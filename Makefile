@@ -47,10 +47,10 @@ tests:
 	$(MAKE) phan
 
 phpcbf:
-	$(call execPhpAlpine,/app/src/vendor/bin/phpcbf /app/client/cd-client.php /app/src/src -s --standard=/app/client/.phpcs.xml.dist)
+	$(call execPhpAlpine,/app/src/vendor/bin/phpcbf /app/src/qit-cli.php /app/src/src -s --standard=/app/src/.phpcs.xml.dist)
 
 phpcs:
-	$(call execPhpAlpine,/app/src/vendor/bin/phpcs /app/client/cd-client.php /app/src/src -s --standard=/app/client/.phpcs.xml.dist)
+	$(call execPhpAlpine,/app/src/vendor/bin/phpcs /app/src/qit-cli.php /app/src/src -s --standard=/app/src/.phpcs.xml.dist)
 
 phpstan:
 	$(call execPhpAlpine,/app/src/vendor/bin/phpstan -vvv analyse -c /app/src/phpstan.neon)

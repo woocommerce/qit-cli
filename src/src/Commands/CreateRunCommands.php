@@ -206,8 +206,8 @@ class CreateRunCommands {
 
 				// Upload zip.
 				if ( ! empty( $options['zip'] ) ) {
-					$options['upload_id']     = $this->upload->upload_build( $options['woo_id'], $input->getArgument( 'woo_extension' ), $options['zip'], $output );
-					$options['event'] = 'cli_development_extension_test';
+					$options['upload_id'] = $this->upload->upload_build( $options['woo_id'], $input->getArgument( 'woo_extension' ), $options['zip'], $output );
+					$options['event']     = 'cli_development_extension_test';
 					unset( $options['zip'] );
 				} else {
 					$options['event'] = 'cli_published_extension_test';
