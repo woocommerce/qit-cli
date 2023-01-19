@@ -14,11 +14,11 @@ jobs:
       - uses: actions/cache@v3
         id: cache-composer
         with:
-          path: client/vendor
+          path: src/vendor
           key: ${{ runner.os }}-${{ hashFiles('src/composer.lock') }}
       - name: Composer install
         if: steps.cache-composer.outputs.cache-hit != 'true'
-        working-directory: client
+        working-directory: src
         run: composer install
       - name: Run PHPCS
         run: make phpcs
