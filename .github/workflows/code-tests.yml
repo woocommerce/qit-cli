@@ -1,0 +1,30 @@
+name: QIT CLI Code tests
+on:
+  workflow_call:
+  push:
+    paths:
+      - 'src/**.php'
+jobs:
+  code_tests:
+    name: Code tests
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: actions/cache@v3
+        id: cache-composer
+        with:
+          path: client/vendor
+          key: ${{ runner.os }}-${{ hashFiles('src/composer.lock') }}
+      - name: Composer install
+        if: steps.cache-composer.outputs.cache-hit != 'true'
+        working-directory: client
+        run: composer install
+      - name: Run PHPCS
+        run: make phpcs
+      - name: Run PHPStan
+        run: make phpstan
+      - name: Run Phan
+        run: make phan
+      - name: Run PHPUnit
+        run: make phpunit

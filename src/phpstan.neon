@@ -1,0 +1,19 @@
+parameters:
+  level: 6
+  paths:
+    - /app/src/src
+    - /app/src/qit-cli.php
+  scanDirectories:
+    - /app/src/vendor
+  tmpDir: /app/.cache
+  parallel:
+    jobSize: 10
+    maximumNumberOfProcesses: 32
+    minimumNumberOfJobsPerProcess: 2
+  inferPrivatePropertyTypeFromConstructor: true
+  reportUnmatchedIgnoredErrors: false
+  ignoreErrors:
+    # Can't set this, as we are extending Symfony Console command class.
+    - '#.*::configure\(\) has no return type specified.$#'
+    - '#.*::execute\(\) has no return type specified.$#'
+    - '#.*::configureIO\(\) has no return type specified.$#'

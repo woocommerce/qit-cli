@@ -1,0 +1,30 @@
+name: Releases
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  code-tests:
+    name: Run code tests
+    uses: ./.github/workflows/code-tests.yml
+  build:
+    needs: [ code-tests ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          tools: none
+          php-version: '7.2'
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "qit"
+          bodyFile: ./docs/changelogs/${{github.ref_name}}.md
+          generateReleaseNotes: true
+      - name: Basic Validation
+        run: ./qit

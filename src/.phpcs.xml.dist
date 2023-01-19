@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress Coding Standards based custom ruleset for the QIT CLI">
+    <description>WordPress Coding Standards based custom ruleset for the QIT CLI.</description>
+
+    <arg value="sp"/>
+    <arg name="colors"/>
+    <arg name="extensions" value="php"/>
+    <arg name="parallel" value="8"/>
+
+    <config name="testVersion" value="7.2-"/>
+    <rule ref="PHPCompatibility"/>
+
+    <!-- Do not fail PHPCS CI over warnings -->
+    <config name="ignore_warnings_on_exit" value="1"/>
+
+    <rule ref="WordPress">
+        <exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+        <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+        <exclude name="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound"/>
+        <exclude name="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound"/>
+        <exclude name="WordPress.NamingConventions.PrefixAllGlobals.InvalidPrefixPassed"/>
+        <exclude name="WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode"/>
+
+        # This is not really a WordPress codebase.
+        <exclude name="WordPress.WP.AlternativeFunctions.curl_curl_exec"/>
+        <exclude name="WordPress.WP.AlternativeFunctions.curl_curl_getinfo"/>
+        <exclude name="WordPress.WP.AlternativeFunctions.curl_curl_close"/>
+        <exclude name="WordPress.WP.AlternativeFunctions.curl_curl_init"/>
+        <exclude name="WordPress.WP.AlternativeFunctions.curl_curl_setopt_array"/>
+        <exclude name="WordPress.WP.AlternativeFunctions.WordPress.WP.AlternativeFunctions.json_encode_json_encode"/>
+        <exclude name="WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents"/>
+        <exclude name="WordPress.PHP.DiscouragedPHPFunctions.system_calls_exec"/>
+        <exclude name="WordPress.PHP.NoSilencedErrors.Discouraged"/>
+        <exclude name="WordPress.Security.ValidatedSanitizedInput.InputNotSanitized"/>
+        <exclude name="WordPress.WP.AlternativeFunctions.file_system_read_file_put_contents"/>
+        <exclude name="WordPress.Security.ValidatedSanitizedInput.MissingUnslash"/>
+
+        <exclude name="Squiz.Commenting.FileComment.WrongStyle"/>
+        <exclude name="Squiz.Commenting.FileComment.Missing"/>
+        <exclude name="Squiz.Commenting.ClassComment.Missing"/>
+        <exclude name="Squiz.Commenting.VariableComment.Missing"/>
+        <exclude name="Squiz.Commenting.FunctionComment.MissingParamComment"/>
+        <exclude name="Squiz.Commenting.FunctionComment.MissingParamTag"/>
+        <exclude name="Squiz.Commenting.FunctionCommentThrowTag.Missing"/>
+        <exclude name="Squiz.PHP.CommentedOutCode.Found"/>
+
+        <exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
+
+        <exclude name="WordPress.PHP.YodaConditions.NotYoda"/>
+
+        <exclude name="PEAR.Functions.FunctionCallSignature.MultipleArguments"/>
+        <exclude name="PEAR.Functions.FunctionCallSignature.ContentAfterOpenBracket"/>
+        <exclude name="PEAR.Functions.FunctionCallSignature.CloseBracketLine"/>
+
+        <exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+        <exclude name="Generic.Commenting.DocComment.MissingShort"/>
+
+        <!-- Ignored until this is answered: https://github.com/squizlabs/PHP_CodeSniffer/issues/3570 -->
+        <exclude name="Squiz.Commenting.FunctionComment.Missing"/>
+
+        <exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
+
+        <exclude name="WordPress.PHP.DisallowShortTernary.Found"/>
+    </rule>
+
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+</ruleset>

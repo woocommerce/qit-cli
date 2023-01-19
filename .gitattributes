@@ -1,0 +1,8 @@
+/_build export-ignore
+/docs export-ignore
+/.github export-ignore
+/src/phpstan.neon export-ignore
+/src/phpunit.xml.dist export-ignore
+/src/.phpcs.xml.dist export-ignore
+/src/tests export-ignore
+/src/.phan export-ignore

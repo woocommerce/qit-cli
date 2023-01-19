@@ -1,0 +1,11 @@
+{
+  "base-path": "./src-tmp",
+  "output": "./../qit",
+  "main": "qit-cli.php",
+  "compactors": [
+    "KevinGH\\Box\\Compactor\\Php",
+    "KevinGH\\Box\\Compactor\\PhpScoper"
+  ],
+  "git-tag": "QIT_CLI_VERSION",
+  "php-scoper": "./../_build/scoper.inc.php"
+}

@@ -1,0 +1,5 @@
+vendor/
+.idea/
+src-tmp/
+.cache
+.phpunit.result.cache

@@ -1,0 +1,11 @@
+{
+  "name": "woocommerce/qit-cli",
+  "config": {
+    "platform-check": false
+  },
+  "require": {
+    "php": "^7.2.5 | ^8",
+    "ext-curl": "*"
+  },
+  "bin": "qit"
+}
