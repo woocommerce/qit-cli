@@ -42,19 +42,19 @@ class AddEnvironment extends Command {
 			->setDescription( 'Add a new environment for this instance of the QIT CLI.' )
 			->addOption( 'environment', 'e', InputOption::VALUE_OPTIONAL, '(Optional) The environment to configure.', '' )
 			->addOption( 'qit_secret', 's', InputOption::VALUE_OPTIONAL, '(Optional) The QIT Secret to use.', '' )
-			->addOption( 'manager_url', 'u', InputOption::VALUE_OPTIONAL, '(Optional) The Manager URL to use. Eg: http://manager.loc (local), or Manager Staging/Prod URLs.', '' )
-			->addOption( 'now', '', InputOption::VALUE_NONE, '(Optional) Whether to use the new environment now.', null );
+			->addOption( 'manager_url', 'u', InputOption::VALUE_OPTIONAL, '(Optional) The Manager URL to use. Eg: http://manager.loc (local), or Manager Staging/Prod URLs.', '' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		$qit_secret  = $input->getOption( 'qit_secret' );
 		$manager_url = $input->getOption( 'manager_url' );
 		$environment = $input->getOption( 'environment' );
-		$now         = $input->getOption( 'now' );
 
 		if ( empty( $environment ) && ! empty( $manager_url ) || ! empty( $qit_secret ) ) {
 			throw new \UnexpectedValueException( 'When passing Manager URL/QIT Secret as a parameter, you need to also provide a --environment.' );
 		}
+
+		$secret_store_id = '';
 
 		if ( empty( $manager_url ) ) {
 			$question = new ChoiceQuestion(
@@ -90,9 +90,8 @@ class AddEnvironment extends Command {
 						return $cd_manager_url;
 					} );
 
-					$manager_url     = $this->getHelper( 'question' )->ask( $input, $output, $question );
-					$secret_store_id = '';
-					$environment     = Environment::$allowed_environments['local'];
+					$manager_url = $this->getHelper( 'question' )->ask( $input, $output, $question );
+					$environment = Environment::$allowed_environments['local'];
 					break;
 			}
 		}
@@ -124,13 +123,13 @@ class AddEnvironment extends Command {
 		$this->auth->set_cd_secret( $qit_secret );
 		$this->config->set_cache( 'cd_manager_url', $manager_url, - 1 );
 
-		$output->writeln( "Validating your CD Secret against $manager_url..." );
+		$output->writeln( "Validating your QIT Secret against $manager_url..." );
 		try {
 			$this->woo_extensions_list->fetch_woo_extensions_available();
 		} catch ( \Exception $e ) {
 			$this->auth->delete_cd_secret();
 			$this->config->delete_cache( 'cd_manager_url' );
-			$output->writeln( sprintf( '<error>We could not authenticate to %s using the provided CD Secret.</error>', escapeshellarg( $manager_url ) ) );
+			$output->writeln( sprintf( '<error>We could not authenticate to %s using the provided QIT Secret.</error>', escapeshellarg( $manager_url ) ) );
 			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
 			return Command::FAILURE;
@@ -148,7 +147,7 @@ class AddEnvironment extends Command {
 TEXT;
 
 		$output->writeln( $easter_egg );
-		$output->writeln( '<comment>[Developer Setup] CD Secret and CD Manager URL saved.</comment>' );
+		$output->writeln( "<comment>Added new environment '$environment' and switched to it.</comment>" );
 
 		return Command::SUCCESS;
 	}

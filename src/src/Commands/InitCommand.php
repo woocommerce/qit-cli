@@ -44,18 +44,10 @@ class InitCommand extends Command {
 			->setDescription( 'Initialize the QIT CLI.' )
 			->setHelp( sprintf( 'Initialize and authenticate the QIT CLI against %s. This command needs to be executed only once. It can either run interactively to guide you through the generation of the application password, or non-interactively (such as in CI) by passing the user and application password as parameters of this command.', get_wccom_url() ) )
 			->addOption( 'user', 'u', InputOption::VALUE_OPTIONAL, '(Optional) WooCommerce.com user with "edit" permission to the extensions that you want to test.' )
-			->addOption( 'application_password', 'p', InputOption::VALUE_OPTIONAL, '(Optional) WooCommerce.com application password.' )
-			->addOption( 'reset', 'r', InputOption::VALUE_NONE, '(Optional) Delete QIT CLI config file to start from a clean state.' );
+			->addOption( 'application_password', 'p', InputOption::VALUE_OPTIONAL, '(Optional) WooCommerce.com application password.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
-		// Reset if user requested it.
-		if ( ! empty( $input->getOption( 'reset' ) ) ) {
-			$this->config->reset();
-
-			return Command::SUCCESS;
-		}
-
 		// Non-interactive early bail: User and application password passed as arguments.
 		if ( ! empty( $input->getOption( 'user' ) ) && ! empty( $input->getOption( 'application_password' ) ) ) {
 			try {

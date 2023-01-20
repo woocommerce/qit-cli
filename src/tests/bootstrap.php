@@ -1,4 +1,5 @@
 <?php
 define( 'UNIT_TESTS', true );
 require_once __DIR__ . '/../src/helpers.php';
-\QIT_CLI\App::setVar( 'override_cd_config_file', __DIR__ . '/.test_config' );
+putenv( 'QIT_CLI_CONFIG_DIR=/tmp/' );
+\QIT_CLI\App::make( \QIT_CLI\Environment::class )->create_environment( 'tests' );
