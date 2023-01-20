@@ -138,7 +138,7 @@ TEXT
 		return Command::SUCCESS;
 	}
 
-	protected function switch_to_vendor_environment( OutputInterface $output ) {
+	protected function switch_to_vendor_environment( OutputInterface $output ): void {
 		if ( $this->environment->is_development_mode() && ! in_array( $this->environment->get_current_environment(), [
 			Environment::$allowed_environments['vendor'],
 			Environment::$allowed_environments['undefined'],
