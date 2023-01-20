@@ -50,7 +50,7 @@ class InitCommand extends Command {
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		// Make sure people understands this only needs to be done once.
 		if ( $this->environment->environment_exists( Environment::$allowed_environments['vendor'] ) ) {
-			if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "<question>QIT CLI has already been initialized. Continue? (y/n) </question>", false ) ) ) {
+			if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( '<question>QIT CLI has already been initialized. Continue? (y/n) </question>', false ) ) ) {
 				return Command::SUCCESS;
 			}
 
@@ -140,9 +140,9 @@ TEXT
 
 	protected function switch_to_vendor_environment( OutputInterface $output ) {
 		if ( $this->environment->is_development_mode() && ! in_array( $this->environment->get_current_environment(), [
-				Environment::$allowed_environments['vendor'],
-				Environment::$allowed_environments['undefined']
-			] ) ) {
+			Environment::$allowed_environments['vendor'],
+			Environment::$allowed_environments['undefined'],
+		], true ) ) {
 			$output->writeln( "<info>[Dev Mode] Switching to environment 'vendor'.</info>" );
 		}
 
