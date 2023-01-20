@@ -5,7 +5,7 @@ use QIT_CLI\Auth;
 
 class AuthTest extends \PHPUnit\Framework\TestCase {
 	public function setUp(): void {
-		App::make( \QIT_CLI\Config::class )->reset();
+		App::make( \QIT_CLI\Environment::class )->delete_environment( 'tests' );
 		parent::setUp();
 	}
 

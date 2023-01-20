@@ -17,6 +17,7 @@ class Environment {
 	 */
 	public static $allowed_environments = [
 		'local'      => 'local',
+		'tests'      => 'tests',
 		'staging'    => 'staging',
 		'production' => 'production',
 		'undefined'  => 'undefined',
@@ -63,10 +64,10 @@ class Environment {
 	/**
 	 * @param string $environment The environment to switch to.
 	 *
-	 * @throws \RuntimeException When the provided environment is not yet configured, and therefore can't be switched to.
+	 * @return void
 	 * @throws \InvalidArgumentException When the provided environment is invalid.
 	 *
-	 * @return void
+	 * @throws \RuntimeException When the provided environment is not yet configured, and therefore can't be switched to.
 	 */
 	public function switch_to_environment( string $environment ): void {
 		if ( ! array_key_exists( $environment, self::$allowed_environments ) ) {
@@ -97,6 +98,10 @@ class Environment {
 	 *                Possible values are: undefined, production, staging, local
 	 */
 	public function get_current_environment(): string {
+		if ( defined( 'UNIT_TESTS' ) ) {
+			return 'tests';
+		}
+
 		if ( ! file_exists( $this->environment_control_file ) ) {
 			return 'undefined';
 		}
@@ -162,7 +167,7 @@ class Environment {
 	 */
 	public function get_config_filepath(): string {
 		// Eg: /home/foo/.woo-qit-cli-production.
-		return App::getVar( 'override_cd_config_file', $this->make_config_filepath( $this->get_current_environment() ) );
+		return $this->make_config_filepath( $this->get_current_environment() );
 	}
 
 	private function make_config_filepath( string $environment ): string {
