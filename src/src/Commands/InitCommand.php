@@ -4,6 +4,7 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\Auth;
 use QIT_CLI\Config;
+use QIT_CLI\Environment;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,8 +28,12 @@ class InitCommand extends Command {
 	/** @var WooExtensionsList $woo_extensions_list */
 	protected $woo_extensions_list;
 
-	public function __construct( Config $config, Auth $auth, WooExtensionsList $woo_extensions_list ) {
+	/** @var Environment $environment */
+	protected $environment;
+
+	public function __construct( Config $config, Environment $environment, Auth $auth, WooExtensionsList $woo_extensions_list ) {
 		$this->config              = $config;
+		$this->environment         = $environment;
 		$this->auth                = $auth;
 		$this->woo_extensions_list = $woo_extensions_list;
 		parent::__construct();
@@ -133,7 +138,7 @@ TEXT
 
 		$this->woo_extensions_list->fetch_woo_extensions_available();
 
-		$output->writeln( sprintf( "CD Config file written to: %s. Keep this file safe, as it contains your Application Password.\n", $this->config->get_config_filepath() ) );
+		$output->writeln( sprintf( "CD Config file written to: %s. Keep this file safe, as it contains your Application Password.\n", $this->environment->get_config_filepath() ) );
 		$output->writeln( '<fg=green>Initialization complete! You can now start using the QIT CLI!</>' );
 
 		return Command::SUCCESS;

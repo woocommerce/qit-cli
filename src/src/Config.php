@@ -16,10 +16,13 @@ class Config {
 	/** @var array<scalar|array<scalar>> $config */
 	protected $config = [];
 
-	public function __construct() {
+	/** @var Environment $environment */
+	protected $environment;
+
+	public function __construct( Environment $environment ) {
+		$this->environment = $environment;
 		$this->init_config();
 	}
-
 
 	/**
 	 * @param string $key The key to retrieve from the config file.
@@ -158,14 +161,14 @@ class Config {
 	 * @throws \RuntimeException When could not read the config file.
 	 */
 	protected function init_config(): void {
-		if ( ! file_exists( $this->get_config_filepath() ) ) {
+		if ( ! file_exists( $this->environment->get_config_filepath() ) ) {
 			return;
 		}
 
-		$data = file_get_contents( $this->get_config_filepath() );
+		$data = file_get_contents( $this->environment->get_config_filepath() );
 
 		if ( $data === false ) {
-			throw new \RuntimeException( 'Could not read config file. Please check if PHP has read permissions on file ' . $this->get_config_filepath() );
+			throw new \RuntimeException( 'Could not read config file. Please check if PHP has read permissions on file ' . $this->environment->get_config_filepath() );
 		}
 
 		$config = json_decode( $data, true ) ?: [];
@@ -187,67 +190,10 @@ class Config {
 	 * @return void
 	 */
 	public function save(): void {
-		$written = file_put_contents( $this->get_config_filepath(), json_encode( $this->config, JSON_PRETTY_PRINT ) );
+		$written = file_put_contents( $this->environment->get_config_filepath(), json_encode( $this->config, JSON_PRETTY_PRINT ) );
 
 		if ( ! $written ) {
-			throw new \RuntimeException( sprintf( "Could not write to the file %s. Please check if it's writable.", $this->get_config_dir() . '/.woo-qit-cli' ) );
-		}
-	}
-
-	/**
-	 * @throws \RuntimeException When it can't find the QIT CLI directory.
-	 * @return string The path to the QIT CLI directory.
-	 */
-	protected function get_config_dir(): string {
-		// Windows alternative.
-		if ( ! empty( getenv( 'QIT_CLI_CONFIG_DIR' ) ) ) {
-			if ( ! file_exists( getenv( 'QIT_CLI_CONFIG_DIR' ) ) ) {
-				throw new \RuntimeException( sprintf( 'The QIT_CLI_CONFIG_DIR environment variable is defined, but points to a non-existing directory: %s', getenv( 'QIT_CLI_CONFIG_DIR' ) ) );
-			}
-
-			return getenv( 'QIT_CLI_CONFIG_DIR' );
-		}
-
-		// Unix.
-		if ( isset( $_SERVER['HOME'] ) ) {
-			if ( ! file_exists( $_SERVER['HOME'] ) ) {
-				throw new \RuntimeException( sprintf( 'The HOME environment variable is defined, but points to a non-existing directory: %s', $_SERVER['HOME'] ) );
-			}
-
-			return $_SERVER['HOME'];
-		}
-
-		$message = '';
-
-		if ( is_windows() ) {
-			$message .= 'The QIT CLI is meant to run on Unix environments, such as Windows WSL, Linux, or Mac. On native Windows, ';
-		}
-
-		$message .= "You need to set an environment variable 'QIT_CLI_CONFIG_DIR' pointing to a writable directory where the QIT CLI can write it's config file. Do NOT use a directory inside your plugin, as the config file will hold sensitive information that should not be included in your plugin.";
-
-		throw new \RuntimeException( $message );
-	}
-
-	/**
-	 * @return string The file path of the QIT CLI config file.
-	 */
-	public function get_config_filepath(): string {
-		return App::getVar( 'override_cd_config_file', $this->get_config_dir() . '/.woo-qit-cli' );
-	}
-
-	/**
-	 * Delete the CD Config file, resetting the QIT CLI to a clean state.
-	 *
-	 * @throws \RuntimeException When could not delete the config file.
-	 *
-	 * @return void
-	 */
-	public function reset(): void {
-		if ( file_exists( $this->get_config_filepath() ) ) {
-			$unlinked = unlink( $this->get_config_filepath() );
-			if ( ! $unlinked ) {
-				throw new \RuntimeException( 'Could not delete config file. Please check if PHP has read permissions on file ' . $this->get_config_filepath() );
-			}
+			throw new \RuntimeException( sprintf( "Could not write to the file %s. Please check if it's writable.", $this->environment->get_config_dir() . '/.woo-qit-cli' ) );
 		}
 	}
 
@@ -256,15 +202,15 @@ class Config {
 	 * @throws \RuntimeException When the QIT CLI config file exists, but is not readable.
 	 */
 	public function is_initialized(): bool {
-		if ( ! file_exists( $this->get_config_filepath() ) ) {
+		if ( ! file_exists( $this->environment->get_config_filepath() ) ) {
 			return false;
 		}
 
-		if ( ! is_readable( $this->get_config_filepath() ) ) {
-			throw new \RuntimeException( sprintf( 'The config file exists but it\'s not readable: %s', $this->get_config_dir() . '/.woo-qit-cli' ) );
+		if ( ! is_readable( $this->environment->get_config_filepath() ) ) {
+			throw new \RuntimeException( sprintf( 'The config file exists but it\'s not readable: %s', $this->environment->get_config_dir() . '/.woo-qit-cli' ) );
 		}
 
-		$json = json_decode( file_get_contents( $this->get_config_filepath() ), true );
+		$json = json_decode( file_get_contents( $this->environment->get_config_filepath() ), true );
 
 		if ( ! is_array( $json ) ) {
 			return false;
