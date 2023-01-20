@@ -92,5 +92,9 @@ if ( $container->make( Config::class )->is_initialized() ) {
 	$application->add( $container->make( WooExtensionsCommand::class ) );
 }
 
+if ( $container->make( Output::class )->isVerbose() ) {
+	$container->make( Output::class )->writeln( sprintf( '<info>QIT Environment: %s</info>', $container->make( \QIT_CLI\Environment::class )->get_current_environment() ) );
+}
+
 // Handle CLI request.
 $application->run();

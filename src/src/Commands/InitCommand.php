@@ -48,12 +48,23 @@ class InitCommand extends Command {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
+		// Make sure people understands this only needs to be done once.
+		if ( $this->environment->environment_exists( Environment::$allowed_environments['vendor'] ) ) {
+			if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "<question>QIT CLI has already been initialized. Continue? (y/n) </question>", false ) ) ) {
+				return Command::SUCCESS;
+			}
+
+			$this->environment->delete_environment( 'vendor' );
+		}
+
 		// Non-interactive early bail: User and application password passed as arguments.
 		if ( ! empty( $input->getOption( 'user' ) ) && ! empty( $input->getOption( 'application_password' ) ) ) {
 			try {
 				validate_authentication( $input->getOption( 'user' ), $input->getOption( 'application_password' ) );
-				$this->auth->set_auth_app_pass( $input->getOption( 'user' ), $input->getOption( 'application_password' ) );
 
+				$this->switch_to_vendor_environment( $output );
+
+				$this->auth->set_auth_app_pass( $input->getOption( 'user' ), $input->getOption( 'application_password' ) );
 				$this->woo_extensions_list->fetch_woo_extensions_available();
 
 				return Command::SUCCESS;
@@ -69,15 +80,6 @@ class InitCommand extends Command {
 			$output->writeln( '<error>To run this command with --no-interaction, please provide the --user and --application-password parameters.</error>' );
 
 			return Command::FAILURE;
-		}
-
-		// Make sure people understands this only needs to be done once.
-		if ( $this->config->is_initialized() ) {
-			$question = new ConfirmationQuestion( '<comment>The QIT CLI is already initialized. Would you like to re-do the initialization process? [y/n]</comment> ', false );
-
-			if ( ! $this->getHelper( 'question' )->ask( $input, $output, $question ) ) {
-				return Command::SUCCESS;
-			}
 		}
 
 		// Ask for WooCommerce username.
@@ -125,14 +127,27 @@ TEXT
 
 		$application_password = $this->getHelper( 'question' )->ask( $input, $output, $question );
 
-		$this->auth->set_auth_app_pass( $user, $application_password );
+		$this->switch_to_vendor_environment( $output );
 
+		$this->auth->set_auth_app_pass( $user, $application_password );
 		$this->woo_extensions_list->fetch_woo_extensions_available();
 
 		$output->writeln( sprintf( "CD Config file written to: %s. Keep this file safe, as it contains your Application Password.\n", $this->environment->get_config_filepath() ) );
 		$output->writeln( '<fg=green>Initialization complete! You can now start using the QIT CLI!</>' );
 
 		return Command::SUCCESS;
+	}
+
+	protected function switch_to_vendor_environment( OutputInterface $output ) {
+		if ( $this->environment->is_development_mode() && ! in_array( $this->environment->get_current_environment(), [
+				Environment::$allowed_environments['vendor'],
+				Environment::$allowed_environments['undefined']
+			] ) ) {
+			$output->writeln( "<info>[Dev Mode] Switching to environment 'vendor'.</info>" );
+		}
+
+		$this->environment->create_environment( 'vendor' );
+		$this->environment->switch_to_environment( 'vendor' );
 	}
 
 	protected function get_authorize_url( OutputInterface $output ): string {

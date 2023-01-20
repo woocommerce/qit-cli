@@ -18,6 +18,7 @@ class Environment {
 	public static $allowed_environments = [
 		'local'      => 'local',
 		'tests'      => 'tests',
+		'vendor'     => 'vendor',
 		'staging'    => 'staging',
 		'production' => 'production',
 		'undefined'  => 'undefined',
@@ -106,15 +107,12 @@ class Environment {
 			return 'undefined';
 		}
 
-		$allowed_envs = [ 'production', 'staging', 'local' ];
-
 		$environment = file_get_contents( $this->environment_control_file );
 
-		if ( ! in_array( $environment, $allowed_envs, true ) ) {
+		if ( ! in_array( $environment, self::$allowed_environments, true ) ) {
 			unlink( $this->get_config_dir() . '/.woo-qit-cli-environment' );
 			App::get( Output::class )->writeln(
-				'QIT Warning: Invalid environment. Resetting "%s".',
-				$this->get_config_dir() . '/.qit-cli-environment'
+				sprintf( 'QIT Warning: Invalid environment. Resetting "%s".', $this->get_config_dir() . '/.qit-cli-environment' )
 			);
 
 			return 'undefined';
