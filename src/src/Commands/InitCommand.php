@@ -42,7 +42,6 @@ class InitCommand extends Command {
 	protected function configure() {
 		$this
 			->setDescription( 'Initialize the QIT CLI.' )
-			->setHidden( true ) // Todo: Show this once the QIT CLI goes public.
 			->setHelp( sprintf( 'Initialize and authenticate the QIT CLI against %s. This command needs to be executed only once. It can either run interactively to guide you through the generation of the application password, or non-interactively (such as in CI) by passing the user and application password as parameters of this command.', get_wccom_url() ) )
 			->addOption( 'user', 'u', InputOption::VALUE_OPTIONAL, '(Optional) WooCommerce.com user with "edit" permission to the extensions that you want to test.' )
 			->addOption( 'application_password', 'p', InputOption::VALUE_OPTIONAL, '(Optional) WooCommerce.com application password.' )
