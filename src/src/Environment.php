@@ -12,6 +12,9 @@ class Environment {
 		$this->environment_control_file = $this->get_config_dir() . '/.woo-qit-cli-environment';
 	}
 
+	/**
+	 * @var array<string> The allowed environments.
+	 */
 	public static $allowed_environments = [
 		'local'      => 'local',
 		'staging'    => 'staging',
@@ -26,7 +29,7 @@ class Environment {
 		return file_exists( sprintf( '%s/%s', $this->get_config_dir(), '.woo-qit-cli-dev' ) );
 	}
 
-	public function enable_development_mode() {
+	public function enable_development_mode(): void {
 		$dev_file = sprintf( '%s/%s', $this->get_config_dir(), '.woo-qit-cli-dev' );
 		if ( ! file_exists( $dev_file ) ) {
 			$touched = touch( $dev_file );
@@ -37,9 +40,9 @@ class Environment {
 		}
 	}
 
-	public function create_environment( string $environment ) {
+	public function create_environment( string $environment ): void {
 		if ( ! array_key_exists( $environment, self::$allowed_environments ) ) {
-			throw new \InvalidArgumentException( 'Invalid environment. Valid options are: ' . implode( ', ', Config::$allowed_environments ) );
+			throw new \InvalidArgumentException( 'Invalid environment. Valid options are: ' . implode( ', ', self::$allowed_environments ) );
 		}
 
 		if ( file_exists( $this->make_config_filepath( $environment ) ) ) {
@@ -60,14 +63,14 @@ class Environment {
 	/**
 	 * @param string $environment The environment to switch to.
 	 *
-	 * @return void
 	 * @throws \RuntimeException When the provided environment is not yet configured, and therefore can't be switched to.
-	 *
 	 * @throws \InvalidArgumentException When the provided environment is invalid.
+	 *
+	 * @return void
 	 */
-	public function switch_to_environment( string $environment ) {
+	public function switch_to_environment( string $environment ): void {
 		if ( ! array_key_exists( $environment, self::$allowed_environments ) ) {
-			throw new \InvalidArgumentException( 'Invalid environment. Valid options are: ' . implode( ', ', Config::$allowed_environments ) );
+			throw new \InvalidArgumentException( 'Invalid environment. Valid options are: ' . implode( ', ', self::$allowed_environments ) );
 		}
 
 		if ( ! file_exists( $this->make_config_filepath( $environment ) ) ) {
@@ -158,11 +161,11 @@ class Environment {
 	 * @return string The file path of the current QIT CLI config file.
 	 */
 	public function get_config_filepath(): string {
-		// Eg: /home/foo/.woo-qit-cli-production
-		return App::getVar( "override_cd_config_file", $this->make_config_filepath( $this->get_current_environment() ) );
+		// Eg: /home/foo/.woo-qit-cli-production.
+		return App::getVar( 'override_cd_config_file', $this->make_config_filepath( $this->get_current_environment() ) );
 	}
 
-	private function make_config_filepath( string $environment ) {
+	private function make_config_filepath( string $environment ): string {
 		return sprintf( '%s/%s-%s', $this->get_config_dir(), '.woo-qit-cli', $environment );
 	}
 
@@ -175,8 +178,8 @@ class Environment {
 	 * @throws \InvalidArgumentException When the provided environment is invalid.
 	 */
 	public function delete_environment( string $environment ): void {
-		if ( ! in_array( $environment, self::$allowed_environments ) ) {
-			throw new \InvalidArgumentException( 'Invalid environment. Valid options are: ' . implode( ', ', Config::$allowed_environments ) );
+		if ( ! in_array( $environment, self::$allowed_environments, true ) ) {
+			throw new \InvalidArgumentException( 'Invalid environment. Valid options are: ' . implode( ', ', self::$allowed_environments ) );
 		}
 
 		if ( ! $this->environment_exists( $environment ) ) {
