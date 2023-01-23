@@ -117,3 +117,14 @@ function generate_uuid4() {
 		mt_rand( 0, 0xffff )
 	);
 }
+
+/**
+ * @param int $length_of_string The length of the string to generate.
+ *
+ * @return string A random string containing only alphanumeric characters.
+ */
+function qit_random_string( int $length_of_string ): string {
+	$str_result = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+	return substr( str_shuffle( $str_result ), 0, $length_of_string );
+}

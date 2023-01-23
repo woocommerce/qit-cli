@@ -60,9 +60,14 @@ $application->configureIO( $container->make( Input::class ), $container->make( O
 $container->setVar( 'doing_autocompletion', stripos( (string) $container->make( Input::class ), '_completion' ) !== false );
 
 // Global commands.
-$application->add( $container->make( InitCommand::class ) );
 $application->add( $container->make( DevModeCommand::class ) );
 
+// Partner commands.
+$application->add( $container->make( \QIT_CLI\Commands\Partner\AddPartner::class ) );
+$application->add( $container->make( \QIT_CLI\Commands\Partner\RemovePartner::class ) );
+$application->add( $container->make( \QIT_CLI\Commands\Partner\SwitchPartner::class ) );
+
+// Environment commands.
 if ( $container->make( \QIT_CLI\Environment::class )->is_development_mode() ) {
 	$application->add( $container->make( \QIT_CLI\Commands\Environment\AddEnvironment::class ) );
 	$application->add( $container->make( \QIT_CLI\Commands\Environment\RemoveEnvironment::class ) );
