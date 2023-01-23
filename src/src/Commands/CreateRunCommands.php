@@ -231,7 +231,7 @@ class CreateRunCommands {
 		};
 
 		$command
-			->setName( "run-$test_type" );
+			->setName( "run:$test_type" );
 
 		if ( ! empty( $schema['description'] ) ) {
 			$command->setDescription( $schema['description'] );
