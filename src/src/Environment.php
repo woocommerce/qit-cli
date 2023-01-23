@@ -222,6 +222,34 @@ class Environment {
 	}
 
 	/**
+	 * @return array<string> The list of Partners configured.
+	 */
+	public function get_configured_partners(): array {
+		if ( ! file_exists( $this->get_config_dir() ) ) {
+			return [];
+		}
+
+		$partners = [];
+
+		$files = scandir( $this->get_config_dir() );
+
+		if ( ! is_array( $files ) ) {
+			return [];
+		}
+
+		foreach ( $files as $f ) {
+			// Not a environment config file.
+			if ( strpos( $f, '.env-partner-' ) === false ) {
+				continue;
+			}
+
+			$partners[] = str_replace( '.env-partner-', '', $f );
+		}
+
+		return $partners;
+	}
+
+	/**
 	 * @param string $environment The environment to remove.
 	 *
 	 * @return void

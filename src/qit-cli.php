@@ -66,6 +66,7 @@ $application->add( $container->make( DevModeCommand::class ) );
 $application->add( $container->make( \QIT_CLI\Commands\Partner\AddPartner::class ) );
 $application->add( $container->make( \QIT_CLI\Commands\Partner\RemovePartner::class ) );
 $application->add( $container->make( \QIT_CLI\Commands\Partner\SwitchPartner::class ) );
+$application->add( $container->make( \QIT_CLI\Commands\Partner\ListPartner::class ) );
 
 // Environment commands.
 if ( $container->make( \QIT_CLI\Environment::class )->is_development_mode() ) {
