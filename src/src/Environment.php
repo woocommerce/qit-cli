@@ -173,14 +173,14 @@ class Environment {
 	}
 
 	/**
-	 * @param string $environment The environment to unset.
+	 * @param string $environment The environment to remove.
 	 *
 	 * @return void
-	 * @throws \RuntimeException When the provided environment is not yet configured, and therefore can't be unset.
+	 * @throws \RuntimeException When the provided environment is not yet configured, and therefore can't be removed.
 	 *
 	 * @throws \InvalidArgumentException When the provided environment is invalid.
 	 */
-	public function unset_environment( string $environment ): void {
+	public function remove_environment( string $environment ): void {
 		if ( ! in_array( $environment, self::$allowed_environments, true ) ) {
 			throw new \InvalidArgumentException( 'Invalid environment. Valid options are: ' . implode( ', ', self::$allowed_environments ) );
 		}
