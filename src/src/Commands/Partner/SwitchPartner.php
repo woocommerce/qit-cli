@@ -31,16 +31,16 @@ class SwitchPartner extends Command {
 		try {
 			$this->environment->switch_to_environment( "partner-$user" );
 		} catch ( \InvalidArgumentException $e ) {
-			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+			$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 
 			return Command::FAILURE;
 		} catch ( \RuntimeException $e ) {
-			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+			$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 
 			return Command::FAILURE;
 		}
 
-		$output->writeln( "<comment>Switched to partner '$user' successfully.</comment>" );
+		$output->writeln( "<info>Switched to partner '$user' successfully.</info>" );
 
 		return Command::SUCCESS;
 	}

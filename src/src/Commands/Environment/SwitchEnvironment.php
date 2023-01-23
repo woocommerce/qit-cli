@@ -31,16 +31,16 @@ class SwitchEnvironment extends Command {
 		try {
 			$this->environment->switch_to_environment( $environment );
 		} catch ( \InvalidArgumentException $e ) {
-			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+			$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 
 			return Command::FAILURE;
 		} catch ( \RuntimeException $e ) {
-			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+			$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 
 			return Command::FAILURE;
 		}
 
-		$output->writeln( "<comment>Switched to environment '$environment' successfully.</comment>" );
+		$output->writeln( "<info>Switched to environment '$environment' successfully.</info>" );
 
 		return Command::SUCCESS;
 	}

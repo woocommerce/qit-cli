@@ -31,16 +31,16 @@ class RemovePartner extends Command {
 		try {
 			$this->environment->remove_environment( "partner-$user" );
 		} catch ( \InvalidArgumentException $e ) {
-			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+			$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 
 			return Command::FAILURE;
 		} catch ( \RuntimeException $e ) {
-			$output->writeln( sprintf( '<info>%s</info>', $e->getMessage() ) );
+			$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 
 			return Command::SUCCESS;
 		}
 
-		$output->writeln( "<comment>Partner config '$user' removed successfully.</comment>" );
+		$output->writeln( "<info>Partner config '$user' removed successfully.</info>" );
 
 		return Command::SUCCESS;
 	}

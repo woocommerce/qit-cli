@@ -31,16 +31,16 @@ class RemoveEnvironment extends Command {
 		try {
 			$this->environment->remove_environment( $environment );
 		} catch ( \InvalidArgumentException $e ) {
-			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+			$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 
 			return Command::FAILURE;
 		} catch ( \RuntimeException $e ) {
-			$output->writeln( sprintf( '<info>%s</info>', $e->getMessage() ) );
+			$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 
 			return Command::SUCCESS;
 		}
 
-		$output->writeln( "<comment>Environment '$environment' unset successfully.</comment>" );
+		$output->writeln( "<info>Environment '$environment' unset successfully.</info>" );
 
 		return Command::SUCCESS;
 	}

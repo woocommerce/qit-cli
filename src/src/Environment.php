@@ -237,5 +237,11 @@ class Environment {
 		if ( ! $this->environment_exists( $environment ) ) {
 			throw new \RuntimeException( "Environment '$environment' does not exist/is not configured yet." );
 		}
+
+		$unlinked = unlink( $this->make_config_filepath( $environment ) );
+
+		if ( ! $unlinked ) {
+			throw new \RuntimeException( sprintf( 'Could not remove environment "%s". Please delete the config file manually: %s', $environment, $this->make_config_filepath( $environment ) ) );
+		}
 	}
 }
