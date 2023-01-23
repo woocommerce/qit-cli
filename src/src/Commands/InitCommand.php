@@ -54,7 +54,7 @@ class InitCommand extends Command {
 				return Command::SUCCESS;
 			}
 
-			$this->environment->delete_environment( 'vendor' );
+			$this->environment->unset_environment( 'vendor' );
 		}
 
 		// Non-interactive early bail: User and application password passed as arguments.
