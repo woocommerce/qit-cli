@@ -58,7 +58,7 @@ class AddPartner extends Command {
 
 		$user = strtolower( $user );
 
-		if ( ! preg_match( '#a-z0-9#i', $user ) ) {
+		if ( ! preg_match( '#[a-z0-9]#i', $user ) ) {
 			throw new \InvalidArgumentException( 'The WooCommerce.com username must contain only letters and numbers.' );
 		}
 

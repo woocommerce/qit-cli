@@ -18,7 +18,6 @@ class Environment {
 	public static $allowed_environments = [
 		'local'      => 'local',
 		'tests'      => 'tests',
-		'vendor'     => 'vendor',
 		'staging'    => 'staging',
 		'production' => 'production',
 		'undefined'  => 'undefined',
@@ -42,9 +41,17 @@ class Environment {
 		}
 	}
 
+	public function is_allowed_environment( string $environment ): bool {
+		if ( substr( $environment, 0, 8 ) === 'partner-' ) {
+			return preg_match( '/^partner-[a-z0-9]{1,60}$/', $environment );
+		}
+
+		return in_array( $environment, self::$allowed_environments, true );
+	}
+
 	public function create_environment( string $environment ): void {
-		if ( ! array_key_exists( $environment, self::$allowed_environments ) ) {
-			throw new \InvalidArgumentException( 'Invalid environment. Valid options are: ' . implode( ', ', self::$allowed_environments ) );
+		if ( ! $this->is_allowed_environment( $environment ) ) {
+			throw new \InvalidArgumentException( 'Invalid environment.' );
 		}
 
 		if ( file_exists( $this->make_config_filepath( $environment ) ) ) {
@@ -87,8 +94,8 @@ class Environment {
 	 * @throws \RuntimeException When the provided environment is not yet configured, and therefore can't be switched to.
 	 */
 	public function switch_to_environment( string $environment ): void {
-		if ( ! array_key_exists( $environment, self::$allowed_environments ) ) {
-			throw new \InvalidArgumentException( 'Invalid environment. Valid options are: ' . implode( ', ', self::$allowed_environments ) );
+		if ( ! $this->is_allowed_environment( $environment ) ) {
+			throw new \InvalidArgumentException( 'Invalid environment.' );
 		}
 
 		if ( ! file_exists( $this->make_config_filepath( $environment ) ) ) {
@@ -103,7 +110,7 @@ class Environment {
 	}
 
 	public function environment_exists( string $environment ): bool {
-		if ( ! array_key_exists( $environment, self::$allowed_environments ) ) {
+		if ( ! $this->is_allowed_environment( $environment ) ) {
 			throw new \InvalidArgumentException( "The environment $environment is not allowed." );
 		}
 
@@ -125,7 +132,7 @@ class Environment {
 
 		$environment = file_get_contents( $this->environment_control_file );
 
-		if ( ! in_array( $environment, self::$allowed_environments, true ) ) {
+		if ( ! $this->is_allowed_environment( $environment ) ) {
 			unlink( $this->get_config_dir() . '/.woo-qit-cli-environment' );
 			App::get( Output::class )->writeln(
 				sprintf( 'QIT Warning: Invalid environment. Resetting "%s".', $this->get_config_dir() . '/.qit-cli-environment' )
@@ -188,7 +195,7 @@ class Environment {
 				App::setVar( 'WARNED_DIR_PERMISSION', true );
 			}
 
-			return $normalize_path( $_SERVER['HOME'] );
+			return $config_dir;
 		}
 
 		$message = '';
@@ -223,8 +230,8 @@ class Environment {
 	 * @throws \InvalidArgumentException When the provided environment is invalid.
 	 */
 	public function remove_environment( string $environment ): void {
-		if ( ! in_array( $environment, self::$allowed_environments, true ) ) {
-			throw new \InvalidArgumentException( 'Invalid environment. Valid options are: ' . implode( ', ', self::$allowed_environments ) );
+		if ( ! $this->is_allowed_environment( $environment ) ) {
+			throw new \InvalidArgumentException( 'Invalid environment.' );
 		}
 
 		if ( ! $this->environment_exists( $environment ) ) {
