@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SwitchEnvironment extends Command {
-	protected static $defaultName = 'environment:switch'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected static $defaultName = 'env:switch'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/** @var Environment $environment */
 	protected $environment;
@@ -21,7 +21,7 @@ class SwitchEnvironment extends Command {
 
 	protected function configure() {
 		$this
-			->setDescription( 'Switch to another QIT CLI environment.' )
+			->setDescription( 'Switch to another QIT environment.' )
 			->addArgument( 'environment', InputArgument::REQUIRED, 'The environment to switch to.' );
 	}
 
