@@ -14,8 +14,8 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class AddEnvironment extends Command {
-	protected static $defaultName = 'environment:add'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+class SetupEnvironment extends Command {
+	protected static $defaultName = 'env:setup'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/** @var Config $config */
 	protected $config;
@@ -39,7 +39,7 @@ class AddEnvironment extends Command {
 
 	protected function configure() {
 		$this
-			->setDescription( 'Add a new environment for this instance of the QIT CLI.' )
+			->setDescription( 'Sets-up a new environment for this instance of the QIT CLI.' )
 			->addOption( 'environment', 'e', InputOption::VALUE_OPTIONAL, '(Optional) The environment to configure.', '' )
 			->addOption( 'qit_secret', 's', InputOption::VALUE_OPTIONAL, '(Optional) The QIT Secret to use.', '' )
 			->addOption( 'manager_url', 'u', InputOption::VALUE_OPTIONAL, '(Optional) The Manager URL to use. Eg: http://manager.loc (local), or Manager Staging/Prod URLs.', '' );
@@ -79,7 +79,7 @@ class AddEnvironment extends Command {
 					$environment     = Environment::$allowed_environments['staging'];
 					break;
 				case 'Local':
-					$question = new Question( "<question>What's the URL of the CD Manager you'd like to use? (Eg: http://cd_manager.loc:8081)</question> " );
+					$question = new Question( "<question>What's the URL of the Manager you'd like to use? (Eg: http://qit_manager.loc:8081)</question> " );
 					$question->setMaxAttempts( 3 );
 					$question->setValidator( function ( $cd_manager_url ) {
 						// Remove underscores before validating because they are not allowed in a hostname. We should change cd_manager.loc to something else upstream.
@@ -147,7 +147,7 @@ class AddEnvironment extends Command {
 TEXT;
 
 		$output->writeln( $easter_egg );
-		$output->writeln( "<comment>Added new environment '$environment' and switched to it.</comment>" );
+		$output->writeln( "<comment>New environment '$environment' has been successfully setup. The CLI has switched to it.</comment>" );
 
 		return Command::SUCCESS;
 	}

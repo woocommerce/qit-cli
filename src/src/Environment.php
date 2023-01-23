@@ -113,8 +113,7 @@ class Environment {
 		if ( ! in_array( $environment, $allowed_envs, true ) ) {
 			unlink( $this->get_config_dir() . '/.woo-qit-cli-environment' );
 			App::get( Output::class )->writeln(
-				'QIT Warning: Invalid environment. Resetting "%s".',
-				$this->get_config_dir() . '/.qit-cli-environment'
+				sprintf( 'QIT Warning: Invalid environment. Resetting "%s".', $this->get_config_dir() . '/.qit-cli-environment' )
 			);
 
 			return 'undefined';
@@ -175,14 +174,14 @@ class Environment {
 	}
 
 	/**
-	 * @param string $environment The environment to delete.
+	 * @param string $environment The environment to unset.
 	 *
 	 * @return void
-	 * @throws \RuntimeException When the provided environment is not yet configured, and therefore can't be deleted.
+	 * @throws \RuntimeException When the provided environment is not yet configured, and therefore can't be unset.
 	 *
 	 * @throws \InvalidArgumentException When the provided environment is invalid.
 	 */
-	public function delete_environment( string $environment ): void {
+	public function unset_environment( string $environment ): void {
 		if ( ! in_array( $environment, self::$allowed_environments, true ) ) {
 			throw new \InvalidArgumentException( 'Invalid environment. Valid options are: ' . implode( ', ', self::$allowed_environments ) );
 		}
