@@ -73,6 +73,7 @@ if ( $container->make( \QIT_CLI\Environment::class )->is_development_mode() ) {
 	$application->add( $container->make( \QIT_CLI\Commands\Environment\AddEnvironment::class ) );
 	$application->add( $container->make( \QIT_CLI\Commands\Environment\RemoveEnvironment::class ) );
 	$application->add( $container->make( \QIT_CLI\Commands\Environment\SwitchEnvironment::class ) );
+	$application->add( $container->make( \QIT_CLI\Commands\Environment\CurrentEnvironment::class ) );
 }
 
 // Commands that require initialization.
