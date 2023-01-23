@@ -88,7 +88,7 @@ TEXT
 			$question->setHiddenFallback( false );
 			$question->setMaxAttempts( 1 );
 
-			$question->setValidator( function ( $application_password ) use ( $output, $user ) {
+			$question->setValidator( function ( $application_password ) {
 				if ( empty( $application_password ) ) {
 					throw new \RuntimeException( 'Invalid Application Password.' );
 				}

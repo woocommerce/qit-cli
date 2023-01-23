@@ -2,7 +2,7 @@
 
 namespace QIT_CLI;
 
-use QIT_CLI\Commands\InitCommand;
+use QIT_CLI\Commands\Partner\AddPartner;
 
 class Auth {
 	/** @var Config $config */
@@ -28,7 +28,7 @@ class Auth {
 		$application_password = $this->config->get_cache( 'application_password' );
 
 		if ( empty( $user ) || empty( $application_password ) ) {
-			throw new \RuntimeException( sprintf( 'Invalid credentials. Please run the "%s" command.', InitCommand::getDefaultName() ) );
+			throw new \RuntimeException( sprintf( 'Invalid credentials. Please run the "%s" command.', AddPartner::getDefaultName() ) );
 		}
 
 		return base64_encode( sprintf( '%s:%s', $user, $application_password ) );
