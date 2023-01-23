@@ -14,8 +14,8 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class SetupEnvironment extends Command {
-	protected static $defaultName = 'env:setup'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+class AddEnvironment extends Command {
+	protected static $defaultName = 'env:add'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/** @var Config $config */
 	protected $config;
@@ -39,8 +39,8 @@ class SetupEnvironment extends Command {
 
 	protected function configure() {
 		$this
-			->setDescription( 'Sets-up a new environment for this instance of the QIT CLI.' )
-			->addOption( 'environment', 'e', InputOption::VALUE_OPTIONAL, '(Optional) The environment to configure.', '' )
+			->setDescription( 'Configure a new environment that the QIT CLI can connect to.' )
+			->addOption( 'environment', 'e', InputOption::VALUE_OPTIONAL, '(Optional) The environment to add.', '' )
 			->addOption( 'qit_secret', 's', InputOption::VALUE_OPTIONAL, '(Optional) The QIT Secret to use.', '' )
 			->addOption( 'manager_url', 'u', InputOption::VALUE_OPTIONAL, '(Optional) The Manager URL to use. Eg: http://manager.loc (local), or Manager Staging/Prod URLs.', '' );
 	}

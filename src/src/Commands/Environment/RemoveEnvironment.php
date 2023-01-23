@@ -8,8 +8,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UnsetEnvironment extends Command {
-	protected static $defaultName = 'env:unset'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+class RemoveEnvironment extends Command {
+	protected static $defaultName = 'env:remove'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/** @var Environment $environment */
 	protected $environment;
@@ -21,15 +21,15 @@ class UnsetEnvironment extends Command {
 
 	protected function configure() {
 		$this
-			->setDescription( 'Unsets an environment that had been previously set-up. This is a non-destructive action that does not remove any data in remote servers.' )
-			->addArgument( 'environment', InputArgument::REQUIRED, 'The environment to unset.' );
+			->setDescription( 'Removes an environment that had been previously configured. This is a non-destructive action that does not remove any data in remote servers.' )
+			->addArgument( 'environment', InputArgument::REQUIRED, 'The environment to remove.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		$environment = $input->getArgument( 'environment' );
 
 		try {
-			$this->environment->unset_environment( $environment );
+			$this->environment->remove_environment( $environment );
 		} catch ( \InvalidArgumentException $e ) {
 			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 

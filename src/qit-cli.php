@@ -64,8 +64,8 @@ $application->add( $container->make( InitCommand::class ) );
 $application->add( $container->make( DevModeCommand::class ) );
 
 if ( $container->make( \QIT_CLI\Environment::class )->is_development_mode() ) {
-	$application->add( $container->make( \QIT_CLI\Commands\Environment\SetupEnvironment::class ) );
-	$application->add( $container->make( \QIT_CLI\Commands\Environment\UnsetEnvironment::class ) );
+	$application->add( $container->make( \QIT_CLI\Commands\Environment\AddEnvironment::class ) );
+	$application->add( $container->make( \QIT_CLI\Commands\Environment\RemoveEnvironment::class ) );
 	$application->add( $container->make( \QIT_CLI\Commands\Environment\SwitchEnvironment::class ) );
 }
 
