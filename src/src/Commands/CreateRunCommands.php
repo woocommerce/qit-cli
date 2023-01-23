@@ -17,7 +17,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use function QIT_CLI\get_cd_manager_url;
+use function QIT_CLI\get_manager_url;
 
 class CreateRunCommands {
 	/** @var Config $config */
@@ -71,7 +71,7 @@ class CreateRunCommands {
 
 				$start = microtime( true );
 
-				$response = ( new RequestBuilder( get_cd_manager_url() . "/wp-json/cd/v1/enqueue-$test_type" ) )
+				$response = ( new RequestBuilder( get_manager_url() . "/wp-json/cd/v1/enqueue-$test_type" ) )
 					->with_curl_opts( [
 						CURLOPT_CUSTOMREQUEST => 'OPTIONS',
 					] )
@@ -121,7 +121,7 @@ class CreateRunCommands {
 	 * @return string
 	 */
 	protected function make_cache_key( string $test_type ) {
-		return sprintf( 'schema_%s_%s', $test_type, md5( get_cd_manager_url() ) );
+		return sprintf( 'schema_%s_%s', $test_type, md5( get_manager_url() ) );
 	}
 
 	/**
@@ -214,7 +214,7 @@ class CreateRunCommands {
 				}
 
 				try {
-					$response = ( new RequestBuilder( get_cd_manager_url() . "/wp-json/cd/v1/enqueue-{$this->test_type}" ) )
+					$response = ( new RequestBuilder( get_manager_url() . "/wp-json/cd/v1/enqueue-{$this->test_type}" ) )
 						->with_method( 'POST' )
 						->with_post_body( $options )
 						->request();

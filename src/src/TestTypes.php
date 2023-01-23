@@ -23,7 +23,7 @@ class TestTypes {
 		$this->config               = $config;
 		$this->auth                 = $auth;
 		$this->output               = App::make( Output::class );
-		$this->test_types_cache_key = sprintf( 'test_types_%s', md5( get_cd_manager_url() ) );
+		$this->test_types_cache_key = sprintf( 'test_types_%s', md5( get_manager_url() ) );
 	}
 
 	/**
@@ -43,7 +43,7 @@ class TestTypes {
 		$start = microtime( true );
 
 		try {
-			$test_types = ( new RequestBuilder( get_cd_manager_url() . '/wp-json/cd/v1/test-types' ) )
+			$test_types = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/test-types' ) )
 				->request();
 		} catch ( DoingAutocompleteException $e ) {
 			return;

@@ -22,7 +22,7 @@ class WooExtensionsList {
 		$this->config                   = $config;
 		$this->auth                     = $auth;
 		$this->output                   = App::make( Output::class );
-		$this->woo_extensions_cache_key = sprintf( 'woo_extensions_%s', md5( get_cd_manager_url() ) );
+		$this->woo_extensions_cache_key = sprintf( 'woo_extensions_%s', md5( get_manager_url() ) );
 	}
 
 	/**
@@ -32,28 +32,8 @@ class WooExtensionsList {
 	 * @throws \Exception|\RuntimeException When could not retrieve list of WooCommerce extensions.
 	 */
 	public function fetch_woo_extensions_available(): void {
-		$is_using_cd_secret = $this->config->get_cache( 'cd_secret' );
-
-		if ( $is_using_cd_secret ) {
-			$this->fetch_all_woo_extensions();
-
-			return;
-		}
-
-		// Todo.
-		throw new \RuntimeException( 'Todo: We need to fetch what WooExtensionsList a user has access to when authenticating using user:application_passwords.' );
-	}
-
-	/**
-	 * When authenticating using the CD Secret,
-	 * all extensions will be available.
-	 *
-	 * @throws \Exception When the request returned an error.
-	 * @throws \RuntimeException When could not retrieve list of WooCommerce extensions.
-	 */
-	protected function fetch_all_woo_extensions(): void {
 		try {
-			$response = ( new RequestBuilder( get_cd_manager_url() . '/wp-json/cd/v1/get_extensions' ) )
+			$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get_extensions' ) )
 				->with_method( 'POST' )
 				->request();
 		} catch ( \Exception $e ) {

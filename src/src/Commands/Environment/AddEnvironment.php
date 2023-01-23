@@ -81,13 +81,13 @@ class AddEnvironment extends Command {
 				case 'Local':
 					$question = new Question( "<question>What's the URL of the Manager you'd like to use? (Eg: http://qit_manager.loc:8081)</question> " );
 					$question->setMaxAttempts( 3 );
-					$question->setValidator( function ( $cd_manager_url ) {
+					$question->setValidator( function ( $manager_url ) {
 						// Remove underscores before validating because they are not allowed in a hostname. We should change cd_manager.loc to something else upstream.
-						if ( filter_var( str_replace( '_', '-', $cd_manager_url ), FILTER_VALIDATE_URL ) === false ) {
+						if ( filter_var( str_replace( '_', '-', $manager_url ), FILTER_VALIDATE_URL ) === false ) {
 							throw new \UnexpectedValueException( 'Invalid URL.' );
 						}
 
-						return $cd_manager_url;
+						return $manager_url;
 					} );
 
 					$manager_url = $this->getHelper( 'question' )->ask( $input, $output, $question );
@@ -121,14 +121,14 @@ class AddEnvironment extends Command {
 		}
 
 		$this->auth->set_cd_secret( $qit_secret );
-		$this->config->set_cache( 'cd_manager_url', $manager_url, - 1 );
+		$this->config->set_cache( 'manager_url', $manager_url, - 1 );
 
 		$output->writeln( "Validating your QIT Secret against $manager_url..." );
 		try {
 			$this->woo_extensions_list->fetch_woo_extensions_available();
 		} catch ( \Exception $e ) {
 			$this->auth->delete_cd_secret();
-			$this->config->delete_cache( 'cd_manager_url' );
+			$this->config->delete_cache( 'manager_url' );
 			$output->writeln( sprintf( '<error>We could not authenticate to %s using the provided QIT Secret.</error>', escapeshellarg( $manager_url ) ) );
 			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 

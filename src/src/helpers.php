@@ -84,8 +84,8 @@ function get_wccom_url(): string {
 /**
  * @return string The URL to the CD Manager instance to use.
  */
-function get_cd_manager_url(): string {
-	$override = App::make( Config::class )->get_cache( 'cd_manager_url' );
+function get_manager_url(): string {
+	$override = App::make( Config::class )->get_cache( 'manager_url' );
 
 	if ( ! is_null( $override ) ) {
 		return (string) $override;

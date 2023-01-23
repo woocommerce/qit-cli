@@ -12,7 +12,7 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use function QIT_CLI\get_cd_manager_url;
+use function QIT_CLI\get_manager_url;
 
 class ListCommand extends Command {
 	protected static $defaultName = 'list-tests'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
@@ -63,7 +63,7 @@ class ListCommand extends Command {
 		}
 
 		try {
-			$response = ( new RequestBuilder( get_cd_manager_url() . '/wp-json/cd/v1/get' ) )
+			$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get' ) )
 				->with_method( 'POST' )
 				->with_post_body( [
 					'woo_ids'     => $woo_ids,
