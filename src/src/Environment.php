@@ -60,6 +60,22 @@ class Environment {
 		if ( ! $written ) {
 			throw new \RuntimeException( 'Could not create environment config file. Please check that PHP has write permission to file: ' . $this->make_config_filepath( $environment ) );
 		}
+
+		/*
+		 * Make sure the file has the correct permissions. (0600)
+		 * Try to set it, warn if cannot.
+		 */
+		if ( decoct( fileperms( $this->make_config_filepath( $environment ) ) & 0777 ) !== '600' && ! chmod( $this->make_config_filepath( $environment ), 0600 ) && ! App::getVar( "WARNED_ENV_PERMISSION_$environment", false ) ) {
+			App::make( Output::class )->writeln(
+				sprintf(
+					'<warning>Warning: Could not set permissions on environment file. Please check that PHP has write permission to file: %s</warning>',
+					$this->make_config_filepath( $environment )
+				)
+			);
+
+			// Show this only once per request.
+			App::setVar( "WARNED_ENV_PERMISSION_$environment", true );
+		}
 	}
 
 	/**
@@ -146,6 +162,32 @@ class Environment {
 				throw new \RuntimeException( sprintf( 'The HOME environment variable is defined, but points to a non-existing directory: %s', $_SERVER['HOME'] ) );
 			}
 
+			$config_dir = $normalize_path( $_SERVER['HOME'] ) . '.woo-qit-cli/';
+
+			if ( ! file_exists( $config_dir ) ) {
+				$dir_created = mkdir( $config_dir );
+
+				if ( ! $dir_created ) {
+					throw new \RuntimeException( sprintf( 'Could not create the QIT CLI config directory: %s. Please try to create the directory manually. ', $config_dir ) );
+				}
+			}
+
+			/*
+			 * Make sure the directory has the correct permissions. (0700)
+			 * Try to set it, warn if cannot.
+			 */
+			if ( decoct( fileperms( $config_dir ) & 0777 ) !== '700' && ! chmod( $config_dir, 0700 ) && ! App::getVar( 'WARNED_DIR_PERMISSION', false ) ) {
+				App::make( Output::class )->writeln(
+					sprintf(
+						'<info>QIT Warning: Could not set permissions on the QIT CLI config directory. Please check that PHP has write permission to file: %s</info>',
+						$config_dir
+					)
+				);
+
+				// Show this only once per request.
+				App::setVar( 'WARNED_DIR_PERMISSION', true );
+			}
+
 			return $normalize_path( $_SERVER['HOME'] );
 		}
 
@@ -169,7 +211,7 @@ class Environment {
 	}
 
 	private function make_config_filepath( string $environment ): string {
-		return sprintf( '%s/%s-%s', $this->get_config_dir(), '.woo-qit-cli', $environment );
+		return sprintf( '%s/%s-%s', $this->get_config_dir(), '.env', $environment );
 	}
 
 	/**
