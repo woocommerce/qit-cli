@@ -216,7 +216,7 @@ class Config {
 			return false;
 		}
 
-		$has_application_password_auth = ! empty( $json['user'] ) && ! empty( $json['application_password'] );
+		$has_application_password_auth = ! empty( $json['cache']['user'] ) && ! empty( $json['cache']['application_password'] );
 		$has_cd_secret                 = ! empty( $json['cache']['cd_secret'] );
 
 		if ( ! $has_application_password_auth && ! $has_cd_secret ) {
