@@ -22,7 +22,7 @@ class SwitchPartner extends Command {
 
 	protected function configure() {
 		$this
-			->setDescription( 'Switch to another WooCommerce.com Partner.' )
+			->setDescription( 'Switch to another Partner.' )
 			->addArgument( 'user', InputArgument::OPTIONAL, '(Optional) The partner user to switch to.' );
 	}
 

@@ -8,13 +8,14 @@ function is_windows(): bool {
 
 function validate_authentication( string $username, string $application_password ): void {
 	try {
-		( new RequestBuilder( 'https://woocommerce.com/wp-json/wc/v3/products' ) )
-			->with_curl_opts( [
-				CURLOPT_USERPWD => sprintf( '%s:%s', $username, $application_password ),
+		( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/partner-auth' ) )
+			->with_method( 'POST' )
+			->with_post_body( [
+				'app_pass' => base64_encode( sprintf( '%s:%s', $username, $application_password ) ),
 			] )
 			->request();
 	} catch ( \Exception $e ) {
-		throw new \Exception( 'Could not authenticate to woocommerce.com using the provided username and application password.' );
+		throw new \Exception( sprintf( 'Could not authenticate to %s using the provided username and application password.', get_wccom_url() ) );
 	}
 }
 
@@ -69,7 +70,7 @@ function open_in_browser( string $url ): void {
 }
 
 /**
- * @return string The URL to the WooCommerce.com instance to use.
+ * @return string The URL of the WCCOM Marketplace to use.
  */
 function get_wccom_url(): string {
 	return App::make( Config::class )->get_manager_sync_data( 'wccom_url' );

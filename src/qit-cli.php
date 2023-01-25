@@ -12,7 +12,6 @@ use QIT_CLI\Environment;
 use QIT_CLI\IO\Input;
 use QIT_CLI\IO\Output;
 use QIT_CLI\ManagerSync;
-use QIT_CLI\TestTypes;
 use Stecman\Component\Symfony\Console\BashCompletion\CompletionCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -62,8 +61,13 @@ $application->configureIO( $container->make( Input::class ), $container->make( O
 
 $container->setVar( 'doing_autocompletion', stripos( (string) $container->make( Input::class ), '_completion' ) !== false );
 
-App::make( ManagerSync::class )->maybe_sync();
-App::make( ManagerSync::class )->enforce_latest_version();
+try {
+	App::make( ManagerSync::class )->maybe_sync();
+	App::make( ManagerSync::class )->enforce_latest_version();
+} catch ( Exception $e ) {
+	echo $e->getMessage();
+	exit( 1 );
+}
 
 $env = App::make( Environment::class );
 

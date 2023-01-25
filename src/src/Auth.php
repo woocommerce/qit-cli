@@ -13,11 +13,11 @@ class Auth {
 	}
 
 	/**
-	 * @return string Return credentials, either an base64 of user:application_password, or the CD_SECRET if defined.
+	 * @return string|null Return either a base64 of user:application_password, or the CD_SECRET if defined, or null if neither are defined.
 	 *
 	 * @throws \RuntimeException When using application password and it's empty.
 	 */
-	public function get_auth(): string {
+	public function get_auth() {
 		$override = $this->config->get_cache( 'cd_secret' );
 
 		if ( ! is_null( $override ) ) {
@@ -27,11 +27,11 @@ class Auth {
 		$user                 = $this->config->get_cache( 'user' );
 		$application_password = $this->config->get_cache( 'application_password' );
 
-		if ( empty( $user ) || empty( $application_password ) ) {
-			throw new \RuntimeException( sprintf( 'Invalid credentials. Please run the "%s" command.', AddPartner::getDefaultName() ) );
+		if ( ! empty( $user ) && ! empty( $application_password ) ) {
+			return base64_encode( sprintf( '%s:%s', $user, $application_password ) );
 		}
 
-		return base64_encode( sprintf( '%s:%s', $user, $application_password ) );
+		return null;
 	}
 
 	/**

@@ -40,10 +40,10 @@ class AddPartner extends Command {
 
 	protected function configure() {
 		$this
-			->setDescription( 'Configure a new WooCommerce.com Partner that the QIT CLI can connect to.' )
+			->setDescription( 'Configure a new WCCOM Marketplace Partner that the QIT CLI can connect to.' )
 			->setHelp( sprintf( 'Configure the QIT CLI to be able to interact with %s on behalf of a given partner.', get_wccom_url() ) )
-			->addOption( 'user', 'u', InputOption::VALUE_OPTIONAL, '(Optional) WooCommerce.com user with "edit" permission to the extensions that you want to test.' )
-			->addOption( 'application_password', 'p', InputOption::VALUE_OPTIONAL, '(Optional) WooCommerce.com application password.' );
+			->addOption( 'user', 'u', InputOption::VALUE_OPTIONAL, '(Optional) WCCOM Marketplace user with "edit" permission to the extensions that you want to test.' )
+			->addOption( 'application_password', 'p', InputOption::VALUE_OPTIONAL, '(Optional) Partner application password.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -51,15 +51,15 @@ class AddPartner extends Command {
 		if ( ! empty( $input->getOption( 'user' ) ) ) {
 			$user = $input->getOption( 'user' );
 		} else {
-			$output->writeln( "\n<info>You will need an account at WooCommerce.com with permission to 'edit' the extensions that you want to test. You can check what's your username here: https://woocommerce.com/wp-admin/profile.php</info>\n" );
-			$question = new Question( "<question>What's the WooCommerce.com username of the Partner you want to add? </question> " );
+			$output->writeln( sprintf("\n<info>You will need an account at %s with permission to 'edit' the extensions that you want to test. You can check what's your username here: %s/wp-admin/profile.php</info>\n", get_wccom_url(), get_wccom_url()) );
+			$question = new Question( "<question>What's the username of the Partner you want to add? </question> " );
 			$user     = $this->getHelper( 'question' )->ask( $input, $output, $question );
 		}
 
 		$user = strtolower( $user );
 
 		if ( ! preg_match( '#[a-z0-9]#i', $user ) ) {
-			throw new \InvalidArgumentException( 'The WooCommerce.com username must contain only letters and numbers.' );
+			throw new \InvalidArgumentException( 'The username must contain only letters and numbers.' );
 		}
 
 		// Application Password.
@@ -104,9 +104,21 @@ TEXT
 		}
 
 		// Validate credentials.
-		$output->writeln( 'Validating your application password with woocommerce.com...' );
+		$output->writeln( sprintf('Validating your application password with %s...', get_wccom_url()) );
 		validate_authentication( $user, $application_password );
 		$output->writeln( '<fg=green>Validated successfully.</>' );
+
+		$easter_egg = <<<TEXT
+ __          __          _ 
+ \ \        / /         | |
+  \ \  /\  / /__   ___  | |
+   \ \/  \/ / _ \ / _ \ | |
+    \  /\  / (_) | (_)  |_|
+     \/  \/ \___/ \___/ (_)
+
+TEXT;
+
+		$output->writeln( $easter_egg );
 
 		if ( $this->environment->environment_exists( "partner-$user" ) ) {
 			$this->environment->remove_environment( "partner-$user" );
@@ -139,7 +151,7 @@ TEXT
 		if ( is_array( $json ) && isset( $json['authentication']['application-passwords']['endpoints']['authorization'] ) ) {
 			$base_url = $json['authentication']['application-passwords']['endpoints']['authorization'];
 		} else {
-			$output->writeln( "Could not get Authorization URL from woocommerce.com. Using fallback...\n" );
+			$output->writeln( sprintf("Could not get Authorization URL from %s. Using fallback...\n", get_wccom_url()) );
 			$base_url = get_wccom_url() . '/wp-admin/authorize-application.php';
 		}
 
