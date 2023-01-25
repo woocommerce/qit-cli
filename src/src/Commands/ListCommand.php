@@ -33,7 +33,7 @@ class ListCommand extends Command {
 	}
 
 	protected function configure() {
-		$test_types_list = implode( ', ', $this->config->get_test_types() );
+		$test_types_list = implode( ', ', $this->config->get_manager_sync_data( 'test_types' ) );
 		$this
 			->setDescription( 'List test runs.' )
 			->addOption( 'test_status', 's', InputOption::VALUE_OPTIONAL, '(Optional) What test status to retrieve.' )

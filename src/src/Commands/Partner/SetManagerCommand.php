@@ -2,8 +2,10 @@
 
 namespace QIT_CLI\Commands\Partner;
 
+use QIT_CLI\App;
 use QIT_CLI\Config;
 use QIT_CLI\Environment;
+use QIT_CLI\ManagerSync;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -31,7 +33,6 @@ class SetManagerCommand extends Command {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
-		// Both overridable values are URLs.
 		$parsed_url = parse_url( filter_var( $input->getArgument( 'manager_url' ) ) );
 
 		if ( ! $parsed_url || empty( $parsed_url['host'] || empty( $parsed_url['scheme'] ) ) ) {
@@ -39,6 +40,7 @@ class SetManagerCommand extends Command {
 		}
 
 		$this->config->set_cache( 'manager_url', $input->getArgument( 'manager_url' ), - 1 );
+		$this->config->delete_cache( App::make( ManagerSync::class )->sync_cache_key );
 
 		$output->writeln( sprintf( '<info>Overriden Manager URL to "%s" in the environment "%s".</info>', $input->getArgument( 'manager_url' ), $this->environment->get_current_environment()) );
 

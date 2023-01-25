@@ -20,18 +20,18 @@ class ManagerSync {
 	protected $output;
 
 	/** @var string $sync_cache_key */
-	public static $sync_cache_key;
+	public $sync_cache_key;
 
 	public function __construct( Config $config, Environment $environment, Auth $auth ) {
-		$this->config           = $config;
-		$this->auth             = $auth;
-		$this->environment      = $environment;
-		$this->output           = App::make( Output::class );
-		static::$sync_cache_key = sprintf( 'manager_sync_%s', md5( get_manager_url() ) );
+		$this->config         = $config;
+		$this->auth           = $auth;
+		$this->environment    = $environment;
+		$this->output         = App::make( Output::class );
+		$this->sync_cache_key = sprintf( 'manager_sync_v%s', App::getVar( 'CLI_VERSION' ) );
 	}
 
 	public function maybe_sync() {
-		$manager_sync = $this->config->get_cache( static::$sync_cache_key );
+		$manager_sync = $this->config->get_cache( $this->sync_cache_key );
 
 		if ( ! is_null( $manager_sync ) ) {
 			return;
@@ -71,6 +71,26 @@ class ManagerSync {
 		}
 
 		// 1 hour.
-		$this->config->set_cache( static::$sync_cache_key, $manager_sync, 3600 );
+		$this->config->set_cache( $this->sync_cache_key, $manager_sync, 3600 );
+	}
+
+	public function enforce_latest_version() {
+		$current_version = App::getVar( 'CLI_VERSION' );
+
+		// Do not check version on development build.
+		if ( $current_version === '@QIT_CLI_VERSION@' ) {
+			return;
+		}
+
+		$latest_version  = $this->config->get_manager_sync_data( 'latest_cli_version' );
+
+		if ( version_compare( $current_version, $latest_version, '<' ) ) {
+			if ( ! $this->environment->is_development_mode() ) {
+				$this->output->writeln( sprintf( '<error>You are using an outdated version of the CLI. Please update to the latest version (%s).</error>', $latest_version ) );
+				throw new \RuntimeException();
+			} else {
+				$this->output->writeln( sprintf( '<comment>You are using an outdated version of the CLI (%s). Please update to the latest version (%s). Continuing execution as dev mode is enabled.</comment>', $current_version, $latest_version ) );
+			}
+		}
 	}
 }

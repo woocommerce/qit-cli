@@ -11,6 +11,7 @@ use QIT_CLI\Config;
 use QIT_CLI\Environment;
 use QIT_CLI\IO\Input;
 use QIT_CLI\IO\Output;
+use QIT_CLI\ManagerSync;
 use QIT_CLI\TestTypes;
 use Stecman\Component\Symfony\Console\BashCompletion\CompletionCommand;
 use Symfony\Component\Console\Application;
@@ -27,8 +28,10 @@ $container = new Container();
 App::setContainer( $container );
 $container->singleton( Config::class );
 
+App::setVar( 'CLI_VERSION', '@QIT_CLI_VERSION@' );
+
 // Initialize Console.
-$application = new class( 'Quality Insights Toolkit CLI', '@QIT_CLI_VERSION@' ) extends Application {
+$application = new class( 'Quality Insights Toolkit CLI', App::getVar( 'CLI_VERSION' ) ) extends Application {
 	// Expose protected method.
 	// phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod.Found
 	public function configureIO( InputInterface $input, OutputInterface $output ) {
@@ -54,9 +57,13 @@ $container->singleton( Input::class, function () {
 $container->singleton( Output::class, function () {
 	return new ConsoleOutput();
 } );
+$container->singleton( ManagerSync::class );
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 
 $container->setVar( 'doing_autocompletion', stripos( (string) $container->make( Input::class ), '_completion' ) !== false );
+
+App::make( ManagerSync::class )->maybe_sync();
+App::make( ManagerSync::class )->enforce_latest_version();
 
 $env = App::make( Environment::class );
 
@@ -98,8 +105,6 @@ if ( $env->is_development_mode() ) {
 
 // Commands that require initialization.
 if ( $container->make( Config::class )->is_initialized() ) {
-	App::make( \QIT_CLI\ManagerSync::class )->maybe_sync();
-
 	// Dynamically create commands to run tests, based on Schema fetched from Manager REST API.
 	$container->make( CreateRunCommands::class )->register_run_commands( $application );
 

@@ -42,8 +42,8 @@ class CreateRunCommands {
 	}
 
 	public function register_run_commands( Application $application ): void {
-		foreach ( $this->config->get_test_types() as $test_type ) {
-			$this->register_command_by_schema( $application, $test_type, $this->config->get_manager_sync_data()['schemas'][ $test_type ] );
+		foreach ( $this->config->get_manager_sync_data( 'test_types' ) as $test_type ) {
+			$this->register_command_by_schema( $application, $test_type, $this->config->get_manager_sync_data('schemas')[ $test_type ] );
 		}
 	}
 

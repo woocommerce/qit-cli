@@ -72,13 +72,7 @@ function open_in_browser( string $url ): void {
  * @return string The URL to the WooCommerce.com instance to use.
  */
 function get_wccom_url(): string {
-	$override = App::make( Config::class )->get_cache( 'wccom_url' );
-
-	if ( ! is_null( $override ) ) {
-		return (string) $override;
-	}
-
-	return 'https://woocommerce.com';
+	return App::make( Config::class )->get_manager_sync_data( 'wccom_url' );
 }
 
 /**

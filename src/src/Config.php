@@ -226,14 +226,24 @@ class Config {
 		return true;
 	}
 
-	public function get_manager_sync_data(): array {
-		return $this->get_cache( ManagerSync::$sync_cache_key ) ?: [];
-	}
-
 	/**
-	 * @return array<string> The test types of the current CD Manager being used.
+	 * @param string $key The key to get.
+	 *
+	 * @throws \UnexpectedValueException When requested a key that does not exist in the sync data.
+	 *
+	 * @return scalar|array The value of the key.
 	 */
-	public function get_test_types(): array {
-		return $this->get_manager_sync_data()['test_types'] ?? [];
+	public function get_manager_sync_data( string $key ) {
+		$manager_data = $this->get_cache( App::make( ManagerSync::class )->sync_cache_key );
+
+		if ( ! is_array( $manager_data ) ) {
+			throw new \UnexpectedValueException( 'The manager sync data is not an array.' );
+		}
+
+		if ( ! array_key_exists( $key, $manager_data ) ) {
+			throw new \UnexpectedValueException( "The manager sync data does not have the key '$key'." );
+		}
+
+		return $manager_data[ $key ];
 	}
 }
