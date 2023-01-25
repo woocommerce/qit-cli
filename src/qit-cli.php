@@ -5,11 +5,10 @@ use QIT_CLI\App;
 use QIT_CLI\Commands\CreateRunCommands;
 use QIT_CLI\Commands\DevModeCommand;
 use QIT_CLI\Commands\GetCommand;
-use QIT_CLI\Commands\InitDevCommand;
-use QIT_CLI\Commands\InitCommand;
 use QIT_CLI\Commands\ListCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Config;
+use QIT_CLI\Environment;
 use QIT_CLI\IO\Input;
 use QIT_CLI\IO\Output;
 use QIT_CLI\TestTypes;
@@ -59,21 +58,42 @@ $application->configureIO( $container->make( Input::class ), $container->make( O
 
 $container->setVar( 'doing_autocompletion', stripos( (string) $container->make( Input::class ), '_completion' ) !== false );
 
+$env = App::make( Environment::class );
+
 // Global commands.
 $application->add( $container->make( DevModeCommand::class ) );
 
 // Partner commands.
 $application->add( $container->make( \QIT_CLI\Commands\Partner\AddPartner::class ) );
-$application->add( $container->make( \QIT_CLI\Commands\Partner\RemovePartner::class ) );
-$application->add( $container->make( \QIT_CLI\Commands\Partner\SwitchPartner::class ) );
-$application->add( $container->make( \QIT_CLI\Commands\Partner\ListPartner::class ) );
 
-// Environment commands.
-if ( $container->make( \QIT_CLI\Environment::class )->is_development_mode() ) {
+// Only show option to Remove Partner if there are Partners to remove.
+if ( count( $env->get_configured_environments( true ) ) > 0 ) {
+	$application->add( $container->make( \QIT_CLI\Commands\Partner\RemovePartner::class ) );
+}
+
+// Only show option to Switch to another partner if there are more than one Partner.
+if ( count( $env->get_configured_environments( true ) ) > 1 ) {
+	$application->add( $container->make( \QIT_CLI\Commands\Partner\SwitchPartner::class ) );
+}
+
+// Dev commands.
+if ( $env->is_development_mode() ) {
 	$application->add( $container->make( \QIT_CLI\Commands\Environment\AddEnvironment::class ) );
-	$application->add( $container->make( \QIT_CLI\Commands\Environment\RemoveEnvironment::class ) );
-	$application->add( $container->make( \QIT_CLI\Commands\Environment\SwitchEnvironment::class ) );
-	$application->add( $container->make( \QIT_CLI\Commands\Environment\CurrentEnvironment::class ) );
+
+	// Only show options to remove and see the current environment if there's at least one environment added.
+	if ( $env->get_configured_environments( false ) > 0 ) {
+		$application->add( $container->make( \QIT_CLI\Commands\Environment\RemoveEnvironment::class ) );
+		$application->add( $container->make( \QIT_CLI\Commands\Environment\CurrentEnvironment::class ) );
+	}
+
+	// Only show option to Switch to another environment if there are more than one environment.
+	if ( $env->get_configured_environments( false ) > 1 ) {
+		$application->add( $container->make( \QIT_CLI\Commands\Environment\SwitchEnvironment::class ) );
+	}
+
+	if ( $env->is_partner_environment() ) {
+		$application->add( $container->make( \QIT_CLI\Commands\Partner\SetManagerCommand::class ) );
+	}
 }
 
 // Commands that require initialization.
@@ -100,7 +120,7 @@ if ( $container->make( Config::class )->is_initialized() ) {
 }
 
 if ( $container->make( Output::class )->isVerbose() ) {
-	$container->make( Output::class )->writeln( sprintf( '<info>QIT Environment: %s</info>', $container->make( \QIT_CLI\Environment::class )->get_current_environment() ) );
+	$container->make( Output::class )->writeln( sprintf( '<info>QIT Environment: %s</info>', $container->make( Environment::class )->get_current_environment() ) );
 }
 
 // Handle CLI request.

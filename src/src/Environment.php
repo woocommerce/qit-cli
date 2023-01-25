@@ -6,10 +6,14 @@ use QIT_CLI\IO\Output;
 
 class Environment {
 	/** @var string This file holds the information of which environment the QIT CLI is currently running on. */
-	protected $environment_control_file;
+	protected $current_environment_file;
+
+	/** @var string If this file exists, the QIT CLI operates in dev mode. */
+	protected $dev_mode_file;
 
 	public function __construct() {
-		$this->environment_control_file = $this->get_config_dir() . '/.woo-qit-cli-environment';
+		$this->current_environment_file = $this->get_config_dir() . '/.current-env';
+		$this->dev_mode_file = $this->get_config_dir() . '/.dev-mode';
 	}
 
 	/**
@@ -27,16 +31,15 @@ class Environment {
 	 * @return bool True if running in Developer mode. False if not.
 	 */
 	public function is_development_mode(): bool {
-		return file_exists( sprintf( '%s/%s', $this->get_config_dir(), '.woo-qit-cli-dev' ) );
+		return file_exists( $this->dev_mode_file );
 	}
 
 	public function enable_development_mode(): void {
-		$dev_file = sprintf( '%s/%s', $this->get_config_dir(), '.woo-qit-cli-dev' );
-		if ( ! file_exists( $dev_file ) ) {
-			$touched = touch( $dev_file );
+		if ( ! file_exists( $this->dev_mode_file ) ) {
+			$touched = touch( $this->dev_mode_file );
 
 			if ( ! $touched ) {
-				throw new \RuntimeException( 'Could not create the file flag to enable development mode. Please check that PHP has write permission to file: ' . $dev_file );
+				throw new \RuntimeException( 'Could not create the file flag to enable development mode. Please check that PHP has write permission to file: ' . $this->dev_mode_file );
 			}
 		}
 	}
@@ -102,10 +105,10 @@ class Environment {
 			throw new \RuntimeException( "Cannot switch to environment '$environment', as it has not been configured yet." );
 		}
 
-		$written = file_put_contents( $this->environment_control_file, $environment );
+		$written = file_put_contents( $this->current_environment_file, $environment );
 
 		if ( ! $written ) {
-			throw new \RuntimeException( 'Could not switch to environment. Cannot write to environment control file. Please check that PHP has write permission to file: ' . $this->environment_control_file );
+			throw new \RuntimeException( 'Could not switch to environment. Cannot write to environment control file. Please check that PHP has write permission to file: ' . $this->current_environment_file );
 		}
 	}
 
@@ -126,22 +129,26 @@ class Environment {
 			return 'tests';
 		}
 
-		if ( ! file_exists( $this->environment_control_file ) ) {
+		if ( ! file_exists( $this->current_environment_file ) ) {
 			return 'undefined';
 		}
 
-		$environment = file_get_contents( $this->environment_control_file );
+		$environment = file_get_contents( $this->current_environment_file );
 
 		if ( ! $this->is_allowed_environment( $environment ) ) {
-			unlink( $this->get_config_dir() . '/.woo-qit-cli-environment' );
+			unlink( $this->current_environment_file );
 			App::get( Output::class )->writeln(
-				sprintf( 'QIT Warning: Invalid environment. Resetting "%s".', $this->get_config_dir() . '/.qit-cli-environment' )
+				sprintf( 'QIT Warning: Invalid environment. Resetting "%s".', $this->current_environment_file )
 			);
 
 			return 'undefined';
 		}
 
 		return $environment;
+	}
+
+	public function is_partner_environment(): bool {
+		return stripos( $this->get_current_environment(), 'partner-' ) === 0;
 	}
 
 	/**
@@ -218,13 +225,13 @@ class Environment {
 	}
 
 	private function make_config_filepath( string $environment ): string {
-		return sprintf( '%s/%s-%s', $this->get_config_dir(), '.env', $environment );
+		return sprintf( '%s/.env-%s', $this->get_config_dir(), $environment );
 	}
 
 	/**
 	 * @return array<string> The list of Partners configured.
 	 */
-	public function get_configured_partners(): array {
+	public function get_configured_environments( bool $partners_only ): array {
 		if ( ! file_exists( $this->get_config_dir() ) ) {
 			return [];
 		}
@@ -238,12 +245,18 @@ class Environment {
 		}
 
 		foreach ( $files as $f ) {
-			// Not a environment config file.
-			if ( strpos( $f, '.env-partner-' ) === false ) {
+			// Skip. Not an environment file.
+			if ( strpos( $f, '.env' ) !== 0 ) {
 				continue;
 			}
 
-			$partners[] = str_replace( '.env-partner-', '', $f );
+			if ( $partners_only ) {
+				if ( strpos( $f, '.env-partner-' ) === 0 ) {
+					$partners[] = str_replace( '.env-partner-', '', $f );
+				}
+			} else {
+				$partners[] = str_replace( '.env-', '', $f );
+			}
 		}
 
 		return $partners;
