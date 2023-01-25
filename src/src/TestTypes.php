@@ -47,6 +47,11 @@ class TestTypes {
 				->request();
 		} catch ( DoingAutocompleteException $e ) {
 			return;
+		} catch ( \Exception $e ) {
+			$this->output->writeln( sprintf( '<error>Failed to fetch Test Types from the Manager: %s</error>', $e->getMessage() ) );
+
+			// Do not bail execution, use the cached test types.
+			return;
 		}
 
 		if ( $this->output->isVerbose() ) {
