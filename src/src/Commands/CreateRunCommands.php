@@ -5,10 +5,8 @@ namespace QIT_CLI\Commands;
 use QIT_CLI\App;
 use QIT_CLI\Auth;
 use QIT_CLI\Config;
-use QIT_CLI\Exceptions\DoingAutocompleteException;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
-use QIT_CLI\TestTypes;
 use QIT_CLI\Upload;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Application;
@@ -29,86 +27,23 @@ class CreateRunCommands {
 	/** @var OutputInterface $output */
 	protected $output;
 
-	/** @var TestTypes $test_types */
-	protected $test_types;
-
 	/** @var Upload $upload */
 	protected $upload;
 
 	/** @var WooExtensionsList $woo_extensions_list */
 	protected $woo_extensions_list;
 
-	public function __construct( Config $config, Auth $auth, TestTypes $test_types, Upload $upload, WooExtensionsList $woo_extensions_list ) {
+	public function __construct( Config $config, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list ) {
 		$this->config              = $config;
 		$this->auth                = $auth;
 		$this->output              = App::make( Output::class );
-		$this->test_types          = $test_types;
 		$this->upload              = $upload;
 		$this->woo_extensions_list = $woo_extensions_list;
 	}
 
 	public function register_run_commands( Application $application ): void {
-		$test_types = $this->test_types->get_test_types();
-
-		foreach ( $test_types as $test_type ) {
-			$schema = $this->config->get_cache( $this->make_cache_key( $test_type ), App::getVar( 'doing_autocompletion' ) );
-
-			// Early bail: Creating command from cache.
-			if ( ! is_null( $schema ) ) {
-				$this->register_command_by_schema( $application, $test_type, $schema );
-
-				continue;
-			}
-
-			if ( $this->output->isVeryVerbose() ) {
-				$this->output->writeln( "[Info] Fetching schema for running test type $test_type." );
-			}
-
-			try {
-				if ( $this->output->isVerbose() ) {
-					App::make( Output::class )->write( "[Info] Fetching from the Manager the schema of test type $test_type... " );
-				}
-
-				$start = microtime( true );
-
-				$response = ( new RequestBuilder( get_manager_url() . "/wp-json/cd/v1/enqueue-$test_type" ) )
-					->with_curl_opts( [
-						CURLOPT_CUSTOMREQUEST => 'OPTIONS',
-					] )
-					->request();
-
-				if ( $this->output->isVerbose() ) {
-					App::make( Output::class )->writeln( sprintf( 'Done in %s seconds.', number_format( microtime( true ) - $start, 2 ) ) );
-				}
-			} catch ( DoingAutocompleteException $e ) {
-				continue;
-			} catch ( \Exception $e ) {
-				$this->output->writeln( "<error>{$e->getMessage()}</error>" );
-
-				continue;
-			}
-
-			$decoded_json = json_decode( $response, true );
-
-			// Skip if response is not JSON.
-			if ( ! is_array( $decoded_json ) ) {
-				if ( $this->output->isVerbose() ) {
-					$this->output->writeln( sprintf( '[Info] CreateRunCommand: Skipping test type %s because the response is not a JSON.', $test_type ) );
-				}
-				continue;
-			}
-
-			// Skip if JSON response does not contain schema.
-			if ( empty( $decoded_json['schema'] ) ) {
-				if ( $this->output->isVerbose() ) {
-					$this->output->writeln( sprintf( '[Info] CreateRunCommand: Skipping test type %s because the response Schema is empty.', $test_type ) );
-				}
-				continue;
-			}
-
-			$this->config->set_cache( $this->make_cache_key( $test_type ), $decoded_json['schema'], 3600 );
-
-			$this->register_command_by_schema( $application, $test_type, $decoded_json['schema'] );
+		foreach ( $this->config->get_test_types() as $test_type ) {
+			$this->register_command_by_schema( $application, $test_type, $this->config->get_manager_sync_data()['schemas'][ $test_type ] );
 		}
 	}
 
@@ -125,8 +60,8 @@ class CreateRunCommands {
 	}
 
 	/**
-	 * @param Application  $application An instance of the current DI.
-	 * @param string       $test_type The test type.
+	 * @param Application $application An instance of the current DI.
+	 * @param string $test_type The test type.
 	 * @param array<mixed> $schema The test type schema.
 	 *
 	 * @return void

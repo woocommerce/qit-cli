@@ -98,16 +98,10 @@ if ( $env->is_development_mode() ) {
 
 // Commands that require initialization.
 if ( $container->make( Config::class )->is_initialized() ) {
-	$do_manager_requests = function () use ( $container, $application ) {
-		// Fetch the available test types from the Manager.
-		$container->make( TestTypes::class )->maybe_update_test_types();
+	App::make( \QIT_CLI\ManagerSync::class )->maybe_sync();
 
-		// Dynamically create commands to run tests, based on Schema fetched from Manager REST API.
-		$container->make( CreateRunCommands::class )->register_run_commands( $application );
-	};
-
-	// Send remote request to the Manager to update the CLI.
-	$do_manager_requests();
+	// Dynamically create commands to run tests, based on Schema fetched from Manager REST API.
+	$container->make( CreateRunCommands::class )->register_run_commands( $application );
 
 	// List tests runs.
 	$application->add( $container->make( ListCommand::class ) );

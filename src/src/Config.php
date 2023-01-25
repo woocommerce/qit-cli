@@ -27,9 +27,9 @@ class Config {
 	/**
 	 * @param string $key The key to retrieve from the config file.
 	 *
+	 * @return mixed The value stored in the config.
 	 * @throws \InvalidArgumentException When the provided key does not exist in the config.
 	 *
-	 * @return mixed The value stored in the config.
 	 */
 	public function get( string $key ) {
 		if ( ! array_key_exists( $key, $this->config ) ) {
@@ -43,11 +43,11 @@ class Config {
 	 * Set something in the config file.
 	 *
 	 * @param string $key The key to save in the config file.
-	 * @param mixed  $value The value to save in the config file. Must be able to be cast to JSON.
-	 *
-	 * @throws \InvalidArgumentException When could not write to the CD Config file.
+	 * @param mixed $value The value to save in the config file. Must be able to be cast to JSON.
 	 *
 	 * @return void
+	 * @throws \InvalidArgumentException When could not write to the CD Config file.
+	 *
 	 */
 	public function set( string $key, $value ) {
 		if ( ! array_key_exists( $key, $this->schema ) ) {
@@ -59,9 +59,9 @@ class Config {
 	}
 
 	/**
-	 * @param string              $key The cache key.
+	 * @param string $key The cache key.
 	 * @param scalar|array<mixed> $value The cache value.
-	 * @param int                 $expire How many seconds from now should this cache expire. -1 for no expiration.
+	 * @param int $expire How many seconds from now should this cache expire. -1 for no expiration.
 	 *
 	 * @return void
 	 */
@@ -90,7 +90,7 @@ class Config {
 
 	/**
 	 * @param string $key The cache key to get.
-	 * @param bool   $ignore_expiration If true, it will return an expired cache entry if available.
+	 * @param bool $ignore_expiration If true, it will return an expired cache entry if available.
 	 *
 	 * @return mixed|null Whatever is in the cache, either a scalar or an array of scalars or array of arrays of scalars. Null if cache not found.
 	 */
@@ -185,9 +185,9 @@ class Config {
 	/**
 	 * Write the config to file.
 	 *
+	 * @return void
 	 * @throws \RuntimeException When could not write to the config file.
 	 *
-	 * @return void
 	 */
 	public function save(): void {
 		$written = file_put_contents( $this->environment->get_config_filepath(), json_encode( $this->config, JSON_PRETTY_PRINT ) );
@@ -224,5 +224,16 @@ class Config {
 		}
 
 		return true;
+	}
+
+	public function get_manager_sync_data(): array {
+		return $this->get_cache( ManagerSync::$sync_cache_key ) ?: [];
+	}
+
+	/**
+	 * @return array<string> The test types of the current CD Manager being used.
+	 */
+	public function get_test_types(): array {
+		return $this->get_manager_sync_data()['test_types'] ?? [];
 	}
 }

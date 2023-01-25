@@ -5,7 +5,6 @@ namespace QIT_CLI\Commands;
 use QIT_CLI\Auth;
 use QIT_CLI\Config;
 use QIT_CLI\RequestBuilder;
-use QIT_CLI\TestTypes;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -27,14 +26,10 @@ class GetCommand extends Command {
 	/** @var WooExtensionsList $woo_extensions_list */
 	protected $woo_extensions_list;
 
-	/** @var TestTypes $test_types */
-	protected $test_types;
-
-	public function __construct( Config $config, Auth $auth, WooExtensionsList $woo_extensions_list, TestTypes $test_types ) {
+	public function __construct( Config $config, Auth $auth, WooExtensionsList $woo_extensions_list ) {
 		$this->config              = $config;
 		$this->auth                = $auth;
 		$this->woo_extensions_list = $woo_extensions_list;
-		$this->test_types          = $test_types;
 		parent::__construct();
 	}
 
