@@ -13,17 +13,9 @@ class Auth {
 	}
 
 	/**
-	 * @return string|null Return either a base64 of user:application_password, or the CD_SECRET if defined, or null if neither are defined.
-	 *
-	 * @throws \RuntimeException When using application password and it's empty.
+	 * @return string|null base64 encoded string of user:application_password, or null if not defined.
 	 */
-	public function get_auth() {
-		$override = $this->config->get_cache( 'cd_secret' );
-
-		if ( ! is_null( $override ) ) {
-			return (string) $override;
-		}
-
+	public function get_app_pass() {
 		$user                 = $this->config->get_cache( 'user' );
 		$application_password = $this->config->get_cache( 'application_password' );
 
@@ -32,6 +24,13 @@ class Auth {
 		}
 
 		return null;
+	}
+
+	/**
+	 * @return string|null CD_SECRET, or null if not defined.
+	 */
+	public function get_cd_secret() {
+		return $this->config->get_cache( 'cd_secret' );
 	}
 
 	/**

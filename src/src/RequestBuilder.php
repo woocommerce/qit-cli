@@ -99,11 +99,10 @@ class RequestBuilder implements \JsonSerializable {
 
 		$this->post_body['client'] = 'qit_cli';
 
-		$credentials = App::make( Auth::class )->get_auth();
-
-		// Is this a CD Manager request?
-		if ( strpos( $this->url, get_manager_url() ) === 0 && ! is_null( $credentials ) ) {
-			$this->post_body['cd_secret'] = $credentials;
+		if ( ! is_null( App::make( Auth::class )->get_cd_secret() ) ) {
+			$this->post_body['cd_secret'] = App::make( Auth::class )->get_cd_secret();
+		} elseif ( ! is_null( App::make( Auth::class )->get_app_pass() ) ) {
+			$this->post_body['partner_app_pass'] = App::make( Auth::class )->get_app_pass();
 		}
 
 		switch ( $this->method ) {

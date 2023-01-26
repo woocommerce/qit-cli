@@ -30,7 +30,11 @@ class ManagerSync {
 		$this->sync_cache_key = sprintf( 'manager_sync_v%s', App::getVar( 'CLI_VERSION' ) );
 	}
 
-	public function maybe_sync() {
+	public function maybe_sync( bool $force_resync = false ) {
+		if ( $force_resync ) {
+			$this->config->delete_cache( $this->sync_cache_key );
+		}
+
 		$manager_sync = $this->config->get_cache( $this->sync_cache_key );
 
 		if ( ! is_null( $manager_sync ) ) {
@@ -45,6 +49,7 @@ class ManagerSync {
 
 		try {
 			$manager_sync = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/sync' ) )
+				->with_method( 'POST' )
 				->request();
 		} catch ( DoingAutocompleteException $e ) {
 			return;
@@ -82,7 +87,7 @@ class ManagerSync {
 			return;
 		}
 
-		$latest_version  = $this->config->get_manager_sync_data( 'latest_cli_version' );
+		$latest_version = $this->config->get_manager_sync_data( 'latest_cli_version' );
 
 		if ( version_compare( $current_version, $latest_version, '<' ) ) {
 			if ( ! $this->environment->is_development_mode() ) {

@@ -7,10 +7,7 @@ use QIT_CLI\IO\Output;
 class Config {
 	/** @var array<scalar|array<scalar>> */
 	protected $schema = [
-		'user'                 => '',
-		'application_password' => '',
-		'test_types'           => [],
-		'cache'                => [],
+		'cache' => [],
 	];
 
 	/** @var array<scalar|array<scalar>> $config */
