@@ -24,7 +24,7 @@ class Environment {
 		'tests'      => 'tests',
 		'staging'    => 'staging',
 		'production' => 'production',
-		'undefined'  => 'undefined',
+		'temp'       => 'temp',
 	];
 
 	/**
@@ -122,7 +122,7 @@ class Environment {
 
 	/**
 	 * @return string Which environment the QIT is currently using.
-	 *                Possible values are: undefined, production, staging, local
+	 *                Possible values are: temp, production, staging, local
 	 */
 	public function get_current_environment(): string {
 		if ( defined( 'UNIT_TESTS' ) ) {
@@ -130,7 +130,7 @@ class Environment {
 		}
 
 		if ( ! file_exists( $this->current_environment_file ) ) {
-			return 'undefined';
+			return 'temp';
 		}
 
 		$environment = file_get_contents( $this->current_environment_file );
@@ -141,7 +141,7 @@ class Environment {
 				sprintf( 'QIT Warning: Invalid environment. Resetting "%s".', $this->current_environment_file )
 			);
 
-			return 'undefined';
+			return 'temp';
 		}
 
 		return $environment;
@@ -255,6 +255,10 @@ class Environment {
 					$partners[] = str_replace( '.env-partner-', '', $f );
 				}
 			} else {
+				// Do not include the "temp" environment as a configured environment.
+				if ( $f === '.env-temp' ) {
+					continue;
+				}
 				$partners[] = str_replace( '.env-', '', $f );
 			}
 		}
