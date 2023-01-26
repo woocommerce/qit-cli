@@ -78,7 +78,7 @@ try {
 	// Allow to run `dev` command without Manager.
 	if ( App::make( Input::class )->getFirstArgument() === DevModeCommand::getDefaultName() ) {
 		$application->add( $container->make( DevModeCommand::class ) );
-		exit( $application->run() );
+		exit( $application->run() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	if ( App::make( Environment::class )->is_development_mode() ) {
@@ -87,11 +87,11 @@ try {
 		// Allow to run `env:add` command without Manager.
 		if ( App::make( Input::class )->getFirstArgument() === AddEnvironment::getDefaultName() ) {
 			$application->add( $container->make( AddEnvironment::class ) );
-			exit( $application->run() );
+			exit( $application->run() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 	}
 
-	echo $e->getMessage();
+	echo $e->getMessage(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	exit( 1 );
 }
 

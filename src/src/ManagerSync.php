@@ -30,7 +30,7 @@ class ManagerSync {
 		$this->sync_cache_key = sprintf( 'manager_sync_v%s', App::getVar( 'CLI_VERSION' ) );
 	}
 
-	public function maybe_sync( bool $force_resync = false ) {
+	public function maybe_sync( bool $force_resync = false ): void {
 		if ( $force_resync ) {
 			$this->config->delete_cache( $this->sync_cache_key );
 		}
@@ -84,7 +84,7 @@ class ManagerSync {
 		$this->config->set_cache( $this->sync_cache_key, $manager_sync, 3600 );
 	}
 
-	public function enforce_latest_version() {
+	public function enforce_latest_version(): void {
 		$current_version = App::getVar( 'CLI_VERSION' );
 
 		// Do not check version on development build.

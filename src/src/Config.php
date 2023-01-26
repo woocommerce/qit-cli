@@ -187,7 +187,7 @@ class Config {
 		$written = file_put_contents( $this->environment->get_config_filepath(), json_encode( $this->config, JSON_PRETTY_PRINT ) );
 
 		if ( ! $written ) {
-			throw new \RuntimeException( sprintf( "Could not write to the file %s. Please check if it's writable.", $this->environment->get_config_dir() . '/.woo-qit-cli' ) );
+			throw new \RuntimeException( sprintf( "Could not write to the file %s. Please check if it's writable.", $this->environment->get_config_dir() . '.woo-qit-cli' ) );
 		}
 	}
 
@@ -201,7 +201,7 @@ class Config {
 		}
 
 		if ( ! is_readable( $this->environment->get_config_filepath() ) ) {
-			throw new \RuntimeException( sprintf( 'The config file exists but it\'s not readable: %s', $this->environment->get_config_dir() . '/.woo-qit-cli' ) );
+			throw new \RuntimeException( sprintf( 'The config file exists but it\'s not readable: %s', $this->environment->get_config_dir() . '.woo-qit-cli' ) );
 		}
 
 		$json = json_decode( file_get_contents( $this->environment->get_config_filepath() ), true );
@@ -225,7 +225,7 @@ class Config {
 	 *
 	 * @throws \UnexpectedValueException When requested a key that does not exist in the sync data.
 	 *
-	 * @return scalar|array The value of the key.
+	 * @return scalar|array<mixed> The value of the key.
 	 */
 	public function get_manager_sync_data( string $key ) {
 		$manager_data = $this->get_cache( App::make( ManagerSync::class )->sync_cache_key );

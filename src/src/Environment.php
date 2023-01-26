@@ -12,8 +12,8 @@ class Environment {
 	protected $dev_mode_file;
 
 	public function __construct() {
-		$this->current_environment_file = $this->get_config_dir() . '/.current-env';
-		$this->dev_mode_file            = $this->get_config_dir() . '/.dev-mode';
+		$this->current_environment_file = $this->get_config_dir() . '.current-env';
+		$this->dev_mode_file            = $this->get_config_dir() . '.dev-mode';
 	}
 
 	/**
@@ -225,7 +225,7 @@ class Environment {
 	}
 
 	private function make_config_filepath( string $environment ): string {
-		return sprintf( '%s/.env-%s', $this->get_config_dir(), $environment );
+		return $this->get_config_dir() . ".env-$environment";
 	}
 
 	/**
