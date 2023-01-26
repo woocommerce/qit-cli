@@ -54,7 +54,12 @@ class ManagerSync {
 		} catch ( DoingAutocompleteException $e ) {
 			return;
 		} catch ( \Exception $e ) {
-			$this->output->writeln( sprintf( '<error>Failed to sync with Manager (%s): %s</error>', get_manager_url(), $e->getMessage() ) );
+			if ( $this->environment->is_development_mode() ) {
+				$this->output->writeln( sprintf( '<error>[Dev Mode] Failed to contact Manager at URL %s.</error>', get_manager_url() ) );
+				$this->output->writeln( sprintf( '<comment>[Dev Mode] %s</comment>', $e->getMessage() ) );
+			}
+
+			$this->output->writeln( '<comment>This CLI tool interacts with external services that are not available at the moment. Please check your internet connection or try again later.</comment>' );
 
 			throw new \RuntimeException();
 		}

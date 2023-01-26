@@ -288,5 +288,22 @@ class Environment {
 		if ( ! $unlinked ) {
 			throw new \RuntimeException( sprintf( 'Could not remove environment "%s". Please delete the config file manually: %s', $environment, $this->make_config_filepath( $environment ) ) );
 		}
+
+		// Are we deleting the environment we are currently in?
+		if ( $this->get_current_environment() === $environment ) {
+			$other_environments = $this->get_configured_environments( false );
+			// Switch to next available environment, if it exists.
+			if ( ! empty( $other_environments ) ) {
+				$next_environment = array_shift( $other_environments );
+				$this->switch_to_environment( $next_environment );
+				App::make( Output::class )->writeln( sprintf( "<comment>Switched to environment '%s'.</comment>", $next_environment ) );
+			} else {
+				$unlinked = unlink( $this->current_environment_file );
+
+				if ( ! $unlinked ) {
+					throw new \RuntimeException( sprintf( 'Could not remove current environment file. Please delete the file manually: %s', $this->current_environment_file ) );
+				}
+			}
+		}
 	}
 }

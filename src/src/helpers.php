@@ -86,6 +86,13 @@ function get_manager_url(): string {
 		return (string) $override;
 	}
 
+	// Low-level alternative to override the Manager URL.
+	$env = getenv( 'MANAGER_URL' );
+
+	if ( ! empty( $env ) ) {
+		return $env;
+	}
+
 	return 'https://compatibilitydashboard.wpcomstaging.com';
 }
 

@@ -73,6 +73,24 @@ try {
 	App::make( ManagerSync::class )->maybe_sync();
 	App::make( ManagerSync::class )->enforce_latest_version();
 } catch ( Exception $e ) {
+	// If we got here, this means the Manager is not accessible.
+
+	// Allow to run `dev` command without Manager.
+	if ( App::make( Input::class )->getFirstArgument() === DevModeCommand::getDefaultName() ) {
+		$application->add( $container->make( DevModeCommand::class ) );
+		exit( $application->run() );
+	}
+
+	if ( App::make( Environment::class )->is_development_mode() ) {
+		App::make( Output::class )->writeln( sprintf( '<comment>[Dev Mode] QIT CLI cannot connect to the Manager at URL %s. You can still run %s to connect to a different Manager.</comment>', \QIT_CLI\get_manager_url(), AddEnvironment::getDefaultName() ) );
+
+		// Allow to run `env:add` command without Manager.
+		if ( App::make( Input::class )->getFirstArgument() === AddEnvironment::getDefaultName() ) {
+			$application->add( $container->make( AddEnvironment::class ) );
+			exit( $application->run() );
+		}
+	}
+
 	echo $e->getMessage();
 	exit( 1 );
 }
