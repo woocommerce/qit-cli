@@ -4,8 +4,16 @@ use lucatume\DI52\Container;
 use QIT_CLI\App;
 use QIT_CLI\Commands\CreateRunCommands;
 use QIT_CLI\Commands\DevModeCommand;
+use QIT_CLI\Commands\Environment\AddEnvironment;
+use QIT_CLI\Commands\Environment\CurrentEnvironment;
+use QIT_CLI\Commands\Environment\RemoveEnvironment;
+use QIT_CLI\Commands\Environment\SwitchEnvironment;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\ListCommand;
+use QIT_CLI\Commands\Partner\AddPartner;
+use QIT_CLI\Commands\Partner\RemovePartner;
+use QIT_CLI\Commands\Partner\SetManagerCommand;
+use QIT_CLI\Commands\Partner\SwitchPartner;
 use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Config;
 use QIT_CLI\Environment;
@@ -75,35 +83,35 @@ $env = App::make( Environment::class );
 $application->add( $container->make( DevModeCommand::class ) );
 
 // Partner commands.
-$application->add( $container->make( \QIT_CLI\Commands\Partner\AddPartner::class ) );
+$application->add( $container->make( AddPartner::class ) );
 
 // Only show option to Remove Partner if there are Partners to remove.
 if ( count( $env->get_configured_environments( true ) ) > 0 ) {
-	$application->add( $container->make( \QIT_CLI\Commands\Partner\RemovePartner::class ) );
+	$application->add( $container->make( RemovePartner::class ) );
 }
 
 // Only show option to Switch to another partner if there are more than one Partner.
 if ( count( $env->get_configured_environments( true ) ) > 1 ) {
-	$application->add( $container->make( \QIT_CLI\Commands\Partner\SwitchPartner::class ) );
+	$application->add( $container->make( SwitchPartner::class ) );
 }
 
 // Dev commands.
 if ( $env->is_development_mode() ) {
-	$application->add( $container->make( \QIT_CLI\Commands\Environment\AddEnvironment::class ) );
+	$application->add( $container->make( AddEnvironment::class ) );
 
 	// Only show options to remove and see the current environment if there's at least one environment added.
-	if ( $env->get_configured_environments( false ) > 0 ) {
-		$application->add( $container->make( \QIT_CLI\Commands\Environment\RemoveEnvironment::class ) );
-		$application->add( $container->make( \QIT_CLI\Commands\Environment\CurrentEnvironment::class ) );
+	if ( count( $env->get_configured_environments( false ) ) > 0 ) {
+		$application->add( $container->make( RemoveEnvironment::class ) );
+		$application->add( $container->make( CurrentEnvironment::class ) );
 	}
 
 	// Only show option to Switch to another environment if there are more than one environment.
-	if ( $env->get_configured_environments( false ) > 1 ) {
-		$application->add( $container->make( \QIT_CLI\Commands\Environment\SwitchEnvironment::class ) );
+	if ( count( $env->get_configured_environments( false ) ) > 1 ) {
+		$application->add( $container->make( SwitchEnvironment::class ) );
 	}
 
 	if ( $env->is_partner_environment() ) {
-		$application->add( $container->make( \QIT_CLI\Commands\Partner\SetManagerCommand::class ) );
+		$application->add( $container->make( SetManagerCommand::class ) );
 	}
 }
 
