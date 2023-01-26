@@ -88,7 +88,7 @@ class ListCommand extends Command {
 			return Command::SUCCESS;
 		}
 
-		$columns_to_hide = [ 'test_log', 'test_result_json', 'test_result_aws_expiration', 'is_development', 'version' ];
+		$columns_to_hide = [ 'test_log', 'test_result_json', 'test_result_aws_expiration', 'is_development', 'version', 'client', 'event' ];
 
 		// Prepare the data to be rendered.
 		foreach ( $test_runs as $k => &$t ) {
