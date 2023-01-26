@@ -17,6 +17,7 @@ use QIT_CLI\Commands\Partner\SwitchPartner;
 use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Config;
 use QIT_CLI\Environment;
+use QIT_CLI\Exceptions\UpdateRequiredException;
 use QIT_CLI\IO\Input;
 use QIT_CLI\IO\Output;
 use QIT_CLI\ManagerSync;
@@ -67,13 +68,18 @@ $container->singleton( Output::class, function () {
 $container->singleton( ManagerSync::class );
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 
+// Detect whether this is a "_completion" command that runs on the background in Bash. If so, no remote requests will be made.
 $container->setVar( 'doing_autocompletion', stripos( (string) $container->make( Input::class ), '_completion' ) !== false );
 
 try {
-	App::make( ManagerSync::class )->maybe_sync();
-	App::make( ManagerSync::class )->enforce_latest_version();
+	if ( ! $container->getVar( 'doing_autocompletion' ) ) {
+		App::make( ManagerSync::class )->maybe_sync();
+		App::make( ManagerSync::class )->enforce_latest_version();
+	}
+} catch ( UpdateRequiredException $e ) {
+	exit( 1 );
 } catch ( Exception $e ) {
-	// If we got here, this means the Manager is not accessible.
+	// If we got here, this means the Manager is not accessible or is responding with an error.
 
 	// Allow to run `dev` command without Manager.
 	if ( App::make( Input::class )->getFirstArgument() === DevModeCommand::getDefaultName() ) {
@@ -90,6 +96,9 @@ try {
 			exit( $application->run() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 	}
+
+	// Run a quick diagnose check to see what might be happening and provide some feedback to the user.
+	( new \QIT_CLI\Diagnosis() )->run( App::make( Output::class ) );
 
 	echo $e->getMessage(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	exit( 1 );

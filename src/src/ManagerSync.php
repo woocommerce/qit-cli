@@ -3,6 +3,7 @@
 namespace QIT_CLI;
 
 use QIT_CLI\Exceptions\DoingAutocompleteException;
+use QIT_CLI\Exceptions\UpdateRequiredException;
 use QIT_CLI\IO\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -93,13 +94,18 @@ class ManagerSync {
 		}
 
 		$latest_version = $this->config->get_manager_sync_data( 'latest_cli_version' );
+		$enforce_latest = $this->config->get_manager_sync_data( 'enforce_latest' );
 
 		if ( version_compare( $current_version, $latest_version, '<' ) ) {
-			if ( ! $this->environment->is_development_mode() ) {
-				$this->output->writeln( sprintf( '<error>You are using an outdated version of the CLI. Please update to the latest version (%s).</error>', $latest_version ) );
-				throw new \RuntimeException();
+			if ( $enforce_latest ) {
+				if ( ! $this->environment->is_development_mode() ) {
+					$this->output->writeln( sprintf( '<error>You are using an outdated version of the CLI. Please update to the latest version (%s).</error>', $latest_version ) );
+					throw new UpdateRequiredException();
+				} else {
+					$this->output->writeln( sprintf( '<comment>You are using an outdated version of the CLI (%s). Please update to the latest version (%s). Continuing execution as dev mode is enabled.</comment>', $current_version, $latest_version ) );
+				}
 			} else {
-				$this->output->writeln( sprintf( '<comment>You are using an outdated version of the CLI (%s). Please update to the latest version (%s). Continuing execution as dev mode is enabled.</comment>', $current_version, $latest_version ) );
+				$this->output->writeln( sprintf( "<info>[There's a new version of the QIT CLI available! It's strongly recommended to update. Current version: %s Latest version: %s]</info>\n", $current_version, $latest_version ) );
 			}
 		}
 	}
