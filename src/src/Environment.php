@@ -13,7 +13,7 @@ class Environment {
 
 	public function __construct() {
 		$this->current_environment_file = $this->get_config_dir() . '/.current-env';
-		$this->dev_mode_file = $this->get_config_dir() . '/.dev-mode';
+		$this->dev_mode_file            = $this->get_config_dir() . '/.dev-mode';
 	}
 
 	/**

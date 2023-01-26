@@ -51,7 +51,7 @@ class AddPartner extends Command {
 		if ( ! empty( $input->getOption( 'user' ) ) ) {
 			$user = $input->getOption( 'user' );
 		} else {
-			$output->writeln( sprintf("\n<info>You will need an account at %s with permission to 'edit' the extensions that you want to test. You can check what's your username here: %s/wp-admin/profile.php</info>\n", get_wccom_url(), get_wccom_url()) );
+			$output->writeln( sprintf( "\n<info>You will need an account at %s with permission to 'edit' the extensions that you want to test. You can check what's your username here: %s/wp-admin/profile.php</info>\n", get_wccom_url(), get_wccom_url() ) );
 			$question = new Question( "<question>What's the username of the Partner you want to add? </question> " );
 			$user     = $this->getHelper( 'question' )->ask( $input, $output, $question );
 		}
@@ -104,7 +104,7 @@ TEXT
 		}
 
 		// Validate credentials.
-		$output->writeln( sprintf('Validating your application password with %s...', get_wccom_url()) );
+		$output->writeln( sprintf( 'Validating your application password with %s...', get_wccom_url() ) );
 		validate_authentication( $user, $application_password );
 		$output->writeln( '<fg=green>Validated successfully.</>' );
 
@@ -151,7 +151,7 @@ TEXT;
 		if ( is_array( $json ) && isset( $json['authentication']['application-passwords']['endpoints']['authorization'] ) ) {
 			$base_url = $json['authentication']['application-passwords']['endpoints']['authorization'];
 		} else {
-			$output->writeln( sprintf("Could not get Authorization URL from %s. Using fallback...\n", get_wccom_url()) );
+			$output->writeln( sprintf( "Could not get Authorization URL from %s. Using fallback...\n", get_wccom_url() ) );
 			$base_url = get_wccom_url() . '/wp-admin/authorize-application.php';
 		}
 

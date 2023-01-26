@@ -42,7 +42,7 @@ class SetManagerCommand extends Command {
 		$this->config->set_cache( 'manager_url', $input->getArgument( 'manager_url' ), - 1 );
 		$this->config->delete_cache( App::make( ManagerSync::class )->sync_cache_key );
 
-		$output->writeln( sprintf( '<info>Overriden Manager URL to "%s" in the environment "%s".</info>', $input->getArgument( 'manager_url' ), $this->environment->get_current_environment()) );
+		$output->writeln( sprintf( '<info>Overriden Manager URL to "%s" in the environment "%s".</info>', $input->getArgument( 'manager_url' ), $this->environment->get_current_environment() ) );
 
 		return Command::SUCCESS;
 	}

@@ -30,7 +30,7 @@ class SwitchEnvironment extends Command {
 		// Optionaly allow the environment to be passed as an argument.
 		if ( ! empty( $input->getArgument( 'environment' ) ) ) {
 			$this->environment->switch_to_environment( strtolower( $input->getArgument( 'environment' ) ) );
-			$output->writeln( "<info>Environment switched.</info>" );
+			$output->writeln( '<info>Environment switched.</info>' );
 
 			return Command::SUCCESS;
 		}
@@ -38,7 +38,7 @@ class SwitchEnvironment extends Command {
 		$environments = $this->environment->get_configured_environments( false );
 
 		if ( empty( $environments ) ) {
-			$output->writeln( "<info>No environments configured.</info>" );
+			$output->writeln( '<info>No environments configured.</info>' );
 
 			return Command::SUCCESS;
 		}

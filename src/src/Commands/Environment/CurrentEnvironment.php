@@ -14,7 +14,7 @@ class CurrentEnvironment extends Command {
 	protected $environment;
 
 	public function __construct( Environment $environment ) {
-		$this->environment         = $environment;
+		$this->environment = $environment;
 		parent::__construct();
 	}
 
