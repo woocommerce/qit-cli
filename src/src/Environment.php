@@ -90,7 +90,6 @@ class Environment {
 		if ( $switch_now ) {
 			$this->switch_to_environment( $environment );
 		}
-
 	}
 
 	/**

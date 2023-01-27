@@ -166,7 +166,19 @@ class Config {
 			throw new \RuntimeException( 'Could not read config file. Please check if PHP has read permissions on file ' . $this->environment->get_config_filepath() );
 		}
 
-		$config = json_decode( $data, true ) ?: [];
+		if ( Crypto::using_encryption() ) {
+			$data = App::make( Crypto::class )->decrypt( $data );
+		}
+
+		$config = json_decode( $data, true );
+
+		if ( ! is_array( $config ) ) {
+			if ( Crypto::using_encryption() ) {
+				throw new \RuntimeException( 'Could not decrypt config file. Please check if the encryption key is correct.' );
+			} else {
+				throw new \RuntimeException( 'Could not parse config file. Please check if the file is valid JSON. If the file was saved with encryption, you need to provide the key with QIT_KEY={key}. Check the QIT docs.' );
+			}
+		}
 
 		// Generate an array with the existing data. Fill-in the blanks with the schema.
 		$config = array_merge( $this->schema, $config );
@@ -184,7 +196,13 @@ class Config {
 	 * @throws \RuntimeException When could not write to the config file.
 	 */
 	public function save(): void {
-		$written = file_put_contents( $this->environment->get_config_filepath(), json_encode( $this->config, JSON_PRETTY_PRINT ) );
+		if ( Crypto::using_encryption() ) {
+			$data = App::make( Crypto::class )->encrypt( json_encode( $this->config ) );
+		} else {
+			$data = json_encode( $this->config, JSON_PRETTY_PRINT );
+		}
+
+		$written = file_put_contents( $this->environment->get_config_filepath(), $data );
 
 		if ( ! $written ) {
 			throw new \RuntimeException( sprintf( "Could not write to the file %s. Please check if it's writable.", $this->environment->get_config_dir() . '.woo-qit-cli' ) );
