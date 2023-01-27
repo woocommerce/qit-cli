@@ -113,7 +113,6 @@ class AddEnvironment extends Command {
 
 		try {
 			$this->environment->create_environment( $environment );
-			$this->environment->switch_to_environment( $environment );
 		} catch ( \Exception $e ) {
 			$output->writeln( "<error>{$e->getMessage()}</error>" );
 

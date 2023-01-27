@@ -52,7 +52,7 @@ class Environment {
 		return in_array( $environment, self::$allowed_environments, true );
 	}
 
-	public function create_environment( string $environment ): void {
+	public function create_environment( string $environment, bool $switch_now = true ): void {
 		if ( ! $this->is_allowed_environment( $environment ) ) {
 			throw new \InvalidArgumentException( 'Invalid environment.' );
 		}
@@ -86,6 +86,11 @@ class Environment {
 			// Show this only once per request.
 			App::setVar( "WARNED_ENV_PERMISSION_$environment", true );
 		}
+
+		if ( $switch_now ) {
+			$this->switch_to_environment( $environment );
+		}
+
 	}
 
 	/**

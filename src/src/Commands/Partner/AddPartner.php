@@ -125,7 +125,6 @@ TEXT;
 		}
 
 		$this->environment->create_environment( "partner-$user" );
-		$this->environment->switch_to_environment( "partner-$user" );
 
 		$this->auth->set_auth_app_pass( $user, $application_password );
 		$this->woo_extensions_list->fetch_woo_extensions_available();
