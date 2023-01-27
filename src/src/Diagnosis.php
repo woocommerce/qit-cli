@@ -25,7 +25,14 @@ class Diagnosis {
 		// Check connection with Manager.
 		$output->write( 'Checking connection to QIT servers... ' );
 
-		$connected = fsockopen( parse_url( \QIT_CLI\get_manager_url() )['host'], parse_url( \QIT_CLI\get_manager_url() )['scheme'] === 'https' ? 443 : 80 );
+		$parsed_url = parse_url( \QIT_CLI\get_manager_url() );
+
+		if ( ! is_array( $parsed_url ) || empty( $parsed_url['host'] ) || empty( $parsed_url['scheme'] ) ) {
+			$output->writeln( 'QIT server URL seems invalid. Try resetting the environment by deleting the folder: ' . App::make( Environment::class )->get_config_dir() );
+			return;
+		}
+
+		$connected = fsockopen( $parsed_url['host'], $parsed_url['scheme'] === 'https' ? 443 : 80 );
 
 		if ( $connected ) {
 			$output->write( '[OK]' );

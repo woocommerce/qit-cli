@@ -35,7 +35,7 @@ class SetManagerCommand extends Command {
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		$parsed_url = parse_url( filter_var( $input->getArgument( 'manager_url' ) ) );
 
-		if ( ! $parsed_url || empty( $parsed_url['host'] || empty( $parsed_url['scheme'] ) ) ) {
+		if ( ! $parsed_url || empty( $parsed_url['host'] ) || empty( $parsed_url['scheme'] ) ) {
 			throw new \InvalidArgumentException( 'Value must be a valid URL.' );
 		}
 
