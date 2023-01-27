@@ -9,6 +9,6 @@
   },
   "bin": "qit",
   "suggest": {
-    "ext-openssl": "Required to encrypt the config files."
+    "ext-openssl": "This extension is needed if you want to encrypt the config files."
   }
 }
