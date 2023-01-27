@@ -5,14 +5,14 @@ namespace QIT_CLI;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Diagnosis {
-	public function run( OutputInterface $output ) {
+	public function run( OutputInterface $output ): void {
 		$connection_to_internet = false;
 		$connection_to_manager  = false;
 
 		// Check connection with internet.
 		$output->write( 'Checking connection to the internet... ' );
 
-		$connected = fsockopen( 'www.google.com', '80' );
+		$connected = fsockopen( 'www.google.com', 80 );
 
 		if ( $connected ) {
 			$output->writeln( 'https://www.google.com [OK]' );
