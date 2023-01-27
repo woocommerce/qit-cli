@@ -136,10 +136,6 @@ if ( $env->is_development_mode() ) {
 	if ( count( $env->get_configured_environments( false ) ) > 1 ) {
 		$application->add( $container->make( SwitchEnvironment::class ) );
 	}
-
-	if ( $env->is_partner_environment() ) {
-		$application->add( $container->make( SetManagerCommand::class ) );
-	}
 }
 
 // Commands that require initialization.
