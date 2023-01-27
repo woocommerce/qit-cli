@@ -2,8 +2,6 @@
 
 namespace QIT_CLI;
 
-use QIT_CLI\Commands\Partner\AddPartner;
-
 class Auth {
 	/** @var Config $config */
 	protected $config;
