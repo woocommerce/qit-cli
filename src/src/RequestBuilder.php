@@ -3,6 +3,8 @@
 namespace QIT_CLI;
 
 use QIT_CLI\Exceptions\DoingAutocompleteException;
+use QIT_CLI\Exceptions\NetworkErrorException;
+use QIT_CLI\Exceptions\UnitTestException;
 
 class RequestBuilder implements \JsonSerializable {
 	/** @var string $url */
@@ -80,6 +82,15 @@ class RequestBuilder implements \JsonSerializable {
 	}
 
 	public function request(): string {
+		if ( defined( 'UNIT_TESTS' ) ) {
+			$mocked = App::getVar( 'mock_' . $this->url );
+			if ( is_null( $mocked ) ) {
+				throw new \LogicException( 'No mock found for ' . $this->url );
+			}
+
+			return $mocked;
+		}
+
 		if ( empty( $this->url ) ) {
 			throw new \LogicException( 'URL cannot be empty.' );
 		}
@@ -95,6 +106,8 @@ class RequestBuilder implements \JsonSerializable {
 			CURLOPT_URL            => $this->url,
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_CONNECTTIMEOUT => 15,
+			CURLOPT_TIMEOUT        => 15,
 		];
 
 		$this->post_body['client'] = 'qit_cli';
@@ -128,7 +141,7 @@ class RequestBuilder implements \JsonSerializable {
 		$response_status_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
 
 		if ( ! in_array( $response_status_code, $this->expected_status_codes, true ) ) {
-			throw new \Exception(
+			throw new NetworkErrorException(
 				sprintf(
 					'Expected return status code(s): %s. Got return status code: %s. Error message: %s',
 					implode( ', ', $this->expected_status_codes ),

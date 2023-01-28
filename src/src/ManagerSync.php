@@ -3,6 +3,7 @@
 namespace QIT_CLI;
 
 use QIT_CLI\Exceptions\DoingAutocompleteException;
+use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\Exceptions\UpdateRequiredException;
 use QIT_CLI\IO\Output;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -54,7 +55,7 @@ class ManagerSync {
 				->request();
 		} catch ( DoingAutocompleteException $e ) {
 			return;
-		} catch ( \Exception $e ) {
+		} catch ( NetworkErrorException $e ) {
 			if ( $this->environment->is_development_mode() ) {
 				$this->output->writeln( sprintf( '<error>[Dev Mode] Failed to contact Manager at URL %s.</error>', get_manager_url() ) );
 				$this->output->writeln( sprintf( '<comment>[Dev Mode] %s</comment>', $e->getMessage() ) );
@@ -62,7 +63,7 @@ class ManagerSync {
 
 			$this->output->writeln( '<comment>This CLI tool interacts with external services that are not available at the moment. Please check your internet connection or try again later.</comment>' );
 
-			throw new \RuntimeException();
+			throw new NetworkErrorException();
 		}
 
 		if ( $this->output->isVerbose() ) {
@@ -74,15 +75,17 @@ class ManagerSync {
 		if ( ! is_array( $manager_sync ) || empty( $manager_sync ) ) {
 			$this->output->writeln( sprintf( '<error>Failed to sync with Manager (%s). Not a valid JSON.</error>', get_manager_url() ) );
 
-			throw new \RuntimeException();
+			throw new NetworkErrorException();
 		}
 
 		if ( $this->output->isVerbose() ) {
 			App::make( Output::class )->writeln( '[Info] New sync with Manager done.' );
 		}
 
-		// 1 hour.
-		$this->config->set_cache( $this->sync_cache_key, $manager_sync, 3600 );
+		// 1 hour if we can connect to the Manager.
+		$expiration = App::getVar( 'offline_mode' ) ? 0 : 3600;
+
+		$this->config->set_cache( $this->sync_cache_key, $manager_sync, $expiration );
 	}
 
 	public function enforce_latest_version(): void {

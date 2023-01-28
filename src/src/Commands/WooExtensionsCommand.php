@@ -32,7 +32,7 @@ class WooExtensionsCommand extends Command {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
-		if ( $input->getOption( 'refresh' ) ) {
+		if ( $input->getOption( 'refresh' ) === true ) {
 			$this->woo_extensions_list->fetch_woo_extensions_available();
 
 			$output->writeln( 'Woo Extensions list reloaded.' );

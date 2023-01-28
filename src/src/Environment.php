@@ -12,8 +12,8 @@ class Environment {
 	protected $dev_mode_file;
 
 	public function __construct() {
-		$this->current_environment_file = $this->get_config_dir() . '.current-env';
-		$this->dev_mode_file            = $this->get_config_dir() . '.dev-mode';
+		$this->current_environment_file = self::get_config_dir() . '.current-env';
+		$this->dev_mode_file            = self::get_config_dir() . '.dev-mode';
 	}
 
 	/**
@@ -159,7 +159,7 @@ class Environment {
 	 * @throws \RuntimeException When it can't find the QIT CLI directory.
 	 * @return string The path to the QIT CLI directory.
 	 */
-	public function get_config_dir(): string {
+	public static function get_config_dir(): string {
 		$normalize_path = static function ( string $path ): string {
 			// Converts Windows-style directory separator to Unix-style. Makes sure it ends with a trailing slash.
 			return rtrim( str_replace( '\\', '/', $path ), '/\\' ) . '/';
@@ -229,20 +229,20 @@ class Environment {
 	}
 
 	private function make_config_filepath( string $environment ): string {
-		return $this->get_config_dir() . ".env-$environment";
+		return Environment::get_config_dir() . ".env-$environment";
 	}
 
 	/**
 	 * @return array<string> The list of Partners configured.
 	 */
 	public function get_configured_environments( bool $partners_only ): array {
-		if ( ! file_exists( $this->get_config_dir() ) ) {
+		if ( ! file_exists( Environment::get_config_dir() ) ) {
 			return [];
 		}
 
 		$partners = [];
 
-		$files = scandir( $this->get_config_dir() );
+		$files = scandir( Environment::get_config_dir() );
 
 		if ( ! is_array( $files ) ) {
 			return [];
@@ -265,6 +265,31 @@ class Environment {
 				}
 				$partners[] = str_replace( '.env-', '', $f );
 			}
+		}
+
+		return $partners;
+	}
+
+	public function get_environment_files() {
+		if ( ! file_exists( Environment::get_config_dir() ) ) {
+			return [];
+		}
+
+		$partners = [];
+
+		$files = scandir( Environment::get_config_dir() );
+
+		if ( ! is_array( $files ) ) {
+			return [];
+		}
+
+		foreach ( $files as $f ) {
+			// Skip. Not an environment file.
+			if ( strpos( $f, '.env' ) !== 0 ) {
+				continue;
+			}
+
+			$partners[] = $this->get_config_dir() . $f;
 		}
 
 		return $partners;

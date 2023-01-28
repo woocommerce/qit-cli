@@ -16,9 +16,10 @@ class Config {
 	/** @var Environment $environment */
 	protected $environment;
 
+	protected $did_init = false;
+
 	public function __construct( Environment $environment ) {
 		$this->environment = $environment;
-		$this->init_config();
 	}
 
 	/**
@@ -28,6 +29,8 @@ class Config {
 	 * @throws \InvalidArgumentException When the provided key does not exist in the config.
 	 */
 	public function get( string $key ) {
+		$this->maybe_init_config();
+
 		if ( ! array_key_exists( $key, $this->config ) ) {
 			throw new \InvalidArgumentException( "The config item $key does not exist." );
 		}
@@ -45,6 +48,8 @@ class Config {
 	 * @throws \InvalidArgumentException When could not write to the CD Config file.
 	 */
 	public function set( string $key, $value ) {
+		$this->maybe_init_config();
+
 		if ( ! array_key_exists( $key, $this->schema ) ) {
 			throw new \InvalidArgumentException( "Cannot write to QIT CLI file, as $key is not in the config schema." );
 		}
@@ -56,7 +61,7 @@ class Config {
 	/**
 	 * @param string              $key The cache key.
 	 * @param scalar|array<mixed> $value The cache value.
-	 * @param int                 $expire How many seconds from now should this cache expire. -1 for no expiration.
+	 * @param int                 $expire How many seconds from now should this cache expire. -1 for no expiration. 0 for only current request.
 	 *
 	 * @return void
 	 */
@@ -80,7 +85,9 @@ class Config {
 			'value'  => $value,
 		];
 
-		$this->set( 'cache', $cache );
+		if ( $expire !== 0 ) {
+			$this->set( 'cache', $cache );
+		}
 	}
 
 	/**
@@ -155,7 +162,13 @@ class Config {
 	 *
 	 * @throws \RuntimeException When could not read the config file.
 	 */
-	protected function init_config(): void {
+	protected function maybe_init_config(): void {
+		if ( $this->did_init ) {
+			return;
+		} else {
+			$this->did_init = true;
+		}
+
 		if ( ! file_exists( $this->environment->get_config_filepath() ) ) {
 			return;
 		}
@@ -166,18 +179,12 @@ class Config {
 			throw new \RuntimeException( 'Could not read config file. Please check if PHP has read permissions on file ' . $this->environment->get_config_filepath() );
 		}
 
-		if ( Crypto::using_encryption() ) {
-			$data = App::make( Crypto::class )->decrypt( $data );
-		}
+		$data = App::make( Encryption::class )->decrypt( $data );
 
 		$config = json_decode( $data, true );
 
 		if ( ! is_array( $config ) ) {
-			if ( Crypto::using_encryption() ) {
-				throw new \RuntimeException( 'Could not decrypt config file. Please check if the encryption key is correct.' );
-			} else {
-				throw new \RuntimeException( 'Could not parse config file. Please check if the file is valid JSON. If the file was saved with encryption, you need to provide the key with QIT_KEY={key}. Check the QIT docs.' );
-			}
+			throw new \RuntimeException( 'Could not parse config file. Resetting environment, please remove the current Partner/Environment and add it again.' );
 		}
 
 		// Generate an array with the existing data. Fill-in the blanks with the schema.
@@ -196,16 +203,12 @@ class Config {
 	 * @throws \RuntimeException When could not write to the config file.
 	 */
 	public function save(): void {
-		if ( Crypto::using_encryption() ) {
-			$data = App::make( Crypto::class )->encrypt( json_encode( $this->config ) );
-		} else {
-			$data = json_encode( $this->config, JSON_PRETTY_PRINT );
-		}
+		$data = App::make( Encryption::class )->encrypt( json_encode( $this->config ) );
 
 		$written = file_put_contents( $this->environment->get_config_filepath(), $data );
 
 		if ( ! $written ) {
-			throw new \RuntimeException( sprintf( "Could not write to the file %s. Please check if it's writable.", $this->environment->get_config_dir() . '.woo-qit-cli' ) );
+			throw new \RuntimeException( sprintf( "Could not write to the file %s. Please check if it's writable.", Environment::get_config_dir() . '.woo-qit-cli' ) );
 		}
 	}
 
@@ -219,7 +222,7 @@ class Config {
 		}
 
 		if ( ! is_readable( $this->environment->get_config_filepath() ) ) {
-			throw new \RuntimeException( sprintf( 'The config file exists but it\'s not readable: %s', $this->environment->get_config_dir() . '.woo-qit-cli' ) );
+			throw new \RuntimeException( sprintf( 'The config file exists but it\'s not readable: %s', Environment::get_config_dir() . '.woo-qit-cli' ) );
 		}
 
 		$json = json_decode( file_get_contents( $this->environment->get_config_filepath() ), true );
