@@ -50,7 +50,7 @@ class AddEnvironment extends Command {
 		$manager_url = $input->getOption( 'manager_url' );
 		$environment = $input->getOption( 'environment' );
 
-		if ( empty( $environment ) && ! empty( $manager_url ) || ! empty( $qit_secret ) ) {
+		if ( empty( $environment ) && ( ! empty( $manager_url ) || ! empty( $qit_secret ) ) ) {
 			throw new \UnexpectedValueException( 'When passing Manager URL/QIT Secret as a parameter, you need to also provide a --environment.' );
 		}
 
