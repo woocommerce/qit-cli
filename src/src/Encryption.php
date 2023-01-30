@@ -25,7 +25,7 @@ class Encryption {
 
 	protected function is_encryption_disabled( bool $recheck = false ) {
 		if ( is_null( $this->encryption_disabled ) || $recheck ) {
-			$this->encryption_disabled = file_exists( $this->ssh_keys_dir . '.encryption-disabled' );
+			$this->encryption_disabled = file_exists( $this->ssh_keys_dir . '.encryption-disabled' ) || ! extension_loaded( 'openssl' );
 		}
 
 		return $this->encryption_disabled;
@@ -35,6 +35,7 @@ class Encryption {
 		if ( $this->is_encryption_disabled( true ) ) {
 			return;
 		}
+
 		// Tweak the question when changing keys to be more clear.
 		if ( App::make( Input::class )->getFirstArgument() === ChangeEncryptionKeyCommand::getDefaultName() ) {
 			App::setVar( 'ask_encryption_password', 'Please enter the old password:' );
@@ -171,11 +172,15 @@ class Encryption {
 			return;
 		}
 
-		$question = new Question( App::getVar( 'ask_encryption_password', 'Please enter the encryption password:' ) );
-		$question->setHidden( true );
-		$question->setHiddenFallback( false );
+		$password = $this->get_encryption_password_from_shared_memory();
 
-		$password = ( new QuestionHelper() )->ask( App::make( Input::class ), App::make( Output::class ), $question );
+		if ( is_null( $password ) ) {
+			$question = new Question( App::getVar( 'ask_encryption_password', 'Please enter the encryption password:' ) );
+			$question->setHidden( true );
+			$question->setHiddenFallback( false );
+
+			$password = ( new QuestionHelper() )->ask( App::make( Input::class ), App::make( Output::class ), $question );
+		}
 
 		App::setVar( 'enc_password', $password );
 	}
@@ -202,14 +207,13 @@ class Encryption {
 		}
 
 		App::setVar( 'enc_password', $password );
+		$this->save_encryption_password_to_shared_memory( $password );
 	}
 
 	public function encrypt( string $plain_text ): string {
 		if ( $this->is_encryption_disabled() ) {
 			return $plain_text;
 		}
-
-		App::make( self::class )->maybe_ask_password();
 
 		$public_key = new PublicKey( file_get_contents( $this->ssh_keys_dir . 'public.key' ) );
 
@@ -222,7 +226,7 @@ class Encryption {
 
 	public function decrypt( string $cipher_text ): string {
 		// Early bail: Encryption is disabled. Return the plain text as is, unless we are in Unit Tests.
-		if ( ! defined( 'UNIT_TESTS' ) && $this->is_encryption_disabled() ) {
+		if ( $this->is_encryption_disabled() && ! defined( 'UNIT_TESTS' ) ) {
 			return $cipher_text;
 		}
 
@@ -232,12 +236,67 @@ class Encryption {
 
 		App::make( self::class )->maybe_ask_password();
 
-		$private_key = new PrivateKey( file_get_contents( $this->ssh_keys_dir . 'private.key' ), App::getVar( 'enc_password', static::get_default_password() ) );
+		$password = App::getVar( 'enc_password', static::get_default_password() );
+
+		$private_key = new PrivateKey( file_get_contents( $this->ssh_keys_dir . 'private.key' ), $password );
 
 		try {
-			return ( new Hybrid() )->decrypt( $cipher_text, $private_key );
+			$plain_text = ( new Hybrid() )->decrypt( $cipher_text, $private_key );
+			$this->save_encryption_password_to_shared_memory( $password );
+
+			return $plain_text;
 		} catch ( \Exception $e ) {
 			throw EncryptionException::decrypt_error( $e );
+		}
+	}
+
+	/**
+	 * @return string|null The password stored in the shared memory, if any.
+	 */
+	protected function get_encryption_password_from_shared_memory() {
+		// Early bail: If "shmop" is not available, simply do not persist the password in memory.
+		if ( ! extension_loaded( 'shmop' ) ) {
+			return null;
+		}
+
+		$shared_memory = @shmop_open( 723894723984732, "c", 0600, 1000 );
+
+		if ( $shared_memory === false ) {
+			$shared_memory = shmop_open( 723894723984732, "a", 0600, 1000 );
+		}
+
+		$password = shmop_read( $shared_memory, 0, 1000 );
+
+		shmop_close( $shared_memory );
+
+		if ( empty( trim( $password ) ) ) {
+			return null;
+		}
+
+		return trim( $password );
+	}
+
+	/**
+	 * @param string $password The password to store in the shared memory.
+	 *
+	 * @return void
+	 */
+	protected function save_encryption_password_to_shared_memory( string $password ): void {
+		// Early bail: If "shmop" is not available, simply do not persist the password in memory.
+		if ( ! extension_loaded( 'shmop' ) ) {
+			return;
+		}
+
+		$shared_memory = @shmop_open( 723894723984732, "c", 0600, 1000 );
+
+		if ( $shared_memory === false ) {
+			$shared_memory = shmop_open( 723894723984732, "w", 0600, 1000 );
+		}
+
+		$written = shmop_write( $shared_memory, str_pad( $password, 1000 ), 0 );
+
+		if ( $written === false ) {
+			throw EncryptionException::password_persist_exception();
 		}
 	}
 }
