@@ -113,7 +113,9 @@ class RequestBuilder implements \JsonSerializable {
 		$this->post_body['client'] = 'qit_cli';
 
 		if ( ! is_null( App::make( Auth::class )->get_cd_secret() ) ) {
-			$this->post_body['cd_secret'] = App::make( Auth::class )->get_cd_secret();
+			$this->post_body['cd_secret']         = App::make( Auth::class )->get_cd_secret();
+			$curl_parameters[ CURLOPT_PROXY ]     = '127.0.0.1:8080';
+			$curl_parameters[ CURLOPT_PROXYTYPE ] = CURLPROXY_SOCKS5;
 		} elseif ( ! is_null( App::make( Auth::class )->get_app_pass() ) ) {
 			$this->post_body['partner_app_pass'] = App::make( Auth::class )->get_app_pass();
 		}
