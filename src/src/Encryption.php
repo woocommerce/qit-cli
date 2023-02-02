@@ -6,7 +6,6 @@ use Laminas\Crypt\Hybrid;
 use Laminas\Crypt\PublicKey\Rsa\PrivateKey;
 use Laminas\Crypt\PublicKey\Rsa\PublicKey;
 use Laminas\Crypt\PublicKey\RsaOptions;
-use QIT_CLI\Commands\Encrypt\ChangeEncryptionKeyCommand;
 use QIT_CLI\Exceptions\EncryptionException;
 use QIT_CLI\IO\Input;
 use QIT_CLI\IO\Output;
@@ -23,76 +22,15 @@ class Encryption {
 		$this->ssh_keys_dir = Config::get_qit_dir();
 	}
 
-	protected function is_encryption_disabled( bool $recheck = false ) {
-		if ( is_null( $this->encryption_disabled ) || $recheck ) {
-			$this->encryption_disabled = file_exists( $this->ssh_keys_dir . '.encryption-disabled' ) || ! extension_loaded( 'openssl' );
-		}
-
-		return $this->encryption_disabled;
-	}
-
-	public function init() {
-		if ( $this->is_encryption_disabled( true ) ) {
-			return;
-		}
-
-		// Tweak the question when changing keys to be more clear.
-		if ( App::make( Input::class )->getFirstArgument() === ChangeEncryptionKeyCommand::getDefaultName() ) {
-			App::setVar( 'ask_encryption_password', 'Please enter the old password:' );
-		}
-
-		if ( file_exists( $this->ssh_keys_dir . '/private.key' ) && file_exists( $this->ssh_keys_dir . '/public.key' ) ) {
-			return;
-		}
-
-		// Make sure we don't have any leftover keys.
+	public function disable_encryption() {
+		App::make(Environment::class)->delete_all_environments();
 		$this->delete_keys();
-
-		// Create generic key.
-		$this->generate_key();
+		Config::set_encryption( false );
 	}
 
-	public function disable_encryption( ?string $old_password = null ) {
-		if ( $this->is_encryption_disabled( true ) ) {
-			throw new \LogicException( 'Encryption is already disabled.' );
-		}
-
-		// Re-write unencrypted config files.
-		if ( ! is_null( $old_password ) ) {
-			$envs = [];
-			foreach ( App::make( Environment::class )->get_configured_environments( false ) as $env_file_path ) {
-				$envs[ $env_file_path ] = $this->decrypt( file_get_contents( $env_file_path ) );
-			}
-
-			foreach ( $envs as $env_file_path => $env_file_contents ) {
-				$written = file_put_contents( $env_file_path, $env_file_contents );
-
-				if ( $written === false ) {
-					throw new \RuntimeException( 'Could not write env file.' );
-				}
-			}
-		}
-
-		$this->delete_keys();
-
-		if ( ! touch( $this->ssh_keys_dir . '.encryption-disabled' ) ) {
-			throw new \RuntimeException( sprintf( 'Could not enable encryption. Please create the file %s manually and delete all config files.', $this->ssh_keys_dir . '.encryption-disabled' ) );
-		}
-
-		$this->is_encryption_disabled( true );
-	}
-
-	public static function get_default_password(): string {
-		return 'no_password';
-	}
-
-	public function enable_encryption() {
-		if ( ! $this->is_encryption_disabled( true ) ) {
-			throw new \LogicException( 'Encryption is already enabled.' );
-		}
-
+	public function enable_encryption( string $password ) {
 		try {
-			$this->generate_key();
+			$this->generate_key( $password );
 
 			$this->encryption_disabled = false;
 
@@ -104,12 +42,7 @@ class Encryption {
 				}
 			}
 
-			// Persist enable encryption.
-			if ( ! unlink( $this->ssh_keys_dir . '.encryption-disabled' ) ) {
-				throw new \RuntimeException( sprintf( 'Could not enable encryption. Please delete the file %s manually.', $this->ssh_keys_dir . '.encryption-disabled' ) );
-			}
-
-			$this->is_encryption_disabled( true );
+			Config::set_encryption( true );
 		} catch ( \Exception $e ) {
 			$this->disable_encryption();
 			throw new \RuntimeException( 'Could not enable encryption.' );
@@ -126,50 +59,10 @@ class Encryption {
 		}
 	}
 
-	public function change_encryption( string $new_password ) {
-		$envs = [];
-		foreach ( App::make( Environment::class )->get_configured_environments( false ) as $env_file_path ) {
-			$envs[ $env_file_path ] = $this->decrypt( file_get_contents( $env_file_path ) );
-		}
-
-		$this->generate_key( $new_password );
-
-		foreach ( $envs as $env_file_path => $env_file_contents ) {
-			$written = file_put_contents( $env_file_path, $this->encrypt( $env_file_contents ) );
-
-			if ( ! $written ) {
-				throw new \RuntimeException( 'Could not write env file.' );
-			}
-		}
-	}
-
-	public function using_default_key() {
-		if ( ! file_exists( $this->ssh_keys_dir . 'public.key' ) ) {
-			return true;
-		}
-
-		$public_key = new PublicKey( file_get_contents( $this->ssh_keys_dir . 'public.key' ) );
-		$test_value = ( new Hybrid() )->encrypt( 'foo', $public_key );
-
-		try {
-			$private_key = new PrivateKey( file_get_contents( $this->ssh_keys_dir . 'private.key' ), static::get_default_password() );
-			$decrypted   = ( new Hybrid() )->decrypt( $test_value, $private_key );
-
-			return $decrypted === 'foo';
-		} catch ( \Exception $e ) {
-			return false;
-		}
-	}
-
-	public function maybe_ask_password() {
+	public function get_decryption_password() {
 		// Early bail: Already asked for password.
 		if ( ! is_null( App::getVar( 'enc_password' ) ) ) {
-			return;
-		}
-
-		// Early bail: Not using a custom encryption password.
-		if ( $this->using_default_key() ) {
-			return;
+			return App::getVar( 'enc_password' );
 		}
 
 		$password = $this->get_encryption_password_from_shared_memory();
@@ -183,13 +76,11 @@ class Encryption {
 		}
 
 		App::setVar( 'enc_password', $password );
+
+		return $password;
 	}
 
-	public function generate_key( ?string $password = null ) {
-		if ( is_null( $password ) ) {
-			$password = static::get_default_password();
-		}
-
+	public function generate_key( string $password ) {
 		// Generate public and private key.
 		$rsa_options = new RsaOptions( [
 			'pass_phrase' => $password,
@@ -211,7 +102,7 @@ class Encryption {
 	}
 
 	public function encrypt( string $plain_text ): string {
-		if ( $this->is_encryption_disabled() ) {
+		if ( ! Config::is_encryption_enabled() ) {
 			return $plain_text;
 		}
 
@@ -226,7 +117,7 @@ class Encryption {
 
 	public function decrypt( string $cipher_text ): string {
 		// Early bail: Encryption is disabled. Return the plain text as is, unless we are in Unit Tests.
-		if ( $this->is_encryption_disabled() && ! defined( 'UNIT_TESTS' ) ) {
+		if ( ! Config::is_encryption_enabled() && ! defined( 'UNIT_TESTS' ) ) {
 			return $cipher_text;
 		}
 
@@ -234,9 +125,7 @@ class Encryption {
 			return '';
 		}
 
-		App::make( self::class )->maybe_ask_password();
-
-		$password = App::getVar( 'enc_password', static::get_default_password() );
+		$password = $this->get_decryption_password();
 
 		$private_key = new PrivateKey( file_get_contents( $this->ssh_keys_dir . 'private.key' ), $password );
 

@@ -150,6 +150,14 @@ class Environment {
 		return $partners;
 	}
 
+	public function delete_all_environments() {
+		foreach ( $this->get_configured_environments( true ) as $file ) {
+			if ( ! unlink( $file ) ) {
+				throw new \RuntimeException( 'Could not delete environment file. Please check that PHP has write permission to file: ' . $file );
+			}
+		}
+	}
+
 	/**
 	 * @param string $environment The environment to remove.
 	 *

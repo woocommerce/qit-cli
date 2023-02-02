@@ -70,13 +70,12 @@ $container->singleton( ManagerSync::class );
 $container->singleton( Encryption::class );
 $container->singleton( Cache::class );
 $container->singleton( Config::class );
+$container->singleton( Environment::class );
 
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 
 // Detect whether this is a "_completion" command that runs on the background in Bash. If so, no remote requests will be made.
 $container->setVar( 'doing_autocompletion', stripos( (string) $container->make( Input::class ), '_completion' ) !== false );
-
-$container->make( Encryption::class )->init();
 
 try {
 	if ( ! $container->getVar( 'doing_autocompletion' ) ) {
@@ -92,7 +91,6 @@ try {
 	$application->add( $container->make( DevModeCommand::class ) );
 	$application->add( $container->make( AddEnvironment::class ) );
 
-	$application->add( $container->make( ChangeEncryptionKeyCommand::class ) );
 	$application->add( $container->make( EnableEncryptionCommand::class ) );
 	$application->add( $container->make( DisableEncryptionCommand::class ) );
 
@@ -107,7 +105,6 @@ try {
 $env = App::make( Environment::class );
 
 // Encryption commands.
-$application->add( $container->make( ChangeEncryptionKeyCommand::class ) );
 $application->add( $container->make( EnableEncryptionCommand::class ) );
 $application->add( $container->make( DisableEncryptionCommand::class ) );
 
