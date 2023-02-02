@@ -119,12 +119,6 @@ class Cache {
 			throw new \RuntimeException( 'Could not parse cache file. Resetting environment, please remove the current Partner/Environment and add it again.' );
 		}
 
-		// Generate an array with the existing data. Fill-in the blanks with the schema.
-		$cache = array_merge( $this->schema, $cache );
-
-		// Remove items that are not in the schema.
-		$cache = array_intersect_key( $cache, $this->schema );
-
 		$this->cache = $cache;
 	}
 
