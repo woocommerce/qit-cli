@@ -25,7 +25,7 @@ class EnableEncryptionCommand extends Command {
 
 	protected function configure() {
 		$this
-			->setDescription( 'Enable encryption of the config files.' );
+			->setDescription( 'Enable encryption of the QIT config files.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -35,16 +35,11 @@ class EnableEncryptionCommand extends Command {
 			return Command::FAILURE;
 		}
 
-		if ( ! extension_loaded( 'shmop' ) ) {
-			$output->writeln( 'Did you know? You can enable the extension "shmop" in your php.ini file to only enter your decryption password once.' );
-		}
+		$output->writeln( sprintf( '<info>Preparing to encrypt the QIT config files located at %s:</info>', Config::get_qit_dir() ) );
 
-		if ( ! empty( $this->environment->get_configured_environments( false ) ) ) {
-			if ( Config::is_development_mode() ) {
-				$question = "Do you want to enable encryption? You will need to re-add the Partner(s)/Environment(s) (y/n)";
-			} else {
-				$question = "Do you want to enable encryption? You will need to re-add the Partner(s) (y/n)";
-			}
+		if ( ! extension_loaded( 'shmop' ) ) {
+			$output->writeln( 'The extension "shmop" is not loaded. Without it, you will need to enter the decryption password on every interaction with the tool. To enable the "shmop" extension, please uncomment ";extension=shmop" in your php.ini file, or install the "shmop" extension if it doesn\'t exist.' );
+			$question = "Do you want to proceed with encrypting the config files? (y/n)";
 			if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "<question>$question </question>", false ) ) ) {
 				$output->writeln( 'Operation cancelled.' );
 
@@ -58,6 +53,8 @@ class EnableEncryptionCommand extends Command {
 		$password = $this->getHelper( 'question' )->ask( $input, $output, $question );
 
 		$this->encryption->enable_encryption( $password );
+
+		$output->writeln('QIT config files encrypted.');
 
 		return Command::SUCCESS;
 	}
