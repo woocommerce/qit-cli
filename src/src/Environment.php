@@ -142,31 +142,6 @@ class Environment {
 		return $partners;
 	}
 
-	public function get_qit_files() {
-		if ( ! file_exists( Config::get_qit_dir() ) ) {
-			return [];
-		}
-
-		$partners = [];
-
-		$files = scandir( Config::get_qit_dir() );
-
-		if ( ! is_array( $files ) ) {
-			return [];
-		}
-
-		foreach ( $files as $f ) {
-			// Skip. Not an environment file.
-			if ( strpos( $f, '.env' ) !== 0 ) {
-				continue;
-			}
-
-			$partners[] = Config::get_qit_dir() . $f;
-		}
-
-		return $partners;
-	}
-
 	/**
 	 * @param string $environment The environment to remove.
 	 *

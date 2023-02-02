@@ -42,7 +42,7 @@ class DisableEncryptionCommand extends Command {
 
 				$encryption_key = $this->getHelper( 'question' )->ask( $input, $output, $question );
 			} else {
-				if ( ! empty( $this->environment->get_qit_files() ) ) {
+				if ( ! empty( $this->environment->get_configured_environments( false ) ) ) {
 					if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "<question>If you disable encryption, you need to re-add the Partners/Environments. Continue? (y/n) </question>", false ) ) ) {
 						return Command::SUCCESS;
 					}

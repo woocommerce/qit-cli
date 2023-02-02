@@ -60,7 +60,7 @@ class Encryption {
 		// Re-write unencrypted config files.
 		if ( ! is_null( $old_password ) ) {
 			$envs = [];
-			foreach ( App::make( Environment::class )->get_qit_files() as $env_file_path ) {
+			foreach ( App::make( Environment::class )->get_configured_environments( false ) as $env_file_path ) {
 				$envs[ $env_file_path ] = $this->decrypt( file_get_contents( $env_file_path ) );
 			}
 
@@ -96,7 +96,7 @@ class Encryption {
 
 			$this->encryption_disabled = false;
 
-			foreach ( App::make( Environment::class )->get_qit_files() as $env_file_path ) {
+			foreach ( App::make( Environment::class )->get_configured_environments( false ) as $env_file_path ) {
 				$written = file_put_contents( $env_file_path, $this->encrypt( file_get_contents( $env_file_path ) ) );
 
 				if ( $written === false ) {
@@ -128,7 +128,7 @@ class Encryption {
 
 	public function change_encryption( string $new_password ) {
 		$envs = [];
-		foreach ( App::make( Environment::class )->get_qit_files() as $env_file_path ) {
+		foreach ( App::make( Environment::class )->get_configured_environments( false ) as $env_file_path ) {
 			$envs[ $env_file_path ] = $this->decrypt( file_get_contents( $env_file_path ) );
 		}
 
