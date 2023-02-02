@@ -4,7 +4,7 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Auth;
-use QIT_CLI\Config;
+use QIT_CLI\Cache;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
@@ -18,8 +18,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
 class CreateRunCommands {
-	/** @var Config $config */
-	protected $config;
+	/** @var Cache $cache */
+	protected $cache;
 
 	/** @var Auth $auth */
 	protected $auth;
@@ -33,8 +33,8 @@ class CreateRunCommands {
 	/** @var WooExtensionsList $woo_extensions_list */
 	protected $woo_extensions_list;
 
-	public function __construct( Config $config, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list ) {
-		$this->config              = $config;
+	public function __construct( Cache $cache, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list ) {
+		$this->cache              = $cache;
 		$this->auth                = $auth;
 		$this->output              = App::make( Output::class );
 		$this->upload              = $upload;
@@ -42,8 +42,8 @@ class CreateRunCommands {
 	}
 
 	public function register_run_commands( Application $application ): void {
-		foreach ( $this->config->get_manager_sync_data( 'test_types' ) as $test_type ) {
-			$this->register_command_by_schema( $application, $test_type, $this->config->get_manager_sync_data( 'schemas' )[ $test_type ] );
+		foreach ( $this->cache->get_manager_sync_data( 'test_types' ) as $test_type ) {
+			$this->register_command_by_schema( $application, $test_type, $this->cache->get_manager_sync_data( 'schemas' )[ $test_type ] );
 		}
 	}
 

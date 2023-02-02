@@ -28,7 +28,7 @@ class EncryptionTest extends QITTestCase {
 			'--refresh' => true,
 		], [ 'capture_stderr_separately' => true ] );
 
-		// Assert Config file is encrypted.
+		// Assert Cache file is encrypted.
 		$encrypted_config = file_get_contents( Environment::get_config_dir() . '/.env-tests' );
 
 		$encryption       = App::make( Encryption::class );
@@ -55,7 +55,7 @@ class EncryptionTest extends QITTestCase {
 			'--refresh' => true,
 		], [ 'capture_stderr_separately' => true ] );
 
-		// Assert Config file is plain text.
+		// Assert Cache file is plain text.
 		$decrypted_config = file_get_contents( Environment::get_config_dir() . '/.env-tests' );
 		$json             = json_decode( $decrypted_config, true );
 
@@ -81,7 +81,7 @@ class EncryptionTest extends QITTestCase {
 			'--force' => true
 		], [ 'capture_stderr_separately' => true ] );
 
-		// Assert Config file is plain text.
+		// Assert Cache file is plain text.
 		$decrypted_config = file_get_contents( Environment::get_config_dir() . '/.env-tests' );
 		$json             = json_decode( $decrypted_config, true );
 

@@ -73,14 +73,14 @@ function open_in_browser( string $url ): void {
  * @return string The URL of the WCCOM Marketplace to use.
  */
 function get_wccom_url(): string {
-	return App::make( Config::class )->get_manager_sync_data( 'wccom_url' );
+	return App::make( Cache::class )->get_manager_sync_data( 'wccom_url' );
 }
 
 /**
  * @return string The URL to the CD Manager instance to use.
  */
 function get_manager_url(): string {
-	$override = App::make( Config::class )->get_cache( 'manager_url' );
+	$override = App::make( Cache::class )->get_cache( 'manager_url' );
 
 	if ( ! is_null( $override ) ) {
 		return (string) $override;

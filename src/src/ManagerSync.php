@@ -9,8 +9,8 @@ use QIT_CLI\IO\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ManagerSync {
-	/** @var Config $config */
-	protected $config;
+	/** @var Cache $cache */
+	protected $cache;
 
 	/** @var Auth $auth */
 	protected $auth;
@@ -24,8 +24,8 @@ class ManagerSync {
 	/** @var string $sync_cache_key */
 	public $sync_cache_key;
 
-	public function __construct( Config $config, Environment $environment, Auth $auth ) {
-		$this->config         = $config;
+	public function __construct( Cache $cache, Environment $environment, Auth $auth ) {
+		$this->cache         = $cache;
 		$this->auth           = $auth;
 		$this->environment    = $environment;
 		$this->output         = App::make( Output::class );
@@ -34,10 +34,10 @@ class ManagerSync {
 
 	public function maybe_sync( bool $force_resync = false ): void {
 		if ( $force_resync ) {
-			$this->config->delete_cache( $this->sync_cache_key );
+			$this->cache->delete_cache( $this->sync_cache_key );
 		}
 
-		$manager_sync = $this->config->get_cache( $this->sync_cache_key );
+		$manager_sync = $this->cache->get_cache( $this->sync_cache_key );
 
 		if ( ! is_null( $manager_sync ) ) {
 			return;
@@ -85,7 +85,7 @@ class ManagerSync {
 		// 1 hour if we can connect to the Manager.
 		$expiration = App::getVar( 'offline_mode' ) ? 0 : 3600;
 
-		$this->config->set_cache( $this->sync_cache_key, $manager_sync, $expiration );
+		$this->cache->set_cache( $this->sync_cache_key, $manager_sync, $expiration );
 	}
 
 	public function enforce_latest_version(): void {
@@ -96,8 +96,8 @@ class ManagerSync {
 			return;
 		}
 
-		$latest_version = $this->config->get_manager_sync_data( 'latest_cli_version' );
-		$enforce_latest = $this->config->get_manager_sync_data( 'enforce_latest' );
+		$latest_version = $this->cache->get_manager_sync_data( 'latest_cli_version' );
+		$enforce_latest = $this->cache->get_manager_sync_data( 'enforce_latest' );
 
 		if ( version_compare( $current_version, $latest_version, '<' ) ) {
 			if ( $enforce_latest ) {

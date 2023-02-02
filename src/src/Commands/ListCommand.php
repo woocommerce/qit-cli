@@ -3,7 +3,7 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\Auth;
-use QIT_CLI\Config;
+use QIT_CLI\Cache;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
@@ -16,8 +16,8 @@ use function QIT_CLI\get_manager_url;
 class ListCommand extends Command {
 	protected static $defaultName = 'list-tests'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Config $config */
-	protected $config;
+	/** @var Cache $cache */
+	protected $cache;
 
 	/** @var Auth $auth */
 	protected $auth;
@@ -25,15 +25,15 @@ class ListCommand extends Command {
 	/** @var WooExtensionsList $woo_extensions_list */
 	protected $woo_extensions_list;
 
-	public function __construct( Config $config, Auth $auth, WooExtensionsList $woo_extensions_list ) {
-		$this->config              = $config;
+	public function __construct( Cache $cache, Auth $auth, WooExtensionsList $woo_extensions_list ) {
+		$this->cache              = $cache;
 		$this->auth                = $auth;
 		$this->woo_extensions_list = $woo_extensions_list;
 		parent::__construct();
 	}
 
 	protected function configure() {
-		$test_types_list = implode( ', ', $this->config->get_manager_sync_data( 'test_types' ) );
+		$test_types_list = implode( ', ', $this->cache->get_manager_sync_data( 'test_types' ) );
 		$this
 			->setDescription( 'List test runs.' )
 			->addOption( 'test_status', 's', InputOption::VALUE_OPTIONAL, '(Optional) What test status to retrieve.' )

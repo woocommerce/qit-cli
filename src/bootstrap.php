@@ -17,7 +17,7 @@ use QIT_CLI\Commands\Partner\AddPartner;
 use QIT_CLI\Commands\Partner\RemovePartner;
 use QIT_CLI\Commands\Partner\SwitchPartner;
 use QIT_CLI\Commands\WooExtensionsCommand;
-use QIT_CLI\Config;
+use QIT_CLI\Cache;
 use QIT_CLI\Encryption;
 use QIT_CLI\Environment;
 use QIT_CLI\Exceptions\NetworkErrorException;
@@ -68,7 +68,7 @@ $container->singleton( Output::class, function () {
 
 $container->singleton( ManagerSync::class );
 $container->singleton( Encryption::class );
-$container->singleton( Config::class );
+$container->singleton( Cache::class );
 
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 
@@ -143,7 +143,7 @@ if ( $env->is_development_mode() ) {
 }
 
 // Commands that require initialization.
-if ( $container->make( Config::class )->is_initialized() ) {
+if ( $container->make( Cache::class )->is_initialized() ) {
 	// Dynamically create commands to run tests, based on Schema fetched from Manager REST API.
 	$container->make( CreateRunCommands::class )->register_run_commands( $application );
 

@@ -273,6 +273,8 @@ class Encryption {
 			return null;
 		}
 
+
+
 		return trim( $password );
 	}
 

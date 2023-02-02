@@ -57,29 +57,29 @@ class Environment {
 			throw new \InvalidArgumentException( 'Invalid environment.' );
 		}
 
-		if ( file_exists( $this->make_config_filepath( $environment ) ) ) {
-			$unlinked = $this->make_config_filepath( $environment );
+		if ( file_exists( $this->make_cache_filepath( $environment ) ) ) {
+			$unlinked = $this->make_cache_filepath( $environment );
 
 			if ( ! $unlinked ) {
-				throw new \RuntimeException( 'Could not delete environment config file to override with new value. Please check that PHP has write permission to file: ' . $this->make_config_filepath( $environment ) );
+				throw new \RuntimeException( 'Could not delete environment file to override with new value. Please check that PHP has write permission to file: ' . $this->make_cache_filepath( $environment ) );
 			}
 		}
 
-		$written = touch( $this->make_config_filepath( $environment ) );
+		$written = touch( $this->make_cache_filepath( $environment ) );
 
 		if ( ! $written ) {
-			throw new \RuntimeException( 'Could not create environment config file. Please check that PHP has write permission to file: ' . $this->make_config_filepath( $environment ) );
+			throw new \RuntimeException( 'Could not create environment file. Please check that PHP has write permission to file: ' . $this->make_cache_filepath( $environment ) );
 		}
 
 		/*
 		 * Make sure the file has the correct permissions. (0600)
 		 * Try to set it, warn if cannot.
 		 */
-		if ( decoct( fileperms( $this->make_config_filepath( $environment ) ) & 0777 ) !== '600' && ! chmod( $this->make_config_filepath( $environment ), 0600 ) && ! App::getVar( "WARNED_ENV_PERMISSION_$environment", false ) ) {
+		if ( decoct( fileperms( $this->make_cache_filepath( $environment ) ) & 0777 ) !== '600' && ! chmod( $this->make_cache_filepath( $environment ), 0600 ) && ! App::getVar( "WARNED_ENV_PERMISSION_$environment", false ) ) {
 			App::make( Output::class )->writeln(
 				sprintf(
 					'<warning>Warning: Could not set permissions on environment file. Please check that PHP has write permission to file: %s</warning>',
-					$this->make_config_filepath( $environment )
+					$this->make_cache_filepath( $environment )
 				)
 			);
 
@@ -105,7 +105,7 @@ class Environment {
 			throw new \InvalidArgumentException( 'Invalid environment.' );
 		}
 
-		if ( ! file_exists( $this->make_config_filepath( $environment ) ) ) {
+		if ( ! file_exists( $this->make_cache_filepath( $environment ) ) ) {
 			throw new \RuntimeException( "Cannot switch to environment '$environment', as it has not been configured yet." );
 		}
 
@@ -121,7 +121,7 @@ class Environment {
 			throw new \InvalidArgumentException( "The environment $environment is not allowed." );
 		}
 
-		return file_exists( $this->make_config_filepath( $environment ) );
+		return file_exists( $this->make_cache_filepath( $environment ) );
 	}
 
 	/**
@@ -180,13 +180,13 @@ class Environment {
 				throw new \RuntimeException( sprintf( 'The HOME environment variable is defined, but points to a non-existing directory: %s', $_SERVER['HOME'] ) );
 			}
 
-			$config_dir = $normalize_path( $_SERVER['HOME'] ) . '.woo-qit-cli/';
+			$cache_dir = $normalize_path( $_SERVER['HOME'] ) . '.woo-qit-cli/';
 
-			if ( ! file_exists( $config_dir ) ) {
-				$dir_created = mkdir( $config_dir );
+			if ( ! file_exists( $cache_dir ) ) {
+				$dir_created = mkdir( $cache_dir );
 
 				if ( ! $dir_created ) {
-					throw new \RuntimeException( sprintf( 'Could not create the QIT CLI config directory: %s. Please try to create the directory manually. ', $config_dir ) );
+					throw new \RuntimeException( sprintf( 'Could not create the QIT CLI config directory: %s. Please try to create the directory manually. ', $cache_dir ) );
 				}
 			}
 
@@ -194,11 +194,11 @@ class Environment {
 			 * Make sure the directory has the correct permissions. (0700)
 			 * Try to set it, warn if cannot.
 			 */
-			if ( decoct( fileperms( $config_dir ) & 0777 ) !== '700' && ! chmod( $config_dir, 0700 ) && ! App::getVar( 'WARNED_DIR_PERMISSION', false ) ) {
+			if ( decoct( fileperms( $cache_dir ) & 0777 ) !== '700' && ! chmod( $cache_dir, 0700 ) && ! App::getVar( 'WARNED_DIR_PERMISSION', false ) ) {
 				App::make( Output::class )->writeln(
 					sprintf(
 						'<info>QIT Warning: Could not set permissions on the QIT CLI config directory. Please check that PHP has write permission to file: %s</info>',
-						$config_dir
+						$cache_dir
 					)
 				);
 
@@ -206,7 +206,7 @@ class Environment {
 				App::setVar( 'WARNED_DIR_PERMISSION', true );
 			}
 
-			return $config_dir;
+			return $cache_dir;
 		}
 
 		$message = '';
@@ -221,14 +221,14 @@ class Environment {
 	}
 
 	/**
-	 * @return string The file path of the current QIT CLI config file.
+	 * @return string The file path of the current QIT CLI cache file.
 	 */
-	public function get_config_filepath(): string {
+	public function get_cache_filepath(): string {
 		// Eg: /home/foo/.woo-qit-cli-production.
-		return $this->make_config_filepath( $this->get_current_environment() );
+		return $this->make_cache_filepath( $this->get_current_environment() );
 	}
 
-	private function make_config_filepath( string $environment ): string {
+	private function make_cache_filepath( string $environment ): string {
 		return Environment::get_config_dir() . ".env-$environment";
 	}
 
@@ -312,10 +312,10 @@ class Environment {
 			throw new \RuntimeException( "Environment '$environment' does not exist/is not configured yet." );
 		}
 
-		$unlinked = unlink( $this->make_config_filepath( $environment ) );
+		$unlinked = unlink( $this->make_cache_filepath( $environment ) );
 
 		if ( ! $unlinked ) {
-			throw new \RuntimeException( sprintf( 'Could not remove environment "%s". Please delete the config file manually: %s', $environment, $this->make_config_filepath( $environment ) ) );
+			throw new \RuntimeException( sprintf( 'Could not remove environment "%s". Please delete the cache file manually: %s', $environment, $this->make_cache_filepath( $environment ) ) );
 		}
 
 		// Are we deleting the environment we are currently in?
