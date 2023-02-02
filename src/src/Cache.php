@@ -29,9 +29,9 @@ class Cache {
 	}
 
 	/**
-	 * @param string $key The cache key.
+	 * @param string              $key The cache key.
 	 * @param scalar|array<mixed> $value The cache value.
-	 * @param int $expire How many seconds from now should this cache expire. -1 for no expiration. 0 for only current request.
+	 * @param int                 $expire How many seconds from now should this cache expire. -1 for no expiration. 0 for only current request.
 	 *
 	 * @return void
 	 */
@@ -56,7 +56,7 @@ class Cache {
 
 	/**
 	 * @param string $key The cache key to get.
-	 * @param bool $ignore_expiration If true, it will return an expired cache entry if available.
+	 * @param bool   $ignore_expiration If true, it will return an expired cache entry if available.
 	 *
 	 * @return mixed|null Whatever is in the cache, either a scalar or an array of scalars or array of arrays of scalars. Null if cache not found.
 	 */
@@ -179,7 +179,6 @@ class Cache {
 	 *
 	 * @return scalar|array<mixed> The value of the key.
 	 * @throws \UnexpectedValueException When requested a key that does not exist in the sync data.
-	 *
 	 */
 	public function get_manager_sync_data( string $key ) {
 		$manager_data = $this->get( App::make( ManagerSync::class )->sync_cache_key );

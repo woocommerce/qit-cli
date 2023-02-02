@@ -31,46 +31,46 @@ class Config {
 	}
 
 	public static function set_development_mode( bool $development_mode ): void {
-		App::make( Config::class )->set( 'development_mode', $development_mode );
+		App::make( self::class )->set( 'development_mode', $development_mode );
 	}
 
 	/**
 	 * @return bool True if running in Developer mode. False if not.
 	 */
 	public static function is_development_mode(): bool {
-		return (bool) App::make( Config::class )->get( 'development_mode' );
+		return (bool) App::make( self::class )->get( 'development_mode' );
 	}
 
 	public static function set_current_environment( string $environment ): void {
-		App::make( Config::class )->set( 'current_environment', $environment );
+		App::make( self::class )->set( 'current_environment', $environment );
 	}
 
 	public static function get_current_environment(): string {
-		return (string) App::make( Config::class )->get( 'current_environment' ) ?: 'default';
+		return (string) App::make( self::class )->get( 'current_environment' ) ?: 'default';
 	}
 
 	public static function set_encryption( bool $encryption ): void {
-		App::make( Config::class )->set( 'encryption', $encryption );
+		App::make( self::class )->set( 'encryption', $encryption );
 	}
 
 	public static function is_encryption_enabled(): bool {
-		return (bool) App::make( Config::class )->get( 'encryption' );
+		return (bool) App::make( self::class )->get( 'encryption' );
 	}
 
 	public static function set_proxy_url( string $proxy_url ): void {
-		App::make( Config::class )->set( 'proxy_url', $proxy_url );
+		App::make( self::class )->set( 'proxy_url', $proxy_url );
 	}
 
 	public static function get_proxy_url(): string {
-		return (string) App::make( Config::class )->get( 'proxy_url' ) ?: '127.0.0.1:8080';
+		return (string) App::make( self::class )->get( 'proxy_url' ) ?: '127.0.0.1:8080';
 	}
 
 	public static function set_last_diagnosis( int $last_diagnosis ): void {
-		App::make( Config::class )->set( 'last_diagnosis', $last_diagnosis );
+		App::make( self::class )->set( 'last_diagnosis', $last_diagnosis );
 	}
 
 	public static function get_last_diagnosis(): int {
-		return (int) App::make( Config::class )->get( 'last_diagnosis' ) ?: 0;
+		return (int) App::make( self::class )->get( 'last_diagnosis' ) ?: 0;
 	}
 
 	protected function set( string $key, $value ) {
@@ -89,7 +89,7 @@ class Config {
 
 	/**
 	 * @return void
-	 * @throws IOException
+	 * @throws IOException If can't write to file.
 	 */
 	protected function save() {
 		$json    = json_encode( $this->config, JSON_PRETTY_PRINT );

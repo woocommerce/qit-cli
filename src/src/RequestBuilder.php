@@ -115,10 +115,10 @@ class RequestBuilder implements \JsonSerializable {
 		$proxied = false;
 
 		if ( ! is_null( App::make( Auth::class )->get_cd_secret() ) ) {
-			$this->post_body['cd_secret']         = App::make( Auth::class )->get_cd_secret();
+			$this->post_body['cd_secret'] = App::make( Auth::class )->get_cd_secret();
 			// Connections using the CD_SECRET that are not local must go through Automattic Proxy.
 			if ( strpos( $this->url, '.loc' ) === false ) {
-				$proxied = true;
+				$proxied                              = true;
 				$curl_parameters[ CURLOPT_PROXY ]     = Config::get_proxy_url();
 				$curl_parameters[ CURLOPT_PROXYTYPE ] = CURLPROXY_SOCKS5;
 			}

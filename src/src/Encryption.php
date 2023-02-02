@@ -145,10 +145,10 @@ class Encryption {
 			return null;
 		}
 
-		$shared_memory = @shmop_open( 723894723984732, "c", 0600, 1000 );
+		$shared_memory = @shmop_open( 723894723984732, 'c', 0600, 1000 );
 
 		if ( $shared_memory === false ) {
-			$shared_memory = shmop_open( 723894723984732, "a", 0600, 1000 );
+			$shared_memory = shmop_open( 723894723984732, 'a', 0600, 1000 );
 		}
 
 		$password = shmop_read( $shared_memory, 0, 1000 );
@@ -158,7 +158,6 @@ class Encryption {
 		if ( empty( trim( $password ) ) ) {
 			return null;
 		}
-
 
 		return trim( $password );
 	}
@@ -174,10 +173,10 @@ class Encryption {
 			return;
 		}
 
-		$shared_memory = @shmop_open( 723894723984732, "c", 0600, 1000 );
+		$shared_memory = @shmop_open( 723894723984732, 'c', 0600, 1000 );
 
 		if ( $shared_memory === false ) {
-			$shared_memory = shmop_open( 723894723984732, "w", 0600, 1000 );
+			$shared_memory = shmop_open( 723894723984732, 'w', 0600, 1000 );
 		}
 
 		$written = shmop_write( $shared_memory, str_pad( $password, 1000 ), 0 );

@@ -96,7 +96,7 @@ class ListCommand extends Command {
 			'is_development',
 			'version',
 			'client',
-			'event'
+			'event',
 		];
 
 		// Prepare the data to be rendered.

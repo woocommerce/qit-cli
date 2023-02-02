@@ -23,7 +23,7 @@ class DisableEncryptionCommand extends Command {
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		if ( $input->getOption( 'force' ) !== true ) {
 			if ( ! empty( Environment::get_configured_environments() ) ) {
-				if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "<question>If you disable encryption, you need to re-add the Partners/Environments. Continue? (y/n) </question>", false ) ) ) {
+				if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( '<question>If you disable encryption, you need to re-add the Partners/Environments. Continue? (y/n) </question>', false ) ) ) {
 					return Command::SUCCESS;
 				}
 			}

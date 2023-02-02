@@ -31,13 +31,13 @@ class SetProxyCommand extends Command {
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		if ( empty( $input->getArgument( 'proxy_url' ) ) ) {
 			// Make sure devs understand this is optional.
-			if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "<question>The proxy comes pre-configured with default values (127.0.0.1:8080). Are you sure you want to change the URL we use to connect to the local Automattic Proxy? (y/n)</question>", false ) ) ) {
+			if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( '<question>The proxy comes pre-configured with default values (127.0.0.1:8080). Are you sure you want to change the URL we use to connect to the local Automattic Proxy? (y/n)</question>', false ) ) ) {
 				$output->writeln( 'Operation cancelled.' );
 
 				return Command::SUCCESS;
 			}
 
-			$proxy_url = $this->getHelper( 'question' )->ask( $input, $output, new Question( "<question>Please enter the URL to connect to the Automattic Proxy locally.</question> " ) );
+			$proxy_url = $this->getHelper( 'question' )->ask( $input, $output, new Question( '<question>Please enter the URL to connect to the Automattic Proxy locally.</question> ' ) );
 		} else {
 			$proxy_url = $input->getArgument( 'proxy_url' );
 		}

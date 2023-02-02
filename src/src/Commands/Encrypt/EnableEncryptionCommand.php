@@ -39,7 +39,7 @@ class EnableEncryptionCommand extends Command {
 
 		if ( ! extension_loaded( 'shmop' ) ) {
 			$output->writeln( 'The extension "shmop" is not loaded. Without it, you will need to enter the decryption password on every interaction with the tool. To enable the "shmop" extension, please uncomment ";extension=shmop" in your php.ini file, or install the "shmop" extension if it doesn\'t exist.' );
-			$question = "Do you want to proceed with encrypting the config files? (y/n)";
+			$question = 'Do you want to proceed with encrypting the config files? (y/n)';
 			if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "<question>$question </question>", false ) ) ) {
 				$output->writeln( 'Operation cancelled.' );
 
@@ -47,14 +47,14 @@ class EnableEncryptionCommand extends Command {
 			}
 		}
 
-		$question = new Question( "<question>Please enter a password to encrypt.</question> " );
+		$question = new Question( '<question>Please enter a password to encrypt.</question> ' );
 		$question->setHidden( true );
 		$question->setHiddenFallback( false );
 		$password = $this->getHelper( 'question' )->ask( $input, $output, $question );
 
 		$this->encryption->enable_encryption( $password );
 
-		$output->writeln('QIT config files encrypted.');
+		$output->writeln( 'QIT config files encrypted.' );
 
 		return Command::SUCCESS;
 	}

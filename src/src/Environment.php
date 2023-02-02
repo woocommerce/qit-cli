@@ -150,7 +150,7 @@ class Environment {
 	}
 
 	public function get_configured_environment_names( bool $partners_only = false ) {
-		$environments = Environment::get_configured_environments( $partners_only );
+		$environments = self::get_configured_environments( $partners_only );
 		foreach ( $environments as &$e ) {
 			$e = str_replace( '.env-partner-', '', $e );
 			$e = str_replace( '.env-', '', $e );
@@ -184,7 +184,7 @@ class Environment {
 
 		// Are we deleting the environment we are currently in?
 		if ( Config::get_current_environment() === $environment ) {
-			$other_environments = Environment::get_configured_environments( false );
+			$other_environments = self::get_configured_environments( false );
 			// Switch to next available environment, if it exists.
 			if ( ! empty( $other_environments ) ) {
 				$next_environment = array_shift( $other_environments );

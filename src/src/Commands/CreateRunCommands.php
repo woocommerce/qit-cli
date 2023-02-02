@@ -35,7 +35,7 @@ class CreateRunCommands {
 	protected $woo_extensions_list;
 
 	public function __construct( Environment $environment, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list ) {
-		$this->environment              = $environment;
+		$this->environment         = $environment;
 		$this->auth                = $auth;
 		$this->output              = App::make( Output::class );
 		$this->upload              = $upload;
