@@ -3,7 +3,6 @@
 use QIT_CLI\App;
 use QIT_CLI\Commands\CreateRunCommands;
 use QIT_CLI\Commands\DevModeCommand;
-use QIT_CLI\Commands\Encrypt\ChangeEncryptionKeyCommand;
 use QIT_CLI\Commands\Encrypt\DisableEncryptionCommand;
 use QIT_CLI\Commands\Encrypt\EnableEncryptionCommand;
 use QIT_CLI\Commands\Environment\AddEnvironment;
@@ -15,6 +14,7 @@ use QIT_CLI\Commands\ListCommand;
 use QIT_CLI\Commands\Partner\AddPartner;
 use QIT_CLI\Commands\Partner\RemovePartner;
 use QIT_CLI\Commands\Partner\SwitchPartner;
+use QIT_CLI\Commands\SetProxyCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Cache;
 use QIT_CLI\Config;
@@ -88,7 +88,11 @@ try {
 	App::setVar( 'offline_mode', true );
 
 	$application->add( $container->make( DevModeCommand::class ) );
-	$application->add( $container->make( AddEnvironment::class ) );
+
+	if ( Config::is_development_mode() ) {
+		$application->add( $container->make( AddEnvironment::class ) );
+		$application->add( $container->make( SetProxyCommand::class ) );
+	}
 
 	$application->add( $container->make( EnableEncryptionCommand::class ) );
 	$application->add( $container->make( DisableEncryptionCommand::class ) );
@@ -126,6 +130,7 @@ if ( count( $env->get_configured_environments( true ) ) > 1 ) {
 // Dev commands.
 if ( Config::is_development_mode() ) {
 	$application->add( $container->make( AddEnvironment::class ) );
+	$application->add( $container->make( SetProxyCommand::class ) );
 
 	// Only show options to remove and see the current environment if there's at least one environment added.
 	if ( count( $env->get_configured_environments( false ) ) > 0 ) {

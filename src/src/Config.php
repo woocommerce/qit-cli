@@ -14,6 +14,7 @@ class Config {
 		'current_environment' => 'default',
 		'encryption'          => false,
 		'development_mode'    => false,
+		'proxy_url'           => '127.0.0.1:8080',
 	];
 
 	protected $did_init = false;
@@ -53,6 +54,14 @@ class Config {
 
 	public static function is_encryption_enabled(): bool {
 		return (bool) App::make( Config::class )->get( 'encryption' );
+	}
+
+	public static function set_proxy_url( string $proxy_url ): void {
+		App::make( Config::class )->set( 'proxy_url', $proxy_url );
+	}
+
+	public static function get_proxy_url(): string {
+		return (bool) App::make( Config::class )->get( 'proxy_url' ) ?: '127.0.0.1:8080';
 	}
 
 	protected function set( string $key, $value ) {

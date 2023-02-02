@@ -112,10 +112,16 @@ class RequestBuilder implements \JsonSerializable {
 
 		$this->post_body['client'] = 'qit_cli';
 
+		$proxied = false;
+
 		if ( ! is_null( App::make( Auth::class )->get_cd_secret() ) ) {
 			$this->post_body['cd_secret']         = App::make( Auth::class )->get_cd_secret();
-			$curl_parameters[ CURLOPT_PROXY ]     = '127.0.0.1:8080';
-			$curl_parameters[ CURLOPT_PROXYTYPE ] = CURLPROXY_SOCKS5;
+			// Connections using the CD_SECRET that are not local must go through Automattic Proxy.
+			if ( strpos( $this->url, '.loc' ) === false ) {
+				$proxied = true;
+				$curl_parameters[ CURLOPT_PROXY ]     = Config::get_proxy_url();
+				$curl_parameters[ CURLOPT_PROXYTYPE ] = CURLPROXY_SOCKS5;
+			}
 		} elseif ( ! is_null( App::make( Auth::class )->get_app_pass() ) ) {
 			$this->post_body['partner_app_pass'] = App::make( Auth::class )->get_app_pass();
 		}
@@ -143,6 +149,9 @@ class RequestBuilder implements \JsonSerializable {
 		$response_status_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
 
 		if ( ! in_array( $response_status_code, $this->expected_status_codes, true ) ) {
+			if ( $proxied && $result === false ) {
+				$result = sprintf( 'Is the Automattic Proxy running and accessible through %s?', Config::get_proxy_url() );
+			}
 			throw new NetworkErrorException(
 				sprintf(
 					'Expected return status code(s): %s. Got return status code: %s. Error message: %s',
