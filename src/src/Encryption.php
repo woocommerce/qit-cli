@@ -23,16 +23,16 @@ class Encryption {
 	}
 
 	public function disable_encryption() {
+		Config::set_encryption( false );
 		App::make(Environment::class)->delete_all_environments();
 		$this->delete_keys();
-		Config::set_encryption( false );
 	}
 
 	public function enable_encryption( string $password ) {
 		try {
 			$this->generate_key( $password );
 
-			$this->encryption_disabled = false;
+			Config::set_encryption( true );
 
 			foreach ( App::make( Environment::class )->get_configured_environments( false ) as $env_file_path ) {
 				$written = file_put_contents( $env_file_path, $this->encrypt( file_get_contents( $env_file_path ) ) );
@@ -41,8 +41,6 @@ class Encryption {
 					throw new \RuntimeException( 'Could not write env file.' );
 				}
 			}
-
-			Config::set_encryption( true );
 		} catch ( \Exception $e ) {
 			$this->disable_encryption();
 			throw new \RuntimeException( 'Could not enable encryption.' );
@@ -116,8 +114,7 @@ class Encryption {
 	}
 
 	public function decrypt( string $cipher_text ): string {
-		// Early bail: Encryption is disabled. Return the plain text as is, unless we are in Unit Tests.
-		if ( ! Config::is_encryption_enabled() && ! defined( 'UNIT_TESTS' ) ) {
+		if ( ! Config::is_encryption_enabled() ) {
 			return $cipher_text;
 		}
 

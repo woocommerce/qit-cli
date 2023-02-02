@@ -3,11 +3,7 @@
 namespace QIT_CLI_Tests;
 
 use QIT_CLI\App;
-use QIT_CLI\Commands\Encrypt\ChangeEncryptionKeyCommand;
-use QIT_CLI\Commands\Encrypt\DisableEncryptionCommand;
-use QIT_CLI\Commands\Encrypt\EnableEncryptionCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
-use QIT_CLI\Config;
 use QIT_CLI\Encryption;
 use QIT_CLI\Environment;
 
@@ -20,35 +16,8 @@ class EncryptionTest extends QITTestCase {
 		parent::setUp();
 	}
 
-	public function test_encrypted_by_default() {
+	public function test_plain_text_by_default() {
 		$application_tester = $this->make_application_tester();
-
-		// Get Woo Extensions.
-		$application_tester->run( [
-			'command'   => WooExtensionsCommand::getDefaultName(),
-			'--refresh' => true,
-		], [ 'capture_stderr_separately' => true ] );
-
-		// Assert Cache file is encrypted.
-		$encrypted_config = file_get_contents( Config::get_qit_dir() . '/.env-tests' );
-
-		$encryption       = App::make( Encryption::class );
-		$decrypted_config = $encryption->decrypt( $encrypted_config );
-		$json             = json_decode( $decrypted_config, true );
-
-		$this->assertIsArray( $json );
-		$this->assertCommandIsSuccessful( $application_tester );
-	}
-
-	public function test_can_disable_encryption_from_beginning() {
-		$application_tester = $this->make_application_tester();
-
-		// Disable Encryption.
-		$application_tester->run( [
-			'command' => DisableEncryptionCommand::getDefaultName(),
-			'--force' => true,
-			'--key'   => Encryption::get_default_password()
-		], [ 'capture_stderr_separately' => true ] );
 
 		// Get Woo Extensions.
 		$application_tester->run( [
@@ -57,34 +26,7 @@ class EncryptionTest extends QITTestCase {
 		], [ 'capture_stderr_separately' => true ] );
 
 		// Assert Cache file is plain text.
-		$decrypted_config = file_get_contents( Config::get_qit_dir() . '/.env-tests' );
-		$json             = json_decode( $decrypted_config, true );
-
-		$this->assertIsArray( $json );
-		$this->assertCommandIsSuccessful( $application_tester );
-	}
-
-	public function test_can_disable_encryption_afterwards() {
-		$application_tester = $this->make_application_tester();
-
-		// Get Woo Extensions.
-		$application_tester->run( [
-			'command'   => WooExtensionsCommand::getDefaultName(),
-			'--refresh' => true,
-		], [ 'capture_stderr_separately' => true ] );
-
-		$encrypted_config = file_get_contents( Config::get_qit_dir() . '/.env-tests' );
-		$this->assertIsArray( json_decode( $this->encryption->decrypt( $encrypted_config ), true ) );
-
-		// Disable Encryption.
-		$application_tester->run( [
-			'command' => DisableEncryptionCommand::getDefaultName(),
-			'--force' => true
-		], [ 'capture_stderr_separately' => true ] );
-
-		// Assert Cache file is plain text.
-		$decrypted_config = file_get_contents( Config::get_qit_dir() . '/.env-tests' );
-		$json             = json_decode( $decrypted_config, true );
+		$json = json_decode( file_get_contents( App::make( Environment::class )->get_cache()->get_cache_file_path() ), true );
 
 		$this->assertIsArray( $json );
 		$this->assertCommandIsSuccessful( $application_tester );
@@ -93,38 +35,25 @@ class EncryptionTest extends QITTestCase {
 	public function test_can_enable_encryption() {
 		$application_tester = $this->make_application_tester();
 
+		$this->encryption->enable_encryption( '123' );
+
 		// Get Woo Extensions.
 		$application_tester->run( [
 			'command'   => WooExtensionsCommand::getDefaultName(),
 			'--refresh' => true,
 		], [ 'capture_stderr_separately' => true ] );
 
-		$encrypted_config = file_get_contents( Config::get_qit_dir() . '/.env-tests' );
-		$this->assertIsArray( json_decode( $this->encryption->decrypt( $encrypted_config ), true ) );
+		$encrypted_config = file_get_contents( App::make( Environment::class )->get_cache()->get_cache_file_path(), true );
+		$this->assertNull( json_decode( $encrypted_config, true ) );
 
-		// Disable Encryption.
-		$application_tester->run( [
-			'command' => DisableEncryptionCommand::getDefaultName(),
-			'--force' => true
-		], [ 'capture_stderr_separately' => true ] );
-
-		$decrypted_config = file_get_contents( Config::get_qit_dir() . '/.env-tests' );
-		$json             = json_decode( $decrypted_config, true );
-
-		// Enable Encryption.
-		$application_tester->run( [
-			'command' => EnableEncryptionCommand::getDefaultName(),
-		], [ 'capture_stderr_separately' => true ] );
-
-		$encrypted_config = file_get_contents( Config::get_qit_dir() . '/.env-tests' );
-		$this->assertIsArray( json_decode( $this->encryption->decrypt( $encrypted_config ), true ) );
-
-		$this->assertIsArray( $json );
-		$this->assertCommandIsSuccessful( $application_tester );
+		$decrypted_config = $this->encryption->decrypt( $encrypted_config );
+		$this->assertIsArray( json_decode( $decrypted_config, true ) );
 	}
 
-	public function test_can_change_encryption() {
+	public function test_can_disable_encryption() {
 		$application_tester = $this->make_application_tester();
+
+		$this->encryption->enable_encryption( '123' );
 
 		// Get Woo Extensions.
 		$application_tester->run( [
@@ -132,22 +61,14 @@ class EncryptionTest extends QITTestCase {
 			'--refresh' => true,
 		], [ 'capture_stderr_separately' => true ] );
 
-		$encrypted_config = file_get_contents( Config::get_qit_dir() . '/.env-tests' );
-		$this->assertIsArray( json_decode( $this->encryption->decrypt( $encrypted_config ), true ) );
+		$encrypted_config = file_get_contents( App::make( Environment::class )->get_cache()->get_cache_file_path(), true );
+		$this->assertNull( json_decode( $encrypted_config, true ) );
 
-		// Change encryption key.
-		$application_tester->run( [
-			'command' => ChangeEncryptionKeyCommand::getDefaultName(),
-			'--old-key' => Encryption::get_default_password(),
-			'--new-key' => '123'
-		], [
-			'capture_stderr_separately' => true,
-			'interactive'               => true,
-		] );
+		$decrypted_config = $this->encryption->decrypt( $encrypted_config );
+		$this->assertIsArray( json_decode( $decrypted_config, true ) );
 
-		$encrypted_config = file_get_contents( Config::get_qit_dir() . '/.env-tests' );
-		$this->assertIsArray( json_decode( $this->encryption->decrypt( $encrypted_config ), true ) );
+		$this->encryption->disable_encryption();
 
-		$this->assertCommandIsSuccessful( $application_tester );
+		$this->assertEmpty( App::make( Environment::class )->get_configured_environments() );
 	}
 }

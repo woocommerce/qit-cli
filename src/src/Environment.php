@@ -21,7 +21,6 @@ class Environment {
 
 	public function __construct( Cache $cache ) {
 		$this->cache = $cache;
-		$this->cache->set_environment( Config::get_current_environment() );
 	}
 
 	public function is_allowed_environment( string $environment ): bool {
@@ -37,25 +36,27 @@ class Environment {
 			throw new \InvalidArgumentException( 'Invalid environment.' );
 		}
 
-		if ( file_exists( $this->cache->get_cache_file_path() ) ) {
-			$unlinked = unlink( $this->cache->get_cache_file_path() );
+		$new_environment_file = $this->cache->make_cache_path_for_environment( $environment );
+
+		if ( file_exists( $new_environment_file ) ) {
+			$unlinked = unlink( $new_environment_file );
 
 			if ( ! $unlinked ) {
-				throw new \RuntimeException( 'Could not delete environment file to override with new value. Please check that PHP has write permission to file: ' . $this->cache->get_cache_file_path() );
+				throw new \RuntimeException( 'Could not delete environment file to override with new value. Please check that PHP has write permission to file: ' . $new_environment_file );
 			}
 		}
 
-		$written = touch( $this->cache->get_cache_file_path() );
+		$written = file_put_contents( $new_environment_file, json_encode( [] ) );
 
 		if ( ! $written ) {
-			throw new \RuntimeException( 'Could not create environment file. Please check that PHP has write permission to file: ' . $this->cache->get_cache_file_path() );
+			throw new \RuntimeException( 'Could not create environment file. Please check that PHP has write permission to file: ' . $new_environment_file );
 		}
 
 		/*
 		 * Make sure the file has the correct permissions. (0600)
 		 * Try to set it, warn if cannot.
 		 */
-		if ( decoct( fileperms( $this->cache->get_cache_file_path() ) & 0777 ) !== '600' && ! chmod( $this->cache->get_cache_file_path(), 0600 ) && ! App::getVar( "WARNED_ENV_PERMISSION_$environment", false ) ) {
+		if ( decoct( fileperms( $new_environment_file ) & 0777 ) !== '600' && ! chmod( $new_environment_file, 0600 ) && ! App::getVar( "WARNED_ENV_PERMISSION_$environment", false ) ) {
 			App::make( Output::class )->writeln(
 				sprintf(
 					'<warning>Warning: Could not set permissions on environment file. Please check that PHP has write permission to file: %s</warning>',
@@ -85,11 +86,12 @@ class Environment {
 			throw new \InvalidArgumentException( 'Invalid environment.' );
 		}
 
-		if ( ! file_exists( $this->cache->get_cache_file_path() ) ) {
+		if ( ! file_exists( $this->cache->make_cache_path_for_environment( $environment ) ) ) {
 			throw new \RuntimeException( "Cannot switch to environment '$environment', as it has not been configured yet." );
 		}
 
 		Config::set_current_environment( $environment );
+		$this->cache = App::make( Cache::class );
 	}
 
 	public function environment_exists( string $environment ): bool {
@@ -97,61 +99,63 @@ class Environment {
 			throw new \InvalidArgumentException( "The environment $environment is not allowed." );
 		}
 
-		return file_exists( $this->cache->get_cache_file_path() );
+		return file_exists( $this->cache->make_cache_path_for_environment( $environment ) );
 	}
 
-	/**
-	 * @return string The file path of the current QIT CLI cache file.
-	 */
-	public function get_cache_filepath(): string {
-		// Eg: /home/foo/.woo-qit-cli/.env-partner-foo.
-		return $this->make_cache_filepath( Config::get_current_environment() );
-	}
-
-	private function make_cache_filepath( string $environment ): string {
-		return Config::get_qit_dir() . ".env-$environment";
+	public function get_cache() {
+		return $this->cache;
 	}
 
 	/**
 	 * @return array<string> The list of Partners configured.
 	 */
-	public function get_configured_environments( bool $partners_only ): array {
+	public function get_configured_environments( bool $partners_only = false ): array {
 		if ( ! file_exists( Config::get_qit_dir() ) ) {
 			return [];
 		}
 
-		$partners = [];
+		$environments = [];
 
-		$files = scandir( Config::get_qit_dir() );
+		$files = new \DirectoryIterator( Config::get_qit_dir() );
 
-		if ( ! is_array( $files ) ) {
-			return [];
-		}
-
-		foreach ( $files as $f ) {
+		while ( $files->valid() ) {
+			$f = $files->current();
 			// Skip. Not an environment file.
-			if ( strpos( $f, '.env' ) !== 0 ) {
+			if ( strpos( $f->getBasename(), '.env' ) !== 0 ) {
+				$files->next();
 				continue;
 			}
 
 			if ( $partners_only ) {
-				if ( strpos( $f, '.env-partner-' ) === 0 ) {
-					$partners[] = str_replace( '.env-partner-', '', $f );
+				if ( strpos( $f->getBasename(), '.env-partner-' ) === 0 ) {
+					$environments[] = $f->getPathname();
 				}
 			} else {
 				// Do not include the "default" environment as a configured environment.
-				if ( $f === '.env-default' ) {
+				if ( $f->getBasename() === '.env-default' ) {
+					$files->next();
 					continue;
 				}
-				$partners[] = str_replace( '.env-', '', $f );
+				$environments[] = $f->getPathname();
 			}
+			$files->next();
 		}
 
-		return $partners;
+		return $environments;
+	}
+
+	public function get_configured_environment_names( bool $partners_only = false ) {
+		$environments = $this->get_configured_environments( $partners_only );
+		foreach ( $environments as &$e ) {
+			$e = str_replace( '.env-partner-', '', $e );
+			$e = str_replace( '.env-', '', $e );
+		}
+
+		return $environments;
 	}
 
 	public function delete_all_environments() {
-		foreach ( $this->get_configured_environments( true ) as $file ) {
+		foreach ( $this->get_configured_environments() as $file ) {
 			if ( ! unlink( $file ) ) {
 				throw new \RuntimeException( 'Could not delete environment file. Please check that PHP has write permission to file: ' . $file );
 			}
@@ -175,7 +179,7 @@ class Environment {
 			throw new \RuntimeException( "Environment '$environment' does not exist/is not configured yet." );
 		}
 
-		$unlinked = unlink( $this->cache->get_cache_file_path() );
+		$unlinked = unlink( $this->cache->make_cache_path_for_environment( $environment ) );
 
 		if ( ! $unlinked ) {
 			throw new \RuntimeException( sprintf( 'Could not remove environment "%s". Please delete the cache file manually: %s', $environment, $this->cache->get_cache_file_path() ) );

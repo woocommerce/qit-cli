@@ -11,7 +11,7 @@ class Config {
 	protected $config = [];
 
 	protected $schema = [
-		'current_environment' => '',
+		'current_environment' => 'default',
 		'encryption'          => false,
 		'development_mode'    => false,
 	];
@@ -44,7 +44,7 @@ class Config {
 	}
 
 	public static function get_current_environment(): string {
-		return (string) App::make( Config::class )->get( 'current_environment' );
+		return (string) App::make( Config::class )->get( 'current_environment' ) ?: 'default';
 	}
 
 	public static function set_encryption( bool $encryption ): void {

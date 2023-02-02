@@ -36,7 +36,7 @@ class SwitchEnvironment extends Command {
 			return Command::SUCCESS;
 		}
 
-		$environments = $this->environment->get_configured_environments( false );
+		$environments = $this->environment->get_configured_environment_names( false, true );
 
 		if ( empty( $environments ) ) {
 			$output->writeln( '<info>No environments configured.</info>' );

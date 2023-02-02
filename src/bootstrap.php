@@ -68,7 +68,6 @@ $container->singleton( Output::class, function () {
 
 $container->singleton( ManagerSync::class );
 $container->singleton( Encryption::class );
-$container->singleton( Cache::class );
 $container->singleton( Config::class );
 $container->singleton( Environment::class );
 

@@ -3,7 +3,6 @@
 namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\Auth;
-use QIT_CLI\Cache;
 use QIT_CLI\Environment;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
@@ -17,9 +16,6 @@ use Symfony\Component\Console\Question\Question;
 class AddEnvironment extends Command {
 	protected static $defaultName = 'env:add'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Cache $cache */
-	protected $cache;
-
 	/** @var Auth $auth */
 	protected $auth;
 
@@ -29,8 +25,7 @@ class AddEnvironment extends Command {
 	/** @var Environment $environment */
 	protected $environment;
 
-	public function __construct( Cache $cache, Environment $environment, Auth $auth, WooExtensionsList $woo_extensions_list ) {
-		$this->cache              = $cache;
+	public function __construct( Environment $environment, Auth $auth, WooExtensionsList $woo_extensions_list ) {
 		$this->environment         = $environment;
 		$this->auth                = $auth;
 		$this->woo_extensions_list = $woo_extensions_list;
@@ -120,14 +115,14 @@ class AddEnvironment extends Command {
 		}
 
 		$this->auth->set_cd_secret( $qit_secret );
-		$this->cache->set_cache( 'manager_url', $manager_url, - 1 );
+		$this->environment->get_cache()->set( 'manager_url', $manager_url, - 1 );
 
 		$output->writeln( "Validating your QIT Secret against $manager_url..." );
 		try {
 			$this->woo_extensions_list->fetch_woo_extensions_available();
 		} catch ( \Exception $e ) {
 			$this->auth->delete_cd_secret();
-			$this->cache->delete_cache( 'manager_url' );
+			$this->environment->get_cache()->delete( 'manager_url' );
 			$output->writeln( sprintf( '<error>We could not authenticate to %s using the provided QIT Secret.</error>', escapeshellarg( $manager_url ) ) );
 			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 

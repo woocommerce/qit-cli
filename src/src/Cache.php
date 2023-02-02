@@ -15,13 +15,17 @@ class Cache {
 
 	protected $cache_file_path;
 
-	public function set_environment( string $environment ) {
-		$this->cache_file_path = Config::get_qit_dir() . ".env-$environment";
+	public function __construct() {
+		$this->cache_file_path = $this->make_cache_path_for_environment( Config::get_current_environment() );
 		$this->init_cache();
 	}
 
 	public function get_cache_file_path() {
 		return $this->cache_file_path;
+	}
+
+	public function make_cache_path_for_environment( string $environment ) {
+		return Config::get_qit_dir() . ".env-$environment.json";
 	}
 
 	/**
@@ -31,7 +35,11 @@ class Cache {
 	 *
 	 * @return void
 	 */
-	public function set_cache( string $key, $value, int $expire ): void {
+	public function set( string $key, $value, int $expire ): void {
+		if ( ! $this->did_init ) {
+			throw new \LogicException( 'Cache not initialized.' );
+		}
+
 		if ( $expire !== - 1 ) {
 			$expire = time() + $expire;
 		}
@@ -52,7 +60,7 @@ class Cache {
 	 *
 	 * @return mixed|null Whatever is in the cache, either a scalar or an array of scalars or array of arrays of scalars. Null if cache not found.
 	 */
-	public function get_cache( string $key, bool $ignore_expiration = false ) {
+	public function get( string $key, bool $ignore_expiration = false ) {
 		// Delete expired caches.
 		$deleted = 0;
 		foreach ( $this->cache as $k => $c ) {
@@ -87,7 +95,7 @@ class Cache {
 	 *
 	 * @return void
 	 */
-	public function delete_cache( string $key ) {
+	public function delete( string $key ) {
 		unset( $this->cache[ $key ] );
 		$this->save();
 	}
@@ -98,10 +106,6 @@ class Cache {
 	 * @throws \RuntimeException When could not read the cache file.
 	 */
 	protected function init_cache(): void {
-		if ( $this->did_init ) {
-			throw new \LogicException( 'Cache already initialized.' );
-		}
-
 		$this->did_init = true;
 
 		if ( ! file_exists( $this->cache_file_path ) ) {
@@ -178,7 +182,7 @@ class Cache {
 	 *
 	 */
 	public function get_manager_sync_data( string $key ) {
-		$manager_data = $this->get_cache( App::make( ManagerSync::class )->sync_cache_key );
+		$manager_data = $this->get( App::make( ManagerSync::class )->sync_cache_key );
 
 		if ( ! is_array( $manager_data ) ) {
 			throw new \UnexpectedValueException( 'The manager sync data is not an array.' );

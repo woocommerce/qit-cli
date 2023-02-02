@@ -2,7 +2,6 @@
 
 namespace QIT_CLI\Commands;
 
-use QIT_CLI\Cache;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -13,14 +12,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 class WooExtensionsCommand extends Command {
 	protected static $defaultName = 'extensions'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Cache $cache */
-	protected $cache;
-
 	/** @var WooExtensionsList $woo_extensions_list */
 	protected $woo_extensions_list;
 
-	public function __construct( Cache $cache, WooExtensionsList $woo_extensions_list ) {
-		$this->cache              = $cache;
+	public function __construct( WooExtensionsList $woo_extensions_list ) {
 		$this->woo_extensions_list = $woo_extensions_list;
 		parent::__construct();
 	}

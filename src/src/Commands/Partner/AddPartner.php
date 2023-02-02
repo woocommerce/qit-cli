@@ -3,7 +3,6 @@
 namespace QIT_CLI\Commands\Partner;
 
 use QIT_CLI\Auth;
-use QIT_CLI\Cache;
 use QIT_CLI\Environment;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
@@ -18,9 +17,6 @@ use function QIT_CLI\validate_authentication;
 class AddPartner extends Command {
 	protected static $defaultName = 'partner:add'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Cache $cache */
-	protected $cache;
-
 	/** @var Auth $auth */
 	protected $auth;
 
@@ -30,8 +26,7 @@ class AddPartner extends Command {
 	/** @var Environment $environment */
 	protected $environment;
 
-	public function __construct( Cache $cache, Environment $environment, Auth $auth, WooExtensionsList $woo_extensions_list ) {
-		$this->cache              = $cache;
+	public function __construct( Environment $environment, Auth $auth, WooExtensionsList $woo_extensions_list ) {
 		$this->environment         = $environment;
 		$this->auth                = $auth;
 		$this->woo_extensions_list = $woo_extensions_list;
@@ -129,7 +124,7 @@ TEXT;
 		$this->auth->set_auth_app_pass( $user, $application_password );
 		$this->woo_extensions_list->fetch_woo_extensions_available();
 
-		$output->writeln( sprintf( "Cache file written to: %s. Keep this file safe, as it contains your Application Password.\n", $this->environment->get_cache_filepath() ) );
+		$output->writeln( sprintf( "Cache file written to: %s. Keep this file safe, as it contains your Application Password.\n", $this->environment->get_cache()->get_cache_file_path() ) );
 		$output->writeln( "Treat this file as you would treat your SSH keys. For more tips on hardening security, check the README of the QIT CLI.\n" );
 		$output->writeln( '<fg=green>Initialization complete! You can now start using the QIT CLI!</>' );
 
