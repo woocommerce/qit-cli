@@ -110,9 +110,11 @@ class Environment {
 	}
 
 	/**
+	 * @param bool $partners_only
+	 *
 	 * @return array<string> The list of Partners configured.
 	 */
-	public function get_configured_environments( bool $partners_only = false ): array {
+	public static function get_configured_environments( bool $partners_only = false ): array {
 		if ( ! file_exists( Config::get_qit_dir() ) ) {
 			return [];
 		}
@@ -148,21 +150,13 @@ class Environment {
 	}
 
 	public function get_configured_environment_names( bool $partners_only = false ) {
-		$environments = $this->get_configured_environments( $partners_only );
+		$environments = Environment::get_configured_environments( $partners_only );
 		foreach ( $environments as &$e ) {
 			$e = str_replace( '.env-partner-', '', $e );
 			$e = str_replace( '.env-', '', $e );
 		}
 
 		return $environments;
-	}
-
-	public function delete_all_environments() {
-		foreach ( $this->get_configured_environments() as $file ) {
-			if ( ! unlink( $file ) ) {
-				throw new \RuntimeException( 'Could not delete environment file. Please check that PHP has write permission to file: ' . $file );
-			}
-		}
 	}
 
 	/**
@@ -190,7 +184,7 @@ class Environment {
 
 		// Are we deleting the environment we are currently in?
 		if ( Config::get_current_environment() === $environment ) {
-			$other_environments = $this->get_configured_environments( false );
+			$other_environments = Environment::get_configured_environments( false );
 			// Switch to next available environment, if it exists.
 			if ( ! empty( $other_environments ) ) {
 				$next_environment = array_shift( $other_environments );

@@ -76,9 +76,11 @@ $application->configureIO( $container->make( Input::class ), $container->make( O
 // Detect whether this is a "_completion" command that runs on the background in Bash. If so, no remote requests will be made.
 $container->setVar( 'doing_autocompletion', stripos( (string) $container->make( Input::class ), '_completion' ) !== false );
 
-// If we are trying to disable encryption in this request, disable it early.
+// Run request to disable encryption in isolation.
 if ( App::make( Input::class )->getFirstArgument() === DisableEncryptionCommand::getDefaultName() ) {
 	Config::set_encryption( false );
+	$application->add( $container->make( DisableEncryptionCommand::class ) );
+	exit( $application->run() );
 }
 
 try {
@@ -123,12 +125,12 @@ $application->add( $container->make( DevModeCommand::class ) );
 $application->add( $container->make( AddPartner::class ) );
 
 // Only show option to Remove Partner if there are Partners to remove.
-if ( count( $env->get_configured_environments( true ) ) > 0 ) {
+if ( count( Environment::get_configured_environments( true ) ) > 0 ) {
 	$application->add( $container->make( RemovePartner::class ) );
 }
 
 // Only show option to Switch to another partner if there are more than one Partner.
-if ( count( $env->get_configured_environments( true ) ) > 1 ) {
+if ( count( Environment::get_configured_environments( true ) ) > 1 ) {
 	$application->add( $container->make( SwitchPartner::class ) );
 }
 
@@ -138,13 +140,13 @@ if ( Config::is_development_mode() ) {
 	$application->add( $container->make( SetProxyCommand::class ) );
 
 	// Only show options to remove and see the current environment if there's at least one environment added.
-	if ( count( $env->get_configured_environments( false ) ) > 0 ) {
+	if ( count( Environment::get_configured_environments( false ) ) > 0 ) {
 		$application->add( $container->make( RemoveEnvironment::class ) );
 		$application->add( $container->make( CurrentEnvironment::class ) );
 	}
 
 	// Only show option to Switch to another environment if there are more than one environment.
-	if ( count( $env->get_configured_environments( false ) ) > 1 ) {
+	if ( count( Environment::get_configured_environments( false ) ) > 1 ) {
 		$application->add( $container->make( SwitchEnvironment::class ) );
 	}
 }

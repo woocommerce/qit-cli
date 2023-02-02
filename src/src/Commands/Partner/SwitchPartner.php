@@ -36,7 +36,7 @@ class SwitchPartner extends Command {
 			return Command::SUCCESS;
 		}
 
-		$environments = $this->environment->get_configured_environments( true );
+		$environments = Environment::get_configured_environments( true );
 
 		if ( empty( $environments ) ) {
 			$output->writeln( '<info>No Partners configured.</info>' );

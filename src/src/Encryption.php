@@ -20,19 +20,12 @@ class Encryption {
 		$this->ssh_keys_dir = Config::get_qit_dir();
 	}
 
-	public function disable_encryption() {
-		Config::set_encryption( false );
-		App::make(Environment::class)->delete_all_environments();
-		$this->delete_keys();
-	}
-
 	public function enable_encryption( string $password ) {
 		try {
 			$this->generate_key( $password );
-
 			Config::set_encryption( true );
 
-			foreach ( App::make( Environment::class )->get_configured_environments( false ) as $env_file_path ) {
+			foreach ( Environment::get_configured_environments() as $env_file_path ) {
 				$written = file_put_contents( $env_file_path, $this->encrypt( file_get_contents( $env_file_path ) ) );
 
 				if ( $written === false ) {
@@ -40,18 +33,27 @@ class Encryption {
 				}
 			}
 		} catch ( \Exception $e ) {
-			$this->disable_encryption();
+			Config::set_encryption( false );
+			static::delete_keys();
 			throw new \RuntimeException( 'Could not enable encryption.' );
 		}
 	}
 
-	protected function delete_keys() {
-		if ( file_exists( $this->ssh_keys_dir . '/private.key' ) ) {
-			unlink( $this->ssh_keys_dir . '/private.key' );
+	public static function delete_keys() {
+		Config::set_encryption( false );
+		$private_key_path = Config::get_qit_dir() . '/private.key';
+		$public_key_path  = Config::get_qit_dir() . '/public.key';
+
+		if ( file_exists( $private_key_path ) ) {
+			if ( ! unlink( $private_key_path ) ) {
+				throw new \RuntimeException( "Could not delete file: $private_key_path" );
+			}
 		}
 
-		if ( file_exists( $this->ssh_keys_dir . '/public.key' ) ) {
-			unlink( $this->ssh_keys_dir . '/public.key' );
+		if ( file_exists( $public_key_path ) ) {
+			if ( ! unlink( $public_key_path ) ) {
+				throw new \RuntimeException( "Could not delete file: $public_key_path" );
+			}
 		}
 	}
 
@@ -156,7 +158,6 @@ class Encryption {
 		if ( empty( trim( $password ) ) ) {
 			return null;
 		}
-
 
 
 		return trim( $password );

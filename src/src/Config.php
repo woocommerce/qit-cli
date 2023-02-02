@@ -15,6 +15,7 @@ class Config {
 		'encryption'          => false,
 		'development_mode'    => false,
 		'proxy_url'           => '127.0.0.1:8080',
+		'last_diagnosis'      => 0,
 	];
 
 	protected $did_init = false;
@@ -61,7 +62,15 @@ class Config {
 	}
 
 	public static function get_proxy_url(): string {
-		return (bool) App::make( Config::class )->get( 'proxy_url' ) ?: '127.0.0.1:8080';
+		return (string) App::make( Config::class )->get( 'proxy_url' ) ?: '127.0.0.1:8080';
+	}
+
+	public static function set_last_diagnosis( int $last_diagnosis ): void {
+		App::make( Config::class )->set( 'last_diagnosis', $last_diagnosis );
+	}
+
+	public static function get_last_diagnosis(): int {
+		return (int) App::make( Config::class )->get( 'last_diagnosis' ) ?: 0;
 	}
 
 	protected function set( string $key, $value ) {

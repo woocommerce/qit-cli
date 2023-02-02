@@ -6,6 +6,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class Diagnosis {
 	public function run( OutputInterface $output ): void {
+		// Only run this every 5 minutes if we can't connect to the Manager.
+		if ( time() - Config::get_last_diagnosis() < 60 * 5 ) {
+			return;
+		} else {
+			Config::set_last_diagnosis( time() );
+		}
+
 		$connection_to_internet = false;
 		$connection_to_manager  = false;
 

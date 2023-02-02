@@ -3,6 +3,7 @@
 namespace QIT_CLI_Tests;
 
 use QIT_CLI\App;
+use QIT_CLI\Commands\Encrypt\DisableEncryptionCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Encryption;
 use QIT_CLI\Environment;
@@ -67,8 +68,12 @@ class EncryptionTest extends QITTestCase {
 		$decrypted_config = $this->encryption->decrypt( $encrypted_config );
 		$this->assertIsArray( json_decode( $decrypted_config, true ) );
 
-		$this->encryption->disable_encryption();
+		// Disable encryption.
+		$application_tester->run( [
+			'command'   => DisableEncryptionCommand::getDefaultName(),
+			'--force' => true,
+		], [ 'capture_stderr_separately' => true ] );
 
-		$this->assertEmpty( App::make( Environment::class )->get_configured_environments() );
+		$this->assertEmpty( Environment::get_configured_environments() );
 	}
 }
