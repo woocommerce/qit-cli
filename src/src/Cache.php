@@ -11,8 +11,10 @@ class Cache {
 	/** @var Environment $environment */
 	protected $environment;
 
+	/** @var bool */
 	protected $did_init = false;
 
+	/** @var string */
 	protected $cache_file_path;
 
 	public function __construct() {
@@ -20,11 +22,11 @@ class Cache {
 		$this->init_cache();
 	}
 
-	public function get_cache_file_path() {
+	public function get_cache_file_path(): string {
 		return $this->cache_file_path;
 	}
 
-	public function make_cache_path_for_environment( string $environment ) {
+	public function make_cache_path_for_environment( string $environment ): string {
 		return Config::get_qit_dir() . ".env-$environment.json";
 	}
 

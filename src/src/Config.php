@@ -6,10 +6,13 @@ use QIT_CLI\Exceptions\IOException;
 use QIT_CLI\IO\Output;
 
 class Config {
+	/** @var string  */
 	protected $config_file;
 
+	/** @var array<scalar> */
 	protected $config = [];
 
+	/** @var array<scalar> */
 	protected $schema = [
 		'current_environment' => 'default',
 		'encryption'          => false,
@@ -18,6 +21,7 @@ class Config {
 		'last_diagnosis'      => 0,
 	];
 
+	/** @var bool */
 	protected $did_init = false;
 
 	public function __construct() {
@@ -73,7 +77,14 @@ class Config {
 		return (int) App::make( self::class )->get( 'last_diagnosis' ) ?: 0;
 	}
 
-	protected function set( string $key, $value ) {
+	/**
+	 * @param string $key
+	 * @param scalar $value
+	 *
+	 * @return void
+	 * @throws IOException When can't write to file.
+	 */
+	protected function set( string $key, $value ): void {
 		$this->config[ $key ] = $value;
 		$this->save();
 	}
@@ -100,7 +111,7 @@ class Config {
 		}
 	}
 
-	protected function init() {
+	protected function init(): void {
 		if ( $this->did_init ) {
 			return;
 		} else {

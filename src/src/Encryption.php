@@ -20,7 +20,7 @@ class Encryption {
 		$this->ssh_keys_dir = Config::get_qit_dir();
 	}
 
-	public function enable_encryption( string $password ) {
+	public function enable_encryption( string $password ): void {
 		try {
 			$this->generate_key( $password );
 			Config::set_encryption( true );
@@ -39,7 +39,7 @@ class Encryption {
 		}
 	}
 
-	public static function delete_keys() {
+	public static function delete_keys(): void {
 		Config::set_encryption( false );
 		$private_key_path = Config::get_qit_dir() . '/private.key';
 		$public_key_path  = Config::get_qit_dir() . '/public.key';
@@ -57,10 +57,10 @@ class Encryption {
 		}
 	}
 
-	public function get_decryption_password() {
+	public function get_decryption_password(): string {
 		// Early bail: Already asked for password.
 		if ( ! is_null( App::getVar( 'enc_password' ) ) ) {
-			return App::getVar( 'enc_password' );
+			return (string) App::getVar( 'enc_password' );
 		}
 
 		$password = $this->get_encryption_password_from_shared_memory();
@@ -78,7 +78,7 @@ class Encryption {
 		return $password;
 	}
 
-	public function generate_key( string $password ) {
+	public function generate_key( string $password ): void {
 		// Generate public and private key.
 		$rsa_options = new RsaOptions( [
 			'pass_phrase' => $password,
@@ -181,6 +181,8 @@ class Encryption {
 
 		$written = shmop_write( $shared_memory, str_pad( $password, 1000 ), 0 );
 
+		// PHPStan thinks this can only return int, but it can return false on failure.
+		/** @phpstan-ignore-next-line */
 		if ( $written === false ) {
 			throw EncryptionException::password_persist_exception();
 		}

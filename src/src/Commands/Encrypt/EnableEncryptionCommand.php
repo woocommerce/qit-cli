@@ -14,7 +14,10 @@ use Symfony\Component\Console\Question\Question;
 class EnableEncryptionCommand extends Command {
 	protected static $defaultName = 'encryption:enable'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
+	/** @var Encryption */
 	protected $encryption;
+
+	/** @var Environment */
 	protected $environment;
 
 	public function __construct( Encryption $encryption, Environment $environment ) {

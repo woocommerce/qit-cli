@@ -19,6 +19,7 @@ class Environment {
 	/** @var Cache The cache file of this environment. */
 	protected $cache;
 
+	/** @var Encryption */
 	protected $encryption;
 
 	public function __construct( Cache $cache, Encryption $encryption ) {
@@ -105,7 +106,7 @@ class Environment {
 		return file_exists( $this->cache->make_cache_path_for_environment( $environment ) );
 	}
 
-	public function get_cache() {
+	public function get_cache(): Cache {
 		return $this->cache;
 	}
 
@@ -149,11 +150,15 @@ class Environment {
 		return $environments;
 	}
 
-	public function get_configured_environment_names( bool $partners_only = false ) {
+	/**
+	 * @param bool $partners_only
+	 *
+	 * @return array<string> The human-friendly names of the environments configured.
+	 */
+	public function get_configured_environment_names( bool $partners_only = false ): array {
 		$environments = self::get_configured_environments( $partners_only );
 		foreach ( $environments as &$e ) {
-			$e = str_replace( '.env-partner-', '', $e );
-			$e = str_replace( '.env-', '', $e );
+			$e = str_replace( [ '.env-partner-', '.env-', '.json' ], '', $e );
 		}
 
 		return $environments;
