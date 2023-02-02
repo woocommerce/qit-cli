@@ -12,8 +12,8 @@ class Environment {
 	protected $dev_mode_file;
 
 	public function __construct() {
-		$this->current_environment_file = self::get_qit_dir() . '.current-env';
-		$this->dev_mode_file            = self::get_qit_dir() . '.dev-mode';
+		$this->current_environment_file = Config::get_qit_dir() . '.current-env';
+		$this->dev_mode_file            = Config::get_qit_dir() . '.dev-mode';
 	}
 
 	/**
@@ -108,71 +108,6 @@ class Environment {
 	}
 
 	/**
-	 * @throws \RuntimeException When it can't find the QIT CLI directory.
-	 * @return string The path to the QIT CLI directory.
-	 */
-	public static function get_qit_dir(): string {
-		$normalize_path = static function ( string $path ): string {
-			// Converts Windows-style directory separator to Unix-style. Makes sure it ends with a trailing slash.
-			return rtrim( str_replace( '\\', '/', $path ), '/\\' ) . '/';
-		};
-
-		// Windows alternative.
-		if ( ! empty( getenv( 'QIT_CLI_CONFIG_DIR' ) ) ) {
-			if ( ! file_exists( getenv( 'QIT_CLI_CONFIG_DIR' ) ) ) {
-				throw new \RuntimeException( sprintf( 'The QIT_CLI_CONFIG_DIR environment variable is defined, but points to a non-existing directory: %s', getenv( 'QIT_CLI_CONFIG_DIR' ) ) );
-			}
-
-			return $normalize_path( getenv( 'QIT_CLI_CONFIG_DIR' ) );
-		}
-
-		// Unix.
-		if ( isset( $_SERVER['HOME'] ) ) {
-			if ( ! file_exists( $_SERVER['HOME'] ) ) {
-				throw new \RuntimeException( sprintf( 'The HOME environment variable is defined, but points to a non-existing directory: %s', $_SERVER['HOME'] ) );
-			}
-
-			$cache_dir = $normalize_path( $_SERVER['HOME'] ) . '.woo-qit-cli/';
-
-			if ( ! file_exists( $cache_dir ) ) {
-				$dir_created = mkdir( $cache_dir );
-
-				if ( ! $dir_created ) {
-					throw new \RuntimeException( sprintf( 'Could not create the QIT CLI config directory: %s. Please try to create the directory manually. ', $cache_dir ) );
-				}
-			}
-
-			/*
-			 * Make sure the directory has the correct permissions. (0700)
-			 * Try to set it, warn if cannot.
-			 */
-			if ( decoct( fileperms( $cache_dir ) & 0777 ) !== '700' && ! chmod( $cache_dir, 0700 ) && ! App::getVar( 'WARNED_DIR_PERMISSION', false ) ) {
-				App::make( Output::class )->writeln(
-					sprintf(
-						'<info>QIT Warning: Could not set permissions on the QIT CLI config directory. Please check that PHP has write permission to file: %s</info>',
-						$cache_dir
-					)
-				);
-
-				// Show this only once per request.
-				App::setVar( 'WARNED_DIR_PERMISSION', true );
-			}
-
-			return $cache_dir;
-		}
-
-		$message = '';
-
-		if ( is_windows() ) {
-			$message .= 'The QIT CLI is meant to run on Unix environments, such as Windows WSL, Linux, or Mac. On native Windows, ';
-		}
-
-		$message .= "You need to set an environment variable 'QIT_CLI_CONFIG_DIR' pointing to a writable directory where the QIT CLI can write it's config file. Do NOT use a directory inside your plugin, as the config file will hold sensitive information that should not be included in your plugin.";
-
-		throw new \RuntimeException( $message );
-	}
-
-	/**
 	 * @return string The file path of the current QIT CLI cache file.
 	 */
 	public function get_cache_filepath(): string {
@@ -181,20 +116,20 @@ class Environment {
 	}
 
 	private function make_cache_filepath( string $environment ): string {
-		return Environment::get_qit_dir() . ".env-$environment";
+		return Config::get_qit_dir() . ".env-$environment";
 	}
 
 	/**
 	 * @return array<string> The list of Partners configured.
 	 */
 	public function get_configured_environments( bool $partners_only ): array {
-		if ( ! file_exists( Environment::get_qit_dir() ) ) {
+		if ( ! file_exists( Config::get_qit_dir() ) ) {
 			return [];
 		}
 
 		$partners = [];
 
-		$files = scandir( Environment::get_qit_dir() );
+		$files = scandir( Config::get_qit_dir() );
 
 		if ( ! is_array( $files ) ) {
 			return [];
@@ -223,13 +158,13 @@ class Environment {
 	}
 
 	public function get_environment_files() {
-		if ( ! file_exists( Environment::get_qit_dir() ) ) {
+		if ( ! file_exists( Config::get_qit_dir() ) ) {
 			return [];
 		}
 
 		$partners = [];
 
-		$files = scandir( Environment::get_qit_dir() );
+		$files = scandir( Config::get_qit_dir() );
 
 		if ( ! is_array( $files ) ) {
 			return [];
@@ -241,7 +176,7 @@ class Environment {
 				continue;
 			}
 
-			$partners[] = $this->get_qit_dir() . $f;
+			$partners[] = Config::get_qit_dir() . $f;
 		}
 
 		return $partners;

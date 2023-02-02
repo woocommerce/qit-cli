@@ -134,7 +134,7 @@ class Cache {
 		$written = file_put_contents( $this->environment->get_cache_filepath(), $data );
 
 		if ( ! $written ) {
-			throw new \RuntimeException( sprintf( "Could not write to the file %s. Please check if it's writable.", Environment::get_qit_dir() . '.woo-qit-cli' ) );
+			throw new \RuntimeException( sprintf( "Could not write to the file %s. Please check if it's writable.", Config::get_qit_dir() . '.woo-qit-cli' ) );
 		}
 	}
 
@@ -148,7 +148,7 @@ class Cache {
 		}
 
 		if ( ! is_readable( $this->environment->get_cache_filepath() ) ) {
-			throw new \RuntimeException( sprintf( 'The cache file exists but it\'s not readable: %s', Environment::get_qit_dir() . '.woo-qit-cli' ) );
+			throw new \RuntimeException( sprintf( 'The cache file exists but it\'s not readable: %s', Config::get_qit_dir() . '.woo-qit-cli' ) );
 		}
 
 		$json = json_decode( file_get_contents( $this->environment->get_cache_filepath() ), true );
