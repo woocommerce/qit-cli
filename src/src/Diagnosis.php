@@ -28,7 +28,7 @@ class Diagnosis {
 		$parsed_url = parse_url( \QIT_CLI\get_manager_url() );
 
 		if ( ! is_array( $parsed_url ) || empty( $parsed_url['host'] ) || empty( $parsed_url['scheme'] ) ) {
-			$output->writeln( 'QIT server URL seems invalid. Try resetting the environment by deleting the folder: ' . Environment::get_config_dir() );
+			$output->writeln( 'QIT server URL seems invalid. Try resetting the environment by deleting the folder: ' . Environment::get_qit_dir() );
 			return;
 		}
 

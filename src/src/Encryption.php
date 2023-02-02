@@ -20,7 +20,7 @@ class Encryption {
 	protected $encryption_disabled;
 
 	public function __construct() {
-		$this->ssh_keys_dir = Environment::get_config_dir();
+		$this->ssh_keys_dir = Environment::get_qit_dir();
 	}
 
 	protected function is_encryption_disabled( bool $recheck = false ) {

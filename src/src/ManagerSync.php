@@ -56,7 +56,7 @@ class ManagerSync {
 		} catch ( DoingAutocompleteException $e ) {
 			return;
 		} catch ( NetworkErrorException $e ) {
-			if ( $this->environment->is_development_mode() ) {
+			if ( Config::is_development_mode() ) {
 				$this->output->writeln( sprintf( '<error>[Dev Mode] Failed to contact Manager at URL %s.</error>', get_manager_url() ) );
 				$this->output->writeln( sprintf( '<comment>[Dev Mode] %s</comment>', $e->getMessage() ) );
 			}
@@ -101,7 +101,7 @@ class ManagerSync {
 
 		if ( version_compare( $current_version, $latest_version, '<' ) ) {
 			if ( $enforce_latest ) {
-				if ( ! $this->environment->is_development_mode() ) {
+				if ( ! Config::is_development_mode() ) {
 					$this->output->writeln( sprintf( '<error>You are using an outdated version of the CLI. Please update to the latest version (%s).</error>', $latest_version ) );
 					throw new UpdateRequiredException();
 				} else {

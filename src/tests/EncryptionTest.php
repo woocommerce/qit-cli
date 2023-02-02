@@ -29,7 +29,7 @@ class EncryptionTest extends QITTestCase {
 		], [ 'capture_stderr_separately' => true ] );
 
 		// Assert Cache file is encrypted.
-		$encrypted_config = file_get_contents( Environment::get_config_dir() . '/.env-tests' );
+		$encrypted_config = file_get_contents( Environment::get_qit_dir() . '/.env-tests' );
 
 		$encryption       = App::make( Encryption::class );
 		$decrypted_config = $encryption->decrypt( $encrypted_config );
@@ -56,7 +56,7 @@ class EncryptionTest extends QITTestCase {
 		], [ 'capture_stderr_separately' => true ] );
 
 		// Assert Cache file is plain text.
-		$decrypted_config = file_get_contents( Environment::get_config_dir() . '/.env-tests' );
+		$decrypted_config = file_get_contents( Environment::get_qit_dir() . '/.env-tests' );
 		$json             = json_decode( $decrypted_config, true );
 
 		$this->assertIsArray( $json );
@@ -72,7 +72,7 @@ class EncryptionTest extends QITTestCase {
 			'--refresh' => true,
 		], [ 'capture_stderr_separately' => true ] );
 
-		$encrypted_config = file_get_contents( Environment::get_config_dir() . '/.env-tests' );
+		$encrypted_config = file_get_contents( Environment::get_qit_dir() . '/.env-tests' );
 		$this->assertIsArray( json_decode( $this->encryption->decrypt( $encrypted_config ), true ) );
 
 		// Disable Encryption.
@@ -82,7 +82,7 @@ class EncryptionTest extends QITTestCase {
 		], [ 'capture_stderr_separately' => true ] );
 
 		// Assert Cache file is plain text.
-		$decrypted_config = file_get_contents( Environment::get_config_dir() . '/.env-tests' );
+		$decrypted_config = file_get_contents( Environment::get_qit_dir() . '/.env-tests' );
 		$json             = json_decode( $decrypted_config, true );
 
 		$this->assertIsArray( $json );
@@ -98,7 +98,7 @@ class EncryptionTest extends QITTestCase {
 			'--refresh' => true,
 		], [ 'capture_stderr_separately' => true ] );
 
-		$encrypted_config = file_get_contents( Environment::get_config_dir() . '/.env-tests' );
+		$encrypted_config = file_get_contents( Environment::get_qit_dir() . '/.env-tests' );
 		$this->assertIsArray( json_decode( $this->encryption->decrypt( $encrypted_config ), true ) );
 
 		// Disable Encryption.
@@ -107,7 +107,7 @@ class EncryptionTest extends QITTestCase {
 			'--force' => true
 		], [ 'capture_stderr_separately' => true ] );
 
-		$decrypted_config = file_get_contents( Environment::get_config_dir() . '/.env-tests' );
+		$decrypted_config = file_get_contents( Environment::get_qit_dir() . '/.env-tests' );
 		$json             = json_decode( $decrypted_config, true );
 
 		// Enable Encryption.
@@ -115,7 +115,7 @@ class EncryptionTest extends QITTestCase {
 			'command' => EnableEncryptionCommand::getDefaultName(),
 		], [ 'capture_stderr_separately' => true ] );
 
-		$encrypted_config = file_get_contents( Environment::get_config_dir() . '/.env-tests' );
+		$encrypted_config = file_get_contents( Environment::get_qit_dir() . '/.env-tests' );
 		$this->assertIsArray( json_decode( $this->encryption->decrypt( $encrypted_config ), true ) );
 
 		$this->assertIsArray( $json );
@@ -131,7 +131,7 @@ class EncryptionTest extends QITTestCase {
 			'--refresh' => true,
 		], [ 'capture_stderr_separately' => true ] );
 
-		$encrypted_config = file_get_contents( Environment::get_config_dir() . '/.env-tests' );
+		$encrypted_config = file_get_contents( Environment::get_qit_dir() . '/.env-tests' );
 		$this->assertIsArray( json_decode( $this->encryption->decrypt( $encrypted_config ), true ) );
 
 		// Change encryption key.
@@ -144,7 +144,7 @@ class EncryptionTest extends QITTestCase {
 			'interactive'               => true,
 		] );
 
-		$encrypted_config = file_get_contents( Environment::get_config_dir() . '/.env-tests' );
+		$encrypted_config = file_get_contents( Environment::get_qit_dir() . '/.env-tests' );
 		$this->assertIsArray( json_decode( $this->encryption->decrypt( $encrypted_config ), true ) );
 
 		$this->assertCommandIsSuccessful( $application_tester );

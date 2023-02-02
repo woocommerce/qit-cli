@@ -1,6 +1,5 @@
 <?php
 
-use lucatume\DI52\Container;
 use QIT_CLI\App;
 use QIT_CLI\Commands\CreateRunCommands;
 use QIT_CLI\Commands\DevModeCommand;
@@ -18,6 +17,7 @@ use QIT_CLI\Commands\Partner\RemovePartner;
 use QIT_CLI\Commands\Partner\SwitchPartner;
 use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Cache;
+use QIT_CLI\Config;
 use QIT_CLI\Encryption;
 use QIT_CLI\Environment;
 use QIT_CLI\Exceptions\NetworkErrorException;
@@ -69,6 +69,7 @@ $container->singleton( Output::class, function () {
 $container->singleton( ManagerSync::class );
 $container->singleton( Encryption::class );
 $container->singleton( Cache::class );
+$container->singleton( Config::class );
 
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 
@@ -127,7 +128,7 @@ if ( count( $env->get_configured_environments( true ) ) > 1 ) {
 }
 
 // Dev commands.
-if ( $env->is_development_mode() ) {
+if ( Config::is_development_mode() ) {
 	$application->add( $container->make( AddEnvironment::class ) );
 
 	// Only show options to remove and see the current environment if there's at least one environment added.
@@ -158,7 +159,7 @@ if ( $container->make( Cache::class )->is_initialized() ) {
 }
 
 if ( $container->make( Output::class )->isVerbose() ) {
-	$container->make( Output::class )->writeln( sprintf( '<info>QIT Environment: %s</info>', $container->make( Environment::class )->get_current_environment() ) );
+	$container->make( Output::class )->writeln( sprintf( '<info>QIT Environment: %s</info>', Config::get_current_environment() ) );
 }
 
 return $application;

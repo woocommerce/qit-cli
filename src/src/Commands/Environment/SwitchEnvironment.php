@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands\Environment;
 
+use QIT_CLI\Config;
 use QIT_CLI\Environment;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -43,8 +44,10 @@ class SwitchEnvironment extends Command {
 			return Command::SUCCESS;
 		}
 
+		$current_environment = Config::get_current_environment();
+
 		$question = new ChoiceQuestion(
-			"Current environment: {$this->environment->get_current_environment()}. Please choose a new environment to switch to.",
+			"Current environment: $current_environment. Please choose a new environment to switch to.",
 			array_merge( $environments, [ '[Cancel]' ] ),
 			count( $environments ) // Cancel is the default.
 		);

@@ -12,8 +12,8 @@ class Environment {
 	protected $dev_mode_file;
 
 	public function __construct() {
-		$this->current_environment_file = self::get_config_dir() . '.current-env';
-		$this->dev_mode_file            = self::get_config_dir() . '.dev-mode';
+		$this->current_environment_file = self::get_qit_dir() . '.current-env';
+		$this->dev_mode_file            = self::get_qit_dir() . '.dev-mode';
 	}
 
 	/**
@@ -26,23 +26,6 @@ class Environment {
 		'production' => 'production',
 		'temp'       => 'temp',
 	];
-
-	/**
-	 * @return bool True if running in Developer mode. False if not.
-	 */
-	public function is_development_mode(): bool {
-		return file_exists( $this->dev_mode_file );
-	}
-
-	public function enable_development_mode(): void {
-		if ( ! file_exists( $this->dev_mode_file ) ) {
-			$touched = touch( $this->dev_mode_file );
-
-			if ( ! $touched ) {
-				throw new \RuntimeException( 'Could not create the file flag to enable development mode. Please check that PHP has write permission to file: ' . $this->dev_mode_file );
-			}
-		}
-	}
 
 	public function is_allowed_environment( string $environment ): bool {
 		if ( substr( $environment, 0, 8 ) === 'partner-' ) {
@@ -125,41 +108,10 @@ class Environment {
 	}
 
 	/**
-	 * @return string Which environment the QIT is currently using.
-	 *                Possible values are: temp, production, staging, local
-	 */
-	public function get_current_environment(): string {
-		if ( defined( 'UNIT_TESTS' ) ) {
-			return 'tests';
-		}
-
-		if ( ! file_exists( $this->current_environment_file ) ) {
-			return 'temp';
-		}
-
-		$environment = file_get_contents( $this->current_environment_file );
-
-		if ( ! $this->is_allowed_environment( $environment ) ) {
-			unlink( $this->current_environment_file );
-			App::get( Output::class )->writeln(
-				sprintf( 'QIT Warning: Invalid environment. Resetting "%s".', $this->current_environment_file )
-			);
-
-			return 'temp';
-		}
-
-		return $environment;
-	}
-
-	public function is_partner_environment(): bool {
-		return stripos( $this->get_current_environment(), 'partner-' ) === 0;
-	}
-
-	/**
 	 * @throws \RuntimeException When it can't find the QIT CLI directory.
 	 * @return string The path to the QIT CLI directory.
 	 */
-	public static function get_config_dir(): string {
+	public static function get_qit_dir(): string {
 		$normalize_path = static function ( string $path ): string {
 			// Converts Windows-style directory separator to Unix-style. Makes sure it ends with a trailing slash.
 			return rtrim( str_replace( '\\', '/', $path ), '/\\' ) . '/';
@@ -225,24 +177,24 @@ class Environment {
 	 */
 	public function get_cache_filepath(): string {
 		// Eg: /home/foo/.woo-qit-cli-production.
-		return $this->make_cache_filepath( $this->get_current_environment() );
+		return $this->make_cache_filepath( Config::get_current_environment() );
 	}
 
 	private function make_cache_filepath( string $environment ): string {
-		return Environment::get_config_dir() . ".env-$environment";
+		return Environment::get_qit_dir() . ".env-$environment";
 	}
 
 	/**
 	 * @return array<string> The list of Partners configured.
 	 */
 	public function get_configured_environments( bool $partners_only ): array {
-		if ( ! file_exists( Environment::get_config_dir() ) ) {
+		if ( ! file_exists( Environment::get_qit_dir() ) ) {
 			return [];
 		}
 
 		$partners = [];
 
-		$files = scandir( Environment::get_config_dir() );
+		$files = scandir( Environment::get_qit_dir() );
 
 		if ( ! is_array( $files ) ) {
 			return [];
@@ -271,13 +223,13 @@ class Environment {
 	}
 
 	public function get_environment_files() {
-		if ( ! file_exists( Environment::get_config_dir() ) ) {
+		if ( ! file_exists( Environment::get_qit_dir() ) ) {
 			return [];
 		}
 
 		$partners = [];
 
-		$files = scandir( Environment::get_config_dir() );
+		$files = scandir( Environment::get_qit_dir() );
 
 		if ( ! is_array( $files ) ) {
 			return [];
@@ -289,7 +241,7 @@ class Environment {
 				continue;
 			}
 
-			$partners[] = $this->get_config_dir() . $f;
+			$partners[] = $this->get_qit_dir() . $f;
 		}
 
 		return $partners;
@@ -319,7 +271,7 @@ class Environment {
 		}
 
 		// Are we deleting the environment we are currently in?
-		if ( $this->get_current_environment() === $environment ) {
+		if ( Config::get_current_environment() === $environment ) {
 			$other_environments = $this->get_configured_environments( false );
 			// Switch to next available environment, if it exists.
 			if ( ! empty( $other_environments ) ) {

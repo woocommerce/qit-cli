@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands\Partner;
 
+use QIT_CLI\Config;
 use QIT_CLI\Environment;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -43,8 +44,10 @@ class SwitchPartner extends Command {
 			return Command::SUCCESS;
 		}
 
+		$current_environment = Config::get_current_environment();
+
 		$question = new ChoiceQuestion(
-			sprintf( 'Current Partner: %s. Please choose a new Partner to switch to.', str_replace( 'partner-', '', $this->environment->get_current_environment() ) ),
+			sprintf( 'Current Partner: %s. Please choose a new Partner to switch to.', str_replace( 'partner-', '', $current_environment ) ),
 			array_merge( array_map( static function ( $e ) {
 				return str_replace( 'partner-', '', $e );
 			}, $environments ), [ '[Cancel]' ] ),
