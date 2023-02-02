@@ -16,8 +16,6 @@ class Encryption {
 	/** @var string The path to the directory to store the SSH keys. */
 	protected $ssh_keys_dir;
 
-	protected $encryption_disabled;
-
 	public function __construct() {
 		$this->ssh_keys_dir = Config::get_qit_dir();
 	}

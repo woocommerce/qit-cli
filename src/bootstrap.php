@@ -76,6 +76,11 @@ $application->configureIO( $container->make( Input::class ), $container->make( O
 // Detect whether this is a "_completion" command that runs on the background in Bash. If so, no remote requests will be made.
 $container->setVar( 'doing_autocompletion', stripos( (string) $container->make( Input::class ), '_completion' ) !== false );
 
+// If we are trying to disable encryption in this request, disable it early.
+if ( App::make( Input::class )->getFirstArgument() === DisableEncryptionCommand::getDefaultName() ) {
+	Config::set_encryption( false );
+}
+
 try {
 	if ( ! $container->getVar( 'doing_autocompletion' ) ) {
 		App::make( ManagerSync::class )->maybe_sync();
