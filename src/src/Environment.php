@@ -5,17 +5,6 @@ namespace QIT_CLI;
 use QIT_CLI\IO\Output;
 
 class Environment {
-	/** @var string This file holds the information of which environment the QIT CLI is currently running on. */
-	protected $current_environment_file;
-
-	/** @var string If this file exists, the QIT CLI operates in dev mode. */
-	protected $dev_mode_file;
-
-	public function __construct() {
-		$this->current_environment_file = Config::get_qit_dir() . '.current-env';
-		$this->dev_mode_file            = Config::get_qit_dir() . '.dev-mode';
-	}
-
 	/**
 	 * @var array<string> The allowed environments.
 	 */
@@ -24,7 +13,7 @@ class Environment {
 		'tests'      => 'tests',
 		'staging'    => 'staging',
 		'production' => 'production',
-		'temp'       => 'temp',
+		'default'    => 'default',
 	];
 
 	public function is_allowed_environment( string $environment ): bool {
@@ -92,11 +81,7 @@ class Environment {
 			throw new \RuntimeException( "Cannot switch to environment '$environment', as it has not been configured yet." );
 		}
 
-		$written = file_put_contents( $this->current_environment_file, $environment );
-
-		if ( ! $written ) {
-			throw new \RuntimeException( 'Could not switch to environment. Cannot write to environment control file. Please check that PHP has write permission to file: ' . $this->current_environment_file );
-		}
+		Config::set_current_environment( $environment );
 	}
 
 	public function environment_exists( string $environment ): bool {
@@ -146,8 +131,8 @@ class Environment {
 					$partners[] = str_replace( '.env-partner-', '', $f );
 				}
 			} else {
-				// Do not include the "temp" environment as a configured environment.
-				if ( $f === '.env-temp' ) {
+				// Do not include the "default" environment as a configured environment.
+				if ( $f === '.env-default' ) {
 					continue;
 				}
 				$partners[] = str_replace( '.env-', '', $f );
@@ -157,7 +142,7 @@ class Environment {
 		return $partners;
 	}
 
-	public function get_environment_files() {
+	public function get_qit_files() {
 		if ( ! file_exists( Config::get_qit_dir() ) ) {
 			return [];
 		}
@@ -214,11 +199,7 @@ class Environment {
 				$this->switch_to_environment( $next_environment );
 				App::make( Output::class )->writeln( sprintf( "<comment>Switched to environment '%s'.</comment>", $next_environment ) );
 			} else {
-				$unlinked = unlink( $this->current_environment_file );
-
-				if ( ! $unlinked ) {
-					throw new \RuntimeException( sprintf( 'Could not remove current environment file. Please delete the file manually: %s', $this->current_environment_file ) );
-				}
+				Config::set_current_environment( 'default' );
 			}
 		}
 	}
