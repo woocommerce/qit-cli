@@ -4,7 +4,6 @@ namespace QIT_CLI;
 
 use QIT_CLI\Exceptions\DoingAutocompleteException;
 use QIT_CLI\Exceptions\NetworkErrorException;
-use QIT_CLI\Exceptions\UnitTestException;
 
 class RequestBuilder implements \JsonSerializable {
 	/** @var string $url */
