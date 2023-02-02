@@ -13,20 +13,25 @@ class Cache {
 
 	protected $did_init = false;
 
-	public function __construct( Environment $environment ) {
-		$this->environment = $environment;
+	protected $cache_file_path;
+
+	public function set_environment( string $environment ) {
+		$this->cache_file_path = Config::get_qit_dir() . ".env-$environment";
+		$this->init_cache();
+	}
+
+	public function get_cache_file_path() {
+		return $this->cache_file_path;
 	}
 
 	/**
-	 * @param string              $key The cache key.
+	 * @param string $key The cache key.
 	 * @param scalar|array<mixed> $value The cache value.
-	 * @param int                 $expire How many seconds from now should this cache expire. -1 for no expiration. 0 for only current request.
+	 * @param int $expire How many seconds from now should this cache expire. -1 for no expiration. 0 for only current request.
 	 *
 	 * @return void
 	 */
 	public function set_cache( string $key, $value, int $expire ): void {
-		$this->maybe_init_cache();
-
 		if ( $expire !== - 1 ) {
 			$expire = time() + $expire;
 		}
@@ -43,13 +48,11 @@ class Cache {
 
 	/**
 	 * @param string $key The cache key to get.
-	 * @param bool   $ignore_expiration If true, it will return an expired cache entry if available.
+	 * @param bool $ignore_expiration If true, it will return an expired cache entry if available.
 	 *
 	 * @return mixed|null Whatever is in the cache, either a scalar or an array of scalars or array of arrays of scalars. Null if cache not found.
 	 */
 	public function get_cache( string $key, bool $ignore_expiration = false ) {
-		$this->maybe_init_cache();
-
 		// Delete expired caches.
 		$deleted = 0;
 		foreach ( $this->cache as $k => $c ) {
@@ -94,21 +97,21 @@ class Cache {
 	 *
 	 * @throws \RuntimeException When could not read the cache file.
 	 */
-	protected function maybe_init_cache(): void {
+	protected function init_cache(): void {
 		if ( $this->did_init ) {
-			return;
-		} else {
-			$this->did_init = true;
+			throw new \LogicException( 'Cache already initialized.' );
 		}
 
-		if ( ! file_exists( $this->environment->get_cache_filepath() ) ) {
+		$this->did_init = true;
+
+		if ( ! file_exists( $this->cache_file_path ) ) {
 			return;
 		}
 
-		$data = file_get_contents( $this->environment->get_cache_filepath() );
+		$data = file_get_contents( $this->cache_file_path );
 
 		if ( $data === false ) {
-			throw new \RuntimeException( 'Could not read cache file. Please check if PHP has read permissions on file ' . $this->environment->get_cache_filepath() );
+			throw new \RuntimeException( 'Could not read cache file. Please check if PHP has read permissions on file ' . $this->cache_file_path );
 		}
 
 		$data = App::make( Encryption::class )->decrypt( $data );
@@ -131,7 +134,7 @@ class Cache {
 	protected function save(): void {
 		$data = App::make( Encryption::class )->encrypt( json_encode( $this->cache ) );
 
-		$written = file_put_contents( $this->environment->get_cache_filepath(), $data );
+		$written = file_put_contents( $this->cache_file_path, $data );
 
 		if ( ! $written ) {
 			throw new \RuntimeException( sprintf( "Could not write to the file %s. Please check if it's writable.", Config::get_qit_dir() . '.woo-qit-cli' ) );
@@ -143,15 +146,15 @@ class Cache {
 	 * @throws \RuntimeException When the QIT CLI cache file exists, but is not readable.
 	 */
 	public function is_initialized(): bool {
-		if ( ! file_exists( $this->environment->get_cache_filepath() ) ) {
+		if ( ! file_exists( $this->cache_file_path ) ) {
 			return false;
 		}
 
-		if ( ! is_readable( $this->environment->get_cache_filepath() ) ) {
+		if ( ! is_readable( $this->cache_file_path ) ) {
 			throw new \RuntimeException( sprintf( 'The cache file exists but it\'s not readable: %s', Config::get_qit_dir() . '.woo-qit-cli' ) );
 		}
 
-		$json = json_decode( file_get_contents( $this->environment->get_cache_filepath() ), true );
+		$json = json_decode( file_get_contents( $this->cache_file_path ), true );
 
 		if ( ! is_array( $json ) ) {
 			return false;
@@ -170,9 +173,9 @@ class Cache {
 	/**
 	 * @param string $key The key to get.
 	 *
+	 * @return scalar|array<mixed> The value of the key.
 	 * @throws \UnexpectedValueException When requested a key that does not exist in the sync data.
 	 *
-	 * @return scalar|array<mixed> The value of the key.
 	 */
 	public function get_manager_sync_data( string $key ) {
 		$manager_data = $this->get_cache( App::make( ManagerSync::class )->sync_cache_key );

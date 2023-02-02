@@ -25,6 +25,7 @@ class Config {
 		}
 
 		$this->config_file = self::get_qit_dir() . '.qit-config.json';
+		$this->init();
 	}
 
 	public static function set_development_mode( bool $development_mode ): void {
@@ -55,7 +56,6 @@ class Config {
 	}
 
 	protected function set( string $key, $value ) {
-		$this->maybe_init();
 		$this->config[ $key ] = $value;
 		$this->save();
 	}
@@ -66,8 +66,6 @@ class Config {
 	 * @return scalar|null
 	 */
 	protected function get( string $key ) {
-		$this->maybe_init();
-
 		return $this->config[ $key ] ?? null;
 	}
 
@@ -84,7 +82,7 @@ class Config {
 		}
 	}
 
-	protected function maybe_init() {
+	protected function init() {
 		if ( $this->did_init ) {
 			return;
 		} else {

@@ -16,6 +16,14 @@ class Environment {
 		'default'    => 'default',
 	];
 
+	/** @var Cache The cache file of this environment. */
+	protected $cache;
+
+	public function __construct( Cache $cache ) {
+		$this->cache = $cache;
+		$this->cache->set_environment( Config::get_current_environment() );
+	}
+
 	public function is_allowed_environment( string $environment ): bool {
 		if ( substr( $environment, 0, 8 ) === 'partner-' ) {
 			return preg_match( '/^partner-[a-z0-9]{1,60}$/', $environment );
@@ -29,29 +37,29 @@ class Environment {
 			throw new \InvalidArgumentException( 'Invalid environment.' );
 		}
 
-		if ( file_exists( $this->make_cache_filepath( $environment ) ) ) {
-			$unlinked = $this->make_cache_filepath( $environment );
+		if ( file_exists( $this->cache->get_cache_file_path() ) ) {
+			$unlinked = unlink( $this->cache->get_cache_file_path() );
 
 			if ( ! $unlinked ) {
-				throw new \RuntimeException( 'Could not delete environment file to override with new value. Please check that PHP has write permission to file: ' . $this->make_cache_filepath( $environment ) );
+				throw new \RuntimeException( 'Could not delete environment file to override with new value. Please check that PHP has write permission to file: ' . $this->cache->get_cache_file_path() );
 			}
 		}
 
-		$written = touch( $this->make_cache_filepath( $environment ) );
+		$written = touch( $this->cache->get_cache_file_path() );
 
 		if ( ! $written ) {
-			throw new \RuntimeException( 'Could not create environment file. Please check that PHP has write permission to file: ' . $this->make_cache_filepath( $environment ) );
+			throw new \RuntimeException( 'Could not create environment file. Please check that PHP has write permission to file: ' . $this->cache->get_cache_file_path() );
 		}
 
 		/*
 		 * Make sure the file has the correct permissions. (0600)
 		 * Try to set it, warn if cannot.
 		 */
-		if ( decoct( fileperms( $this->make_cache_filepath( $environment ) ) & 0777 ) !== '600' && ! chmod( $this->make_cache_filepath( $environment ), 0600 ) && ! App::getVar( "WARNED_ENV_PERMISSION_$environment", false ) ) {
+		if ( decoct( fileperms( $this->cache->get_cache_file_path() ) & 0777 ) !== '600' && ! chmod( $this->cache->get_cache_file_path(), 0600 ) && ! App::getVar( "WARNED_ENV_PERMISSION_$environment", false ) ) {
 			App::make( Output::class )->writeln(
 				sprintf(
 					'<warning>Warning: Could not set permissions on environment file. Please check that PHP has write permission to file: %s</warning>',
-					$this->make_cache_filepath( $environment )
+					$this->cache->get_cache_file_path()
 				)
 			);
 
@@ -77,7 +85,7 @@ class Environment {
 			throw new \InvalidArgumentException( 'Invalid environment.' );
 		}
 
-		if ( ! file_exists( $this->make_cache_filepath( $environment ) ) ) {
+		if ( ! file_exists( $this->cache->get_cache_file_path() ) ) {
 			throw new \RuntimeException( "Cannot switch to environment '$environment', as it has not been configured yet." );
 		}
 
@@ -89,14 +97,14 @@ class Environment {
 			throw new \InvalidArgumentException( "The environment $environment is not allowed." );
 		}
 
-		return file_exists( $this->make_cache_filepath( $environment ) );
+		return file_exists( $this->cache->get_cache_file_path() );
 	}
 
 	/**
 	 * @return string The file path of the current QIT CLI cache file.
 	 */
 	public function get_cache_filepath(): string {
-		// Eg: /home/foo/.woo-qit-cli-production.
+		// Eg: /home/foo/.woo-qit-cli/.env-partner-foo.
 		return $this->make_cache_filepath( Config::get_current_environment() );
 	}
 
@@ -159,10 +167,10 @@ class Environment {
 			throw new \RuntimeException( "Environment '$environment' does not exist/is not configured yet." );
 		}
 
-		$unlinked = unlink( $this->make_cache_filepath( $environment ) );
+		$unlinked = unlink( $this->cache->get_cache_file_path() );
 
 		if ( ! $unlinked ) {
-			throw new \RuntimeException( sprintf( 'Could not remove environment "%s". Please delete the cache file manually: %s', $environment, $this->make_cache_filepath( $environment ) ) );
+			throw new \RuntimeException( sprintf( 'Could not remove environment "%s". Please delete the cache file manually: %s', $environment, $this->cache->get_cache_file_path() ) );
 		}
 
 		// Are we deleting the environment we are currently in?
