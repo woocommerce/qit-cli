@@ -58,7 +58,7 @@ class SwitchEnvironment extends Command {
 			case '[Cancel]':
 				return Command::SUCCESS;
 			default:
-				$this->environment->switch_to_environment( $new_environment );
+				$this->environment->switch_to_environment( strtolower(  $new_environment ) );
 				$output->writeln( "<info>Environment switched to $new_environment.</info>" );
 
 				return Command::SUCCESS;

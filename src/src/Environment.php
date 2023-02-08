@@ -155,6 +155,8 @@ class Environment {
 		$environments = self::get_configured_environments( $partners_only );
 		foreach ( $environments as &$e ) {
 			$e = str_replace( [ '.env-partner-', '.env-', '.json' ], '', $e );
+			$e = basename( $e );
+			$e = ucwords( $e );
 		}
 
 		return $environments;

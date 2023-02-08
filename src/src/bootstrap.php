@@ -87,6 +87,8 @@ try {
 	if ( Config::is_development_mode() ) {
 		$application->add( $container->make( AddEnvironment::class ) );
 		$application->add( $container->make( SetProxyCommand::class ) );
+		$application->add( $container->make( SwitchEnvironment::class ) );
+
 	}
 
 	// Run a quick diagnose check to see what might be happening and provide some feedback to the user.
