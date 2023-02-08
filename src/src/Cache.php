@@ -148,35 +148,6 @@ class Cache {
 	}
 
 	/**
-	 * @return bool True if the QIT CLI is initialized. False if not.
-	 * @throws \RuntimeException When the QIT CLI cache file exists, but is not readable.
-	 */
-	public function is_initialized(): bool {
-		if ( ! file_exists( $this->cache_file_path ) ) {
-			return false;
-		}
-
-		if ( ! is_readable( $this->cache_file_path ) ) {
-			throw new \RuntimeException( sprintf( 'The cache file exists but it\'s not readable: %s', Config::get_qit_dir() . '.woo-qit-cli' ) );
-		}
-
-		$json = json_decode( file_get_contents( $this->cache_file_path ), true );
-
-		if ( ! is_array( $json ) ) {
-			return false;
-		}
-
-		$has_application_password_auth = ! empty( $json['cache']['user'] ) && ! empty( $json['cache']['application_password'] );
-		$has_cd_secret                 = ! empty( $json['cache']['cd_secret'] );
-
-		if ( ! $has_application_password_auth && ! $has_cd_secret ) {
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
 	 * @param string $key The key to get.
 	 *
 	 * @return scalar|array<mixed> The value of the key.

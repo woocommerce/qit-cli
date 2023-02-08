@@ -112,6 +112,8 @@ try {
 	return $application;
 }
 
+$has_environment = false;
+
 $env = App::make( Environment::class );
 
 // Encryption commands.
@@ -126,6 +128,7 @@ $application->add( $container->make( AddPartner::class ) );
 
 // Only show option to Remove Partner if there are Partners to remove.
 if ( count( Environment::get_configured_environments( true ) ) > 0 ) {
+	$has_environment = true;
 	$application->add( $container->make( RemovePartner::class ) );
 }
 
@@ -141,6 +144,7 @@ if ( Config::is_development_mode() ) {
 
 	// Only show options to remove and see the current environment if there's at least one environment added.
 	if ( count( Environment::get_configured_environments( false ) ) > 0 ) {
+		$has_environment = true;
 		$application->add( $container->make( RemoveEnvironment::class ) );
 		$application->add( $container->make( CurrentEnvironment::class ) );
 	}
@@ -151,8 +155,7 @@ if ( Config::is_development_mode() ) {
 	}
 }
 
-// Commands that require initialization.
-if ( $container->make( Cache::class )->is_initialized() ) {
+if ( $has_environment ) {
 	// Dynamically create commands to run tests, based on Schema fetched from Manager REST API.
 	$container->make( CreateRunCommands::class )->register_run_commands( $application );
 
