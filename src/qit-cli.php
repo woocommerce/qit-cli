@@ -10,7 +10,7 @@ require_once __DIR__ . '/src/helpers.php';
 $container = new Container();
 App::setContainer( $container );
 
-$application = require_once __DIR__ . '/bootstrap.php';
+$application = require_once __DIR__ . '/src/bootstrap.php';
 
 // Handle CLI request.
 $application->run();
