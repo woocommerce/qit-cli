@@ -20,7 +20,7 @@ class Environment {
 	protected $cache;
 
 	public function __construct( Cache $cache ) {
-		$this->cache      = $cache;
+		$this->cache = $cache;
 	}
 
 	public function is_allowed_environment( string $environment ): bool {

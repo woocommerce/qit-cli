@@ -3,8 +3,6 @@
 use QIT_CLI\App;
 use QIT_CLI\Commands\CreateRunCommands;
 use QIT_CLI\Commands\DevModeCommand;
-use QIT_CLI\Commands\Encrypt\DisableEncryptionCommand;
-use QIT_CLI\Commands\Encrypt\EnableEncryptionCommand;
 use QIT_CLI\Commands\Environment\AddEnvironment;
 use QIT_CLI\Commands\Environment\CurrentEnvironment;
 use QIT_CLI\Commands\Environment\RemoveEnvironment;
@@ -16,9 +14,7 @@ use QIT_CLI\Commands\Partner\RemovePartner;
 use QIT_CLI\Commands\Partner\SwitchPartner;
 use QIT_CLI\Commands\SetProxyCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
-use QIT_CLI\Cache;
 use QIT_CLI\Config;
-use QIT_CLI\Encryption;
 use QIT_CLI\Environment;
 use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\Exceptions\UpdateRequiredException;
