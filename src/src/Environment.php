@@ -19,12 +19,8 @@ class Environment {
 	/** @var Cache The cache file of this environment. */
 	protected $cache;
 
-	/** @var Encryption */
-	protected $encryption;
-
-	public function __construct( Cache $cache, Encryption $encryption ) {
+	public function __construct( Cache $cache ) {
 		$this->cache      = $cache;
-		$this->encryption = $encryption;
 	}
 
 	public function is_allowed_environment( string $environment ): bool {
@@ -50,7 +46,7 @@ class Environment {
 			}
 		}
 
-		$written = file_put_contents( $new_environment_file, $this->encryption->encrypt( json_encode( [] ) ) );
+		$written = file_put_contents( $new_environment_file, json_encode( [] ) );
 
 		if ( ! $written ) {
 			throw new \RuntimeException( 'Could not create environment file. Please check that PHP has write permission to file: ' . $new_environment_file );

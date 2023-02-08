@@ -67,7 +67,6 @@ $container->singleton( Output::class, function () {
 } );
 
 $container->singleton( ManagerSync::class );
-$container->singleton( Encryption::class );
 $container->singleton( Config::class );
 $container->singleton( Environment::class );
 
@@ -75,13 +74,6 @@ $application->configureIO( $container->make( Input::class ), $container->make( O
 
 // Detect whether this is a "_completion" command that runs on the background in Bash. If so, no remote requests will be made.
 $container->setVar( 'doing_autocompletion', stripos( (string) $container->make( Input::class ), '_completion' ) !== false );
-
-// Run request to disable encryption in isolation.
-if ( App::make( Input::class )->getFirstArgument() === DisableEncryptionCommand::getDefaultName() ) {
-	Config::set_encryption( false );
-	$application->add( $container->make( DisableEncryptionCommand::class ) );
-	exit( $application->run() );
-}
 
 try {
 	if ( ! $container->getVar( 'doing_autocompletion' ) ) {
@@ -101,9 +93,6 @@ try {
 		$application->add( $container->make( SetProxyCommand::class ) );
 	}
 
-	$application->add( $container->make( EnableEncryptionCommand::class ) );
-	$application->add( $container->make( DisableEncryptionCommand::class ) );
-
 	// Run a quick diagnose check to see what might be happening and provide some feedback to the user.
 	( new \QIT_CLI\Diagnosis() )->run( App::make( Output::class ) );
 
@@ -115,10 +104,6 @@ try {
 $has_environment = false;
 
 $env = App::make( Environment::class );
-
-// Encryption commands.
-$application->add( $container->make( EnableEncryptionCommand::class ) );
-$application->add( $container->make( DisableEncryptionCommand::class ) );
 
 // Global commands.
 $application->add( $container->make( DevModeCommand::class ) );

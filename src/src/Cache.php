@@ -120,8 +120,6 @@ class Cache {
 			throw new \RuntimeException( 'Could not read cache file. Please check if PHP has read permissions on file ' . $this->cache_file_path );
 		}
 
-		$data = App::make( Encryption::class )->decrypt( $data );
-
 		$cache = json_decode( $data, true );
 
 		if ( ! is_array( $cache ) ) {
@@ -138,9 +136,7 @@ class Cache {
 	 * @throws \RuntimeException When could not write to the cache file.
 	 */
 	protected function save(): void {
-		$data = App::make( Encryption::class )->encrypt( json_encode( $this->cache ) );
-
-		$written = file_put_contents( $this->cache_file_path, $data );
+		$written = file_put_contents( $this->cache_file_path, json_encode( $this->cache ) );
 
 		if ( ! $written ) {
 			throw new \RuntimeException( sprintf( "Could not write to the file %s. Please check if it's writable.", Config::get_qit_dir() . '.woo-qit-cli' ) );
