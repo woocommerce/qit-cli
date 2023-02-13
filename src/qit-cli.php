@@ -12,5 +12,10 @@ App::setContainer( $container );
 
 $application = require_once __DIR__ . '/bootstrap.php';
 
-// Handle CLI request.
-$application->run();
+try {
+	// Handle CLI request.
+	exit( $application->run() );
+} catch ( \Exception $e ) {
+	App::make( Output::class )->writeln( "<error>{$e->getMessage()}</error>" );
+	exit( 1 );
+}
