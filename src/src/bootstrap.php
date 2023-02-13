@@ -3,8 +3,6 @@
 use QIT_CLI\App;
 use QIT_CLI\Commands\CreateRunCommands;
 use QIT_CLI\Commands\DevModeCommand;
-use QIT_CLI\Commands\Encrypt\DisableEncryptionCommand;
-use QIT_CLI\Commands\Encrypt\EnableEncryptionCommand;
 use QIT_CLI\Commands\Environment\AddEnvironment;
 use QIT_CLI\Commands\Environment\CurrentEnvironment;
 use QIT_CLI\Commands\Environment\RemoveEnvironment;
@@ -16,9 +14,7 @@ use QIT_CLI\Commands\Partner\RemovePartner;
 use QIT_CLI\Commands\Partner\SwitchPartner;
 use QIT_CLI\Commands\SetProxyCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
-use QIT_CLI\Cache;
 use QIT_CLI\Config;
-use QIT_CLI\Encryption;
 use QIT_CLI\Environment;
 use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\Exceptions\UpdateRequiredException;
@@ -67,7 +63,6 @@ $container->singleton( Output::class, function () {
 } );
 
 $container->singleton( ManagerSync::class );
-$container->singleton( Encryption::class );
 $container->singleton( Config::class );
 $container->singleton( Environment::class );
 
@@ -75,13 +70,6 @@ $application->configureIO( $container->make( Input::class ), $container->make( O
 
 // Detect whether this is a "_completion" command that runs on the background in Bash. If so, no remote requests will be made.
 $container->setVar( 'doing_autocompletion', stripos( (string) $container->make( Input::class ), '_completion' ) !== false );
-
-// Run request to disable encryption in isolation.
-if ( App::make( Input::class )->getFirstArgument() === DisableEncryptionCommand::getDefaultName() ) {
-	Config::set_encryption( false );
-	$application->add( $container->make( DisableEncryptionCommand::class ) );
-	exit( $application->run() );
-}
 
 try {
 	if ( ! $container->getVar( 'doing_autocompletion' ) ) {
@@ -99,10 +87,9 @@ try {
 	if ( Config::is_development_mode() ) {
 		$application->add( $container->make( AddEnvironment::class ) );
 		$application->add( $container->make( SetProxyCommand::class ) );
-	}
+		$application->add( $container->make( SwitchEnvironment::class ) );
 
-	$application->add( $container->make( EnableEncryptionCommand::class ) );
-	$application->add( $container->make( DisableEncryptionCommand::class ) );
+	}
 
 	// Run a quick diagnose check to see what might be happening and provide some feedback to the user.
 	( new \QIT_CLI\Diagnosis() )->run( App::make( Output::class ) );
@@ -112,11 +99,9 @@ try {
 	return $application;
 }
 
-$env = App::make( Environment::class );
+$has_environment = false;
 
-// Encryption commands.
-$application->add( $container->make( EnableEncryptionCommand::class ) );
-$application->add( $container->make( DisableEncryptionCommand::class ) );
+$env = App::make( Environment::class );
 
 // Global commands.
 $application->add( $container->make( DevModeCommand::class ) );
@@ -126,6 +111,7 @@ $application->add( $container->make( AddPartner::class ) );
 
 // Only show option to Remove Partner if there are Partners to remove.
 if ( count( Environment::get_configured_environments( true ) ) > 0 ) {
+	$has_environment = true;
 	$application->add( $container->make( RemovePartner::class ) );
 }
 
@@ -141,6 +127,7 @@ if ( Config::is_development_mode() ) {
 
 	// Only show options to remove and see the current environment if there's at least one environment added.
 	if ( count( Environment::get_configured_environments( false ) ) > 0 ) {
+		$has_environment = true;
 		$application->add( $container->make( RemoveEnvironment::class ) );
 		$application->add( $container->make( CurrentEnvironment::class ) );
 	}
@@ -151,8 +138,7 @@ if ( Config::is_development_mode() ) {
 	}
 }
 
-// Commands that require initialization.
-if ( $container->make( Cache::class )->is_initialized() ) {
+if ( $has_environment ) {
 	// Dynamically create commands to run tests, based on Schema fetched from Manager REST API.
 	$container->make( CreateRunCommands::class )->register_run_commands( $application );
 

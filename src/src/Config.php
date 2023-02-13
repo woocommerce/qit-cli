@@ -15,7 +15,6 @@ class Config {
 	/** @var array<scalar> */
 	protected $schema = [
 		'current_environment' => 'default',
-		'encryption'          => false,
 		'development_mode'    => false,
 		'proxy_url'           => '127.0.0.1:8080',
 		'last_diagnosis'      => 0,
@@ -51,14 +50,6 @@ class Config {
 
 	public static function get_current_environment(): string {
 		return (string) App::make( self::class )->get( 'current_environment' ) ?: 'default';
-	}
-
-	public static function set_encryption( bool $encryption ): void {
-		App::make( self::class )->set( 'encryption', $encryption );
-	}
-
-	public static function is_encryption_enabled(): bool {
-		return (bool) App::make( self::class )->get( 'encryption' );
 	}
 
 	public static function set_proxy_url( string $proxy_url ): void {

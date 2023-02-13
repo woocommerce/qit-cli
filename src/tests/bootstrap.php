@@ -38,7 +38,7 @@ App::setContainer( $container );
 App::setVar( sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/cli/sync' ), file_get_contents( __DIR__ . '/data/sync.json' ) );
 
 /** @var Application $qit_application */
-$GLOBALS['qit_application'] = require_once __DIR__ . '/../bootstrap.php';
+$GLOBALS['qit_application'] = require_once __DIR__ . '/../src/bootstrap.php';
 $GLOBALS['qit_application']->setAutoExit( false );
 
 define( 'UNIT_TESTS_BOOTSTRAPPED', true );
