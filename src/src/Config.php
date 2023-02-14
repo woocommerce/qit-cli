@@ -133,51 +133,53 @@ class Config {
 	public static function get_qit_dir(): string {
 		$normalize_path = static function ( string $path ): string {
 			// Converts Windows-style directory separator to Unix-style. Makes sure it ends with a trailing slash.
-			return rtrim( str_replace( '\\', '/', $path ), '/\\' ) . '/';
+			return rtrim( str_replace( '\\', '/', $path ), '/' ) . '/';
 		};
 
-		// Windows alternative.
-		if ( ! empty( getenv( 'QIT_CLI_CONFIG_DIR' ) ) ) {
-			if ( ! file_exists( getenv( 'QIT_CLI_CONFIG_DIR' ) ) ) {
-				throw new \RuntimeException( sprintf( 'The QIT_CLI_CONFIG_DIR environment variable is defined, but points to a non-existing directory: %s', getenv( 'QIT_CLI_CONFIG_DIR' ) ) );
+		// Allow override.
+		if ( ! empty( getenv( 'QIT_HOME' ) ) ) {
+			if ( ! file_exists( getenv( 'QIT_HOME' ) ) ) {
+				throw new \RuntimeException( sprintf( 'The QIT_HOME environment variable is defined, but points to a non-existing directory: %s', getenv( 'QIT_CLI_CONFIG_DIR' ) ) );
 			}
 
-			return $normalize_path( getenv( 'QIT_CLI_CONFIG_DIR' ) );
+			return $normalize_path( getenv( 'QIT_HOME' ) );
 		}
 
-		// Unix.
-		if ( isset( $_SERVER['HOME'] ) ) {
-			if ( ! file_exists( $_SERVER['HOME'] ) ) {
-				throw new \RuntimeException( sprintf( 'The HOME environment variable is defined, but points to a non-existing directory: %s', $_SERVER['HOME'] ) );
+		// Windows.
+		if ( is_windows() ) {
+			if ( empty( getenv( 'APPDATA' ) ) ) {
+				throw new \RuntimeException( 'The APPDATA or QIT_HOME environment variables must be defined.' );
 			}
 
-			$cache_dir = $normalize_path( $_SERVER['HOME'] ) . '.woo-qit-cli/';
+			return $normalize_path( getenv( 'APPDATA' ) ) . 'woo-qit-cli';
+		}
 
-			if ( ! file_exists( $cache_dir ) ) {
-				$dir_created = mkdir( $cache_dir );
+		if ( empty( getenv('HOME') ) ) {
+			throw new \RuntimeException( 'The HOME or QIT_HOME environment variables must be defined.' );
+		}
 
-				if ( ! $dir_created ) {
-					throw new \RuntimeException( sprintf( 'Could not create the QIT CLI config directory: %s. Please try to create the directory manually. ', $cache_dir ) );
-				}
+		$home = $normalize_path( getenv( 'HOME' ) );
+		$dirs = [];
+
+		if ( static::use_xdg() ) {
+			$xdg_config = getenv( 'XDG_CONFIG_HOME' );
+			if ( ! $xdg_config ) {
+				$xdg_config = $home . '.config';
 			}
 
-			/*
-			 * Make sure the directory has the correct permissions. (0700)
-			 * Try to set it, warn if cannot.
-			 */
-			if ( decoct( fileperms( $cache_dir ) & 0777 ) !== '700' && ! chmod( $cache_dir, 0700 ) && ! App::getVar( 'WARNED_DIR_PERMISSION', false ) ) {
-				App::make( Output::class )->writeln(
-					sprintf(
-						'<info>QIT Warning: Could not set permissions on the QIT CLI config directory. Please check that PHP has write permission to file: %s</info>',
-						$cache_dir
-					)
-				);
+			$dirs[] = $xdg_config . '/woo-qit-cli/';
+		}
 
-				// Show this only once per request.
-				App::setVar( 'WARNED_DIR_PERMISSION', true );
+		$dirs[] = $home . 'woo-qit-cli/';
+
+		foreach ( $dirs as $dir ) {
+			if ( is_dir( $dir ) ) {
+				return $dir;
 			}
 
-			return $cache_dir;
+			if ( mkdir( $dir, 0700, true ) ) {
+				return $dir;
+			}
 		}
 
 		$message = '';
@@ -186,8 +188,18 @@ class Config {
 			$message .= 'The QIT CLI is meant to run on Unix environments, such as Windows WSL, Linux, or Mac. On native Windows, ';
 		}
 
-		$message .= "You need to set an environment variable 'QIT_CLI_CONFIG_DIR' pointing to a writable directory where the QIT CLI can write it's config file. Do NOT use a directory inside your plugin, as the config file will hold sensitive information that should not be included in your plugin.";
+		$message .= "You need to set an environment variable 'QIT_HOME' pointing to a writable directory where the QIT CLI can write it's config file. Do NOT use a directory inside your plugin, as the config file will hold sensitive information that should not be included in your plugin.";
 
 		throw new \RuntimeException( $message );
+	}
+
+	protected static function use_xdg(): bool {
+		foreach ( array_keys( $_SERVER ) as $key ) {
+			if ( strpos( $key, 'XDG_' ) === 0 ) {
+				return true;
+			}
+		}
+
+		return @is_dir( '/etc/xdg' );
 	}
 }
