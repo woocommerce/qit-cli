@@ -3,7 +3,7 @@
 namespace QIT_CLI;
 
 function is_windows(): bool {
-	return strtoupper( substr( PHP_OS, 0, 3 ) ) === 'WIN';
+	return defined( 'PHP_WINDOWS_VERSION_BUILD' );
 }
 
 function validate_authentication( string $username, string $application_password ): void {

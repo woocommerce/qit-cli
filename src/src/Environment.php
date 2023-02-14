@@ -187,12 +187,12 @@ class Environment {
 
 		// Are we deleting the environment we are currently in?
 		if ( Config::get_current_environment() === $environment ) {
-			$other_environments = self::get_configured_environments( false );
+			$other_environments = self::get_configured_environment_names( false );
 			// Switch to next available environment, if it exists.
 			if ( ! empty( $other_environments ) ) {
 				$next_environment = array_shift( $other_environments );
-				$this->switch_to_environment( $next_environment );
-				App::make( Output::class )->writeln( sprintf( "<comment>Switched to environment '%s'.</comment>", $next_environment ) );
+				$this->switch_to_environment( strtolower( $next_environment ) );
+				App::make( Output::class )->writeln( sprintf( "\n<comment>Switched to environment '%s'.</comment>", $next_environment ) );
 			} else {
 				Config::set_current_environment( 'default' );
 			}

@@ -19,6 +19,7 @@ define execPhpAlpine
 	docker run --rm \
 		--user $(DOCKER_USER) \
 		-v "${PWD}:/app" \
+		--env QIT_HOME=/tmp \
 		--workdir "$(2:=/)" \
 		qit-cli-php \
 		bash -c "php -d memory_limit=1G $(1)"

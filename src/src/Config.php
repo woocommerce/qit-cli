@@ -3,7 +3,6 @@
 namespace QIT_CLI;
 
 use QIT_CLI\Exceptions\IOException;
-use QIT_CLI\IO\Output;
 
 class Config {
 	/** @var string  */
@@ -154,7 +153,7 @@ class Config {
 			return $normalize_path( getenv( 'APPDATA' ) ) . 'woo-qit-cli';
 		}
 
-		if ( empty( getenv('HOME') ) ) {
+		if ( empty( getenv( 'HOME' ) ) ) {
 			throw new \RuntimeException( 'The HOME or QIT_HOME environment variables must be defined.' );
 		}
 
@@ -177,20 +176,14 @@ class Config {
 				return $dir;
 			}
 
-			if ( mkdir( $dir, 0700, true ) ) {
+			$dir_created = mkdir( $dir, 0700, true );
+
+			if ( $dir_created ) {
 				return $dir;
 			}
 		}
 
-		$message = '';
-
-		if ( is_windows() ) {
-			$message .= 'The QIT CLI is meant to run on Unix environments, such as Windows WSL, Linux, or Mac. On native Windows, ';
-		}
-
-		$message .= "You need to set an environment variable 'QIT_HOME' pointing to a writable directory where the QIT CLI can write it's config file. Do NOT use a directory inside your plugin, as the config file will hold sensitive information that should not be included in your plugin.";
-
-		throw new \RuntimeException( $message );
+		throw new \RuntimeException( "You need to set an environment variable 'QIT_HOME' pointing to a writable directory where the QIT CLI can write it's config file. Do NOT use a directory inside your plugin, as the config file will hold sensitive information that should not be included in your plugin." );
 	}
 
 	protected static function use_xdg(): bool {
