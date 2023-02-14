@@ -24,11 +24,30 @@ class Environment {
 	}
 
 	public function is_allowed_environment( string $environment ): bool {
+		// Partner environment.
 		if ( substr( $environment, 0, 8 ) === 'partner-' ) {
-			return preg_match( '/^partner-[a-z0-9]{1,60}$/', $environment );
-		}
+			$parts = explode( '-', $environment );
+			if ( count( $parts ) !== 3 ) {
+				return false;
+			}
+			if ( ! in_array( $parts[1], self::$allowed_environments, true ) ) {
+				return false;
+			}
 
-		return in_array( $environment, self::$allowed_environments, true );
+			/**
+			 * Validates whether a string is a valid WordPress username.
+			 *
+			 * This regular expression allows usernames that:
+			 * - Contain only letters (uppercase and lowercase), numbers, underscores, and hyphens.
+			 * - Are between 2 and 60 characters in length.
+			 *
+			 * Examples of valid usernames: my_username, john123, user-name_1.
+			 * Examples of invalid usernames: my@username, john.smith, a_very_long_username_that_is_more_than_60_characters.
+			 */
+			return preg_match( '#^[a-zA-Z0-9_\-]{2,60}$#', $parts[2] );
+		} else {
+			return in_array( $environment, self::$allowed_environments, true );
+		}
 	}
 
 	public function create_environment( string $environment, bool $switch_now = true ): void {
@@ -73,6 +92,10 @@ class Environment {
 		}
 	}
 
+	public function create_partner( string $partner, bool $switch_now = true ): void {
+		$this->create_environment( sprintf( 'partner-%s-%s', Config::get_current_environment(), $partner ), $switch_now );
+	}
+
 	/**
 	 * @param string $environment The environment to switch to.
 	 *
@@ -92,6 +115,14 @@ class Environment {
 
 		Config::set_current_environment( $environment );
 		$this->cache = App::make( Cache::class );
+	}
+
+	public function switch_to_partner( string $partner ): void {
+		$this->switch_to_environment( sprintf( 'partner-%s-%s', Config::get_current_environment(), $partner ) );
+	}
+
+	public function partner_exists( string $partner ): bool {
+		return $this->environment_exists( sprintf( 'partner-%s-%s', Config::get_current_environment(), $partner ) );
 	}
 
 	public function environment_exists( string $environment ): bool {
@@ -197,5 +228,9 @@ class Environment {
 				Config::set_current_environment( 'default' );
 			}
 		}
+	}
+
+	public function remove_partner( string $partner ): void {
+		$this->remove_environment( sprintf( 'partner-%s-%s', Config::get_current_environment(), $partner ) );
 	}
 }

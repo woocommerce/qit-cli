@@ -30,8 +30,8 @@ class SwitchPartner extends Command {
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		// Optionaly allow the Partner to be passed as an argument.
 		if ( ! empty( $input->getArgument( 'user' ) ) ) {
-			$this->environment->switch_to_environment( "partner-{$input->getArgument( 'user' )}" );
-			$output->writeln( "<info>Switched to Partner {$input->getArgument( 'user' )} successfully..</info>" );
+			$this->environment->switch_to_partner( $input->getArgument( 'user' ) );
+			$output->writeln( "<info>Switched to Partner {$input->getArgument( 'user' )} successfully.</info>" );
 
 			return Command::SUCCESS;
 		}
@@ -46,10 +46,14 @@ class SwitchPartner extends Command {
 
 		$current_environment = Config::get_current_environment();
 
+		$human_readable_partner = explode( '-', $current_environment );
+		$human_readable_partner = end( $human_readable_partner );
+
 		$question = new ChoiceQuestion(
-			sprintf( 'Current Partner: %s. Please choose a new Partner to switch to.', str_replace( 'partner-', '', $current_environment ) ),
+			sprintf( 'Current Partner: %s. Please choose a new Partner to switch to.', $human_readable_partner ),
 			array_merge( array_map( static function ( $e ) {
-				return str_replace( 'partner-', '', $e );
+				$h = explode( '-', $e );
+				return end( $h );
 			}, $environments ), [ '[Cancel]' ] ),
 			count( $environments ) // Cancel is the default.
 		);
@@ -60,7 +64,7 @@ class SwitchPartner extends Command {
 			case '[Cancel]':
 				return Command::SUCCESS;
 			default:
-				$this->environment->switch_to_environment( "partner-$new_environment" );
+				$this->environment->switch_to_partner( $new_environment);
 				$output->writeln( "<info>Switched to Partner $new_environment successfully.</info>" );
 
 				return Command::SUCCESS;

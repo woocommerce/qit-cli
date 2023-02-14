@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands\Partner;
 
+use QIT_CLI\Config;
 use QIT_CLI\Environment;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -29,7 +30,7 @@ class RemovePartner extends Command {
 		$user = $input->getArgument( 'user' );
 
 		try {
-			$this->environment->remove_environment( "partner-$user" );
+			$this->environment->remove_partner( $user );
 		} catch ( \InvalidArgumentException $e ) {
 			$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 

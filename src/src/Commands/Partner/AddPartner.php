@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
+use function QIT_CLI\get_manager_url;
 use function QIT_CLI\get_wccom_url;
 use function QIT_CLI\open_in_browser;
 use function QIT_CLI\validate_authentication;
@@ -50,6 +51,8 @@ class AddPartner extends Command {
 			$question = new Question( "<question>What's the username of the Partner you want to add? </question> " );
 			$user     = $this->getHelper( 'question' )->ask( $input, $output, $question );
 		}
+
+		$manager_url = get_manager_url();
 
 		$user = strtolower( $user );
 
@@ -115,13 +118,14 @@ TEXT;
 
 		$output->writeln( $easter_egg );
 
-		if ( $this->environment->environment_exists( "partner-$user" ) ) {
-			$this->environment->remove_environment( "partner-$user" );
+		if ( $this->environment->partner_exists( $user ) ) {
+			$this->environment->remove_partner( $user );
 		}
 
-		$this->environment->create_environment( "partner-$user" );
+		$this->environment->create_partner( $user );
 
 		$this->auth->set_auth_app_pass( $user, $application_password );
+		$this->environment->get_cache()->set( 'manager_url', $manager_url, - 1 );
 		$this->woo_extensions_list->fetch_woo_extensions_available();
 
 		$output->writeln( sprintf( "Cache file written to: %s. Keep this file safe, as it contains your Application Password.\n", $this->environment->get_cache()->get_cache_file_path() ) );
