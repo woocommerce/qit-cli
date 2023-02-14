@@ -184,10 +184,16 @@ class Environment {
 	 */
 	public function get_configured_environment_names( bool $partners_only = false ): array {
 		$environments = self::get_configured_environments( $partners_only );
+
 		foreach ( $environments as &$e ) {
-			$e = str_replace( [ '.env-partner-', '.env-', '.json' ], '', $e );
+			// "/tmp/qit/.env-default.json" => "/tmp/qit/.env-default"
+			$e = rtrim( $e, '.json' );
+
+			// "/tmp/qit/.env-default" => ".env-default"
 			$e = basename( $e );
-			$e = ucwords( $e );
+
+			// ".env-default" => "default"
+			$e = ltrim($e, '.env-');
 		}
 
 		return $environments;
