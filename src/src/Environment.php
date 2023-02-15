@@ -27,9 +27,11 @@ class Environment {
 		// Partner environment.
 		if ( substr( $environment, 0, 8 ) === 'partner-' ) {
 			$parts = explode( '-', $environment );
+			
 			if ( count( $parts ) !== 3 ) {
 				return false;
 			}
+
 			if ( ! in_array( $parts[1], self::$allowed_environments, true ) ) {
 				return false;
 			}
@@ -92,10 +94,6 @@ class Environment {
 		}
 	}
 
-	public function create_partner( string $partner, bool $switch_now = true ): void {
-		$this->create_environment( sprintf( 'partner-%s-%s', Config::get_current_environment(), $partner ), $switch_now );
-	}
-
 	/**
 	 * @param string $environment The environment to switch to.
 	 *
@@ -117,12 +115,39 @@ class Environment {
 		$this->cache = App::make( Cache::class );
 	}
 
+	public function create_partner( string $partner, bool $switch_now = true ): void {
+		$this->create_environment( $this->get_partner_filename( $partner ), $switch_now );
+	}
+
+	public function remove_partner( string $partner ): void {
+		$this->remove_environment( $this->get_partner_filename( $partner ) );
+	}
+
 	public function switch_to_partner( string $partner ): void {
-		$this->switch_to_environment( sprintf( 'partner-%s-%s', Config::get_current_environment(), $partner ) );
+		$this->switch_to_environment( $this->get_partner_filename( $partner ) );
 	}
 
 	public function partner_exists( string $partner ): bool {
-		return $this->environment_exists( sprintf( 'partner-%s-%s', Config::get_current_environment(), $partner ) );
+		return $this->environment_exists( $this->get_partner_filename( $partner ) );
+	}
+
+	public function get_partner_filename( string $partner ): string {
+		$current_environment = Config::get_current_environment();
+
+		/*
+		 * This code determines the current environment based on the partner environment file convention,
+		 * which follows the format: partner-{ENVIRONMENT}-{PARTNER}.
+		 * For example, if the current environment is a partner test environment, the file name convention
+		 * would be partner-tests-foopartner.
+		 * The code breaks the file name down into three parts and uses the second part as the current environment.
+		 * This is necessary to prevent the name generation from becoming recursively bigger if additional partners
+		 * are added while using a partner environment.
+		 */
+		if ( strpos( $current_environment, 'partner-' ) === 0 ) {
+			$current_environment = explode( '-', $current_environment )[1];
+		}
+
+		return sprintf( 'partner-%s-%s', $current_environment, $partner );
 	}
 
 	public function environment_exists( string $environment ): bool {
@@ -234,9 +259,5 @@ class Environment {
 				Config::set_current_environment( 'default' );
 			}
 		}
-	}
-
-	public function remove_partner( string $partner ): void {
-		$this->remove_environment( sprintf( 'partner-%s-%s', Config::get_current_environment(), $partner ) );
 	}
 }

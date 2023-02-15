@@ -1,0 +1,312 @@
+{
+    "user": {
+        "expire": -1,
+        "value": "foo_user"
+    },
+    "application_password": {
+        "expire": -1,
+        "value": "foo_pass"
+    },
+    "manager_url": {
+        "expire": -1,
+        "value": "https:\/\/compatibilitydashboard.wpcomstaging.com"
+    },
+    "manager_sync_v@QIT_CLI_VERSION@": {
+        "expire": 1234567890,
+        "value": {
+            "latest_cli_version": "0.1",
+            "enforce_latest": true,
+            "test_types": {
+                "e2e": "e2e",
+                "phpstan": "phpstan",
+                "compatibility": "compatibility",
+                "activation": "activation",
+                "security": "security"
+            },
+            "wccom_url": "https:\/\/woocommerce.test",
+            "schemas": {
+                "e2e": {
+                    "title": "e2eTest",
+                    "description": "Enqueue E2E Tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer"
+                        },
+                        "wordpress_version": {
+                            "description": "The WordPress version to use in the test.",
+                            "type": "string"
+                        },
+                        "woocommerce_version": {
+                            "description": "The WooCommerce version to use in the test.",
+                            "type": "string"
+                        },
+                        "optional_features": {
+                            "description": "WooCommerce features to enable in the testing environment.",
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "hpos": {
+                                    "description": "Whether or not to enable High Performance Order Storage in the testing environment.",
+                                    "type": "boolean"
+                                },
+                                "cc_blocks": {
+                                    "description": "Whether or not to enable Cart and Checkout Blocks in the testing environment.",
+                                    "type": "boolean"
+                                }
+                            }
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        },
+                        "additional_woo_plugins": {
+                            "description": "A comma-separated list of Additional WooCommerce Extension IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "integer",
+                                "minimum": 1
+                            }
+                        },
+                        "additional_wordpress_plugins": {
+                            "description": "A comma-separated list of Additional WordPress plugin slugs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        }
+                    }
+                },
+                "phpstan": {
+                    "title": "phpstanTest",
+                    "description": "Enqueue PHPStan tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer"
+                        },
+                        "wordpress_version": {
+                            "description": "The WordPress version to use in the test.",
+                            "type": "string"
+                        },
+                        "woocommerce_version": {
+                            "description": "The WooCommerce version to use in the test.",
+                            "type": "string"
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        }
+                    }
+                },
+                "compatibility": {
+                    "title": "compatibilityTest",
+                    "description": "Enqueue Compatibility tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer"
+                        },
+                        "wordpress_version": {
+                            "description": "The WordPress version to use in the test.",
+                            "type": "string"
+                        },
+                        "woocommerce_version": {
+                            "description": "The WooCommerce version to use in the test.",
+                            "type": "string"
+                        },
+                        "optional_features": {
+                            "description": "WooCommerce features to enable in the testing environment.",
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "hpos": {
+                                    "description": "Whether or not to enable High Performance Order Storage in the testing environment.",
+                                    "type": "boolean"
+                                },
+                                "cc_blocks": {
+                                    "description": "Whether or not to enable Cart and Checkout Blocks in the testing environment.",
+                                    "type": "boolean"
+                                }
+                            }
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        }
+                    }
+                },
+                "activation": {
+                    "title": "Activation Test",
+                    "description": "Enqueue Activation tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer"
+                        },
+                        "wordpress_version": {
+                            "description": "The WordPress version to use in the test.",
+                            "type": "string"
+                        },
+                        "woocommerce_version": {
+                            "description": "The WooCommerce version to use in the test.",
+                            "type": "string"
+                        },
+                        "optional_features": {
+                            "description": "WooCommerce features to enable in the testing environment.",
+                            "type": "object",
+                            "additionalProperties": false,
+                            "properties": {
+                                "hpos": {
+                                    "description": "Whether or not to enable High Performance Order Storage in the testing environment.",
+                                    "type": "boolean"
+                                },
+                                "cc_blocks": {
+                                    "description": "Whether or not to enable Cart and Checkout Blocks in the testing environment.",
+                                    "type": "boolean"
+                                }
+                            }
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        }
+                    }
+                },
+                "security": {
+                    "title": "Security Test",
+                    "description": "Enqueue Security tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer"
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "extensions": []
+        }
+    }
+}
