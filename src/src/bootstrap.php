@@ -15,6 +15,7 @@ use QIT_CLI\Commands\Partner\SwitchPartner;
 use QIT_CLI\Commands\SetProxyCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Config;
+use QIT_CLI\Diagnosis;
 use QIT_CLI\Environment;
 use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\Exceptions\UpdateRequiredException;
@@ -92,9 +93,10 @@ try {
 	}
 
 	// Run a quick diagnose check to see what might be happening and provide some feedback to the user.
-	( new \QIT_CLI\Diagnosis() )->run( App::make( Output::class ) );
+	App::make( Diagnosis::class )->run( App::make( Output::class ) );
 
-	echo $e->getMessage(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	App::make( Output::class )->writeln( $e->getMessage() );
+	App::make( Output::class )->writeln( '<fg=black;bg=yellow>[Synchronization with the Quality Insights Toolkit servers failed. Only limited commands are available]</>' );
 
 	return $application;
 }

@@ -17,7 +17,7 @@ class Diagnosis {
 		$connection_to_manager  = false;
 
 		// Check connection with internet.
-		$output->write( 'Checking connection to the internet... ' );
+		$output->write( 'Checking internet connection... ' );
 
 		$connected = fsockopen( 'www.google.com', 80 );
 
@@ -30,7 +30,7 @@ class Diagnosis {
 		}
 
 		// Check connection with Manager.
-		$output->write( 'Checking connection to QIT servers... ' );
+		$output->write( 'Checking QIT server connection... ' );
 
 		$parsed_url = parse_url( \QIT_CLI\get_manager_url() );
 
@@ -52,20 +52,15 @@ class Diagnosis {
 		$output->write( PHP_EOL );
 
 		if ( $connection_to_internet && $connection_to_manager ) {
-			$output->writeln( 'Connections to both the Internet and the QIT servers were successful. This is likely an internal issue with the QIT servers. Please try again later.' );
+			$output->writeln( 'Both the internet and QIT server connections were successful. This is likely an internal issue with the QIT servers. Please try again later.' );
 		}
 
 		if ( $connection_to_internet && ! $connection_to_manager ) {
-			$output->writeln( 'QIT server is down, but your internet connection seems to be working. This is likely an internal issue with the QIT servers. Please try again later.' );
+			$output->writeln( 'Unable to connect to QIT server. Your internet connection is working, but the QIT server connection failed. This is likely an internal issue with the QIT servers. Please try again later.' );
 		}
 
 		if ( ! $connection_to_internet && ! $connection_to_manager ) {
-			$output->writeln( 'The CLI tool could not connect to the internet nor the QIT servers. Please check your internet connection.' );
-		}
-
-		// phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
-		if ( ! $connection_to_internet && $connection_to_manager ) {
-			// no-op.
+			$output->writeln( 'The CLI tool was unable to connect to the internet or the QIT servers. Please check your internet connection and try again.' );
 		}
 	}
 }

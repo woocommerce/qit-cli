@@ -3,6 +3,7 @@
 use lucatume\DI52\Container;
 use QIT_CLI\App;
 use QIT_CLI\IO\Output;
+use Symfony\Component\Console\Application;
 
 try {
 	require_once __DIR__ . '/vendor/autoload.php';
@@ -12,6 +13,7 @@ try {
 	$container = new Container();
 	App::setContainer( $container );
 
+	/** @var Application $application */
 	$application = require_once __DIR__ . '/src/bootstrap.php';
 
 	// Handle CLI request.
