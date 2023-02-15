@@ -27,7 +27,7 @@ class Environment {
 		// Partner environment.
 		if ( substr( $environment, 0, 8 ) === 'partner-' ) {
 			$parts = explode( '-', $environment );
-			
+
 			if ( count( $parts ) !== 3 ) {
 				return false;
 			}
@@ -218,7 +218,7 @@ class Environment {
 			$e = basename( $e );
 
 			// ".env-default" => "default"
-			$e = ltrim($e, '.env-');
+			$e = ltrim( $e, '.env-' );
 		}
 
 		return $environments;

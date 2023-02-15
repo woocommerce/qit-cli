@@ -2,7 +2,6 @@
 
 namespace QIT_CLI\Commands\Partner;
 
-use QIT_CLI\Config;
 use QIT_CLI\Environment;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

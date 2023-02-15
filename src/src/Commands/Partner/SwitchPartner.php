@@ -64,7 +64,7 @@ class SwitchPartner extends Command {
 			case '[Cancel]':
 				return Command::SUCCESS;
 			default:
-				$this->environment->switch_to_partner( $new_environment);
+				$this->environment->switch_to_partner( $new_environment );
 				$output->writeln( "<info>Switched to Partner $new_environment successfully.</info>" );
 
 				return Command::SUCCESS;
