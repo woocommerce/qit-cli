@@ -38,7 +38,7 @@ build:
 			composer \
 			install --no-dev --quiet --optimize-autoloader --ignore-platform-reqs
 	@docker images -q | grep qit-cli-box || docker build -t qit-cli-box ./_build/docker/box
-	@docker run --rm -v ${PWD}:${PWD} -w ${PWD} -u "$(shell id -u):$(shell id -g)" qit-cli-box ./_build/box.phar compile -c ./_build/box.json.dist
+	@docker run --rm -v ${PWD}:${PWD} -w ${PWD} -u "$(shell id -u):$(shell id -g)" qit-cli-box ./_build/box.phar compile -c ./_build/box.json.dist --no-parallel || rm -rf src-tmp
 	@rm -rf src-tmp
 
 tests:
