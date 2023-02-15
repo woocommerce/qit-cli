@@ -25,10 +25,10 @@ class Auth {
 	}
 
 	/**
-	 * @return string|null CD_SECRET, or null if not defined.
+	 * @return string|null MANAGER_SECRET, or null if not defined.
 	 */
-	public function get_cd_secret() {
-		return $this->environment->get_cache()->get( 'cd_secret' );
+	public function get_manager_secret() {
+		return $this->environment->get_cache()->get( 'manager_secret' );
 	}
 
 	/**
@@ -43,15 +43,15 @@ class Auth {
 	}
 
 	/**
-	 * @param string $cd_secret
+	 * @param string $manager_secret
 	 *
 	 * @return void
 	 */
-	public function set_cd_secret( $cd_secret ): void {
-		$this->environment->get_cache()->set( 'cd_secret', $cd_secret, - 1 );
+	public function set_manager_secret( $manager_secret ): void {
+		$this->environment->get_cache()->set( 'manager_secret', $manager_secret, - 1 );
 	}
 
-	public function delete_cd_secret(): void {
-		$this->environment->get_cache()->delete( 'cd_secret' );
+	public function delete_manager_secret(): void {
+		$this->environment->get_cache()->delete( 'manager_secret' );
 	}
 }

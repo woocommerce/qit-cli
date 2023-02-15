@@ -65,20 +65,19 @@ class AddEnvironment extends Command {
 			switch ( $this->getHelper( 'question' )->ask( $input, $output, $question ) ) {
 				case 'Production (Default)':
 					$manager_url     = 'https://compatibilitydashboard.wpcomstaging.com';
-					$secret_store_id = '(Secret ID: 9769)';
+					$secret_store_id = '(Secret ID: 10523)';
 					$environment     = Environment::$allowed_environments['production'];
 					break;
 				case 'Staging (Only for QIT development)':
 					$manager_url     = 'https://stagingcompatibilitydashboard.wpcomstaging.com';
-					$secret_store_id = '(Secret ID: 9768)';
+					$secret_store_id = '(Secret ID: 10522)';
 					$environment     = Environment::$allowed_environments['staging'];
 					break;
 				case 'Local':
-					$question = new Question( "<question>What's the URL of the Manager you'd like to use? (Eg: http://qit_manager.loc:8081)</question> " );
+					$question = new Question( "<question>What's the URL of the Manager you'd like to use? (Default: http://qit.test:8081)</question> ", 'http://qit.test:8081' );
 					$question->setMaxAttempts( 3 );
 					$question->setValidator( function ( $manager_url ) {
-						// Remove underscores before validating because they are not allowed in a hostname. We should change cd_manager.loc to something else upstream.
-						if ( filter_var( str_replace( '_', '-', $manager_url ), FILTER_VALIDATE_URL ) === false ) {
+						if ( filter_var( $manager_url, FILTER_VALIDATE_URL ) === false ) {
 							throw new \UnexpectedValueException( 'Invalid URL.' );
 						}
 
@@ -100,7 +99,7 @@ class AddEnvironment extends Command {
 		$manager_url = rtrim( $manager_url, '/' );
 
 		if ( empty( $qit_secret ) ) {
-			$question = new Question( "<question>What's the QIT Secret of that Manager? $secret_store_id</question> " );
+			$question = new Question( "<question>What's the Manager Secret? $secret_store_id</question> " );
 			$question->setHidden( true );
 			$question->setHiddenFallback( false );
 			$qit_secret = $this->getHelper( 'question' )->ask( $input, $output, $question );
@@ -114,16 +113,16 @@ class AddEnvironment extends Command {
 			return Command::FAILURE;
 		}
 
-		$this->auth->set_cd_secret( $qit_secret );
+		$this->auth->set_manager_secret( $qit_secret );
 		$this->environment->get_cache()->set( 'manager_url', $manager_url, - 1 );
 
-		$output->writeln( "Validating your QIT Secret against $manager_url..." );
+		$output->writeln( "Validating your Manager Secret against $manager_url..." );
 		try {
 			$this->woo_extensions_list->fetch_woo_extensions_available();
 		} catch ( \Exception $e ) {
-			$this->auth->delete_cd_secret();
+			$this->auth->delete_manager_secret();
 			$this->environment->get_cache()->delete( 'manager_url' );
-			$output->writeln( sprintf( '<error>We could not authenticate to %s using the provided QIT Secret.</error>', escapeshellarg( $manager_url ) ) );
+			$output->writeln( sprintf( '<error>We could not authenticate to %s using the provided Manager Secret.</error>', escapeshellarg( $manager_url ) ) );
 			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
 			return Command::FAILURE;
