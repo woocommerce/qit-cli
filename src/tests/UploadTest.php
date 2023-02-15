@@ -1,12 +1,17 @@
 <?php
 
+namespace QIT_CLI_Tests;
+
+use Exception;
 use QIT_CLI\App;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
+use RuntimeException;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Console\Output\NullOutput;
+use ZipArchive;
 
-class UploadTest extends \PHPUnit\Framework\TestCase {
+class UploadTest extends QITTestCase {
 	use MatchesSnapshots;
 
 	protected $to_delete = [];

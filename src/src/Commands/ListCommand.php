@@ -3,22 +3,21 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\Auth;
-use QIT_CLI\Config;
+use QIT_CLI\Environment;
 use QIT_CLI\RequestBuilder;
-use QIT_CLI\TestTypes;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use function QIT_CLI\get_cd_manager_url;
+use function QIT_CLI\get_manager_url;
 
 class ListCommand extends Command {
 	protected static $defaultName = 'list-tests'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Config $config */
-	protected $config;
+	/** @var Environment $environment */
+	protected $environment;
 
 	/** @var Auth $auth */
 	protected $auth;
@@ -26,19 +25,15 @@ class ListCommand extends Command {
 	/** @var WooExtensionsList $woo_extensions_list */
 	protected $woo_extensions_list;
 
-	/** @var TestTypes $test_types */
-	protected $test_types;
-
-	public function __construct( Config $config, Auth $auth, WooExtensionsList $woo_extensions_list, TestTypes $test_types ) {
-		$this->config              = $config;
+	public function __construct( Environment $environment, Auth $auth, WooExtensionsList $woo_extensions_list ) {
+		$this->environment         = $environment;
 		$this->auth                = $auth;
 		$this->woo_extensions_list = $woo_extensions_list;
-		$this->test_types          = $test_types;
 		parent::__construct();
 	}
 
 	protected function configure() {
-		$test_types_list = implode( ', ', $this->test_types->get_test_types() );
+		$test_types_list = implode( ', ', $this->environment->get_cache()->get_manager_sync_data( 'test_types' ) );
 		$this
 			->setDescription( 'List test runs.' )
 			->addOption( 'test_status', 's', InputOption::VALUE_OPTIONAL, '(Optional) What test status to retrieve.' )
@@ -63,7 +58,7 @@ class ListCommand extends Command {
 		}
 
 		try {
-			$response = ( new RequestBuilder( get_cd_manager_url() . '/wp-json/cd/v1/get' ) )
+			$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get' ) )
 				->with_method( 'POST' )
 				->with_post_body( [
 					'woo_ids'     => $woo_ids,
@@ -93,7 +88,15 @@ class ListCommand extends Command {
 			return Command::SUCCESS;
 		}
 
-		$columns_to_hide = [ 'test_log', 'test_result_json', 'test_result_aws_expiration', 'is_development', 'version' ];
+		$columns_to_hide = [
+			'test_log',
+			'test_result_json',
+			'test_result_aws_expiration',
+			'is_development',
+			'version',
+			'client',
+			'event',
+		];
 
 		// Prepare the data to be rendered.
 		foreach ( $test_runs as $k => &$t ) {

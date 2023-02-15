@@ -2,41 +2,17 @@
 
 namespace QIT_CLI\Commands;
 
-use QIT_CLI\Auth;
-use QIT_CLI\Config;
 use QIT_CLI\RequestBuilder;
-use QIT_CLI\TestTypes;
-use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use function QIT_CLI\get_cd_manager_url;
+use function QIT_CLI\get_manager_url;
 use function QIT_CLI\open_in_browser;
 
 class GetCommand extends Command {
 	protected static $defaultName = 'get'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
-
-	/** @var Config $config */
-	protected $config;
-
-	/** @var Auth $auth */
-	protected $auth;
-
-	/** @var WooExtensionsList $woo_extensions_list */
-	protected $woo_extensions_list;
-
-	/** @var TestTypes $test_types */
-	protected $test_types;
-
-	public function __construct( Config $config, Auth $auth, WooExtensionsList $woo_extensions_list, TestTypes $test_types ) {
-		$this->config              = $config;
-		$this->auth                = $auth;
-		$this->woo_extensions_list = $woo_extensions_list;
-		$this->test_types          = $test_types;
-		parent::__construct();
-	}
 
 	protected function configure() {
 		$this
@@ -46,9 +22,8 @@ class GetCommand extends Command {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
-
 		try {
-			$response = ( new RequestBuilder( get_cd_manager_url() . '/wp-json/cd/v1/get-single' ) )
+			$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get-single' ) )
 				->with_method( 'POST' )
 				->with_post_body( [
 					'test_run_id' => $input->getArgument( 'test_run_id' ),

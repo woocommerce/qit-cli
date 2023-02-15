@@ -2,36 +2,33 @@
 
 namespace QIT_CLI;
 
-use QIT_CLI\Commands\InitCommand;
-
 class Auth {
-	/** @var Config $config */
-	protected $config;
+	/** @var Environment $environment */
+	protected $environment;
 
-	public function __construct( Config $config ) {
-		$this->config = $config;
+	public function __construct( Environment $environment ) {
+		$this->environment = $environment;
 	}
 
 	/**
-	 * @return string Return credentials, either an base64 of user:application_password, or the CD_SECRET if defined.
-	 *
-	 * @throws \RuntimeException When using application password and it's empty.
+	 * @return string|null base64 encoded string of user:application_password, or null if not defined.
 	 */
-	public function get_auth(): string {
-		$override = $this->config->get_cache( 'cd_secret' );
+	public function get_app_pass() {
+		$user                 = $this->environment->get_cache()->get( 'user' );
+		$application_password = $this->environment->get_cache()->get( 'application_password' );
 
-		if ( ! is_null( $override ) ) {
-			return (string) $override;
+		if ( ! empty( $user ) && ! empty( $application_password ) ) {
+			return base64_encode( sprintf( '%s:%s', $user, $application_password ) );
 		}
 
-		$user                 = $this->config->get_cache( 'user' );
-		$application_password = $this->config->get_cache( 'application_password' );
+		return null;
+	}
 
-		if ( empty( $user ) || empty( $application_password ) ) {
-			throw new \RuntimeException( sprintf( 'Invalid credentials. Please run the "%s" command.', InitCommand::getDefaultName() ) );
-		}
-
-		return base64_encode( sprintf( '%s:%s', $user, $application_password ) );
+	/**
+	 * @return string|null CD_SECRET, or null if not defined.
+	 */
+	public function get_cd_secret() {
+		return $this->environment->get_cache()->get( 'cd_secret' );
 	}
 
 	/**
@@ -41,8 +38,8 @@ class Auth {
 	 * @return void
 	 */
 	public function set_auth_app_pass( $user, $app_pass ): void {
-		$this->config->set_cache( 'user', $user, - 1 );
-		$this->config->set_cache( 'application_password', $app_pass, - 1 );
+		$this->environment->get_cache()->set( 'user', $user, - 1 );
+		$this->environment->get_cache()->set( 'application_password', $app_pass, - 1 );
 	}
 
 	/**
@@ -51,10 +48,10 @@ class Auth {
 	 * @return void
 	 */
 	public function set_cd_secret( $cd_secret ): void {
-		$this->config->set_cache( 'cd_secret', $cd_secret, - 1 );
+		$this->environment->get_cache()->set( 'cd_secret', $cd_secret, - 1 );
 	}
 
 	public function delete_cd_secret(): void {
-		$this->config->delete_cache( 'cd_secret' );
+		$this->environment->get_cache()->delete( 'cd_secret' );
 	}
 }

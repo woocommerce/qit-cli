@@ -59,7 +59,7 @@ class Upload {
 			$current_chunk ++;
 
 			$r = $this->request_builder
-					->with_url( get_cd_manager_url() . '/wp-json/cd/v1/upload-build' )
+					->with_url( get_manager_url() . '/wp-json/cd/v1/upload-build' )
 					->with_method( 'POST' )
 					->with_expected_status_codes( [ 200, 206 ] )
 					->with_post_body( [

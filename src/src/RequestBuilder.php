@@ -3,6 +3,7 @@
 namespace QIT_CLI;
 
 use QIT_CLI\Exceptions\DoingAutocompleteException;
+use QIT_CLI\Exceptions\NetworkErrorException;
 
 class RequestBuilder implements \JsonSerializable {
 	/** @var string $url */
@@ -80,6 +81,15 @@ class RequestBuilder implements \JsonSerializable {
 	}
 
 	public function request(): string {
+		if ( defined( 'UNIT_TESTS' ) ) {
+			$mocked = App::getVar( 'mock_' . $this->url );
+			if ( is_null( $mocked ) ) {
+				throw new \LogicException( 'No mock found for ' . $this->url );
+			}
+
+			return $mocked;
+		}
+
 		if ( empty( $this->url ) ) {
 			throw new \LogicException( 'URL cannot be empty.' );
 		}
@@ -95,13 +105,24 @@ class RequestBuilder implements \JsonSerializable {
 			CURLOPT_URL            => $this->url,
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_CONNECTTIMEOUT => 15,
+			CURLOPT_TIMEOUT        => 15,
 		];
 
 		$this->post_body['client'] = 'qit_cli';
 
-		// Is this a CD Manager request?
-		if ( strpos( $this->url, get_cd_manager_url() ) === 0 ) {
-			$this->post_body['cd_secret'] = App::make( Auth::class )->get_auth();
+		$proxied = false;
+
+		if ( ! is_null( App::make( Auth::class )->get_cd_secret() ) ) {
+			$this->post_body['cd_secret'] = App::make( Auth::class )->get_cd_secret();
+			// Connections using the CD_SECRET that are not local must go through Automattic Proxy.
+			if ( strpos( $this->url, '.loc' ) === false ) {
+				$proxied                              = true;
+				$curl_parameters[ CURLOPT_PROXY ]     = Config::get_proxy_url();
+				$curl_parameters[ CURLOPT_PROXYTYPE ] = CURLPROXY_SOCKS5;
+			}
+		} elseif ( ! is_null( App::make( Auth::class )->get_app_pass() ) ) {
+			$this->post_body['partner_app_pass'] = App::make( Auth::class )->get_app_pass();
 		}
 
 		switch ( $this->method ) {
@@ -127,7 +148,10 @@ class RequestBuilder implements \JsonSerializable {
 		$response_status_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
 
 		if ( ! in_array( $response_status_code, $this->expected_status_codes, true ) ) {
-			throw new \Exception(
+			if ( $proxied && $result === false ) {
+				$result = sprintf( 'Is the Automattic Proxy running and accessible through %s?', Config::get_proxy_url() );
+			}
+			throw new NetworkErrorException(
 				sprintf(
 					'Expected return status code(s): %s. Got return status code: %s. Error message: %s',
 					implode( ', ', $this->expected_status_codes ),

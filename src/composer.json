@@ -13,12 +13,17 @@
       "QIT_CLI\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "QIT_CLI_Tests\\": "tests/"
+    }
+  },
   "require": {
     "php": "^7.2.5 | ^8",
     "ext-curl": "*",
     "ext-zip": "*",
     "symfony/console": "^5",
-    "lucatume/di52": "^3.0.1",
+    "lucatume/di52": "^3",
     "stecman/symfony-console-completion": "^0.11.0"
   },
   "require-dev": {

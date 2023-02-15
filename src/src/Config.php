@@ -2,195 +2,126 @@
 
 namespace QIT_CLI;
 
-use QIT_CLI\IO\Output;
+use QIT_CLI\Exceptions\IOException;
 
 class Config {
-	/** @var array<scalar|array<scalar>> */
-	protected $schema = [
-		'user'                 => '',
-		'application_password' => '',
-		'test_types'           => [],
-		'cache'                => [],
-	];
+	/** @var string  */
+	protected $config_file;
 
-	/** @var array<scalar|array<scalar>> $config */
+	/** @var array<scalar> */
 	protected $config = [];
 
+	/** @var array<scalar> */
+	protected $schema = [
+		'current_environment' => 'default',
+		'development_mode'    => false,
+		'proxy_url'           => '127.0.0.1:8080',
+		'last_diagnosis'      => 0,
+	];
+
+	/** @var bool */
+	protected $did_init = false;
+
 	public function __construct() {
-		$this->init_config();
-	}
-
-
-	/**
-	 * @param string $key The key to retrieve from the config file.
-	 *
-	 * @throws \InvalidArgumentException When the provided key does not exist in the config.
-	 *
-	 * @return mixed The value stored in the config.
-	 */
-	public function get( string $key ) {
-		if ( ! array_key_exists( $key, $this->config ) ) {
-			throw new \InvalidArgumentException( "The config item $key does not exist." );
+		if ( count( func_get_args() ) > 0 ) {
+			// Please do not add arguments to this constructor.
+			throw new \LogicException();
 		}
 
-		return $this->config[ $key ];
+		$this->config_file = self::get_qit_dir() . '.qit-config.json';
+		$this->init();
+	}
+
+	public static function set_development_mode( bool $development_mode ): void {
+		App::make( self::class )->set( 'development_mode', $development_mode );
 	}
 
 	/**
-	 * Set something in the config file.
-	 *
-	 * @param string $key The key to save in the config file.
-	 * @param mixed  $value The value to save in the config file. Must be able to be cast to JSON.
-	 *
-	 * @throws \InvalidArgumentException When could not write to the CD Config file.
+	 * @return bool True if running in Developer mode. False if not.
+	 */
+	public static function is_development_mode(): bool {
+		return (bool) App::make( self::class )->get( 'development_mode' );
+	}
+
+	public static function set_current_environment( string $environment ): void {
+		App::make( self::class )->set( 'current_environment', $environment );
+	}
+
+	public static function get_current_environment(): string {
+		return (string) App::make( self::class )->get( 'current_environment' ) ?: 'default';
+	}
+
+	public static function set_proxy_url( string $proxy_url ): void {
+		App::make( self::class )->set( 'proxy_url', $proxy_url );
+	}
+
+	public static function get_proxy_url(): string {
+		return (string) App::make( self::class )->get( 'proxy_url' ) ?: '127.0.0.1:8080';
+	}
+
+	public static function set_last_diagnosis( int $last_diagnosis ): void {
+		App::make( self::class )->set( 'last_diagnosis', $last_diagnosis );
+	}
+
+	public static function get_last_diagnosis(): int {
+		return (int) App::make( self::class )->get( 'last_diagnosis' ) ?: 0;
+	}
+
+	/**
+	 * @param string $key
+	 * @param scalar $value
 	 *
 	 * @return void
+	 * @throws IOException When can't write to file.
 	 */
-	public function set( string $key, $value ) {
-		if ( ! array_key_exists( $key, $this->schema ) ) {
-			throw new \InvalidArgumentException( "Cannot write to QIT CLI file, as $key is not in the config schema." );
-		}
-
+	protected function set( string $key, $value ): void {
 		$this->config[ $key ] = $value;
 		$this->save();
 	}
 
 	/**
-	 * @param string              $key The cache key.
-	 * @param scalar|array<mixed> $value The cache value.
-	 * @param int                 $expire How many seconds from now should this cache expire. -1 for no expiration.
+	 * @param string $key The config key to retrieve.
 	 *
+	 * @return scalar|null
+	 */
+	protected function get( string $key ) {
+		return $this->config[ $key ] ?? null;
+	}
+
+	/**
 	 * @return void
+	 * @throws IOException If can't write to file.
 	 */
-	public function set_cache( string $key, $value, int $expire ): void {
-		try {
-			$cache = $this->get( 'cache' );
-
-			if ( ! is_array( $cache ) ) {
-				$cache = [];
-			}
-		} catch ( \Exception $e ) {
-			$cache = [];
-		}
-
-		if ( $expire !== - 1 ) {
-			$expire = time() + $expire;
-		}
-
-		$cache[ $key ] = [
-			'expire' => $expire,
-			'value'  => $value,
-		];
-
-		$this->set( 'cache', $cache );
-	}
-
-	/**
-	 * @param string $key The cache key to get.
-	 * @param bool   $ignore_expiration If true, it will return an expired cache entry if available.
-	 *
-	 * @return mixed|null Whatever is in the cache, either a scalar or an array of scalars or array of arrays of scalars. Null if cache not found.
-	 */
-	public function get_cache( string $key, bool $ignore_expiration = false ) {
-		try {
-			$cache = $this->get( 'cache' );
-
-			if ( ! is_array( $cache ) ) {
-				$cache = [];
-			}
-		} catch ( \Exception $e ) {
-			$cache = [];
-		}
-
-		// Delete expired caches.
-		$deleted = 0;
-		foreach ( $cache as $k => $c ) {
-			// Skip caches with no expiration.
-			if ( $c['expire'] === - 1 ) {
-				continue;
-			}
-
-			if ( $ignore_expiration === false && time() > $c['expire'] ) {
-				$deleted ++;
-				unset( $cache[ $k ] );
-			}
-		}
-
-		if ( $deleted > 0 ) {
-			if ( App::make( Output::class )->isVeryVerbose() ) {
-				App::make( Output::class )->writeln( "[Info]: Deleting $deleted expired cache entries." );
-			}
-
-			$this->set( 'cache', $cache );
-		}
-
-		if ( ! array_key_exists( $key, $cache ) ) {
-			return null;
-		}
-
-		return $cache[ $key ]['value'];
-	}
-
-	/**
-	 * @param string $key The cache key to delete.
-	 *
-	 * @return void
-	 */
-	public function delete_cache( string $key ) {
-		try {
-			$cache = $this->get( 'cache' );
-
-			if ( ! is_array( $cache ) ) {
-				$cache = [];
-			}
-		} catch ( \Exception $e ) {
-			$cache = [];
-		}
-
-		unset( $cache[ $key ] );
-
-		$this->set( 'cache', $cache );
-	}
-
-	/**
-	 * Read the config file and store it on this instance.
-	 *
-	 * @throws \RuntimeException When could not read the config file.
-	 */
-	protected function init_config(): void {
-		if ( ! file_exists( $this->get_config_filepath() ) ) {
-			return;
-		}
-
-		$data = file_get_contents( $this->get_config_filepath() );
-
-		if ( $data === false ) {
-			throw new \RuntimeException( 'Could not read config file. Please check if PHP has read permissions on file ' . $this->get_config_filepath() );
-		}
-
-		$config = json_decode( $data, true ) ?: [];
-
-		// Generate an array with the existing data. Fill-in the blanks with the schema.
-		$config = array_merge( $this->schema, $config );
-
-		// Remove items that are not in the schema.
-		$config = array_intersect_key( $config, $this->schema );
-
-		$this->config = $config;
-	}
-
-	/**
-	 * Write the config to file.
-	 *
-	 * @throws \RuntimeException When could not write to the config file.
-	 *
-	 * @return void
-	 */
-	public function save(): void {
-		$written = file_put_contents( $this->get_config_filepath(), json_encode( $this->config, JSON_PRETTY_PRINT ) );
+	protected function save() {
+		$json    = json_encode( $this->config, JSON_PRETTY_PRINT );
+		$written = file_put_contents( $this->config_file, $json );
 
 		if ( ! $written ) {
-			throw new \RuntimeException( sprintf( "Could not write to the file %s. Please check if it's writable.", $this->get_config_dir() . '/.woo-qit-cli' ) );
+			throw IOException::cant_write_to_file( $this->config_file );
+		}
+	}
+
+	protected function init(): void {
+		if ( $this->did_init ) {
+			return;
+		} else {
+			$this->did_init = true;
+		}
+
+		if ( file_exists( $this->config_file ) ) {
+			$config = json_decode( file_get_contents( $this->config_file ), true );
+
+			if ( ! is_array( $config ) ) {
+				throw new \UnexpectedValueException( 'Config is not JSON.' );
+			}
+
+			// Generate an array with the existing data. Fill-in the blanks with the schema.
+			$config = array_merge( $this->schema, $config );
+
+			// Remove items that are not in the schema.
+			$config = array_intersect_key( $config, $this->schema );
+
+			$this->config = $config;
 		}
 	}
 
@@ -198,85 +129,70 @@ class Config {
 	 * @throws \RuntimeException When it can't find the QIT CLI directory.
 	 * @return string The path to the QIT CLI directory.
 	 */
-	protected function get_config_dir(): string {
-		// Windows alternative.
-		if ( ! empty( getenv( 'QIT_CLI_CONFIG_DIR' ) ) ) {
-			if ( ! file_exists( getenv( 'QIT_CLI_CONFIG_DIR' ) ) ) {
-				throw new \RuntimeException( sprintf( 'The QIT_CLI_CONFIG_DIR environment variable is defined, but points to a non-existing directory: %s', getenv( 'QIT_CLI_CONFIG_DIR' ) ) );
+	public static function get_qit_dir(): string {
+		$normalize_path = static function ( string $path ): string {
+			// Converts Windows-style directory separator to Unix-style. Makes sure it ends with a trailing slash.
+			return rtrim( str_replace( '\\', '/', $path ), '/' ) . '/';
+		};
+
+		// Allow override.
+		if ( ! empty( getenv( 'QIT_HOME' ) ) ) {
+			if ( ! file_exists( getenv( 'QIT_HOME' ) ) ) {
+				throw new \RuntimeException( sprintf( 'The QIT_HOME environment variable is defined, but points to a non-existing directory: %s', getenv( 'QIT_CLI_CONFIG_DIR' ) ) );
 			}
 
-			return getenv( 'QIT_CLI_CONFIG_DIR' );
+			return $normalize_path( getenv( 'QIT_HOME' ) );
 		}
 
-		// Unix.
-		if ( isset( $_SERVER['HOME'] ) ) {
-			if ( ! file_exists( $_SERVER['HOME'] ) ) {
-				throw new \RuntimeException( sprintf( 'The HOME environment variable is defined, but points to a non-existing directory: %s', $_SERVER['HOME'] ) );
-			}
-
-			return $_SERVER['HOME'];
-		}
-
-		$message = '';
-
+		// Windows.
 		if ( is_windows() ) {
-			$message .= 'The QIT CLI is meant to run on Unix environments, such as Windows WSL, Linux, or Mac. On native Windows, ';
+			if ( empty( getenv( 'APPDATA' ) ) ) {
+				throw new \RuntimeException( 'The APPDATA or QIT_HOME environment variables must be defined.' );
+			}
+
+			return $normalize_path( getenv( 'APPDATA' ) ) . 'woo-qit-cli';
 		}
 
-		$message .= "You need to set an environment variable 'QIT_CLI_CONFIG_DIR' pointing to a writable directory where the QIT CLI can write it's config file. Do NOT use a directory inside your plugin, as the config file will hold sensitive information that should not be included in your plugin.";
+		if ( empty( getenv( 'HOME' ) ) ) {
+			throw new \RuntimeException( 'The HOME or QIT_HOME environment variables must be defined.' );
+		}
 
-		throw new \RuntimeException( $message );
-	}
+		$home = $normalize_path( getenv( 'HOME' ) );
+		$dirs = [];
 
-	/**
-	 * @return string The file path of the QIT CLI config file.
-	 */
-	public function get_config_filepath(): string {
-		return App::getVar( 'override_cd_config_file', $this->get_config_dir() . '/.woo-qit-cli' );
-	}
+		if ( static::use_xdg() ) {
+			$xdg_config = getenv( 'XDG_CONFIG_HOME' );
+			if ( ! $xdg_config ) {
+				$xdg_config = $home . '.config';
+			}
 
-	/**
-	 * Delete the CD Config file, resetting the QIT CLI to a clean state.
-	 *
-	 * @throws \RuntimeException When could not delete the config file.
-	 *
-	 * @return void
-	 */
-	public function reset(): void {
-		if ( file_exists( $this->get_config_filepath() ) ) {
-			$unlinked = unlink( $this->get_config_filepath() );
-			if ( ! $unlinked ) {
-				throw new \RuntimeException( 'Could not delete config file. Please check if PHP has read permissions on file ' . $this->get_config_filepath() );
+			$dirs[] = $xdg_config . '/woo-qit-cli/';
+		}
+
+		$dirs[] = $home . 'woo-qit-cli/';
+
+		foreach ( $dirs as $dir ) {
+			if ( is_dir( $dir ) ) {
+				return $dir;
+			}
+
+			$dir_created = mkdir( $dir, 0700, true );
+
+			if ( $dir_created ) {
+				return $dir;
 			}
 		}
+
+		throw new \RuntimeException( "You need to set an environment variable 'QIT_HOME' pointing to a writable directory where the QIT CLI can write it's config file. Do NOT use a directory inside your plugin, as the config file will hold sensitive information that should not be included in your plugin." );
 	}
 
-	/**
-	 * @return bool True if the QIT CLI is initialized. False if not.
-	 * @throws \RuntimeException When the QIT CLI config file exists, but is not readable.
-	 */
-	public function is_initialized(): bool {
-		if ( ! file_exists( $this->get_config_filepath() ) ) {
-			return false;
+	protected static function use_xdg(): bool {
+		foreach ( array_keys( $_SERVER ) as $key ) {
+			if ( strpos( $key, 'XDG_' ) === 0 ) {
+				return true;
+			}
 		}
 
-		if ( ! is_readable( $this->get_config_filepath() ) ) {
-			throw new \RuntimeException( sprintf( 'The config file exists but it\'s not readable: %s', $this->get_config_dir() . '/.woo-qit-cli' ) );
-		}
-
-		$json = json_decode( file_get_contents( $this->get_config_filepath() ), true );
-
-		if ( ! is_array( $json ) ) {
-			return false;
-		}
-
-		$has_application_password_auth = ! empty( $json['user'] ) && ! empty( $json['application_password'] );
-		$has_cd_secret                 = ! empty( $json['cache']['cd_secret'] );
-
-		if ( ! $has_application_password_auth && ! $has_cd_secret ) {
-			return false;
-		}
-
-		return true;
+		return @is_dir( '/etc/xdg' );
 	}
 }
