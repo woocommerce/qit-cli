@@ -1,0 +1,13 @@
+{
+    "url": "https:\/\/compatibilitydashboard.wpcomstaging.com\/wp-json\/cd\/v1\/enqueue-e2e",
+    "method": "POST",
+    "post_body": {
+        "additional_woo_plugins": "456,789",
+        "woo_id": "123",
+        "event": "cli_published_extension_test"
+    },
+    "curl_opts": [],
+    "expected_status_codes": [
+        200
+    ]
+}
