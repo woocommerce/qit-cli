@@ -306,7 +306,20 @@
                     }
                 }
             },
-            "extensions": []
+            "extensions": [
+                {
+                    "id": 123,
+                    "slug": "foo-extension"
+                },
+                {
+                    "id": 456,
+                    "slug": "bar-extension"
+                },
+                {
+                    "id": 789,
+                    "slug": "baz-extension"
+                }
+            ]
         }
     }
 }
