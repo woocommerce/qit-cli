@@ -39,7 +39,7 @@ class GetCommand extends Command {
 		}
 
 		if ( $input->getOption( 'json' ) ) {
-			echo $response;
+			$output->write( $response );
 
 			return Command::SUCCESS;
 		}
