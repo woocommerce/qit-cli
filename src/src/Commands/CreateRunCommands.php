@@ -197,6 +197,7 @@ class CreateRunCommands {
 					do {
 						$command = $this->getApplication()->find( GetCommand::getDefaultName() );
 
+						// When checking for finished status, return status code is 0 if finished, 1 if not.
 						$finished = $command->run( new ArrayInput( [
 							'test_run_id' => $response['run_id'],
 							'--check_finished' => true,
@@ -220,7 +221,9 @@ class CreateRunCommands {
 				if ( $waited ) {
 					$output->writeln( sprintf( '<info>Test run completed.</info>' ) );
 					$command = $this->getApplication()->find( GetCommand::getDefaultName() );
-					$command->run( new ArrayInput( [
+
+					// If waiting, the exit status code will come from the GetCommand.
+					return $command->run( new ArrayInput( [
 						'test_run_id' => $response['run_id'],
 					] ), $output );
 				} else {
@@ -234,9 +237,9 @@ class CreateRunCommands {
 					$table->render();
 					$output->writeln('');
 					$output->writeln( sprintf( '<info>You can follow up on the result of the test using the URL above, with the command "%s %s %d", or by passing the "--wait" option when running tests.</info>', basename( $_SERVER['argv'][0] ), GetCommand::getDefaultName(), $response['run_id'] ) );
-				}
 
-				return Command::SUCCESS;
+					return Command::SUCCESS;
+				}
 			}
 		};
 
