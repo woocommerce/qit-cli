@@ -21,7 +21,10 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 	}
 
 	public function test_run_with_additional_woo_plugins() {
-		App::setVar( sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/enqueue-e2e' ), 'NULL_RESPONSE' );
+		App::setVar( sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/enqueue-e2e' ), json_encode( [
+			'run_id'            => 123456,
+			'result_view_token' => ''
+		] ) );
 
 		$this->application_tester->run( [
 			'command'                  => 'run:e2e',
