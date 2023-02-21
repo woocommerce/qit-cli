@@ -106,10 +106,7 @@ class GetCommand extends Command {
 
 			switch ( $test_key ) {
 				case 'is_development':
-					if ( ! empty( $v ) ) {
-						// 1 => Yes
-						$v = 'Yes';
-					}
+					$v = 'Yes'; // If this is not empty, it's "Yes".
 					break;
 			}
 
@@ -127,6 +124,12 @@ class GetCommand extends Command {
 			// Remove some columns.
 			if ( in_array( $test_key, $columns_to_hide, true ) ) {
 				unset( $test_run[ $test_key ] );
+			}
+
+			// Rename "Result View Token" to "Result URL".
+			if ( $test_key === 'result_view_token' ) {
+				$test_run['result_url'] = $v;
+				unset( $test_run['result_view_token'] );
 			}
 		}
 
