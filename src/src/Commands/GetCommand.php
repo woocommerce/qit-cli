@@ -20,8 +20,8 @@ class GetCommand extends Command {
 			->setDescription( 'Get a single test run.' )
 			->setHelp( 'Get a single test run.' )
 			->addArgument( 'test_run_id', InputArgument::REQUIRED )
-			->addOption('open', 'o', InputOption::VALUE_NEGATABLE, 'Open the test run in the browser.', false)
-			->addOption('json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false);
+			->addOption( 'open', 'o', InputOption::VALUE_NEGATABLE, 'Open the test run in the browser.', false )
+			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -94,10 +94,7 @@ class GetCommand extends Command {
 
 			switch ( $test_key ) {
 				case 'is_development':
-					if ( ! empty( $v ) ) {
-						// 1 => Yes
-						$v = 'Yes';
-					}
+					$v = 'Yes'; // If this is not empty, it's "Yes".
 					break;
 			}
 
