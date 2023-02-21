@@ -18,7 +18,7 @@ class GetCommand extends Command {
 	protected function configure() {
 		$this
 			->setDescription( 'Get a single test run.' )
-			->setHelp( 'Get a single test run.' )
+			->setHelp( 'Get a single test run. Exit status codes: 0 (success), 1 (failed), 2 (warning), 3 (others).' )
 			->addArgument( 'test_run_id', InputArgument::REQUIRED )
 			->addOption('open', 'o', InputOption::VALUE_NEGATABLE, 'Open the test run in the browser.', false)
 			->addOption('json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false)
@@ -39,29 +39,30 @@ class GetCommand extends Command {
 			return Command::FAILURE;
 		}
 
-		if ( $input->getOption( 'json' ) ) {
-			$output->write( $response );
-
-			return Command::SUCCESS;
-		}
-
 		$test_run = json_decode( $response, true );
 
-		if ( ! is_array( $test_run ) ) {
-			$output->writeln( '<error>Could not retrieve test run.</error>' );
-
-			if ( $output->isVeryVerbose() ) {
-				$output->writeln( 'Raw response:' );
-				$output->writeln( $response );
-			}
-
+		if ( ! is_array( $test_run ) || ! array_key_exists( 'status', $test_run ) ) {
 			return Command::FAILURE;
 		}
 
-		if ( empty( $test_run ) ) {
-			$output->writeln( 'No test run found.' );
+		switch ( $test_run['status'] ) {
+			case 'success':
+				$exit_status_code = 0;
+				break;
+			case 'failed':
+				$exit_status_code = 1;
+				break;
+			case 'warning':
+				$exit_status_code = 2;
+				break;
+			default:
+				$exit_status_code = 3;
+		}
 
-			return Command::SUCCESS;
+		if ( $input->getOption( 'json' ) ) {
+			$output->write( $response );
+
+			return $exit_status_code;
 		}
 
 		if ( $input->getOption( 'check_finished' ) ) {
@@ -90,7 +91,7 @@ class GetCommand extends Command {
 				}
 			}
 
-			return Command::SUCCESS;
+			return $exit_status_code;
 		}
 
 		$columns_to_hide = [ 'test_result_aws_expiration', 'test_result_json', 'event', 'client' ];
@@ -146,6 +147,6 @@ class GetCommand extends Command {
 			->setRows( [ $test_run ] );
 		$table->render();
 
-		return Command::SUCCESS;
+		return $exit_status_code;
 	}
 }
