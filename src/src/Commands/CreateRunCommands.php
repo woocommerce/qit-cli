@@ -217,8 +217,8 @@ class CreateRunCommands {
 						}
 
 						if ( time() - $start > $timeout ) {
-							$output->writeln('<comment>Timed out while waiting for test run to complete.</comment>');
-							$output->writeln('<comment>The test is still executing in QIT servers, but the timeout for waiting was reached.</comment>');
+							$output->writeln( '<comment>Timed out while waiting for test run to complete.</comment>' );
+							$output->writeln( '<comment>The test is still executing in QIT servers, but the timeout for waiting was reached.</comment>' );
 
 							// Timeout.
 							return 124;
