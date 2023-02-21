@@ -27,7 +27,7 @@ class GetCommand extends Command {
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		try {
-			$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get-single' ) )
+			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get-single' ) )
 				->with_method( 'POST' )
 				->with_post_body( [
 					'test_run_id' => $input->getArgument( 'test_run_id' ),
@@ -39,7 +39,7 @@ class GetCommand extends Command {
 			return Command::FAILURE;
 		}
 
-		$test_run = json_decode( $response, true );
+		$test_run = json_decode( $json, true );
 
 		if ( ! is_array( $test_run ) || ! array_key_exists( 'status', $test_run ) ) {
 			return Command::FAILURE;
@@ -60,7 +60,7 @@ class GetCommand extends Command {
 		}
 
 		if ( $input->getOption( 'json' ) ) {
-			$output->write( $response );
+			$output->write( $json );
 
 			return $exit_status_code;
 		}

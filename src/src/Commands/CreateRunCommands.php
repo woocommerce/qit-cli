@@ -164,7 +164,7 @@ class CreateRunCommands {
 				}
 
 				try {
-					$response = ( new RequestBuilder( get_manager_url() . "/wp-json/cd/v1/enqueue-{$this->test_type}" ) )
+					$json = ( new RequestBuilder( get_manager_url() . "/wp-json/cd/v1/enqueue-{$this->test_type}" ) )
 						->with_method( 'POST' )
 						->with_post_body( $options )
 						->request();
@@ -174,7 +174,7 @@ class CreateRunCommands {
 					return Command::FAILURE;
 				}
 
-				$response = json_decode( $response, true );
+				$response = json_decode( $json, true );
 
 				if ( ! is_array( $response ) ) {
 					return Command::FAILURE;
@@ -213,9 +213,13 @@ class CreateRunCommands {
 				}
 
 				if ( $input->getOption( 'json' ) ) {
-					$output->write( $response );
+					$command = $this->getApplication()->find( GetCommand::getDefaultName() );
 
-					return Command::SUCCESS;
+					// If waiting, the exit status code will come from the GetCommand.
+					return $command->run( new ArrayInput( [
+						'test_run_id' => $response['run_id'],
+						'--json'      => true,
+					] ), $output );
 				}
 
 				if ( $waited ) {
