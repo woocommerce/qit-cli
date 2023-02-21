@@ -187,6 +187,14 @@ class CreateRunCommands {
 				$waited = false;
 
 				if ( $input->getOption( 'wait' ) ) {
+					// Show a message if user aborts waiting.
+					foreach ( [ \SIGINT, \SIGTERM ] as $signal ) {
+						$this->getApplication()->getSignalRegistry()->register( $signal, static function () use ( $output ) {
+							$output->writeln( sprintf( '<comment>The test is still executing on the QIT Servers, but we have aborted the wait. You can check the status of the test by running the "%s" command.</comment>', GetCommand::getDefaultName() ) );
+							exit( 124 );
+						} );
+					}
+
 					// Minimum timeout is 10 seconds.
 					$timeout = max( 10, $input->getOption( 'timeout' ) );
 
@@ -208,8 +216,16 @@ class CreateRunCommands {
 							break;
 						}
 
+						if ( time() - $start > $timeout ) {
+							$output->writeln('<comment>Timed out while waiting for test run to complete.</comment>');
+							$output->writeln('<comment>The test is still executing in QIT servers, but the timeout for waiting was reached.</comment>');
+
+							// Timeout.
+							return 124;
+						}
+
 						sleep( 5 );
-					} while ( time() - $start < $timeout );
+					} while ( true );
 				}
 
 				if ( $input->getOption( 'json' ) ) {
