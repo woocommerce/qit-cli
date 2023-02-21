@@ -116,6 +116,12 @@ class GetCommand extends Command {
 			if ( in_array( $test_key, $columns_to_hide, true ) ) {
 				unset( $test_run[ $test_key ] );
 			}
+
+			// Rename "Result View Token" to "Result URL".
+			if ( $test_key === 'result_view_token' ) {
+				$test_run['result_url'] = $v;
+				unset( $test_run['result_view_token'] );
+			}
 		}
 
 		unset( $v );
