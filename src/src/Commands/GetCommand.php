@@ -21,7 +21,8 @@ class GetCommand extends Command {
 			->setHelp( 'Get a single test run.' )
 			->addArgument( 'test_run_id', InputArgument::REQUIRED )
 			->addOption('open', 'o', InputOption::VALUE_NEGATABLE, 'Open the test run in the browser.', false)
-			->addOption('json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false);
+			->addOption('json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false)
+			->addOption('check_finished', null, InputOption::VALUE_NONE, 'Return success if test has finished. Failure if not.', null);
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -63,6 +64,16 @@ class GetCommand extends Command {
 			return Command::SUCCESS;
 		}
 
+		if ( $input->getOption( 'check_finished' ) ) {
+			$non_finished = [ 'pending', 'dispatched' ];
+
+			if ( in_array( $test_run['status'], $non_finished, true ) ) {
+				return Command::FAILURE;
+			} else {
+				return Command::SUCCESS;
+			}
+		}
+
 		/**
 		 * Some test types can't be properly rendered in CLI context,
 		 * so if the user requests it, we open it in browser/show the link.
@@ -82,7 +93,7 @@ class GetCommand extends Command {
 			return Command::SUCCESS;
 		}
 
-		$columns_to_hide = [ 'test_result_aws_expiration', 'test_result_json' ];
+		$columns_to_hide = [ 'test_result_aws_expiration', 'test_result_json', 'event', 'client' ];
 
 		// Prepare the data to be rendered.
 		foreach ( $test_run as $test_key => &$v ) {
