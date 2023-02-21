@@ -199,7 +199,7 @@ class CreateRunCommands {
 
 						// When checking for finished status, return status code is 0 if finished, 1 if not.
 						$finished = $command->run( new ArrayInput( [
-							'test_run_id' => $response['run_id'],
+							'test_run_id'      => $response['run_id'],
 							'--check_finished' => true,
 						] ), $output );
 
@@ -209,7 +209,7 @@ class CreateRunCommands {
 						}
 
 						sleep( 5 );
-					} while( time() - $start < $timeout );
+					} while ( time() - $start < $timeout );
 				}
 
 				if ( $input->getOption( 'json' ) ) {
@@ -235,8 +235,12 @@ class CreateRunCommands {
 						->setHeaders( [ 'Test ID', 'Result URL' ] );
 					$table->addRow( [ $response['run_id'], $response['result_view_token'] ] );
 					$table->render();
-					$output->writeln('');
-					$output->writeln( sprintf( '<info>You can follow up on the result of the test using the URL above, with the command "%s %s %d", or by passing the "--wait" option when running tests.</info>', basename( $_SERVER['argv'][0] ), GetCommand::getDefaultName(), $response['run_id'] ) );
+					$output->writeln( '' );
+
+					// Get the name of the script entrypoint.
+					$bin = isset( $_SERVER['argv'][0] ) ? basename( $_SERVER['argv'][0] ) : '';
+
+					$output->writeln( sprintf( '<info>You can follow up on the result of the test using the URL above, with the command "%s %s %d", or by passing the "--wait" option when running tests.</info>', $bin, GetCommand::getDefaultName(), $response['run_id'] ) );
 
 					return Command::SUCCESS;
 				}

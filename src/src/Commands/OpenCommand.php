@@ -22,7 +22,7 @@ class OpenCommand extends Command {
 
 		return $command->run( new ArrayInput( [
 			'test_run_id' => $input->getArgument( 'test_run_id' ),
-			'--open' => true,
+			'--open'      => true,
 		] ), $output );
 	}
 }

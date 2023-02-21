@@ -20,9 +20,9 @@ class GetCommand extends Command {
 			->setDescription( 'Get a single test run.' )
 			->setHelp( 'Get a single test run. Exit status codes: 0 (success), 1 (failed), 2 (warning), 3 (others).' )
 			->addArgument( 'test_run_id', InputArgument::REQUIRED )
-			->addOption('open', 'o', InputOption::VALUE_NEGATABLE, 'Open the test run in the browser.', false)
-			->addOption('json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false)
-			->addOption('check_finished', null, InputOption::VALUE_NONE, 'Return success if test has finished. Failure if not.', null);
+			->addOption( 'open', 'o', InputOption::VALUE_NEGATABLE, 'Open the test run in the browser.', false )
+			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
+			->addOption( 'check_finished', null, InputOption::VALUE_NONE, 'Return success if test has finished. Failure if not.', null );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
