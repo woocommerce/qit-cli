@@ -79,12 +79,12 @@ class GetCommand extends Command {
 		 * Some test types can't be properly rendered in CLI context,
 		 * so if the user requests it, we open it in browser/show the link.
 		 */
-		if ( $input->getOption( 'open' ) && isset( $test_run['result_view_token'] ) ) {
+		if ( $input->getOption( 'open' ) && isset( $test_run['test_results_manager_url'] ) ) {
 			$output->writeln( '<info>To view this test run, please open this URL:</info>' );
-			$output->writeln( $test_run['result_view_token'] );
+			$output->writeln( $test_run['test_results_manager_url'] );
 
 			try {
-				open_in_browser( $test_run['result_view_token'] );
+				open_in_browser( $test_run['test_results_manager_url'] );
 			} catch ( \Exception $e ) {
 				if ( $output->isVerbose() ) {
 					$output->writeln( sprintf( 'Could not open URL in browser. Reason: %s', $e->getMessage() ) );
@@ -94,7 +94,7 @@ class GetCommand extends Command {
 			return $exit_status_code;
 		}
 
-		$columns_to_hide = [ 'test_result_aws_expiration', 'test_result_json', 'event', 'client' ];
+		$columns_to_hide = [ 'test_result_aws_expiration', 'test_result_manager_expiration', 'test_result_json', 'event', 'client' ];
 
 		// Prepare the data to be rendered.
 		foreach ( $test_run as $test_key => &$v ) {
@@ -126,10 +126,10 @@ class GetCommand extends Command {
 				unset( $test_run[ $test_key ] );
 			}
 
-			// Rename "Result View Token" to "Result URL".
-			if ( $test_key === 'result_view_token' ) {
+			// Rename "Test Results Manager URL" to "Result URL".
+			if ( $test_key === 'test_results_manager_url' ) {
 				$test_run['result_url'] = $v;
-				unset( $test_run['result_view_token'] );
+				unset( $test_run['test_results_manager_url'] );
 			}
 		}
 
