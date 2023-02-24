@@ -190,7 +190,7 @@ class CreateRunCommands {
 					// Show a message if user aborts waiting.
 					foreach ( [ \SIGINT, \SIGTERM ] as $signal ) {
 						$this->getApplication()->getSignalRegistry()->register( $signal, static function () use ( $output ) {
-							$output->writeln( sprintf( '<comment>The test is still executing on the QIT Servers, but we have aborted the wait. You can check the status of the test by running the "%s" command.</comment>', GetCommand::getDefaultName() ) );
+							$output->writeln( sprintf( '<comment>The test is still executing on the QIT Servers, but we have skipped the wait. You can always check the status of the test by running the "%s" command.</comment>', GetCommand::getDefaultName() ) );
 							exit( 124 );
 						} );
 					}
