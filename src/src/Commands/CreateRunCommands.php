@@ -180,7 +180,7 @@ class CreateRunCommands {
 					return Command::FAILURE;
 				}
 
-				if ( ! isset( $response['run_id'] ) || ! isset( $response['result_view_token'] ) ) {
+				if ( ! isset( $response['run_id'] ) || ! isset( $response['test_results_manager_url'] ) ) {
 					return Command::FAILURE;
 				}
 
@@ -253,7 +253,7 @@ class CreateRunCommands {
 						->setHorizontal()
 						->setStyle( 'compact' )
 						->setHeaders( [ 'Test ID', 'Result URL' ] );
-					$table->addRow( [ $response['run_id'], $response['result_view_token'] ] );
+					$table->addRow( [ $response['run_id'], $response['test_results_manager_url'] ] );
 					$table->render();
 					$output->writeln( '' );
 
