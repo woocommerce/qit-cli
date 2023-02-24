@@ -46,23 +46,22 @@ _Since this repository is still private, a simple `composer require` is not avai
   ]
 }
 ```
+
 2. Run `composer update`. It might prompt you for a GitHub Personal Access Token.
 3. Run `./vendor/bin/qit init-a8c` to configure your credentials.
 
 ### Phar
 
-1. Download the [qit](https://github.com/woocommerce/cd-client/releases/latest/download/qit-cli) phar directly from the latest release.*
+1. Download the [qit](https://github.com/woocommerce/qit-cli/releases/latest/) phar directly from the latest release.\*
 2. Make it executable: `chmod +x qit.phar`
 3. Move the binary to a directory in PATH, giving preference for a directory that doesn't require root: `(test -w ~/.local/bin && echo $PATH | grep -q "/.local/bin") && mv qit.phar ~/.local/bin/qit || sudo mv qit.phar /usr/local/bin/qit`
 4. Run `qit init-a8c` to configure your credentials.
 
-_* Since this is a private repo, downloading with `curl` or `wget`, like WP-CLI, won't work._
+_\* Since this is a private repo, downloading with `curl` or `wget`, like WP-CLI, won't work._
 
 ## Running Tests
 
 Tests can be executed against plugins that are available for sale in the WooCommerce Extension Store. Once started, they will run in the cloud, in our servers.
-
-By initializing as an Automattician (with `init-a8c`), you have access to start tests against all extensions.
 
 The commands to run tests are formatted as `run-<test-type>`. Example: `./vendor/bin/qit run-e2e --help`
 
@@ -74,7 +73,7 @@ You can run just `./vendor/bin/qit` to see a list of available commands.
 
 ### Examples:
 
-`./vendor/bin/qit run-e2e some-extension` 
+`./vendor/bin/qit run-e2e some-extension`
 
 This will run the [WooCommerce Core E2E Test Suite](https://github.com/woocommerce/woocommerce/tree/trunk/plugins/woocommerce/tests/e2e-pw) against the WooCommerce extension with slug "some-extension" in our managed servers, using the latest stable versions of WordPress and WooCommerce. Since the tests are executed in the cloud, you can even close the terminal if you wish. You can see the result of this test after a while running `./vendor/bin/qit list-tests`, or `./vendor/bin/qit get 456`, where 456 is the test run ID. When the test finishes, the status will be updated to Success, Warning, or Failed.
 
@@ -107,4 +106,4 @@ We provide basic autocompletion support, check the [docs](./docs/autocompletion.
 
 ## Support
 
-You can open a GitHub issue in this repository if you need support with the CD Client.
+You can open a GitHub issue in this repository if you need support with QIT CLI.
