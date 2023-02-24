@@ -92,6 +92,7 @@ class ListCommand extends Command {
 			'test_log',
 			'test_result_json',
 			'test_result_aws_expiration',
+			'test_results_manager_url',
 			'test_results_manager_expiration',
 			'is_development',
 			'version',
@@ -113,7 +114,6 @@ class ListCommand extends Command {
 			foreach ( $t as $test_key => &$v ) {
 				switch ( $test_key ) {
 					case 'test_result_aws_url':
-					case 'test_results_manager_url':
 						// Replace big test result URLS with "Available". They can be seen using the "get" command.
 						if ( ! empty( $v ) ) {
 							$v = 'Available';
