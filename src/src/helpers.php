@@ -34,8 +34,7 @@ function open_in_browser( string $url ): void {
 
 	// We only open URLs.
 	// We can also optionally allow FILTER_VALIDATE_IP as well.
-	// Todo: Remove str_replace once we rename cd_manager.loc to cd-manager.loc.
-	if ( ! filter_var( str_replace( '_', '-', $url ), FILTER_VALIDATE_URL ) ) {
+	if ( ! filter_var( $url, FILTER_VALIDATE_URL ) ) {
 		throw new \InvalidArgumentException( 'Invalid URL provided.' );
 	}
 
