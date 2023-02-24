@@ -9,6 +9,7 @@ use QIT_CLI\Commands\Environment\RemoveEnvironment;
 use QIT_CLI\Commands\Environment\SwitchEnvironment;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\ListCommand;
+use QIT_CLI\Commands\OpenCommand;
 use QIT_CLI\Commands\Partner\AddPartner;
 use QIT_CLI\Commands\Partner\RemovePartner;
 use QIT_CLI\Commands\Partner\SwitchPartner;
@@ -149,6 +150,9 @@ if ( $has_environment ) {
 
 	// Get a single test run.
 	$application->add( $container->make( GetCommand::class ) );
+
+	// Open a test run result in the browser.
+	$application->add( $container->make( OpenCommand::class ) );
 
 	// List the Woo Extensions the user can run tests against.
 	$application->add( $container->make( WooExtensionsCommand::class ) );

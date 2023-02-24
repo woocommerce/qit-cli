@@ -92,6 +92,8 @@ class ListCommand extends Command {
 			'test_log',
 			'test_result_json',
 			'test_result_aws_expiration',
+			'test_results_manager_url',
+			'test_results_manager_expiration',
 			'is_development',
 			'version',
 			'client',
