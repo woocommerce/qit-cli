@@ -87,6 +87,8 @@ class RequestBuilder implements \JsonSerializable {
 				throw new \LogicException( 'No mock found for ' . $this->url );
 			}
 
+			App::setVar( 'mocked_request', $this->to_array() );
+
 			return $mocked;
 		}
 

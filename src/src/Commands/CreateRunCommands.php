@@ -148,6 +148,19 @@ class CreateRunCommands {
 					$options['event'] = 'cli_published_extension_test';
 				}
 
+				// Convert "Additional Woo Plugins" Slugs to IDs.
+				if ( ! empty( $options['additional_woo_plugins'] ) ) {
+					$additional_woo_plugins = explode( ',', $options['additional_woo_plugins'] );
+					foreach ( $additional_woo_plugins as &$awp ) {
+						$awp = trim( $awp );
+						if ( ! is_numeric( $awp ) ) {
+							$awp = $this->woo_extensions_list->get_woo_extension_id_by_slug( $awp );
+						}
+					}
+
+					$options['additional_woo_plugins'] = implode( ',', $additional_woo_plugins );
+				}
+
 				try {
 					$response = ( new RequestBuilder( get_manager_url() . "/wp-json/cd/v1/enqueue-{$this->test_type}" ) )
 						->with_method( 'POST' )

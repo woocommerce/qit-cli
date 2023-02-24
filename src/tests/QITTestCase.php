@@ -23,11 +23,11 @@ abstract class QITTestCase extends TestCase {
 		App::make( ManagerSync::class )->maybe_sync( true );
 	}
 
-	protected function make_application_tester( Command ...$commands ): ApplicationTester {
+	protected function make_application_tester( ?callable $callback = null ): ApplicationTester {
 		$application = clone $GLOBALS['qit_application'];
 
-		foreach ( $commands as $c ) {
-			$application->add( $c );
+		if ( ! is_null( $callback ) ) {
+			$callback( $application );
 		}
 
 		// This command is not available when in offline mode, so let's make it available for convenience.
