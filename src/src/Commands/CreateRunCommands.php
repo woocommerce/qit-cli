@@ -11,6 +11,8 @@ use QIT_CLI\Upload;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -162,7 +164,7 @@ class CreateRunCommands {
 				}
 
 				try {
-					$response = ( new RequestBuilder( get_manager_url() . "/wp-json/cd/v1/enqueue-{$this->test_type}" ) )
+					$json = ( new RequestBuilder( get_manager_url() . "/wp-json/cd/v1/enqueue-{$this->test_type}" ) )
 						->with_method( 'POST' )
 						->with_post_body( $options )
 						->request();
@@ -172,9 +174,96 @@ class CreateRunCommands {
 					return Command::FAILURE;
 				}
 
-				$output->writeln( sprintf( '<info>Test started! You can see more details using the "%s" command.</info>', ListCommand::getDefaultName() ) );
+				$response = json_decode( $json, true );
 
-				return Command::SUCCESS;
+				if ( ! is_array( $response ) ) {
+					return Command::FAILURE;
+				}
+
+				if ( ! isset( $response['run_id'] ) || ! isset( $response['result_view_token'] ) ) {
+					return Command::FAILURE;
+				}
+
+				$waited = false;
+
+				if ( $input->getOption( 'wait' ) ) {
+					// Show a message if user aborts waiting.
+					foreach ( [ \SIGINT, \SIGTERM ] as $signal ) {
+						$this->getApplication()->getSignalRegistry()->register( $signal, static function () use ( $output ) {
+							$output->writeln( sprintf( '<comment>The test is still executing on the QIT Servers, but we have skipped the wait. You can always check the status of the test by running the "%s" command.</comment>', GetCommand::getDefaultName() ) );
+							exit( 124 );
+						} );
+					}
+
+					// Minimum timeout is 10 seconds.
+					$timeout = max( 10, $input->getOption( 'timeout' ) );
+
+					// Maximum timeout is 2 hours.
+					$timeout = min( 3600 * 2, $timeout );
+
+					$start = time();
+					do {
+						$command = $this->getApplication()->find( GetCommand::getDefaultName() );
+
+						// When checking for finished status, return status code is 0 if finished, 1 if not.
+						$finished = $command->run( new ArrayInput( [
+							'test_run_id'      => $response['run_id'],
+							'--check_finished' => true,
+						] ), $output );
+
+						if ( $finished === 0 ) {
+							$waited = true;
+							break;
+						}
+
+						if ( time() - $start > $timeout ) {
+							$output->writeln( '<comment>Timed out while waiting for test run to complete.</comment>' );
+							$output->writeln( '<comment>The test is still executing in QIT servers, but the timeout for waiting was reached.</comment>' );
+
+							// Timeout.
+							return 124;
+						}
+
+						sleep( 5 );
+					} while ( true );
+				}
+
+				if ( $input->getOption( 'json' ) ) {
+					$command = $this->getApplication()->find( GetCommand::getDefaultName() );
+
+					// If waiting, the exit status code will come from the GetCommand.
+					return $command->run( new ArrayInput( [
+						'test_run_id' => $response['run_id'],
+						'--json'      => true,
+					] ), $output );
+				}
+
+				if ( $waited ) {
+					$output->writeln( sprintf( '<info>Test run completed.</info>' ) );
+					$command = $this->getApplication()->find( GetCommand::getDefaultName() );
+
+					// If waiting, the exit status code will come from the GetCommand.
+					return $command->run( new ArrayInput( [
+						'test_run_id' => $response['run_id'],
+					] ), $output );
+				} else {
+					$output->writeln( sprintf( '<info>Test started on the QIT Servers!</info>' ) );
+					$table = new Table( $output );
+					$table
+						->setHorizontal()
+						->setStyle( 'compact' )
+						->setHeaders( [ 'Test ID', 'Result URL' ] );
+					$table->addRow( [ $response['run_id'], $response['result_view_token'] ] );
+					$table->render();
+					$output->writeln( '' );
+
+					// Get the name of the script entrypoint.
+					$bin = isset( $_SERVER['argv'][0] ) ? basename( $_SERVER['argv'][0] ) : '';
+
+					$output->writeln( sprintf( '<info>You can follow up on the result of the test using the URL above, with the command "%s %s %d", or by passing the "--wait" option when running tests.</info>', $bin, GetCommand::getDefaultName(), $response['run_id'] ) );
+
+					return Command::SUCCESS;
+				}
 			}
 		};
 
@@ -240,6 +329,34 @@ class CreateRunCommands {
 			InputOption::VALUE_OPTIONAL,
 			'(Optional) Run the test using a local zip file of the plugin. Useful for running the tests before publishing it to the Marketplace.'
 		);
+
+		// JSON Response.
+		$command->addOption(
+			'json',
+			'j',
+			InputOption::VALUE_NEGATABLE,
+			'(Optional) Whether to return the JSON object of the test that was created.',
+			false
+		);
+
+		// Wait for test to finish.
+		$command->addOption(
+			'wait',
+			'w',
+			InputOption::VALUE_NEGATABLE,
+			'(Optional) Wait for the test to finish before finishing command execution.',
+			false
+		);
+
+		// Timeout if waiting.
+		$command->addOption(
+			'timeout',
+			't',
+			InputOption::VALUE_OPTIONAL,
+			'(Optional) Seconds to wait for a test to finish before failing the command. Default is 30 minutes. Min 10 seconds. Max 2 hours.',
+			1800
+		);
+
 		$command->add_option_to_send( 'zip' );
 
 		$application->add( $command );

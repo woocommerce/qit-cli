@@ -18,15 +18,16 @@ class GetCommand extends Command {
 	protected function configure() {
 		$this
 			->setDescription( 'Get a single test run.' )
-			->setHelp( 'Get a single test run.' )
+			->setHelp( 'Get a single test run. Exit status codes: 0 (success), 1 (failed), 2 (warning), 3 (others).' )
 			->addArgument( 'test_run_id', InputArgument::REQUIRED )
 			->addOption( 'open', 'o', InputOption::VALUE_NEGATABLE, 'Open the test run in the browser.', false )
-			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false );
+			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
+			->addOption( 'check_finished', null, InputOption::VALUE_NONE, 'Return success if test has finished. Failure if not.', null );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		try {
-			$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get-single' ) )
+			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get-single' ) )
 				->with_method( 'POST' )
 				->with_post_body( [
 					'test_run_id' => $input->getArgument( 'test_run_id' ),
@@ -38,29 +39,40 @@ class GetCommand extends Command {
 			return Command::FAILURE;
 		}
 
-		if ( $input->getOption( 'json' ) ) {
-			$output->write( $response );
+		$test_run = json_decode( $json, true );
 
-			return Command::SUCCESS;
-		}
-
-		$test_run = json_decode( $response, true );
-
-		if ( ! is_array( $test_run ) ) {
-			$output->writeln( '<error>Could not retrieve test run.</error>' );
-
-			if ( $output->isVeryVerbose() ) {
-				$output->writeln( 'Raw response:' );
-				$output->writeln( $response );
-			}
-
+		if ( ! is_array( $test_run ) || ! array_key_exists( 'status', $test_run ) ) {
 			return Command::FAILURE;
 		}
 
-		if ( empty( $test_run ) ) {
-			$output->writeln( 'No test run found.' );
+		switch ( $test_run['status'] ) {
+			case 'success':
+				$exit_status_code = 0;
+				break;
+			case 'failed':
+				$exit_status_code = 1;
+				break;
+			case 'warning':
+				$exit_status_code = 2;
+				break;
+			default:
+				$exit_status_code = 3;
+		}
 
-			return Command::SUCCESS;
+		if ( $input->getOption( 'json' ) ) {
+			$output->write( $json );
+
+			return $exit_status_code;
+		}
+
+		if ( $input->getOption( 'check_finished' ) ) {
+			$non_finished = [ 'pending', 'dispatched' ];
+
+			if ( in_array( $test_run['status'], $non_finished, true ) ) {
+				return Command::FAILURE;
+			} else {
+				return Command::SUCCESS;
+			}
 		}
 
 		/**
@@ -79,10 +91,10 @@ class GetCommand extends Command {
 				}
 			}
 
-			return Command::SUCCESS;
+			return $exit_status_code;
 		}
 
-		$columns_to_hide = [ 'test_result_aws_expiration', 'test_result_manager_expiration', 'test_result_json' ];
+		$columns_to_hide = [ 'test_result_aws_expiration', 'test_results_manager_expiration', 'test_result_json', 'event', 'client' ];
 
 		// Prepare the data to be rendered.
 		foreach ( $test_run as $test_key => &$v ) {
@@ -138,6 +150,6 @@ class GetCommand extends Command {
 			->setRows( [ $test_run ] );
 		$table->render();
 
-		return Command::SUCCESS;
+		return $exit_status_code;
 	}
 }
