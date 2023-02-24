@@ -94,7 +94,7 @@ class GetCommand extends Command {
 			return $exit_status_code;
 		}
 
-		$columns_to_hide = [ 'test_result_aws_expiration', 'test_result_manager_expiration', 'test_result_json', 'event', 'client' ];
+		$columns_to_hide = [ 'test_result_aws_expiration', 'test_results_manager_expiration', 'test_result_json', 'event', 'client' ];
 
 		// Prepare the data to be rendered.
 		foreach ( $test_run as $test_key => &$v ) {
