@@ -70,6 +70,32 @@ $container->singleton( Environment::class );
 
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 
+/*
+ * If the paramter "--json" is present, make sure only JSON
+ * is outputted, ignoring all output that is not JSON.
+ */
+if ( in_array( '--json', $GLOBALS['argv'], true ) ) {
+	class qit_json_filter extends \php_user_filter {
+		public function filter( $in, $out, &$consumed, $closing ) {
+			while ( $bucket = stream_bucket_make_writeable( $in ) ) {
+				if ( ! is_null( json_decode( $bucket->data ) ) ) {
+					$consumed += $bucket->datalen;
+					stream_bucket_append( $out, $bucket );
+				}
+			}
+
+			return PSFS_PASS_ON;
+		}
+	}
+
+	if ( ! stream_filter_register( 'qit_json', qit_json_filter::class ) ) {
+		exit( 151 );
+	}
+	if ( ! stream_filter_append( App::make( Output::class )->getStream(), 'qit_json' ) ) {
+		exit( 152 );
+	}
+}
+
 // Detect whether this is a "_completion" command that runs on the background in Bash. If so, no remote requests will be made.
 $container->setVar( 'doing_autocompletion', stripos( (string) $container->make( Input::class ), '_completion' ) !== false );
 

@@ -1,0 +1,11 @@
+{
+  "autoload-dev": {
+    "psr-4": {
+      "QITE2E\\": "tests/"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^8",
+    "spatie/phpunit-snapshot-assertions": "^3.0"
+  }
+}
