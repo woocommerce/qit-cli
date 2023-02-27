@@ -164,6 +164,7 @@ class CreateRunCommands {
 				}
 
 				try {
+					$output->writeln( sprintf( 'Running test...' ) );
 					$json = ( new RequestBuilder( get_manager_url() . "/wp-json/cd/v1/enqueue-{$this->test_type}" ) )
 						->with_method( 'POST' )
 						->with_post_body( $options )
@@ -181,6 +182,7 @@ class CreateRunCommands {
 				}
 
 				if ( ! isset( $response['run_id'] ) || ! isset( $response['test_results_manager_url'] ) ) {
+					$output->writeln('Unexpected response. Missing "run_id" or "test_results_manager_url".');
 					return Command::FAILURE;
 				}
 
@@ -226,16 +228,10 @@ class CreateRunCommands {
 
 						sleep( 5 );
 					} while ( true );
-				}
-
-				if ( $input->getOption( 'json' ) ) {
-					$command = $this->getApplication()->find( GetCommand::getDefaultName() );
-
-					// If waiting, the exit status code will come from the GetCommand.
-					return $command->run( new ArrayInput( [
-						'test_run_id' => $response['run_id'],
-						'--json'      => true,
-					] ), $output );
+				} else {
+					if ( $input->getOption( 'ignore-error' ) ) {
+						$output->writeln( '<error>"--ignore-fail" can only be used with "--wait".</error>' );
+					}
 				}
 
 				if ( $waited ) {
@@ -243,9 +239,16 @@ class CreateRunCommands {
 					$command = $this->getApplication()->find( GetCommand::getDefaultName() );
 
 					// If waiting, the exit status code will come from the GetCommand.
-					return $command->run( new ArrayInput( [
+					$exit_code = $command->run( new ArrayInput( [
 						'test_run_id' => $response['run_id'],
+						'--json'      => $input->getOption( 'json' ),
 					] ), $output );
+
+					if ( $input->getOption( 'ignore-fail' ) ) {
+						return 0;
+					} else {
+						return $exit_code;
+					}
 				} else {
 					$output->writeln( sprintf( '<info>Test started on the QIT Servers!</info>' ) );
 					$table = new Table( $output );
@@ -353,8 +356,17 @@ class CreateRunCommands {
 			'timeout',
 			't',
 			InputOption::VALUE_OPTIONAL,
-			'(Optional) Seconds to wait for a test to finish before failing the command. Default is 30 minutes. Min 10 seconds. Max 2 hours.',
+			'(Optional) Seconds to wait for a test to finish before failing the command. Default is 30 minutes. Min 10 seconds. Max 2 hours. (requires "--wait")',
 			1800
+		);
+
+		// If set, exit status code will be zero even if test fails.
+		$command->addOption(
+			'ignore-fail',
+			'i',
+			InputOption::VALUE_NEGATABLE,
+			'(Optional) If set, exit status code will be zero even if test fails. (requires "--wait")',
+			false
 		);
 
 		$command->add_option_to_send( 'zip' );
