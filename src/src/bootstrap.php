@@ -75,9 +75,9 @@ $application->configureIO( $container->make( Input::class ), $container->make( O
  * is outputted, ignoring all output that is not JSON.
  */
 if ( in_array( '--json', $GLOBALS['argv'], true ) ) {
-	class qit_json_filter extends \php_user_filter {
+	class QIT_JSON_Filter extends \php_user_filter {
 		public function filter( $in, $out, &$consumed, $closing ) {
-			while ( $bucket = stream_bucket_make_writeable( $in ) ) {
+			while ( $bucket = stream_bucket_make_writeable( $in ) ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 				if ( ! is_null( json_decode( $bucket->data ) ) ) {
 					$consumed += $bucket->datalen;
 					stream_bucket_append( $out, $bucket );
@@ -88,7 +88,7 @@ if ( in_array( '--json', $GLOBALS['argv'], true ) ) {
 		}
 	}
 
-	if ( ! stream_filter_register( 'qit_json', qit_json_filter::class ) ) {
+	if ( ! stream_filter_register( 'qit_json', QIT_JSON_Filter::class ) ) {
 		exit( 151 );
 	}
 	if ( ! stream_filter_append( App::make( Output::class )->getStream(), 'qit_json' ) ) {
