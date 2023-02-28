@@ -182,7 +182,7 @@ class CreateRunCommands {
 				}
 
 				if ( ! isset( $response['run_id'] ) || ! isset( $response['test_results_manager_url'] ) ) {
-					$output->writeln('Unexpected response. Missing "run_id" or "test_results_manager_url".');
+					$output->writeln( 'Unexpected response. Missing "run_id" or "test_results_manager_url".' );
 					return Command::FAILURE;
 				}
 
@@ -229,7 +229,7 @@ class CreateRunCommands {
 						sleep( 5 );
 					} while ( true );
 				} else {
-					if ( $input->getOption( 'ignore-error' ) ) {
+					if ( $input->getOption( 'ignore-fail' ) ) {
 						$output->writeln( '<error>"--ignore-fail" can only be used with "--wait".</error>' );
 					}
 				}
