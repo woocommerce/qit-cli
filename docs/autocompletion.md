@@ -1,14 +1,15 @@
 ### Autocompletion
 
-We provide basic autocompletion support for Bash/ZSH.   
+We provide basic autocompletion support for Bash/ZSH.
 
 **Testing autocompletion:**
-1. If you installed the CLI tool using Composer, run `eval $(./vendor/bin/qit _completion --generate-hook)`. If you installed using the Phar, just replace `./vendor/bin/qit` with the path to the Phar. 
-2. Assert that autocompletion is working by typing `./vendor/bin/qit` and pressing `<tab>` to see the possible commands.  
+
+1. If you installed the CLI tool using Composer, run `eval $(./vendor/bin/qit _completion --generate-hook)`. If you installed using the Phar, just replace `./vendor/bin/qit` with the path to the Phar.
+2. Assert that autocompletion is working by typing `./vendor/bin/qit` and pressing `<tab>` to see the possible commands.
 
 **Making autocompletion persistent:**
 
-The instructions above will have effect only on the current terminal session. To make autocompletion support persistent: 
+The instructions above will have effect only on the current terminal session. To make autocompletion support persistent:
 
 1. Navigate to the directory where the CLI tool is installed, eg: `cd ./vendor/bin`
 2. Run `pwd` to get the full directory path, eg: `/home/johndoe/foo/vendor/bin`
