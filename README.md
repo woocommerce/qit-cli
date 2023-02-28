@@ -19,7 +19,7 @@ Have a suggestion for a new test? Feel free to open an issue!
 
 ## Who is this for?
 
-This tool is for [WooCommerce Partner developers](https://woocommerce.com/partners/) that have extensions in the [WooCommerce Extension Store](https://woocommerce.com/products).
+This tool is for [WooCommerce Partner developers](https://woocommerce.com/partners/) that have extensions in the [Woo Marketplace](https://woocommerce.com/products).
 
 ## Installing
 
@@ -48,14 +48,14 @@ _Since this repository is still private, a simple `composer require` is not avai
 ```
 
 2. Run `composer update`. It might prompt you for a GitHub Personal Access Token.
-3. Run `./vendor/bin/qit partner:add` to configure your credentials.
+3. Run `./vendor/bin/qit partner:add` to configure your credentials. This authentication flow makes use of [WordPress Application Passwords](https://make.wordpress.org/core/2020/11/05/application-passwords-integration-guide/).
 
 ### Phar
 
 1. Download the [qit](https://github.com/woocommerce/qit-cli/releases/latest/) phar directly from the latest release.\*
 2. Make it executable: `chmod +x qit.phar`
 3. Move the binary to a directory in PATH, giving preference for a directory that doesn't require root: `(test -w ~/.local/bin && echo $PATH | grep -q "/.local/bin") && mv qit.phar ~/.local/bin/qit || sudo mv qit.phar /usr/local/bin/qit`
-4. Run `qit partner:add` to configure your credentials.
+4. Run `qit partner:add` to configure your credentials. This authentication flow makes use of [WordPress Application Passwords](https://make.wordpress.org/core/2020/11/05/application-passwords-integration-guide/).
 
 _\* Since this is a private repo, downloading with `curl` or `wget`, like WP-CLI, won't work._
 
@@ -63,7 +63,7 @@ _\* Since this is a private repo, downloading with `curl` or `wget`, like WP-CLI
 
 Tests can be executed against plugins that are available for sale in the WooCommerce Extension Store. Once started, they will run in the cloud, in our servers.
 
-The commands to run tests are formatted as `run-<test-type>`. Example: `./vendor/bin/qit run-e2e --help`
+The commands to run tests are formatted as `run:<test-type>`. Example: `./vendor/bin/qit run:e2e --help`
 
 ![Run E2E tests command help](./docs/run-e2e.png)
 
@@ -73,7 +73,7 @@ You can run just `./vendor/bin/qit` to see a list of available commands.
 
 ### Examples:
 
-`./vendor/bin/qit run-e2e some-extension`
+`./vendor/bin/qit run:e2e some-extension`
 
 This will run the [WooCommerce Core E2E Test Suite](https://github.com/woocommerce/woocommerce/tree/trunk/plugins/woocommerce/tests/e2e-pw) against the WooCommerce extension with slug "some-extension" in our managed servers, using the latest stable versions of WordPress and WooCommerce. Since the tests are executed in the cloud, you can even close the terminal if you wish. You can see the result of this test after a while running `./vendor/bin/qit list-tests`, or `./vendor/bin/qit get 456`, where 456 is the test run ID. When the test finishes, the status will be updated to Success, Warning, or Failed.
 
@@ -92,7 +92,7 @@ To run a test against a development version of an extension, use the `--zip=<ZIP
 
 Example:
 
-`././vendor/bin/qit run-e2e some-extension --zip=some-extension.zip`
+`./vendor/bin/qit run:e2e some-extension --zip=some-extension.zip`
 
 ## Finding out the Slug of a given extension
 
