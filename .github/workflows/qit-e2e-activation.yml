@@ -1,6 +1,9 @@
 name: QIT E2E - Activation Test
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - trunk
 jobs:
   qit_activation:
     name: QIT Activation

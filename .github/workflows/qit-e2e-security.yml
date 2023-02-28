@@ -1,6 +1,9 @@
 name: QIT E2E - Security Test
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - trunk
 jobs:
   qit_security:
     name: QIT Security
