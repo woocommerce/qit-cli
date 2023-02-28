@@ -48,7 +48,7 @@ _Since this repository is still private, a simple `composer require` is not avai
 ```
 
 2. Run `composer update`. It might prompt you for a GitHub Personal Access Token.
-3. Run `./vendor/bin/qit init-a8c` to configure your credentials.
+3. Run `./vendor/bin/qit partner:add` to configure your credentials.
 
 ### Phar
 
