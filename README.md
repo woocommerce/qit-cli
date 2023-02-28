@@ -55,7 +55,7 @@ _Since this repository is still private, a simple `composer require` is not avai
 1. Download the [qit](https://github.com/woocommerce/qit-cli/releases/latest/) phar directly from the latest release.\*
 2. Make it executable: `chmod +x qit.phar`
 3. Move the binary to a directory in PATH, giving preference for a directory that doesn't require root: `(test -w ~/.local/bin && echo $PATH | grep -q "/.local/bin") && mv qit.phar ~/.local/bin/qit || sudo mv qit.phar /usr/local/bin/qit`
-4. Run `qit init-a8c` to configure your credentials.
+4. Run `qit partner:add` to configure your credentials.
 
 _\* Since this is a private repo, downloading with `curl` or `wget`, like WP-CLI, won't work._
 
