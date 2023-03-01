@@ -27,7 +27,7 @@ jobs:
         run: docker run --rm --user $(id -u):$(id -g) -v "$(pwd):/app" -w /app joshkeegan/zip:latest sh -c "zip -r automatewoo.zip automatewoo"
       - name: Run Security Test.
         id: run-security-test
-        run: ./qit run:security automatewoo --zip=_tests/security/automatewoo.zip --wait --ignore-fail --timeout=300 > _tests/security.txt
+        run: ./qit run:security automatewoo --zip=_tests/security/automatewoo.zip --wait --ignore-fail --timeout=300 --json > _tests/security.txt
       - name: Check Results
         id: check-security-test
         working-directory: _tests

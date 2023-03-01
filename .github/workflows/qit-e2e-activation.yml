@@ -27,7 +27,7 @@ jobs:
         run: docker run --rm --user $(id -u):$(id -g) -v "$(pwd):/app" -w /app joshkeegan/zip:latest sh -c "zip -r automatewoo.zip automatewoo"
       - name: Run Activation Test.
         id: run-activation-test
-        run: ./qit run:activation automatewoo --zip=_tests/activation/automatewoo.zip --wait --ignore-fail --timeout=420 > _tests/activation.txt
+        run: ./qit run:activation automatewoo --zip=_tests/activation/automatewoo.zip --wait --ignore-fail --timeout=420 --json > _tests/activation.txt
       - name: Check Results
         id: check-activation-test
         working-directory: _tests
