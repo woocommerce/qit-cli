@@ -24,10 +24,10 @@ jobs:
         run: ./qit env:add --environment=staging --manager_url=https://stagingcompatibilitydashboard.wpcomstaging.com --qit_secret=${{ secrets.QIT_STAGING_SECRET }}
       - name: Create Zip.
         working-directory: _tests/activation
-        run: docker run --rm --user $(id -u):$(id -g) -v "$(pwd):/app" -w /app joshkeegan/zip:latest sh -c "zip -r automatewoo.zip automatewoo"
+        run: docker run --rm --user $(id -u):$(id -g) -v "$(pwd):/app" -w /app joshkeegan/zip:latest sh -c "zip -r woocommerce-product-feeds.zip woocommerce-product-feeds"
       - name: Run Activation Test.
         id: run-activation-test
-        run: ./qit run:activation automatewoo --zip=_tests/activation/automatewoo.zip --wait --ignore-fail --timeout=420 --json > _tests/activation.txt
+        run: ./qit run:activation woocommerce-product-feeds --zip=_tests/activation/woocommerce-product-feeds.zip --wait --ignore-fail --timeout=420 --json > _tests/activation.txt
       - name: Check Results
         id: check-activation-test
         working-directory: _tests

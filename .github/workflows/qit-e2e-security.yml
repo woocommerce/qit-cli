@@ -24,10 +24,10 @@ jobs:
         run: ./qit env:add --environment=staging --manager_url=https://stagingcompatibilitydashboard.wpcomstaging.com --qit_secret=${{ secrets.QIT_STAGING_SECRET }}
       - name: Create Zip.
         working-directory: _tests/security
-        run: docker run --rm --user $(id -u):$(id -g) -v "$(pwd):/app" -w /app joshkeegan/zip:latest sh -c "zip -r automatewoo.zip automatewoo"
+        run: docker run --rm --user $(id -u):$(id -g) -v "$(pwd):/app" -w /app joshkeegan/zip:latest sh -c "zip -r woocommerce-product-feeds.zip woocommerce-product-feeds"
       - name: Run Security Test.
         id: run-security-test
-        run: ./qit run:security automatewoo --zip=_tests/security/automatewoo.zip --wait --ignore-fail --timeout=300 --json > _tests/security.txt
+        run: ./qit run:security woocommerce-product-feeds --zip=_tests/security/woocommerce-product-feeds.zip --wait --ignore-fail --timeout=300 --json > _tests/security.txt
       - name: Check Results
         id: check-security-test
         working-directory: _tests
