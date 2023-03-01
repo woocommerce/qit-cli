@@ -1,4 +1,12 @@
 {
+  "config": {
+    "platform": {
+      "php": "7.2.5"
+    }
+  },
+  "require": {
+    "php": "^7.2.5 | ^8"
+  },
   "autoload-dev": {
     "psr-4": {
       "QITE2E\\": "tests/"

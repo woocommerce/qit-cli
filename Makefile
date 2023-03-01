@@ -68,18 +68,18 @@ phan:
 
 regenerate_security_snapshot:
 	$(MAKE) build
-	docker run --rm --user $(DOCKER_USER) -v "${PWD}:/app" joshkeegan/zip:latest sh -c "cd /app/_tests/security && zip -r automatewoo.zip automatewoo"
-	./qit env:switch production
-	./qit run:security automatewoo --zip=_tests/security/automatewoo.zip --wait --json --ignore-fail > _tests/security.txt
+	docker run --rm --user $(DOCKER_USER) -v "${PWD}:/app" joshkeegan/zip:latest sh -c "cd /app/_tests/security && zip -r woocommerce-product-feeds.zip woocommerce-product-feeds"
+	./qit env:switch staging
+	./qit run:security woocommerce-product-feeds --zip=_tests/security/woocommerce-product-feeds.zip --wait --json --ignore-fail > _tests/security.txt
 	cd _tests && php ./vendor/bin/phpunit tests/SecurityTest.php -d --update-snapshots
 	rm _tests/security.txt
-	rm _tests/security/automatewoo.zip
+	rm _tests/security/woocommerce-product-feeds.zip
 
 regenerate_activation_snapshot:
 	$(MAKE) build
-	docker run --rm --user $(DOCKER_USER) -v "${PWD}:/app" joshkeegan/zip:latest sh -c "cd /app/_tests/activation && zip -r automatewoo.zip automatewoo"
-	./qit env:switch production
-	./qit run:activation automatewoo --zip=_tests/activation/automatewoo.zip --wait --json --ignore-fail > _tests/activation.txt
+	docker run --rm --user $(DOCKER_USER) -v "${PWD}:/app" joshkeegan/zip:latest sh -c "cd /app/_tests/activation && zip -r woocommerce-product-feeds.zip woocommerce-product-feeds"
+	./qit env:switch staging
+	./qit run:activation woocommerce-product-feeds --zip=_tests/activation/woocommerce-product-feeds.zip --wait --json --ignore-fail > _tests/activation.txt
 	cd _tests && php ./vendor/bin/phpunit tests/ActivationTest.php -d --update-snapshots
 	rm _tests/activation.txt
-	rm _tests/activation/automatewoo.zip
+	rm _tests/activation/woocommerce-product-feeds.zip

@@ -47,6 +47,17 @@ class QITE2ETestCase extends TestCase {
 					return preg_match( '/^\d+$/', $value );
 				}
 			],
+			'test_result_json' => [
+				'normalize' => static function( $value ) {
+					// Normalize timestamps such as [01-Mar-2023 10:55:12 UTC] to [TIMESTAMP]
+					$value = preg_replace( '/\[\d{2}-\w{3}-\d{4} \d{2}:\d{2}:\d{2} UTC\]/', '[TIMESTAMP]', $value );
+
+					return $value;
+				},
+				'validate' => static function( $value ) {
+					return ! is_null( json_decode( $value ) );
+				}
+			]
 		];
 
 		if ( is_callable( $callback ) ) {
@@ -59,7 +70,11 @@ class QITE2ETestCase extends TestCase {
 				// Validate the existing value.
 				if ( $rules[ $k ]['validate']( $v ) ) {
 					// Normalize for snapshot testing.
-					$v = $rules[ $k ]['normalize'];
+					if (is_callable($rules[ $k ]['normalize'])) {
+						$v = $rules[ $k ]['normalize']( $v );
+					} else {
+						$v = $rules[ $k ]['normalize'];
+					}
 				} else {
 					$this->fail( 'Invalid value for key: ' . $k );
 				}
