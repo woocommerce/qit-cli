@@ -118,7 +118,7 @@ class RequestBuilder implements \JsonSerializable {
 		if ( ! is_null( App::make( Auth::class )->get_manager_secret() ) ) {
 			$this->post_body['manager_secret'] = App::make( Auth::class )->get_manager_secret();
 			// Connections using the MANAGER_SECRET that are not local must go through Automattic Proxy.
-			if ( strpos( $this->url, '.test' ) === false ) {
+			if ( strpos( $this->url, '.test' ) === false && strpos( $this->url, 'stagingcompatibilitydashboard' ) === false ) {
 				$proxied                              = true;
 				$curl_parameters[ CURLOPT_PROXY ]     = Config::get_proxy_url();
 				$curl_parameters[ CURLOPT_PROXYTYPE ] = CURLPROXY_SOCKS5;
@@ -158,7 +158,7 @@ class RequestBuilder implements \JsonSerializable {
 					'Expected return status code(s): %s. Got return status code: %s. Error message: %s',
 					implode( ', ', $this->expected_status_codes ),
 					$response_status_code,
-					$result
+					curl_error( $curl )
 				),
 				$response_status_code
 			);

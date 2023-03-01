@@ -1,0 +1,34 @@
+name: QIT E2E - Activation Test
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - trunk
+jobs:
+  qit_activation:
+    name: QIT Activation
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.2'
+      - name: Composer install
+        working_dir: _tests
+        run: composer install
+      - name: Enable QIT development mode
+        run: ./qit dev
+      - name: Connect to QIT Staging
+        run: ./qit env:add --environment=staging --manager_url=https://stagingcompatibilitydashboard.wpcomstaging.com --qit_secret=${{ secrets.QIT_STAGING_SECRET }}
+      - name: Create Zip.
+        working-dir: _tests/activation
+        run: docker run --rm --user $(id -u):$(id -g) -v "$GITHUB_WORKSPACE:/app" -w /app joshkeegan/zip:latest sh -c "zip -r automatewoo.zip automatewoo"
+      - name: Run Activation Test.
+        id: run-activation-test
+        run: ./qit run:activation automatewoo --zip=_tests/security/automatewoo.zip --wait > _tests/activation.txt
+      - name: Check Results
+        id: check-activation-test
+        working-dir: _tests
+        run: php ./vendor/bin/phpunit tests/ActivationTest.php
