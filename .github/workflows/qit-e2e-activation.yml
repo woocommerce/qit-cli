@@ -24,7 +24,7 @@ jobs:
         run: ./qit env:add --environment=staging --manager_url=https://stagingcompatibilitydashboard.wpcomstaging.com --qit_secret=${{ secrets.QIT_STAGING_SECRET }}
       - name: Create Zip.
         working-directory: _tests/activation
-        run: docker run --rm --user $(id -u):$(id -g) -v "$GITHUB_WORKSPACE:/app" -w /app joshkeegan/zip:latest sh -c "zip -r automatewoo.zip automatewoo"
+        run: docker run --rm --user $(id -u):$(id -g) -v "$(pwd):/app" -w /app joshkeegan/zip:latest sh -c "zip -r automatewoo.zip automatewoo"
       - name: Run Activation Test.
         id: run-activation-test
         run: ./qit run:activation automatewoo --zip=_tests/security/automatewoo.zip --wait > _tests/activation.txt
