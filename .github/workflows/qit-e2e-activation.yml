@@ -1,6 +1,11 @@
 name: QIT E2E - Activation Test
 on:
+  # Every day at 9pm UTC
+  schedule:
+    - cron: '0 21 * * *'
+  # Manually
   workflow_dispatch:
+  # On push to trunk
   push:
     branches:
       - trunk
