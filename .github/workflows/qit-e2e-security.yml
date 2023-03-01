@@ -16,19 +16,19 @@ jobs:
         with:
           php-version: '7.2'
       - name: Composer install
-        working-dir: _tests
+        working-directory: _tests
         run: composer install
       - name: Enable QIT development mode
         run: ./qit dev
       - name: Connect to QIT Staging
         run: ./qit env:add --environment=staging --manager_url=https://stagingcompatibilitydashboard.wpcomstaging.com --qit_secret=${{ secrets.QIT_STAGING_SECRET }}
       - name: Create Zip.
-        working-dir: _tests/security
+        working-directory: _tests/security
         run: docker run --rm --user $(id -u):$(id -g) -v "$GITHUB_WORKSPACE:/app" -w /app joshkeegan/zip:latest sh -c "zip -r automatewoo.zip automatewoo"
       - name: Run Security Test.
         id: run-security-test
         run: ./qit run:security automatewoo --zip=_tests/security/automatewoo.zip --wait > _tests/security.txt
       - name: Check Results
         id: check-security-test
-        working-dir: _tests
+        working-directory: _tests
         run: php ./vendor/bin/phpunit tests/SecurityTest.php
