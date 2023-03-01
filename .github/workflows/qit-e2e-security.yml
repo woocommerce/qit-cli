@@ -16,7 +16,7 @@ jobs:
         with:
           php-version: '7.2'
       - name: Composer install
-        working_dir: _tests
+        working-dir: _tests
         run: composer install
       - name: Enable QIT development mode
         run: ./qit dev
