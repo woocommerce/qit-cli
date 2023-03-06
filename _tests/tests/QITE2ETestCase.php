@@ -60,7 +60,7 @@ class QITE2ETestCase extends TestCase {
 			]
 		];
 
-		if ( is_callable( $callback ) ) {
+		if ( ! is_null( $callback ) ) {
 			$rules = $callback( $rules );
 		}
 
