@@ -211,14 +211,14 @@ class Environment {
 		$environments = self::get_configured_environments( $partners_only );
 
 		foreach ( $environments as &$e ) {
-			// "/tmp/qit/.env-default.json" => "/tmp/qit/.env-default"
-			$e = rtrim( $e, '.json' );
-
-			// "/tmp/qit/.env-default" => ".env-default"
+			// "/tmp/qit/.env-default.json" => ".env-default.json"
 			$e = basename( $e );
 
+			// ".env-default.json" => ".env-default"
+			$e = str_replace( '.json', '', $e );
+
 			// ".env-default" => "default"
-			$e = ltrim( $e, '.env-' );
+			$e = str_replace( '.env-', '', $e );
 		}
 
 		return $environments;
