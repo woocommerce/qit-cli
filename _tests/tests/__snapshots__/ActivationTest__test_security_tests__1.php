@@ -3,6 +3,7 @@
     "test_type": "activation",
     "wordpress_version": "6.0.0-normalized",
     "woocommerce_version": "6.0.0-normalized",
+    "php_version": "7.4",
     "additional_woo_plugins": [],
     "additional_wp_plugins": [],
     "test_log": "",
@@ -24,5 +25,6 @@
     },
     "test_results_manager_url": "https:\\/\\/test-results-manager.com",
     "test_results_manager_expiration": 1234567890,
+    "test_summary": "7 Errors Detected. (1 Fatal, 2 Warnings, 4 Notices)",
     "version": "Zip"
 }';
