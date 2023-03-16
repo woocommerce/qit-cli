@@ -59,7 +59,7 @@ To generate an Application Password, please follow these steps:
 3. Go to $authorize_url
 4. Authorize the connection, copy the Application Password that will be generated and paste it here.
 
-<info>If you are redirected back to "my-account" on step 3, it's because you are not logged with a Partner account.
+<info>If you are redirected back to "my-account" on step 3, it's because you are not logged in with a Partner account.
 Contact someone in your organization that has access to the Partner account in WCCOM to generate the Application Password for you.</info>
 
 Note: The input is protected, so you won't be able to see it on your terminal.
