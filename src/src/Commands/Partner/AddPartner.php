@@ -43,23 +43,6 @@ class AddPartner extends Command {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
-		// User.
-		if ( ! empty( $input->getOption( 'user' ) ) ) {
-			$user = $input->getOption( 'user' );
-		} else {
-			$output->writeln( sprintf( "\n<info>You will need an account at %s with permission to manage the extensions that you want to test. You can check what's your username here: %s/wp-admin/profile.php</info>\n", get_wccom_url(), get_wccom_url() ) );
-			$question = new Question( "<question>What's the username/email of the Partner you want to add? </question> " );
-			$user     = $this->getHelper( 'question' )->ask( $input, $output, $question );
-		}
-
-		$manager_url = get_manager_url();
-
-		$user = strtolower( $user );
-
-		if ( ! filter_var( $user, 'FILTER_VALIDATE_EMAIL' ) && ! preg_match( '#[a-z0-9_-]#i', $user ) ) {
-			throw new \InvalidArgumentException( 'The username must be either a valid e-mail, or contain only letters, numbers, underscores or dashes).' );
-		}
-
 		// Application Password.
 		if ( ! empty( $input->getOption( 'application_password' ) ) ) {
 			$application_password = $input->getOption( 'application_password' );
@@ -68,16 +51,18 @@ class AddPartner extends Command {
 			$wccom_url     = get_wccom_url();
 
 			$output->writeln( <<<TEXT
+
 To generate an Application Password, please follow these steps:
 
 1. Go to $wccom_url/my-account
 2. Login with a Partner account that has permissions to manage the extensions you want to test.
 3. Go to $authorize_url
 4. Authorize the connection, copy the Application Password that will be generated and paste it here.
-Note: The input is protected, so you won't be able to see it on your terminal.
 
-PS: If after step 3 you are redirected back to my-account, it's because you are not logged in with a Partner account.
-Contact someone in your organization that has access to the Partner account in WCCOM to generate the Application Password for you.
+<info>If you are redirected back to "my-account" on step 3, it's because you are not logged with a Partner account.
+Contact someone in your organization that has access to the Partner account in WCCOM to generate the Application Password for you.</info>
+
+Note: The input is protected, so you won't be able to see it on your terminal.
 
 TEXT
 			);
@@ -100,6 +85,22 @@ TEXT
 			} );
 
 			$application_password = $this->getHelper( 'question' )->ask( $input, $output, $question );
+		}
+
+		// User.
+		if ( ! empty( $input->getOption( 'user' ) ) ) {
+			$user = $input->getOption( 'user' );
+		} else {
+			$question = new Question( "<question>What's the username/email of the Partner account? </question> " );
+			$user     = $this->getHelper( 'question' )->ask( $input, $output, $question );
+		}
+
+		$manager_url = get_manager_url();
+
+		$user = strtolower( $user );
+
+		if ( ! filter_var( $user, FILTER_VALIDATE_EMAIL ) && ! preg_match( '#[a-z0-9_-]#i', $user ) ) {
+			throw new \InvalidArgumentException( 'The username must be either a valid e-mail, or contain only letters, numbers, underscores or dashes).' );
 		}
 
 		// Validate credentials.
@@ -137,7 +138,7 @@ TEXT;
 	}
 
 	protected function get_authorize_url( OutputInterface $output ): string {
-		$result = file_get_contents( get_wccom_url() . '/wp-json' );
+		$result = @file_get_contents( get_wccom_url() . '/wp-json' );
 
 		/*
 		 * A random, hard-coded UUID. This is used to identify the QIT CLI as the application
@@ -150,7 +151,9 @@ TEXT;
 		if ( is_array( $json ) && isset( $json['authentication']['application-passwords']['endpoints']['authorization'] ) ) {
 			$base_url = $json['authentication']['application-passwords']['endpoints']['authorization'];
 		} else {
-			$output->writeln( sprintf( "Could not get Authorization URL from %s. Using fallback...\n", get_wccom_url() ) );
+			if ( $output->isVerbose() ) {
+				$output->writeln( sprintf( "Could not get Authorization URL from %s. Using fallback...\n", get_wccom_url() ) );
+			}
 			$base_url = get_wccom_url() . '/wp-admin/authorize-application.php';
 		}
 
