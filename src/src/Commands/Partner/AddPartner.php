@@ -47,8 +47,8 @@ class AddPartner extends Command {
 		if ( ! empty( $input->getOption( 'user' ) ) ) {
 			$user = $input->getOption( 'user' );
 		} else {
-			$output->writeln( sprintf( "\n<info>You will need an account at %s with permission to 'edit' the extensions that you want to test. You can check what's your username here: %s/wp-admin/profile.php</info>\n", get_wccom_url(), get_wccom_url() ) );
-			$question = new Question( "<question>What's the username of the Partner you want to add? </question> " );
+			$output->writeln( sprintf( "\n<info>You will need an account at %s with permission to manage the extensions that you want to test. You can check what's your username here: %s/wp-admin/profile.php</info>\n", get_wccom_url(), get_wccom_url() ) );
+			$question = new Question( "<question>What's the username/email of the Partner you want to add? </question> " );
 			$user     = $this->getHelper( 'question' )->ask( $input, $output, $question );
 		}
 
@@ -56,8 +56,8 @@ class AddPartner extends Command {
 
 		$user = strtolower( $user );
 
-		if ( ! preg_match( '#[a-z0-9]#i', $user ) ) {
-			throw new \InvalidArgumentException( 'The username must contain only letters and numbers.' );
+		if ( ! filter_var( $user, 'FILTER_VALIDATE_EMAIL' ) && ! preg_match( '#[a-z0-9_-]#i', $user ) ) {
+			throw new \InvalidArgumentException( 'The username must be either a valid e-mail, or contain only letters, numbers, underscores or dashes).' );
 		}
 
 		// Application Password.
@@ -65,18 +65,19 @@ class AddPartner extends Command {
 			$application_password = $input->getOption( 'application_password' );
 		} else {
 			$authorize_url = $this->get_authorize_url( $output );
-
-			/*
-			 * We try to open the URL on the default browser. If that doesn't work for any reason out of our control,
-			 * no error output should be generated, and the URL will still be in the text to be opened manually.
-			 */
-			open_in_browser( $authorize_url );
+			$wccom_url     = get_wccom_url();
 
 			$output->writeln( <<<TEXT
+To generate an Application Password, please follow these steps:
 
-1. Go to $authorize_url
-2. Authorize the connection, copy the Application Password that will be generated and paste it here.
+1. Go to $wccom_url/my-account
+2. Login with a Partner account that has permissions to manage the extensions you want to test.
+3. Go to $authorize_url
+4. Authorize the connection, copy the Application Password that will be generated and paste it here.
 Note: The input is protected, so you won't be able to see it on your terminal.
+
+PS: If after step 3 you are redirected back to my-account, it's because you are not logged in with a Partner account.
+Contact someone in your organization that has access to the Partner account in WCCOM to generate the Application Password for you.
 
 TEXT
 			);
