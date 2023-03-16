@@ -12,7 +12,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use function QIT_CLI\get_manager_url;
 use function QIT_CLI\get_wccom_url;
-use function QIT_CLI\open_in_browser;
 use function QIT_CLI\validate_authentication;
 
 class AddPartner extends Command {
