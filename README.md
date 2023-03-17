@@ -18,6 +18,13 @@ QIT currently supports the following types of tests:
 - Compatibility Test
 - _Performance Test (Coming soon)_
 
+In addition, QIT offers the following features:
+
+- For certain test types, you can select specific versions of PHP, WooCommerce, and WordPress to test against, including Release Candidates of WooCommerce.
+- During certain test types, any PHP notices, warnings, or errors that occur will be displayed.
+- QIT can be integrated into your development process using the [GitHub Workflows integration](https://woocommerce.github.io/qit-documentation/#/workflows/getting-started).
+- You can create and share application passwords with your development team, which allows them to use the QIT CLI without having full access to your WooCommerce.com account. 
+
 ### Quick Start
 
 To use QIT, follow these steps:
@@ -25,8 +32,6 @@ To use QIT, follow these steps:
 1. Install the QIT CLI tool with `composer require woocommerce/qit-cli`.
 2. Add your partner credentials with `./vendor/bin/qit partner-add`.
 3. Run a test on your extension with `./vendor/bin/qit run:e2e YOUR_EXTENSION`.
-
-For some tests, you can specify the PHP, WooCommerce, and WordPress versions you want to use.
 
 ## Documentation
 
