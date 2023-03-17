@@ -8,7 +8,7 @@ The Quality Insights Toolkit (QIT) is an initiative by WooCommerce designed to p
 
 Example: `./qit run:e2e foo --php_version=8.2 --woocommerce_version=7.4-RC1`
 
-This will start up a managed end-to-end test on our servers, creating a temporary test environment with the provided PHP, WooCommerce, and WordPress versions, with your extension activate. We then execute the same tests that WooCommerce itself runs before releases, and you can view the result and a report containing any PHP notices, warnings, or errors that happens during the test.
+This will spin up a managed end-to-end test on our servers, creating a temporary test environment with the provided PHP, WooCommerce, and WordPress versions, with your extension activate. We then execute the same tests that WooCommerce itself runs before releases, and you can view the result and a report containing any PHP notices, warnings, or errors that happens during the test.
 
 Here are the different tests you can run so far:
 
