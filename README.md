@@ -2,15 +2,13 @@
 
 <p align="center"><img src="https://woocommerce.com/wp-content/themes/woo/images/logo-woocommerce-bubble.svg" alt="WooCommerce" style="width:100px;height:auto;"></p>
 
-## Introduction
+## Overview
 
-The Quality Insights Toolkit (QIT) is an initiative by WooCommerce designed to provide extension developers in the [Woo Marketplace](https://woocommerce.com/products/) with managed automated tests.
+The Quality Insights Toolkit (QIT) is an automated testing tool developed by WooCommerce for extension developers in the [Woo Marketplace](https://woocommerce.com/products/). It allows you to run various types of tests on your extension in a managed environment and get feedback on potential issues or errors.
 
-Example: `./qit run:e2e foo --php_version=8.2 --woocommerce_version=7.4-RC1`
+### Supported Tests
 
-This will spin up a managed end-to-end test on our servers, creating a temporary test environment with the provided PHP, WooCommerce, and WordPress versions, with your extension activate. We then execute the same tests that WooCommerce itself runs before releases, and you can view the result and a report containing any PHP notices, warnings, or errors that happens during the test.
-
-Here are the different tests you can run so far:
+QIT currently supports the following types of tests:
 
 - [End-to-End Test](https://woocommerce.github.io/qit-documentation/#/test-types/e2e)
 - [Activation Test](https://woocommerce.github.io/qit-documentation/#/test-types/activation)
@@ -20,16 +18,20 @@ Here are the different tests you can run so far:
 - Compatibility Test
 - _Performance Test (Coming soon)_
 
-### Quick Start Guide
+### Quick Start
 
-1. `composer require woocommerce/qit-cli`
-2. `./vendor/bin/qit partner-add`
-3. `./vendor/bin/qit run:e2e YOUR_EXTENSION`
+To use QIT, follow these steps:
+
+1. Install the QIT CLI tool with `composer require woocommerce/qit-cli`.
+2. Add your partner credentials with `./vendor/bin/qit partner-add`.
+3. Run a test on your extension with `./vendor/bin/qit run:e2e YOUR_EXTENSION`.
+
+For some tests, you can specify the PHP, WooCommerce, and WordPress versions you want to use.
 
 ## Documentation
 
-For a more comprehensive documentation, go to [woocommerce.github.io/qit-documentation](https://woocommerce.github.io/qit-documentation/#/).
+For more detailed information on QIT and how to use it, refer to the [official documentation](https://woocommerce.github.io/qit-documentation/#/).
 
 ## Support
 
-You can open a GitHub issue in this repository if you need support with Quality Insights Toolkit.
+If you need help with QIT, you can open an issue on this [GitHub repository](https://github.com/woocommerce/qit-cli).
