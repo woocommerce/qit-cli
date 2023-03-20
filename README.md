@@ -40,4 +40,4 @@ For more detailed information on QIT and how to use it, refer to the [official d
 
 ## Support
 
-If you need help with QIT, you can open an issue on this [GitHub repository](https://github.com/woocommerce/qit-cli).
+If you need help with QIT, you can open an issue on this [GitHub repository](https://github.com/woocommerce/qit-cli/issues/new).
