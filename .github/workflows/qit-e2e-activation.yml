@@ -62,6 +62,30 @@ jobs:
         working-directory: _tests
         run: php ./vendor/bin/phpunit tests/ActivationTest.php --filter=test_main_activation
 
+  qit_activation_test_php81:
+    name: QIT Activation - PHP 8.1
+    runs-on: ubuntu-20.04
+    needs: [qit_activation_prepare]
+    steps:
+      - uses: actions/cache@v3
+        id: cache-composer
+        with:
+          path: $(./qit qit:dir)
+          key: qit-config
+
+      - name: Create Zip.
+        working-directory: _tests/activation/php81
+        run: docker run --rm --user $(id -u):$(id -g) -v "$(pwd):/app" -w /app joshkeegan/zip:latest sh -c "zip -r woocommerce-product-feeds.zip woocommerce-product-feeds"
+
+      - name: Run Activation Test.
+        id: run-activation-test
+        run: ./qit run:activation woocommerce-product-feeds --zip=_tests/activation/php81/woocommerce-product-feeds.zip --wait --ignore-fail --timeout=420 --json --php_version=8.1 > _tests/activation-php81.txt
+
+      - name: Check Results
+        id: check-activation-test
+        working-directory: _tests
+        run: php ./vendor/bin/phpunit tests/ActivationTest.php --filter=test_php81_activation
+
   qit_activation_test_php82:
     name: QIT Activation - PHP 8.2
     runs-on: ubuntu-20.04
@@ -79,7 +103,7 @@ jobs:
 
       - name: Run Activation Test.
         id: run-activation-test
-        run: ./qit run:activation woocommerce-product-feeds --zip=_tests/activation/php82/woocommerce-product-feeds.zip --wait --ignore-fail --timeout=420 --json > _tests/activation-php82.txt
+        run: ./qit run:activation woocommerce-product-feeds --zip=_tests/activation/php82/woocommerce-product-feeds.zip --wait --ignore-fail --timeout=420 --json --php_version=8.2 > _tests/activation-php82.txt
 
       - name: Check Results
         id: check-activation-test

@@ -11,6 +11,10 @@ class ActivationTest extends QITE2ETestCase {
 		$this->assertMatchesSnapshot( $this->validate_and_normalize( __DIR__ . '/../activation-main.txt' ) );
 	}
 
+	public function test_php81_activation() {
+		$this->assertMatchesSnapshot( $this->validate_and_normalize( __DIR__ . '/../activation-php81.txt' ) );
+	}
+
 	public function test_php82_activation() {
 		$this->assertMatchesSnapshot( $this->validate_and_normalize( __DIR__ . '/../activation-php82.txt' ) );
 	}

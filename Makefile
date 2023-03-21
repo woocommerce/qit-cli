@@ -81,17 +81,25 @@ regenerate_activation_snapshot:
 	$(MAKE) build
 
 	# Main test
-	docker run --rm --user $(DOCKER_USER) -v "${PWD}:/app" joshkeegan/zip:latest sh -c "cd /app/_tests/activation/main && zip -r woocommerce-product-feeds.zip woocommerce-product-feeds"
+	#docker run --rm --user $(DOCKER_USER) -v "${PWD}:/app" joshkeegan/zip:latest sh -c "cd /app/_tests/activation/main && zip -r woocommerce-product-feeds.zip woocommerce-product-feeds"
+	#./qit env:switch staging
+	#./qit run:activation woocommerce-product-feeds --zip=_tests/activation/main/woocommerce-product-feeds.zip --wait --json --ignore-fail > _tests/activation-main.txt
+	#cd _tests && php ./vendor/bin/phpunit tests/ActivationTest.php --filter=test_main_activation -d --update-snapshots
+	#rm _tests/activation-main.txt
+	#rm _tests/activation/main/woocommerce-product-feeds.zip
+
+	# PHP 8.1 test
+	docker run --rm --user $(DOCKER_USER) -v "${PWD}:/app" joshkeegan/zip:latest sh -c "cd /app/_tests/activation/php81 && zip -r woocommerce-product-feeds.zip woocommerce-product-feeds"
 	./qit env:switch staging
-	./qit run:activation woocommerce-product-feeds --zip=_tests/activation/main/woocommerce-product-feeds.zip --wait --json --ignore-fail > _tests/activation-main.txt
-	cd _tests && php ./vendor/bin/phpunit tests/ActivationTest.php --filter=test_main_activation -d --update-snapshots
-	rm _tests/activation-main.txt
-	rm _tests/activation/main/woocommerce-product-feeds.zip
+	./qit run:activation woocommerce-product-feeds --zip=_tests/activation/php81/woocommerce-product-feeds.zip --wait --json --ignore-fail --php_version=8.1 > _tests/activation-php81.txt
+	cd _tests && php ./vendor/bin/phpunit tests/ActivationTest.php --filter=test_php81_activation -d --update-snapshots
+	rm _tests/activation-php81.txt
+	rm _tests/activation/php81/woocommerce-product-feeds.zip
 
 	# PHP 8.2 test
-	docker run --rm --user $(DOCKER_USER) -v "${PWD}:/app" joshkeegan/zip:latest sh -c "cd /app/_tests/activation/php82 && zip -r woocommerce-product-feeds.zip woocommerce-product-feeds"
-	./qit env:switch staging
-	./qit run:activation woocommerce-product-feeds --zip=_tests/activation/php82/woocommerce-product-feeds.zip --wait --json --ignore-fail > _tests/activation-php82.txt
-	cd _tests && php ./vendor/bin/phpunit tests/ActivationTest.php --filter=test_php82_activation -d --update-snapshots
-	rm _tests/activation-php82.txt
-	rm _tests/activation/php82/woocommerce-product-feeds.zip
+	#docker run --rm --user $(DOCKER_USER) -v "${PWD}:/app" joshkeegan/zip:latest sh -c "cd /app/_tests/activation/php82 && zip -r woocommerce-product-feeds.zip woocommerce-product-feeds"
+	#./qit env:switch staging
+	#./qit run:activation woocommerce-product-feeds --zip=_tests/activation/php82/woocommerce-product-feeds.zip --wait --json --ignore-fail --php_version=8.2 > _tests/activation-php82.txt
+	#cd _tests && php ./vendor/bin/phpunit tests/ActivationTest.php --filter=test_php82_activation -d --update-snapshots
+	#rm _tests/activation-php82.txt
+	#rm _tests/activation/php82/woocommerce-product-feeds.zip
