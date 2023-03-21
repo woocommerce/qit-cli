@@ -1,6 +1,7 @@
 <?php
 
 use QIT_CLI\App;
+use QIT_CLI\Commands\ConfigDirCommand;
 use QIT_CLI\Commands\CreateRunCommands;
 use QIT_CLI\Commands\DevModeCommand;
 use QIT_CLI\Commands\Environment\AddEnvironment;
@@ -111,6 +112,7 @@ try {
 	App::setVar( 'offline_mode', true );
 
 	$application->add( $container->make( DevModeCommand::class ) );
+	$application->add( $container->make( ConfigDirCommand::class ) );
 
 	if ( Config::is_development_mode() ) {
 		$application->add( $container->make( AddEnvironment::class ) );
@@ -134,6 +136,7 @@ $env = App::make( Environment::class );
 
 // Global commands.
 $application->add( $container->make( DevModeCommand::class ) );
+$application->add( $container->make( ConfigDirCommand::class ) );
 
 // Partner commands.
 $application->add( $container->make( AddPartner::class ) );
