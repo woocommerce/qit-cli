@@ -55,7 +55,7 @@ jobs:
 
       - name: Run Activation Test.
         id: run-activation-test
-        run: ./qit run:activation woocommerce-product-feeds --zip=_tests/activation/woocommerce-product-feeds.zip --wait --ignore-fail --timeout=420 --json > _tests/activation-main.txt
+        run: ./qit run:activation woocommerce-product-feeds --zip=_tests/activation/main/woocommerce-product-feeds.zip --wait --ignore-fail --timeout=420 --json > _tests/activation-main.txt
 
       - name: Check Results
         id: check-activation-test
@@ -79,7 +79,7 @@ jobs:
 
       - name: Run Activation Test.
         id: run-activation-test
-        run: ./qit run:activation woocommerce-product-feeds --zip=_tests/activation/woocommerce-product-feeds.zip --wait --ignore-fail --timeout=420 --json > _tests/activation-php82.txt
+        run: ./qit run:activation woocommerce-product-feeds --zip=_tests/activation/php82/woocommerce-product-feeds.zip --wait --ignore-fail --timeout=420 --json > _tests/activation-php82.txt
 
       - name: Check Results
         id: check-activation-test
