@@ -18,13 +18,14 @@ QIT currently supports the following types of tests:
 - Compatibility Test
 - _Performance Test (Coming soon)_
 
-In addition, QIT offers the following features:
+### Highlights:
 
-- For certain test types, you can select specific versions of PHP, WooCommerce, and WordPress to test against, including Release Candidates of WooCommerce.
-- During certain test types, any PHP notices, warnings, or errors that occur will be displayed.
-- QIT can be integrated into your development process using the [GitHub Workflows integration](https://woocommerce.github.io/qit-documentation/#/workflows/getting-started).
-- You can create and share application passwords with your development team, which allows them to use the QIT CLI without having full access to your WooCommerce.com account.
-- For certain types of tests, you can choose to activate other WordPress or WooCommerce extensions alongside your own to check for potential conflicts.
+- Run your tests using PHP 7.4, 8.0, 8.1, or 8.2.*
+- Choose the WooCommerce and WordPress versions, including beta releases.*
+- Integrate QIT as part of your own Pull-Requests with the [GitHub Workflows integration](https://woocommerce.github.io/qit-documentation/#/workflows/getting-started).
+- Create and share application passwords with your development team, which allows them to use the QIT CLI without having full access to your WooCommerce.com account.
+
+_* For E2E, Activation, and API tests._
 
 ### Quick Start
 
