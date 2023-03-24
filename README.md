@@ -20,14 +20,16 @@ QIT currently supports the following types of tests:
 
 ### Highlights
 
-- Integrate QIT as part of your own Pull-Requests with the [GitHub Workflows integration](https://woocommerce.github.io/qit-documentation/#/workflows/getting-started).
-- Create and share application passwords with your development team, which allows them to use the QIT CLI without having full access to your WooCommerce.com account.
-
-#### For End-to-End, Activation, and API tests
+#### For End-to-End, Activation, and API Tests
 
 - Choose the PHP version, from 7.4 to 8.2.
 - Choose the WooCommerce and WordPress versions, including beta releases.
 - Choose to activate other extensions to check for potential conflicts.
+
+#### For all Tests
+
+- Integrate QIT as part of your own Pull-Requests with our example [GitHub Workflows integration](https://woocommerce.github.io/qit-documentation/#/workflows/getting-started).
+- Create and share application passwords with your development team, which allows them to use the QIT CLI without having full access to your WooCommerce.com account.
 
 ### Quick Start
 
