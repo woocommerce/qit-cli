@@ -134,7 +134,7 @@ function run_test_runs( array $test_runs ) {
 				'--wait',
 				'--json',
 				'--ignore-fail',
-				sprintf( '--zip=%s/%s.zip', $t['path'], Context::$sut_slug ),
+				"--zip={$t['path']}/sut.zip"
 			];
 
 			if ( ! empty( $t['php'] ) ) {
@@ -168,7 +168,7 @@ function run_test_runs( array $test_runs ) {
 	$process_manager = new \Jack\Symfony\ProcessManager();
 	$process_manager->runParallel( $processes, 10, 1000, function ( string $type, string $out, \Symfony\Component\Process\Process $process ) {
 		if ( ! is_null( json_decode( $out, true ) ) ) {
-			$snapshot_filepath = $process->getEnv()['QIT_TEST_PATH'] . '/' . $process->getEnv()['QIT_TEST_SLUG'] . '.txt';
+			$snapshot_filepath = $process->getEnv()['QIT_TEST_PATH'] . '/test-result.json';
 
 			if ( file_exists( $snapshot_filepath ) ) {
 				if ( ! unlink( $snapshot_filepath ) ) {
@@ -176,7 +176,7 @@ function run_test_runs( array $test_runs ) {
 				}
 			}
 
-			if ( ! file_put_contents( $process->getEnv()['QIT_TEST_PATH'] . '/' . $process->getEnv()['QIT_TEST_SLUG'] . '.txt', $out ) ) {
+			if ( ! file_put_contents( $process->getEnv()['QIT_TEST_PATH'] . '/test-result.json', $out ) ) {
 				echo "[Process {$process->getPid()}]: Failed to write test output to file.\n";
 				throw new RuntimeException( 'Failed to write test output to file.' );
 			}
@@ -214,7 +214,7 @@ function generate_test_files( string $test_type, array $test_runs ): void {
 		$tests .= <<<PHP
 
 	public function test_{$test_run['type']}_{$test_run['slug']}() {
-		\$this->assertMatchesSnapshot( \$this->validate_and_normalize( __DIR__ . '/../{$test_run['type']}/{$test_run['slug']}/{$test_run['slug']}.txt' ) );
+		\$this->assertMatchesSnapshot( \$this->validate_and_normalize( __DIR__ . '/../{$test_run['type']}/{$test_run['slug']}/test-result.json' ) );
 	}
 PHP;
 
@@ -267,7 +267,7 @@ function make_zips( array $test_type_test_runs ) {
 			'joshkeegan/zip:latest',
 			'sh',
 			'-c',
-			"rm -f $slug.zip && zip -r $slug.zip $slug",
+			"rm -f sut.zip && zip -r sut.zip $slug",
 		];
 
 		$processes[] = new Symfony\Component\Process\Process( $args );
