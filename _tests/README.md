@@ -8,14 +8,19 @@ The self-tests uses Snapshot Testing to validate that the QIT flags the expected
 - Each directory is a test-type self-test, except for "vendor" and "tests" folders, eg: `activation`, `security`, `e2e`, etc.
 - Each test-type self-test can contain multiple tests, eg: `activation/test-1`, `activation/test-2`, etc.
 - Each test has a `env.php` file, with parameters used for the test, such as PHP, WooCommerce and WordPress versions, eg: `activation/test-1/env.php`.
-- The `QITSelfTests.php` file is the runner for the self-tests.
 
-### QITSelfTests.php 
+### Running the self-tests
 
-- For each test type, it will create the zip file of the plugin of each test.
-- For each test type, it will dispatch a QIT test with `--wait` and `--json` parameters, which will wait for the test to finish, and get the result of the test as a JSON.
-- All tests are dispatched in parallel, and the results are processed as they come in.
-- When a result is available, it will compare the JSON result with a previously saved snapshot.
+This is the runner for the self-tests. When you run `php QitSelfTests.php run`, it will:
+
+- For each test type directory (eg: `activation`)
+  - For each test (eg: `activation/test-1`)
+    - Create the zip of the SUT
+    - Create a PHPUnit test file
+    - Dispatch a QIT test with `--wait` and `--json` parameters
+    - Compare the JSON result with a previously saved snapshot
+
+If the JSON result is different from the snapshot, the test will fail. All tests are dispatched in parallel, and the results are processed as they come in. When a result is available, it will compare the JSON result with a previously saved snapshot.
 
 ### Regenerating snapshots
 To re-generate the Snapshots, run `php QitSelfTests.php update`
