@@ -9,6 +9,6 @@ class SecurityTest extends QITE2ETestCase {
 	use MatchesSnapshots;
 
 	public function test_security_main() {
-		$this->assertMatchesSnapshot( $this->validate_and_normalize( __DIR__ . '/../security/main/main.txt' ) );
+		$this->assertMatchesSnapshot( $this->validate_and_normalize( __DIR__ . '/../security/main/test-result.json' ) );
 	}
 }

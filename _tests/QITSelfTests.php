@@ -162,12 +162,13 @@ function run_test_runs( array $test_runs ) {
 
 			$p = new Symfony\Component\Process\Process( $args );
 
-			echo "[INFO] Preparing to run command {$p->getCommandLine()}";
+			echo "[INFO] Preparing to run command {$p->getCommandLine()}\n";
 
 			$p->setEnv( [
 				'QIT_TEST_PATH' => $t['path'],
 				'QIT_TEST_SLUG' => $t['slug'],
 				'QIT_TEST_TYPE' => $test_type,
+				'QIT_RAN_TEST'  => false,
 			] );
 
 			$processes[] = $p;
@@ -175,7 +176,7 @@ function run_test_runs( array $test_runs ) {
 	}
 
 	$process_manager = new \Jack\Symfony\ProcessManager();
-	$process_manager->runParallel( $processes, 25, 1000, function ( string $type, string $out, \Symfony\Component\Process\Process $process ) use ( $test_runs ) {
+	$process_manager->runParallel( $processes, 25, 1000, function ( string $type, string $out, \Symfony\Component\Process\Process $process ) {
 		/*
 		 * This is the callback that will be called when a process generates output.
 		 */
@@ -212,19 +213,25 @@ function run_test_runs( array $test_runs ) {
 
 			$process_id = $process->getPid();
 
-			$test_process = new Symfony\Component\Process\Process( $args );
-			$exit_status_code = $test_process->run( function ( $type, $out ) use ( $process_id ) {
+			$phpunit_process = new Symfony\Component\Process\Process( $args );
+			$phpunit_process->run( function ( $type, $out ) use ( $process_id ) {
 				echo "[Process $process_id]: $out\n";
 			} );
 
-			foreach ( $test_runs as $test_type => $test_type_test_runs ) {
-				cleanup_test( $process->getEnv()['QIT_TEST_PATH'] );
-			}
+			cleanup_test( $process->getEnv()['QIT_TEST_PATH'] );
+
+			$process->setEnv( [ 'QIT_RAN_TEST' => true ] );
 		} else {
 			// Not a JSON, so just output it.
 			echo "[Process {$process->getPid()}]: $out\n";
 		}
 	} );
+
+	foreach ( $processes as $p ) {
+		if ( ! $p->getEnv()['QIT_RAN_TEST'] ) {
+			throw new RuntimeException( "[Process {$p->getPid()}]: Test {$p->getEnv()['QIT_TEST_PATH']} did not run.\n" );
+		}
+	}
 }
 
 function generate_phpunit_files( string $test_type, array $test_runs ): void {

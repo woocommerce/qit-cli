@@ -9,12 +9,12 @@ class ActivationTest extends QITE2ETestCase {
 	use MatchesSnapshots;
 
 	public function test_activation_php82() {
-		$this->assertMatchesSnapshot( $this->validate_and_normalize( __DIR__ . '/../activation/php82/php82.txt' ) );
+		$this->assertMatchesSnapshot( $this->validate_and_normalize( __DIR__ . '/../activation/php82/test-result.json' ) );
 	}
 	public function test_activation_generic() {
-		$this->assertMatchesSnapshot( $this->validate_and_normalize( __DIR__ . '/../activation/generic/generic.txt' ) );
+		$this->assertMatchesSnapshot( $this->validate_and_normalize( __DIR__ . '/../activation/generic/test-result.json' ) );
 	}
 	public function test_activation_php81() {
-		$this->assertMatchesSnapshot( $this->validate_and_normalize( __DIR__ . '/../activation/php81/php81.txt' ) );
+		$this->assertMatchesSnapshot( $this->validate_and_normalize( __DIR__ . '/../activation/php81/test-result.json' ) );
 	}
 }
