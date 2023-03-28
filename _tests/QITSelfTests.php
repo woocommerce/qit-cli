@@ -9,6 +9,8 @@
  * - Checks that the result matches the snapshot
  */
 
+use Symfony\Component\Process\Process;
+
 class Context {
 	public static $action;
 	public static $suite;
@@ -160,7 +162,7 @@ function run_test_runs( array $test_runs ) {
 
 			$args[] = Context::$sut_slug;
 
-			$p = new Symfony\Component\Process\Process( $args );
+			$p = new Process( $args );
 
 			echo "[INFO] Preparing to run command {$p->getCommandLine()}\n";
 
@@ -176,56 +178,69 @@ function run_test_runs( array $test_runs ) {
 	}
 
 	$process_manager = new \Jack\Symfony\ProcessManager();
-	$process_manager->runParallel( $processes, 25, 1000, function ( string $type, string $out, \Symfony\Component\Process\Process $process ) {
-		/*
-		 * This is the callback that will be called when a process generates output.
-		 */
-		if ( ! is_null( json_decode( $out, true ) ) ) {
-			/*
-			 * Here we received a JSON output, so it must be the result.
-			 * - Save the output in a file.
-			 * - Run the PHPUnit test.
-			 */
-			$snapshot_filepath = $process->getEnv()['QIT_TEST_PATH'] . '/test-result.json';
-
-			if ( file_exists( $snapshot_filepath ) ) {
-				if ( ! unlink( $snapshot_filepath ) ) {
-					throw new RuntimeException( "Failed to delete snapshot file: $snapshot_filepath" );
-				}
-			}
-
-			if ( ! file_put_contents( $process->getEnv()['QIT_TEST_PATH'] . '/test-result.json', $out ) ) {
-				echo "[Process {$process->getPid()}]: Failed to write test output to file.\n";
-				throw new RuntimeException( 'Failed to write test output to file.' );
-			}
-
-			// Run the test itself.
-			//php ./vendor/bin/phpunit tests/ActivationTest.php --filter=test_php81_activation -d --update-snapshots
-			$args = [
-				__DIR__ . '/vendor/bin/phpunit',
-				__DIR__ . '/tests/' . ucfirst( $process->getEnv()['QIT_TEST_TYPE'] ) . 'Test.php',
-				'--filter=test_' . $process->getEnv()['QIT_TEST_TYPE'] . '_' . $process->getEnv()['QIT_TEST_SLUG'],
-			];
-
-			if ( Context::$action === 'update' ) {
-				$args[] = '-d --update-snapshots';
-			}
-
-			$process_id = $process->getPid();
-
-			$phpunit_process = new Symfony\Component\Process\Process( $args );
-			$phpunit_process->run( function ( $type, $out ) use ( $process_id ) {
-				echo "[Process $process_id]: $out\n";
-			} );
-
-			cleanup_test( $process->getEnv()['QIT_TEST_PATH'] );
-
-			$process->setEnv( [ 'QIT_RAN_TEST' => true ] );
-		} else {
-			// Not a JSON, so just output it.
+	$process_manager->runParallel( $processes, 25, 1000, function ( string $type, string $out, Process $process ) {
+		// This is the callback that will be called when a process generates output.
+		if ( is_null( json_decode( $out, true ) ) ) {
+			// Print anything that is not JSON.
 			echo "[Process {$process->getPid()}]: $out\n";
 		}
 	} );
+
+	/**
+	 * After the process has finished, iterate over the output.
+	 * We do this when it finishes because the output that is generated while
+	 * the process is running (as in the callback above) is chunked to 16kb,
+	 * which might cut the JSON.
+	 *
+	 * @see \Symfony\Component\Process\Pipes\PipesInterface::CHUNK_SIZE
+	 */
+	foreach ( $processes as $p ) {
+		$it = $p->getIterator( Process::ITER_SKIP_ERR | Process::ITER_KEEP_OUTPUT );
+		foreach ( $it as $out ) {
+			if ( ! is_null( json_decode( $out, true ) ) ) {
+				/*
+				 * Here we received a JSON output, so it must be the result.
+				 * - Save the output in a file.
+				 * - Run the PHPUnit test.
+				 */
+				$snapshot_filepath = $p->getEnv()['QIT_TEST_PATH'] . '/test-result.json';
+
+				if ( file_exists( $snapshot_filepath ) ) {
+					if ( ! unlink( $snapshot_filepath ) ) {
+						throw new RuntimeException( "Failed to delete snapshot file: $snapshot_filepath" );
+					}
+				}
+
+				if ( ! file_put_contents( $p->getEnv()['QIT_TEST_PATH'] . '/test-result.json', $out ) ) {
+					echo "[Process {$p->getPid()}]: Failed to write test output to file.\n";
+					throw new RuntimeException( 'Failed to write test output to file.' );
+				}
+
+				// Run the test itself.
+				//php ./vendor/bin/phpunit tests/ActivationTest.php --filter=test_php81_activation -d --update-snapshots
+				$args = [
+					__DIR__ . '/vendor/bin/phpunit',
+					__DIR__ . '/tests/' . ucfirst( $p->getEnv()['QIT_TEST_TYPE'] ) . 'Test.php',
+					'--filter=test_' . $p->getEnv()['QIT_TEST_TYPE'] . '_' . $p->getEnv()['QIT_TEST_SLUG'],
+				];
+
+				if ( Context::$action === 'update' ) {
+					$args[] = '-d --update-snapshots';
+				}
+
+				$process_id = $p->getPid();
+
+				$phpunit_process = new Process( $args );
+				$phpunit_process->run( function ( $type, $out ) use ( $process_id ) {
+					echo "[Process $process_id]: $out\n";
+				} );
+
+				cleanup_test( $p->getEnv()['QIT_TEST_PATH'] );
+
+				$p->setEnv( [ 'QIT_RAN_TEST' => true ] );
+			}
+		}
+	}
 
 	foreach ( $processes as $p ) {
 		if ( ! $p->getEnv()['QIT_RAN_TEST'] ) {
@@ -301,7 +316,7 @@ function generate_zips( array $test_type_test_runs ) {
 	}
 
 	$process_manager = new \Jack\Symfony\ProcessManager();
-	$process_manager->runParallel( $processes, 25, 1000, function ( string $type, string $out, \Symfony\Component\Process\Process $process ) {
+	$process_manager->runParallel( $processes, 25, 1000, function ( string $type, string $out, Process $process ) {
 		echo $out;
 	} );
 }
