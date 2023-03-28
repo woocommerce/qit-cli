@@ -232,7 +232,7 @@ function run_test_runs( array $test_runs ) {
 				}
 
 				$phpunit_process = new Process( $args );
-				$phpunit_process->run( function ( $type, $out ) {
+				$phpunit_process->mustRun( function ( $type, $out ) {
 					echo "$out\n";
 				} );
 
