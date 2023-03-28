@@ -1,0 +1,44 @@
+name: QIT Self-Tests
+on:
+  # Every day at 9pm UTC
+  schedule:
+    - cron: '0 21 * * *'
+  # Manually
+  workflow_dispatch:
+  # On push to trunk
+  push:
+    branches:
+      - trunk
+jobs:
+  qit_self_tests:
+    name: QIT Self Tests
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.2'
+
+      - name: Composer install
+        working-directory: _tests
+        run: composer install
+
+      - name: Enable QIT development mode
+        run: ./qit dev
+
+      - name: Connect to QIT Staging
+        run: ./qit env:add --environment=staging --manager_url=https://stagingcompatibilitydashboard.wpcomstaging.com --qit_secret=${{ secrets.QIT_STAGING_SECRET }}
+
+      - uses: actions/cache@v3
+        id: cache-composer
+        with:
+          path: $(./qit qit:dir)
+          key: qit-config
+
+      - name: Run Self-Tests
+        id: run-self-tests
+        working-directory: _tests
+        run: php ./QITSelfTests.php run
