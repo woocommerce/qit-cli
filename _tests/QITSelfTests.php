@@ -175,7 +175,7 @@ function run_test_runs( array $test_runs ) {
 	}
 
 	$process_manager = new \Jack\Symfony\ProcessManager();
-	$process_manager->runParallel( $processes, 10, 1000, function ( string $type, string $out, \Symfony\Component\Process\Process $process ) use ( $test_runs ) {
+	$process_manager->runParallel( $processes, 25, 1000, function ( string $type, string $out, \Symfony\Component\Process\Process $process ) use ( $test_runs ) {
 		/*
 		 * This is the callback that will be called when a process generates output.
 		 */
@@ -294,7 +294,7 @@ function generate_zips( array $test_type_test_runs ) {
 	}
 
 	$process_manager = new \Jack\Symfony\ProcessManager();
-	$process_manager->runParallel( $processes, 10, 1000, function ( string $type, string $out, \Symfony\Component\Process\Process $process ) {
+	$process_manager->runParallel( $processes, 25, 1000, function ( string $type, string $out, \Symfony\Component\Process\Process $process ) {
 		echo $out;
 	} );
 }
