@@ -160,10 +160,10 @@ function run_test_runs( array $test_runs ) {
 
 			$args[] = Context::$sut_slug;
 
-			var_dump( $args );
-
 			$p = new Symfony\Component\Process\Process( $args );
-			var_dump( (string) $p->getCommandLine() );
+
+			echo "[INFO] Preparing to run command {$p->getCommandLine()}";
+
 			$p->setEnv( [
 				'QIT_TEST_PATH' => $t['path'],
 				'QIT_TEST_SLUG' => $t['slug'],
@@ -305,10 +305,10 @@ function cleanup_test( $test_type_path ) {
 			if ( ! unlink( "$test_type_path/$file" ) ) {
 				throw new RuntimeException( "Failed to delete test result file: $test_type_path/$file" );
 			} else {
-				echo "[Cleanup] Deleted file $test_type_path/$file";
+				echo "[Cleanup] Deleted file $test_type_path/$file\n";
 			}
 		} else {
-			echo "[Cleanup] File does not exist $test_type_path/$file";
+			echo "[Cleanup] File does not exist $test_type_path/$file\n";
 		}
 	}
 }
