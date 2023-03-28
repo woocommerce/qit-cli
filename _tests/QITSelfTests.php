@@ -224,17 +224,16 @@ function run_test_runs( array $test_runs ) {
 					__DIR__ . '/vendor/bin/phpunit',
 					__DIR__ . '/tests/' . ucfirst( $p->getEnv()['QIT_TEST_TYPE'] ) . 'Test.php',
 					'--filter=test_' . $p->getEnv()['QIT_TEST_TYPE'] . '_' . $p->getEnv()['QIT_TEST_SLUG'],
+					'--testdox', // Nice formatting.
 				];
 
 				if ( Context::$action === 'update' ) {
 					$args[] = '-d --update-snapshots';
 				}
 
-				$process_id = $p->getPid();
-
 				$phpunit_process = new Process( $args );
-				$phpunit_process->run( function ( $type, $out ) use ( $process_id ) {
-					echo "[Process $process_id]: $out\n";
+				$phpunit_process->run( function ( $type, $out ) {
+					echo "$out\n";
 				} );
 
 				cleanup_test( $p->getEnv()['QIT_TEST_PATH'] );
