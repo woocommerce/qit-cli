@@ -9,6 +9,7 @@
  * - Checks that the result matches the snapshot
  */
 
+use Symfony\Component\Process\Pipes\PipesInterface;
 use Symfony\Component\Process\Process;
 
 class Context {
@@ -180,7 +181,8 @@ function run_test_runs( array $test_runs ) {
 	$process_manager = new \Jack\Symfony\ProcessManager();
 	$process_manager->runParallel( $processes, 25, 1000, function ( string $type, string $out, Process $process ) {
 		// This is the callback that will be called when a process generates output.
-		if ( is_null( json_decode( $out, true ) ) ) {
+		// Ignore any output that is JSON, or is too long, and is possibly a chunked JSON.
+		if ( is_null( json_decode( $out, true ) ) && strlen( $out ) < PipesInterface::CHUNK_SIZE * 0.9 ) {
 			// Print anything that is not JSON.
 			echo "[Process {$process->getPid()}]: $out\n";
 		}
