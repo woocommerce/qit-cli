@@ -7,8 +7,6 @@ on:
   workflow_dispatch:
   # On push to trunk
   push:
-    branches:
-      - trunk
 jobs:
   qit_self_tests:
     name: QIT Self Tests
@@ -20,7 +18,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.2'
+          php-version: '8.2'
 
       - name: Composer install
         working-directory: _tests
