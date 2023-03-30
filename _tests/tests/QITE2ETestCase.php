@@ -52,6 +52,9 @@ class QITE2ETestCase extends TestCase {
 					// Normalize timestamps such as [01-Mar-2023 10:55:12 UTC] to [TIMESTAMP]
 					$value = preg_replace( '/\[\d{2}-\w{3}-\d{4} \d{2}:\d{2}:\d{2} UTC\]/', '[TIMESTAMP]', $value );
 
+					// Normalize tests running on staging-compatibility to compatibility.
+					$value = str_replace( 'staging-compatibility', 'compatibility', $value );
+
 					return $value;
 				},
 				'validate' => static function( $value ) {

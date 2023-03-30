@@ -252,7 +252,8 @@ function run_test_runs( array $test_runs ) {
 				];
 
 				if ( Context::$action === 'update' ) {
-					$args[] = '-d --update-snapshots';
+					$args[] = '-d';
+					$args[] = '--update-snapshots';
 				}
 
 				$phpunit_process = new Process( $args );
@@ -260,7 +261,7 @@ function run_test_runs( array $test_runs ) {
 				echo "[INFO] Preparing to run test: {$phpunit_process->getCommandLine()}\n";
 
 				$phpunit_process->mustRun( function ( $type, $out ) {
-					echo "$out\n";
+					echo substr( $out, 0, 500 ) . "\n";
 				} );
 
 				cleanup_test( $p->getEnv()['QIT_TEST_PATH'] );
