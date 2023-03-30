@@ -189,7 +189,10 @@ function run_test_runs( array $test_runs ) {
 	}
 
 	$process_manager = new \Jack\Symfony\ProcessManager();
-	$process_manager->runParallel( $processes, 25, 1000, function ( string $type, string $out, Process $process ) {
+
+	echo "Starting tests in Parallel...\n";
+
+	$process_manager->runParallel( $processes, 25, 10000, function ( string $type, string $out, Process $process ) {
 		// This is the callback that will be called when a process generates output.
 		// Ignore any output that is JSON, or is too long, and is possibly a chunked JSON.
 		if ( is_null( json_decode( $out, true ) ) && strlen( $out ) < PipesInterface::CHUNK_SIZE * 0.9 ) {
@@ -197,6 +200,8 @@ function run_test_runs( array $test_runs ) {
 			echo "[Process {$process->getPid()}]: $out\n";
 		}
 	} );
+
+	echo "All tests finished. Processing results...\n";
 
 	/**
 	 * After the process has finished, iterate over the output.
@@ -327,8 +332,8 @@ function generate_zips( array $test_type_test_runs ) {
 	}
 
 	$process_manager = new \Jack\Symfony\ProcessManager();
-	$process_manager->runParallel( $processes, 25, 1000, function ( string $type, string $out, Process $process ) {
-		echo $out;
+	$process_manager->runParallel( $processes, 25, 10000, function ( string $type, string $out, Process $process ) {
+		echo "[Process {$process->getPid()}] $out";
 	} );
 }
 
