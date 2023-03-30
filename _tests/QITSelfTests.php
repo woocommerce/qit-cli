@@ -103,6 +103,9 @@ function get_tests_in_test_type( string $path ) {
 	/** @var DirectoryIterator $file */
 	foreach ( $it as $file ) {
 		if ( $file->isDir() && ! $file->isDot() ) {
+			if ( stripos( $file->getBasename(), '-' ) !== false ) {
+				throw new \UnexpectedValueException( sprintf( 'Please rename the test "%s" to "%s"', $file->getBasename(), str_replace( '-', '_', $file->getBasename() ) ) );
+			}
 			$tests[] = $file->getPathname();
 		}
 	}
