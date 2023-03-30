@@ -57,7 +57,19 @@ class QITE2ETestCase extends TestCase {
 				'validate' => static function( $value ) {
 					return ! is_null( json_decode( $value ) );
 				}
-			]
+			],
+			'test_result_aws_expiration' => [
+				'normalize' => 1234567890,
+				'validate'  => static function ( $value ) {
+					return empty( $value ) || preg_match( '/^\d+$/', $value );
+				}
+			],
+			'test_result_aws_url' => [
+				'normalize' => 'https://test-results-aws.com',
+				'validate'  => static function ( $value ) {
+					return empty( $value ) || filter_var( $value, FILTER_VALIDATE_URL );
+				}
+			],
 		];
 
 		if ( ! is_null( $callback ) ) {
