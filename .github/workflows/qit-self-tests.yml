@@ -5,7 +5,7 @@ on:
     - cron: '0 21 * * *'
   # Manually
   workflow_dispatch:
-  # On push to trunk
+  # On push to trunk.
   push:
 jobs:
   qit_self_tests:
