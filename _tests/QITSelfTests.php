@@ -9,6 +9,8 @@
  * - Checks that the result matches the snapshot
  */
 
+use Jack\Symfony\ProcessManager;
+use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Pipes\PipesInterface;
 use Symfony\Component\Process\Process;
 
@@ -62,12 +64,6 @@ function validate_context(): void {
 
 	if ( ! file_exists( __DIR__ . '/../qit' ) ) {
 		throw new RuntimeException( '"qit" binary does not exist in the parent directory.' );
-	}
-
-	if ( function_exists( 'xdebug_break' ) ) {
-		echo "\n\n==========\n";
-		echo "WARNING: Xdebug is enabled. The parallelism of tests might be bottlenecked by the \"Max concurrent connections\" setting of PHPStorm or similar config in your IDE. If the tests are not running in parallel, or are running only a few at a time, try disabling Xdebug or increasing max concurrent connections in your IDE.\n";
-		echo "==========\n\n";
 	}
 }
 
@@ -149,8 +145,14 @@ function run_test_runs( array $test_runs ) {
 	// Dispatch all tests in parallel using the qit binary.
 	foreach ( $test_runs as $test_type => $test_type_test_runs ) {
 		foreach ( $test_type_test_runs as $t ) {
+			$php = ( new PhpExecutableFinder() )->find( false );
+			$qit = realpath( __DIR__ . '/../qit' );
+
 			$args = [
-				__DIR__ . '/../qit',
+				$php,
+				'-d',
+				'xdebug.mode=off', // Run QIT with Xdebug disabled to avoid "Max concurrent settings" on PHPStorm from bottlenecking parallelism.
+				$qit,
 				"run:$test_type",
 				'--wait',
 				'--json',
@@ -188,7 +190,7 @@ function run_test_runs( array $test_runs ) {
 		}
 	}
 
-	$process_manager = new \Jack\Symfony\ProcessManager();
+	$process_manager = new ProcessManager();
 
 	echo "Starting tests in Parallel...\n";
 
@@ -331,7 +333,7 @@ function generate_zips( array $test_type_test_runs ) {
 		$processes[] = new Symfony\Component\Process\Process( $args );
 	}
 
-	$process_manager = new \Jack\Symfony\ProcessManager();
+	$process_manager = new ProcessManager();
 	$process_manager->runParallel( $processes, 25, 10000, function ( string $type, string $out, Process $process ) {
 		echo "[Process {$process->getPid()}] $out";
 	} );
