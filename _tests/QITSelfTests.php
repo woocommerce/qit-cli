@@ -240,7 +240,14 @@ function run_test_runs( array $test_runs ) {
 				$args = [
 					__DIR__ . '/vendor/bin/phpunit',
 					__DIR__ . '/tests/' . ucfirst( $p->getEnv()['QIT_TEST_TYPE'] ) . 'Test.php',
-					'--filter=test_' . $p->getEnv()['QIT_TEST_TYPE'] . '_' . $p->getEnv()['QIT_TEST_SLUG'],
+					/*
+					 * Match a single test method by regex.
+					 * Example test method: TestNamespace\TestCaseClass::testMethod
+					 * Example regex: --filter=::testMethod$
+					 * The "$" at the end is so that it does an exact match. For instance, the above regex would not match:
+					 * TestNamespace\TestCaseClass::testMethodPhp82
+					 */
+					sprintf('--filter=::test_%s_%s$', $p->getEnv()['QIT_TEST_TYPE'], $p->getEnv()['QIT_TEST_SLUG']),
 					'--testdox', // Nice formatting.
 				];
 
@@ -249,6 +256,9 @@ function run_test_runs( array $test_runs ) {
 				}
 
 				$phpunit_process = new Process( $args );
+
+				echo "[INFO] Preparing to run test: {$phpunit_process->getCommandLine()}\n";
+
 				$phpunit_process->mustRun( function ( $type, $out ) {
 					echo "$out\n";
 				} );
