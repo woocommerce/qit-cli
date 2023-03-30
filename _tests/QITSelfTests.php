@@ -63,6 +63,12 @@ function validate_context(): void {
 	if ( ! file_exists( __DIR__ . '/../qit' ) ) {
 		throw new RuntimeException( '"qit" binary does not exist in the parent directory.' );
 	}
+
+	if ( function_exists( 'xdebug_break' ) ) {
+		echo "\n\n==========\n";
+		echo "WARNING: Xdebug is enabled. The parallelism of tests might be bottlenecked by the \"Max concurrent connections\" setting of PHPStorm or similar config in your IDE. If the tests are not running in parallel, or are running only a few at a time, try disabling Xdebug or increasing max concurrent connections in your IDE.\n";
+		echo "==========\n\n";
+	}
 }
 
 /**
