@@ -5,7 +5,7 @@ namespace QIT_CLI;
 use QIT_CLI\Exceptions\DoingAutocompleteException;
 use QIT_CLI\Exceptions\NetworkErrorException;
 
-class RequestBuilder implements \JsonSerializable {
+class RequestBuilder {
 	/** @var string $url */
 	protected $url;
 
@@ -180,9 +180,5 @@ class RequestBuilder implements \JsonSerializable {
 			'curl_opts'             => $this->curl_opts,
 			'expected_status_codes' => $this->expected_status_codes,
 		];
-	}
-
-	public function jsonSerialize(): mixed  {
-		return $this->to_array();
 	}
 }
