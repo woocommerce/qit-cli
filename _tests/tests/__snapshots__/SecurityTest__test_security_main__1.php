@@ -25,6 +25,6 @@
     },
     "test_results_manager_url": "https:\\/\\/test-results-manager.com",
     "test_results_manager_expiration": 1234567890,
-    "test_summary": "",
+    "test_summary": "Errors: 2 Warnings: 0",
     "version": "Zip"
 }';
