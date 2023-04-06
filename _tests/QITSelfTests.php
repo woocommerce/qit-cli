@@ -17,11 +17,13 @@ use Symfony\Component\Process\Process;
 class Context {
 	public static $action;
 	public static $suite;
+	public static $test;
 	public static $sut_slug;
 }
 
 Context::$action = $GLOBALS['argv'][1] ?? 'run';
 Context::$suite  = $GLOBALS['argv'][2] ?? null;
+Context::$test  = $GLOBALS['argv'][3] ?? null;
 
 /*
  * To run tests in QIT, we need to assign the results to a plugin in the Marketplace.
@@ -115,6 +117,13 @@ function generate_test_runs( array $test_types ): array {
 	foreach ( $test_types as $test_type ) {
 		$tests_to_run[ basename( $test_type ) ] = [];
 		foreach ( get_tests_in_test_type( $test_type ) as $test ) {
+			// If we defined a single test to run, skip those that are not it.
+			if ( ! is_null( Context::$test ) ) {
+				if ( basename( $test ) !== Context::$test ) {
+					continue;
+				}
+			}
+
 			$env = require $test . '/env.php';
 
 			$tests_to_run[ basename( $test_type ) ][] = [
