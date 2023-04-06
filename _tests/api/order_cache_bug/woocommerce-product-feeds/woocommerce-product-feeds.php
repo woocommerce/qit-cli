@@ -16,21 +16,21 @@ add_action(
 add_action( 'init', static function() {
 	$order = new \WC_Order();
 	$order->save();
-} );
 
-$order = wc_get_order( $order->get_id() );
+	$order = wc_get_order( $order->get_id() );
 
-if ( get_class( $order ) !== \WC_Order::class ) {
-	if ( is_object( $order ) ) {
-		$actual = get_class( $order );
-	} else {
-		$actual = gettype( $order );
+	if ( get_class( $order ) !== \WC_Order::class ) {
+		if ( is_object( $order ) ) {
+			$actual = get_class( $order );
+		} else {
+			$actual = gettype( $order );
 
-		if ( is_scalar( $actual ) ) {
-			$actual .= " $actual";
+			if ( is_scalar( $actual ) ) {
+				$actual .= " $actual";
+			}
 		}
+		trigger_error( sprintf( 'Expected $order to be \WC_Order. Got %s instead.', $order ), E_USER_ERROR );
+	} else {
+		trigger_error( '$order is \WC_Order as expected.' );
 	}
-	trigger_error( sprintf( 'Expected $order to be \WC_Order. Got %s instead.', $order ), E_USER_ERROR );
-} else {
-	trigger_error( '$order is \WC_Order as expected.' );
-}
+} );
