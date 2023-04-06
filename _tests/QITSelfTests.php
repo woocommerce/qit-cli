@@ -120,6 +120,7 @@ function generate_test_runs( array $test_types ): array {
 			// If we defined a single test to run, skip those that are not it.
 			if ( ! is_null( Context::$test ) ) {
 				if ( basename( $test ) !== Context::$test ) {
+					echo sprintf( "Skipping %s, running only %s\n", basename( $test ), Context::$test );
 					continue;
 				}
 			}

@@ -13,8 +13,10 @@ add_action(
 	}
 );
 
-$order = new \WC_Order();
-$order->save();
+add_action( 'init', static function() {
+	$order = new \WC_Order();
+	$order->save();
+} );
 
 $order = wc_get_order( $order->get_id() );
 
