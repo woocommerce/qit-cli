@@ -4,6 +4,11 @@
  * Plugin name: API - Order Cache Bug
  */
 
+// Only trigger on API test requests.
+if ( php_sapi_name() === 'cli' || ! isset( $_SERVER['PHP_AUTH_USER'] ) || ! isset( $_SERVER['PHP_AUTH_PW'] ) ) {
+	return;
+}
+
 add_action(
 	'woocommerce_new_order',
 	function ( $order_id ) {
@@ -19,7 +24,9 @@ add_action( 'init', static function() {
 
 	$order = wc_get_order( $order->get_id() );
 
-	if ( get_class( $order ) !== \WC_Order::class ) {
+	$expected = \Automattic\WooCommerce\Admin\Overrides\Order::class;
+
+	if ( get_class( $order ) !== $expected ) {
 		if ( is_object( $order ) ) {
 			$actual = get_class( $order );
 		} else {
@@ -29,8 +36,8 @@ add_action( 'init', static function() {
 				$actual .= " $actual";
 			}
 		}
-		trigger_error( sprintf( 'Expected $order to be \WC_Order. Got %s instead.', $order ), E_USER_ERROR );
+		trigger_error( sprintf( 'Expected $order to be %s. Got %s instead.', $expected, $actual ), E_USER_ERROR );
 	} else {
-		trigger_error( '$order is \WC_Order as expected.' );
+		trigger_error( sprintf( '$order is %s as expected.', $expected ) );
 	}
 } );
