@@ -23,7 +23,7 @@ class Context {
 
 Context::$action = $GLOBALS['argv'][1] ?? 'run';
 Context::$suite  = $GLOBALS['argv'][2] ?? null;
-Context::$test  = $GLOBALS['argv'][3] ?? null;
+Context::$test   = $GLOBALS['argv'][3] ?? null;
 
 /*
  * To run tests in QIT, we need to assign the results to a plugin in the Marketplace.
@@ -128,12 +128,13 @@ function generate_test_runs( array $test_types ): array {
 			$env = require $test . '/env.php';
 
 			$tests_to_run[ basename( $test_type ) ][] = [
-				'type' => basename( $test_type ),
-				'slug' => basename( $test ),
-				'php'  => $env['php'] ?? '',
-				'wp'   => $env['wp'] ?? '',
-				'woo'  => $env['woo'] ?? '',
-				'path' => $test,
+				'type'     => basename( $test_type ),
+				'slug'     => basename( $test ),
+				'php'      => $env['php'] ?? '',
+				'wp'       => $env['wp'] ?? '',
+				'woo'      => $env['woo'] ?? '',
+				'features' => $env['features'] ?? '',
+				'path'     => $test,
 			];
 		}
 	}
@@ -180,6 +181,10 @@ function run_test_runs( array $test_runs ) {
 
 			if ( ! empty( $t['woo'] ) ) {
 				$args[] = "--woocommerce_version={$t['woo']}";
+			}
+
+			if ( ! empty( $t['features'] ) ) {
+				$args[] = "--optional_features={$t['features']}";
 			}
 
 			$args[] = Context::$sut_slug;
@@ -257,7 +262,7 @@ function run_test_runs( array $test_runs ) {
 					 * The "$" at the end is so that it does an exact match. For instance, the above regex would not match:
 					 * TestNamespace\TestCaseClass::testMethodPhp82
 					 */
-					sprintf('--filter=::test_%s_%s$', $p->getEnv()['QIT_TEST_TYPE'], $p->getEnv()['QIT_TEST_SLUG']),
+					sprintf( '--filter=::test_%s_%s$', $p->getEnv()['QIT_TEST_TYPE'], $p->getEnv()['QIT_TEST_SLUG'] ),
 					'--testdox', // Nice formatting.
 				];
 
