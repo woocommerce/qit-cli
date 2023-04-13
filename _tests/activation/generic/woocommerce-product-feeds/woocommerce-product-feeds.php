@@ -12,4 +12,6 @@ add_action( 'wp', static function () {
 	trigger_error( 'Warning on all requests', E_USER_WARNING );
 } );
 
-trigger_error( 'Notice on all requests' );
+add_action( 'init', static function() {
+	trigger_error( 'Notice on all requests' );
+} );

@@ -31,6 +31,8 @@ Context::$test   = $GLOBALS['argv'][3] ?? null;
  */
 Context::$sut_slug = 'woocommerce-product-feeds';
 
+require_once __DIR__ . '/test-result-parser.php';
+
 try {
 	validate_context();
 
@@ -245,7 +247,9 @@ function run_test_runs( array $test_runs ) {
 					}
 				}
 
-				if ( ! file_put_contents( $p->getEnv()['QIT_TEST_PATH'] . '/test-result.json', $out ) ) {
+				$human_friendly_test_result = test_result_parser( $out );
+
+				if ( ! file_put_contents( $p->getEnv()['QIT_TEST_PATH'] . '/test-result.json', $human_friendly_test_result ) ) {
 					echo "[Process {$p->getPid()}]: Failed to write test output to file.\n";
 					throw new RuntimeException( 'Failed to write test output to file.' );
 				}
