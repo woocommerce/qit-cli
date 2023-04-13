@@ -100,6 +100,10 @@ class QITE2ETestCase extends TestCase {
 					return $normalized_debug_log;
 				},
 				'validate' => static function( $value ) {
+					if ( empty( $value ) ) {
+						return true;
+					}
+
 					if ( is_array( $value ) ) {
 						$value = json_encode( $value );
 					}
