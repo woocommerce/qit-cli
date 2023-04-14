@@ -191,7 +191,7 @@ function run_test_runs( array $test_runs ) {
 
 			$args[] = Context::$sut_slug;
 
-			$p = new Process( $args, null, [ 'WAIT_BEFORE_REQUEST' => 'yes' ] );
+			$p = new Process( $args );
 			$p->setTimeout( null ); // Let QIT CLI handle timeouts.
 
 			echo "[INFO] Preparing to run command {$p->getCommandLine()}\n";
