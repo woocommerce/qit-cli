@@ -130,13 +130,14 @@ function generate_test_runs( array $test_types ): array {
 			$env = require $test . '/env.php';
 
 			$tests_to_run[ basename( $test_type ) ][] = [
-				'type'     => basename( $test_type ),
-				'slug'     => basename( $test ),
-				'php'      => $env['php'] ?? '',
-				'wp'       => $env['wp'] ?? '',
-				'woo'      => $env['woo'] ?? '',
-				'features' => $env['features'] ?? '',
-				'path'     => $test,
+				'type'                 => basename( $test_type ),
+				'slug'                 => basename( $test ),
+				'php'                  => $env['php'] ?? '',
+				'wp'                   => $env['wp'] ?? '',
+				'woo'                  => $env['woo'] ?? '',
+				'features'             => $env['features'] ?? '',
+				'remove_from_snapshot' => $env['remove_from_snapshot'] ?? '',
+				'path'                 => $test,
 			];
 		}
 	}
@@ -164,7 +165,8 @@ function run_test_runs( array $test_runs ) {
 			$args = [
 				$php,
 				'-d',
-				'xdebug.mode=off', // Run QIT with Xdebug disabled to avoid "Max concurrent settings" on PHPStorm from bottlenecking parallelism.
+				'xdebug.mode=off',
+				// Run QIT with Xdebug disabled to avoid "Max concurrent settings" on PHPStorm from bottlenecking parallelism.
 				$qit,
 				"run:$test_type",
 				'--wait',
@@ -197,10 +199,11 @@ function run_test_runs( array $test_runs ) {
 			echo "[INFO] Preparing to run command {$p->getCommandLine()}\n";
 
 			$p->setEnv( [
-				'QIT_TEST_PATH' => $t['path'],
-				'QIT_TEST_SLUG' => $t['slug'],
-				'QIT_TEST_TYPE' => $test_type,
-				'QIT_RAN_TEST'  => false,
+				'QIT_TEST_PATH'            => $t['path'],
+				'QIT_TEST_SLUG'            => $t['slug'],
+				'QIT_TEST_TYPE'            => $test_type,
+				'QIT_RAN_TEST'             => false,
+				'QIT_REMOVE_FROM_SNAPSHOT' => $t['remove_from_snapshot'],
 			] );
 
 			$processes[] = $p;
@@ -247,7 +250,7 @@ function run_test_runs( array $test_runs ) {
 					}
 				}
 
-				$human_friendly_test_result = test_result_parser( $out );
+				$human_friendly_test_result = test_result_parser( $out, $p->getEnv()['QIT_REMOVE_FROM_SNAPSHOT'] );
 
 				if ( ! file_put_contents( $p->getEnv()['QIT_TEST_PATH'] . '/test-result.json', $human_friendly_test_result ) ) {
 					echo "[Process {$p->getPid()}]: Failed to write test output to file.\n";

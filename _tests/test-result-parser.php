@@ -1,6 +1,12 @@
 <?php
 
-function test_result_parser( string $json ): string {
+function test_result_parser( string $json, string $remove_from_snapshot = '' ): string {
+	if ( ! empty( $remove_from_snapshot ) ) {
+		$remove_from_snapshot = array_map( 'trim', explode( ',', $remove_from_snapshot ) );
+	} else {
+		$remove_from_snapshot = [];
+	}
+
 	// Decode the original JSON
 	$data = json_decode( $json, true );
 
@@ -9,6 +15,10 @@ function test_result_parser( string $json ): string {
 
 	// Iterate over the top-level items and extract nested JSON strings
 	foreach ( $data as $key => $value ) {
+		if ( in_array( $key, $remove_from_snapshot ) ) {
+			unset( $data[ $key ] );
+			continue;
+		}
 		if ( is_string( $value ) ) {
 			$decodedValue = json_decode( $value, true );
 			if ( json_last_error() == JSON_ERROR_NONE && is_array( $decodedValue ) ) {
