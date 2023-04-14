@@ -26,20 +26,20 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 24 failed, 18 passed, 42 total | Tests: 72 skipped, 32 failed, 84 passed, 188 total.",
+            "test_summary": "Test Suites: 0 skipped, 6 failed, 36 passed, 42 total | Tests: 137 skipped, 7 failed, 44 passed, 188 total.",
             "version": "Zip",
             "test_result_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 24,
-                "numPassedTestSuites": 18,
+                "numFailedTestSuites": 6,
+                "numPassedTestSuites": 36,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 42,
-                "numFailedTests": 32,
-                "numPassedTests": 84,
-                "numPendingTests": 72,
+                "numFailedTests": 7,
+                "numPassedTests": 44,
+                "numPendingTests": 137,
                 "numTotalTests": 188,
                 "testResults": [
                     {
@@ -415,7 +415,7 @@
                     {
                         "file": "merchant\\/order-edit.spec.js",
                         "status": "failed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Edit order": [
                                 {
@@ -442,19 +442,19 @@
                                 },
                                 {
                                     "title": "can edit downloadable product permissions",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can revoke downloadable product permissions",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should not allow downloading a product if download attempts are exceeded",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should not allow downloading a product if expiration date has passed",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -462,33 +462,33 @@
                     {
                         "file": "merchant\\/order-emails.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Merchant > Order Action emails received": [
                                 {
                                     "title": "can receive new order email",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can resend new order notification",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can email invoice\\/order details to customer",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/order-refund.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
                                     "title": "can issue a refund by quantity",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete an issued refund",
@@ -498,20 +498,20 @@
                             "WooCommerce Orders > Refund and restock an order item": [
                                 {
                                     "title": "can update order after refunding item without automatic stock adjustment",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/order-search.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Search orders": [
                                 {
                                     "title": "can search for order by order id",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can search for order containing \\"James\\" as the billing first name",
@@ -587,139 +587,139 @@
                     {
                         "file": "merchant\\/order-status-filter.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Filter Order by Status": [
                                 {
                                     "title": "should filter by All",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should filter by Pending payment",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should filter by Processing",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should filter by On hold",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should filter by Completed",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should filter by Cancelled",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should filter by Refunded",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should filter by Failed",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/page-loads.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Page Load > Load WooCommerce sub pages": [
                                 {
                                     "title": "Can load Home",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Orders",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Customers",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Coupons",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Reports",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Status",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "WooCommerce Page Load > Load Products sub pages": [
                                 {
                                     "title": "Can load All Products",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Add New",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Categories",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Tags",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Attributes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "WooCommerce Page Load > Load Marketing sub pages": [
                                 {
                                     "title": "Can load Overview",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Coupons",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/product-edit.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Products > Edit Product": [
                                 {
                                     "title": "can edit a product and save the changes",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/product-import-csv.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Import Products from a CSV file": [
                                 {
                                     "title": "should show error message if you go without providing CSV file",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can upload the CSV file and import products",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can override the existing products via CSV import",
@@ -730,13 +730,13 @@
                     },
                     {
                         "file": "merchant\\/product-search.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Products > Search and View a product": [
                                 {
                                     "title": "can do a partial search for a product",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can view a product\'s details after search",
@@ -752,12 +752,12 @@
                     {
                         "file": "merchant\\/product-settings.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Products > Downloadable Product Settings": [
                                 {
                                     "title": "can update settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -765,12 +765,12 @@
                     {
                         "file": "merchant\\/settings-general.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce General Settings": [
                                 {
                                     "title": "can update settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -778,30 +778,30 @@
                     {
                         "file": "merchant\\/settings-tax.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Tax Settings > enable": [
                                 {
                                     "title": "can enable tax calculation",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "WooCommerce Tax Settings": [
                                 {
                                     "title": "can set tax options",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can add tax classes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can set rate settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can remove tax classes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -815,11 +815,11 @@
                             "New product editor > Default (disabled)": [
                                 {
                                     "title": "is feature flag disabled",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "is not hooked up to sidebar \\"Add New\\"",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "New product editor > Enabled": [
@@ -844,13 +844,13 @@
                     },
                     {
                         "file": "shopper\\/calculate-shipping.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Cart Calculate Shipping": [
                                 {
                                     "title": "allows customer to calculate Free Shipping if in Germany",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to calculate Flat rate and Local pickup if in France",
@@ -873,13 +873,13 @@
                     },
                     {
                         "file": "shopper\\/cart-coupons.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Cart applying coupons": [
                                 {
                                     "title": "allows cart to apply coupon of type fixed_cart",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows cart to apply coupon of type percent",
@@ -906,13 +906,13 @@
                     },
                     {
                         "file": "shopper\\/cart-redirection.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Cart > Redirect to cart from shop": [
                                 {
                                     "title": "can redirect user to cart from shop page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can redirect user to cart from detail page",
@@ -923,13 +923,13 @@
                     },
                     {
                         "file": "shopper\\/cart.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Cart page": [
                                 {
                                     "title": "should display no item in the cart",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should add the product to the cart from the shop page",
@@ -960,13 +960,13 @@
                     },
                     {
                         "file": "shopper\\/checkout-coupons.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Checkout coupons": [
                                 {
                                     "title": "allows checkout to apply coupon of type fixed_cart",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows checkout to apply coupon of type percent",
@@ -993,39 +993,39 @@
                     },
                     {
                         "file": "shopper\\/checkout-create-account.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Shopper Checkout Create Account": [
                                 {
                                     "title": "can create an account during checkout",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "shopper\\/checkout-login.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Shopper Checkout Login Account": [
                                 {
                                     "title": "can login to an existing account during checkout",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "shopper\\/checkout.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Checkout page": [
                                 {
                                     "title": "should display cart items in order review",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to choose available payment methods",
@@ -1053,25 +1053,25 @@
                     {
                         "file": "shopper\\/my-account-create-account.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Shopper My Account Create Account": [
                                 {
                                     "title": "can create a new account via my account",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "shopper\\/my-account-pay-order.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Customer can pay for their order through My Account": [
                                 {
                                     "title": "allows customer to pay for their order in My Account",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1079,41 +1079,41 @@
                     {
                         "file": "shopper\\/my-account.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "My account page": [
                                 {
                                     "title": "allows customer to login",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to see Orders page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to see Downloads page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to see Addresses page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to see Account details page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "shopper\\/product-browse-search-sort.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Search, browse by categories and sort items in the shop": [
                                 {
                                     "title": "should let user search the store",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should let user browse products by categories",
@@ -1128,13 +1128,13 @@
                     },
                     {
                         "file": "shopper\\/single-product.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Single Product Page": [
                                 {
                                     "title": "should be able to add simple products to the cart",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should be able to remove simple products from the cart",
@@ -1144,7 +1144,7 @@
                             "Variable Product Page": [
                                 {
                                     "title": "should be able to add variation products to the cart",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should be able to remove variation products from the cart",
@@ -1154,7 +1154,7 @@
                             "Grouped Product Page": [
                                 {
                                     "title": "should be able to add grouped products to the cart",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should be able to remove grouped products from the cart",
@@ -1165,13 +1165,13 @@
                     },
                     {
                         "file": "shopper\\/variable-product-updates.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Shopper > Update variable product": [
                                 {
                                     "title": "Shopper can change variable attributes to the same value",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Shopper can change attributes to combination with dimentions and weight",
@@ -1202,7 +1202,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 24 failed, 18 passed, 42 total | Tests: 72 skipped, 32 failed, 84 passed, 188 total."
+                "summary": "Test Suites: 0 skipped, 6 failed, 36 passed, 42 total | Tests: 137 skipped, 7 failed, 44 passed, 188 total."
             }
         },
         {
@@ -1212,60 +1212,60 @@
                     "message": "The Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options::get_options function is deprecated since version 3.1."
                 },
                 {
-                    "count": "145",
-                    "message": "PHP Fatal error: Uncaught Error: Call to a member function get_id() on bool in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version2\\/class-wc-rest-products-v2-controller.php:1518\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(310): WC_REST_Products_V2_Controller->clear_transients(false)\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(332): WP_Hook->apply_filters(\'\', Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version3\\/class-wc-rest-crud-controller.php(207): do_action(\'woocommerce_res...\', false, Object(WP_REST_Request), true)\\n#4 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1171): WC_REST_CRUD_Controller->create_item(Object(WP_REST_Request))\\n#5 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1018): WP_REST_Server->respond_to_request(Object(WP_REST_Request), \'\\/wc\\/v3\\/products\', Array, NULL)\\n#6 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.p in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version2\\/class-wc-rest-products-v2-controller.php on line 1518\\n"
+                    "count": "17",
+                    "message": "PHP Fatal error: Uncaught Error: Call to a member function get_id() on bool in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version2\\/class-wc-rest-products-v2-controller.php:1518\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(310): WC_REST_Products_V2_Controller->clear_transients(false)\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(332): WP_Hook->apply_filters(\'\', Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version3\\/class-wc-rest-crud-controller.php(207): do_action(\'woocommerce_res...\', false, Object(WP_REST_Request), true)\\n#4 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1181): WC_REST_CRUD_Controller->create_item(Object(WP_REST_Request))\\n#5 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1028): WP_REST_Server->respond_to_request(Object(WP_REST_Request), \'\\/wc\\/v3\\/products\', Array, NULL)\\n#6 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.p in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version2\\/class-wc-rest-products-v2-controller.php on line 1518\\n"
                 },
                 {
-                    "count": "11",
-                    "message": "PHP Warning: Creating default object from empty value in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 748"
+                    "count": "3",
+                    "message": "PHP Warning: Creating default object from empty value in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 762"
                 },
                 {
-                    "count": "11",
+                    "count": "3",
                     "message": "PHP Notice: Undefined property: stdClass::$ID in \\/var\\/www\\/html\\/wp-admin\\/post-new.php on line 67"
                 },
                 {
-                    "count": "11",
+                    "count": "3",
                     "message": "PHP Notice: Undefined property: stdClass::$post_status in \\/var\\/www\\/html\\/wp-admin\\/edit-form-blocks.php on line 91"
                 },
                 {
-                    "count": "11",
+                    "count": "3",
                     "message": "PHP Notice: Undefined property: stdClass::$post_type in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/admin\\/class-wc-admin-post-types.php on line 642"
                 },
                 {
-                    "count": "11",
-                    "message": "PHP Notice: Undefined property: stdClass::$post_type in \\/var\\/www\\/html\\/wp-admin\\/includes\\/meta-boxes.php on line 1447"
+                    "count": "3",
+                    "message": "PHP Notice: Undefined property: stdClass::$post_type in \\/var\\/www\\/html\\/wp-admin\\/includes\\/meta-boxes.php on line 1549"
                 },
                 {
-                    "count": "11",
+                    "count": "3",
                     "message": "PHP Notice: Undefined property: stdClass::$post_type in \\/var\\/www\\/html\\/wp-includes\\/taxonomy.php on line 276"
                 },
                 {
-                    "count": "11",
+                    "count": "3",
                     "message": "PHP Notice: Undefined property: stdClass::$post_type in \\/var\\/www\\/html\\/wp-includes\\/taxonomy.php on line 279"
                 },
                 {
-                    "count": "11",
+                    "count": "3",
                     "message": "PHP Notice: Undefined property: stdClass::$post_status in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/admin\\/class-wc-admin-meta-boxes.php on line 202"
                 },
                 {
-                    "count": "11",
+                    "count": "3",
                     "message": "PHP Notice: Undefined property: stdClass::$post_type in \\/var\\/www\\/html\\/wp-admin\\/edit-form-blocks.php on line 298"
                 },
                 {
-                    "count": "11",
-                    "message": "PHP Notice: Undefined property: stdClass::$post_status in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 2395"
+                    "count": "3",
+                    "message": "PHP Notice: Undefined property: stdClass::$post_status in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 2413"
                 },
                 {
-                    "count": "11",
+                    "count": "3",
                     "message": "PHP Notice: Undefined property: stdClass::$post_type in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/admin\\/class-wc-admin-post-types.php on line 660"
                 },
                 {
-                    "count": "11",
-                    "message": "PHP Notice: Undefined property: stdClass::$post_type in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 2433"
+                    "count": "3",
+                    "message": "PHP Notice: Undefined property: stdClass::$post_type in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 2451"
                 },
                 {
-                    "count": "11",
-                    "message": "PHP Notice: Undefined property: stdClass::$post_status in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 2434"
+                    "count": "3",
+                    "message": "PHP Notice: Undefined property: stdClass::$post_status in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 2452"
                 }
             ]
         }

@@ -26,20 +26,20 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 7 failed, 13 passed, 20 total | Tests: 70 skipped, 29 failed, 159 passed, 258 total.",
+            "test_summary": "Test Suites: 0 skipped, 5 failed, 15 passed, 20 total | Tests: 206 skipped, 5 failed, 47 passed, 258 total.",
             "version": "Zip",
             "test_result_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 7,
-                "numPassedTestSuites": 13,
+                "numFailedTestSuites": 5,
+                "numPassedTestSuites": 15,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 20,
-                "numFailedTests": 29,
-                "numPassedTests": 159,
-                "numPendingTests": 70,
+                "numFailedTests": 5,
+                "numPassedTests": 47,
+                "numPendingTests": 206,
                 "numTotalTests": 258,
                 "testResults": [
                     {
@@ -327,7 +327,7 @@
                     },
                     {
                         "file": "orders\\/orders-crud.test.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Orders API tests: CRUD": [],
@@ -362,41 +362,41 @@
                                 },
                                 {
                                     "title": "can create an order with status failed",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Orders API tests: CRUD > Create an order > Order Notes tests": [
                                 {
                                     "title": "can create a order note",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve an order note",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve all order notes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "cannot update an order note",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can permanently delete an order note",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Orders API tests: CRUD > Retrieve an order": [
                                 {
                                     "title": "can retrieve an order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Orders API tests: CRUD > Update an order": [
                                 {
                                     "title": "can update status of an order to pending",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can update status of an order to processing",
@@ -438,7 +438,7 @@
                             "Orders API tests: CRUD > Delete an order": [
                                 {
                                     "title": "can permanently delete an order",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -676,7 +676,7 @@
                     {
                         "file": "products\\/products-crud.test.js",
                         "status": "failed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Products API tests: CRUD": [
                                 {
@@ -685,240 +685,240 @@
                                 },
                                 {
                                     "title": "can add a virtual product",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can view a single product",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can update a single product",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete a product",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "Products API tests: CRUD > Product attributes tests: CRUD": [
                                 {
                                     "title": "can add a product attribute",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve a product attribute",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve all product attribute",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can update a product attribute",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can permanently delete a product attribute",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can batch update product attributes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Products API tests: CRUD > Product attributes tests: CRUD > Product attribute terms tests: CRUD": [
                                 {
                                     "title": "can add a product attribute term",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve a product attribute term",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve all product attribute terms",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can update a product attribute term",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can permanently delete a product attribute term",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can batch update product attribute terms",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Products API tests: CRUD > Product categories tests: CRUD": [
                                 {
                                     "title": "can add a product category",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve a product category",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve all product categories",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can update a product category",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can permanently delete a product tag",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can batch update product categories",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Products API tests: CRUD > Product review tests: CRUD": [
                                 {
                                     "title": "can add a product review",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "cannot add a product review with invalid product_id",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "cannot add a duplicate product review",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve a product review",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve all product reviews",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can update a product review",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can permanently delete a product review",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can batch update product reviews",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "Products API tests: CRUD > Product shipping classes tests: CRUD": [
                                 {
                                     "title": "can add a product shipping class",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve a product shipping class",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve all product shipping classes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can update a product shipping class",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can permanently delete a product shipping class",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can batch update product shipping classes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Products API tests: CRUD > Product tags tests: CRUD": [
                                 {
                                     "title": "can add a product tag",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve a product tag",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve all product tags",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can update a product tag",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can permanently delete a product tag",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can batch update product tags",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Products API tests: CRUD > Product variation tests: CRUD": [
                                 {
                                     "title": "can add a variable product",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can add a product variation",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve a product variation",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve all product variations",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can update a product variation",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can permanently delete a product variation",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can batch update product variations",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "Products API tests: CRUD > Batch update products": [
                                 {
                                     "title": "can batch create products",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can batch update products",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can batch delete products",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "refunds\\/refunds.test.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Refunds API tests": [
                                 {
                                     "title": "can create a refund",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve a refund",
@@ -938,40 +938,40 @@
                     {
                         "file": "reports\\/reports-crud.test.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Reports API tests": [
                                 {
                                     "title": "can view all reports",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can view sales reports",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can view top sellers reports",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can view coupons totals",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can view customers totals",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can view orders totals",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can view products totals",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can view reviews totals",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -979,139 +979,139 @@
                     {
                         "file": "settings\\/settings-crud.test.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Settings API tests: CRUD": [],
                             "Settings API tests: CRUD > List all settings groups": [
                                 {
                                     "title": "can retrieve all settings groups",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all settings options": [
                                 {
                                     "title": "can retrieve all general settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > Retrieve a settings option": [
                                 {
                                     "title": "can retrieve a settings option",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > Update a settings option": [
                                 {
                                     "title": "can update a settings option",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > Batch Update a settings option": [
                                 {
                                     "title": "can batch update settings options",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Products settings options": [
                                 {
                                     "title": "can retrieve all products settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Tax settings options": [
                                 {
                                     "title": "can retrieve all tax settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Shipping settings options": [
                                 {
                                     "title": "can retrieve all shipping settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Checkout settings options": [
                                 {
                                     "title": "can retrieve all checkout settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Account settings options": [
                                 {
                                     "title": "can retrieve all account settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Email settings options": [
                                 {
                                     "title": "can retrieve all email settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Advanced settings options": [
                                 {
                                     "title": "can retrieve all advanced settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Email New Order settings": [
                                 {
                                     "title": "can retrieve all email new order settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Email Failed Order settings": [
                                 {
                                     "title": "can retrieve all email failed order settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Email Customer On Hold Order settings": [
                                 {
                                     "title": "can retrieve all email customer on hold order settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Email Customer Processing Order settings": [
                                 {
                                     "title": "can retrieve all email customer processsing order settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Email Customer Completed Order settings": [
                                 {
                                     "title": "can retrieve all email customer completed order settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Email Customer Refunded Order settings": [
                                 {
                                     "title": "can retrieve all email customer refunded order settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Email Customer Invoice settings": [
                                 {
                                     "title": "can retrieve all email customer invoice settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Email Customer Note settings": [
                                 {
                                     "title": "can retrieve all email customer note settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Email Customer Reset Password settings": [
                                 {
                                     "title": "can retrieve all email customer reset password settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Email Customer New Account settings": [
                                 {
                                     "title": "can retrieve all email customer new account settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1119,40 +1119,40 @@
                     {
                         "file": "shipping\\/shipping-method.test.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Shipping methods API tests": [
                                 {
                                     "title": "cannot create a shipping method",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve all shipping methods",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve a shipping method",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "cannot update a shipping method",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "cannot delete a shipping method",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can add a Flat rate shipping method",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can add a Free shipping shipping method",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can add a Local pickup shipping method",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1160,48 +1160,48 @@
                     {
                         "file": "shipping\\/shipping-zones.test.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Shipping zones API tests": [
                                 {
                                     "title": "cannot delete the default shipping zone \\"Locations not covered by your other zones\\"",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "cannot update the default shipping zone",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can create a shipping zone",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve a shipping zone",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can list all shipping zones",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can update a shipping zone",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can add a shipping region to a shipping zone",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can update a shipping region on a shipping zone",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can clear\\/delete a shipping region on a shipping zone",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete a shipping zone",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1209,20 +1209,20 @@
                     {
                         "file": "system-status\\/system-status-crud.test.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "System Status API tests": [
                                 {
                                     "title": "can view all system status tools",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve a system status tool",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can run a tool from system status",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1230,39 +1230,39 @@
                     {
                         "file": "taxes\\/tax-classes-crud.test.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Tax Classes API tests: CRUD": [],
                             "Tax Classes API tests: CRUD > Create a tax class": [
                                 {
                                     "title": "can enable tax calculations",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can create a tax class",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Tax Classes API tests: CRUD > Retrieve after create": [
                                 {
                                     "title": "can retrieve a tax class",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve all tax classes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Tax Classes API tests: CRUD > Update a tax class": [
                                 {
                                     "title": "cannot update a tax class",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Tax Classes API tests: CRUD > Delete a tax class": [
                                 {
                                     "title": "can permanently delete a tax class",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1270,53 +1270,53 @@
                     {
                         "file": "taxes\\/tax-rates-crud.test.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Tax Rates API tests: CRUD": [],
                             "Tax Rates API tests: CRUD > Create a tax rate": [
                                 {
                                     "title": "can create a tax rate",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Tax Rates API tests: CRUD > Retrieve after create": [
                                 {
                                     "title": "can retrieve a tax rate",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve all tax rates",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Tax Rates API tests: CRUD > Update a tax rate": [
                                 {
                                     "title": "can update a tax rate",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "retrieve after update tax rate",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Tax Rates API tests: CRUD > Delete a tax rate": [
                                 {
                                     "title": "can permanently delete a tax rate",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Tax Rates API tests: CRUD > Batch tax rate operations": [
                                 {
                                     "title": "can batch create tax rates",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can batch update tax rates",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can batch delete tax rates",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1324,74 +1324,66 @@
                     {
                         "file": "webhooks\\/webhooks-crud.test.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Webhooks API tests": [],
                             "Webhooks API tests > Create a webhook": [
                                 {
                                     "title": "can create a webhook",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Webhooks API tests > Retrieve after create": [
                                 {
                                     "title": "can retrieve a webhook",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can retrieve all webhooks",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Webhooks API tests > Update a webhook": [
                                 {
                                     "title": "can update a web hook",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Webhooks API tests > Delete a webhook": [
                                 {
                                     "title": "can permanently delete a webhook",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Webhooks API tests > Batch webhook operations": [
                                 {
                                     "title": "can batch create webhooks",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can batch update webhooks",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can batch delete webhooks",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 7 failed, 13 passed, 20 total | Tests: 70 skipped, 29 failed, 159 passed, 258 total."
+                "summary": "Test Suites: 0 skipped, 5 failed, 15 passed, 20 total | Tests: 206 skipped, 5 failed, 47 passed, 258 total."
             }
         },
         {
             "debug_log": [
                 {
-                    "count": "35",
+                    "count": "8",
                     "message": "PHP Fatal error: Uncaught Error: Call to a member function get_id() on bool in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version2\\/class-wc-rest-products-v2-controller.php:1518\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(310): WC_REST_Products_V2_Controller->clear_transients(false)\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(332): WP_Hook->apply_filters(\'\', Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version3\\/class-wc-rest-crud-controller.php(207): do_action(\'woocommerce_res...\', false, Object(WP_REST_Request), true)\\n#4 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1181): WC_REST_CRUD_Controller->create_item(Object(WP_REST_Request))\\n#5 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1028): WP_REST_Server->respond_to_request(Object(WP_REST_Request), \'\\/wc\\/v3\\/products\', Array, NULL)\\n#6 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.p in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version2\\/class-wc-rest-products-v2-controller.php on line 1518\\n"
                 },
                 {
-                    "count": "15",
+                    "count": "2",
                     "message": "PHP Fatal error: Uncaught Error: Call to a member function get_id() on bool in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version2\\/class-wc-rest-products-v2-controller.php:1518\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(310): WC_REST_Products_V2_Controller->clear_transients(false)\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(332): WP_Hook->apply_filters(\'\', Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version3\\/class-wc-rest-crud-controller.php(207): do_action(\'woocommerce_res...\', false, Object(WP_REST_Request), true)\\n#4 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version3\\/class-wc-rest-controller.php(248): WC_REST_CRUD_Controller->create_item(Object(WP_REST_Request))\\n#5 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1181): WC_REST_Controller->batch_items(Object(WP_REST_Request))\\n#6 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version2\\/class-wc-rest-products-v2-controller.php on line 1518\\n"
-                },
-                {
-                    "count": "6",
-                    "message": "PHP Notice: Undefined index: id in \\/var\\/www\\/html\\/wp-includes\\/class-wp-list-util.php on line 170"
-                },
-                {
-                    "count": "5",
-                    "message": "PHP Notice: Undefined index: id in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version3\\/class-wc-rest-controller.php on line 273"
                 }
             ]
         }
