@@ -16,11 +16,6 @@ try {
 	/** @var Application $application */
 	$application = require_once __DIR__ . '/src/bootstrap.php';
 
-	// Allow to wait from the outside to avoid 429 on parallel tests.
-	if ( getenv( 'WAIT_USLEEP' ) !== false ) {
-		usleep( (int) getenv( 'WAIT_USLEEP' ) );
-	}
-
 	// Handle CLI request.
 	exit( $application->run() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 } catch ( \Exception $e ) {
