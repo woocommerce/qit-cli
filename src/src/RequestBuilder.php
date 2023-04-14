@@ -104,7 +104,7 @@ class RequestBuilder {
 
 		// Allow to wait from the outside to avoid 429 on parallel tests.
 		if ( getenv( 'WAIT_BEFORE_REQUEST' ) === 'yes' ) {
-			$to_wait = rand( 0, 3 * 1e6 );
+			$to_wait = rand( 0, intval( 3 * 1e6 ) );
 			usleep( $to_wait );
 			App::make( Output::class )->writeln( sprintf( 'Waiting %d seconds before request...', number_format( $to_wait / 1e6, 2 ) ) );
 		}
