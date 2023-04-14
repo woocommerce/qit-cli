@@ -26,20 +26,20 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 5 failed, 15 passed, 20 total | Tests: 206 skipped, 5 failed, 47 passed, 258 total.",
+            "test_summary": "Test Suites: 0 skipped, 6 failed, 14 passed, 20 total | Tests: 184 skipped, 7 failed, 67 passed, 258 total.",
             "version": "Zip",
             "test_result_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 5,
-                "numPassedTestSuites": 15,
+                "numFailedTestSuites": 6,
+                "numPassedTestSuites": 14,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 20,
-                "numFailedTests": 5,
-                "numPassedTests": 47,
-                "numPendingTests": 206,
+                "numFailedTests": 7,
+                "numPassedTests": 67,
+                "numPendingTests": 184,
                 "numTotalTests": 258,
                 "testResults": [
                     {
@@ -327,7 +327,7 @@
                     },
                     {
                         "file": "orders\\/orders-crud.test.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "Orders API tests: CRUD": [],
@@ -362,41 +362,41 @@
                                 },
                                 {
                                     "title": "can create an order with status failed",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Orders API tests: CRUD > Create an order > Order Notes tests": [
                                 {
                                     "title": "can create a order note",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve an order note",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve all order notes",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "cannot update an order note",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can permanently delete an order note",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Orders API tests: CRUD > Retrieve an order": [
                                 {
                                     "title": "can retrieve an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Orders API tests: CRUD > Update an order": [
                                 {
                                     "title": "can update status of an order to pending",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can update status of an order to processing",
@@ -438,7 +438,7 @@
                             "Orders API tests: CRUD > Delete an order": [
                                 {
                                     "title": "can permanently delete an order",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -703,59 +703,59 @@
                             "Products API tests: CRUD > Product attributes tests: CRUD": [
                                 {
                                     "title": "can add a product attribute",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve a product attribute",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve all product attribute",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can update a product attribute",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can permanently delete a product attribute",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can batch update product attributes",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Products API tests: CRUD > Product attributes tests: CRUD > Product attribute terms tests: CRUD": [
                                 {
                                     "title": "can add a product attribute term",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve a product attribute term",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve all product attribute terms",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can update a product attribute term",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can permanently delete a product attribute term",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can batch update product attribute terms",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Products API tests: CRUD > Product categories tests: CRUD": [
                                 {
                                     "title": "can add a product category",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve a product category",
@@ -1372,18 +1372,22 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 5 failed, 15 passed, 20 total | Tests: 206 skipped, 5 failed, 47 passed, 258 total."
+                "summary": "Test Suites: 0 skipped, 6 failed, 14 passed, 20 total | Tests: 184 skipped, 7 failed, 67 passed, 258 total."
             }
         },
         {
             "debug_log": [
                 {
-                    "count": "8",
+                    "count": "12",
                     "message": "PHP Fatal error: Uncaught Error: Call to a member function get_id() on bool in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version2\\/class-wc-rest-products-v2-controller.php:1518\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(310): WC_REST_Products_V2_Controller->clear_transients(false)\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(332): WP_Hook->apply_filters(\'\', Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version3\\/class-wc-rest-crud-controller.php(207): do_action(\'woocommerce_res...\', false, Object(WP_REST_Request), true)\\n#4 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1181): WC_REST_CRUD_Controller->create_item(Object(WP_REST_Request))\\n#5 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1028): WP_REST_Server->respond_to_request(Object(WP_REST_Request), \'\\/wc\\/v3\\/products\', Array, NULL)\\n#6 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.p in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version2\\/class-wc-rest-products-v2-controller.php on line 1518\\n"
                 },
                 {
-                    "count": "2",
+                    "count": "6",
                     "message": "PHP Fatal error: Uncaught Error: Call to a member function get_id() on bool in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version2\\/class-wc-rest-products-v2-controller.php:1518\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(310): WC_REST_Products_V2_Controller->clear_transients(false)\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(332): WP_Hook->apply_filters(\'\', Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version3\\/class-wc-rest-crud-controller.php(207): do_action(\'woocommerce_res...\', false, Object(WP_REST_Request), true)\\n#4 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version3\\/class-wc-rest-controller.php(248): WC_REST_CRUD_Controller->create_item(Object(WP_REST_Request))\\n#5 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1181): WC_REST_Controller->batch_items(Object(WP_REST_Request))\\n#6 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version2\\/class-wc-rest-products-v2-controller.php on line 1518\\n"
+                },
+                {
+                    "count": "2",
+                    "message": "PHP Notice: Undefined index: id in \\/var\\/www\\/html\\/wp-includes\\/class-wp-list-util.php on line 170"
                 }
             ]
         }
