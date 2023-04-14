@@ -191,7 +191,10 @@ function run_test_runs( array $test_runs ) {
 
 			$args[] = Context::$sut_slug;
 
-			$p = new Process( $args );
+			// Wait between 0 and 5 seconds.
+			$random_wait = rand( 0, 5 * 1e6 );
+
+			$p = new Process( $args, null, [ 'WAIT_USLEEP' => $random_wait ] );
 			$p->setTimeout( null ); // Let QIT CLI handle timeouts.
 
 			echo "[INFO] Preparing to run command {$p->getCommandLine()}\n";
