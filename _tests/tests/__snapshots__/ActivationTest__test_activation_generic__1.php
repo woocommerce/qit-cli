@@ -89,7 +89,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 617,
+                            "line": 623,
                             "function": "do_action"
                         },
                         {
@@ -151,7 +151,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1332,
+                            "line": 1334,
                             "function": "main",
                             "class": "WP",
                             "type": "->"
@@ -199,7 +199,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 617,
+                            "line": 623,
                             "function": "do_action"
                         },
                         {
@@ -271,7 +271,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 617,
+                            "line": 623,
                             "function": "do_action"
                         },
                         {
@@ -333,7 +333,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1332,
+                            "line": 1334,
                             "function": "main",
                             "class": "WP",
                             "type": "->"

@@ -26,7 +26,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "213 Errors Detected. (0 Fatal, 0 Warnings, 213 Notices)",
+            "test_summary": "321 Errors Detected. (0 Fatal, 0 Warnings, 321 Notices)",
             "debug_log": "",
             "version": "Zip",
             "test_result_json_extracted": "{EXTRACTED}"
@@ -37,20 +37,20 @@
                     "total_extensions": "0",
                     "extensions_with_errors": {
                         "": {
-                            "WP-CLI Plugin Activation": 182,
-                            "\\/": 10,
-                            "\\/cart\\/": 11,
-                            "\\/my-account\\/": 10
+                            "WP-CLI Plugin Activation": 184,
+                            "\\/": 46,
+                            "\\/cart\\/": 46,
+                            "\\/my-account\\/": 45
                         }
                     },
                     "error_totals": {
                         "fatal": 0,
-                        "notice": 213,
+                        "notice": 321,
                         "warning": 0,
-                        "E_DEPRECATED": 213
+                        "E_DEPRECATED": 321
                     },
-                    "summary": "213 Errors Detected. (0 Fatal, 0 Warnings, 213 Notices)",
-                    "error_count": 213,
+                    "summary": "321 Errors Detected. (0 Fatal, 0 Warnings, 321 Notices)",
+                    "error_count": 321,
                     "count_extensions_with_errors": 1
                 },
                 "0": {
@@ -463,7 +463,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 639,
+                            "line": 645,
                             "function": "do_action"
                         },
                         {
@@ -523,7 +523,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 639,
+                            "line": 645,
                             "function": "do_action"
                         },
                         {
@@ -1226,7 +1226,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Features is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -1285,7 +1285,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Notes is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -1344,7 +1344,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\NoteActions is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -1403,7 +1403,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Coupons is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -1462,7 +1462,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Data is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -1521,7 +1521,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\DataCountries is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -1580,7 +1580,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\DataDownloadIPs is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -1639,7 +1639,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Experiments is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -1698,7 +1698,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Marketing is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -1757,7 +1757,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingOverview is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -1816,7 +1816,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingRecommendations is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -1875,7 +1875,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingChannels is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -1934,7 +1934,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingCampaigns is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -1993,7 +1993,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingCampaignTypes is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -2052,7 +2052,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -2111,7 +2111,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Orders is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -2170,7 +2170,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\PaymentGatewaySuggestions is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -2229,7 +2229,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Products is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -2288,7 +2288,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductAttributes is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -2347,7 +2347,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductAttributeTerms is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -2406,7 +2406,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductCategories is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -2465,7 +2465,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductVariations is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -2524,7 +2524,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductReviews is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -2583,7 +2583,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductsLowInStock is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -2642,7 +2642,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\SettingOptions is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -2701,7 +2701,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Themes is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -2760,7 +2760,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Plugins is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -2819,7 +2819,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingFreeExtensions is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -2878,7 +2878,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingProductTypes is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -2937,7 +2937,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingProfile is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -2996,7 +2996,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingTasks is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -3055,7 +3055,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingThemes is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -3114,7 +3114,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\NavigationFavorites is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -3173,7 +3173,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Taxes is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -3232,7 +3232,7 @@
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MobileAppMagicLink is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -3289,9 +3289,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Customers is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ShippingPartnerSuggestions is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -3348,9 +3348,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Leaderboards is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Customers is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -3407,9 +3407,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Leaderboards is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -3466,9 +3466,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Import\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -3525,9 +3525,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Export\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Import\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -3584,9 +3584,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Products\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Export\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -3643,9 +3643,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Variations\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Products\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -3702,9 +3702,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Products\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Variations\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -3761,9 +3761,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Variations\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Products\\\\Stats\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -3820,9 +3820,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Revenue\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Variations\\\\Stats\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -3879,9 +3879,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Orders\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Revenue\\\\Stats\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -3938,9 +3938,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Orders\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Orders\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -3997,9 +3997,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Categories\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Orders\\\\Stats\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -4056,9 +4056,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Taxes\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Categories\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -4115,9 +4115,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Taxes\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Taxes\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -4174,9 +4174,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Coupons\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Taxes\\\\Stats\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -4233,9 +4233,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Coupons\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Coupons\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -4292,9 +4292,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Stock\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Coupons\\\\Stats\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -4351,9 +4351,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Stock\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Stock\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -4410,9 +4410,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Downloads\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Stock\\\\Stats\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -4469,9 +4469,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Downloads\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Downloads\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -4528,9 +4528,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Customers\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Downloads\\\\Stats\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -4587,9 +4587,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Customers\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Customers\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -4646,9 +4646,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\PerformanceIndicators\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Customers\\\\Stats\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -4701,6 +4701,65 @@
                     "db_error": ""
                 },
                 "78": {
+                    "activated_alongside": "",
+                    "context": "WP-CLI Plugin Activation",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\PerformanceIndicators\\\\Controller is deprecated",
+                    "error_file": "API\\/Init.php",
+                    "error_line": 143,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
+                            "line": 308,
+                            "function": "rest_api_init",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
+                            "line": 332,
+                            "function": "apply_filters",
+                            "class": "WP_Hook",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
+                            "line": 517,
+                            "function": "do_action",
+                            "class": "WP_Hook",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/cli\\/class-wc-cli-runner.php",
+                            "line": 59,
+                            "function": "do_action"
+                        },
+                        {
+                            "file": "phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/class-wp-cli.php",
+                            "line": 336,
+                            "function": "after_wp_load",
+                            "class": "WC_CLI_Runner",
+                            "type": "::"
+                        },
+                        {
+                            "file": "phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/WP_CLI\\/Runner.php",
+                            "line": 1362,
+                            "function": "do_hook",
+                            "class": "WP_CLI",
+                            "type": "::"
+                        },
+                        {
+                            "file": "phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/WP_CLI\\/Runner.php",
+                            "line": 1254,
+                            "function": "load_wordpress",
+                            "class": "WP_CLI\\\\Runner",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "79": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -4761,7 +4820,7 @@
                     ],
                     "db_error": ""
                 },
-                "79": {
+                "80": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -4822,7 +4881,7 @@
                     ],
                     "db_error": ""
                 },
-                "80": {
+                "81": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -4883,7 +4942,7 @@
                     ],
                     "db_error": ""
                 },
-                "81": {
+                "82": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -4944,7 +5003,7 @@
                     ],
                     "db_error": ""
                 },
-                "82": {
+                "83": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -5005,7 +5064,7 @@
                     ],
                     "db_error": ""
                 },
-                "83": {
+                "84": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -5066,7 +5125,7 @@
                     ],
                     "db_error": ""
                 },
-                "84": {
+                "85": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -5127,7 +5186,7 @@
                     ],
                     "db_error": ""
                 },
-                "85": {
+                "86": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -5188,7 +5247,7 @@
                     ],
                     "db_error": ""
                 },
-                "86": {
+                "87": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -5249,7 +5308,7 @@
                     ],
                     "db_error": ""
                 },
-                "87": {
+                "88": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -5310,7 +5369,7 @@
                     ],
                     "db_error": ""
                 },
-                "88": {
+                "89": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -5371,7 +5430,7 @@
                     ],
                     "db_error": ""
                 },
-                "89": {
+                "90": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -5432,7 +5491,7 @@
                     ],
                     "db_error": ""
                 },
-                "90": {
+                "91": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -5493,7 +5552,7 @@
                     ],
                     "db_error": ""
                 },
-                "91": {
+                "92": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -5554,7 +5613,7 @@
                     ],
                     "db_error": ""
                 },
-                "92": {
+                "93": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -5615,7 +5674,7 @@
                     ],
                     "db_error": ""
                 },
-                "93": {
+                "94": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -5676,7 +5735,7 @@
                     ],
                     "db_error": ""
                 },
-                "94": {
+                "95": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -5737,7 +5796,7 @@
                     ],
                     "db_error": ""
                 },
-                "95": {
+                "96": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -5798,7 +5857,7 @@
                     ],
                     "db_error": ""
                 },
-                "96": {
+                "97": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -5857,7 +5916,7 @@
                     ],
                     "db_error": ""
                 },
-                "97": {
+                "98": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -5903,7 +5962,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 639,
+                            "line": 645,
                             "function": "do_action"
                         },
                         {
@@ -5917,7 +5976,7 @@
                     ],
                     "db_error": ""
                 },
-                "98": {
+                "99": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -5963,7 +6022,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 639,
+                            "line": 645,
                             "function": "do_action"
                         },
                         {
@@ -5977,7 +6036,7 @@
                     ],
                     "db_error": ""
                 },
-                "99": {
+                "100": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -6039,7 +6098,7 @@
                     ],
                     "db_error": ""
                 },
-                "100": {
+                "101": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -6101,7 +6160,7 @@
                     ],
                     "db_error": ""
                 },
-                "101": {
+                "102": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -6163,7 +6222,7 @@
                     ],
                     "db_error": ""
                 },
-                "102": {
+                "103": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -6225,7 +6284,7 @@
                     ],
                     "db_error": ""
                 },
-                "103": {
+                "104": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -6287,7 +6346,7 @@
                     ],
                     "db_error": ""
                 },
-                "104": {
+                "105": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -6349,7 +6408,7 @@
                     ],
                     "db_error": ""
                 },
-                "105": {
+                "106": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -6411,7 +6470,7 @@
                     ],
                     "db_error": ""
                 },
-                "106": {
+                "107": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -6473,7 +6532,7 @@
                     ],
                     "db_error": ""
                 },
-                "107": {
+                "108": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -6535,7 +6594,7 @@
                     ],
                     "db_error": ""
                 },
-                "108": {
+                "109": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -6597,7 +6656,7 @@
                     ],
                     "db_error": ""
                 },
-                "109": {
+                "110": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -6659,73 +6718,14 @@
                     ],
                     "db_error": ""
                 },
-                "110": {
+                "111": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Features is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 308,
-                            "function": "rest_api_init",
-                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 332,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 517,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/cli\\/class-wc-cli-runner.php",
-                            "line": 59,
-                            "function": "do_action"
-                        },
-                        {
-                            "file": "phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/class-wp-cli.php",
-                            "line": 336,
-                            "function": "after_wp_load",
-                            "class": "WC_CLI_Runner",
-                            "type": "::"
-                        },
-                        {
-                            "file": "phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/WP_CLI\\/Runner.php",
-                            "line": 1362,
-                            "function": "do_hook",
-                            "class": "WP_CLI",
-                            "type": "::"
-                        },
-                        {
-                            "file": "phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/WP_CLI\\/Runner.php",
-                            "line": 1254,
-                            "function": "load_wordpress",
-                            "class": "WP_CLI\\\\Runner",
-                            "type": "->"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "111": {
-                    "activated_alongside": "",
-                    "context": "WP-CLI Plugin Activation",
-                    "is_fatal": "No",
-                    "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Notes is deprecated",
-                    "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -6782,9 +6782,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\NoteActions is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Notes is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -6841,9 +6841,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Coupons is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\NoteActions is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -6900,9 +6900,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Data is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Coupons is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -6959,9 +6959,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\DataCountries is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Data is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -7018,9 +7018,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\DataDownloadIPs is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\DataCountries is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -7077,9 +7077,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Experiments is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\DataDownloadIPs is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -7136,9 +7136,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Marketing is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Experiments is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -7195,9 +7195,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingOverview is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Marketing is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -7254,9 +7254,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingRecommendations is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingOverview is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -7313,9 +7313,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingChannels is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingRecommendations is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -7372,9 +7372,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingCampaigns is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingChannels is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -7431,9 +7431,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingCampaignTypes is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingCampaigns is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -7490,9 +7490,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingCampaignTypes is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -7549,9 +7549,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Orders is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -7608,9 +7608,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\PaymentGatewaySuggestions is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Orders is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -7667,9 +7667,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Products is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\PaymentGatewaySuggestions is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -7726,9 +7726,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductAttributes is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Products is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -7785,9 +7785,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductAttributeTerms is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductAttributes is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -7844,9 +7844,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductCategories is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductAttributeTerms is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -7903,9 +7903,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductVariations is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductCategories is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -7962,9 +7962,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductReviews is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductVariations is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -8021,9 +8021,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductsLowInStock is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductReviews is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -8080,9 +8080,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\SettingOptions is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductsLowInStock is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -8139,9 +8139,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Themes is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\SettingOptions is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -8198,9 +8198,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Plugins is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Themes is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -8257,9 +8257,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingFreeExtensions is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Plugins is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -8316,9 +8316,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingProductTypes is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingFreeExtensions is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -8375,9 +8375,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingProfile is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingProductTypes is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -8434,9 +8434,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingTasks is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingProfile is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -8493,9 +8493,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingThemes is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingTasks is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -8552,9 +8552,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\NavigationFavorites is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingThemes is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -8611,9 +8611,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Taxes is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\NavigationFavorites is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -8670,9 +8670,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MobileAppMagicLink is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Taxes is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -8729,9 +8729,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Customers is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MobileAppMagicLink is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -8788,9 +8788,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Leaderboards is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ShippingPartnerSuggestions is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -8847,9 +8847,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Customers is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -8906,9 +8906,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Import\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Leaderboards is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -8965,9 +8965,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Export\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -9024,9 +9024,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Products\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Import\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -9083,9 +9083,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Variations\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Export\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -9142,9 +9142,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Products\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Products\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -9201,9 +9201,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Variations\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Variations\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -9260,9 +9260,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Revenue\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Products\\\\Stats\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -9319,9 +9319,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Orders\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Variations\\\\Stats\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -9378,9 +9378,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Orders\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Revenue\\\\Stats\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -9437,9 +9437,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Categories\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Orders\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -9496,9 +9496,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Taxes\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Orders\\\\Stats\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -9555,9 +9555,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Taxes\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Categories\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -9614,9 +9614,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Coupons\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Taxes\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -9673,9 +9673,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Coupons\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Taxes\\\\Stats\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -9732,9 +9732,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Stock\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Coupons\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -9791,9 +9791,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Stock\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Coupons\\\\Stats\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -9850,9 +9850,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Downloads\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Stock\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -9909,9 +9909,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Downloads\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Stock\\\\Stats\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -9968,9 +9968,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Customers\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Downloads\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -10027,9 +10027,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Customers\\\\Stats\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Downloads\\\\Stats\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -10086,9 +10086,9 @@
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\PerformanceIndicators\\\\Controller is deprecated",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Customers\\\\Controller is deprecated",
                     "error_file": "API\\/Init.php",
-                    "error_line": 142,
+                    "error_line": 143,
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
@@ -10141,6 +10141,124 @@
                     "db_error": ""
                 },
                 "169": {
+                    "activated_alongside": "",
+                    "context": "WP-CLI Plugin Activation",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Customers\\\\Stats\\\\Controller is deprecated",
+                    "error_file": "API\\/Init.php",
+                    "error_line": 143,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
+                            "line": 308,
+                            "function": "rest_api_init",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
+                            "line": 332,
+                            "function": "apply_filters",
+                            "class": "WP_Hook",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
+                            "line": 517,
+                            "function": "do_action",
+                            "class": "WP_Hook",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/cli\\/class-wc-cli-runner.php",
+                            "line": 59,
+                            "function": "do_action"
+                        },
+                        {
+                            "file": "phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/class-wp-cli.php",
+                            "line": 336,
+                            "function": "after_wp_load",
+                            "class": "WC_CLI_Runner",
+                            "type": "::"
+                        },
+                        {
+                            "file": "phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/WP_CLI\\/Runner.php",
+                            "line": 1362,
+                            "function": "do_hook",
+                            "class": "WP_CLI",
+                            "type": "::"
+                        },
+                        {
+                            "file": "phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/WP_CLI\\/Runner.php",
+                            "line": 1254,
+                            "function": "load_wordpress",
+                            "class": "WP_CLI\\\\Runner",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "170": {
+                    "activated_alongside": "",
+                    "context": "WP-CLI Plugin Activation",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\PerformanceIndicators\\\\Controller is deprecated",
+                    "error_file": "API\\/Init.php",
+                    "error_line": 143,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
+                            "line": 308,
+                            "function": "rest_api_init",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
+                            "line": 332,
+                            "function": "apply_filters",
+                            "class": "WP_Hook",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
+                            "line": 517,
+                            "function": "do_action",
+                            "class": "WP_Hook",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/cli\\/class-wc-cli-runner.php",
+                            "line": 59,
+                            "function": "do_action"
+                        },
+                        {
+                            "file": "phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/class-wp-cli.php",
+                            "line": 336,
+                            "function": "after_wp_load",
+                            "class": "WC_CLI_Runner",
+                            "type": "::"
+                        },
+                        {
+                            "file": "phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/WP_CLI\\/Runner.php",
+                            "line": 1362,
+                            "function": "do_hook",
+                            "class": "WP_CLI",
+                            "type": "::"
+                        },
+                        {
+                            "file": "phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/WP_CLI\\/Runner.php",
+                            "line": 1254,
+                            "function": "load_wordpress",
+                            "class": "WP_CLI\\\\Runner",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "171": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -10201,7 +10319,7 @@
                     ],
                     "db_error": ""
                 },
-                "170": {
+                "172": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -10262,7 +10380,7 @@
                     ],
                     "db_error": ""
                 },
-                "171": {
+                "173": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -10323,7 +10441,7 @@
                     ],
                     "db_error": ""
                 },
-                "172": {
+                "174": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -10384,7 +10502,7 @@
                     ],
                     "db_error": ""
                 },
-                "173": {
+                "175": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -10445,7 +10563,7 @@
                     ],
                     "db_error": ""
                 },
-                "174": {
+                "176": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -10506,7 +10624,7 @@
                     ],
                     "db_error": ""
                 },
-                "175": {
+                "177": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -10567,7 +10685,7 @@
                     ],
                     "db_error": ""
                 },
-                "176": {
+                "178": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -10628,7 +10746,7 @@
                     ],
                     "db_error": ""
                 },
-                "177": {
+                "179": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -10689,7 +10807,7 @@
                     ],
                     "db_error": ""
                 },
-                "178": {
+                "180": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -10750,7 +10868,7 @@
                     ],
                     "db_error": ""
                 },
-                "179": {
+                "181": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -10811,7 +10929,7 @@
                     ],
                     "db_error": ""
                 },
-                "180": {
+                "182": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -10872,7 +10990,7 @@
                     ],
                     "db_error": ""
                 },
-                "181": {
+                "183": {
                     "activated_alongside": "",
                     "context": "WP-CLI Plugin Activation",
                     "is_fatal": "No",
@@ -10933,7 +11051,7 @@
                     ],
                     "db_error": ""
                 },
-                "182": {
+                "184": {
                     "activated_alongside": "",
                     "context": "\\/",
                     "is_fatal": "No",
@@ -10994,7 +11112,7 @@
                     ],
                     "db_error": ""
                 },
-                "183": {
+                "185": {
                     "activated_alongside": "",
                     "context": "\\/",
                     "is_fatal": "No",
@@ -11055,7 +11173,7 @@
                     ],
                     "db_error": ""
                 },
-                "184": {
+                "186": {
                     "activated_alongside": "",
                     "context": "\\/",
                     "is_fatal": "No",
@@ -11083,128 +11201,6 @@
                             "line": 46,
                             "function": "__construct",
                             "class": "Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostToOrderAddressTableMigrator",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/DependencyManagement\\/Definition.php",
-                            "line": 29,
-                            "function": "__construct",
-                            "class": "Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostsToOrdersMigrationController",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/lib\\/packages\\/League\\/Container\\/Definition\\/Definition.php",
-                            "line": 212,
-                            "function": "resolveClass",
-                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\DependencyManagement\\\\Definition",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/lib\\/packages\\/League\\/Container\\/Definition\\/DefinitionAggregate.php",
-                            "line": 94,
-                            "function": "resolve",
-                            "class": "Automattic\\\\WooCommerce\\\\Vendor\\\\League\\\\Container\\\\Definition\\\\Definition",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/lib\\/packages\\/League\\/Container\\/Container.php",
-                            "line": 157,
-                            "function": "resolve",
-                            "class": "Automattic\\\\WooCommerce\\\\Vendor\\\\League\\\\Container\\\\Definition\\\\DefinitionAggregate",
-                            "type": "->"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "185": {
-                    "activated_alongside": "",
-                    "context": "\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostToOrderOpTableMigrator::$table_names is deprecated",
-                    "error_file": "CustomOrderTable\\/PostToOrderOpTableMigrator.php",
-                    "error_line": 26,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Database\\/Migrations\\/MetaToCustomTableMigrator.php",
-                            "line": 41,
-                            "function": "get_schema_config",
-                            "class": "Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostToOrderOpTableMigrator",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Database\\/Migrations\\/CustomOrderTable\\/PostsToOrdersMigrationController.php",
-                            "line": 47,
-                            "function": "__construct",
-                            "class": "Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\MetaToCustomTableMigrator",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/DependencyManagement\\/Definition.php",
-                            "line": 29,
-                            "function": "__construct",
-                            "class": "Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostsToOrdersMigrationController",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/lib\\/packages\\/League\\/Container\\/Definition\\/Definition.php",
-                            "line": 212,
-                            "function": "resolveClass",
-                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\DependencyManagement\\\\Definition",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/lib\\/packages\\/League\\/Container\\/Definition\\/DefinitionAggregate.php",
-                            "line": 94,
-                            "function": "resolve",
-                            "class": "Automattic\\\\WooCommerce\\\\Vendor\\\\League\\\\Container\\\\Definition\\\\Definition",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/lib\\/packages\\/League\\/Container\\/Container.php",
-                            "line": 157,
-                            "function": "resolve",
-                            "class": "Automattic\\\\WooCommerce\\\\Vendor\\\\League\\\\Container\\\\Definition\\\\DefinitionAggregate",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/DependencyManagement\\/ExtendedContainer.php",
-                            "line": 117,
-                            "function": "get",
-                            "class": "Automattic\\\\WooCommerce\\\\Vendor\\\\League\\\\Container\\\\Container",
-                            "type": "->"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "186": {
-                    "activated_alongside": "",
-                    "context": "\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_DEPRECATED",
-                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostMetaToOrderMetaMigrator::$table_names is deprecated",
-                    "error_file": "CustomOrderTable\\/PostMetaToOrderMetaMigrator.php",
-                    "error_line": 43,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Database\\/Migrations\\/MetaToMetaTableMigrator.php",
-                            "line": 60,
-                            "function": "get_meta_config",
-                            "class": "Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostMetaToOrderMetaMigrator",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Database\\/Migrations\\/CustomOrderTable\\/PostMetaToOrderMetaMigrator.php",
-                            "line": 32,
-                            "function": "__construct",
-                            "class": "Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\MetaToMetaTableMigrator",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Database\\/Migrations\\/CustomOrderTable\\/PostsToOrdersMigrationController.php",
-                            "line": 48,
-                            "function": "__construct",
-                            "class": "Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostMetaToOrderMetaMigrator",
                             "type": "->"
                         },
                         {
@@ -11243,6 +11239,128 @@
                     "context": "\\/",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostToOrderOpTableMigrator::$table_names is deprecated",
+                    "error_file": "CustomOrderTable\\/PostToOrderOpTableMigrator.php",
+                    "error_line": 26,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Database\\/Migrations\\/MetaToCustomTableMigrator.php",
+                            "line": 41,
+                            "function": "get_schema_config",
+                            "class": "Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostToOrderOpTableMigrator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Database\\/Migrations\\/CustomOrderTable\\/PostsToOrdersMigrationController.php",
+                            "line": 47,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\MetaToCustomTableMigrator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/DependencyManagement\\/Definition.php",
+                            "line": 29,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostsToOrdersMigrationController",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/lib\\/packages\\/League\\/Container\\/Definition\\/Definition.php",
+                            "line": 212,
+                            "function": "resolveClass",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\DependencyManagement\\\\Definition",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/lib\\/packages\\/League\\/Container\\/Definition\\/DefinitionAggregate.php",
+                            "line": 94,
+                            "function": "resolve",
+                            "class": "Automattic\\\\WooCommerce\\\\Vendor\\\\League\\\\Container\\\\Definition\\\\Definition",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/lib\\/packages\\/League\\/Container\\/Container.php",
+                            "line": 157,
+                            "function": "resolve",
+                            "class": "Automattic\\\\WooCommerce\\\\Vendor\\\\League\\\\Container\\\\Definition\\\\DefinitionAggregate",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/DependencyManagement\\/ExtendedContainer.php",
+                            "line": 117,
+                            "function": "get",
+                            "class": "Automattic\\\\WooCommerce\\\\Vendor\\\\League\\\\Container\\\\Container",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "188": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostMetaToOrderMetaMigrator::$table_names is deprecated",
+                    "error_file": "CustomOrderTable\\/PostMetaToOrderMetaMigrator.php",
+                    "error_line": 43,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Database\\/Migrations\\/MetaToMetaTableMigrator.php",
+                            "line": 60,
+                            "function": "get_meta_config",
+                            "class": "Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostMetaToOrderMetaMigrator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Database\\/Migrations\\/CustomOrderTable\\/PostMetaToOrderMetaMigrator.php",
+                            "line": 32,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\MetaToMetaTableMigrator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Database\\/Migrations\\/CustomOrderTable\\/PostsToOrdersMigrationController.php",
+                            "line": 48,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostMetaToOrderMetaMigrator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/DependencyManagement\\/Definition.php",
+                            "line": 29,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostsToOrdersMigrationController",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/lib\\/packages\\/League\\/Container\\/Definition\\/Definition.php",
+                            "line": 212,
+                            "function": "resolveClass",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\DependencyManagement\\\\Definition",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/lib\\/packages\\/League\\/Container\\/Definition\\/DefinitionAggregate.php",
+                            "line": 94,
+                            "function": "resolve",
+                            "class": "Automattic\\\\WooCommerce\\\\Vendor\\\\League\\\\Container\\\\Definition\\\\Definition",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/lib\\/packages\\/League\\/Container\\/Container.php",
+                            "line": 157,
+                            "function": "resolve",
+                            "class": "Automattic\\\\WooCommerce\\\\Vendor\\\\League\\\\Container\\\\Definition\\\\DefinitionAggregate",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "189": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
                     "error_message": "Creation of dynamic property WC_Countries::$countries is deprecated",
                     "error_file": "includes\\/class-wc-countries.php",
                     "error_line": 51,
@@ -11297,7 +11415,7 @@
                     ],
                     "db_error": ""
                 },
-                "188": {
+                "190": {
                     "activated_alongside": "",
                     "context": "\\/",
                     "is_fatal": "No",
@@ -11327,7 +11445,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 617,
+                            "line": 623,
                             "function": "do_action"
                         },
                         {
@@ -11357,7 +11475,7 @@
                     ],
                     "db_error": ""
                 },
-                "189": {
+                "191": {
                     "activated_alongside": "",
                     "context": "\\/",
                     "is_fatal": "No",
@@ -11403,7 +11521,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 639,
+                            "line": 645,
                             "function": "do_action"
                         },
                         {
@@ -11417,7 +11535,7 @@
                     ],
                     "db_error": ""
                 },
-                "190": {
+                "192": {
                     "activated_alongside": "",
                     "context": "\\/",
                     "is_fatal": "No",
@@ -11463,7 +11581,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 639,
+                            "line": 645,
                             "function": "do_action"
                         },
                         {
@@ -11477,7 +11595,7 @@
                     ],
                     "db_error": ""
                 },
-                "191": {
+                "193": {
                     "activated_alongside": "",
                     "context": "\\/",
                     "is_fatal": "No",
@@ -11512,7 +11630,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1332,
+                            "line": 1334,
                             "function": "main",
                             "class": "WP",
                             "type": "->"
@@ -11533,7 +11651,2137 @@
                     ],
                     "db_error": ""
                 },
-                "192": {
+                "194": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Shipping_Flat_Rate::$cost is deprecated",
+                    "error_file": "flat-rate\\/class-wc-shipping-flat-rate.php",
+                    "error_line": 50,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/flat-rate\\/class-wc-shipping-flat-rate.php",
+                            "line": 38,
+                            "function": "init",
+                            "class": "WC_Shipping_Flat_Rate",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 199,
+                            "function": "__construct",
+                            "class": "WC_Shipping_Flat_Rate",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 177,
+                            "function": "register_shipping_method",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 221,
+                            "function": "load_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/StoreApi\\/Utilities\\/LocalPickupUtils.php",
+                            "line": 16,
+                            "function": "get_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 268,
+                            "function": "get_local_pickup_method_ids",
+                            "class": "Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\LocalPickupUtils",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 369,
+                            "function": "execute_lazy_data",
+                            "class": "Automattic\\\\WooCommerce\\\\Blocks\\\\Assets\\\\AssetDataRegistry",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "195": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Shipping_Flat_Rate::$type is deprecated",
+                    "error_file": "flat-rate\\/class-wc-shipping-flat-rate.php",
+                    "error_line": 51,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/flat-rate\\/class-wc-shipping-flat-rate.php",
+                            "line": 38,
+                            "function": "init",
+                            "class": "WC_Shipping_Flat_Rate",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 199,
+                            "function": "__construct",
+                            "class": "WC_Shipping_Flat_Rate",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 177,
+                            "function": "register_shipping_method",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 221,
+                            "function": "load_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/StoreApi\\/Utilities\\/LocalPickupUtils.php",
+                            "line": 16,
+                            "function": "get_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 268,
+                            "function": "get_local_pickup_method_ids",
+                            "class": "Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\LocalPickupUtils",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 369,
+                            "function": "execute_lazy_data",
+                            "class": "Automattic\\\\WooCommerce\\\\Blocks\\\\Assets\\\\AssetDataRegistry",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "196": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Shipping_Free_Shipping::$ignore_discounts is deprecated",
+                    "error_file": "free-shipping\\/class-wc-shipping-free-shipping.php",
+                    "error_line": 70,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/free-shipping\\/class-wc-shipping-free-shipping.php",
+                            "line": 55,
+                            "function": "init",
+                            "class": "WC_Shipping_Free_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 199,
+                            "function": "__construct",
+                            "class": "WC_Shipping_Free_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 177,
+                            "function": "register_shipping_method",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 221,
+                            "function": "load_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/StoreApi\\/Utilities\\/LocalPickupUtils.php",
+                            "line": 16,
+                            "function": "get_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 268,
+                            "function": "get_local_pickup_method_ids",
+                            "class": "Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\LocalPickupUtils",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 369,
+                            "function": "execute_lazy_data",
+                            "class": "Automattic\\\\WooCommerce\\\\Blocks\\\\Assets\\\\AssetDataRegistry",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "197": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Shipping_Local_Pickup::$cost is deprecated",
+                    "error_file": "local-pickup\\/class-wc-shipping-local-pickup.php",
+                    "error_line": 53,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/local-pickup\\/class-wc-shipping-local-pickup.php",
+                            "line": 38,
+                            "function": "init",
+                            "class": "WC_Shipping_Local_Pickup",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 199,
+                            "function": "__construct",
+                            "class": "WC_Shipping_Local_Pickup",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 177,
+                            "function": "register_shipping_method",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 221,
+                            "function": "load_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/StoreApi\\/Utilities\\/LocalPickupUtils.php",
+                            "line": 16,
+                            "function": "get_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 268,
+                            "function": "get_local_pickup_method_ids",
+                            "class": "Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\LocalPickupUtils",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 369,
+                            "function": "execute_lazy_data",
+                            "class": "Automattic\\\\WooCommerce\\\\Blocks\\\\Assets\\\\AssetDataRegistry",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "198": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Paypal::$testmode is deprecated",
+                    "error_file": "paypal\\/class-wc-gateway-paypal.php",
+                    "error_line": 60,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 233,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Paypal",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 83,
+                            "function": "should_load_paypal_standard",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "199": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Paypal::$debug is deprecated",
+                    "error_file": "paypal\\/class-wc-gateway-paypal.php",
+                    "error_line": 61,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 233,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Paypal",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 83,
+                            "function": "should_load_paypal_standard",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "200": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Paypal::$email is deprecated",
+                    "error_file": "paypal\\/class-wc-gateway-paypal.php",
+                    "error_line": 62,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 233,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Paypal",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 83,
+                            "function": "should_load_paypal_standard",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "201": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Paypal::$receiver_email is deprecated",
+                    "error_file": "paypal\\/class-wc-gateway-paypal.php",
+                    "error_line": 63,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 233,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Paypal",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 83,
+                            "function": "should_load_paypal_standard",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "202": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Paypal::$identity_token is deprecated",
+                    "error_file": "paypal\\/class-wc-gateway-paypal.php",
+                    "error_line": 64,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 233,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Paypal",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 83,
+                            "function": "should_load_paypal_standard",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "203": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_BACS::$instructions is deprecated",
+                    "error_file": "bacs\\/class-wc-gateway-bacs.php",
+                    "error_line": 49,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_BACS",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "204": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_BACS::$account_details is deprecated",
+                    "error_file": "bacs\\/class-wc-gateway-bacs.php",
+                    "error_line": 52,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_BACS",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "205": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Cheque::$instructions is deprecated",
+                    "error_file": "cheque\\/class-wc-gateway-cheque.php",
+                    "error_line": 41,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Cheque",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "206": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_COD::$instructions is deprecated",
+                    "error_file": "cod\\/class-wc-gateway-cod.php",
+                    "error_line": 40,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_COD",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "207": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_COD::$enable_for_methods is deprecated",
+                    "error_file": "cod\\/class-wc-gateway-cod.php",
+                    "error_line": 41,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_COD",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "208": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_COD::$enable_for_virtual is deprecated",
+                    "error_file": "cod\\/class-wc-gateway-cod.php",
+                    "error_line": 42,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_COD",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "209": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Automatic conversion of false to array is deprecated",
+                    "error_file": "Admin\\/DataSourcePoller.php",
+                    "error_line": 138,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/DataSourcePoller.php",
+                            "line": 112,
+                            "function": "read_specs_from_data_sources",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\DataSourcePoller",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 72,
+                            "function": "get_specs_from_data_sources",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\DataSourcePoller",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 33,
+                            "function": "get_specs",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "210": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "211": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "212": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "213": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "214": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "215": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/OrRuleProcessor.php",
+                            "line": 23,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/GetRuleProcessor.php",
+                            "line": 32,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/RuleEvaluator.php",
+                            "line": 70,
+                            "function": "get_processor",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\GetRuleProcessor",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 27,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "216": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor::$rule_evaluator is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/OrRuleProcessor.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/GetRuleProcessor.php",
+                            "line": 32,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/RuleEvaluator.php",
+                            "line": 70,
+                            "function": "get_processor",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\GetRuleProcessor",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 27,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "217": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "218": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "219": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "220": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "221": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "222": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "223": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "224": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "225": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/OrRuleProcessor.php",
+                            "line": 23,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/GetRuleProcessor.php",
+                            "line": 32,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/RuleEvaluator.php",
+                            "line": 70,
+                            "function": "get_processor",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\GetRuleProcessor",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 27,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "226": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor::$rule_evaluator is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/OrRuleProcessor.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/GetRuleProcessor.php",
+                            "line": 32,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/RuleEvaluator.php",
+                            "line": 70,
+                            "function": "get_processor",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\GetRuleProcessor",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 27,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "227": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "228": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "229": {
+                    "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "230": {
                     "activated_alongside": "",
                     "context": "\\/cart\\/",
                     "is_fatal": "No",
@@ -11594,7 +13842,7 @@
                     ],
                     "db_error": ""
                 },
-                "193": {
+                "231": {
                     "activated_alongside": "",
                     "context": "\\/cart\\/",
                     "is_fatal": "No",
@@ -11655,7 +13903,7 @@
                     ],
                     "db_error": ""
                 },
-                "194": {
+                "232": {
                     "activated_alongside": "",
                     "context": "\\/cart\\/",
                     "is_fatal": "No",
@@ -11716,7 +13964,7 @@
                     ],
                     "db_error": ""
                 },
-                "195": {
+                "233": {
                     "activated_alongside": "",
                     "context": "\\/cart\\/",
                     "is_fatal": "No",
@@ -11777,7 +14025,7 @@
                     ],
                     "db_error": ""
                 },
-                "196": {
+                "234": {
                     "activated_alongside": "",
                     "context": "\\/cart\\/",
                     "is_fatal": "No",
@@ -11838,7 +14086,7 @@
                     ],
                     "db_error": ""
                 },
-                "197": {
+                "235": {
                     "activated_alongside": "",
                     "context": "\\/cart\\/",
                     "is_fatal": "No",
@@ -11897,7 +14145,7 @@
                     ],
                     "db_error": ""
                 },
-                "198": {
+                "236": {
                     "activated_alongside": "",
                     "context": "\\/cart\\/",
                     "is_fatal": "No",
@@ -11927,7 +14175,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 617,
+                            "line": 623,
                             "function": "do_action"
                         },
                         {
@@ -11957,7 +14205,7 @@
                     ],
                     "db_error": ""
                 },
-                "199": {
+                "237": {
                     "activated_alongside": "",
                     "context": "\\/cart\\/",
                     "is_fatal": "No",
@@ -12003,7 +14251,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 639,
+                            "line": 645,
                             "function": "do_action"
                         },
                         {
@@ -12017,7 +14265,7 @@
                     ],
                     "db_error": ""
                 },
-                "200": {
+                "238": {
                     "activated_alongside": "",
                     "context": "\\/cart\\/",
                     "is_fatal": "No",
@@ -12063,7 +14311,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 639,
+                            "line": 645,
                             "function": "do_action"
                         },
                         {
@@ -12077,7 +14325,7 @@
                     ],
                     "db_error": ""
                 },
-                "201": {
+                "239": {
                     "activated_alongside": "",
                     "context": "\\/cart\\/",
                     "is_fatal": "No",
@@ -12112,7 +14360,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1332,
+                            "line": 1334,
                             "function": "main",
                             "class": "WP",
                             "type": "->"
@@ -12133,7 +14381,7 @@
                     ],
                     "db_error": ""
                 },
-                "202": {
+                "240": {
                     "activated_alongside": "",
                     "context": "\\/cart\\/",
                     "is_fatal": "No",
@@ -12194,7 +14442,2078 @@
                     ],
                     "db_error": ""
                 },
-                "203": {
+                "241": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Shipping_Flat_Rate::$cost is deprecated",
+                    "error_file": "flat-rate\\/class-wc-shipping-flat-rate.php",
+                    "error_line": 50,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/flat-rate\\/class-wc-shipping-flat-rate.php",
+                            "line": 38,
+                            "function": "init",
+                            "class": "WC_Shipping_Flat_Rate",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 199,
+                            "function": "__construct",
+                            "class": "WC_Shipping_Flat_Rate",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 177,
+                            "function": "register_shipping_method",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 221,
+                            "function": "load_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/StoreApi\\/Utilities\\/LocalPickupUtils.php",
+                            "line": 16,
+                            "function": "get_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 268,
+                            "function": "get_local_pickup_method_ids",
+                            "class": "Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\LocalPickupUtils",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 369,
+                            "function": "execute_lazy_data",
+                            "class": "Automattic\\\\WooCommerce\\\\Blocks\\\\Assets\\\\AssetDataRegistry",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "242": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Shipping_Flat_Rate::$type is deprecated",
+                    "error_file": "flat-rate\\/class-wc-shipping-flat-rate.php",
+                    "error_line": 51,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/flat-rate\\/class-wc-shipping-flat-rate.php",
+                            "line": 38,
+                            "function": "init",
+                            "class": "WC_Shipping_Flat_Rate",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 199,
+                            "function": "__construct",
+                            "class": "WC_Shipping_Flat_Rate",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 177,
+                            "function": "register_shipping_method",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 221,
+                            "function": "load_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/StoreApi\\/Utilities\\/LocalPickupUtils.php",
+                            "line": 16,
+                            "function": "get_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 268,
+                            "function": "get_local_pickup_method_ids",
+                            "class": "Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\LocalPickupUtils",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 369,
+                            "function": "execute_lazy_data",
+                            "class": "Automattic\\\\WooCommerce\\\\Blocks\\\\Assets\\\\AssetDataRegistry",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "243": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Shipping_Free_Shipping::$ignore_discounts is deprecated",
+                    "error_file": "free-shipping\\/class-wc-shipping-free-shipping.php",
+                    "error_line": 70,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/free-shipping\\/class-wc-shipping-free-shipping.php",
+                            "line": 55,
+                            "function": "init",
+                            "class": "WC_Shipping_Free_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 199,
+                            "function": "__construct",
+                            "class": "WC_Shipping_Free_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 177,
+                            "function": "register_shipping_method",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 221,
+                            "function": "load_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/StoreApi\\/Utilities\\/LocalPickupUtils.php",
+                            "line": 16,
+                            "function": "get_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 268,
+                            "function": "get_local_pickup_method_ids",
+                            "class": "Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\LocalPickupUtils",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 369,
+                            "function": "execute_lazy_data",
+                            "class": "Automattic\\\\WooCommerce\\\\Blocks\\\\Assets\\\\AssetDataRegistry",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "244": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Shipping_Local_Pickup::$cost is deprecated",
+                    "error_file": "local-pickup\\/class-wc-shipping-local-pickup.php",
+                    "error_line": 53,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/local-pickup\\/class-wc-shipping-local-pickup.php",
+                            "line": 38,
+                            "function": "init",
+                            "class": "WC_Shipping_Local_Pickup",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 199,
+                            "function": "__construct",
+                            "class": "WC_Shipping_Local_Pickup",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 177,
+                            "function": "register_shipping_method",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 221,
+                            "function": "load_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/StoreApi\\/Utilities\\/LocalPickupUtils.php",
+                            "line": 16,
+                            "function": "get_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 268,
+                            "function": "get_local_pickup_method_ids",
+                            "class": "Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\LocalPickupUtils",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 369,
+                            "function": "execute_lazy_data",
+                            "class": "Automattic\\\\WooCommerce\\\\Blocks\\\\Assets\\\\AssetDataRegistry",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "245": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Paypal::$testmode is deprecated",
+                    "error_file": "paypal\\/class-wc-gateway-paypal.php",
+                    "error_line": 60,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 233,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Paypal",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 83,
+                            "function": "should_load_paypal_standard",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "246": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Paypal::$debug is deprecated",
+                    "error_file": "paypal\\/class-wc-gateway-paypal.php",
+                    "error_line": 61,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 233,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Paypal",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 83,
+                            "function": "should_load_paypal_standard",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "247": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Paypal::$email is deprecated",
+                    "error_file": "paypal\\/class-wc-gateway-paypal.php",
+                    "error_line": 62,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 233,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Paypal",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 83,
+                            "function": "should_load_paypal_standard",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "248": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Paypal::$receiver_email is deprecated",
+                    "error_file": "paypal\\/class-wc-gateway-paypal.php",
+                    "error_line": 63,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 233,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Paypal",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 83,
+                            "function": "should_load_paypal_standard",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "249": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Paypal::$identity_token is deprecated",
+                    "error_file": "paypal\\/class-wc-gateway-paypal.php",
+                    "error_line": 64,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 233,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Paypal",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 83,
+                            "function": "should_load_paypal_standard",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "250": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_BACS::$instructions is deprecated",
+                    "error_file": "bacs\\/class-wc-gateway-bacs.php",
+                    "error_line": 49,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_BACS",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "251": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_BACS::$account_details is deprecated",
+                    "error_file": "bacs\\/class-wc-gateway-bacs.php",
+                    "error_line": 52,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_BACS",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "252": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Cheque::$instructions is deprecated",
+                    "error_file": "cheque\\/class-wc-gateway-cheque.php",
+                    "error_line": 41,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Cheque",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "253": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_COD::$instructions is deprecated",
+                    "error_file": "cod\\/class-wc-gateway-cod.php",
+                    "error_line": 40,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_COD",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "254": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_COD::$enable_for_methods is deprecated",
+                    "error_file": "cod\\/class-wc-gateway-cod.php",
+                    "error_line": 41,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_COD",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "255": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_COD::$enable_for_virtual is deprecated",
+                    "error_file": "cod\\/class-wc-gateway-cod.php",
+                    "error_line": 42,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_COD",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "256": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "257": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "258": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "259": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "260": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "261": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/OrRuleProcessor.php",
+                            "line": 23,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/GetRuleProcessor.php",
+                            "line": 32,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/RuleEvaluator.php",
+                            "line": 70,
+                            "function": "get_processor",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\GetRuleProcessor",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 27,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "262": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor::$rule_evaluator is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/OrRuleProcessor.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/GetRuleProcessor.php",
+                            "line": 32,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/RuleEvaluator.php",
+                            "line": 70,
+                            "function": "get_processor",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\GetRuleProcessor",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 27,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "263": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "264": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "265": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "266": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "267": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "268": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "269": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "270": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "271": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/OrRuleProcessor.php",
+                            "line": 23,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/GetRuleProcessor.php",
+                            "line": 32,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/RuleEvaluator.php",
+                            "line": 70,
+                            "function": "get_processor",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\GetRuleProcessor",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 27,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "272": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor::$rule_evaluator is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/OrRuleProcessor.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/GetRuleProcessor.php",
+                            "line": 32,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/RuleEvaluator.php",
+                            "line": 70,
+                            "function": "get_processor",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\GetRuleProcessor",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 27,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "273": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "274": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "275": {
+                    "activated_alongside": "",
+                    "context": "\\/cart\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "276": {
                     "activated_alongside": "",
                     "context": "\\/my-account\\/",
                     "is_fatal": "No",
@@ -12255,7 +16574,7 @@
                     ],
                     "db_error": ""
                 },
-                "204": {
+                "277": {
                     "activated_alongside": "",
                     "context": "\\/my-account\\/",
                     "is_fatal": "No",
@@ -12316,7 +16635,7 @@
                     ],
                     "db_error": ""
                 },
-                "205": {
+                "278": {
                     "activated_alongside": "",
                     "context": "\\/my-account\\/",
                     "is_fatal": "No",
@@ -12377,7 +16696,7 @@
                     ],
                     "db_error": ""
                 },
-                "206": {
+                "279": {
                     "activated_alongside": "",
                     "context": "\\/my-account\\/",
                     "is_fatal": "No",
@@ -12438,7 +16757,7 @@
                     ],
                     "db_error": ""
                 },
-                "207": {
+                "280": {
                     "activated_alongside": "",
                     "context": "\\/my-account\\/",
                     "is_fatal": "No",
@@ -12499,7 +16818,7 @@
                     ],
                     "db_error": ""
                 },
-                "208": {
+                "281": {
                     "activated_alongside": "",
                     "context": "\\/my-account\\/",
                     "is_fatal": "No",
@@ -12558,7 +16877,7 @@
                     ],
                     "db_error": ""
                 },
-                "209": {
+                "282": {
                     "activated_alongside": "",
                     "context": "\\/my-account\\/",
                     "is_fatal": "No",
@@ -12588,7 +16907,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 617,
+                            "line": 623,
                             "function": "do_action"
                         },
                         {
@@ -12618,7 +16937,7 @@
                     ],
                     "db_error": ""
                 },
-                "210": {
+                "283": {
                     "activated_alongside": "",
                     "context": "\\/my-account\\/",
                     "is_fatal": "No",
@@ -12664,7 +16983,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 639,
+                            "line": 645,
                             "function": "do_action"
                         },
                         {
@@ -12678,7 +16997,7 @@
                     ],
                     "db_error": ""
                 },
-                "211": {
+                "284": {
                     "activated_alongside": "",
                     "context": "\\/my-account\\/",
                     "is_fatal": "No",
@@ -12724,7 +17043,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 639,
+                            "line": 645,
                             "function": "do_action"
                         },
                         {
@@ -12738,7 +17057,7 @@
                     ],
                     "db_error": ""
                 },
-                "212": {
+                "285": {
                     "activated_alongside": "",
                     "context": "\\/my-account\\/",
                     "is_fatal": "No",
@@ -12773,7 +17092,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1332,
+                            "line": 1334,
                             "function": "main",
                             "class": "WP",
                             "type": "->"
@@ -12790,6 +17109,2077 @@
                                 "\\/var\\/www\\/html\\/wp-blog-header.php"
                             ],
                             "function": "require"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "286": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Shipping_Flat_Rate::$cost is deprecated",
+                    "error_file": "flat-rate\\/class-wc-shipping-flat-rate.php",
+                    "error_line": 50,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/flat-rate\\/class-wc-shipping-flat-rate.php",
+                            "line": 38,
+                            "function": "init",
+                            "class": "WC_Shipping_Flat_Rate",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 199,
+                            "function": "__construct",
+                            "class": "WC_Shipping_Flat_Rate",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 177,
+                            "function": "register_shipping_method",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 221,
+                            "function": "load_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/StoreApi\\/Utilities\\/LocalPickupUtils.php",
+                            "line": 16,
+                            "function": "get_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 268,
+                            "function": "get_local_pickup_method_ids",
+                            "class": "Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\LocalPickupUtils",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 369,
+                            "function": "execute_lazy_data",
+                            "class": "Automattic\\\\WooCommerce\\\\Blocks\\\\Assets\\\\AssetDataRegistry",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "287": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Shipping_Flat_Rate::$type is deprecated",
+                    "error_file": "flat-rate\\/class-wc-shipping-flat-rate.php",
+                    "error_line": 51,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/flat-rate\\/class-wc-shipping-flat-rate.php",
+                            "line": 38,
+                            "function": "init",
+                            "class": "WC_Shipping_Flat_Rate",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 199,
+                            "function": "__construct",
+                            "class": "WC_Shipping_Flat_Rate",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 177,
+                            "function": "register_shipping_method",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 221,
+                            "function": "load_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/StoreApi\\/Utilities\\/LocalPickupUtils.php",
+                            "line": 16,
+                            "function": "get_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 268,
+                            "function": "get_local_pickup_method_ids",
+                            "class": "Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\LocalPickupUtils",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 369,
+                            "function": "execute_lazy_data",
+                            "class": "Automattic\\\\WooCommerce\\\\Blocks\\\\Assets\\\\AssetDataRegistry",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "288": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Shipping_Free_Shipping::$ignore_discounts is deprecated",
+                    "error_file": "free-shipping\\/class-wc-shipping-free-shipping.php",
+                    "error_line": 70,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/free-shipping\\/class-wc-shipping-free-shipping.php",
+                            "line": 55,
+                            "function": "init",
+                            "class": "WC_Shipping_Free_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 199,
+                            "function": "__construct",
+                            "class": "WC_Shipping_Free_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 177,
+                            "function": "register_shipping_method",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 221,
+                            "function": "load_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/StoreApi\\/Utilities\\/LocalPickupUtils.php",
+                            "line": 16,
+                            "function": "get_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 268,
+                            "function": "get_local_pickup_method_ids",
+                            "class": "Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\LocalPickupUtils",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 369,
+                            "function": "execute_lazy_data",
+                            "class": "Automattic\\\\WooCommerce\\\\Blocks\\\\Assets\\\\AssetDataRegistry",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "289": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Shipping_Local_Pickup::$cost is deprecated",
+                    "error_file": "local-pickup\\/class-wc-shipping-local-pickup.php",
+                    "error_line": 53,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/local-pickup\\/class-wc-shipping-local-pickup.php",
+                            "line": 38,
+                            "function": "init",
+                            "class": "WC_Shipping_Local_Pickup",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 199,
+                            "function": "__construct",
+                            "class": "WC_Shipping_Local_Pickup",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 177,
+                            "function": "register_shipping_method",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping.php",
+                            "line": 221,
+                            "function": "load_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/StoreApi\\/Utilities\\/LocalPickupUtils.php",
+                            "line": 16,
+                            "function": "get_shipping_methods",
+                            "class": "WC_Shipping",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 268,
+                            "function": "get_local_pickup_method_ids",
+                            "class": "Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\LocalPickupUtils",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/Assets\\/AssetDataRegistry.php",
+                            "line": 369,
+                            "function": "execute_lazy_data",
+                            "class": "Automattic\\\\WooCommerce\\\\Blocks\\\\Assets\\\\AssetDataRegistry",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "290": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Paypal::$testmode is deprecated",
+                    "error_file": "paypal\\/class-wc-gateway-paypal.php",
+                    "error_line": 60,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 233,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Paypal",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 83,
+                            "function": "should_load_paypal_standard",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "291": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Paypal::$debug is deprecated",
+                    "error_file": "paypal\\/class-wc-gateway-paypal.php",
+                    "error_line": 61,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 233,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Paypal",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 83,
+                            "function": "should_load_paypal_standard",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "292": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Paypal::$email is deprecated",
+                    "error_file": "paypal\\/class-wc-gateway-paypal.php",
+                    "error_line": 62,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 233,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Paypal",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 83,
+                            "function": "should_load_paypal_standard",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "293": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Paypal::$receiver_email is deprecated",
+                    "error_file": "paypal\\/class-wc-gateway-paypal.php",
+                    "error_line": 63,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 233,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Paypal",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 83,
+                            "function": "should_load_paypal_standard",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "294": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Paypal::$identity_token is deprecated",
+                    "error_file": "paypal\\/class-wc-gateway-paypal.php",
+                    "error_line": 64,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 233,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Paypal",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 83,
+                            "function": "should_load_paypal_standard",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "295": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_BACS::$instructions is deprecated",
+                    "error_file": "bacs\\/class-wc-gateway-bacs.php",
+                    "error_line": 49,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_BACS",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "296": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_BACS::$account_details is deprecated",
+                    "error_file": "bacs\\/class-wc-gateway-bacs.php",
+                    "error_line": 52,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_BACS",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "297": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_Cheque::$instructions is deprecated",
+                    "error_file": "cheque\\/class-wc-gateway-cheque.php",
+                    "error_line": 41,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_Cheque",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "298": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_COD::$instructions is deprecated",
+                    "error_file": "cod\\/class-wc-gateway-cod.php",
+                    "error_line": 40,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_COD",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "299": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_COD::$enable_for_methods is deprecated",
+                    "error_file": "cod\\/class-wc-gateway-cod.php",
+                    "error_line": 41,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_COD",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "300": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property WC_Gateway_COD::$enable_for_virtual is deprecated",
+                    "error_file": "cod\\/class-wc-gateway-cod.php",
+                    "error_line": 42,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 97,
+                            "function": "__construct",
+                            "class": "WC_Gateway_COD",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 70,
+                            "function": "init",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-payment-gateways.php",
+                            "line": 43,
+                            "function": "__construct",
+                            "class": "WC_Payment_Gateways",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 932,
+                            "function": "instance",
+                            "class": "WC_Payment_Gateways",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-woocommerce.php",
+                            "line": 174,
+                            "function": "payment_gateways",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 93,
+                            "function": "__get",
+                            "class": "WooCommerce",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Payments.php",
+                            "line": 71,
+                            "function": "has_gateways",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Payments",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "301": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "302": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "303": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "304": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "305": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "306": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/OrRuleProcessor.php",
+                            "line": 23,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/GetRuleProcessor.php",
+                            "line": 32,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/RuleEvaluator.php",
+                            "line": 70,
+                            "function": "get_processor",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\GetRuleProcessor",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 27,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "307": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor::$rule_evaluator is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/OrRuleProcessor.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/GetRuleProcessor.php",
+                            "line": 32,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/RuleEvaluator.php",
+                            "line": 70,
+                            "function": "get_processor",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\GetRuleProcessor",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 27,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "308": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "309": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "310": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "311": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "312": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "313": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "314": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "315": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "316": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/OrRuleProcessor.php",
+                            "line": 23,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/GetRuleProcessor.php",
+                            "line": 32,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/RuleEvaluator.php",
+                            "line": 70,
+                            "function": "get_processor",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\GetRuleProcessor",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 27,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "317": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor::$rule_evaluator is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/OrRuleProcessor.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/GetRuleProcessor.php",
+                            "line": 32,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/RuleEvaluator.php",
+                            "line": 70,
+                            "function": "get_processor",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\GetRuleProcessor",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 27,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "318": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "319": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "320": {
+                    "activated_alongside": "",
+                    "context": "\\/my-account\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated",
+                    "error_file": "RemoteInboxNotifications\\/RuleEvaluator.php",
+                    "error_line": 22,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/EvaluateExtension.php",
+                            "line": 24,
+                            "function": "__construct",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 45,
+                            "function": "evaluate",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\EvaluateExtension",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 82,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 301,
+                            "function": "array_filter"
                         }
                     ],
                     "db_error": ""

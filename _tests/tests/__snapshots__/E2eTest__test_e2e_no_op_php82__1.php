@@ -1208,379 +1208,379 @@
         {
             "debug_log": [
                 {
-                    "count": "3179",
+                    "count": "3177",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostToOrderTableMigrator::$table_names is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Database\\/Migrations\\/CustomOrderTable\\/PostToOrderTableMigrator.php on line 25"
                 },
                 {
-                    "count": "3179",
+                    "count": "3177",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostToOrderAddressTableMigrator::$table_names is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Database\\/Migrations\\/CustomOrderTable\\/PostToOrderAddressTableMigrator.php on line 42"
                 },
                 {
-                    "count": "3179",
+                    "count": "3177",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostToOrderOpTableMigrator::$table_names is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Database\\/Migrations\\/CustomOrderTable\\/PostToOrderOpTableMigrator.php on line 26"
                 },
                 {
-                    "count": "3179",
+                    "count": "3177",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Database\\\\Migrations\\\\CustomOrderTable\\\\PostMetaToOrderMetaMigrator::$table_names is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Database\\/Migrations\\/CustomOrderTable\\/PostMetaToOrderMetaMigrator.php on line 43"
                 },
                 {
-                    "count": "2804",
+                    "count": "2805",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Gateway_Paypal::$testmode is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/gateways\\/paypal\\/class-wc-gateway-paypal.php on line 60"
                 },
                 {
-                    "count": "2804",
+                    "count": "2805",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Gateway_Paypal::$debug is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/gateways\\/paypal\\/class-wc-gateway-paypal.php on line 61"
                 },
                 {
-                    "count": "2804",
+                    "count": "2805",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Gateway_Paypal::$email is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/gateways\\/paypal\\/class-wc-gateway-paypal.php on line 62"
                 },
                 {
-                    "count": "2804",
+                    "count": "2805",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Gateway_Paypal::$receiver_email is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/gateways\\/paypal\\/class-wc-gateway-paypal.php on line 63"
                 },
                 {
-                    "count": "2804",
+                    "count": "2805",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Gateway_Paypal::$identity_token is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/gateways\\/paypal\\/class-wc-gateway-paypal.php on line 64"
                 },
                 {
-                    "count": "956",
+                    "count": "953",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Countries::$countries is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-countries.php on line 51"
                 },
                 {
-                    "count": "610",
+                    "count": "606",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Cart::$coupon_discount_totals is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/legacy\\/class-wc-legacy-cart.php on line 266"
                 },
                 {
-                    "count": "610",
+                    "count": "606",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Cart::$coupon_discount_tax_totals is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/legacy\\/class-wc-legacy-cart.php on line 266"
                 },
                 {
-                    "count": "2540",
+                    "count": "2542",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Email_New_Order::$email_type is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/emails\\/class-wc-email.php on line 254"
                 },
                 {
-                    "count": "2540",
+                    "count": "2542",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Email_Cancelled_Order::$email_type is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/emails\\/class-wc-email.php on line 254"
                 },
                 {
-                    "count": "2540",
+                    "count": "2542",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Email_Failed_Order::$email_type is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/emails\\/class-wc-email.php on line 254"
                 },
                 {
-                    "count": "2540",
+                    "count": "2542",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Email_Customer_On_Hold_Order::$email_type is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/emails\\/class-wc-email.php on line 254"
                 },
                 {
-                    "count": "2540",
+                    "count": "2542",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Email_Customer_Processing_Order::$email_type is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/emails\\/class-wc-email.php on line 254"
                 },
                 {
-                    "count": "2540",
+                    "count": "2542",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Email_Customer_Completed_Order::$email_type is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/emails\\/class-wc-email.php on line 254"
                 },
                 {
-                    "count": "2540",
+                    "count": "2542",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Email_Customer_Refunded_Order::$email_type is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/emails\\/class-wc-email.php on line 254"
                 },
                 {
-                    "count": "2540",
+                    "count": "2542",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Email_Customer_Invoice::$email_type is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/emails\\/class-wc-email.php on line 254"
                 },
                 {
-                    "count": "2540",
+                    "count": "2542",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Email_Customer_Note::$email_type is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/emails\\/class-wc-email.php on line 254"
                 },
                 {
-                    "count": "2540",
+                    "count": "2542",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Email_Customer_Reset_Password::$email_type is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/emails\\/class-wc-email.php on line 254"
                 },
                 {
-                    "count": "2540",
+                    "count": "2542",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Email_Customer_New_Account::$email_type is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/emails\\/class-wc-email.php on line 254"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Features is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Notes is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\NoteActions is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Coupons is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Data is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\DataCountries is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\DataDownloadIPs is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Experiments is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Marketing is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingOverview is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingRecommendations is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingChannels is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingCampaigns is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MarketingCampaignTypes is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Orders is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\PaymentGatewaySuggestions is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Products is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductAttributes is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductAttributeTerms is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductCategories is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductVariations is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductReviews is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ProductsLowInStock is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\SettingOptions is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Themes is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Plugins is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingFreeExtensions is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingProductTypes is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingProfile is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingTasks is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\OnboardingThemes is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\NavigationFavorites is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Taxes is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\MobileAppMagicLink is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\ShippingPartnerSuggestions is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Customers is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Leaderboards is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Import\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Export\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Products\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Variations\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Products\\\\Stats\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Variations\\\\Stats\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Revenue\\\\Stats\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Orders\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Orders\\\\Stats\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Categories\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Taxes\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Taxes\\\\Stats\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Coupons\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Coupons\\\\Stats\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Stock\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Stock\\\\Stats\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Downloads\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Downloads\\\\Stats\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Customers\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Customers\\\\Stats\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "2506",
+                    "count": "2508",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\PerformanceIndicators\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "4774",
+                    "count": "4778",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\StoreApi\\\\Schemas\\\\V1\\\\CheckoutSchema::$image_attachment_schema is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/StoreApi\\/Schemas\\/V1\\/CheckoutSchema.php on line 51"
                 },
                 {
-                    "count": "2803",
+                    "count": "2804",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Gateway_BACS::$instructions is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/gateways\\/bacs\\/class-wc-gateway-bacs.php on line 49"
                 },
                 {
-                    "count": "2803",
+                    "count": "2804",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Gateway_BACS::$account_details is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/gateways\\/bacs\\/class-wc-gateway-bacs.php on line 52"
                 },
                 {
-                    "count": "2803",
+                    "count": "2804",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Gateway_Cheque::$instructions is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/gateways\\/cheque\\/class-wc-gateway-cheque.php on line 41"
                 },
                 {
-                    "count": "2803",
+                    "count": "2804",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Gateway_COD::$instructions is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/gateways\\/cod\\/class-wc-gateway-cod.php on line 40"
                 },
                 {
-                    "count": "2803",
+                    "count": "2804",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Gateway_COD::$enable_for_methods is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/gateways\\/cod\\/class-wc-gateway-cod.php on line 41"
                 },
                 {
-                    "count": "2803",
+                    "count": "2804",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Gateway_COD::$enable_for_virtual is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/gateways\\/cod\\/class-wc-gateway-cod.php on line 42"
                 },
                 {
-                    "count": "598",
+                    "count": "597",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Shipping_Flat_Rate::$cost is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/flat-rate\\/class-wc-shipping-flat-rate.php on line 50"
                 },
                 {
-                    "count": "598",
+                    "count": "597",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Shipping_Flat_Rate::$type is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/flat-rate\\/class-wc-shipping-flat-rate.php on line 51"
                 },
                 {
-                    "count": "1118",
+                    "count": "1081",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Shipping_Free_Shipping::$ignore_discounts is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/free-shipping\\/class-wc-shipping-free-shipping.php on line 70"
                 },
                 {
-                    "count": "604",
+                    "count": "603",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Shipping_Local_Pickup::$cost is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/local-pickup\\/class-wc-shipping-local-pickup.php on line 53"
                 },
                 {
@@ -1588,11 +1588,11 @@
                     "message": "PHP Deprecated: Automatic conversion of false to array is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/DataSourcePoller.php on line 138"
                 },
                 {
-                    "count": "8901",
+                    "count": "8953",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\RuleEvaluator::$get_rule_processor is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/RuleEvaluator.php on line 22"
                 },
                 {
-                    "count": "5705",
+                    "count": "5772",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrRuleProcessor::$rule_evaluator is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/OrRuleProcessor.php on line 22"
                 },
                 {
@@ -1608,7 +1608,7 @@
                     "message": "PHP Deprecated: Creation of dynamic property WC_Countries::$states is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-countries.php on line 169"
                 },
                 {
-                    "count": "252",
+                    "count": "251",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Customers\\\\DataStore::$report_columns is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Reports\\/Customers\\/DataStore.php on line 64"
                 },
                 {
@@ -1628,32 +1628,16 @@
                     "message": "PHP Deprecated: round(): Passing null to parameter #1 ($num) of type int|float is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/PageController.php on line 461"
                 },
                 {
-                    "count": "51",
+                    "count": "52",
                     "message": "PHP Deprecated: explode(): Passing null to parameter #2 ($string) of type string is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Options.php on line 72"
                 },
                 {
-                    "count": "49",
+                    "count": "44",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\NotRuleProcessor::$rule_evaluator is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/NotRuleProcessor.php on line 20"
                 },
                 {
-                    "count": "48",
+                    "count": "43",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\PluginsActivatedRuleProcessor::$plugins_provider is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/PluginsActivatedRuleProcessor.php on line 22"
-                },
-                {
-                    "count": "339",
-                    "message": "PHP Deprecated: Creation of dynamic property WC_Countries::$continents is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-countries.php on line 78"
-                },
-                {
-                    "count": "553",
-                    "message": "PHP Deprecated: Creation of dynamic property WC_Shipping_Free_Shipping::$method_order is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping-zone.php on line 191"
-                },
-                {
-                    "count": "553",
-                    "message": "PHP Deprecated: Creation of dynamic property WC_Shipping_Free_Shipping::$has_settings is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping-zone.php on line 193"
-                },
-                {
-                    "count": "553",
-                    "message": "PHP Deprecated: Creation of dynamic property WC_Shipping_Free_Shipping::$settings_html is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping-zone.php on line 194"
                 },
                 {
                     "count": "66",
@@ -1680,15 +1664,15 @@
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\RemoteInboxNotifications\\\\OrderCountRuleProcessor::$orders_provider is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/RemoteInboxNotifications\\/OrderCountRuleProcessor.php on line 20"
                 },
                 {
-                    "count": "119",
+                    "count": "120",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Orders\\\\Stats\\\\DataStore::$report_columns is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Reports\\/Orders\\/Stats\\/DataStore.php on line 95"
                 },
                 {
-                    "count": "39",
+                    "count": "40",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Products\\\\Stats\\\\DataStore::$report_columns is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Reports\\/Products\\/Stats\\/DataStore.php on line 55"
                 },
                 {
-                    "count": "37",
+                    "count": "38",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Variations\\\\Stats\\\\DataStore::$report_columns is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Reports\\/Variations\\/Stats\\/DataStore.php on line 51"
                 },
                 {
@@ -1718,6 +1702,22 @@
                 {
                     "count": "1",
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Downloads\\\\DataStore::$report_columns is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Reports\\/Downloads\\/DataStore.php on line 62"
+                },
+                {
+                    "count": "303",
+                    "message": "PHP Deprecated: Creation of dynamic property WC_Countries::$continents is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-countries.php on line 78"
+                },
+                {
+                    "count": "517",
+                    "message": "PHP Deprecated: Creation of dynamic property WC_Shipping_Free_Shipping::$method_order is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping-zone.php on line 191"
+                },
+                {
+                    "count": "517",
+                    "message": "PHP Deprecated: Creation of dynamic property WC_Shipping_Free_Shipping::$has_settings is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping-zone.php on line 193"
+                },
+                {
+                    "count": "517",
+                    "message": "PHP Deprecated: Creation of dynamic property WC_Shipping_Free_Shipping::$settings_html is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-shipping-zone.php on line 194"
                 },
                 {
                     "count": "4",
@@ -1754,10 +1754,6 @@
                 {
                     "count": "21",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Order::$refunds is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/class-wc-order.php on line 1999"
-                },
-                {
-                    "count": "1",
-                    "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\Customers\\\\Stats\\\\DataStore::$report_columns is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Reports\\/Customers\\/Stats\\/DataStore.php on line 47"
                 },
                 {
                     "count": "23",

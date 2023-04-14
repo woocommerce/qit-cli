@@ -26,7 +26,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "6 Errors Detected. (0 Fatal, 0 Warnings, 6 Notices)",
+            "test_summary": "7 Errors Detected. (0 Fatal, 0 Warnings, 7 Notices)",
             "debug_log": "",
             "version": "Zip",
             "test_result_json_extracted": "{EXTRACTED}"
@@ -37,19 +37,19 @@
                     "total_extensions": "0",
                     "extensions_with_errors": {
                         "": {
-                            "\\/": 2,
+                            "\\/": 3,
                             "\\/cart\\/": 2,
                             "\\/my-account\\/": 2
                         }
                     },
                     "error_totals": {
                         "fatal": 0,
-                        "notice": 6,
+                        "notice": 7,
                         "warning": 0,
-                        "E_DEPRECATED": 6
+                        "E_DEPRECATED": 7
                     },
-                    "summary": "6 Errors Detected. (0 Fatal, 0 Warnings, 6 Notices)",
-                    "error_count": 6,
+                    "summary": "7 Errors Detected. (0 Fatal, 0 Warnings, 7 Notices)",
+                    "error_count": 7,
                     "count_extensions_with_errors": 1
                 },
                 "0": {
@@ -82,7 +82,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 617,
+                            "line": 623,
                             "function": "do_action"
                         },
                         {
@@ -152,7 +152,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1332,
+                            "line": 1334,
                             "function": "main",
                             "class": "WP",
                             "type": "->"
@@ -167,6 +167,65 @@
                 },
                 "2": {
                     "activated_alongside": "",
+                    "context": "\\/",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "Automatic conversion of false to array is deprecated",
+                    "error_file": "Admin\\/DataSourcePoller.php",
+                    "error_line": 138,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/DataSourcePoller.php",
+                            "line": 112,
+                            "function": "read_specs_from_data_sources",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\DataSourcePoller",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 72,
+                            "function": "get_specs_from_data_sources",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\DataSourcePoller",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/RemoteFreeExtensions\\/Init.php",
+                            "line": 33,
+                            "function": "get_specs",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 84,
+                            "function": "get_extensions",
+                            "class": "Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\RemoteFreeExtensions\\\\Init",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/Tasks\\/Marketing.php",
+                            "line": 73,
+                            "function": "get_plugins",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/OnboardingTasks\\/TaskList.php",
+                            "line": 304,
+                            "function": "can_view",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\Tasks\\\\Marketing",
+                            "type": "->"
+                        },
+                        {
+                            "function": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\{closure}",
+                            "class": "Automattic\\\\WooCommerce\\\\Admin\\\\Features\\\\OnboardingTasks\\\\TaskList",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
+                },
+                "3": {
+                    "activated_alongside": "",
                     "context": "\\/cart\\/",
                     "is_fatal": "No",
                     "error_type": "E_DEPRECATED",
@@ -195,7 +254,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 617,
+                            "line": 623,
                             "function": "do_action"
                         },
                         {
@@ -225,7 +284,7 @@
                     ],
                     "db_error": ""
                 },
-                "3": {
+                "4": {
                     "activated_alongside": "",
                     "context": "\\/cart\\/",
                     "is_fatal": "No",
@@ -265,7 +324,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1332,
+                            "line": 1334,
                             "function": "main",
                             "class": "WP",
                             "type": "->"
@@ -278,7 +337,7 @@
                     ],
                     "db_error": ""
                 },
-                "4": {
+                "5": {
                     "activated_alongside": "",
                     "context": "\\/my-account\\/",
                     "is_fatal": "No",
@@ -308,7 +367,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 617,
+                            "line": 623,
                             "function": "do_action"
                         },
                         {
@@ -338,7 +397,7 @@
                     ],
                     "db_error": ""
                 },
-                "5": {
+                "6": {
                     "activated_alongside": "",
                     "context": "\\/my-account\\/",
                     "is_fatal": "No",
@@ -378,7 +437,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1332,
+                            "line": 1334,
                             "function": "main",
                             "class": "WP",
                             "type": "->"

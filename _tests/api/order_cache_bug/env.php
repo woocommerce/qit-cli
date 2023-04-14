@@ -1,7 +1,7 @@
 <?php
 return [
 	'php'      => '7.4',
-	'wp'       => 'latest',
-	'woo'      => '7.6.0-rc.2',
+	'wp'       => '6.2',
+	'woo'      => '7.6.0',
 	'features' => 'hpos',
 ];
