@@ -4,6 +4,7 @@ namespace QIT_CLI;
 
 use QIT_CLI\Exceptions\DoingAutocompleteException;
 use QIT_CLI\Exceptions\NetworkErrorException;
+use QIT_CLI\IO\Output;
 
 class RequestBuilder {
 	/** @var string $url */
@@ -99,6 +100,13 @@ class RequestBuilder {
 		// Early bail: Do not make remote requests when doing completion.
 		if ( App::getVar( 'doing_autocompletion' ) ) {
 			throw new DoingAutocompleteException();
+		}
+
+		// Allow to wait from the outside to avoid 429 on parallel tests.
+		if ( getenv( 'WAIT_BEFORE_REQUEST' ) === 'yes' ) {
+			$to_wait = rand( 0, 3 * 1e6 );
+			usleep( $to_wait );
+			App::make( Output::class )->writeln( sprintf( 'Waiting %d seconds before request...', number_format( $to_wait / 1e6, 2 ) ) );
 		}
 
 		$curl = curl_init();

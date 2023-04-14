@@ -164,12 +164,6 @@ class CreateRunCommands {
 				}
 
 				try {
-					// Allow to wait from the outside to avoid 429 on parallel tests.
-					if ( getenv( 'WAIT_BEFORE_TEST' ) !== false ) {
-						usleep( (int) getenv( 'WAIT_BEFORE_TEST' ) );
-						App::make( Output::class )->writeln( sprintf( 'Waiting %d seconds...', (int) getenv( 'WAIT_BEFORE_TEST' ) / 1000000 ) );
-					}
-					
 					$output->writeln( sprintf( 'Running test...' ) );
 					$json = ( new RequestBuilder( get_manager_url() . "/wp-json/cd/v1/enqueue-{$this->test_type}" ) )
 						->with_method( 'POST' )
