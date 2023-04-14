@@ -11,6 +11,8 @@ jobs:
   qit_self_tests:
     name: QIT Self Tests
     runs-on: ubuntu-20.04
+    env:
+      NO_COLOR: 1
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
