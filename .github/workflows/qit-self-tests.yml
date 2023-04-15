@@ -21,11 +21,8 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
+          tools: none
           php-version: '7.2'
-
-      - name: Composer install
-        working-directory: _tests
-        run: composer install
 
       - name: Enable QIT development mode
         run: ./qit dev
