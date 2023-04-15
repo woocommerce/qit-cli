@@ -2,6 +2,7 @@
 
 use QIT_CLI\App;
 use QIT_CLI\Commands\ConfigDirCommand;
+use QIT_CLI\Commands\CreateMassTestCommands;
 use QIT_CLI\Commands\CreateRunCommands;
 use QIT_CLI\Commands\DevModeCommand;
 use QIT_CLI\Commands\Environment\AddEnvironment;
@@ -172,7 +173,7 @@ if ( Config::is_development_mode() ) {
 
 if ( $has_environment ) {
 	// Dynamically create commands to run tests, based on Schema fetched from Manager REST API.
-	$container->make( CreateRunCommands::class )->register_run_commands( $application );
+	$container->make( CreateRunCommands::class )->register_commands( $application );
 
 	// List tests runs.
 	$application->add( $container->make( ListCommand::class ) );
@@ -185,6 +186,11 @@ if ( $has_environment ) {
 
 	// List the Woo Extensions the user can run tests against.
 	$application->add( $container->make( WooExtensionsCommand::class ) );
+
+	if ( Config::is_development_mode() ) {
+		// Dynamically crete Mass Test run command.
+		$container->make( CreateMassTestCommands::class )->register_commands( $application );
+	}
 }
 
 if ( $container->make( Output::class )->isVerbose() ) {
