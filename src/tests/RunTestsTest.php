@@ -16,7 +16,7 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 		\QIT_CLI_Tests\QITTestCase::setUp();
 
 		$this->application_tester = $this->make_application_tester( static function ( Application $application ) {
-			App::make( CreateRunCommands::class )->register_run_commands( $application );
+			App::make( CreateRunCommands::class )->register_commands( $application );
 		} );
 	}
 

@@ -34,7 +34,7 @@ class CreateMassTestCommands extends DynamicCommandCreator {
 		$command = new class() extends DynamicCommand {
 			public function execute( InputInterface $input, OutputInterface $output ) {
 				try {
-					$options = $this->parse_options( $input, $output );
+					$options = $this->parse_options( $input );
 
 					$output->writeln( sprintf( 'Running mass test...' ) );
 

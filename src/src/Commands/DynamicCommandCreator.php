@@ -5,11 +5,18 @@ namespace QIT_CLI\Commands;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class DynamicCommandCreator {
 	abstract public function register_commands( Application $application ): void;
 
-	protected function add_schema_to_command( Command $command, array $schema ): void {
+	/**
+	 * @param DynamicCommand $command
+	 * @param array<mixed>   $schema
+	 *
+	 * @return void
+	 */
+	protected function add_schema_to_command( DynamicCommand $command, array $schema ): void {
 		if ( ! empty( $schema['description'] ) ) {
 			$command->setDescription( $schema['description'] );
 		}
@@ -35,7 +42,7 @@ abstract class DynamicCommandCreator {
 					$description = '(Optional) ' . $description;
 				}
 
-				if ( $this->output->isVerbose() ) {
+				if ( isset( $this->output ) && $this->output instanceof OutputInterface && $this->output->isVerbose() ) {
 					$schema_to_show = $property_schema;
 					unset( $schema_to_show['description'] );
 					$description = sprintf( '%s (Schema: %s)', $description, json_encode( $schema_to_show ) );

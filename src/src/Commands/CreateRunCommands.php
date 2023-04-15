@@ -92,7 +92,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 
 			public function execute( InputInterface $input, OutputInterface $output ) {
 				try {
-					$options = $this->parse_options( $input, $output );
+					$options = $this->parse_options( $input );
 				} catch ( \Exception $e ) {
 					$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 

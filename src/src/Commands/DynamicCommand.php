@@ -4,7 +4,6 @@ namespace QIT_CLI\Commands;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class DynamicCommand extends Command {
 	/** @var array<mixed> $options_to_send */
@@ -34,7 +33,12 @@ abstract class DynamicCommand extends Command {
 		}
 	}
 
-	protected function parse_options( InputInterface $input, OutputInterface $output ): array {
+	/**
+	 * @param InputInterface $input
+	 *
+	 * @return array<mixed> The options to send.
+	 */
+	protected function parse_options( InputInterface $input ): array {
 		$this->validate_required_options( $input );
 
 		// Filter from the available options, those that we want to send.
