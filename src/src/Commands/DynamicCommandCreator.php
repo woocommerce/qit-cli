@@ -47,7 +47,7 @@ abstract class DynamicCommandCreator {
 					$description = sprintf( '%s (Schema: %s)', $description, json_encode( $schema_to_show ) );
 				}
 
-				// So that we know inside the command that this option should be sent.
+				// So that we know inside the command that this option should be sent to the Manager.
 				$command->add_option_to_send( $property_name );
 
 				$command
