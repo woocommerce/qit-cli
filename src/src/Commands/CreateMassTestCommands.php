@@ -64,7 +64,7 @@ class CreateMassTestCommands extends DynamicCommandCreator {
 				throw new \Exception();
 			}
 		} catch ( \Exception $e ) {
-			App::make( OutputInterface::class )->writeln( '<error>Could not fetch schema from QIT Servers to register Mass Test Run. Please try again later.</error>' );
+			App::make( Output::class )->writeln( '<error>Could not fetch schema from QIT Servers to register Mass Test Run. Please try again later.</error>' );
 
 			return;
 		}
