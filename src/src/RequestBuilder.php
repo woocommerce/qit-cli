@@ -141,8 +141,13 @@ class RequestBuilder {
 				// no-op.
 				break;
 			case 'POST':
+				$json_data                             = json_encode( $this->post_body );
 				$curl_parameters[ CURLOPT_POST ]       = true;
-				$curl_parameters[ CURLOPT_POSTFIELDS ] = $this->post_body;
+				$curl_parameters[ CURLOPT_POSTFIELDS ] = $json_data;
+				$curl_parameters[ CURLOPT_HTTPHEADER ] = [
+					'Content-Type: application/json',
+					'Content-Length: ' . strlen( $json_data ),
+				];
 				break;
 			default:
 				$curl_parameters[ CURLOPT_CUSTOMREQUEST ] = $this->method;
