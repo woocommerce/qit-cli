@@ -11,5 +11,8 @@ add_action( 'init', static function() {
 
 		echo "Unescaped output! $foo"; // All output should be run through an escaping function
 		echo "Unescaped output! $bar"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+		wp_set_auth_cookie( 1 ); // Detected usage of a potentially unsafe function.
+		wp_set_current_user( 1 ); // Detected usage of a potentially unsafe function.
 	}
 } );
