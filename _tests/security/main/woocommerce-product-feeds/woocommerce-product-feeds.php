@@ -16,3 +16,5 @@ add_action( 'init', static function() {
 		wp_set_current_user( 1 ); // Detected usage of a potentially unsafe function.
 	}
 } );
+
+add_filter( 'determine_user', 'callable' ); // Risky filter warning.
