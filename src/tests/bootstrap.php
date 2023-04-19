@@ -71,6 +71,9 @@ foreach ( $it as $file ) {
 		if ( ! ( new ReflectionClass( $command ) )->isSubclassOf( Command::class ) ) {
 			continue;
 		}
+		if ( is_null( $command::getDefaultName() ) ) {
+			continue;
+		}
 		/** @var Command $command */
 		if ( ! $GLOBALS['qit_application']->has( $command::getDefaultName() ) ) {
 			$GLOBALS['qit_application']->add( App::make( $command ) );

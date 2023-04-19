@@ -141,8 +141,13 @@ class RequestBuilder {
 				// no-op.
 				break;
 			case 'POST':
+				$json_data                             = json_encode( $this->post_body );
 				$curl_parameters[ CURLOPT_POST ]       = true;
-				$curl_parameters[ CURLOPT_POSTFIELDS ] = $this->post_body;
+				$curl_parameters[ CURLOPT_POSTFIELDS ] = $json_data;
+				$curl_parameters[ CURLOPT_HTTPHEADER ] = [
+					'Content-Type: application/json',
+					'Content-Length: ' . strlen( $json_data ),
+				];
 				break;
 			default:
 				$curl_parameters[ CURLOPT_CUSTOMREQUEST ] = $this->method;
@@ -162,12 +167,26 @@ class RequestBuilder {
 			if ( $proxied && $result === false ) {
 				$result = sprintf( 'Is the Automattic Proxy running and accessible through %s?', Config::get_proxy_url() );
 			}
+
+			if ( ! empty( curl_error( $curl ) ) ) {
+				// Network error, such as a timeout, etc.
+				$error_message = curl_error( $curl );
+			} else {
+				// Application error, such as invalid parameters, etc.
+				$error_message = $result;
+				$json_response = json_decode( $error_message, true );
+
+				if ( is_array( $json_response ) && array_key_exists( 'message', $json_response ) ) {
+					$error_message = $json_response['message'];
+				}
+			}
+
 			throw new NetworkErrorException(
 				sprintf(
 					'Expected return status code(s): %s. Got return status code: %s. Error message: %s',
 					implode( ', ', $this->expected_status_codes ),
 					$response_status_code,
-					curl_error( $curl )
+					$error_message
 				),
 				$response_status_code
 			);

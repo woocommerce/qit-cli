@@ -19,7 +19,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
-class CreateRunCommands {
+class CreateRunCommands extends DynamicCommandCreator {
 	/** @var Environment $environment */
 	protected $environment;
 
@@ -43,7 +43,7 @@ class CreateRunCommands {
 		$this->woo_extensions_list = $woo_extensions_list;
 	}
 
-	public function register_run_commands( Application $application ): void {
+	public function register_commands( Application $application ): void {
 		foreach ( $this->environment->get_cache()->get_manager_sync_data( 'test_types' ) as $test_type ) {
 			$this->register_command_by_schema( $application, $test_type, $this->environment->get_cache()->get_manager_sync_data( 'schemas' )[ $test_type ] );
 		}
@@ -69,7 +69,7 @@ class CreateRunCommands {
 	 * @return void
 	 */
 	protected function register_command_by_schema( Application $application, string $test_type, array $schema ): void {
-		$command = new class( $test_type, $this->auth, $this->upload, $this->woo_extensions_list ) extends Command {
+		$command = new class( $test_type, $this->auth, $this->upload, $this->woo_extensions_list ) extends DynamicCommand {
 			/** @var Auth $auth */
 			protected $auth;
 
@@ -78,9 +78,6 @@ class CreateRunCommands {
 
 			/** @var string $test_type */
 			protected $test_type;
-
-			/** @var array<mixed> $options_to_send */
-			protected $options_to_send = [];
 
 			/** @var Upload $upload */
 			protected $upload;
@@ -93,46 +90,14 @@ class CreateRunCommands {
 				parent::__construct();
 			}
 
-			public function add_option_to_send( string $option_name ): void {
-				$this->options_to_send[ $option_name ] = '';
-			}
-
-			/**
-			 * Symfony considers options as optional, and only enforces
-			 * the "required" if the option is used but no value is passed.
-			 *
-			 * This method changes this behavior to ensure that a required option
-			 * needs to be passed, otherwise the command is not executed.
-			 *
-			 * @throws \InvalidArgumentException When a required option is empty.
-			 */
-			protected function validate_required_options( InputInterface $input ): void {
-				$options = $this->getDefinition()->getOptions();
-				foreach ( $options as $option ) {
-					$name  = $option->getName();
-					$value = $input->getOption( $name );
-					if ( $option->isValueRequired() && empty( $value ) ) {
-						throw new \InvalidArgumentException( sprintf( 'The required option "%s" is not set. Run the command with --help for more information.', $name ) );
-					}
-				}
-			}
-
 			public function execute( InputInterface $input, OutputInterface $output ) {
 				try {
-					$this->validate_required_options( $input );
+					$options = $this->parse_options( $input );
 				} catch ( \Exception $e ) {
 					$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
 					return Command::FAILURE;
 				}
-
-				// Filter from the available options, those that we want to send.
-				$options = array_intersect_key( $input->getOptions(), $this->options_to_send );
-
-				// Filter empty options without a default.
-				$options = array_filter( $options, static function ( $v ) {
-					return ! is_null( $v );
-				} );
 
 				// Woo Extension ID / Slug.
 				if ( is_numeric( $input->getArgument( 'woo_extension' ) ) ) {
@@ -273,50 +238,7 @@ class CreateRunCommands {
 		$command
 			->setName( "run:$test_type" );
 
-		if ( ! empty( $schema['description'] ) ) {
-			$command->setDescription( $schema['description'] );
-		}
-
-		if ( ! empty( $schema['properties'] ) && is_array( $schema['properties'] ) ) {
-			foreach ( $schema['properties'] as $property_name => $property_schema ) {
-				$ignore = [ 'client', 'event', 'woo_id' ];
-
-				if ( in_array( $property_name, $ignore, true ) ) {
-					continue;
-				}
-
-				if ( isset( $property_schema['required'] ) && $property_schema['required'] ) {
-					$required = InputOption::VALUE_REQUIRED;
-				} else {
-					$required = InputOption::VALUE_OPTIONAL;
-				}
-
-				$description = $property_schema['description'] ?? '';
-				$default     = $property_schema['default'] ?? null;
-
-				if ( $required === InputOption::VALUE_OPTIONAL && ! empty( $description ) ) {
-					$description = '(Optional) ' . $description;
-				}
-
-				if ( $this->output->isVerbose() ) {
-					$schema_to_show = $property_schema;
-					unset( $schema_to_show['description'] );
-					$description = sprintf( '%s (Schema: %s)', $description, json_encode( $schema_to_show ) );
-				}
-
-				// So that we know inside the command that this option should be sent.
-				$command->add_option_to_send( $property_name );
-
-				$command
-					->addOption(
-						$property_name,
-						null,
-						$required,
-						$description,
-						$default
-					);
-			}
-		}
+		$this->add_schema_to_command( $command, $schema );
 
 		// Extension slug/ID.
 		$command->addArgument(
