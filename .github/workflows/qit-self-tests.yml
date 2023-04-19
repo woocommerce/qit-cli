@@ -1,4 +1,4 @@
-name: QIT E2E - Security Test
+name: QIT Self-Tests
 on:
   # Every day at 9pm UTC
   schedule:
@@ -7,33 +7,39 @@ on:
   workflow_dispatch:
   # On push to trunk
   push:
-    branches:
-      - trunk
 jobs:
-  qit_security:
-    name: QIT Security
+  qit_self_tests:
+    name: QIT Self Tests
     runs-on: ubuntu-20.04
+    env:
+      NO_COLOR: 1
+      QIT_WAIT_BEFORE_REQUEST: yes
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '7.2'
+
       - name: Composer install
         working-directory: _tests
         run: composer install
+
       - name: Enable QIT development mode
         run: ./qit dev
+
       - name: Connect to QIT Staging
         run: ./qit env:add --environment=staging --manager_url=https://stagingcompatibilitydashboard.wpcomstaging.com --qit_secret=${{ secrets.QIT_STAGING_SECRET }}
-      - name: Create Zip.
-        working-directory: _tests/security
-        run: docker run --rm --user $(id -u):$(id -g) -v "$(pwd):/app" -w /app joshkeegan/zip:latest sh -c "zip -r woocommerce-product-feeds.zip woocommerce-product-feeds"
-      - name: Run Security Test.
-        id: run-security-test
-        run: ./qit run:security woocommerce-product-feeds --zip=_tests/security/woocommerce-product-feeds.zip --wait --ignore-fail --timeout=300 --json > _tests/security.txt
-      - name: Check Results
-        id: check-security-test
+
+      - uses: actions/cache@v3
+        id: cache-composer
+        with:
+          path: $(./qit qit:dir)
+          key: qit-config
+
+      - name: Run Self-Tests
+        id: run-self-tests
         working-directory: _tests
-        run: php ./vendor/bin/phpunit tests/SecurityTest.php
+        run: php ./QITSelfTests.php run

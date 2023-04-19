@@ -4,8 +4,9 @@ namespace QIT_CLI;
 
 use QIT_CLI\Exceptions\DoingAutocompleteException;
 use QIT_CLI\Exceptions\NetworkErrorException;
+use QIT_CLI\IO\Output;
 
-class RequestBuilder implements \JsonSerializable {
+class RequestBuilder {
 	/** @var string $url */
 	protected $url;
 
@@ -101,6 +102,14 @@ class RequestBuilder implements \JsonSerializable {
 			throw new DoingAutocompleteException();
 		}
 
+		// Allow to wait from the outside to avoid 429 on parallel tests.
+		if ( getenv( 'QIT_WAIT_BEFORE_REQUEST' ) === 'yes' ) {
+			// Wait between 1 and 10 seconds.
+			$to_wait = rand( intval( 1 * 1e6 ), intval( 10 * 1e6 ) );
+			usleep( $to_wait );
+			App::make( Output::class )->writeln( sprintf( 'Waiting %d seconds before request...', number_format( $to_wait / 1e6, 2 ) ) );
+		}
+
 		$curl = curl_init();
 
 		$curl_parameters = [
@@ -180,9 +189,5 @@ class RequestBuilder implements \JsonSerializable {
 			'curl_opts'             => $this->curl_opts,
 			'expected_status_codes' => $this->expected_status_codes,
 		];
-	}
-
-	public function jsonSerialize() {
-		return $this->to_array();
 	}
 }
