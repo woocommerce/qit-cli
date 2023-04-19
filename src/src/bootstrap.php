@@ -139,7 +139,7 @@ if ( Config::needs_onboarding() ) {
 
 		$onboarding = $container->make( OnboardingCommand::class );
 		$onboarding->setApplication( $application );
-		exit( $onboarding->run( $container->make( Input::class ), $container->make( Output::class ) ) );
+		exit( $onboarding->run( $container->make( Input::class ), $container->make( Output::class ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	} catch ( \Exception $e ) {
 		App::make( Output::class )->writeln( $e->getMessage() );
 		exit( 1 );

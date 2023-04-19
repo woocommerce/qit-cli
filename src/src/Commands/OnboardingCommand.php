@@ -33,17 +33,17 @@ class OnboardingCommand extends Command {
 Documentation: https://woocommerce.github.io/qit-documentation/
 Running Tests: https://woocommerce.github.io/qit-documentation/#/cli/running-tests
 SECTION
-);
+		);
 
-		$io->writeln("<comment>Examples:</comment>");
+		$io->writeln( '<comment>Examples:</comment>' );
 
-		$io->writeln("\n<info>Running a Security Test:</info>");
-		$io->writeln('./qit run:security automatewoo');
+		$io->writeln( "\n<info>Running a Security Test:</info>" );
+		$io->writeln( './qit run:security automatewoo' );
 
-		$io->writeln("\n<info>Running a Security Test against a development build:</info>");
-		$io->writeln('./qit run:security automatewoo --zip=automatewoo.zip');
+		$io->writeln( "\n<info>Running a Security Test against a development build:</info>" );
+		$io->writeln( './qit run:security automatewoo --zip=automatewoo.zip' );
 
-		$io->writeln("\n<info>Running a WooCommerce Core E2E test with configurable options against a dev build:</info>");
+		$io->writeln( "\n<info>Running a WooCommerce Core E2E test with configurable options against a dev build:</info>" );
 		$io->writeln(<<<COMMAND
 ./qit run:e2e automatewoo \
 	--woocommerce_version=7.6.0-rc.2 \
@@ -55,12 +55,12 @@ SECTION
 	--zip=automatewoo.zip
 
 COMMAND
-);
+		);
 
 		$io->writeln( sprintf( '<comment>%s</comment>', str_repeat( '-', ( new Terminal() )->getWidth() ) ) );
 
 		$spinner = new SpinnerProgress( $output, 100 );
-		$spinner->setMessage( '<comment>Connecting to QIT servers...</comment>');
+		$spinner->set_message( '<comment>Connecting to QIT servers...</comment>' );
 		$spinner->start();
 
 		try {
@@ -73,14 +73,14 @@ COMMAND
 
 		$spinner->finish();
 
-		$questionHelper = $this->getHelper( 'question' );
+		$question_helper = $this->getHelper( 'question' );
 
 		if ( $is_proxied ) {
 			$io->section( 'Onboarding as Automattician (Connected to Proxy)' );
 
 			$question = new Question( $proxied_instructions );
 			$question->setHidden( true );
-			$answer = $questionHelper->ask( $input, $output, $question );
+			$answer = $question_helper->ask( $input, $output, $question );
 
 			$command = $this->getApplication()->find( AddEnvironment::getDefaultName() );
 
@@ -102,10 +102,11 @@ COMMAND
 				return $command->run( new ArrayInput( [] ), $output );
 			}
 		}
-
-		return Command::SUCCESS;
 	}
 
+	/**
+	 * @return array{bool, string} Whether it's a proxied request, and instructions if so.
+	 */
 	protected function is_proxied(): array {
 		try {
 			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/proxied' ) )

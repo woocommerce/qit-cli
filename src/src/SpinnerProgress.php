@@ -16,30 +16,36 @@ class SpinnerProgress {
 	/**
 	 * @var ProgressBar
 	 */
-	private $progressBar;
+	private $progress_bar;
 	/**
 	 * @var int
 	 */
 	private $step;
 
 	public function __construct( OutputInterface $output, int $max = 0 ) {
-		$this->progressBar = new ProgressBar( $output->section(), $max );
-		$this->progressBar->setBarCharacter( '✔' );
-		$this->progressBar->setFormat( '%bar%  %message%' );
-		$this->progressBar->setBarWidth( 1 );
-		$this->progressBar->setRedrawFrequency( 31 );
+		if ( method_exists( $output, 'section' ) ) {
+			$progress_bar_output = $output->section();
+		} else {
+			$progress_bar_output = $output;
+		}
+
+		$this->progress_bar = new ProgressBar( $progress_bar_output, $max );
+		$this->progress_bar->setBarCharacter( '✔' );
+		$this->progress_bar->setFormat( '%bar%  %message%' );
+		$this->progress_bar->setBarWidth( 1 );
+		$this->progress_bar->setRedrawFrequency( 31 );
 
 		$this->step = 0;
 	}
 
 	public function advance( int $step = 1 ): void {
 		$this->step += $step;
-		$this->progressBar->setProgressCharacter( self::CHARS[ $this->step % 8 ] );
-		$this->progressBar->advance( $step );
+		$this->progress_bar->setProgressCharacter( self::CHARS[ $this->step % 8 ] );
+		$this->progress_bar->advance( $step );
 	}
 
-	public function setMessage( string $message ): void {
-		$this->progressBar->setMessage( $message, 'message' );
+	public function set_message( string $message ): void {
+		$this->progress_bar->setMessage( $message, 'message' );
 	}
 
 	public function start(): void {
@@ -50,10 +56,10 @@ class SpinnerProgress {
 	}
 
 	public function finish(): void {
-		$this->progressBar->finish();
+		$this->progress_bar->finish();
 	}
 
-	public function getProgressBar(): ProgressBar {
-		return $this->progressBar;
+	public function get_progress_bar(): ProgressBar {
+		return $this->progress_bar;
 	}
 }
