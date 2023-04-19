@@ -59,7 +59,7 @@ COMMAND
 
 		$io->writeln( sprintf( '<comment>%s</comment>', str_repeat( '-', ( new Terminal() )->getWidth() ) ) );
 
-		$output->write( '<info>Connecting to QIT servers... </info>' );
+		$output->write( "\n<comment>Connecting to QIT servers... </comment>" );
 
 		try {
 			[ $is_proxied, $proxied_instructions ] = $this->is_proxied();
@@ -69,7 +69,7 @@ COMMAND
 			return Command::FAILURE;
 		}
 
-		$output->write( '<info>Done.</info>' );
+		$output->write( "<fg=green>✔</>\n" );
 
 		$question_helper = $this->getHelper( 'question' );
 
