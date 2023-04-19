@@ -81,6 +81,8 @@ COMMAND
 
 			$command = $this->getApplication()->find( AddEnvironment::getDefaultName() );
 
+			Config::set_development_mode( true );
+
 			return $command->run( new ArrayInput( [
 				'--environment' => 'production',
 				'--manager_url' => 'https://compatibilitydashboard.wpcomstaging.com/',
