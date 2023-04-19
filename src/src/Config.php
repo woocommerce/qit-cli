@@ -71,6 +71,10 @@ class Config {
 	}
 
 	public static function needs_onboarding(): bool {
+		if ( defined( 'UNIT_TESTS' ) ) {
+			return false;
+		}
+
 		if ( getenv( 'QIT_DISABLE_ONBOARDING' ) === 'yes' ) {
 			return false;
 		}
