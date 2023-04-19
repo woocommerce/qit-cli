@@ -59,9 +59,7 @@ COMMAND
 
 		$io->writeln( sprintf( '<comment>%s</comment>', str_repeat( '-', ( new Terminal() )->getWidth() ) ) );
 
-		$spinner = new SpinnerProgress( $output, 100 );
-		$spinner->set_message( '<comment>Connecting to QIT servers...</comment>' );
-		$spinner->start();
+		$output->write( '<info>Connecting to QIT servers... </info>' );
 
 		try {
 			[ $is_proxied, $proxied_instructions ] = $this->is_proxied();
@@ -71,7 +69,7 @@ COMMAND
 			return Command::FAILURE;
 		}
 
-		$spinner->finish();
+		$output->write( '<info>Done.</info>' );
 
 		$question_helper = $this->getHelper( 'question' );
 
@@ -86,12 +84,12 @@ COMMAND
 
 			return $command->run( new ArrayInput( [
 				'--environment' => 'production',
-				'--manager_url' => 'http://compatibilitydashboard.wpcomstaging.com/',
+				'--manager_url' => 'https://compatibilitydashboard.wpcomstaging.com/',
 				'--qit_secret'  => $answer,
 			] ), $output );
 		} else {
 			if ( $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "\n<question>Are you an Automattic employee? (y/n)</question> ", false ) ) ) {
-				$output->writeln( sprintf( "<error>Please connect to the proxy and run the CLI again. If this error persists, make sure the proxy is accessible through %s, or add a runtime environment variable with the correct address, eg:\nQIT_PROXY_URL={proxy_address} ./qit</error>", Config::get_proxy_url() ) );
+				$io->warning( sprintf( "Please connect to the proxy and run the CLI again. If this error persists, make sure the proxy is accessible through %s, or add a runtime environment variable with the correct address, eg:\nQIT_PROXY_URL={proxy_address} ./qit", Config::get_proxy_url() ) );
 
 				return Command::FAILURE;
 			} else {
