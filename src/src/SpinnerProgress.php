@@ -4,6 +4,7 @@ namespace QIT_CLI;
 
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * This package is ported from https://github.com/icanhazstring/symfony-console-spinner
@@ -22,8 +23,14 @@ class SpinnerProgress {
 	 */
 	private $step;
 
-	public function __construct( ConsoleOutputInterface $output, int $max = 0 ) {
-		$this->progress_bar = new ProgressBar( $output->section(), $max );
+	public function __construct( OutputInterface $output, int $max = 0 ) {
+		if ( $output instanceof ConsoleOutputInterface ) {
+			$progress_bar_output = $output->section();
+		} else {
+			$progress_bar_output = $output;
+		}
+
+		$this->progress_bar = new ProgressBar( $progress_bar_output, $max );
 		$this->progress_bar->setBarCharacter( '✔' );
 		$this->progress_bar->setFormat( '%bar%  %message%' );
 		$this->progress_bar->setBarWidth( 1 );
