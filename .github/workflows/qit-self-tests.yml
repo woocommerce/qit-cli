@@ -39,6 +39,10 @@ jobs:
           path: $(./qit qit:dir)
           key: qit-config
 
+      - name: Skip E2E tests on push
+        run: echo "QIT_SKIP_E2E=yes" >> $GITHUB_ENV
+        if: github.event_name == 'push'
+
       - name: Run Self-Tests
         id: run-self-tests
         working-directory: _tests

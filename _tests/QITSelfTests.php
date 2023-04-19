@@ -46,6 +46,12 @@ try {
 		} );
 	}
 
+	if ( getenv( 'QIT_SKIP_E2E' ) === 'yes' ) {
+		$test_types = array_filter( $test_types, function ( $test_type_path ) {
+			return basename( $test_type_path ) !== 'e2e';
+		} );
+	}
+
 	if ( empty( $test_types ) ) {
 		throw new Exception( 'No test suites found.' );
 	}
