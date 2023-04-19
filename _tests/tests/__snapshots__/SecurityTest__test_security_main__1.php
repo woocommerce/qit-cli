@@ -26,7 +26,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 2 Warnings: 0",
+            "test_summary": "Errors: 2 Warnings: 3",
             "debug_log": "",
             "version": "Zip",
             "test_result_json_extracted": "{EXTRACTED}"
@@ -35,13 +35,13 @@
             "test_result_json": {
                 "totals": {
                     "errors": 2,
-                    "warnings": 0,
+                    "warnings": 3,
                     "fixable": 0
                 },
                 "files": {
                     "\\/home\\/runner\\/work\\/compatibility-dashboard\\/compatibility-dashboard\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
                         "errors": 2,
-                        "warnings": 0,
+                        "warnings": 3,
                         "messages": [
                             {
                                 "message": "Detected usage of a non-sanitized input variable: $_POST[\'foo\']",
@@ -60,6 +60,33 @@
                                 "type": "ERROR",
                                 "line": 12,
                                 "column": 8
+                            },
+                            {
+                                "message": "The use of function wp_set_auth_cookie() is discouraged",
+                                "source": "Generic.PHP.ForbiddenFunctions.Discouraged",
+                                "severity": 5,
+                                "fixable": false,
+                                "type": "WARNING",
+                                "line": 15,
+                                "column": 3
+                            },
+                            {
+                                "message": "The use of function wp_set_current_user() is discouraged",
+                                "source": "Generic.PHP.ForbiddenFunctions.Discouraged",
+                                "severity": 5,
+                                "fixable": false,
+                                "type": "WARNING",
+                                "line": 16,
+                                "column": 3
+                            },
+                            {
+                                "message": "Detected usage of the \\"determine_user\\" filter. Please double-check if this filter is safe and ignore this warning to confirm.",
+                                "source": "QITStandard.PHP.DangerousFilters.RiskyFilterDetected",
+                                "severity": 5,
+                                "fixable": false,
+                                "type": "WARNING",
+                                "line": 20,
+                                "column": 1
                             }
                         ]
                     }
