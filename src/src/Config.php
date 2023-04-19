@@ -71,7 +71,7 @@ class Config {
 	}
 
 	public static function needs_onboarding(): bool {
-		if ( defined( 'UNIT_TESTS' ) ) {
+		if ( defined( 'UNIT_TESTS' ) && UNIT_TESTS ) {
 			return false;
 		}
 
