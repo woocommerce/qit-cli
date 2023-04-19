@@ -56,6 +56,9 @@ class Config {
 	}
 
 	public static function get_proxy_url(): string {
+		if ( ! empty( getenv( 'QIT_PROXY_URL' ) ) ) {
+			return getenv( 'QIT_PROXY_URL' );
+		}
 		return (string) App::make( self::class )->get( 'proxy_url' ) ?: '127.0.0.1:8080';
 	}
 
@@ -65,6 +68,16 @@ class Config {
 
 	public static function get_last_diagnosis(): int {
 		return (int) App::make( self::class )->get( 'last_diagnosis' ) ?: 0;
+	}
+
+	public static function needs_onboarding(): bool {
+		if ( getenv( 'QIT_DISABLE_ONBOARDING' ) === 'yes' ) {
+			return false;
+		}
+
+		clearstatcache();
+
+		return ! file_exists( self::get_qit_dir() . '.qit-config.json' );
 	}
 
 	/**
