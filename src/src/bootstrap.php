@@ -151,6 +151,7 @@ $has_environment = false;
 // Global commands.
 $application->add( $container->make( DevModeCommand::class ) );
 $application->add( $container->make( ConfigDirCommand::class ) );
+$application->add( $container->make( OnboardingCommand::class ) );
 
 // Partner commands.
 $application->add( $container->make( AddPartner::class ) );

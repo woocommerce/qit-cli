@@ -2,7 +2,9 @@
 
 namespace QIT_CLI;
 
+use QIT_CLI\Commands\OnboardingCommand;
 use QIT_CLI\Exceptions\IOException;
+use QIT_CLI\IO\Input;
 
 class Config {
 	/** @var string  */
@@ -77,6 +79,11 @@ class Config {
 
 		if ( getenv( 'QIT_DISABLE_ONBOARDING' ) === 'yes' ) {
 			return false;
+		}
+
+		// Consistent behavior if we are running the onboarding command directly.
+		if ( App::make( Input::class )->getFirstArgument() === OnboardingCommand::getDefaultName() ) {
+			return true;
 		}
 
 		clearstatcache();
