@@ -43,9 +43,17 @@ abstract class DynamicCommandCreator {
 				}
 
 				if ( ! empty( $enum ) ) {
-					// Show up to 200 characters of possible values.
-					$enum        = substr( implode( ', ', $enum ), 0, 200 );
-					$description = sprintf( '%s <comment>[possible values: %s]</comment>', $description, $enum );
+					// Convert an array to a comma-separated list.
+					if ( is_array( $enum ) ) {
+						$enum = implode( ', ', $enum );
+					}
+
+					// If $enum is as expected, show the possible values.
+					if ( is_scalar( $enum ) ) {
+						// Show up to 200 characters of possible values.
+						$enum        = substr( $enum, 0, 200 );
+						$description = sprintf( '%s <comment>[possible values: %s]</comment>', $description, $enum );
+					}
 				}
 
 				if ( isset( $this->output ) && $this->output instanceof OutputInterface && $this->output->isVerbose() ) {
