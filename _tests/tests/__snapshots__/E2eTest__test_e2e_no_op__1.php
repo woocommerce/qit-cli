@@ -26,7 +26,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 42 passed, 42 total | Tests: 8 skipped, 0 failed, 180 passed, 188 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 42 passed, 42 total | Tests: 8 skipped, 0 failed, 179 passed, 187 total.",
             "version": "Zip",
             "test_result_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
@@ -38,9 +38,9 @@
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 42,
                 "numFailedTests": 0,
-                "numPassedTests": 180,
+                "numPassedTests": 179,
                 "numPendingTests": 8,
-                "numTotalTests": 188,
+                "numTotalTests": 187,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -92,10 +92,6 @@
                                 {
                                     "title": "can unselect all business features and continue",
                                     "status": "pending"
-                                },
-                                {
-                                    "title": "can complete the theme selection section",
-                                    "status": "passed"
                                 }
                             ],
                             "A Liberian store can complete the selective bundle install but does not include WCPay.": [
@@ -1202,7 +1198,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 42 passed, 42 total | Tests: 8 skipped, 0 failed, 180 passed, 188 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 42 passed, 42 total | Tests: 8 skipped, 0 failed, 179 passed, 187 total."
             }
         },
         {
