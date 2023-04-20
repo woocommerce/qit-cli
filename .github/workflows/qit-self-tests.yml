@@ -7,6 +7,8 @@ on:
   workflow_dispatch:
   # On push to trunk
   push:
+    branches:
+      - trunk
 jobs:
   qit_self_tests:
     name: QIT Self Tests
