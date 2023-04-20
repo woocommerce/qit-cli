@@ -35,10 +35,25 @@ abstract class DynamicCommandCreator {
 				}
 
 				$description = $property_schema['description'] ?? '';
+				$enum        = $property_schema['enum'] ?? '';
 				$default     = $property_schema['default'] ?? null;
 
 				if ( $required === InputOption::VALUE_OPTIONAL && ! empty( $description ) ) {
 					$description = '(Optional) ' . $description;
+				}
+
+				if ( ! empty( $enum ) ) {
+					// Convert an array to a comma-separated list.
+					if ( is_array( $enum ) ) {
+						$enum = implode( ', ', $enum );
+					}
+
+					// If $enum is as expected, show the possible values.
+					if ( is_scalar( $enum ) ) {
+						// Show up to 200 characters of possible values.
+						$enum        = substr( $enum, 0, 200 );
+						$description = sprintf( '%s <comment>[possible values: %s]</comment>', $description, $enum );
+					}
 				}
 
 				if ( isset( $this->output ) && $this->output instanceof OutputInterface && $this->output->isVerbose() ) {
