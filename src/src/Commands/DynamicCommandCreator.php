@@ -35,10 +35,17 @@ abstract class DynamicCommandCreator {
 				}
 
 				$description = $property_schema['description'] ?? '';
+				$enum        = $property_schema['enum'] ?? '';
 				$default     = $property_schema['default'] ?? null;
 
 				if ( $required === InputOption::VALUE_OPTIONAL && ! empty( $description ) ) {
 					$description = '(Optional) ' . $description;
+				}
+
+				if ( ! empty( $enum ) ) {
+					// Show up to 200 characters of possible values.
+					$enum        = substr( implode( ', ', $enum ), 0, 200 );
+					$description = sprintf( '%s <comment>[possible values: %s]</comment>', $description, $enum );
 				}
 
 				if ( isset( $this->output ) && $this->output instanceof OutputInterface && $this->output->isVerbose() ) {
