@@ -41,7 +41,7 @@
                             "fixable": 0
                         },
                         "files": {
-                            "\\/home\\/runner\\/work\\/compatibility-dashboard\\/compatibility-dashboard\\/ci\\/plugins\\/woocommerce-product-feeds\\/exclude-escaped-output\\/woocommerce-product-feeds.php": {
+                            "\\/home\\/runner\\/work\\/compatibility-dashboard\\/compatibility-dashboard\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
                                 "errors": 2,
                                 "warnings": 3,
                                 "messages": [
@@ -92,7 +92,7 @@
                                     }
                                 ]
                             },
-                            "\\/home\\/runner\\/work\\/compatibility-dashboard\\/compatibility-dashboard\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
+                            "\\/home\\/runner\\/work\\/compatibility-dashboard\\/compatibility-dashboard\\/ci\\/plugins\\/woocommerce-product-feeds\\/exclude-escaped-output\\/woocommerce-product-feeds.php": {
                                 "errors": 2,
                                 "warnings": 3,
                                 "messages": [
@@ -152,7 +152,7 @@
                             "fixable": 0
                         },
                         "files": {
-                            "\\/sut\\/exclude-all\\/woocommerce-product-feeds.php": {
+                            "\\/woocommerce-product-feeds\\/exclude-all\\/woocommerce-product-feeds.php": {
                                 "errors": 2,
                                 "warnings": 0,
                                 "messages": [
@@ -176,7 +176,7 @@
                                     }
                                 ]
                             },
-                            "\\/sut\\/exclude-escaped-output\\/woocommerce-product-feeds.php": {
+                            "\\/woocommerce-product-feeds\\/exclude-escaped-output\\/woocommerce-product-feeds.php": {
                                 "errors": 2,
                                 "warnings": 0,
                                 "messages": [
@@ -200,7 +200,7 @@
                                     }
                                 ]
                             },
-                            "\\/sut\\/woocommerce-product-feeds.php": {
+                            "\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
                                 "errors": 2,
                                 "warnings": 0,
                                 "messages": [

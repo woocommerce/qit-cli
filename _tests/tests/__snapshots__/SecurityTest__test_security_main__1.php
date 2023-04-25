@@ -101,7 +101,7 @@
                             "fixable": 0
                         },
                         "files": {
-                            "\\/sut\\/woocommerce-product-feeds.php": {
+                            "\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
                                 "errors": 2,
                                 "warnings": 0,
                                 "messages": [
