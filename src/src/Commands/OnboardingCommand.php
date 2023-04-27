@@ -37,21 +37,21 @@ SECTION
 		$io->writeln( '<comment>Examples:</comment>' );
 
 		$io->writeln( "\n<info>Running a Security Test:</info>" );
-		$io->writeln( './qit run:security automatewoo' );
+		$io->writeln( './qit run:security my-extension-slug' );
 
 		$io->writeln( "\n<info>Running a Security Test against a development build:</info>" );
-		$io->writeln( './qit run:security automatewoo --zip=automatewoo.zip' );
+		$io->writeln( './qit run:security my-extension-slug --zip=my-extension-slug.zip' );
 
 		$io->writeln( "\n<info>Running a WooCommerce Core E2E test with configurable options against a dev build:</info>" );
 		$io->writeln(<<<COMMAND
-./qit run:e2e automatewoo \
+./qit run:e2e my-extension-slug \
 	--woocommerce_version=7.6.0-rc.2 \
 	--php_version=8.2 \
 	--wordpress_version=6.2 \
 	--optional_features=hpos \
 	--additional_woo_plugins=woocommerce-shipping \
 	--additional_wordpress_plugins=hello-dolly \
-	--zip=automatewoo.zip
+	--zip=my-extension-slug.zip
 
 COMMAND
 		);
