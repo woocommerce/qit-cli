@@ -50,18 +50,6 @@ class CreateRunCommands extends DynamicCommandCreator {
 	}
 
 	/**
-	 * Returns a cache key that is tied to the current CD Manager URL, so
-	 * that it is invalidated if the CD Manager URL changes.
-	 *
-	 * @param string $test_type The test type to generate a cache key for.
-	 *
-	 * @return string
-	 */
-	protected function make_cache_key( string $test_type ) {
-		return sprintf( 'schema_%s_%s', $test_type, md5( get_manager_url() ) );
-	}
-
-	/**
 	 * @param Application  $application An instance of the current DI.
 	 * @param string       $test_type The test type.
 	 * @param array<mixed> $schema The test type schema.
@@ -82,6 +70,9 @@ class CreateRunCommands extends DynamicCommandCreator {
 			/** @var Upload $upload */
 			protected $upload;
 
+			/** @var string A flag, so we know that a zip must be inferred from the slug, eg: --zip === my-extension.zip */
+			private const QIT_ZIP_FROM_SLUG = 'QIT_ZIP_FROM_SLUG';
+
 			public function __construct( string $test_type, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list ) {
 				$this->auth                = $auth;
 				$this->test_type           = $test_type;
@@ -91,6 +82,10 @@ class CreateRunCommands extends DynamicCommandCreator {
 			}
 
 			public function execute( InputInterface $input, OutputInterface $output ) {
+				if ( $input->hasOption( 'zip' ) && is_null( $input->getOption( 'zip' ) ) ) {
+					$input->setOption( 'zip', static::QIT_ZIP_FROM_SLUG );
+				}
+
 				try {
 					$options = $this->parse_options( $input );
 				} catch ( \Exception $e ) {
@@ -108,6 +103,27 @@ class CreateRunCommands extends DynamicCommandCreator {
 
 				// Upload zip.
 				if ( ! empty( $options['zip'] ) ) {
+					if ( $options['zip'] === static::QIT_ZIP_FROM_SLUG ) {
+						$options['zip'] = $input->getArgument( 'woo_extension' ) . '.zip';
+
+						/*
+						 * Provide a custom error message if the inferred zip file does not exist,
+						 * so that the user is aware he can also pass a path if he/she wishes.
+						 */
+						if ( ! file_exists( $options['zip'] ) ) {
+							$output->writeln(sprintf(
+								"<error>Error: The specified zip file '%s' does not exist.</error>" .
+								"<info>\nTo run the command, use one of the following options:" .
+								"\n1. Provide the zip file name without an argument to infer from the slug or ID:" .
+								"\n   run:security my-extension --zip" .
+								"\n\n2. Provide the zip path as a parameter:" .
+								"\n   run:security my-extension --zip=/some/path/my-extension.zip</info>",
+								$options['zip']
+							));
+							return Command::FAILURE;
+						}
+					}
+
 					$options['upload_id'] = $this->upload->upload_build( $options['woo_id'], $input->getArgument( 'woo_extension' ), $options['zip'], $output );
 					$options['event']     = 'cli_development_extension_test';
 					unset( $options['zip'] );
