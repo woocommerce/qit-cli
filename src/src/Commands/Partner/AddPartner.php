@@ -83,6 +83,10 @@ TEXT
 				return $application_password;
 			} );
 
+			$question->setNormalizer( function ( $application_password ) {
+				return str_replace( ' ', '', $application_password );
+			} );
+
 			$application_password = $this->getHelper( 'question' )->ask( $input, $output, $question );
 		}
 
@@ -98,8 +102,15 @@ TEXT
 
 		$user = strtolower( $user );
 
-		if ( ! filter_var( $user, FILTER_VALIDATE_EMAIL ) && ! preg_match( '#[a-z0-9_-]#i', $user ) ) {
-			throw new \InvalidArgumentException( 'The username must be either a valid e-mail, or contain only letters, numbers, underscores or dashes).' );
+		if ( preg_match( '#[a-z0-9_-]#i', $user ) ) {
+			$user_environment = $user;
+		} else {
+			if ( filter_var( $user, FILTER_VALIDATE_EMAIL ) ) {
+				// Remove any non-alphanumeric characters from the username.
+				$user_environment = preg_replace( '#[^a-z0-9_-]#i', '', $user );
+			} else {
+				throw new \InvalidArgumentException( 'The username must be either a valid e-mail, or contain only letters, numbers, underscores or dashes.' );
+			}
 		}
 
 		// Validate credentials.
@@ -119,11 +130,11 @@ TEXT;
 
 		$output->writeln( $easter_egg );
 
-		if ( $this->environment->partner_exists( $user ) ) {
-			$this->environment->remove_partner( $user );
+		if ( $this->environment->partner_exists( $user_environment ) ) {
+			$this->environment->remove_partner( $user_environment );
 		}
 
-		$this->environment->create_partner( $user );
+		$this->environment->create_partner( $user_environment );
 
 		$this->auth->set_auth_app_pass( $user, $application_password );
 		$this->environment->get_cache()->set( 'manager_url', $manager_url, - 1 );
