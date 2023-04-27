@@ -70,9 +70,6 @@ class CreateRunCommands extends DynamicCommandCreator {
 			/** @var Upload $upload */
 			protected $upload;
 
-			/** @var string A flag, so we know that a zip must be inferred from the slug, eg: --zip === my-extension.zip */
-			private const QIT_ZIP_FROM_SLUG = 'QIT_ZIP_FROM_SLUG';
-
 			public function __construct( string $test_type, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list ) {
 				$this->auth                = $auth;
 				$this->test_type           = $test_type;
@@ -82,10 +79,6 @@ class CreateRunCommands extends DynamicCommandCreator {
 			}
 
 			public function execute( InputInterface $input, OutputInterface $output ) {
-				if ( $input->hasOption( 'zip' ) && is_null( $input->getOption( 'zip' ) ) ) {
-					$input->setOption( 'zip', static::QIT_ZIP_FROM_SLUG );
-				}
-
 				try {
 					$options = $this->parse_options( $input );
 				} catch ( \Exception $e ) {
@@ -102,8 +95,13 @@ class CreateRunCommands extends DynamicCommandCreator {
 				}
 
 				// Upload zip.
-				if ( ! empty( $options['zip'] ) ) {
-					if ( $options['zip'] === static::QIT_ZIP_FROM_SLUG ) {
+				if ( $options['zip'] !== false ) {
+					/*
+					 * $options['zip'] will be null if passed without a parameter, eg: --zip
+					 * In this scenario, we look for a zip that matches the slug or ID, eg:
+					 * my-extension.zip or 123.zip
+					 */
+					if ( is_null( $options['zip'] ) ) {
 						$options['zip'] = $input->getArgument( 'woo_extension' ) . '.zip';
 
 						/*
@@ -268,7 +266,8 @@ class CreateRunCommands extends DynamicCommandCreator {
 			'zip',
 			null,
 			InputOption::VALUE_OPTIONAL,
-			'(Optional) Run the test using a local zip file of the plugin. Useful for running the tests before publishing it to the Marketplace.'
+			'(Optional) Run the test using a local zip file of the plugin. Useful for running the tests before publishing it to the Marketplace.',
+			false
 		);
 
 		// JSON Response.
