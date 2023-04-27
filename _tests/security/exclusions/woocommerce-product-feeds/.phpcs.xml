@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<ruleset name="QIT Exclusion Rules">
+    <exclude-pattern>exclude-all/*</exclude-pattern>
+    <rule ref="WordPress.Security.EscapeOutput">
+        <exclude-pattern>exclude-escaped-output/*</exclude-pattern>
+    </rule>
+</ruleset>
