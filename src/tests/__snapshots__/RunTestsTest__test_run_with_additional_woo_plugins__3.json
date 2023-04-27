@@ -3,6 +3,7 @@
     "method": "POST",
     "post_body": {
         "additional_woo_plugins": "456,789",
+        "zip": false,
         "woo_id": 123,
         "event": "cli_published_extension_test"
     },
