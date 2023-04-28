@@ -94,34 +94,31 @@ class CreateRunCommands extends DynamicCommandCreator {
 					$options['woo_id'] = $this->woo_extensions_list->get_woo_extension_id_by_slug( $input->getArgument( 'woo_extension' ) );
 				}
 
-				// Upload zip.
-				if ( array_key_exists( 'zip', $options ) && $options['zip'] !== false ) {
+				// --zip without a value.
+				if ( is_null( $input->getParameterOption( '--zip', 'NOT_SET' ) ) ) {
+					$options['zip'] = $input->getArgument( 'woo_extension' ) . '.zip';
+
 					/*
-					 * $options['zip'] will be null if passed without a parameter, eg: --zip
-					 * In this scenario, we look for a zip that matches the slug or ID, eg:
-					 * my-extension.zip or 123.zip
+					 * Provide a custom error message if the inferred zip file does not exist,
+					 * so that the user is aware he can also pass a path if he/she wishes.
 					 */
-					if ( is_null( $options['zip'] ) ) {
-						$options['zip'] = $input->getArgument( 'woo_extension' ) . '.zip';
+					if ( ! file_exists( $options['zip'] ) ) {
+						$output->writeln( sprintf(
+							"<error>Error: The specified zip file '%s' does not exist.</error>" .
+							"<info>\nTo run the command, use one of the following options:" .
+							"\n1. Provide the zip file name without an argument to infer from the slug or ID:" .
+							"\n   run:security my-extension --zip" .
+							"\n\n2. Provide the zip path as a parameter:" .
+							"\n   run:security my-extension --zip=/some/path/my-extension.zip</info>",
+							$options['zip']
+						) );
 
-						/*
-						 * Provide a custom error message if the inferred zip file does not exist,
-						 * so that the user is aware he can also pass a path if he/she wishes.
-						 */
-						if ( ! file_exists( $options['zip'] ) ) {
-							$output->writeln(sprintf(
-								"<error>Error: The specified zip file '%s' does not exist.</error>" .
-								"<info>\nTo run the command, use one of the following options:" .
-								"\n1. Provide the zip file name without an argument to infer from the slug or ID:" .
-								"\n   run:security my-extension --zip" .
-								"\n\n2. Provide the zip path as a parameter:" .
-								"\n   run:security my-extension --zip=/some/path/my-extension.zip</info>",
-								$options['zip']
-							));
-							return Command::FAILURE;
-						}
+						return Command::FAILURE;
 					}
+				}
 
+				// Upload zip.
+				if ( ! empty( $options['zip'] ) ) {
 					$options['upload_id'] = $this->upload->upload_build( $options['woo_id'], $input->getArgument( 'woo_extension' ), $options['zip'], $output );
 					$options['event']     = 'cli_development_extension_test';
 					unset( $options['zip'] );
@@ -162,6 +159,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 
 				if ( ! isset( $response['run_id'] ) || ! isset( $response['test_results_manager_url'] ) ) {
 					$output->writeln( 'Unexpected response. Missing "run_id" or "test_results_manager_url".' );
+
 					return Command::FAILURE;
 				}
 
@@ -266,8 +264,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 			'zip',
 			null,
 			InputOption::VALUE_OPTIONAL,
-			'(Optional) Run the test using a local zip file of the plugin. Useful for running the tests before publishing it to the Marketplace.',
-			false
+			'(Optional) Run the test using a local zip file of the plugin. Useful for running the tests before publishing it to the Marketplace.'
 		);
 
 		// JSON Response.
