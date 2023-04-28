@@ -95,7 +95,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 				}
 
 				// Upload zip.
-				if ( $options['zip'] !== false ) {
+				if ( array_key_exists( 'zip', $options ) && $options['zip'] !== false ) {
 					/*
 					 * $options['zip'] will be null if passed without a parameter, eg: --zip
 					 * In this scenario, we look for a zip that matches the slug or ID, eg:
