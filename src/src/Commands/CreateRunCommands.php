@@ -50,18 +50,6 @@ class CreateRunCommands extends DynamicCommandCreator {
 	}
 
 	/**
-	 * Returns a cache key that is tied to the current CD Manager URL, so
-	 * that it is invalidated if the CD Manager URL changes.
-	 *
-	 * @param string $test_type The test type to generate a cache key for.
-	 *
-	 * @return string
-	 */
-	protected function make_cache_key( string $test_type ) {
-		return sprintf( 'schema_%s_%s', $test_type, md5( get_manager_url() ) );
-	}
-
-	/**
 	 * @param Application  $application An instance of the current DI.
 	 * @param string       $test_type The test type.
 	 * @param array<mixed> $schema The test type schema.
@@ -106,6 +94,29 @@ class CreateRunCommands extends DynamicCommandCreator {
 					$options['woo_id'] = $this->woo_extensions_list->get_woo_extension_id_by_slug( $input->getArgument( 'woo_extension' ) );
 				}
 
+				// --zip without a value.
+				if ( is_null( $input->getParameterOption( '--zip', 'NOT_SET' ) ) ) {
+					$options['zip'] = $input->getArgument( 'woo_extension' ) . '.zip';
+
+					/*
+					 * Provide a custom error message if the inferred zip file does not exist,
+					 * so that the user is aware he can also pass a path if he/she wishes.
+					 */
+					if ( ! file_exists( $options['zip'] ) ) {
+						$output->writeln( sprintf(
+							"<error>Error: The specified zip file '%s' does not exist.</error>" .
+							"<info>\nTo run the command, use one of the following options:" .
+							"\n1. Provide the zip file name without an argument to infer from the slug or ID:" .
+							"\n   run:security my-extension --zip" .
+							"\n\n2. Provide the zip path as a parameter:" .
+							"\n   run:security my-extension --zip=/some/path/my-extension.zip</info>",
+							$options['zip']
+						) );
+
+						return Command::FAILURE;
+					}
+				}
+
 				// Upload zip.
 				if ( ! empty( $options['zip'] ) ) {
 					$options['upload_id'] = $this->upload->upload_build( $options['woo_id'], $input->getArgument( 'woo_extension' ), $options['zip'], $output );
@@ -148,6 +159,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 
 				if ( ! isset( $response['run_id'] ) || ! isset( $response['test_results_manager_url'] ) ) {
 					$output->writeln( 'Unexpected response. Missing "run_id" or "test_results_manager_url".' );
+
 					return Command::FAILURE;
 				}
 
