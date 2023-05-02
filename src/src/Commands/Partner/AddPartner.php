@@ -102,14 +102,12 @@ TEXT
 
 		$user = strtolower( $user );
 
-		if ( filter_var( $user, FILTER_VALIDATE_EMAIL ) ) {
-			// Remove any non-alphanumeric characters from the username.
-			$user_environment = preg_replace( '#[^a-z0-9_-]#i', '', $user );
-		} else {
-			if ( ! preg_match( '#^[a-z0-9_-]{1, 60}$#i', $user ) ) {
-				throw new \InvalidArgumentException( 'The username must be either a valid e-mail, or contain only letters, numbers, underscores or dashes.' );
-			}
+		if ( ! filter_var( $user, FILTER_VALIDATE_EMAIL ) && ! preg_match( '#^[a-z0-9_-]{1, 70}$#i', $user ) ) {
+			throw new \InvalidArgumentException( 'The username must be either a valid e-mail, or contain only letters, numbers, underscores or dashes.' );
 		}
+
+		// Remove any non-alphanumeric characters from the username.
+		$user_environment = preg_replace( '#[^a-z0-9_-]#i', '', $user );
 
 		// Validate credentials.
 		$output->writeln( sprintf( 'Validating your application password with %s...', get_wccom_url() ) );
