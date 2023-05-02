@@ -2,7 +2,9 @@
 
 namespace QIT_CLI;
 
+use QIT_CLI\Commands\OnboardingCommand;
 use QIT_CLI\Exceptions\IOException;
+use QIT_CLI\IO\Input;
 
 class Config {
 	/** @var string  */
@@ -56,6 +58,9 @@ class Config {
 	}
 
 	public static function get_proxy_url(): string {
+		if ( ! empty( getenv( 'QIT_PROXY_URL' ) ) ) {
+			return getenv( 'QIT_PROXY_URL' );
+		}
 		return (string) App::make( self::class )->get( 'proxy_url' ) ?: '127.0.0.1:8080';
 	}
 
@@ -65,6 +70,25 @@ class Config {
 
 	public static function get_last_diagnosis(): int {
 		return (int) App::make( self::class )->get( 'last_diagnosis' ) ?: 0;
+	}
+
+	public static function needs_onboarding(): bool {
+		if ( defined( 'UNIT_TESTS' ) && UNIT_TESTS ) {
+			return false;
+		}
+
+		if ( getenv( 'QIT_DISABLE_ONBOARDING' ) === 'yes' ) {
+			return false;
+		}
+
+		// Consistent behavior if we are running the onboarding command directly.
+		if ( App::make( Input::class )->getFirstArgument() === OnboardingCommand::getDefaultName() ) {
+			return true;
+		}
+
+		clearstatcache();
+
+		return ! file_exists( self::get_qit_dir() . '.qit-config.json' );
 	}
 
 	/**

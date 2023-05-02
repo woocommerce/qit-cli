@@ -6,6 +6,15 @@
 
 The Quality Insights Toolkit (QIT) is an automated testing tool developed by WooCommerce for extension developers in the [Woo Marketplace](https://woocommerce.com/products/). It allows you to run various types of tests on your extension in a managed environment and get feedback on potential issues or errors.
 
+### Quick Start
+
+To use QIT, follow these steps:
+
+1. [Download the QIT CLI binary](https://github.com/woocommerce/qit-cli/raw/trunk/qit).
+2. Make it executable `chmod +x qit`
+3. Move it to a directory in your PATH, such as `sudo mv qit /usr/local/bin/qit`.
+4. Run `qit` to get started.
+
 ### Supported Tests
 
 QIT currently supports the following types of tests:
@@ -30,14 +39,6 @@ QIT currently supports the following types of tests:
 
 - Integrate QIT as part of your own Pull-Requests with our example [GitHub Workflows integration](https://woocommerce.github.io/qit-documentation/#/workflows/getting-started).
 - Create and share application passwords with your development team, which allows them to use the QIT CLI without having full access to your WooCommerce.com account.
-
-### Quick Start
-
-To use QIT, follow these steps:
-
-1. Install the QIT CLI tool with `composer require woocommerce/qit-cli`.
-2. Add your partner credentials with `./vendor/bin/qit partner-add`.
-3. Run a test on your extension with `./vendor/bin/qit run:e2e YOUR_EXTENSION`.
 
 ## Documentation
 

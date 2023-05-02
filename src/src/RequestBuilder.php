@@ -19,6 +19,9 @@ class RequestBuilder {
 	/** @var array<int, mixed> $curl_opts */
 	protected $curl_opts = [];
 
+	/** @var bool $onboarding */
+	protected $onboarding = false;
+
 	/** @var array<int> */
 	protected $expected_status_codes = [ 200 ];
 
@@ -81,6 +84,17 @@ class RequestBuilder {
 		return $this;
 	}
 
+	/**
+	 * @param bool $onboarding
+	 *
+	 * @return $this
+	 */
+	public function with_onboarding( bool $onboarding ): self {
+		$this->onboarding = $onboarding;
+
+		return $this;
+	}
+
 	public function request(): string {
 		if ( defined( 'UNIT_TESTS' ) ) {
 			$mocked = App::getVar( 'mock_' . $this->url );
@@ -124,16 +138,23 @@ class RequestBuilder {
 
 		$proxied = false;
 
-		if ( ! is_null( App::make( Auth::class )->get_manager_secret() ) ) {
-			$this->post_body['manager_secret'] = App::make( Auth::class )->get_manager_secret();
-			// Connections using the MANAGER_SECRET that are not local must go through Automattic Proxy.
-			if ( strpos( $this->url, '.test' ) === false && strpos( $this->url, 'stagingcompatibilitydashboard' ) === false ) {
-				$proxied                              = true;
-				$curl_parameters[ CURLOPT_PROXY ]     = Config::get_proxy_url();
-				$curl_parameters[ CURLOPT_PROXYTYPE ] = CURLPROXY_SOCKS5;
+		if ( $this->onboarding ) {
+			// When onboarding, proxy the request to test.
+			$proxied                              = true;
+			$curl_parameters[ CURLOPT_PROXY ]     = Config::get_proxy_url();
+			$curl_parameters[ CURLOPT_PROXYTYPE ] = CURLPROXY_SOCKS5;
+		} else {
+			if ( ! is_null( App::make( Auth::class )->get_manager_secret() ) ) {
+				$this->post_body['manager_secret'] = App::make( Auth::class )->get_manager_secret();
+				// Connections using the MANAGER_SECRET that are not local must go through Automattic Proxy.
+				if ( strpos( $this->url, '.test' ) === false && strpos( $this->url, 'stagingcompatibilitydashboard' ) === false ) {
+					$proxied                              = true;
+					$curl_parameters[ CURLOPT_PROXY ]     = Config::get_proxy_url();
+					$curl_parameters[ CURLOPT_PROXYTYPE ] = CURLPROXY_SOCKS5;
+				}
+			} elseif ( ! is_null( App::make( Auth::class )->get_app_pass() ) ) {
+				$this->post_body['partner_app_pass'] = App::make( Auth::class )->get_app_pass();
 			}
-		} elseif ( ! is_null( App::make( Auth::class )->get_app_pass() ) ) {
-			$this->post_body['partner_app_pass'] = App::make( Auth::class )->get_app_pass();
 		}
 
 		switch ( $this->method ) {
@@ -159,6 +180,11 @@ class RequestBuilder {
 		}
 
 		curl_setopt_array( $curl, $curl_parameters );
+
+		if ( App::make( Output::class )->isVeryVerbose() ) {
+			App::make( Output::class )->writeln( sprintf( '[QIT DEBUG] Running external request: %s', json_encode( $this->to_array(), JSON_PRETTY_PRINT ) ) );
+		}
+
 		$result = curl_exec( $curl );
 
 		$response_status_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
