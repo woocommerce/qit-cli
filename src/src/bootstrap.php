@@ -11,6 +11,7 @@ use QIT_CLI\Commands\Environment\RemoveEnvironment;
 use QIT_CLI\Commands\Environment\SwitchEnvironment;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\ListCommand;
+use QIT_CLI\Commands\OnboardingCommand;
 use QIT_CLI\Commands\OpenCommand;
 use QIT_CLI\Commands\Partner\AddPartner;
 use QIT_CLI\Commands\Partner\RemovePartner;
@@ -131,13 +132,26 @@ try {
 	return $application;
 }
 
-$has_environment = false;
+if ( Config::needs_onboarding() ) {
+	try {
+		$application->add( $container->make( AddPartner::class ) );
+		$application->add( $container->make( AddEnvironment::class ) );
 
-$env = App::make( Environment::class );
+		$onboarding = $container->make( OnboardingCommand::class );
+		$onboarding->setApplication( $application );
+		exit( $onboarding->run( $container->make( Input::class ), $container->make( Output::class ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	} catch ( \Exception $e ) {
+		App::make( Output::class )->writeln( $e->getMessage() );
+		exit( 1 );
+	}
+}
+
+$has_environment = false;
 
 // Global commands.
 $application->add( $container->make( DevModeCommand::class ) );
 $application->add( $container->make( ConfigDirCommand::class ) );
+$application->add( $container->make( OnboardingCommand::class ) );
 
 // Partner commands.
 $application->add( $container->make( AddPartner::class ) );

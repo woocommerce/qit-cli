@@ -119,11 +119,13 @@ class AddEnvironment extends Command {
 		$output->writeln( "Validating your Manager Secret against $manager_url..." );
 		try {
 			$this->woo_extensions_list->fetch_woo_extensions_available();
+			if ( empty( $this->woo_extensions_list->get_woo_extension_list() ) ) {
+				throw new \RuntimeException();
+			}
 		} catch ( \Exception $e ) {
 			$this->auth->delete_manager_secret();
 			$this->environment->get_cache()->delete( 'manager_url' );
 			$output->writeln( sprintf( '<error>We could not authenticate to %s using the provided Manager Secret.</error>', escapeshellarg( $manager_url ) ) );
-			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
 			return Command::FAILURE;
 		}

@@ -98,6 +98,7 @@ class ListCommand extends Command {
 			'version',
 			'client',
 			'event',
+			'debug_log',
 		];
 
 		// Prepare the data to be rendered.

@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-20.04
     env:
       NO_COLOR: 1
+      QIT_DISABLE_ONBOARDING: yes
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -30,6 +31,10 @@ jobs:
 
       - name: Connect to QIT
         run: ./qit partner:add --user=${{ secrets.QIT_USER }} --application_password=${{ secrets.QIT_ACCESS_TOKEN }}
+
+      - name: Skip E2E tests on push
+        run: echo "QIT_SKIP_E2E=yes" >> $GITHUB_ENV
+        if: github.event_name == 'push'
 
       - name: Run Self-Tests
         id: run-self-tests
