@@ -102,7 +102,7 @@ TEXT
 
 		$user = strtolower( $user );
 
-		if ( ! filter_var( $user, FILTER_VALIDATE_EMAIL ) && ! preg_match( '#^[a-z0-9_-]{1, 70}$#i', $user ) ) {
+		if ( ! filter_var( $user, FILTER_VALIDATE_EMAIL ) && ! preg_match( '#^[a-z0-9_-]{1,70}$#i', $user ) ) {
 			throw new \InvalidArgumentException( 'The username must be either a valid e-mail, or contain only letters, numbers, underscores or dashes.' );
 		}
 

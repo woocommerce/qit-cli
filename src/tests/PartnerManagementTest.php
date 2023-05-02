@@ -59,6 +59,12 @@ class PartnerManagementTest extends QITTestCase {
 		$this->assertMatchesJsonSnapshot( $this->get_snapshot_friendly_cache() );
 	}
 
+	public function test_add_partner_email() {
+		$this->add_partner( 'foo_user@bar.com', 'foo_pass' );
+
+		$this->assertMatchesJsonSnapshot( $this->get_snapshot_friendly_cache() );
+	}
+
 	public function test_switch_partner() {
 		$this->add_partner( 'foo_user', 'foo_pass' );
 		$this->add_partner( 'bar_user', 'bar_pass' );
