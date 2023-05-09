@@ -1,6 +1,6 @@
 {
   "name": "woocommerce/qit-cli",
-  "description": "A command line interface for WooCOmmerce Quality Insights Toolkit (QIT).",
+  "description": "A command line interface for WooCommerce Quality Insights Toolkit (QIT).",
   "license": "GPL-3.0-or-later",
   "config": {
     "platform-check": false
