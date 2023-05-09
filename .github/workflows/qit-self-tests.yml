@@ -37,7 +37,7 @@ jobs:
 
       - name: Run Self-Tests
         id: run-self-tests
-        if: matrix.test_type != 'e2e'
+        if: (github.event_name != 'push' || matrix.test_type != 'e2e') # Do not run e2e tests on push, since they take long.
         working-directory: _tests
         env:
           QIT_WAIT_BEFORE_REQUEST: yes
