@@ -25,6 +25,9 @@ class RequestBuilder {
 	/** @var array<int> */
 	protected $expected_status_codes = [ 200 ];
 
+	/** @var int */
+	protected $retry = 0;
+
 	public function __construct( string $url = '' ) {
 		$this->url = $url;
 	}
@@ -91,6 +94,17 @@ class RequestBuilder {
 	 */
 	public function with_onboarding( bool $onboarding ): self {
 		$this->onboarding = $onboarding;
+
+		return $this;
+	}
+
+	/**
+	 * @param int $retry
+	 *
+	 * @return RequestBuilder
+	 */
+	public function with_retry( int $retry ): RequestBuilder {
+		$this->retry = $retry;
 
 		return $this;
 	}
@@ -185,18 +199,19 @@ class RequestBuilder {
 			App::make( Output::class )->writeln( sprintf( '[QIT DEBUG] Running external request: %s', json_encode( $this->to_array(), JSON_PRETTY_PRINT ) ) );
 		}
 
-		$result = curl_exec( $curl );
-
+		$result     = curl_exec( $curl );
+		$curl_error = curl_error( $curl );
 		$response_status_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
+		curl_close( $curl );
 
 		if ( ! in_array( $response_status_code, $this->expected_status_codes, true ) ) {
 			if ( $proxied && $result === false ) {
 				$result = sprintf( 'Is the Automattic Proxy running and accessible through %s?', Config::get_proxy_url() );
 			}
 
-			if ( ! empty( curl_error( $curl ) ) ) {
+			if ( ! empty( $curl_error ) ) {
 				// Network error, such as a timeout, etc.
-				$error_message = curl_error( $curl );
+				$error_message = $curl_error;
 			} else {
 				// Application error, such as invalid parameters, etc.
 				$error_message = $result;
@@ -205,6 +220,15 @@ class RequestBuilder {
 				if ( is_array( $json_response ) && array_key_exists( 'message', $json_response ) ) {
 					$error_message = $json_response['message'];
 				}
+			}
+
+			if ( $this->retry > 0 ) {
+				$this->retry --;
+				if ( App::make( Output::class )->isVerbose() ) {
+					App::make( Output::class )->writeln( '<comment>Request failed... Retrying.</comment>' );
+				}
+				sleep( 2 );
+				$this->request();
 			}
 
 			throw new NetworkErrorException(
@@ -217,8 +241,6 @@ class RequestBuilder {
 				$response_status_code
 			);
 		}
-
-		curl_close( $curl );
 
 		return $result;
 	}
