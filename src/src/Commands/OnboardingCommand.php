@@ -90,7 +90,7 @@ COMMAND
 			] ), $output );
 		} else {
 			$io->section( 'Onboarding as Partner of the Woo Marketplace' );
-			$io->info('If you are an Automattic employee, please connect to the proxy and run the CLI again.');
+			$io->info( 'If you are an Automattic employee, please connect to the proxy and run the CLI again.' );
 
 			$command = $this->getApplication()->find( AddPartner::getDefaultName() );
 
