@@ -10,7 +10,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Terminal;
@@ -89,17 +88,12 @@ COMMAND
 				'--qit_secret'  => $answer,
 			] ), $output );
 		} else {
-			if ( $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "\n<question>Are you an Automattic employee? (y/n)</question> ", false ) ) ) {
-				$io->warning( sprintf( "Please connect to the proxy and run the CLI again. If this error persists, make sure the proxy is accessible through %s, or add a runtime environment variable with the correct address, eg:\nQIT_PROXY_URL={proxy_address} ./qit", Config::get_proxy_url() ) );
+			$io->section( 'Onboarding as Partner of the Woo Marketplace' );
+			$io->info( 'If you are an Automattic employee, please connect to the proxy and run the CLI again.' );
 
-				return Command::FAILURE;
-			} else {
-				$io->section( 'Onboarding as Partner of the Woo Marketplace' );
+			$command = $this->getApplication()->find( AddPartner::getDefaultName() );
 
-				$command = $this->getApplication()->find( AddPartner::getDefaultName() );
-
-				return $command->run( new ArrayInput( [] ), $output );
-			}
+			return $command->run( new ArrayInput( [] ), $output );
 		}
 	}
 

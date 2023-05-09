@@ -42,6 +42,14 @@ class AddPartner extends Command {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
+		// User.
+		if ( ! empty( $input->getOption( 'user' ) ) ) {
+			$user = $input->getOption( 'user' );
+		} else {
+			$question = new Question( "<question>What's the username/email of the Partner account? </question> " );
+			$user     = $this->getHelper( 'question' )->ask( $input, $output, $question );
+		}
+
 		// Application Password.
 		if ( ! empty( $input->getOption( 'application_password' ) ) ) {
 			$application_password = $input->getOption( 'application_password' );
@@ -88,14 +96,6 @@ TEXT
 			} );
 
 			$application_password = $this->getHelper( 'question' )->ask( $input, $output, $question );
-		}
-
-		// User.
-		if ( ! empty( $input->getOption( 'user' ) ) ) {
-			$user = $input->getOption( 'user' );
-		} else {
-			$question = new Question( "<question>What's the username/email of the Partner account? </question> " );
-			$user     = $this->getHelper( 'question' )->ask( $input, $output, $question );
 		}
 
 		$manager_url = get_manager_url();

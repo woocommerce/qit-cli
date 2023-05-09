@@ -199,8 +199,8 @@ class RequestBuilder {
 			App::make( Output::class )->writeln( sprintf( '[QIT DEBUG] Running external request: %s', json_encode( $this->to_array(), JSON_PRETTY_PRINT ) ) );
 		}
 
-		$result     = curl_exec( $curl );
-		$curl_error = curl_error( $curl );
+		$result               = curl_exec( $curl );
+		$curl_error           = curl_error( $curl );
 		$response_status_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
 		curl_close( $curl );
 
