@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <ruleset name="QIT Exclusion Rules">
+    <arg name="parallel" value="1"/>
     <exclude-pattern>exclude-all/*</exclude-pattern>
     <rule ref="WordPress.Security.EscapeOutput">
         <exclude-pattern>exclude-escaped-output/*</exclude-pattern>
