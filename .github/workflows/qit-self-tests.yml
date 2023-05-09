@@ -11,8 +11,11 @@ on:
       - trunk
 jobs:
   qit_self_tests:
-    name: QIT Self Tests
+    name: QIT Self Tests - ${{ matrix.test_type }}
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        test_type: ["activation", "api", "e2e", "phpstan", "security"]
     env:
       NO_COLOR: 1
       QIT_DISABLE_ONBOARDING: yes
@@ -34,11 +37,11 @@ jobs:
 
       - name: Skip E2E tests on push
         run: echo "QIT_SKIP_E2E=yes" >> $GITHUB_ENV
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' && matrix.test_type == 'e2e'
 
       - name: Run Self-Tests
         id: run-self-tests
         working-directory: _tests
         env:
           QIT_WAIT_BEFORE_REQUEST: yes
-        run: php ./QITSelfTests.php run
+        run: php ./QITSelfTests.php run ${{ matrix.test_type }}
