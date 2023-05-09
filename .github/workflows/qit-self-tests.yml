@@ -44,3 +44,11 @@ jobs:
     secrets:
       QIT_USER: ${{ secrets.QIT_USER }}
       QIT_ACCESS_TOKEN: ${{ secrets.QIT_ACCESS_TOKEN }}
+
+  activation_tests:
+    uses: ./.github/workflows/self-test-template.yml
+    with:
+      test_type: activation
+    secrets:
+      QIT_USER: ${{ secrets.QIT_USER }}
+      QIT_ACCESS_TOKEN: ${{ secrets.QIT_ACCESS_TOKEN }}
