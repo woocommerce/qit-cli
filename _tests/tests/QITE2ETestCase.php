@@ -18,6 +18,19 @@ class QITE2ETestCase extends TestCase {
 			$this->fail( 'Test result file is not a JSON: ' . $file_path );
 		}
 
+		/*
+		 * Sort 'phpcs' and 'semgrep' files in security tests,
+		 * so that the order in which the files are scanned do
+		 * not change the JSON of the test.
+		 */
+		if ( isset( $json_data['test_result_json']['tool']['phpcs']['files'] ) ) {
+			uksort( $json_data['test_result_json']['tool']['phpcs']['files'], 'strcmp' );
+		}
+
+		if ( isset( $json_data['test_result_json']['tool']['semgrep']['files'] ) ) {
+			uksort( $json_data['test_result_json']['tool']['semgrep']['files'], 'strcmp' );
+		}
+
 		$rules = [
 			'run_id'                          => [
 				'normalize' => 123456,
