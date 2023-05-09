@@ -12,6 +12,9 @@ jobs:
   build:
     needs: [ code-tests ]
     runs-on: ubuntu-latest
+    env:
+      NO_COLOR: 1
+      QIT_DISABLE_ONBOARDING: yes
     permissions:
       contents: write
     steps:
