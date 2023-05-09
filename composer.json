@@ -1,5 +1,7 @@
 {
   "name": "woocommerce/qit-cli",
+  "description": "A command line interface for WooCOmmerce Quality Insights Toolkit (QIT).",
+  "license": "GPL-3.0-or-later",
   "config": {
     "platform-check": false
   },
@@ -7,8 +9,5 @@
     "php": "^7.2.5 | ^8",
     "ext-curl": "*"
   },
-  "bin": "qit",
-  "suggest": {
-    "ext-openssl": "This extension is needed if you want to encrypt the config files."
-  }
+  "bin": "qit"
 }
