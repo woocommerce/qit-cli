@@ -29,7 +29,7 @@ You can install QIT in three different ways:
 
 1. Run `wget https://github.com/woocommerce/qit-cli/blob/trunk/qit`
 2. Execute `chmod +x qit`
-3. Move the file to a directory in your PATH, such as `sudo mv qit /usr/local/bin/qit`.
+3. Move the file to a directory in your PATH, such as `sudo mv qit /usr/local/bin/qit`
 4. Run `qit` to authenticate with your WooCommerce.com Partner Developer account.
 
 ## Documentation
