@@ -1,0 +1,22 @@
+name: QIT Self-Tests - E2E
+
+on:
+  # Every day at 9pm UTC
+  schedule:
+    - cron: '0 21 * * *'
+  # Manually
+  workflow_dispatch:
+  # On push to trunk
+  push:
+    branches:
+      - trunk
+
+jobs:
+  e2e_tests:
+    if: github.event_name != 'push'
+    uses: ./.github/workflows/self-test-template.yml
+    with:
+      test_type: e2e
+    secrets:
+      QIT_USER: ${{ secrets.QIT_USER }}
+      QIT_ACCESS_TOKEN: ${{ secrets.QIT_ACCESS_TOKEN }}
