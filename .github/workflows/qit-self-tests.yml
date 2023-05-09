@@ -35,12 +35,9 @@ jobs:
       - name: Connect to QIT
         run: ./qit partner:add --user=${{ secrets.QIT_USER }} --application_password=${{ secrets.QIT_ACCESS_TOKEN }}
 
-      - name: Skip E2E tests on push
-        run: echo "QIT_SKIP_E2E=yes" >> $GITHUB_ENV
-        if: github.event_name == 'push' && matrix.test_type == 'e2e'
-
       - name: Run Self-Tests
         id: run-self-tests
+        if: matrix.test_type != 'e2e'
         working-directory: _tests
         env:
           QIT_WAIT_BEFORE_REQUEST: yes
