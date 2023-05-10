@@ -1710,10 +1710,6 @@
                     "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init::$Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Reports\\\\PerformanceIndicators\\\\Controller is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/API\\/Init.php on line 143"
                 },
                 {
-                    "count": "1216",
-                    "message": "PHP Deprecated: Creation of dynamic property Automattic\\\\WooCommerce\\\\StoreApi\\\\Schemas\\\\V1\\\\CheckoutSchema::$image_attachment_schema is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/packages\\/woocommerce-blocks\\/src\\/StoreApi\\/Schemas\\/V1\\/CheckoutSchema.php on line 51"
-                },
-                {
                     "count": "609",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Gateway_BACS::$instructions is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/gateways\\/bacs\\/class-wc-gateway-bacs.php on line 49"
                 },
@@ -1738,19 +1734,19 @@
                     "message": "PHP Deprecated: Creation of dynamic property WC_Gateway_COD::$enable_for_virtual is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/gateways\\/cod\\/class-wc-gateway-cod.php on line 42"
                 },
                 {
-                    "count": "11",
+                    "count": "32",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Shipping_Flat_Rate::$cost is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/flat-rate\\/class-wc-shipping-flat-rate.php on line 50"
                 },
                 {
-                    "count": "11",
+                    "count": "32",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Shipping_Flat_Rate::$type is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/flat-rate\\/class-wc-shipping-flat-rate.php on line 51"
                 },
                 {
-                    "count": "11",
+                    "count": "32",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Shipping_Free_Shipping::$ignore_discounts is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/free-shipping\\/class-wc-shipping-free-shipping.php on line 70"
                 },
                 {
-                    "count": "11",
+                    "count": "32",
                     "message": "PHP Deprecated: Creation of dynamic property WC_Shipping_Local_Pickup::$cost is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/shipping\\/local-pickup\\/class-wc-shipping-local-pickup.php on line 53"
                 },
                 {
