@@ -23,12 +23,16 @@ class QITE2ETestCase extends TestCase {
 		 * so that the order in which the files are scanned do
 		 * not change the JSON of the test.
 		 */
-		if ( isset( $json_data['test_result_json']['tool']['phpcs']['files'] ) ) {
-			uksort( $json_data['test_result_json']['tool']['phpcs']['files'], 'strcmp' );
+		if ( isset( $json['test_result_json']['tool']['phpcs']['files'] ) ) {
+			if ( ! uksort( $json['test_result_json']['tool']['phpcs']['files'], 'strcmp' ) ) {
+				$this->fail( 'Failed to sort phpcs files' );
+			}
 		}
 
-		if ( isset( $json_data['test_result_json']['tool']['semgrep']['files'] ) ) {
-			uksort( $json_data['test_result_json']['tool']['semgrep']['files'], 'strcmp' );
+		if ( isset( $json['test_result_json']['tool']['semgrep']['files'] ) ) {
+			if ( ! uksort( $json['test_result_json']['tool']['semgrep']['files'], 'strcmp' ) ) {
+				$this->fail( 'Failed to sort semgrep files' );
+			}
 		}
 
 		$rules = [
