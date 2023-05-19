@@ -13,6 +13,7 @@
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
+            "send_notifications": false,
             "woo_extension": {
                 "id": 18619,
                 "host": "wccom",

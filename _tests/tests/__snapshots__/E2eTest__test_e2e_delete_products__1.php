@@ -13,6 +13,7 @@
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
+            "send_notifications": false,
             "woo_extension": {
                 "id": 18619,
                 "host": "wccom",
@@ -1208,7 +1209,7 @@
                     "message": "The Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options::get_options function is deprecated since version 3.1."
                 },
                 {
-                    "count": "17",
+                    "count": "16",
                     "message": "PHP Fatal error: Uncaught Error: Call to a member function get_id() on bool in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version2\\/class-wc-rest-products-v2-controller.php:1518\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(310): WC_REST_Products_V2_Controller->clear_transients(false)\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(332): WP_Hook->apply_filters(\'\', Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version3\\/class-wc-rest-crud-controller.php(207): do_action(\'woocommerce_res...\', false, Object(WP_REST_Request), true)\\n#4 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1181): WC_REST_CRUD_Controller->create_item(Object(WP_REST_Request))\\n#5 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1028): WP_REST_Server->respond_to_request(Object(WP_REST_Request), \'\\/wc\\/v3\\/products\', Array, NULL)\\n#6 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.p in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/rest-api\\/Controllers\\/Version2\\/class-wc-rest-products-v2-controller.php on line 1518\\n"
                 },
                 {
