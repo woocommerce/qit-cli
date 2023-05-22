@@ -27,7 +27,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "7 Errors Detected. (0 Fatal, 1 Warnings, 6 Notices)",
+            "test_summary": "6 Errors Detected. (0 Fatal, 0 Warnings, 6 Notices)",
             "debug_log": "",
             "version": "Zip",
             "test_result_json_extracted": "{EXTRACTED}"
@@ -40,18 +40,17 @@
                         "": {
                             "\\/": 2,
                             "\\/cart\\/": 2,
-                            "\\/my-account\\/": 3
+                            "\\/my-account\\/": 2
                         }
                     },
                     "error_totals": {
                         "fatal": 0,
                         "notice": 6,
-                        "warning": 1,
-                        "E_DEPRECATED": 6,
-                        "E_WARNING": 1
+                        "warning": 0,
+                        "E_DEPRECATED": 6
                     },
-                    "summary": "7 Errors Detected. (0 Fatal, 1 Warnings, 6 Notices)",
-                    "error_count": 7,
+                    "summary": "6 Errors Detected. (0 Fatal, 0 Warnings, 6 Notices)",
+                    "error_count": 6,
                     "count_extensions_with_errors": 1
                 },
                 "0": {
@@ -398,60 +397,6 @@
                                 "\\/var\\/www\\/html\\/wp-blog-header.php"
                             ],
                             "function": "require"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "6": {
-                    "activated_alongside": "",
-                    "context": "\\/my-account\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_WARNING",
-                    "error_message": "Cannot modify header information - headers already sent by (output started at \\/var\\/www\\/html\\/wp-content\\/mu-plugins\\/compatibility-tests-error-checker.php:242)",
-                    "error_file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                    "error_line": 6896,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 6896,
-                            "function": "header"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/includes\\/wc-template-functions.php",
-                            "line": 89,
-                            "function": "send_frame_options_header"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 308,
-                            "function": "wc_send_frame_options_header"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 332,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 517,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/template-loader.php",
-                            "line": 13,
-                            "function": "do_action"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-blog-header.php",
-                            "line": 19,
-                            "args": [
-                                "\\/var\\/www\\/html\\/wp-includes\\/template-loader.php"
-                            ],
-                            "function": "require_once"
                         }
                     ],
                     "db_error": ""
