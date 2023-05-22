@@ -27,7 +27,7 @@ You can install QIT in three different ways:
 
 ### Globally Using `wget`
 
-_(Pro Tip: Opting for the Composer installation method simplifies the process of updating QIT in the future 😉)_
+_(Pro Tip: Opting for the Composer installation method simplifies the process of [updating QIT](https://woocommerce.github.io/qit-documentation/#/cli/getting-started?id=updating-qit) in the future 😉)_
 1. Run `wget https://github.com/woocommerce/qit-cli/raw/trunk/qit`
 2. Execute `chmod +x qit`
 3. Move the file to a directory in your PATH, such as `sudo mv qit /usr/local/bin/qit`
