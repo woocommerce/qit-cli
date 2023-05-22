@@ -79,7 +79,7 @@ QIT represents a revolutionary step forward in facilitating automated testing fo
 
 In its inaugural phase, we've chosen to primarily target Woo Marketplace Partner Developers. However, our broader vision encompasses extending the availability of this tool to plugins outside of the Marketplace as well, in a commitment to make automated testing accessible to the WordPress ecosystem as a whole.
 
-Should you be interested in leveraging the potential of QIT and wish to express your support for its broader application, we welcome you to [submit an issue](https://github.com/woocommerce/qit-cli/issues) in our GitHub repository. Your input is invaluable to us, as it greatly contributes to directing the course of our project's future.
+Should you be interested in leveraging the potential of QIT and wish to express your support for its broader application, we welcome you to [submit an issue](https://github.com/woocommerce/qit-cli/issues) in our GitHub repository. Your input is invaluable to us, as it greatly contributes to directing the course of the project's future.
 
 ## Support
 
