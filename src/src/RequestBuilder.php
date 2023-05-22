@@ -110,6 +110,7 @@ class RequestBuilder {
 	}
 
 	public function request(): string {
+		retry_request:
 		if ( defined( 'UNIT_TESTS' ) ) {
 			$mocked = App::getVar( 'mock_' . $this->url );
 			if ( is_null( $mocked ) ) {
@@ -226,7 +227,7 @@ class RequestBuilder {
 				$this->retry --;
 				App::make( Output::class )->writeln( '<comment>Request failed... Retrying.</comment>' );
 				usleep( rand( intval( 5 * 1e5 ), intval( 5 * 1e6 ) ) ); // Sleep between 0.5s and 5s.
-				$this->request();
+				goto retry_request;
 			}
 
 			throw new NetworkErrorException(
