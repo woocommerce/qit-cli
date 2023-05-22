@@ -42,7 +42,7 @@ _(Pro Tip: Opting for the Composer installation method simplifies the process of
 - `qit run:e2e my-extension --additional_wordpress_plugins=gutenberg` - Activates the "Gutenberg" feature plugin in the test environment as well.
 - `qit run:e2e my-extension --optional_features=hpos` - Enables the WooCommerce "High Performance Order Storage" in the test site.
 
-You can use these parameter individually or in combination to create different scenarios for your tests. Run `qit run:<test-type> --help` to see all the available options. Different test types will have different options to choose from.
+You can use these parameters individually or in combination to create different scenarios for your tests. Run `qit run:<test-type> --help` to see all the available options. Different test types will have different options to choose from.
 
 ### Supported Tests
 
