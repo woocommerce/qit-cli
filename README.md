@@ -27,15 +27,22 @@ You can install QIT in three different ways:
 
 ### Globally Using `wget`
 
-_(Pro Tip: Opting for the Composer installation method simplifies the process of updating QIT in the future 😉)_
+_(Pro Tip: Opting for the Composer installation method simplifies the process of [updating QIT](https://woocommerce.github.io/qit-documentation/#/cli/getting-started?id=updating-qit) in the future 😉)_
 1. Run `wget https://github.com/woocommerce/qit-cli/raw/trunk/qit`
 2. Execute `chmod +x qit`
 3. Move the file to a directory in your PATH, such as `sudo mv qit /usr/local/bin/qit`
 4. Run `qit` to authenticate with your WooCommerce.com Partner Developer account.
 
-## Documentation
+## Examples
 
-For more detailed information on QIT and how to use it, refer to the [official documentation](https://woocommerce.github.io/qit-documentation/#/).
+- `qit run:e2e my-extension` - Runs the WooCommerce Core E2E tests with your extension active.
+- `qit run:e2e my-extension --php_version=8.2` - Same as above, but with PHP 8.2.
+- `qit run:e2e my-extension --php_version=8.2 --woocommerce_version=rc --wordpress_version=rc` - Same as above, but with the release candidate versions of WooCommerce and WordPress, or latest stable if none available.
+- `qit run:e2e my-extension --zip` - Runs the tests using an unreleased development build zip.
+- `qit run:e2e my-extension --additional_wordpress_plugins=gutenberg` - Activates the "Gutenberg" feature plugin in the test environment as well.
+- `qit run:e2e my-extension --optional_features=hpos` - Enables the [WooCommerce "High Performance Order Storage"](https://developer.woocommerce.com/roadmap/high-performance-order-storage/) feature in the test site.
+
+You can use these parameters individually or in combination to create different scenarios for your tests. Run `qit run:<test-type> --help` to see all the available options. Different test types will have different options to choose from.
 
 ### Supported Tests
 
@@ -46,8 +53,12 @@ QIT currently supports the following types of tests:
 - [Security Test](https://woocommerce.github.io/qit-documentation/#/test-types/security)
 - [PHPStan Test](https://woocommerce.github.io/qit-documentation/#/test-types/phpstan)
 - [API Test](https://woocommerce.github.io/qit-documentation/#/test-types/api)
-- Compatibility Test
+- _PHP Minimum and Maximum Version Compatibility (Coming soon)_
 - _Performance Test (Coming soon)_
+
+## Documentation
+
+For more detailed information on QIT and how to use it, refer to the [official documentation](https://woocommerce.github.io/qit-documentation/#/).
 
 ### Highlights
 
@@ -61,6 +72,14 @@ QIT currently supports the following types of tests:
 
 - Integrate QIT as part of your pull requests with our example [GitHub Workflows integration](https://woocommerce.github.io/qit-documentation/#/workflows/getting-started).
 - Create and share application passwords with your development team, allowing them to use the QIT CLI without having full access to your WooCommerce.com account.
+
+## Is QIT Exclusively Available for WooCommerce.com Partner Developers?
+
+QIT represents a revolutionary step forward in facilitating automated testing for WordPress developers.
+
+In its inaugural phase, we've chosen to primarily target Woo Marketplace Partner Developers. However, our broader vision encompasses extending the availability of this tool to plugins outside of the Marketplace as well, in a commitment to make automated testing accessible to the WordPress ecosystem as a whole.
+
+If you're interested in leveraging the potential of QIT and want to further support its broader goals, we welcome you to [submit an issue](https://github.com/woocommerce/qit-cli/issues) in our GitHub repository. Your input is invaluable to us, as it greatly contributes to directing the course of the project's future.
 
 ## Support
 
