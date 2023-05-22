@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Plugin name: Activation - Assert that we can run a PHP 7.4 test on WordPress 6.2.1.
+ * Plugin name: Activation - Assert that we can run a PHP 7.4 test on WordPress 6.2.2.
  */
 
 add_action( 'wp', static function () {
