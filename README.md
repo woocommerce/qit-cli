@@ -58,6 +58,12 @@ QIT currently supports the following types of tests:
 
 For more detailed information on QIT and how to use it, refer to the [official documentation](https://woocommerce.github.io/qit-documentation/#/).
 
+## Is this tool exclusive to WooCommerce.com Partner Developers?
+
+QIT is an innovative initiative aimed at enhancing the accessibility of automated testing for developers. Our ultimate aspiration is to extend the benefits of this tool to a wider circle of WordPress developers, thereby strengthening the entire ecosystem.
+
+However, as we find ourselves in the preliminary phase of this project, we are currently extending this offering solely to our WooCommerce.com Partner Developers. If you're eager to utilize QIT and want to voice your interest, we welcome you to [submit an issue](https://github.com/woocommerce/qit-cli/issues) in our GitHub repository. We deeply value your feedback as it plays a critical role in shaping the future of our project.
+
 ### Highlights
 
 #### For End-to-End, Activation, and API Tests
