@@ -73,13 +73,13 @@ For more detailed information on QIT and how to use it, refer to the [official d
 - Integrate QIT as part of your pull requests with our example [GitHub Workflows integration](https://woocommerce.github.io/qit-documentation/#/workflows/getting-started).
 - Create and share application passwords with your development team, allowing them to use the QIT CLI without having full access to your WooCommerce.com account.
 
-## Is this tool exclusive to WooCommerce.com Partner Developers?
+## Is QIT Exclusively Available for WooCommerce.com Partner Developers?
 
-QIT is an innovative initiative aimed at enhancing the accessibility of automated testing for WordPress developers.
+QIT represents a revolutionary step forward in facilitating automated testing for WordPress developers.
 
-In this initial phase, we've started with bringing this to Woo Marketplace Partner Developers. Our ultimate aspiration is to extend the benefits of this tool to a wider circle of WordPress developers, thereby strengthening the entire ecosystem.
+In its inaugural phase, we've chosen to primarily target Woo Marketplace Partner Developers. However, our broader vision encompasses extending the availability of this tool to plugins outside of the Marketplace as well, in a commitment to make automated testing accessible to the WordPress ecosystem as a whole.
 
-If you're eager to utilize QIT and want to voice your interest, we welcome you to [submit an issue](https://github.com/woocommerce/qit-cli/issues) in our GitHub repository. We deeply value your feedback as it plays a critical role in shaping the future of our project.
+Should you be interested in leveraging the potential of QIT and wish to express your support for its broader application, we welcome you to [submit an issue](https://github.com/woocommerce/qit-cli/issues) in our GitHub repository. Your input is invaluable to us, as it greatly contributes to directing the course of our project's future.
 
 ## Support
 
