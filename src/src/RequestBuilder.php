@@ -224,10 +224,8 @@ class RequestBuilder {
 
 			if ( $this->retry > 0 ) {
 				$this->retry --;
-				if ( App::make( Output::class )->isVerbose() ) {
-					App::make( Output::class )->writeln( '<comment>Request failed... Retrying.</comment>' );
-				}
-				sleep( 2 );
+				App::make( Output::class )->writeln( '<comment>Request failed... Retrying.</comment>' );
+				usleep( rand( 5 * 1e5, 5 * 1e6 ) ); // Sleep between 0.5s and 5s.
 				$this->request();
 			}
 
