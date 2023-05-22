@@ -34,7 +34,7 @@ jobs:
         run: composer install
 
       - name: Connect to QIT
-        run: ./qit partner:add --user="${{ secrets.QIT_USER }}" --application_password="${{ secrets.QIT_ACCESS_TOKEN }}"
+        run: ./qit partner:add --user="${{ secrets.QIT_USER }}" --application_password="${{ secrets.QIT_ACCESS_TOKEN }}" -vv
 
       - name: Run Self-Tests
         id: run-self-tests

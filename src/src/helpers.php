@@ -10,7 +10,7 @@ function validate_authentication( string $username, string $application_password
 	try {
 		( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/partner-auth' ) )
 			->with_method( 'POST' )
-			->with_retry( 3 )
+			->with_retry( 8 ) // Retry many times due to parallel test runs in CI which might cause 429.
 			->with_post_body( [
 				'app_pass' => base64_encode( sprintf( '%s:%s', $username, $application_password ) ),
 			] )
