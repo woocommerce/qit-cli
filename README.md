@@ -33,9 +33,13 @@ _(Pro Tip: Opting for the Composer installation method simplifies the process of
 3. Move the file to a directory in your PATH, such as `sudo mv qit /usr/local/bin/qit`
 4. Run `qit` to authenticate with your WooCommerce.com Partner Developer account.
 
-## Documentation
+## Examples
 
-For more detailed information on QIT and how to use it, refer to the [official documentation](https://woocommerce.github.io/qit-documentation/#/).
+- `qit run:e2e my-extension` - Runs the WooCommerce Core E2E tests with your extension active.
+- `qit run:e2e my-extension --php_version=8.2` - Same as above, but with PHP 8.2.
+- `qit run:e2e my-extension --php_version=8.2 --woocommerce_version=rc --wordpress_version=rc` - Same as above, but with PHP 8.2, and the release candidate versions of WooCommerce and WordPress, if they are available.
+- `qit run:e2e my-extension --zip` - Runs the tests using your development build zip, that is still unreleased.
+- `qit run:e2e my-extension --additional_wordpress_plugins=gutenberg` - Activates the "Gutenberg" feature plugin in the test environment as well.
 
 ### Supported Tests
 
@@ -47,7 +51,12 @@ QIT currently supports the following types of tests:
 - [PHPStan Test](https://woocommerce.github.io/qit-documentation/#/test-types/phpstan)
 - [API Test](https://woocommerce.github.io/qit-documentation/#/test-types/api)
 - Compatibility Test
+- _PHP Minimum and Maximum Version Compatibility (Coming soon)_
 - _Performance Test (Coming soon)_
+
+## Documentation
+
+For more detailed information on QIT and how to use it, refer to the [official documentation](https://woocommerce.github.io/qit-documentation/#/).
 
 ### Highlights
 
