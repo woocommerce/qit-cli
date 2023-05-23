@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class SyncCommand extends Command {
 	protected static $defaultName = 'sync'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
+	/** @var ManagerSync */
 	protected $manager_sync;
 
 	public function __construct( ManagerSync $manager_sync ) {
