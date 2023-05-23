@@ -35,8 +35,26 @@ abstract class DynamicCommandCreator {
 				}
 
 				$description = $property_schema['description'] ?? '';
-				$enum        = $property_schema['enum'] ?? '';
 				$default     = $property_schema['default'] ?? null;
+
+				$items = $property_schema['items'] ?? '';
+				$enum  = $property_schema['enum'] ?? '';
+
+				if ( empty( $enum ) && ! empty( $items ) ) {
+					if ( is_array( $items ) && ! empty( $items ) ) {
+						foreach ( $items as $type => $type_schemas ) {
+							if ( ! in_array( $type, [ 'oneOf', 'anyOf' ], true ) ) {
+								continue;
+							}
+							foreach ( $type_schemas as $type_schema ) {
+								if ( is_array( $type_schema ) && ! empty( $type_schema['enum'] ) ) {
+									$enum = $type_schema['enum'];
+									break;
+								}
+							}
+						}
+					}
+				}
 
 				if ( $required === InputOption::VALUE_OPTIONAL && ! empty( $description ) ) {
 					$description = '(Optional) ' . $description;
