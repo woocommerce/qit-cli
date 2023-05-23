@@ -96,7 +96,7 @@ class ManagerSync {
 
 		if ( version_compare( $current_version, $latest_version, '<' ) ) {
 			$this->output->writeln( '<comment>There\'s a new version of the QIT CLI available!</comment>' );
-			$this->output->writeln( sprintf( "Current version: %s\n<info>Latest version: %s</info>\nIt's strongly recommended to update. Update instructions: https://woocommerce.github.io/qit-documentation/#/cli/getting-started?id=updating-qit</info>\n", $current_version, $latest_version ) );
+			$this->output->writeln( sprintf( "Current version: %s\n<info>Latest version: %s</info>\nUpdate today to take advantage of the latest features! Update instructions: https://woocommerce.github.io/qit-documentation/#/cli/getting-started?id=updating-qit</info>\n", $current_version, $latest_version ) );
 			if ( version_compare( $current_version, $minimum_cli_version, '<' ) ) {
 				if ( ! Config::is_development_mode() ) {
 					$this->output->writeln( sprintf( '<error>You are using an outdated version of the CLI. Please update to the latest version (%s).</error>', $latest_version ) );
