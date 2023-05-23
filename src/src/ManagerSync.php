@@ -92,18 +92,18 @@ class ManagerSync {
 		}
 
 		$latest_version = $this->environment->get_cache()->get_manager_sync_data( 'latest_cli_version' );
-		$enforce_latest = $this->environment->get_cache()->get_manager_sync_data( 'enforce_latest' );
+		$minimum_cli_version = $this->environment->get_cache()->get_manager_sync_data( 'minimum_cli_version' );
 
 		if ( version_compare( $current_version, $latest_version, '<' ) ) {
-			if ( $enforce_latest ) {
+			$this->output->writeln( '<comment>There\'s a new version of the QIT CLI available!</comment>' );
+			$this->output->writeln( sprintf( "Current version: %s\n<info>Latest version: %s</info>\nIt's strongly recommended to update. Update instructions: https://woocommerce.github.io/qit-documentation/#/cli/getting-started?id=updating-qit</info>\n", $current_version, $latest_version ) );
+			if ( version_compare( $current_version, $minimum_cli_version, '<' ) ) {
 				if ( ! Config::is_development_mode() ) {
 					$this->output->writeln( sprintf( '<error>You are using an outdated version of the CLI. Please update to the latest version (%s).</error>', $latest_version ) );
 					throw new UpdateRequiredException();
 				} else {
 					$this->output->writeln( sprintf( '<comment>You are using an outdated version of the CLI (%s). Please update to the latest version (%s). Continuing execution as dev mode is enabled.</comment>', $current_version, $latest_version ) );
 				}
-			} else {
-				$this->output->writeln( sprintf( "<info>[There's a new version of the QIT CLI available! It's strongly recommended to update. Current version: %s Latest version: %s]</info>\n", $current_version, $latest_version ) );
 			}
 		}
 	}
