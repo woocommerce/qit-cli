@@ -13,6 +13,7 @@ class SyncCommand extends Command {
 	protected $manager_sync;
 
 	public function __construct( ManagerSync $manager_sync ) {
+		parent::__construct();
 		$this->manager_sync = $manager_sync;
 	}
 
@@ -23,6 +24,8 @@ class SyncCommand extends Command {
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		$this->manager_sync->maybe_sync( true );
+
+		$output->writeln( 'Sync completed.' );
 
 		return Command::SUCCESS;
 	}
