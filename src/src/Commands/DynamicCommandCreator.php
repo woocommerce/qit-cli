@@ -41,7 +41,7 @@ abstract class DynamicCommandCreator {
 				$enum  = $property_schema['enum'] ?? '';
 
 				if ( empty( $enum ) && ! empty( $items ) ) {
-					if ( is_array( $items ) && ! empty( $items ) ) {
+					if ( is_array( $items ) ) {
 						foreach ( $items as $type => $type_schemas ) {
 							if ( ! in_array( $type, [ 'oneOf', 'anyOf' ], true ) ) {
 								continue;
