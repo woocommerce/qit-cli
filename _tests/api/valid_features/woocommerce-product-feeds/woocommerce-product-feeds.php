@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Plugin name: API - Trigger failure when New Product Editor is not enabled.
+ * Plugin name: API - Log that the  New Product Editor is enabled.
  */
 
  add_action( 'woocommerce_admin_get_feature_config', static function( $features ) {
