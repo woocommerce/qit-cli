@@ -23,7 +23,7 @@
             "event": "cli_development_extension_test",
             "optional_features": {
                 "hpos": false,
-                "cc_blocks": false
+                "new_product_editor": false
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
