@@ -9,7 +9,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -27,20 +27,20 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 1 failed, 41 passed, 42 total | Tests: 7 skipped, 3 failed, 177 passed, 187 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 42 passed, 42 total | Tests: 8 skipped, 0 failed, 179 passed, 187 total.",
             "version": "Zip",
             "test_result_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 41,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 42,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 42,
-                "numFailedTests": 3,
-                "numPassedTests": 177,
-                "numPendingTests": 7,
+                "numFailedTests": 0,
+                "numPassedTests": 179,
+                "numPendingTests": 8,
                 "numTotalTests": 187,
                 "testResults": [
                     {
@@ -805,32 +805,32 @@
                     },
                     {
                         "file": "new-product-editor\\/new-product-editor.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "New product editor": [],
                             "New product editor > Default (disabled)": [
                                 {
                                     "title": "is feature flag disabled",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "is not hooked up to sidebar \\"Add New\\"",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "New product editor > Enabled": [
                                 {
                                     "title": "is feature flag enabled",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "is hooked up to sidebar \\"Add New\\"",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can be disabled from the header",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can be disabled from the feedback footer",
@@ -1199,13 +1199,13 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 41 passed, 42 total | Tests: 7 skipped, 3 failed, 177 passed, 187 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 42 passed, 42 total | Tests: 8 skipped, 0 failed, 179 passed, 187 total."
             }
         },
         {
             "debug_log": [
                 {
-                    "count": "20",
+                    "count": "16",
                     "message": "The Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options::get_options function is deprecated since version 3.1."
                 }
             ]
