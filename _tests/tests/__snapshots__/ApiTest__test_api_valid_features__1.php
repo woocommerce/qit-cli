@@ -1379,32 +1379,8 @@
         {
             "debug_log": [
                 {
-                    "count": "4287",
-                    "message": "PHP Warning: array_filter() expects parameter 1 to be array, null given in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/FeaturePlugin.php on line 211"
-                },
-                {
-                    "count": "4287",
-                    "message": "PHP Warning: array_keys() expects parameter 1 to be array, null given in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Internal\\/Admin\\/FeaturePlugin.php on line 211"
-                },
-                {
-                    "count": "3676",
-                    "message": "PHP Warning: array_diff(): Expected parameter 1 to be an array, null given in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/Features.php on line 184"
-                },
-                {
-                    "count": "3676",
-                    "message": "PHP Warning: array_values() expects parameter 1 to be array, null given in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/Features.php on line 184"
-                },
-                {
-                    "count": "3676",
-                    "message": "PHP Warning: in_array() expects parameter 2 to be array, null given in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/Features.php on line 195"
-                },
-                {
-                    "count": "611",
-                    "message": "PHP Warning: Invalid argument supplied for foreach() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/Admin\\/Features\\/Features.php on line 135"
-                },
-                {
-                    "count": "4251",
-                    "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 13"
+                    "count": "607",
+                    "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                 },
                 {
                     "count": "3",

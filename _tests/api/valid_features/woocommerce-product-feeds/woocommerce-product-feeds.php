@@ -11,4 +11,6 @@
 	) {
 		trigger_error( "New Product Editor is enabled as expected." );
 	}
+
+	return $features;
 }, 99 );
