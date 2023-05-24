@@ -17,6 +17,7 @@ use QIT_CLI\Commands\Partner\AddPartner;
 use QIT_CLI\Commands\Partner\RemovePartner;
 use QIT_CLI\Commands\Partner\SwitchPartner;
 use QIT_CLI\Commands\SetProxyCommand;
+use QIT_CLI\Commands\SyncCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Config;
 use QIT_CLI\Diagnosis;
@@ -171,6 +172,7 @@ if ( count( Environment::get_configured_environments( true ) ) > 1 ) {
 if ( Config::is_development_mode() ) {
 	$application->add( $container->make( AddEnvironment::class ) );
 	$application->add( $container->make( SetProxyCommand::class ) );
+	$application->add( $container->make( SyncCommand::class ) );
 
 	// Only show options to remove and see the current environment if there's at least one environment added.
 	if ( count( Environment::get_configured_environments( false ) ) > 0 ) {
