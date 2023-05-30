@@ -91,7 +91,7 @@ class ManagerSync {
 			return;
 		}
 
-		$latest_version = $this->environment->get_cache()->get_manager_sync_data( 'latest_cli_version' );
+		$latest_version      = $this->environment->get_cache()->get_manager_sync_data( 'latest_cli_version' );
 		$minimum_cli_version = $this->environment->get_cache()->get_manager_sync_data( 'minimum_cli_version' );
 
 		if ( version_compare( $current_version, $latest_version, '<' ) ) {
