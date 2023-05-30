@@ -2,9 +2,7 @@
 
 namespace QIT_CLI\Commands;
 
-use QIT_CLI\Commands\Environment\AddEnvironment;
 use QIT_CLI\Commands\Partner\AddPartner;
-use QIT_CLI\Config;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
