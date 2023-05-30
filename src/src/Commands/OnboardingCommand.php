@@ -72,7 +72,7 @@ COMMAND
 		if ( $is_proxied ) {
 			$io->section( 'Onboarding as Automattician (Connected to Proxy)' );
 
-			$io->writeln( $proxied_instructions );
+			$io->writeln( $proxied_instructions . "\n" );
 
 			$user = new Question( 'Please enter the user: ' );
 			$user = $question_helper->ask( $input, $output, $user );
