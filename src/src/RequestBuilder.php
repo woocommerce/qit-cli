@@ -197,7 +197,21 @@ class RequestBuilder {
 		curl_setopt_array( $curl, $curl_parameters );
 
 		if ( App::make( Output::class )->isVeryVerbose() ) {
-			App::make( Output::class )->writeln( sprintf( '[QIT DEBUG] Running external request: %s', json_encode( $this->to_array(), JSON_PRETTY_PRINT ) ) );
+			$request_in_logs = $this->to_array();
+
+			/*
+			 * Remove some sensitive data from external request logs just to protect the user from itself
+			 * in case it's running on verbose mode in CI.
+			 */
+			if ( getenv( 'CI' ) ) {
+				foreach ( [ 'app_pass', 'partner_app_pass', 'manager_secret' ] as $protected_key ) {
+					if ( ! empty( $request_in_logs['post_body'][ $protected_key ] ) ) {
+						$request_in_logs['post_body'][ $protected_key ] = '***';
+					}
+				}
+			}
+
+			App::make( Output::class )->writeln( sprintf( '[QIT DEBUG] Running external request: %s', json_encode( $request_in_logs, JSON_PRETTY_PRINT ) ) );
 		}
 
 		$result               = curl_exec( $curl );
