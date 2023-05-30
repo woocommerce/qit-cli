@@ -74,18 +74,20 @@ COMMAND
 		if ( $is_proxied ) {
 			$io->section( 'Onboarding as Automattician (Connected to Proxy)' );
 
-			$question = new Question( $proxied_instructions );
-			$question->setHidden( true );
-			$answer = $question_helper->ask( $input, $output, $question );
+			$io->writeln( $proxied_instructions );
 
-			$command = $this->getApplication()->find( AddEnvironment::getDefaultName() );
+			$user = new Question( 'Please enter the user: ' );
+			$user = $question_helper->ask( $input, $output, $user );
 
-			Config::set_development_mode( true );
+			$app_pass = new Question( 'Please enter the application password: ' );
+			$app_pass->setHidden( true );
+			$app_pass = $question_helper->ask( $input, $output, $app_pass );
+
+			$command = $this->getApplication()->find( AddPartner::getDefaultName() );
 
 			return $command->run( new ArrayInput( [
-				'--environment' => 'production',
-				'--manager_url' => 'https://compatibilitydashboard.wpcomstaging.com/',
-				'--qit_secret'  => $answer,
+				'--user'                 => $user,
+				'--application_password' => $app_pass,
 			] ), $output );
 		} else {
 			$io->section( 'Onboarding as Partner of the Woo Marketplace' );
