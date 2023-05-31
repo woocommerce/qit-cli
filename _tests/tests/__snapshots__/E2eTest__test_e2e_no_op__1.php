@@ -1205,7 +1205,7 @@
         {
             "debug_log": [
                 {
-                    "count": "16",
+                    "count": "20",
                     "message": "The Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options::get_options function is deprecated since version 3.1."
                 }
             ]
