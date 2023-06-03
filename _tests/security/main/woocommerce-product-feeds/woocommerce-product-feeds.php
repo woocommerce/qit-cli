@@ -2,6 +2,7 @@
 
 /*
  * Plugin name: Security - Plugin A
+ * Version: 0.1-test-version
  */
 
 add_action( 'init', static function() {

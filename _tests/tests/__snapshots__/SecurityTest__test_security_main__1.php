@@ -29,7 +29,7 @@
             "test_results_manager_expiration": 1234567890,
             "test_summary": "Errors: 4 Warnings: 3",
             "debug_log": "",
-            "version": "Undefined",
+            "version": "0.1-test-version",
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {
@@ -52,7 +52,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
-                                        "line": 9,
+                                        "line": 10,
                                         "column": 10
                                     },
                                     {
@@ -61,7 +61,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
-                                        "line": 12,
+                                        "line": 13,
                                         "column": 8
                                     },
                                     {
@@ -70,7 +70,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
-                                        "line": 15,
+                                        "line": 16,
                                         "column": 3
                                     },
                                     {
@@ -79,7 +79,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
-                                        "line": 16,
+                                        "line": 17,
                                         "column": 3
                                     },
                                     {
@@ -88,7 +88,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
-                                        "line": 20,
+                                        "line": 21,
                                         "column": 1
                                     }
                                 ]
@@ -107,7 +107,7 @@
                                 "warnings": 0,
                                 "messages": [
                                     {
-                                        "line": 12,
+                                        "line": 13,
                                         "column": 3,
                                         "type": "ERROR",
                                         "message": "User Input directly used in echo\\/printf statement, leading to Reflected XSS",
@@ -116,7 +116,7 @@
                                         "fixable": false
                                     },
                                     {
-                                        "line": 13,
+                                        "line": 14,
                                         "column": 3,
                                         "type": "ERROR",
                                         "message": "User Input directly used in echo\\/printf statement, leading to Reflected XSS",
