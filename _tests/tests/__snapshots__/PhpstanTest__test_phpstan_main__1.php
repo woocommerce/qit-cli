@@ -29,7 +29,7 @@
             "test_results_manager_expiration": 1234567890,
             "test_summary": "Errors: 0, File Errors: 2",
             "debug_log": "",
-            "version": "Zip",
+            "version": "Undefined",
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {

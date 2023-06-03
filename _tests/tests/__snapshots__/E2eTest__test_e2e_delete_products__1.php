@@ -28,7 +28,7 @@
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
             "test_summary": "Test Suites: 0 skipped, 6 failed, 36 passed, 42 total | Tests: 137 skipped, 7 failed, 43 passed, 187 total.",
-            "version": "Zip",
+            "version": "Undefined",
             "test_result_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },

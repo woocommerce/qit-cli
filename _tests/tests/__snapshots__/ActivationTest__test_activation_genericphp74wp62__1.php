@@ -29,7 +29,7 @@
             "test_results_manager_expiration": 1234567890,
             "test_summary": "6 Errors Detected. (1 Fatal, 2 Warnings, 3 Notices)",
             "debug_log": "",
-            "version": "Zip",
+            "version": "Undefined",
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {
