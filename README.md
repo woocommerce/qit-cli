@@ -11,6 +11,10 @@
 
 The Quality Insights Toolkit (QIT) is an automated testing tool developed by WooCommerce for extension developers in the [Woo Marketplace](https://woocommerce.com/products/). It allows you to run various types of tests on your extension in a managed environment and receive feedback on potential issues or errors.
 
+<p align="center">
+  <img src="https://github.com/woocommerce/qit-cli/assets/9341686/640698a7-01c3-498a-8bb2-7c5e337e0a9c" alt="Qit Quick Demo">
+</p>
+
 ## Installing QIT
 
 You can install QIT in three different ways:
