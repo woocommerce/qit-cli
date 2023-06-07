@@ -38,7 +38,6 @@ class Upload {
 
 		try {
 			$this->check_zip_consistency( $zip_path, $output );
-			$this->validate_zip_plugin( $zip_path, $extension_slug );
 		} catch ( \Exception $e ) {
 			throw $e;
 		}
@@ -116,46 +115,6 @@ class Upload {
 
 		if ( $opened !== true ) {
 			throw new \UnexpectedValueException( 'Invalid Zip file.' );
-		}
-	}
-
-	/**
-	 * This method will look for a top-level directory at the zip file
-	 * that matches the plugin slug. For instance, if the plugin slug
-	 * is "Foo", the zip file must have a "foo" directory at the top-level.
-	 *
-	 * @param string $zip_file The path to the zip plugin.
-	 * @param string $plugin_slug The plugin slug to look for.
-	 *
-	 * @return void
-	 */
-	protected function validate_zip_plugin( string $zip_file, string $plugin_slug ): void {
-		$zip = new ZipArchive();
-
-		// Do not check for consistency when opening, so that it opens macOS Archive Utility zips.
-		$opened = $zip->open( $zip_file );
-
-		if ( $opened !== true ) {
-			throw new \UnexpectedValueException( 'Invalid Zip file.' );
-		}
-
-		$found_plugin_dir = false;
-
-		for ( $i = 0; $i < $zip->numFiles; $i ++ ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-			$info = $zip->statIndex( $i );
-
-			if ( ! $info ) {
-				throw new \UnexpectedValueException( 'Could not retrieve file from archive.' );
-			}
-
-			if ( $info['name'] === $plugin_slug . '/' ) {
-				$found_plugin_dir = true;
-				break;
-			}
-		}
-
-		if ( ! $found_plugin_dir ) {
-			throw new \UnexpectedValueException( sprintf( 'Invalid zip contents. Please make sure that the zip contains the plugin folder at the root level. Expected to find directory: %s', $plugin_slug ) );
 		}
 	}
 }
