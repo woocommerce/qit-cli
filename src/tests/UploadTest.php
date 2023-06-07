@@ -115,6 +115,23 @@ class UploadTest extends QITTestCase {
 		$upload->upload_build( 123, 'foo', __DIR__ . '/foo.zip', new NullOutput() );
 	}
 
+	public function test_upload_fails_if_no_parent_dir() {
+		$this->inject_request_builder_mock();
+		$upload = App::make( Upload::class );
+
+		file_put_contents( __DIR__ . '/foo.txt', 'a' );
+		$zip = new ZipArchive();
+		$zip->open( __DIR__ . '/foo.zip', ZipArchive::CREATE );
+		$zip->addFile( __DIR__ . '/data/cat.jpg', 'cat.jpg' );
+		$zip->close();
+
+		$this->to_delete[] = __DIR__ . '/foo.zip';
+		$this->to_delete[] = __DIR__ . '/foo.txt';
+
+		$this->expectException( Exception::class );
+		$upload->upload_build( 123, 'foo', __DIR__ . '/foo.zip', new NullOutput() );
+	}
+
 	public function test_upload_file_exists() {
 		$this->inject_request_builder_mock();
 		$upload = App::make( Upload::class );
