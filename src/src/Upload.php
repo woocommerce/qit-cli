@@ -148,8 +148,8 @@ class Upload {
 
 		$found_parent_directory  = false;
 		$found_plugin_entrypoint = false;
-		$default_headers = [
-			'Name' => 'Plugin Name'
+		$default_headers         = [
+			'Name' => 'Plugin Name',
 		];
 
 		for ( $i = 0; $i < $zip->numFiles; $i ++ ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
@@ -200,14 +200,14 @@ class Upload {
 	 * @see \get_file_data()
 	 * @see \get_plugin_data()
 	 *
-	 * @param string $file_path The file path.
-	 * @param array $default_headers The default headers.
+	 * @param string        $file_path The file path.
+	 * @param array<scalar> $default_headers The default headers.
 	 *
-	 * @return array The file data.
+	 * @return array<scalar> The file data.
 	 */
 	protected function get_file_data( string $file_path, array $default_headers ): array {
 		$all_headers = $default_headers;
-		$file_data = file_get_contents( $file_path, false, null, 0, 8 * 1024 );
+		$file_data   = file_get_contents( $file_path, false, null, 0, 8 * 1024 );
 
 		if ( ! empty( $file_data ) ) {
 			$file_data = str_replace( "\r", "\n", $file_data );
