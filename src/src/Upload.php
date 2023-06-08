@@ -2,6 +2,7 @@
 
 namespace QIT_CLI;
 
+use QIT_CLI\Exceptions\InvalidZipException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 use ZipArchive;
@@ -119,15 +120,16 @@ class Upload {
 		}
 	}
 
+
 	/**
-	 * This method will look for a top-level directory at the zip file
-	 * that matches the plugin slug. For instance, if the plugin slug
-	 * is "Foo", the zip file must have a "foo" directory at the top-level.
+	 * Checks if the given zip file contains a directory with the same name as the plugin slug,
+	 * or that the zip name matches the plugin slug as a fallback.
 	 *
-	 * @param string $zip_file The path to the zip plugin.
-	 * @param string $plugin_slug The plugin slug to look for.
+	 * @param string $zip_file The zip file path.
+	 * @param string $plugin_slug The plugin slug.
 	 *
 	 * @return void
+	 * @throws InvalidZipException If the zip file is invalid.
 	 */
 	protected function validate_zip_plugin( string $zip_file, string $plugin_slug ): void {
 		$zip = new ZipArchive();
@@ -139,7 +141,10 @@ class Upload {
 			throw new \UnexpectedValueException( 'Invalid Zip file.' );
 		}
 
-		$found_plugin_dir = false;
+		// foo => foo/
+		$parent_dir = strtolower( trim( trim( $plugin_slug ), '/' ) . '/' );
+
+		$found_parent_directory = false;
 
 		for ( $i = 0; $i < $zip->numFiles; $i ++ ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$info = $zip->statIndex( $i );
@@ -148,14 +153,36 @@ class Upload {
 				throw new \UnexpectedValueException( 'Could not retrieve file from archive.' );
 			}
 
-			if ( $info['name'] === $plugin_slug . '/' ) {
-				$found_plugin_dir = true;
+			/*
+			 * Examples:
+			 * - $parent_dir = my-extension/
+			 * - $info['name'] = some-file-outside-of-extension.php -> False
+			 * - $info['name'] = my-extension/my-extension.php -> true
+			 * - $info['name'] = my-extension/assets/custom.css -> true
+			 */
+			if ( $this->starts_with( strtolower( $info['name'] ), $parent_dir ) ) {
+				$found_parent_directory = true;
 				break;
 			}
 		}
 
-		if ( ! $found_plugin_dir ) {
-			throw new \UnexpectedValueException( sprintf( 'Invalid zip contents. Please make sure that the zip contains the plugin folder at the root level. Expected to find directory: %s', $plugin_slug ) );
+		// We didn't find a parent directory.
+		if ( ! $found_parent_directory ) {
+			// If the zip does not have a parent directory matching the plugin slug, the zip file should match the plugin slug.
+			if ( $zip_file !== $plugin_slug . '.zip' ) {
+				// If both conditions fails, then the zip file is invalid.
+				throw InvalidZipException::invalid_plugin_zip( $zip_file, $plugin_slug );
+			}
 		}
+	}
+
+	/**
+	 * @param string $haystack The string to search in.
+	 * @param string $needle The string to search for.
+	 *
+	 * @return bool Whether the haystack starts with the needle.
+	 */
+	private function starts_with( string $haystack, string $needle ): bool {
+		return strncmp( $haystack, $needle, strlen( $needle ) ) === 0;
 	}
 }
