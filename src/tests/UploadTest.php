@@ -54,7 +54,6 @@ class ZipBuilder {
 		}
 
 		foreach ( $this->files as $file ) {
-			$this->normalize_modification_date( $file['source'] );
 			if ( ! $zip->addFile( $file['source'], $file['target'] ) ) {
 				throw new RuntimeException( 'Could not add file to zip: ' . $file['source'] );
 			}
@@ -69,23 +68,6 @@ class ZipBuilder {
 		}
 
 		return __DIR__ . "/$this->filename";
-	}
-
-
-	/**
-	 * Zip archives stores the FileMTime as metadata,
-	 * which interferes with snapshot testing.
-	 * Set a predictable FileMTime to normalize the created
-	 * zip files for snapshot testing.
-	 *
-	 * @param string $filename The file to set the modification date for.
-	 *
-	 * @return void
-	 */
-	protected function normalize_modification_date( string $filename ): void {
-		if ( ! touch( $filename, strtotime( '2020-01-01 00:00:00' ) ) ) {
-			throw new RuntimeException( "Could not set modification date for $filename" );
-		}
 	}
 }
 
