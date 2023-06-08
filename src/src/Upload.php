@@ -148,6 +148,9 @@ class Upload {
 
 		$found_parent_directory  = false;
 		$found_plugin_entrypoint = false;
+		$default_headers = [
+			'Name' => 'Plugin Name'
+		];
 
 		for ( $i = 0; $i < $zip->numFiles; $i ++ ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$info = $zip->statIndex( $i );
@@ -170,28 +173,9 @@ class Upload {
 			}
 
 			if ( ! $found_plugin_entrypoint && str_ends_with( strtolower( $info['name'] ), '.php' ) ) {
-				/**
-				 * Port from Core.
-				 *
-				 * @see \get_file_data()
-				 */
-				// Get the first 8kbs of data of this PHP file inside the zip.
-				$file_data = file_get_contents( "zip://$zip_file#{$info['name']}", false, null, 0, 8 * 1024 );
-
-				if ( ! empty( $file_data ) ) {
-					// Normalize.
-					$file_data = str_replace( "\r", "\n", $file_data );
-
-					/**
-					 * Search for "Plugin Name" header, which is the only header required by WordPress.
-					 *
-					 * @see \get_plugin_data
-					 * @see \get_file_data
-					 * @link https://developer.wordpress.org/plugins/plugin-basics/header-requirements/
-					 */
-					if ( preg_match( '/^(?:[ \t]*<\?php)?[ \t\/*#@]*' . preg_quote( 'Plugin Name', '/' ) . ':(.*)$/mi', $file_data, $match ) && $match[1] ) {
-						$found_plugin_entrypoint = true;
-					}
+				/** @see get_plugin_data() */
+				if ( ! empty( $this->get_file_data( "zip://$zip_file#{$info['name']}", $default_headers )['Name'] ) ) {
+					$found_plugin_entrypoint = true;
 				}
 			}
 		}
@@ -208,5 +192,33 @@ class Upload {
 				throw InvalidZipException::invalid_plugin_zip( $zip_filename, $plugin_slug );
 			}
 		}
+	}
+
+	/**
+	 * This function is a port from WordPress Core.
+	 *
+	 * @see \get_file_data()
+	 * @see \get_plugin_data()
+	 *
+	 * @param string $file_path The file path.
+	 * @param array $default_headers The default headers.
+	 *
+	 * @return array The file data.
+	 */
+	protected function get_file_data( string $file_path, array $default_headers ): array {
+		$all_headers = $default_headers;
+		$file_data = file_get_contents( $file_path, false, null, 0, 8 * 1024 );
+
+		if ( ! empty( $file_data ) ) {
+			$file_data = str_replace( "\r", "\n", $file_data );
+
+			foreach ( $all_headers as $field => $regex ) {
+				if ( preg_match( '/^(?:[ \t]*<\?php)?[ \t\/*#@]*' . preg_quote( $regex, '/' ) . ':(.*)$/mi', $file_data, $match ) && $match[1] ) {
+					$all_headers[ $field ] = $match[1];
+				}
+			}
+		}
+
+		return $all_headers;
 	}
 }
