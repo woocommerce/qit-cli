@@ -121,3 +121,40 @@ function generate_uuid4() {
 		mt_rand( 0, 0xffff )
 	);
 }
+
+
+// Polyfill ported from WordPress Core.
+if ( ! function_exists( 'str_starts_with' ) ) {
+	/**
+	 * @param string $haystack The string to search in.
+	 * @param string $needle The string to search for.
+	 *
+	 * @return bool Whether the haystack starts with the needle.
+	 */
+	function str_starts_with( string $haystack, string $needle ): bool {
+		if ( $needle === '' ) {
+			return true;
+		}
+
+		return strpos( $haystack, $needle ) === 0;
+	}
+}
+
+// Polyfill ported from WordPress Core.
+if ( ! function_exists( 'str_ends_with' ) ) {
+	/**
+	 * @param string $haystack The string to search in.
+	 * @param string $needle The string to search for.
+	 *
+	 * @return bool Whether the haystack ends with the needle.
+	 */
+	function str_ends_with( string $haystack, string $needle ): bool {
+		if ( $haystack === '' && $needle !== '' ) {
+			return false;
+		}
+
+		$len = strlen( $needle );
+
+		return substr_compare( $haystack, $needle, - $len, $len ) === 0;
+	}
+}

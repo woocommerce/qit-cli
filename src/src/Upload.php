@@ -134,55 +134,79 @@ class Upload {
 	protected function validate_zip_plugin( string $zip_file, string $plugin_slug ): void {
 		$zip = new ZipArchive();
 
+		$zip_filename = basename( $zip_file );
+
 		// Do not check for consistency when opening, so that it opens macOS Archive Utility zips.
 		$opened = $zip->open( $zip_file );
 
 		if ( $opened !== true ) {
-			throw new \UnexpectedValueException( 'Invalid Zip file.' );
+			throw InvalidZipException::not_a_zip();
 		}
 
-		// foo => foo/
+		// Example (foo => foo/).
 		$parent_dir = strtolower( trim( trim( $plugin_slug ), '/' ) . '/' );
 
-		$found_parent_directory = false;
+		$found_parent_directory  = false;
+		$found_plugin_entrypoint = false;
 
 		for ( $i = 0; $i < $zip->numFiles; $i ++ ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$info = $zip->statIndex( $i );
 
 			if ( ! $info ) {
-				throw new \UnexpectedValueException( 'Could not retrieve file from archive.' );
+				throw InvalidZipException::cannot_read_zip_index();
 			}
 
 			/*
+			 * Does this ZIP contain the parent directory?
+			 *
 			 * Examples:
 			 * - $parent_dir = my-extension/
 			 * - $info['name'] = some-file-outside-of-extension.php -> False
 			 * - $info['name'] = my-extension/my-extension.php -> true
 			 * - $info['name'] = my-extension/assets/custom.css -> true
 			 */
-			if ( $this->starts_with( strtolower( $info['name'] ), $parent_dir ) ) {
+			if ( ! $found_parent_directory && str_starts_with( strtolower( $info['name'] ), $parent_dir ) ) {
 				$found_parent_directory = true;
-				break;
 			}
+
+			if ( ! $found_plugin_entrypoint && str_ends_with( strtolower( $info['name'] ), '.php' ) ) {
+				/**
+				 * Port from Core.
+				 *
+				 * @see \get_file_data()
+				 */
+				// Get the first 8kbs of data of this PHP file inside the zip.
+				$file_data = file_get_contents( "zip://$zip_file#{$info['name']}", false, null, 0, 8 * 1024 );
+
+				if ( ! empty( $file_data ) ) {
+					// Normalize.
+					$file_data = str_replace( "\r", "\n", $file_data );
+
+					/**
+					 * Search for "Plugin Name" header, which is the only header required by WordPress.
+					 *
+					 * @see \get_plugin_data
+					 * @see \get_file_data
+					 * @link https://developer.wordpress.org/plugins/plugin-basics/header-requirements/
+					 */
+					if ( preg_match( '/^(?:[ \t]*<\?php)?[ \t\/*#@]*' . preg_quote( 'Plugin Name', '/' ) . ':(.*)$/mi', $file_data, $match ) && $match[1] ) {
+						$found_plugin_entrypoint = true;
+					}
+				}
+			}
+		}
+
+		if ( ! $found_plugin_entrypoint ) {
+			throw InvalidZipException::plugin_entrypoint_not_found();
 		}
 
 		// We didn't find a parent directory.
 		if ( ! $found_parent_directory ) {
 			// If the zip does not have a parent directory matching the plugin slug, the zip file should match the plugin slug.
-			if ( $zip_file !== $plugin_slug . '.zip' ) {
+			if ( $zip_filename !== $plugin_slug . '.zip' ) {
 				// If both conditions fails, then the zip file is invalid.
-				throw InvalidZipException::invalid_plugin_zip( $zip_file, $plugin_slug );
+				throw InvalidZipException::invalid_plugin_zip( $zip_filename, $plugin_slug );
 			}
 		}
-	}
-
-	/**
-	 * @param string $haystack The string to search in.
-	 * @param string $needle The string to search for.
-	 *
-	 * @return bool Whether the haystack starts with the needle.
-	 */
-	private function starts_with( string $haystack, string $needle ): bool {
-		return strncmp( $haystack, $needle, strlen( $needle ) ) === 0;
 	}
 }

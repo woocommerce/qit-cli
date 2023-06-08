@@ -2,14 +2,93 @@
 
 namespace QIT_CLI_Tests;
 
-use Exception;
 use QIT_CLI\App;
+use QIT_CLI\Exceptions\InvalidZipException;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
 use RuntimeException;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Console\Output\NullOutput;
 use ZipArchive;
+
+class ZipBuilder {
+	private $filename;
+	private $files = array();
+
+	/**
+	 * @param string $filename The name of the zip file to be created.
+	 */
+	public function __construct( $filename ) {
+		$this->filename = $filename;
+	}
+
+	/**
+	 * Adds a new file to the archive.
+	 *
+	 * @param string $source The file to be added.
+	 * @param string $target The target path in the archive.
+	 *
+	 * @return ZipBuilder The current ZipBuilder instance.
+	 */
+	public function with_file( $source, $target ): self {
+		$this->files[] = array(
+			'source' => $source,
+			'target' => $target,
+		);
+
+		return $this;
+	}
+
+	/**
+	 * Builds the zip archive.
+	 *
+	 * @return string The zip file path.
+	 * @throws RuntimeException If the zip file could not be created.
+	 *
+	 */
+	public function build(): string {
+		$zip = new ZipArchive();
+
+		if ( $zip->open( __DIR__ . "/$this->filename", ZipArchive::CREATE ) !== true ) {
+			throw new RuntimeException( 'Could not create zip file.' );
+		}
+
+		foreach ( $this->files as $file ) {
+			$this->normalize_modification_date( $file['source'] );
+			if ( ! $zip->addFile( $file['source'], $file['target'] ) ) {
+				throw new RuntimeException( 'Could not add file to zip: ' . $file['source'] );
+			}
+		}
+
+		$zip->close();
+
+		clearstatcache();
+
+		if ( ! file_exists( __DIR__ . "/$this->filename" ) ) {
+			throw new RuntimeException( 'Zip file was not created.' );
+		}
+
+		return __DIR__ . "/$this->filename";
+	}
+
+
+	/**
+	 * Zip archives stores the FileMTime as metadata,
+	 * which interferes with snapshot testing.
+	 * Set a predictable FileMTime to normalize the created
+	 * zip files for snapshot testing.
+	 *
+	 * @param string $filename The file to set the modification date for.
+	 *
+	 * @return void
+	 */
+	protected function normalize_modification_date( string $filename ): void {
+		if ( ! touch( $filename, strtotime( '2020-01-01 00:00:00' ) ) ) {
+			throw new RuntimeException( "Could not set modification date for $filename" );
+		}
+	}
+}
+
 
 class UploadTest extends QITTestCase {
 	use MatchesSnapshots;
@@ -19,6 +98,11 @@ class UploadTest extends QITTestCase {
 	public function setUp(): void {
 		global $_test_post_bodies;
 		$_test_post_bodies = [];
+
+		// Pre-create the entrypoint file as we use it on various tests.
+		file_put_contents(__DIR__ . '/plugin-entrypoint.php', '<?php Plugin Name: Foo');
+		$this->to_delete[] = __DIR__ . '/plugin-entrypoint.php';
+
 		parent::setUp();
 	}
 
@@ -45,55 +129,53 @@ class UploadTest extends QITTestCase {
 		App::singleton( RequestBuilder::class, $mock );
 	}
 
-	protected function create_file( string $name, string $contents ) {
-		file_put_contents( __DIR__ . '/' . $name, $contents );
-
-		/*
-		 * Zip archives stores the FileMTime as metadata,
-		 * which interferes with snapshot testing.
-		 * Set a predictable FileMTime to normalize the created
-		 * zip files for snapshot testing.
-		 */
-		touch( __DIR__ . '/' . $name, 1669652766 );
-
-		$this->to_delete[] = __DIR__ . '/' . $name;
-	}
-
 	/**
 	 * @param Upload $upload The Upload instance to get the requests.
 	 *
-	 * @return array All requests this Upload instance sent out, normalized for snapshot testing.
+	 * @return array An array with the requests and the size of the chunks sent.
 	 */
 	protected function get_requests_from_upload( Upload $upload ): array {
+		$content_size_sent = 0;
+
 		$data = [];
 
 		foreach ( $upload->_requests as $r ) {
 			$normalized_request = $r->to_array();
 
 			if ( isset( $normalized_request['post_body']['chunk'] ) ) {
-				/*
-				 * The ZIP algorithm includes bytes that stores the
-				 * file modification and creation times. This makes
-				 * it impossible to do snapshot tests of the chunks
-				 * of a zip file, as each time you create them, they
-				 * will be slightly different.
-				 */
-				$normalized_request['post_body']['chunk'] = 'Contents removed for snapshot tests.';
-			}
+				$content_size_sent += strlen( $normalized_request['post_body']['chunk'] );
 
-			if ( isset( $normalized_request['post_body']['expected_size'] ) ) {
-				// Due to the same reason above, the expected size varies a little, which breaks snapshot testing.
-				$normalized_request['post_body']['expected_size'] = 123;
+				// It's impossible to do snapshot testing on zips, as they change every time they are created.
+				$normalized_request['post_body']['chunk'] = 'REMOVED_FOR_SNAPSHOT_TEST';
 			}
 
 			if ( isset( $normalized_request['post_body']['md5_sum'] ) ) {
-				$normalized_request['post_body']['md5_sum'] = 'Normalized MD5';
+				// It's impossible to do snapshot testing on zips, as they change every time they are created.
+				$normalized_request['post_body']['md5_sum'] = 'REMOVED_FOR_SNAPSHOT_TEST';
 			}
 
 			$data[] = $normalized_request;
 		}
 
-		return $data;
+		return [ $content_size_sent, $data ];
+	}
+
+	protected function list_zip_contents( string $zip_file_path, bool $acceptable ) {
+		$zip_archive = new ZipArchive();
+
+		if ( ! $zip_archive->open( $zip_file_path ) ) {
+			throw new RuntimeException( 'Could not open zip file.' );
+		}
+
+		$index = [ 'contents' => [] ];
+
+		for ( $i = 0; $i < $zip_archive->numFiles; $i ++ ) {
+			$index['contents'][] = $zip_archive->getNameIndex( $i );
+		}
+
+		$zip_archive->close();
+
+		return $index;
 	}
 
 	public function test_upload_file_not_exists() {
@@ -115,60 +197,126 @@ class UploadTest extends QITTestCase {
 		$upload->upload_build( 123, 'foo', __DIR__ . '/foo.zip', new NullOutput() );
 	}
 
-	public function test_upload_fails_if_no_parent_dir() {
+	/*
+	 * Regular Scenario: Plugin entrypoint inside directory matching SUT slug.
+	 *
+	 * Zip name: example.zip
+	 * SUT Slug: foo
+	 * Contents:
+	 *   - foo/plugin-entrypoint.php
+	 * Outcome: Success
+	 */
+	public function test_upload_succeeds() {
 		$this->inject_request_builder_mock();
 		$upload = App::make( Upload::class );
 
-		file_put_contents( __DIR__ . '/foo.txt', 'a' );
-		$zip = new ZipArchive();
-		$zip->open( __DIR__ . '/foo.zip', ZipArchive::CREATE );
-		$zip->addFile( __DIR__ . '/data/cat.jpg', 'cat.jpg' );
-		$zip->close();
+		$zip_file = 'example.zip';
+		$sut_slug = 'foo';
 
-		$this->to_delete[] = __DIR__ . '/foo.zip';
-		$this->to_delete[] = __DIR__ . '/foo.txt';
+		$zip = ( new ZipBuilder( $zip_file ) )
+			->with_file( __DIR__ . '/plugin-entrypoint.php', "$sut_slug/plugin-entrypoint.php" )
+			->build();
 
-		$this->expectException( Exception::class );
-		$upload->upload_build( 123, 'foo', __DIR__ . '/foo.zip', new NullOutput() );
+		$this->to_delete[] = __DIR__ . "/$zip_file";
+
+		$this->assertMatchesSnapshot( $this->list_zip_contents( $zip, true ) );
+		$upload->upload_build( 123, $sut_slug, __DIR__ . "/$zip_file", new NullOutput() );
+		$this->assertTrue( true );
 	}
 
-	public function test_upload_file_exists() {
+	/*
+	 * Acceptable scenario: Plugin entrypoint without parent directory, but zip matches SUT slug.
+	 *
+	 * Zip name: foo.zip
+	 * SUT Slug: foo
+	 * Contents:
+	 *   - plugin-entrypoint.php
+	 * Outcome: Success
+	 */
+	public function test_upload_succeeds_without_parent_dir_zip_name_matches_slug() {
 		$this->inject_request_builder_mock();
 		$upload = App::make( Upload::class );
 
-		file_put_contents( __DIR__ . '/foo.txt', 'a' );
-		$zip = new ZipArchive();
-		$zip->open( __DIR__ . '/foo.zip', ZipArchive::CREATE );
-		$zip->addEmptyDir('foo');
-		$zip->addFile( __DIR__ . '/data/cat.jpg', 'foo/cat.jpg' );
-		$zip->close();
+		$zip_file = 'foo.zip';
+		$sut_slug = 'foo';
 
-		$this->to_delete[] = __DIR__ . '/foo.zip';
-		$this->to_delete[] = __DIR__ . '/foo.txt';
+		$zip = ( new ZipBuilder( $zip_file ) )
+			->with_file( __DIR__ . '/plugin-entrypoint.php', 'plugin-entrypoint.php' )
+			->build();
 
-		$upload->upload_build( 123, 'foo', __DIR__ . '/foo.zip', new NullOutput() );
+		$this->to_delete[] = __DIR__ . "/$zip_file";
 
-		// This test passes if we don't throw an exception.
+		$this->assertMatchesSnapshot( $this->list_zip_contents( $zip, true ) );
+		$upload->upload_build( 123, $sut_slug, __DIR__ . "/$zip_file", new NullOutput() );
 		$this->assertTrue( true );
+	}
+
+	/*
+	 * Failure scenario: No valid plugin found.
+	 *
+	 * Zip name: foo.zip
+	 * SUT Slug: foo
+	 * Contents:
+	 *   - cat.jpg
+	 * Outcome: Failure: Not a valid plugin.
+	 */
+	public function test_upload_fails_without_valid_plugin() {
+		$this->inject_request_builder_mock();
+		$upload = App::make( Upload::class );
+
+		$zip_file = 'foo.zip';
+		$sut_slug = 'foo';
+
+		$zip = ( new ZipBuilder( $zip_file ) )
+			->with_file( __DIR__ . '/data/cat.jpg', "$sut_slug/cat.jpg" )
+			->build();
+
+		$this->to_delete[] = __DIR__ . "/$zip_file";
+
+		$this->assertMatchesSnapshot( $this->list_zip_contents( $zip, false ) );
+
+		$this->expectException( InvalidZipException::class );
+		$this->expectExceptionMessage( InvalidZipException::plugin_entrypoint_not_found()->getMessage() );
+		$upload->upload_build( 123, $sut_slug, __DIR__ . "/$zip_file", new NullOutput() );
+	}
+
+	/**
+	 * @param string $zip_file Path to zip file.
+	 * @param int $content_size_sent Size of contents uploaded.
+	 *
+	 * @return void
+	 */
+	protected function assert_sent_chunks_matches_original_file( string $zip_file, int $content_size_sent ) {
+		$original_zip_file_size = strlen( base64_encode( file_get_contents( $zip_file ) ) );
+
+		// Allow uploaded data to vary up to 4kb compared to local zip, to accommodate dynamic ZipArchive metadata.
+		$variance = 4096;
+
+		$this->assertTrue( $content_size_sent >= $original_zip_file_size - $variance && $content_size_sent <= $original_zip_file_size + $variance );
 	}
 
 	public function test_upload_reads_whole_file() {
 		$this->inject_request_builder_mock();
 		$upload = App::make( Upload::class );
 
-		$this->create_file( 'foo.txt', 'a' );
+		$zip_file = 'foo.zip';
+		$sut_slug = 'foo';
 
-		$zip = new ZipArchive();
-		$zip->open( __DIR__ . '/foo.zip', ZipArchive::CREATE );
-		$zip->addEmptyDir('foo');
-		$zip->addFile( __DIR__ . '/data/cat.jpg', 'foo/cat.jpg' );
-		$zip->close();
+		$zip = ( new ZipBuilder( $zip_file ) )
+			->with_file( __DIR__ . '/plugin-entrypoint.php', "$sut_slug/plugin-entrypoint.php" )
+			->with_file( __DIR__ . '/data/cat.jpg', "$sut_slug/cat.jpg" )
+			->build();
 
-		$this->to_delete[] = __DIR__ . '/foo.zip';
+		$this->to_delete[] = __DIR__ . "/$zip_file";
 
-		$upload->upload_build( 123, 'foo', __DIR__ . '/foo.zip', new NullOutput() );
+		$this->assertMatchesSnapshot( $this->list_zip_contents( $zip, true ) );
 
-		$this->assertMatchesJsonSnapshot( $this->get_requests_from_upload( $upload ) );
+		$upload->upload_build( 123, $sut_slug, __DIR__ . "/$zip_file", new NullOutput() );
+
+		[ $content_size_sent, $data ] =  $this->get_requests_from_upload( $upload );
+
+		$this->assertMatchesJsonSnapshot( json_encode( $data ) );
+		$this->assert_sent_chunks_matches_original_file( __DIR__ . "/$zip_file", $content_size_sent );
 	}
 
 	public function test_upload_reads_whole_file_in_chunks() {
@@ -178,19 +326,24 @@ class UploadTest extends QITTestCase {
 		// 128kb chunks
 		App::setVar( 'UPLOAD_CHUNK_KB', 128 );
 
-		touch( __DIR__ . '/data/cat.jpg', 1669652766 );
+		$zip_file = 'foo.zip';
+		$sut_slug = 'foo';
 
-		$zip = new ZipArchive();
-		$zip->open( __DIR__ . '/foo.zip', ZipArchive::CREATE );
-		$zip->addEmptyDir('foo');
-		$zip->addFile( __DIR__ . '/data/cat.jpg', 'foo/cat.jpg' );
-		$zip->close();
+		$zip = ( new ZipBuilder( $zip_file ) )
+			->with_file( __DIR__ . '/plugin-entrypoint.php', "$sut_slug/plugin-entrypoint.php" )
+			->with_file( __DIR__ . '/data/cat.jpg', "$sut_slug/cat.jpg" )
+			->build();
 
-		$this->to_delete[] = __DIR__ . '/foo.zip';
+		$this->to_delete[] = __DIR__ . "/$zip_file";
 
-		$upload->upload_build( 123, 'foo', __DIR__ . '/foo.zip', new NullOutput() );
+		$this->assertMatchesSnapshot( $this->list_zip_contents( $zip, true ) );
 
-		$this->assertMatchesJsonSnapshot( json_encode( $this->get_requests_from_upload( $upload ) ) );
+		$upload->upload_build( 123, $sut_slug, __DIR__ . "/$zip_file", new NullOutput() );
+
+		[ $content_size_sent, $data ] =  $this->get_requests_from_upload( $upload );
+
+		$this->assertMatchesJsonSnapshot( json_encode( $data ) );
+		$this->assert_sent_chunks_matches_original_file( __DIR__ . "/$zip_file", $content_size_sent );
 
 		App::offsetUnset( 'UPLOAD_CHUNK_KB' );
 	}
@@ -203,17 +356,19 @@ class UploadTest extends QITTestCase {
 		// 128kb chunks
 		App::setVar( 'UPLOAD_CHUNK_KB', 128 );
 
-		touch( __DIR__ . '/data/cat.jpg', 1669652766 );
+		$zip_file = 'foo.zip';
+		$sut_slug = 'foo';
 
-		$zip = new ZipArchive();
-		$zip->open( __DIR__ . '/foo.zip', ZipArchive::CREATE );
-		$zip->addEmptyDir('foo');
-		$zip->addFile( __DIR__ . '/data/cat.jpg', 'foo/cat.jpg' );
-		$zip->close();
+		$zip = ( new ZipBuilder( $zip_file ) )
+			->with_file( __DIR__ . '/plugin-entrypoint.php', "$sut_slug/plugin-entrypoint.php" )
+			->with_file( __DIR__ . '/data/cat.jpg', "$sut_slug/cat.jpg" )
+			->build();
 
-		$this->to_delete[] = __DIR__ . '/foo.zip';
+		$this->to_delete[] = __DIR__ . "/$zip_file";
 
-		$upload->upload_build( 123, 'foo', __DIR__ . '/foo.zip', new NullOutput() );
+		$this->assertMatchesSnapshot( $this->list_zip_contents( $zip, true ) );
+
+		$upload->upload_build( 123, $sut_slug, __DIR__ . "/$zip_file", new NullOutput() );
 
 		// Hydrate the chunks and validate it's the same as the source.
 		$file_string = '';
