@@ -134,9 +134,9 @@ function validate_zip_plugin( string $zip_file, string $plugin_slug ) {
 			 * This is used in the CLI to show a progress bar.
 			 */
 			yield [
-				'total_files'        => $zip->numFiles,
+				'total_files'        => $zip->numFiles, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				'scanned_files'      => $scanned_files,
-				'scanned_percentage' => (float) number_format( ( $scanned_files / $zip->numFiles ) * 100, 2 ),
+				'scanned_percentage' => (float) number_format( ( $scanned_files / $zip->numFiles ) * 100, 2 ), // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			];
 
 			$info = $zip->statIndex( $i );
