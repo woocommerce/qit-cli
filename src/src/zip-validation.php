@@ -96,8 +96,8 @@ function check_zip_consistency( string $filepath ) {
  * @param string $zip_file The zip file path.
  * @param string $plugin_slug The plugin slug.
  *
- * @return \Generator|array<string,int> A generator that yields progress updates as scanning
- *                                      progresses and ultimately returns the final counts.
+ * @return \Generator|array<string,mixed> A generator that yields progress updates as scanning
+ *                                        progresses and ultimately returns the final counts.
  * @throws InvalidZipException If the zip file is invalid.
  */
 function validate_zip_plugin( string $zip_file, string $plugin_slug ) {
