@@ -2,10 +2,12 @@
 
 namespace QIT_CLI;
 
-use QIT_CLI\Exceptions\InvalidZipException;
+use QIT_CLI\IO\Input;
+use QIT_ZIP_Validation\InconsistentZipException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
-use ZipArchive;
+use function QIT_ZIP_Validation\check_zip_consistency;
+use function QIT_ZIP_Validation\validate_zip_plugin;
 
 class Upload {
 	/** @var array<RequestBuilder> $_requests The requests made by this Upload instance,
@@ -38,10 +40,32 @@ class Upload {
 		}
 
 		try {
-			$this->check_zip_consistency( $zip_path, $output );
-			$this->validate_zip_plugin( $zip_path, $extension_slug );
-		} catch ( \Exception $e ) {
-			throw $e;
+			check_zip_consistency( $zip_path );
+		} catch ( InconsistentZipException $e ) {
+			$output->writeln( '<comment>Zip file failed consistency check. We will proceed with the upload, as macOS Archive Utility is known to generate zip files that are non-compliant with the Zip specification.</comment>' );
+		}
+
+		$output->writeln( 'Starting zip validation...' );
+
+		$generator = validate_zip_plugin( $zip_path, $extension_slug );
+
+		$progress_bar = new ProgressBar( $output );
+
+		foreach ( $generator as $partial_result ) {
+			if ( ! $progress_bar->getMaxSteps() && isset( $partial_result['total_files'] ) ) {
+				$progress_bar->setMaxSteps( $partial_result['total_files'] );
+			}
+
+			$progress_bar->setProgress( $partial_result['scanned_files'] );
+		}
+
+		$progress_bar->finish();
+		$results = $generator->getReturn();
+
+		if ( $output->isVerbose() ) {
+			$output->writeln( sprintf( "\nValidated after scanning %d out of %d files (Efficiency: %.2f%%)", $results['scanned_files'], $results['total_files'], 100 - $results['scanned_percentage'] ) );
+		} else {
+			$output->writeln( "\nValidation complete." );
 		}
 
 		$file = fopen( $zip_path, 'rb' );
@@ -53,7 +77,7 @@ class Upload {
 		$cd_upload_id  = generate_uuid4();
 
 		$progress_bar = new ProgressBar( $output, $total_chunks );
-		$output->writeln( 'Uploading zip build...' );
+		$output->writeln( 'Initiating zip upload...' );
 		$progress_bar->start();
 
 		while ( ! feof( $file ) ) {
@@ -95,104 +119,6 @@ class Upload {
 		$output->writeln( '' );
 
 		return $parsed_response['upload_id'];
-	}
-
-	/**
-	 * Checks if the given zip file passes a zip consistency check.
-	 *
-	 * @param string          $zip_file The zip file path.
-	 * @param OutputInterface $output The output instance.
-	 *
-	 * @return void
-	 */
-	protected function check_zip_consistency( string $zip_file, OutputInterface $output ): void {
-		$zip = new ZipArchive();
-
-		$opened = $zip->open( $zip_file, ZipArchive::CHECKCONS );
-
-		if ( $opened === 21 ) {
-			$output->writeln( '<comment>Zip file failed consistency check. We will proceed with the upload, as macOS Archive Utility is known to generate zip files that are non-compliant with the Zip specification.</comment>' );
-
-			return;
-		}
-
-		if ( $opened !== true ) {
-			throw new \UnexpectedValueException( 'Invalid Zip file.' );
-		}
-	}
-
-
-	/**
-	 * Checks if the given zip file contains a directory with the same name as the plugin slug,
-	 * or that the zip name matches the plugin slug as a fallback.
-	 *
-	 * @param string $zip_file The zip file path.
-	 * @param string $plugin_slug The plugin slug.
-	 *
-	 * @return void
-	 * @throws InvalidZipException If the zip file is invalid.
-	 */
-	protected function validate_zip_plugin( string $zip_file, string $plugin_slug ): void {
-		$zip = new ZipArchive();
-
-		$zip_filename = basename( $zip_file );
-
-		// Do not check for consistency when opening, so that it opens macOS Archive Utility zips.
-		$opened = $zip->open( $zip_file );
-
-		if ( $opened !== true ) {
-			throw InvalidZipException::not_a_zip();
-		}
-
-		// Example (foo => foo/).
-		$parent_dir = strtolower( trim( trim( $plugin_slug ), '/' ) . '/' );
-
-		$found_parent_directory  = false;
-		$found_plugin_entrypoint = false;
-		$default_headers         = [
-			'Name' => 'Plugin Name',
-		];
-
-		for ( $i = 0; $i < $zip->numFiles; $i ++ ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-			$info = $zip->statIndex( $i );
-
-			if ( ! $info ) {
-				throw InvalidZipException::cannot_read_zip_index();
-			}
-
-			/*
-			 * Does this ZIP contain the parent directory?
-			 *
-			 * Examples:
-			 * - $parent_dir = my-extension/
-			 * - $info['name'] = some-file-outside-of-extension.php -> False
-			 * - $info['name'] = my-extension/my-extension.php -> true
-			 * - $info['name'] = my-extension/assets/custom.css -> true
-			 */
-			if ( ! $found_parent_directory && str_starts_with( strtolower( $info['name'] ), $parent_dir ) ) {
-				$found_parent_directory = true;
-			}
-
-			if ( ! $found_plugin_entrypoint && str_ends_with( strtolower( $info['name'] ), '.php' ) ) {
-				/** @see get_plugin_data() */
-				if ( ! empty( $this->get_file_data( "zip://$zip_file#{$info['name']}", $default_headers )['Name'] ) ) {
-					$found_plugin_entrypoint = true;
-				}
-			}
-		}
-
-		if ( ! $found_plugin_entrypoint ) {
-			throw InvalidZipException::plugin_entrypoint_not_found();
-		}
-
-		// We didn't find a parent directory.
-		if ( ! $found_parent_directory ) {
-			// If the zip does not have a parent directory matching the plugin slug, the zip file should match the plugin slug.
-			if ( $zip_filename !== $plugin_slug . '.zip' ) {
-				// If both conditions fails, then the zip file is invalid.
-				throw InvalidZipException::invalid_plugin_zip( $zip_filename, $plugin_slug );
-			}
-		}
 	}
 
 	/**

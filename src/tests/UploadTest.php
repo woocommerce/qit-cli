@@ -3,9 +3,9 @@
 namespace QIT_CLI_Tests;
 
 use QIT_CLI\App;
-use QIT_CLI\Exceptions\InvalidZipException;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
+use QIT_ZIP_Validation\InvalidZipException;
 use RuntimeException;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Console\Output\NullOutput;
@@ -175,7 +175,7 @@ class UploadTest extends QITTestCase {
 		file_put_contents( __DIR__ . '/foo.zip', 'a' );
 		$this->to_delete[] = __DIR__ . '/foo.zip';
 
-		$this->expectException( RuntimeException::class );
+		$this->expectException( InvalidZipException::class );
 		$upload->upload_build( 123, 'foo', __DIR__ . '/foo.zip', new NullOutput() );
 	}
 

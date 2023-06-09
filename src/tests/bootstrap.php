@@ -23,6 +23,7 @@ function qit_tests_clean_config_dir() {
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/helpers.php';
+require_once __DIR__ . '/../src/zip-validation.php';
 
 if ( ! file_exists( '/tmp/.woo-qit-tests' ) ) {
 	if ( ! mkdir( '/tmp/.woo-qit-tests' ) ) {
