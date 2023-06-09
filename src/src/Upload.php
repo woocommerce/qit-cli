@@ -2,7 +2,6 @@
 
 namespace QIT_CLI;
 
-use QIT_CLI\IO\Input;
 use QIT_ZIP_Validation\InconsistentZipException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;

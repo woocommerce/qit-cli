@@ -1,11 +1,20 @@
 <?php
 /**
  * QIT Zip Validation.
- * Requires: PHP 7.2
  *
- * Tests for this file lives in QIT CLI UploadTest.php file.
+ * Requires PHP version 7.2 or later.
+ * Tests for this file are present in the QIT CLI UploadTest.php file.
  *
- * This file is shared by different QIT systems to validate a ZIP file.
+ * This PHP file does not require WordPress, and provides functionality for validating zip files.
+ * It is designed to verify the integrity and structure of zip files according to specific criteria.
+ * These criteria include checks for a consistent zip structure, the presence of a
+ * specific directory within the zip, and the location of a plugin entrypoint.
+ *
+ * It utilizes a generator for efficient scanning and real-time feedback. As it scans the zip file,
+ * it yields progress updates with information about the total files, number of scanned files,
+ * and the percentage of files scanned so far.
+ *
+ * Both the CLI and the Manager should use this same file.
  */
 
 namespace QIT_ZIP_Validation;
@@ -75,12 +84,20 @@ function check_zip_consistency( string $filepath ) {
  * Checks if the given zip file contains a directory with the same name as the plugin slug,
  * or that the zip name matches the plugin slug as a fallback.
  *
+ * This function is a generator and will yield progress updates as it scans the zip file.
+ * The yielded updates are associative arrays with the following keys:
+ * - 'total_files': The total number of files in the zip.
+ * - 'scanned_files': The number of files scanned so far.
+ * - 'scanned_percentage': The percentage of the total files that have been scanned so far.
+ *
+ * Once all files have been scanned or the necessary information has been found, the function will
+ * return an associative array with the same keys as the yielded updates.
+ *
  * @param string $zip_file The zip file path.
  * @param string $plugin_slug The plugin slug.
  *
- * @return array<string,int> An array containing how many files the zip has, how many files we had to scan
- *                           to find the info we were looking for, and what was the scanned files percentage,
- *                           which can be a measurement of efficiency to find the information we were looking for.
+ * @return \Generator|array<string,int> A generator that yields progress updates as scanning
+ *                                      progresses and ultimately returns the final counts.
  * @throws InvalidZipException If the zip file is invalid.
  */
 function validate_zip_plugin( string $zip_file, string $plugin_slug ) {
