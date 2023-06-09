@@ -28,6 +28,9 @@ class RequestBuilder {
 	/** @var int */
 	protected $retry = 0;
 
+	/** @var int */
+	protected $timeout_in_seconds = 15;
+
 	public function __construct( string $url = '' ) {
 		$this->url = $url;
 	}
@@ -109,6 +112,17 @@ class RequestBuilder {
 		return $this;
 	}
 
+	/**
+	 * @param int $timeout_in_seconds
+	 *
+	 * @return RequestBuilder
+	 */
+	public function with_timeout_in_seconds( int $timeout_in_seconds ): RequestBuilder {
+		$this->timeout_in_seconds = $timeout_in_seconds;
+
+		return $this;
+	}
+
 	public function request(): string {
 		retry_request: // phpcs:ignore Generic.PHP.DiscourageGoto.Found
 		if ( defined( 'UNIT_TESTS' ) ) {
@@ -145,8 +159,8 @@ class RequestBuilder {
 			CURLOPT_URL            => $this->url,
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_FOLLOWLOCATION => true,
-			CURLOPT_CONNECTTIMEOUT => 15,
-			CURLOPT_TIMEOUT        => 15,
+			CURLOPT_CONNECTTIMEOUT => $this->timeout_in_seconds,
+			CURLOPT_TIMEOUT        => $this->timeout_in_seconds,
 		];
 
 		$this->post_body['client'] = 'qit_cli';

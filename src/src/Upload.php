@@ -63,6 +63,7 @@ class Upload {
 					->with_url( get_manager_url() . '/wp-json/cd/v1/upload-build' )
 					->with_method( 'POST' )
 					->with_expected_status_codes( [ 200, 206 ] )
+					->with_timeout_in_seconds( 60 )
 					->with_post_body( [
 						'cd_upload_id'     => $cd_upload_id,
 						'woo_extension_id' => $woo_extension_id,
