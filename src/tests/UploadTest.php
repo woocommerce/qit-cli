@@ -3,6 +3,7 @@
 namespace QIT_CLI_Tests;
 
 use QIT_CLI\App;
+use QIT_CLI\Exceptions\InvalidZipException;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
 use RuntimeException;
@@ -239,7 +240,7 @@ class UploadTest extends QITTestCase {
 	 * SUT Slug: foo
 	 * Contents:
 	 *   - cat.jpg
-	 * Outcome: Success. We don't check for zip contents.
+	 * Outcome: Failure: Not a valid plugin.
 	 */
 	public function test_upload_fails_without_valid_plugin() {
 		$this->inject_request_builder_mock();
@@ -256,9 +257,9 @@ class UploadTest extends QITTestCase {
 
 		$this->assertMatchesSnapshot( $this->list_zip_contents( $zip, false ) );
 
+		$this->expectException( InvalidZipException::class );
+		$this->expectExceptionMessage( InvalidZipException::plugin_entrypoint_not_found()->getMessage() );
 		$upload->upload_build( 123, $sut_slug, __DIR__ . "/$zip_file", new NullOutput() );
-
-		$this->assertTrue( true );
 	}
 
 	/**
