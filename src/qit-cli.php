@@ -8,7 +8,6 @@ use Symfony\Component\Console\Application;
 try {
 	require_once __DIR__ . '/vendor/autoload.php';
 	require_once __DIR__ . '/src/helpers.php';
-	require_once __DIR__ . '/src/zip-validation.php';
 
 	// Initialize DI container.
 	$container = new Container();

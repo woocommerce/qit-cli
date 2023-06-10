@@ -2,11 +2,9 @@
 
 namespace QIT_CLI;
 
-use QIT_ZIP_Validation\InconsistentZipException;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
-use function QIT_ZIP_Validation\check_zip_consistency;
-use function QIT_ZIP_Validation\validate_zip_plugin;
+use ZipArchive;
 
 class Upload {
 	/** @var array<RequestBuilder> $_requests The requests made by this Upload instance,
@@ -38,34 +36,7 @@ class Upload {
 			throw new \RuntimeException( sprintf( 'File %s is not readable.', $zip_path ) );
 		}
 
-		try {
-			check_zip_consistency( $zip_path );
-		} catch ( InconsistentZipException $e ) {
-			$output->writeln( '<comment>Zip file failed consistency check. We will proceed with the upload, as macOS Archive Utility is known to generate zip files that are non-compliant with the Zip specification.</comment>' );
-		}
-
-		$output->writeln( 'Starting zip validation...' );
-
-		$generator = validate_zip_plugin( $zip_path, $extension_slug );
-
-		$progress_bar = new ProgressBar( $output );
-
-		foreach ( $generator as $partial_result ) {
-			if ( ! $progress_bar->getMaxSteps() && isset( $partial_result['total_files'] ) ) {
-				$progress_bar->setMaxSteps( $partial_result['total_files'] );
-			}
-
-			$progress_bar->setProgress( $partial_result['scanned_files'] );
-		}
-
-		$progress_bar->finish();
-		$results = $generator->getReturn();
-
-		if ( $output->isVerbose() ) {
-			$output->writeln( sprintf( "\nValidated after scanning %d out of %d files (Efficiency: %.2f%%)", $results['scanned_files'], $results['total_files'], 100 - $results['scanned_percentage'] ) );
-		} else {
-			$output->writeln( "\nValidation complete." );
-		}
+		$this->check_zip_consistency( $zip_path, $output );
 
 		$file = fopen( $zip_path, 'rb' );
 		$stat = fstat( $file );
@@ -121,30 +92,26 @@ class Upload {
 	}
 
 	/**
-	 * This function is a port from WordPress Core.
+	 * Checks if the given zip file passes a zip consistency check.
 	 *
-	 * @see \get_file_data()
-	 * @see \get_plugin_data()
+	 * @param string          $filepath The zip file path.
+	 * @param OutputInterface $output The output instance.
 	 *
-	 * @param string        $file_path The file path.
-	 * @param array<scalar> $default_headers The default headers.
+	 * @throws \RuntimeException If the file is not a zip file.
 	 *
-	 * @return array<scalar> The file data.
+	 * @return void
 	 */
-	protected function get_file_data( string $file_path, array $default_headers ): array {
-		$all_headers = $default_headers;
-		$file_data   = file_get_contents( $file_path, false, null, 0, 8 * 1024 );
+	protected function check_zip_consistency( string $filepath, OutputInterface $output ) {
+		$zip = new ZipArchive();
 
-		if ( ! empty( $file_data ) ) {
-			$file_data = str_replace( "\r", "\n", $file_data );
+		$opened = $zip->open( $filepath, ZipArchive::CHECKCONS );
 
-			foreach ( $all_headers as $field => $regex ) {
-				if ( preg_match( '/^(?:[ \t]*<\?php)?[ \t\/*#@]*' . preg_quote( $regex, '/' ) . ':(.*)$/mi', $file_data, $match ) && $match[1] ) {
-					$all_headers[ $field ] = $match[1];
-				}
-			}
+		if ( $opened === 21 ) {
+			$output->writeln( '<comment>Zip file failed consistency check. We will proceed with the upload, as macOS Archive Utility is known to generate zip files that are non-compliant with the Zip specification.</comment>' );
 		}
 
-		return $all_headers;
+		if ( $opened !== true ) {
+			throw new \RuntimeException( 'This is not a valid zip file.' );
+		}
 	}
 }

@@ -5,7 +5,6 @@ namespace QIT_CLI_Tests;
 use QIT_CLI\App;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
-use QIT_ZIP_Validation\InvalidZipException;
 use RuntimeException;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Console\Output\NullOutput;
@@ -175,91 +174,9 @@ class UploadTest extends QITTestCase {
 		file_put_contents( __DIR__ . '/foo.zip', 'a' );
 		$this->to_delete[] = __DIR__ . '/foo.zip';
 
-		$this->expectException( InvalidZipException::class );
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( 'This is not a valid zip file.' );
 		$upload->upload_build( 123, 'foo', __DIR__ . '/foo.zip', new NullOutput() );
-	}
-
-	/*
-	 * Regular Scenario: Plugin entrypoint inside directory matching SUT slug.
-	 *
-	 * Zip name: example.zip
-	 * SUT Slug: foo
-	 * Contents:
-	 *   - foo/plugin-entrypoint.php
-	 * Outcome: Success
-	 */
-	public function test_upload_succeeds() {
-		$this->inject_request_builder_mock();
-		$upload = App::make( Upload::class );
-
-		$zip_file = 'example.zip';
-		$sut_slug = 'foo';
-
-		$zip = ( new ZipBuilder( $zip_file ) )
-			->with_file( __DIR__ . '/plugin-entrypoint.php', "$sut_slug/plugin-entrypoint.php" )
-			->build();
-
-		$this->to_delete[] = __DIR__ . "/$zip_file";
-
-		$this->assertMatchesSnapshot( $this->list_zip_contents( $zip, true ) );
-		$upload->upload_build( 123, $sut_slug, __DIR__ . "/$zip_file", new NullOutput() );
-		$this->assertTrue( true );
-	}
-
-	/*
-	 * Acceptable scenario: Plugin entrypoint without parent directory, but zip matches SUT slug.
-	 *
-	 * Zip name: foo.zip
-	 * SUT Slug: foo
-	 * Contents:
-	 *   - plugin-entrypoint.php
-	 * Outcome: Success
-	 */
-	public function test_upload_succeeds_without_parent_dir_zip_name_matches_slug() {
-		$this->inject_request_builder_mock();
-		$upload = App::make( Upload::class );
-
-		$zip_file = 'foo.zip';
-		$sut_slug = 'foo';
-
-		$zip = ( new ZipBuilder( $zip_file ) )
-			->with_file( __DIR__ . '/plugin-entrypoint.php', 'plugin-entrypoint.php' )
-			->build();
-
-		$this->to_delete[] = __DIR__ . "/$zip_file";
-
-		$this->assertMatchesSnapshot( $this->list_zip_contents( $zip, true ) );
-		$upload->upload_build( 123, $sut_slug, __DIR__ . "/$zip_file", new NullOutput() );
-		$this->assertTrue( true );
-	}
-
-	/*
-	 * Failure scenario: No valid plugin found.
-	 *
-	 * Zip name: foo.zip
-	 * SUT Slug: foo
-	 * Contents:
-	 *   - cat.jpg
-	 * Outcome: Failure: Not a valid plugin.
-	 */
-	public function test_upload_fails_without_valid_plugin() {
-		$this->inject_request_builder_mock();
-		$upload = App::make( Upload::class );
-
-		$zip_file = 'foo.zip';
-		$sut_slug = 'foo';
-
-		$zip = ( new ZipBuilder( $zip_file ) )
-			->with_file( __DIR__ . '/data/cat.jpg', "$sut_slug/cat.jpg" )
-			->build();
-
-		$this->to_delete[] = __DIR__ . "/$zip_file";
-
-		$this->assertMatchesSnapshot( $this->list_zip_contents( $zip, false ) );
-
-		$this->expectException( InvalidZipException::class );
-		$this->expectExceptionMessage( InvalidZipException::plugin_entrypoint_not_found()->getMessage() );
-		$upload->upload_build( 123, $sut_slug, __DIR__ . "/$zip_file", new NullOutput() );
 	}
 
 	/**
