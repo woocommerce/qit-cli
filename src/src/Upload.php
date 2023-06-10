@@ -47,7 +47,7 @@ class Upload {
 		$cd_upload_id  = generate_uuid4();
 
 		$progress_bar = new ProgressBar( $output, $total_chunks );
-		$output->writeln( 'Initiating zip upload...' );
+		$output->writeln( 'Uploading zip...' );
 		$progress_bar->start();
 
 		while ( ! feof( $file ) ) {
