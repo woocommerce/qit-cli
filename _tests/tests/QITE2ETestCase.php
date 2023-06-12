@@ -99,21 +99,39 @@ class QITE2ETestCase extends TestCase {
 				}
 			],
 			'debug_log' => [
-				'normalize' => static function( $value ) {
+				'normalize' => static function ( $value ) use ( $file_path ) {
 					if ( ! is_array( $value ) ) {
 						return $value;
 					}
 
 					$normalized_debug_log = [];
 
+                    /*
+                     * $debug_log is an array with the following structure:
+                     *
+                     * [
+                     *   'count' => <int>,
+                     *   'message' => <string>,
+                     * ]
+                     */
 					foreach ( $value as $k => $debug_log ) {
 						// Normalize timestamps such as [01-Mar-2023 10:55:12 UTC] to [TIMESTAMP]
-						$debug_log = preg_replace( '/\[\d{2}-\w{3}-\d{4} \d{2}:\d{2}:\d{2} UTC\]/', '[TIMESTAMP]', $debug_log );
+						$debug_log['message'] = preg_replace( '/\[\d{2}-\w{3}-\d{4} \d{2}:\d{2}:\d{2} UTC\]/', '[TIMESTAMP]', $debug_log['message'] );
 
 						// Normalize tests running on staging-compatibility to compatibility.
-						$debug_log = str_replace( 'staging-compatibility', 'compatibility', $debug_log );
+						$debug_log['message'] = str_replace( 'staging-compatibility', 'compatibility', $debug_log['message'] );
 
-						$normalized_debug_log[] = $debug_log;
+						if ( stripos( $file_path, 'api/delete_products' ) ) {
+							$pos = stripos( $debug_log['message'], 'Stack Trace:' );
+
+							if ( $pos !== false ) {
+								// Remove stack trace from debug log.
+								$debug_log['message'] = substr( $debug_log['message'], 0, $pos );
+							}
+						}
+
+						// todo: regenerate snapshots and remove strval later.
+						$normalized_debug_log[] = array_map( 'strval', $debug_log );
 					}
 
 					return $normalized_debug_log;
