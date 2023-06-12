@@ -6,9 +6,9 @@
             "cd_upload_id": "123e4567-e89b-12d3-a456-426614174000",
             "woo_extension_id": 123,
             "current_chunk": 1,
-            "md5_sum": "Normalized MD5",
+            "md5_sum": "REMOVED_FOR_SNAPSHOT_TEST",
             "total_chunks": 2,
-            "chunk": "Contents removed for snapshot tests."
+            "chunk": "REMOVED_FOR_SNAPSHOT_TEST"
         },
         "curl_opts": [],
         "expected_status_codes": [
@@ -23,9 +23,9 @@
             "cd_upload_id": "123e4567-e89b-12d3-a456-426614174000",
             "woo_extension_id": 123,
             "current_chunk": 2,
-            "md5_sum": "Normalized MD5",
+            "md5_sum": "REMOVED_FOR_SNAPSHOT_TEST",
             "total_chunks": 2,
-            "chunk": "Contents removed for snapshot tests."
+            "chunk": "REMOVED_FOR_SNAPSHOT_TEST"
         },
         "curl_opts": [],
         "expected_status_codes": [

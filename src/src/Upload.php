@@ -36,12 +36,7 @@ class Upload {
 			throw new \RuntimeException( sprintf( 'File %s is not readable.', $zip_path ) );
 		}
 
-		try {
-			$this->check_zip_consistency( $zip_path, $output );
-			$this->validate_zip_plugin( $zip_path, $extension_slug );
-		} catch ( \Exception $e ) {
-			throw $e;
-		}
+		$this->check_zip_consistency( $zip_path, $output );
 
 		$file = fopen( $zip_path, 'rb' );
 		$stat = fstat( $file );
@@ -52,7 +47,7 @@ class Upload {
 		$cd_upload_id  = generate_uuid4();
 
 		$progress_bar = new ProgressBar( $output, $total_chunks );
-		$output->writeln( 'Uploading zip build...' );
+		$output->writeln( 'Uploading zip...' );
 		$progress_bar->start();
 
 		while ( ! feof( $file ) ) {
@@ -62,6 +57,7 @@ class Upload {
 					->with_url( get_manager_url() . '/wp-json/cd/v1/upload-build' )
 					->with_method( 'POST' )
 					->with_expected_status_codes( [ 200, 206 ] )
+					->with_timeout_in_seconds( 60 )
 					->with_post_body( [
 						'cd_upload_id'     => $cd_upload_id,
 						'woo_extension_id' => $woo_extension_id,
@@ -98,16 +94,19 @@ class Upload {
 	/**
 	 * Checks if the given zip file passes a zip consistency check.
 	 *
-	 * @param string          $zip_file The zip file path.
+	 * @param string          $filepath The zip file path.
 	 * @param OutputInterface $output The output instance.
+	 *
+	 * @throws \RuntimeException If the file is not a zip file.
 	 *
 	 * @return void
 	 */
-	protected function check_zip_consistency( string $zip_file, OutputInterface $output ): void {
+	protected function check_zip_consistency( string $filepath, OutputInterface $output ) {
 		$zip = new ZipArchive();
 
-		$opened = $zip->open( $zip_file, ZipArchive::CHECKCONS );
+		$opened = $zip->open( $filepath, ZipArchive::CHECKCONS );
 
+		// Early bail: Tolerable inconsistency.
 		if ( $opened === 21 ) {
 			$output->writeln( '<comment>Zip file failed consistency check. We will proceed with the upload, as macOS Archive Utility is known to generate zip files that are non-compliant with the Zip specification.</comment>' );
 
@@ -115,47 +114,7 @@ class Upload {
 		}
 
 		if ( $opened !== true ) {
-			throw new \UnexpectedValueException( 'Invalid Zip file.' );
-		}
-	}
-
-	/**
-	 * This method will look for a top-level directory at the zip file
-	 * that matches the plugin slug. For instance, if the plugin slug
-	 * is "Foo", the zip file must have a "foo" directory at the top-level.
-	 *
-	 * @param string $zip_file The path to the zip plugin.
-	 * @param string $plugin_slug The plugin slug to look for.
-	 *
-	 * @return void
-	 */
-	protected function validate_zip_plugin( string $zip_file, string $plugin_slug ): void {
-		$zip = new ZipArchive();
-
-		// Do not check for consistency when opening, so that it opens macOS Archive Utility zips.
-		$opened = $zip->open( $zip_file );
-
-		if ( $opened !== true ) {
-			throw new \UnexpectedValueException( 'Invalid Zip file.' );
-		}
-
-		$found_plugin_dir = false;
-
-		for ( $i = 0; $i < $zip->numFiles; $i ++ ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-			$info = $zip->statIndex( $i );
-
-			if ( ! $info ) {
-				throw new \UnexpectedValueException( 'Could not retrieve file from archive.' );
-			}
-
-			if ( $info['name'] === $plugin_slug . '/' ) {
-				$found_plugin_dir = true;
-				break;
-			}
-		}
-
-		if ( ! $found_plugin_dir ) {
-			throw new \UnexpectedValueException( sprintf( 'Invalid zip contents. Please make sure that the zip contains the plugin folder at the root level. Expected to find directory: %s', $plugin_slug ) );
+			throw new \RuntimeException( 'This is not a valid zip file.' );
 		}
 	}
 }

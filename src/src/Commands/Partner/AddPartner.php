@@ -166,7 +166,7 @@ TEXT;
 		$separator = stripos( $base_url, '?' ) === false ? '?' : '&';
 
 		// Generate a unique app name based on the current timestamp to avoid collision.
-		$app_name = urlencode( 'Woo Quality Insights Toolkit CLI (QIT) ' . time() );
+		$app_name = rawurlencode( 'Woo Quality Insights Toolkit CLI (QIT) ' . time() );
 
 		return $base_url . "{$separator}app_name=$app_name&app_id=$qit_cli_app_id";
 	}
