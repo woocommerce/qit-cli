@@ -106,8 +106,11 @@ class Upload {
 
 		$opened = $zip->open( $filepath, ZipArchive::CHECKCONS );
 
+		// Early bail: Tolerable inconsistency.
 		if ( $opened === 21 ) {
 			$output->writeln( '<comment>Zip file failed consistency check. We will proceed with the upload, as macOS Archive Utility is known to generate zip files that are non-compliant with the Zip specification.</comment>' );
+
+			return;
 		}
 
 		if ( $opened !== true ) {
