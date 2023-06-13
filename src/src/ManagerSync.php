@@ -47,6 +47,7 @@ class ManagerSync {
 
 		try {
 			$manager_sync = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/sync' ) )
+				->with_retry( 2 )
 				->with_method( 'POST' )
 				->request();
 		} catch ( DoingAutocompleteException $e ) {
