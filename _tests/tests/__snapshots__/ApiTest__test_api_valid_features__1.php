@@ -528,7 +528,7 @@
                         "tests": {
                             "Payment Gateways API tests": [
                                 {
-                                    "title": "can view all payment gatways",
+                                    "title": "can view all payment gateways",
                                     "status": "passed"
                                 },
                                 {
@@ -1075,7 +1075,7 @@
                             ],
                             "Settings API tests: CRUD > List all Email Customer Processing Order settings": [
                                 {
-                                    "title": "can retrieve all email customer processsing order settings",
+                                    "title": "can retrieve all email customer processing order settings",
                                     "status": "passed"
                                 }
                             ],
