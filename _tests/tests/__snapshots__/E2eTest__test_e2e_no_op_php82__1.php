@@ -27,20 +27,20 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 42 passed, 42 total | Tests: 8 skipped, 0 failed, 179 passed, 187 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 49 passed, 49 total | Tests: 16 skipped, 0 failed, 187 passed, 203 total.",
             "version": "Undefined",
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 42,
+                "numPassedTestSuites": 49,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 42,
+                "numTotalTestSuites": 49,
                 "numFailedTests": 0,
-                "numPassedTests": 179,
-                "numPendingTests": 8,
-                "numTotalTests": 187,
+                "numPassedTests": 187,
+                "numPendingTests": 16,
+                "numTotalTests": 203,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -67,27 +67,27 @@
                             "Store owner can complete onboarding wizard": [
                                 {
                                     "title": "can complete the \\"Store Details\\" section",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can complete the industry section",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can save industry changes when navigating back to \\"Store Details\\"",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can discard industry changes when navigating back to \\"Store Details\\"",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can complete the product types section",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can complete the business section",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can unselect all business features and continue",
@@ -97,11 +97,11 @@
                             "A Liberian store can complete the selective bundle install but does not include WCPay.": [
                                 {
                                     "title": "can choose the \\"Other\\" industry",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can choose not to install any extensions",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should display the choose payments task, and not the WC Pay task",
@@ -294,6 +294,32 @@
                         }
                     },
                     {
+                        "file": "merchant\\/create-page.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Can create a new page": [
+                                {
+                                    "title": "can create new page",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/create-post.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Can create a new post": [
+                                {
+                                    "title": "can create new post",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/create-shipping-classes.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -326,6 +352,10 @@
                                 },
                                 {
                                     "title": "add shipping zone with region and then delete the region",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "add and delete shipping method",
                                     "status": "passed"
                                 }
                             ],
@@ -759,6 +789,82 @@
                         }
                     },
                     {
+                        "file": "merchant\\/products\\/add-variable-product\\/create-product-attributes.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Add product attributes": [
+                                {
+                                    "title": "can add custom product attributes",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/products\\/add-variable-product\\/create-variable-product.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Add variable product": [
+                                {
+                                    "title": "can create a variable product",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/products\\/add-variable-product\\/create-variations.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Add variations": [
+                                {
+                                    "title": "can generate variations from product attributes",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can manually add a variation",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/products\\/add-variable-product\\/update-variations.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Update variations": [
+                                {
+                                    "title": "can individually edit variations",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can bulk edit variations",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can delete all variations",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can manage stock levels",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can set variation defaults",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can remove a variation",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/settings-general.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1047,6 +1153,27 @@
                         }
                     },
                     {
+                        "file": "shopper\\/dashboard-access.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Customer-role users are blocked from accessing the WP Dashboard.": [
+                                {
+                                    "title": "Customer is redirected from WP Admin home back to the My Account page.",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Customer is redirected from WP Admin profile page back to the My Account page.",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Customer is redirected from WP Admin using ajax query param back to the My Account page.",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "shopper\\/my-account-create-account.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1170,7 +1297,7 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Shopper can change attributes to combination with dimentions and weight",
+                                    "title": "Shopper can change attributes to combination with dimensions and weight",
                                     "status": "passed"
                                 },
                                 {
@@ -1191,14 +1318,14 @@
                         "tests": {
                             "undefined plugin can be uploaded and activated": [
                                 {
-                                    "title": "can upload and activate undefined",
+                                    "title": "can upload and activate \\"undefined\\"",
                                     "status": "pending"
                                 }
                             ]
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 42 passed, 42 total | Tests: 8 skipped, 0 failed, 179 passed, 187 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 49 passed, 49 total | Tests: 16 skipped, 0 failed, 187 passed, 203 total."
             }
         }
     ]
