@@ -100,6 +100,14 @@ class QITE2ETestCase extends TestCase {
 			],
 			'debug_log' => [
 				'normalize' => static function ( $value ) use ( $file_path ) {
+					/*
+					 * When deleting products to cause a test to fail, we introduce a lot of "chaos" that
+					 * makes it very hard to do snapshot test on the debug log.
+					 */
+					if ( stripos( $file_path, 'e2e/delete_products' ) !== false ) {
+						return [ 'NORMALIZED_FOR_SNAPSHOT_TESTING' ];
+					}
+
 					if ( ! is_array( $value ) ) {
 						return $value;
 					}
@@ -121,7 +129,7 @@ class QITE2ETestCase extends TestCase {
 						// Normalize tests running on staging-compatibility to compatibility.
 						$debug_log['message'] = str_replace( 'staging-compatibility', 'compatibility', $debug_log['message'] );
 
-						if ( stripos( $file_path, 'api/delete_products' ) ) {
+						if ( stripos( $file_path, 'api/delete_products' ) !== false ) {
 							$pos = stripos( $debug_log['message'], 'Stack Trace:' );
 
 							if ( $pos !== false ) {
