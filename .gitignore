@@ -6,3 +6,4 @@ src-tmp/
 ./qit
 _tests/**/*.zip
 _tests/**/*.txt
+src/dev

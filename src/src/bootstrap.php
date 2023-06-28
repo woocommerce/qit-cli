@@ -9,6 +9,7 @@ use QIT_CLI\Commands\Environment\AddEnvironment;
 use QIT_CLI\Commands\Environment\CurrentEnvironment;
 use QIT_CLI\Commands\Environment\RemoveEnvironment;
 use QIT_CLI\Commands\Environment\SwitchEnvironment;
+use QIT_CLI\Commands\FixCommand;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\ListCommand;
 use QIT_CLI\Commands\OnboardingCommand;
@@ -207,6 +208,9 @@ if ( $has_environment ) {
 		// Dynamically crete Mass Test run command.
 		$container->make( CreateMassTestCommands::class )->register_commands( $application );
 	}
+
+	// Fix code with AI.
+	$application->add( $container->make( FixCommand::class ) );
 }
 
 if ( $container->make( Output::class )->isVerbose() ) {
