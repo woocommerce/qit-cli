@@ -1,4 +1,5 @@
 vendor/
+!_tests/phpstan/with_vendor/woocommerce-product-feeds/vendor
 .idea/
 src-tmp/
 .cache
