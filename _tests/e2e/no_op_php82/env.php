@@ -1,7 +1,7 @@
 <?php
 return [
 	'php'                  => '8.2',
-	'wp'                   => '6.2.2',
+	'wp'                   => 'rc',
 	'woo'                  => 'rc',
 	/*
 	 * PHP 8.2 generates thousands of notices in the debug log.
