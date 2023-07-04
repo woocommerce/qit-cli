@@ -2,7 +2,9 @@
 
 namespace QIT_CLI\Fixer;
 
+use QIT_CLI\App;
 use QIT_CLI\Fixer\Exceptions\SecurityFixerException;
+use QIT_CLI\IO\Output;
 
 class SecurityFixer {
 	public function fix( string $local_plugin_dir, string $test_result_json ): void {
@@ -21,7 +23,19 @@ class SecurityFixer {
 
 		foreach ( $test_result['tool'] as &$tool ) {
 			foreach ( $tool['files'] as $file_path => &$file ) {
-				$file_locally = $this->find_file_correspondence( $file_path, $local_plugin_dir );
+
+				try {
+					$file_locally = $this->find_file_correspondence( $file_path, $local_plugin_dir );
+				} catch ( SecurityFixerException $e ) {
+					// If file is not found, just notify and skip.
+					if ( stripos( $e->getMessage(), 'does not exist locally.' ) !== false ) {
+						App::make( Output::class )->writeln( '<comment>' . $e->getMessage() . '</comment>' );
+						continue;
+					} else {
+						throw $e;
+					}
+				}
+
 				foreach ( $file['messages'] as &$message ) {
 					if ( ! empty( $message['ai'] ) && is_array( $message['ai'] ) ) {
 						$code_to_fix = $message['codeFragment'];
