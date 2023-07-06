@@ -21,15 +21,44 @@ class SecurityFixer {
 			throw SecurityFixerException::test_result_json_invalid();
 		}
 
+		$total_files = 0;
+		$files_not_found = 0;
+
+		// If more than 10% of the files are not found, throw an exception.
+		$not_found_tolerance = 0.10;
+
+		foreach ( $test_result['tool'] as &$tool ) {
+			$total_files += count( $tool['files'] );
+		}
+
+		if ( $total_files === 0 ) {
+			throw new \UnexpectedValueException();
+		}
+
+		$output = App::make( Output::class );
+
+		if ( $output->isVerbose() ) {
+			$output->writeln( '[Verbose] Total files to fix: ' . $total_files );
+		}
+
 		foreach ( $test_result['tool'] as &$tool ) {
 			foreach ( $tool['files'] as $file_path => &$file ) {
-
 				try {
 					$file_locally = $this->find_file_correspondence( $file_path, $local_plugin_dir );
+
+					if ( $output->isVerbose() ) {
+						$output->writeln( '[Verbose] Fixing file ' . $file_locally );
+					}
 				} catch ( SecurityFixerException $e ) {
 					// If file is not found, just notify and skip.
 					if ( stripos( $e->getMessage(), 'does not exist locally.' ) !== false ) {
-						App::make( Output::class )->writeln( '<comment>' . $e->getMessage() . '</comment>' );
+						$files_not_found++;
+						$output->writeln( '<comment>' . $e->getMessage() . '</comment>' );
+
+						if ( ( $files_not_found / $total_files ) > $not_found_tolerance ) {
+							throw SecurityFixerException::too_many_files_not_found();
+						}
+
 						continue;
 					} else {
 						throw $e;
@@ -62,6 +91,9 @@ class SecurityFixer {
 	}
 
 	protected function find_file_correspondence( string $file_in_json, string $local_plugin_dir ): string {
+		// Normalize Windows directory separators.
+		$file_in_json = str_replace( '\\', '/', $file_in_json );
+
 		if ( stripos( $file_in_json, '/ci/plugins/' ) ) {
 			/*
 			 * PHPCS sends a path like this:
@@ -84,14 +116,11 @@ class SecurityFixer {
 		// 'woocommerce-example-plugin'
 		$top_level_directory = array_shift( $parts );
 
-		$local_plugin_basename = basename( $local_plugin_dir );
-
-		if ( $local_plugin_basename !== $top_level_directory ) {
-			throw SecurityFixerException::plugin_path_does_not_match( $local_plugin_basename, $top_level_directory );
-		}
-
 		// Get relative path from JSON file path.
-		$relative_path = substr( $plugin_in_json, strlen( $top_level_directory ) );
+		$relative_path = trim( substr( $plugin_in_json, strlen( $top_level_directory ) ), '/' );
+
+		// Make sure path ends in directory separator.
+		$local_plugin_dir = rtrim( $local_plugin_dir, '/' ) . '/';
 
 		// Replace the prefix of JSON file path with local plugin dir.
 		$local_file_path = $local_plugin_dir . $relative_path;
