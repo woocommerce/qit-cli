@@ -51,11 +51,28 @@ class FixCommand extends Command {
 		try {
 			$securityFixer = new SecurityFixer();
 			$securityFixer->fix( $input->getArgument( 'plugin_dir' ), $json['test_result_json'] );
-			$output->writeln( '<info>Security issues have been fixed in the plugin.</info>' );
+
+			$completionMessage = <<<EOD
+    The Security Fixer has now completed its execution. Please bear in mind that 
+    this tool is powered by an AI model in its early stages of training. 
+    The automatically generated fixes are experimental and might produce invalid 
+    PHP code or recommend non-existent functions.
+
+    It is crucial for every suggested fix to be carefully reviewed and tested by 
+    a professional developer. Although this tool aims to ease the task of making 
+    code secure, it is not a substitute for professional code review and should be 
+    used as a helper tool.
+
+    We strongly encourage you to provide feedback about the suggestions. Your 
+    valuable input will help to further refine and improve this AI model.
+EOD;
+
+			$output->writeln("<info>$completionMessage</info>");
+			$output->writeln('<info>Automatically applied AI recommendations. Please review them carefully.</info>');
 
 			return 0;
 		} catch ( SecurityFixerException $e ) {
-			$output->writeln( '<error>An error occurred while fixing the security issues:</error>' );
+			$output->writeln( '<error>An error occurred while applying the automatic fixer:</error>' );
 			$output->writeln( $e->getMessage() );
 
 			return 1;
