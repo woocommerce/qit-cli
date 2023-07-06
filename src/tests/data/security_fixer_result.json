@@ -28,5 +28,6 @@
   "test_results_manager_expiration": 1688229320,
   "test_summary": "Errors: 89 Warnings: 0",
   "debug_log": "",
-  "version": "1.2.3"
+  "version": "1.2.3",
+  "ai_suggestion_status": "done"
 }
