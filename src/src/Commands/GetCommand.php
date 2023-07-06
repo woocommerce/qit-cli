@@ -66,7 +66,7 @@ class GetCommand extends Command {
 		}
 
 		if ( $input->getOption( 'check_finished' ) ) {
-			$non_finished = [ 'pending', 'dispatched' ];
+			$non_finished = [ 'pending', 'dispatched', 'running' ];
 
 			if ( in_array( $test_run['status'], $non_finished, true ) ) {
 				return Command::FAILURE;
