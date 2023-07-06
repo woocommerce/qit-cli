@@ -39,6 +39,17 @@ class FixCommand extends Command {
 
 				return Command::FAILURE;
 			}
+			if ( empty( $json['ai_suggestion_status'] ) ) {
+				$output->writeln( '<error>This test report does not support the AI fixer. Please run a new test.</error>' );
+
+				return Command::FAILURE;
+			}
+
+			if ( $json['ai_suggestion_status'] !== 'done' ) {
+				$output->writeln( '<error>This test report does not have AI suggestions. Please request the AI Suggestions on the test report page.</error>' );
+
+				return Command::FAILURE;
+			}
 		} catch ( \JsonException $e ) {
 			$output->writeln( '<error>Invalid JSON returned from the API.</error>' );
 			$output->writeln( $e->getMessage() );
