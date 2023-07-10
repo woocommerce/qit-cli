@@ -41,8 +41,10 @@ try {
 	$test_types = get_test_types();
 
 	if ( ! is_null( Context::$suite ) ) {
-		$test_types = array_filter( $test_types, function ( $test_type_path ) {
-			return basename( $test_type_path ) === Context::$suite;
+		$suites = explode( ',', Context::$suite );
+
+		$test_types = array_filter( $test_types, function ( $test_type_path ) use ( $suites ) {
+			return in_array( basename( $test_type_path ), $suites );
 		} );
 	}
 
