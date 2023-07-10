@@ -1383,10 +1383,6 @@
                     "message": "PHP Notice: $order is Automattic\\\\WooCommerce\\\\Admin\\\\Overrides\\\\Order as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 41"
                 },
                 {
-                    "count": "1",
-                    "message": "WordPress database error Deadlock found when trying to get lock; try restarting transaction for query DELETE FROM wp_postmeta WHERE meta_id IN( 6724 ) made by require(\'wp-blog-header.php\'), require_once(\'wp-load.php\'), require_once(\'wp-config.php\'), require_once(\'wp-settings.php\'), do_action(\'init\'), WP_Hook->do_action, WP_Hook->apply_filters, wc_enable_cot, wc_create_order_custom_table_if_not_exist, Automattic\\\\WooCommerce\\\\Internal\\\\DataStores\\\\Orders\\\\DataSynchronizer->process_batch, WC_Data_Store->__call, Automattic\\\\WooCommerce\\\\Internal\\\\DataStores\\\\Orders\\\\OrdersTableDataStore->backfill_post_record, Abstract_WC_Order_Data_Store_CPT->update_order_from_object, Abstract_WC_Order_Data_Store_CPT->update_order_meta_from_object, delete_post_meta, delete_metadata"
-                },
-                {
                     "count": "3",
                     "message": "The wc_get_min_max_price_meta_query() function is deprecated since version 3.6."
                 }
