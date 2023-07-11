@@ -1,0 +1,18 @@
+{
+    "assets\/css\/admin.css": "3878921c4aaa3c12f481eeaa1e8023d62ce2b2bbac688f34eac4287881d858cb",
+    "assets\/images\/delete.png": "5473d9275bcb804caaf23ac11be2b22c9e4f76a93996043adb8c75cd370ddf25",
+    "assets\/images\/edit.png": "e801ef8aac36d58ce0d2eebb990de6f07c794fa3113716039f7e3162ca6fb85e",
+    "example-plugin.php": "6efb2d0e082d61adeb2cd9e1655a1a3367acb76754fcc97bec48651f0af5c5df",
+    "includes\/class-wc-example-plugin-admin.php": "9d430a0aa20d3f293d9ce36ca41fc89d5c83d35f1762b803302372f735c01a4a",
+    "includes\/class-wc-example-plugin-privacy.php": "e6d5a4385aa91e6536e9a0da185df08b06e2bc1116e99b7bbcb9359de663e108",
+    "includes\/class-wc-example-plugin-table.php": "3570627a4a596ebbe85ee642c423c21f1a6283fbe533f62a1ca8bd09c9e39690",
+    "includes\/class-wc-example-plugin.php": "ef237545b8d327866ae002d751af60d0eae4bf266180a268832eaa10e231371d",
+    "includes\/views\/admin-screen-edit.php": "1a77495ea552042e917d15292269071a83fe1fb730ce78ea46eb029950fc7f82",
+    "includes\/views\/admin-screen.php": "d6dcd2c9a1d1dddbc5b9197125eb90145458e5b8481960bab45307ce0cc95a31",
+    "languages\/woocommerce-example-plugin.pot": "81e2ab390941afdfe49fa5255de960ad7d3629a5902478777cd4f9942f84afca",
+    "templates\/emails\/new-order-plain.php": "96d81c1f190b0aa5a81d846d5bfa9f6b6856de7680090f208501a05fca9ff398",
+    "templates\/emails\/new-order.php": "10d1f961c1961cc8ce4dde9e8f10e7cd443ffdb0d3282e8a33dc0d4e0dfe1fbf",
+    "templates\/emails\/refunds-plain.php": "77a0176221c11e9d5f52f9a7c1ae34cfe220dde87dcfd053b37699cdf4ab4e3b",
+    "templates\/emails\/refunds.php": "8ee19983406dc0a2e8e19a6977d98c3aa6f81883a16025a8c6899c0a433caad2",
+    "woocommerce-example-plugin.php": "066905bf685a2e0851ed87cc2a7df0b4535980dbda9af81d5043b5d6d833de64"
+}

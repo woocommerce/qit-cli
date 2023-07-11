@@ -154,7 +154,7 @@ CODE
 		// Calculate checksum after the fix.
 		$checksum = calculate_directory_checksum( $tmp_plugin_dir );
 
-		$this->assertEquals( '793ed29648634a279399bdbc9f4057288c9ee7eb4e7586efcaff626f06d76521', $checksum );
+		$this->assertMatchesJsonSnapshot( json_encode( $checksum, JSON_PRETTY_PRINT ) );
 	}
 
 	public function test_find_file_correspondence_with_existing_file() {
