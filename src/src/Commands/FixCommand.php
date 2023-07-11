@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 
 class FixCommand extends Command {
-	protected static $defaultName = 'fix';
+	protected static $defaultName = 'fix'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	protected function configure() {
 		$this
@@ -24,7 +24,7 @@ class FixCommand extends Command {
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		$command = $this->getApplication()->find( GetCommand::getDefaultName() );
 
-		// Execute the GetCommand to retrieve the test result JSON
+		// Execute the GetCommand to retrieve the test result JSON.
 		$get_command        = new ArrayInput( [
 			'test_run_id' => $input->getArgument( 'test_run_id' ),
 			'--json'      => true,
@@ -34,6 +34,11 @@ class FixCommand extends Command {
 
 		try {
 			$json = json_decode( $get_command_output->fetch(), true );
+
+			if ( is_null( $json ) ) {
+				throw new \UnexpectedValueException();
+			}
+
 			if ( empty( $json['test_result_json'] ) ) {
 				$output->writeln( '<error>Invalid JSON returned from the API.</error>' );
 
@@ -50,9 +55,8 @@ class FixCommand extends Command {
 
 				return Command::FAILURE;
 			}
-		} catch ( \JsonException $e ) {
+		} catch ( \UnexpectedValueException $e ) {
 			$output->writeln( '<error>Invalid JSON returned from the API.</error>' );
-			$output->writeln( $e->getMessage() );
 
 			return Command::FAILURE;
 		} catch ( \Exception $e ) {
@@ -60,10 +64,10 @@ class FixCommand extends Command {
 		}
 
 		try {
-			$securityFixer = new SecurityFixer();
-			$securityFixer->fix( $input->getArgument( 'plugin_dir' ), $json['test_result_json'] );
+			$security_fixer = new SecurityFixer();
+			$security_fixer->fix( $input->getArgument( 'plugin_dir' ), $json['test_result_json'] );
 
-			$completionMessage = <<<EOD
+			$completion_message = <<<EOD
     The Security Fixer has now completed its execution. Please bear in mind that 
     this tool is powered by an AI model in its early stages of training. 
     The automatically generated fixes are experimental and might produce invalid 
@@ -78,8 +82,8 @@ class FixCommand extends Command {
     valuable input will help to further refine and improve this AI model.
 EOD;
 
-			$output->writeln("<info>$completionMessage</info>");
-			$output->writeln('<info>Automatically applied AI recommendations. Please review them carefully.</info>');
+			$output->writeln( "<info>$completion_message</info>" );
+			$output->writeln( '<info>Automatically applied AI recommendations. Please review them carefully.</info>' );
 
 			return 0;
 		} catch ( SecurityFixerException $e ) {

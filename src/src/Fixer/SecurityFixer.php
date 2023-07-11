@@ -21,7 +21,7 @@ class SecurityFixer {
 			throw SecurityFixerException::test_result_json_invalid();
 		}
 
-		$total_files = 0;
+		$total_files     = 0;
 		$files_not_found = 0;
 
 		// If more than 10% of the files are not found, throw an exception.
@@ -70,7 +70,7 @@ class SecurityFixer {
 						$code_to_fix = $message['codeFragment'];
 						$fix         = array_shift( $message['ai'] );
 
-						// Replace the faulty code with the fix and preserve surrounding whitespaces and line breaks
+						// Replace the faulty code with the fix and preserve surrounding whitespaces and line breaks.
 						$fix_with_whitespaces = preg_replace(
 							'/^([\n\r\s]*)(.*)[\n\r\s]*$/s',
 							'${1}' . $fix . "\n",
@@ -79,11 +79,7 @@ class SecurityFixer {
 
 						$content = file_get_contents( $file_locally );
 
-						// Replace the faulty code with the fixed content
-						$fixed_content = str_replace( $code_to_fix, $fix_with_whitespaces, $content );
-
-						// Write the fixed content back to the file
-						file_put_contents( $file_locally, $fixed_content );
+						file_put_contents( $file_locally, str_replace( $code_to_fix, $fix_with_whitespaces, $content ) );
 					}
 				}
 			}
