@@ -27,7 +27,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 4 failed, 45 passed, 49 total | Tests: 161 skipped, 7 failed, 35 passed, 203 total.",
+            "test_summary": "Test Suites: 0 skipped, 4 failed, 44 passed, 48 total | Tests: 158 skipped, 7 failed, 35 passed, 200 total.",
             "version": "Undefined",
             "test_result_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
@@ -35,13 +35,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 4,
-                "numPassedTestSuites": 45,
+                "numPassedTestSuites": 44,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 49,
+                "numTotalTestSuites": 48,
                 "numFailedTests": 7,
                 "numPassedTests": 35,
-                "numPendingTests": 161,
-                "numTotalTests": 203,
+                "numPendingTests": 158,
+                "numTotalTests": 200,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -735,27 +735,6 @@
                         }
                     },
                     {
-                        "file": "merchant\\/product-import-csv.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Import Products from a CSV file": [
-                                {
-                                    "title": "should show error message if you go without providing CSV file",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can upload the CSV file and import products",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can override the existing products via CSV import",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "merchant\\/product-search.spec.js",
                         "status": "passed",
                         "has_pending": true,
@@ -1326,7 +1305,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 4 failed, 45 passed, 49 total | Tests: 161 skipped, 7 failed, 35 passed, 203 total."
+                "summary": "Test Suites: 0 skipped, 4 failed, 44 passed, 48 total | Tests: 158 skipped, 7 failed, 35 passed, 200 total."
             }
         },
         {
