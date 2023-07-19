@@ -27,7 +27,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 49 passed, 49 total | Tests: 16 skipped, 0 failed, 187 passed, 203 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 49 passed, 49 total | Tests: 17 skipped, 0 failed, 186 passed, 203 total.",
             "version": "Undefined",
             "test_result_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
@@ -39,8 +39,8 @@
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 49,
                 "numFailedTests": 0,
-                "numPassedTests": 187,
-                "numPendingTests": 16,
+                "numPassedTests": 186,
+                "numPendingTests": 17,
                 "numTotalTests": 203,
                 "testResults": [
                     {
@@ -655,7 +655,7 @@
                     {
                         "file": "merchant\\/page-loads.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Page Load > Load WooCommerce sub pages": [
                                 {
@@ -672,7 +672,7 @@
                                 },
                                 {
                                     "title": "Can load Coupons",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Reports",
@@ -1326,11 +1326,15 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 49 passed, 49 total | Tests: 16 skipped, 0 failed, 187 passed, 203 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 49 passed, 49 total | Tests: 17 skipped, 0 failed, 186 passed, 203 total."
             }
         },
         {
             "debug_log": [
+                {
+                    "count": "201",
+                    "message": "PHP Deprecated: Function WP_Scripts::print_inline_script is deprecated since version 6.3.0! Use WP_Scripts::get_inline_script_data() or WP_Scripts::get_inline_script_tag() instead. in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 5453"
+                },
                 {
                     "count": "2",
                     "message": "The Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options::get_options function is deprecated since version 6.3."

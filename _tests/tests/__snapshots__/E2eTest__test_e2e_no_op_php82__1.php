@@ -27,7 +27,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 49 passed, 49 total | Tests: 16 skipped, 0 failed, 187 passed, 203 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 49 passed, 49 total | Tests: 17 skipped, 0 failed, 186 passed, 203 total.",
             "version": "Undefined",
             "test_result_json_extracted": "{EXTRACTED}"
         },
@@ -38,8 +38,8 @@
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 49,
                 "numFailedTests": 0,
-                "numPassedTests": 187,
-                "numPendingTests": 16,
+                "numPassedTests": 186,
+                "numPendingTests": 17,
                 "numTotalTests": 203,
                 "testResults": [
                     {
@@ -654,7 +654,7 @@
                     {
                         "file": "merchant\\/page-loads.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Page Load > Load WooCommerce sub pages": [
                                 {
@@ -671,7 +671,7 @@
                                 },
                                 {
                                     "title": "Can load Coupons",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Reports",
@@ -1325,7 +1325,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 49 passed, 49 total | Tests: 16 skipped, 0 failed, 187 passed, 203 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 49 passed, 49 total | Tests: 17 skipped, 0 failed, 186 passed, 203 total."
             }
         }
     ]
