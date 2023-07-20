@@ -1332,7 +1332,7 @@
         {
             "debug_log": [
                 {
-                    "count": "201",
+                    "count": "198",
                     "message": "PHP Deprecated: Function WP_Scripts::print_inline_script is deprecated since version 6.3.0! Use WP_Scripts::get_inline_script_data() or WP_Scripts::get_inline_script_tag() instead. in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 5453"
                 },
                 {
