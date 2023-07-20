@@ -27,7 +27,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 10 Warnings: 6",
+            "test_summary": "",
             "debug_log": "",
             "version": "Undefined",
             "test_result_json_extracted": "{EXTRACTED}"
