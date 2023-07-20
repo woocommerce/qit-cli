@@ -9,7 +9,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "warning",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -27,7 +27,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "",
+            "test_summary": "154 Errors Detected. (0 Fatal, 0 Warnings, 6 Notices)",
             "debug_log": "",
             "version": "Undefined",
             "test_result_json_extracted": "{EXTRACTED}"

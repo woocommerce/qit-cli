@@ -28,9 +28,9 @@
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
             "test_summary": "Test Suites: 0 skipped, 7 failed, 13 passed, 20 total | Tests: 70 skipped, 29 failed, 159 passed, 258 total.",
-            "debug_log": "",
             "version": "Undefined",
-            "test_result_json_extracted": "{EXTRACTED}"
+            "test_result_json_extracted": "{EXTRACTED}",
+            "debug_log_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
@@ -1375,6 +1375,22 @@
                 ],
                 "summary": "Test Suites: 0 skipped, 7 failed, 13 passed, 20 total | Tests: 70 skipped, 29 failed, 159 passed, 258 total."
             }
+        },
+        {
+            "debug_log": [
+                {
+                    "count": "1",
+                    "message": "PHP Deprecated: Function WP_Scripts::print_inline_script is deprecated since version 6.3.0! Use WP_Scripts::get_inline_script_data() or WP_Scripts::get_inline_script_tag() instead. in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 5453"
+                },
+                {
+                    "count": "2",
+                    "message": "PHP Notice: Undefined index: id in \\/var\\/www\\/html\\/wp-includes\\/class-wp-list-util.php on line 170"
+                },
+                {
+                    "count": "1",
+                    "message": "PHP Notice: Undefined index: id in \\/var\\/www\\/html\\/wp-includes\\/class-wp-list-util.php on line 170\\n"
+                }
+            ]
         }
     ]
 ]';
