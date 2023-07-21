@@ -30,6 +30,7 @@
             "test_summary": "Errors: 4 Warnings: 3",
             "debug_log": "",
             "version": "0.1-test-version",
+            "update_complete": true,
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {

@@ -30,6 +30,7 @@
             "test_summary": "Errors: 10 Warnings: 6",
             "debug_log": "",
             "version": "Undefined",
+            "update_complete": true,
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {

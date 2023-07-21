@@ -29,6 +29,7 @@
             "test_results_manager_expiration": 1234567890,
             "test_summary": "Test Suites: 0 skipped, 7 failed, 13 passed, 20 total | Tests: 70 skipped, 29 failed, 159 passed, 258 total.",
             "version": "Undefined",
+            "update_complete": true,
             "test_result_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
