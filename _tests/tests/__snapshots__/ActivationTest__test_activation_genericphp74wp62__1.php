@@ -30,6 +30,7 @@
             "test_summary": "154 Errors Detected. (1 Fatal, 2 Warnings, 3 Notices)",
             "debug_log": "",
             "version": "Undefined",
+            "update_complete": true,
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {

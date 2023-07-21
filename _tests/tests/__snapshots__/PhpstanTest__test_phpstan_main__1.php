@@ -30,6 +30,7 @@
             "test_summary": "Errors: 0, File Errors: 2",
             "debug_log": "",
             "version": "Undefined",
+            "update_complete": true,
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {
