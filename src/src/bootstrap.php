@@ -9,6 +9,7 @@ use QIT_CLI\Commands\Environment\AddEnvironment;
 use QIT_CLI\Commands\Environment\CurrentEnvironment;
 use QIT_CLI\Commands\Environment\RemoveEnvironment;
 use QIT_CLI\Commands\Environment\SwitchEnvironment;
+use QIT_CLI\Commands\FixCommand;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\ListCommand;
 use QIT_CLI\Commands\OnboardingCommand;
@@ -204,8 +205,11 @@ if ( $has_environment ) {
 	$application->add( $container->make( WooExtensionsCommand::class ) );
 
 	if ( Config::is_development_mode() ) {
-		// Dynamically crete Mass Test run command.
+		// Dynamically create Mass Test run command.
 		$container->make( CreateMassTestCommands::class )->register_commands( $application );
+
+		// Fix code with AI.
+		$application->add( $container->make( FixCommand::class ) );
 	}
 }
 

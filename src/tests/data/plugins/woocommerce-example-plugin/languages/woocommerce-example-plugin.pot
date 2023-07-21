@@ -1,0 +1,498 @@
+# Copyright (C) 2023 WooCommerce
+# This file is distributed under the GNU General Public License v3.0.
+msgid ""
+msgstr ""
+"Project-Id-Version: WooCommerce Example Plugin 1.4.1\n"
+"Report-Msgid-Bugs-To: "
+"https://wordpress.org/support/plugin/woocommerce-example-plugin\n"
+"POT-Creation-Date: 2023-02-14 19:03:54+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2023-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Generator: node-wp-i18n 1.2.3\n"
+
+#. Author of the plugin/theme
+msgid "WooCommerce"
+msgstr ""
+
+#: includes/class-wc-example-plugin-admin.php:41
+#: includes/class-wc-example-plugin-privacy.php:12
+#: includes/class-wc-example-plugin-privacy.php:69
+msgid "Example Plugin"
+msgstr ""
+
+#: includes/class-wc-example-plugin-admin.php:41
+#: includes/class-wc-example-plugin-admin.php:107
+#: includes/views/admin-screen-edit.php:59 includes/views/admin-screen.php:4
+msgid "Plugin"
+msgstr ""
+
+#: includes/class-wc-example-plugin-admin.php:79
+#: includes/class-wc-example-plugin-table.php:175
+msgid "Notification Types"
+msgstr ""
+
+#: includes/class-wc-example-plugin-admin.php:80
+#: includes/class-wc-example-plugin-table.php:176
+msgid "Triggers"
+msgstr ""
+
+#: includes/class-wc-example-plugin-admin.php:81
+#: includes/class-wc-example-plugin-table.php:177
+msgid "Plain text?"
+msgstr ""
+
+#: includes/class-wc-example-plugin-admin.php:82
+#: includes/class-wc-example-plugin-table.php:178
+msgid "Prices?"
+msgstr ""
+
+#: includes/class-wc-example-plugin-admin.php:83
+#: includes/class-wc-example-plugin-table.php:179
+msgid "Totals?"
+msgstr ""
+
+#: includes/class-wc-example-plugin-admin.php:84
+#: includes/class-wc-example-plugin-table.php:180
+msgid "Sent count"
+msgstr ""
+
+#: includes/class-wc-example-plugin-admin.php:108
+msgid "Choose recipients for this product&hellip;"
+msgstr ""
+
+#: includes/class-wc-example-plugin-admin.php:178
+#: includes/class-wc-example-plugin-admin.php:231
+msgid "Notification deleted successfully"
+msgstr ""
+
+#: includes/class-wc-example-plugin-admin.php:192
+#: includes/class-wc-example-plugin-admin.php:216
+#: includes/class-wc-example-plugin-admin.php:227
+msgid "Notification saved successfully"
+msgstr ""
+
+#: includes/class-wc-example-plugin-admin.php:296
+#: includes/class-wc-example-plugin-admin.php:387
+msgid "Recipient name is a required field"
+msgstr ""
+
+#: includes/class-wc-example-plugin-admin.php:300
+#: includes/class-wc-example-plugin-admin.php:391
+msgid "Recipient email is a required field"
+msgstr ""
+
+#: includes/class-wc-example-plugin-admin.php:307
+#: includes/class-wc-example-plugin-admin.php:398
+msgid "A recipient email is invalid:"
+msgstr ""
+
+#: includes/class-wc-example-plugin-privacy.php:14
+#: includes/class-wc-example-plugin-privacy.php:16
+msgid "WooCommerce Example Plugin Data"
+msgstr ""
+
+#: includes/class-wc-example-plugin-privacy.php:47
+msgid ""
+"By using this extension, you may be storing personal data or sharing data "
+"with an external service. <a href=\"%s\" target=\"_blank\">Learn more about "
+"how this works, including what you may want to include in your privacy "
+"policy.</a>"
+msgstr ""
+
+#: includes/class-wc-example-plugin-privacy.php:73
+#: includes/views/admin-screen-edit.php:12
+msgid "Recipient name"
+msgstr ""
+
+#: includes/class-wc-example-plugin-privacy.php:77
+msgid "Recipient address"
+msgstr ""
+
+#: includes/class-wc-example-plugin-privacy.php:81
+msgid "Recipient phone"
+msgstr ""
+
+#: includes/class-wc-example-plugin-privacy.php:85
+msgid "Recipient website"
+msgstr ""
+
+#: includes/class-wc-example-plugin-privacy.php:132
+msgid "Example Plugin Data Erased."
+msgstr ""
+
+#: includes/class-wc-example-plugin-table.php:48
+msgid "Edit"
+msgstr ""
+
+#: includes/class-wc-example-plugin-table.php:48
+#: includes/class-wc-example-plugin-table.php:190
+msgid "Delete"
+msgstr ""
+
+#: includes/class-wc-example-plugin-table.php:65
+#: includes/views/admin-screen-edit.php:79
+msgid "Low stock"
+msgstr ""
+
+#: includes/class-wc-example-plugin-table.php:68
+#: includes/views/admin-screen-edit.php:80
+msgid "Out of stock"
+msgstr ""
+
+#: includes/class-wc-example-plugin-table.php:71
+#: includes/views/admin-screen-edit.php:81
+msgid "Backorders"
+msgstr ""
+
+#: includes/class-wc-example-plugin-table.php:74
+#: includes/views/admin-screen-edit.php:78
+msgid "Purchases"
+msgstr ""
+
+#: includes/class-wc-example-plugin-table.php:77
+#: includes/views/admin-screen-edit.php:82
+msgid "Refunds"
+msgstr ""
+
+#: includes/class-wc-example-plugin-table.php:93
+msgid "1 sent"
+msgid_plural "%s sent"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/class-wc-example-plugin-table.php:106
+msgid "All Purchases"
+msgstr ""
+
+#: includes/class-wc-example-plugin-table.php:131
+msgid "Categories:"
+msgstr ""
+
+#: includes/class-wc-example-plugin-table.php:135
+msgid "Classes:"
+msgstr ""
+
+#: includes/class-wc-example-plugin-table.php:139
+msgid "Products:"
+msgstr ""
+
+#: includes/class-wc-example-plugin-table.php:174
+#: includes/views/admin-screen-edit.php:7
+msgid "Recipient"
+msgstr ""
+
+#: includes/class-wc-example-plugin-table.php:236
+msgid "Plugin updated"
+msgstr ""
+
+#: includes/class-wc-example-plugin.php:336
+msgid "New Customer Order"
+msgstr ""
+
+#: includes/class-wc-example-plugin.php:338
+msgid "[%s] New Order (%s)"
+msgstr ""
+
+#: includes/class-wc-example-plugin.php:412
+msgid "Product low in stock"
+msgstr ""
+
+#: includes/class-wc-example-plugin.php:419
+#: includes/class-wc-example-plugin.php:468
+msgid "Variation #%s of %s"
+msgstr ""
+
+#: includes/class-wc-example-plugin.php:421
+#: includes/class-wc-example-plugin.php:536
+msgid "Product #%s - %s"
+msgstr ""
+
+#: includes/class-wc-example-plugin.php:425
+#: includes/class-wc-example-plugin.php:475
+#: includes/class-wc-example-plugin.php:541
+#: templates/emails/new-order-plain.php:7 templates/emails/new-order.php:19
+#: templates/emails/refunds-plain.php:7 templates/emails/refunds.php:23
+msgid "Hi %s,"
+msgstr ""
+
+#: includes/class-wc-example-plugin.php:427
+msgid "is low in stock."
+msgstr ""
+
+#: includes/class-wc-example-plugin.php:461
+msgid "Product out of stock"
+msgstr ""
+
+#: includes/class-wc-example-plugin.php:470
+msgid "Product #%1$s - %2$s"
+msgstr ""
+
+#: includes/class-wc-example-plugin.php:477
+msgid "is out of stock."
+msgstr ""
+
+#: includes/class-wc-example-plugin.php:527
+msgid "Product Backorder"
+msgstr ""
+
+#: includes/class-wc-example-plugin.php:534
+msgid "Variation #%1$s of %2$s"
+msgstr ""
+
+#: includes/class-wc-example-plugin.php:543
+msgid "%s units of %s have been backordered in order #%s."
+msgstr ""
+
+#: includes/class-wc-example-plugin.php:607
+msgid "[%s] Partial Order Refund (%s)"
+msgstr ""
+
+#: includes/class-wc-example-plugin.php:608
+msgid "Customer Partial Refund"
+msgstr ""
+
+#: includes/class-wc-example-plugin.php:610
+msgid "[%s] Order Refund (%s)"
+msgstr ""
+
+#: includes/class-wc-example-plugin.php:611
+msgid "Customer Refund"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:3
+msgid "Add Notification"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:8
+msgid "These fields determine who receives the plugin and are required."
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:16
+msgid "Enter the recipient name."
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:21
+msgid "Recipient email address(s)"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:25
+msgid ""
+"Enter the recipient(s) email address for this notification (comma separate "
+"for multiple addresses)."
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:30
+msgid "Recipient details"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:31
+msgid ""
+"You can use these fields to store additional information about the "
+"recipient."
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:35
+msgid "Address"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:43
+msgid "Phone"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:51
+msgid "Website"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:60
+msgid "You can choose which recipients are received in this section."
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:64
+msgid "Email format"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:67
+msgid "Plain text"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:68
+msgid ""
+"Enable to send in plain text rather than using the standard HTML email "
+"template."
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:73
+msgid "Enable plugin"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:77
+msgid "Choose types&hellip;"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:84
+msgid "Define which plugin to enable."
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:89
+msgid "Notification triggers"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:100
+msgid "Choose triggers&hellip;"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:101
+msgid "All purchases"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:102
+msgid "Product category plugin"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:107
+msgid "Category:"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:111
+msgid "Shipping class plugin"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:116
+msgid "Class:"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:124
+#. translators: %s Product edit URL.
+msgid ""
+"Here you can enable global or product plugin. Define recipients for "
+"categories and shipping classes here. You can define per-product "
+"plugin later by <a href=\"%s\">editing a product</a>."
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:131
+#: includes/views/admin-screen-edit.php:134
+msgid "Include All Items"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:135
+msgid "Enable this to include all order items in the notification emails."
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:140
+msgid "Prices"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:143
+msgid "Include prices"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:144
+msgid "Enable this to include product prices in the notification emails."
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:149
+msgid "Totals"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:152
+msgid "Include order totals"
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:153
+msgid "Enable this to include order totals in the notification emails."
+msgstr ""
+
+#: includes/views/admin-screen-edit.php:158
+msgid "Save changes"
+msgstr ""
+
+#: includes/views/admin-screen.php:6
+msgid "Add notification"
+msgstr ""
+
+#: includes/views/admin-screen.php:21
+msgid "Are you sure you want to delete this notification?"
+msgstr ""
+
+#: templates/emails/new-order-plain.php:12 templates/emails/new-order.php:23
+#. translators: 1: first name 2: last name
+msgid "You have received an order from %s %s:"
+msgstr ""
+
+#: templates/emails/new-order-plain.php:18
+msgid "Order: %s"
+msgstr ""
+
+#: templates/emails/new-order-plain.php:22
+#: templates/emails/refunds-plain.php:17
+msgid "jS F Y"
+msgstr ""
+
+#: templates/emails/new-order-plain.php:119 templates/emails/new-order.php:154
+#: templates/emails/refunds-plain.php:114 templates/emails/refunds.php:175
+msgid "Total"
+msgstr ""
+
+#: templates/emails/new-order-plain.php:127
+#: templates/emails/refunds-plain.php:122
+msgid "Note"
+msgstr ""
+
+#: templates/emails/new-order.php:38 templates/emails/refunds.php:47
+msgid "Order #%s"
+msgstr ""
+
+#: templates/emails/new-order.php:51 templates/emails/refunds.php:56
+msgid "Product"
+msgstr ""
+
+#: templates/emails/new-order.php:52 templates/emails/refunds.php:57
+msgid "Quantity"
+msgstr ""
+
+#: templates/emails/new-order.php:54 templates/emails/refunds.php:59
+msgid "Price"
+msgstr ""
+
+#: templates/emails/new-order.php:163 templates/emails/refunds.php:184
+msgid "Note:"
+msgstr ""
+
+#: templates/emails/refunds-plain.php:11
+msgid "Order: %s has been refunded."
+msgstr ""
+
+#: templates/emails/refunds.php:28
+msgid "Order #%s has been partially refunded."
+msgstr ""
+
+#: templates/emails/refunds.php:30
+msgid "Order #%s has been refunded."
+msgstr ""
+
+#: woocommerce-example-plugin.php:54
+#. translators: %s: WooCommerce link
+msgid "WooCommerce Example Plugin requires %s to be installed and active."
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "WooCommerce Example Plugin"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "https://woocommerce.com/products/example-plugin"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Add additonal, example order and stock plugin to WordPress - ideal "
+"for improving store management or for dropshippers."
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "https://woocommerce.com"
+msgstr ""

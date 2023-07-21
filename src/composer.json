@@ -32,6 +32,7 @@
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
     "wp-coding-standards/wpcs": "^2.3",
     "phpcompatibility/php-compatibility": "^9",
-    "spatie/phpunit-snapshot-assertions": "^3.0"
+    "spatie/phpunit-snapshot-assertions": "^3.0",
+    "symfony/filesystem": "^5.4"
   }
 }
