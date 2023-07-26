@@ -9,7 +9,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -27,19 +27,19 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 49 passed, 49 total | Tests: 17 skipped, 0 failed, 186 passed, 203 total.",
+            "test_summary": "Test Suites: 0 skipped, 1 failed, 48 passed, 49 total | Tests: 17 skipped, 1 failed, 185 passed, 203 total.",
             "version": "Undefined",
             "update_complete": true,
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 49,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 48,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 49,
-                "numFailedTests": 0,
-                "numPassedTests": 186,
+                "numFailedTests": 1,
+                "numPassedTests": 185,
                 "numPendingTests": 17,
                 "numTotalTests": 203,
                 "testResults": [
@@ -1122,7 +1122,7 @@
                     },
                     {
                         "file": "shopper\\/checkout.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Checkout page": [
@@ -1144,7 +1144,7 @@
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "allows existing customer to place order",
@@ -1326,7 +1326,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 49 passed, 49 total | Tests: 17 skipped, 0 failed, 186 passed, 203 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 48 passed, 49 total | Tests: 17 skipped, 1 failed, 185 passed, 203 total."
             }
         }
     ]
