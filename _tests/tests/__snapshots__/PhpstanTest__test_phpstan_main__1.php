@@ -31,6 +31,7 @@
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
+            "ai_suggestion_status": "none",
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {

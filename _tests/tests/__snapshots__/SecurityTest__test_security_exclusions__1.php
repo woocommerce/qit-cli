@@ -31,6 +31,7 @@
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
+            "ai_suggestion_status": "none",
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {
@@ -53,6 +54,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
+                                        "codeFragment": "\\t\\t$foo = $_POST[\'foo\']; \\/\\/ Detected usage of a non-sanitized input variable: $_POST[\'foo\']\\n",
                                         "line": 9,
                                         "column": 10
                                     },
@@ -62,6 +64,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
+                                        "codeFragment": "\\t\\techo \\"Unescaped output! $foo\\"; \\/\\/ All output should be run through an escaping function\\n",
                                         "line": 12,
                                         "column": 8
                                     },
@@ -71,6 +74,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
+                                        "codeFragment": "\\t\\twp_set_auth_cookie( 1 ); \\/\\/ Detected usage of a potentially unsafe function.\\n",
                                         "line": 15,
                                         "column": 3
                                     },
@@ -80,6 +84,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
+                                        "codeFragment": "\\t\\twp_set_current_user( 1 ); \\/\\/ Detected usage of a potentially unsafe function.\\n",
                                         "line": 16,
                                         "column": 3
                                     },
@@ -89,6 +94,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
+                                        "codeFragment": "add_filter( \'determine_user\', \'callable\' ); \\/\\/ Risky filter warning.",
                                         "line": 20,
                                         "column": 1
                                     }
@@ -104,6 +110,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
+                                        "codeFragment": "\\t\\t$foo = $_POST[\'foo\']; \\/\\/ Detected usage of a non-sanitized input variable: $_POST[\'foo\']\\n",
                                         "line": 9,
                                         "column": 10
                                     },
@@ -113,6 +120,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
+                                        "codeFragment": "\\t\\techo \\"Unescaped output! $foo\\"; \\/\\/ All output should be run through an escaping function\\n",
                                         "line": 12,
                                         "column": 8
                                     },
@@ -122,6 +130,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
+                                        "codeFragment": "\\t\\twp_set_auth_cookie( 1 ); \\/\\/ Detected usage of a potentially unsafe function.\\n",
                                         "line": 15,
                                         "column": 3
                                     },
@@ -131,6 +140,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
+                                        "codeFragment": "\\t\\twp_set_current_user( 1 ); \\/\\/ Detected usage of a potentially unsafe function.\\n",
                                         "line": 16,
                                         "column": 3
                                     },
@@ -140,6 +150,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
+                                        "codeFragment": "add_filter( \'determine_user\', \'callable\' ); \\/\\/ Risky filter warning.",
                                         "line": 20,
                                         "column": 1
                                     }
@@ -165,7 +176,8 @@
                                         "message": "User Input directly used in echo\\/printf statement, leading to Reflected XSS",
                                         "source": "scanner.php.lang.security.xss.direct-reflected",
                                         "severity": 10,
-                                        "fixable": false
+                                        "fixable": false,
+                                        "codeFragment": "\\t\\techo \\"Unescaped output! $foo\\"; \\/\\/ All output should be run through an escaping function"
                                     },
                                     {
                                         "line": 13,
@@ -174,7 +186,8 @@
                                         "message": "User Input directly used in echo\\/printf statement, leading to Reflected XSS",
                                         "source": "scanner.php.lang.security.xss.direct-reflected",
                                         "severity": 10,
-                                        "fixable": false
+                                        "fixable": false,
+                                        "codeFragment": "\\t\\techo \\"Unescaped output! $bar\\"; \\/\\/ phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped"
                                     }
                                 ]
                             },
@@ -189,7 +202,8 @@
                                         "message": "User Input directly used in echo\\/printf statement, leading to Reflected XSS",
                                         "source": "scanner.php.lang.security.xss.direct-reflected",
                                         "severity": 10,
-                                        "fixable": false
+                                        "fixable": false,
+                                        "codeFragment": "\\t\\techo \\"Unescaped output! $foo\\"; \\/\\/ All output should be run through an escaping function"
                                     },
                                     {
                                         "line": 13,
@@ -198,7 +212,8 @@
                                         "message": "User Input directly used in echo\\/printf statement, leading to Reflected XSS",
                                         "source": "scanner.php.lang.security.xss.direct-reflected",
                                         "severity": 10,
-                                        "fixable": false
+                                        "fixable": false,
+                                        "codeFragment": "\\t\\techo \\"Unescaped output! $bar\\"; \\/\\/ phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped"
                                     }
                                 ]
                             },
@@ -213,7 +228,8 @@
                                         "message": "User Input directly used in echo\\/printf statement, leading to Reflected XSS",
                                         "source": "scanner.php.lang.security.xss.direct-reflected",
                                         "severity": 10,
-                                        "fixable": false
+                                        "fixable": false,
+                                        "codeFragment": "\\t\\techo \\"Unescaped output! $foo\\"; \\/\\/ All output should be run through an escaping function"
                                     },
                                     {
                                         "line": 13,
@@ -222,7 +238,8 @@
                                         "message": "User Input directly used in echo\\/printf statement, leading to Reflected XSS",
                                         "source": "scanner.php.lang.security.xss.direct-reflected",
                                         "severity": 10,
-                                        "fixable": false
+                                        "fixable": false,
+                                        "codeFragment": "\\t\\techo \\"Unescaped output! $bar\\"; \\/\\/ phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped"
                                     }
                                 ]
                             }

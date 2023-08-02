@@ -30,6 +30,7 @@
             "test_summary": "Test Suites: 0 skipped, 0 failed, 20 passed, 20 total | Tests: 2 skipped, 0 failed, 256 passed, 258 total.",
             "version": "Undefined",
             "update_complete": true,
+            "ai_suggestion_status": "none",
             "test_result_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
