@@ -1381,10 +1381,6 @@
         {
             "debug_log": [
                 {
-                    "count": "1",
-                    "message": "PHP Deprecated: Function WP_Scripts::print_inline_script is deprecated since version 6.3.0! Use WP_Scripts::get_inline_script_data() or WP_Scripts::get_inline_script_tag() instead. in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 5453"
-                },
-                {
                     "count": "602",
                     "message": "PHP Notice: $order is Automattic\\\\WooCommerce\\\\Admin\\\\Overrides\\\\Order as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 41"
                 },

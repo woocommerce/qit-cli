@@ -1334,10 +1334,6 @@
         {
             "debug_log": [
                 {
-                    "count": "198",
-                    "message": "PHP Deprecated: Function WP_Scripts::print_inline_script is deprecated since version 6.3.0! Use WP_Scripts::get_inline_script_data() or WP_Scripts::get_inline_script_tag() instead. in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 5453"
-                },
-                {
                     "count": "2",
                     "message": "The Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options::get_options function is deprecated since version 6.3."
                 }
