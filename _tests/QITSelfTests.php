@@ -67,7 +67,7 @@ try {
 
 function validate_context(): void {
 	if ( ! file_exists( __DIR__ . '/vendor' ) ) {
-		throw new RuntimeException( 'Please run "composer install".' );
+		throw new RuntimeException( 'Please run "composer install" on the directory: ' . __DIR__ );
 	}
 
 	if ( ! in_array( Context::$action, [ 'run', 'update' ], true ) ) {
@@ -75,7 +75,7 @@ function validate_context(): void {
 	}
 
 	if ( ! file_exists( __DIR__ . '/../qit' ) ) {
-		throw new RuntimeException( '"qit" binary does not exist in the parent directory.' );
+		throw new RuntimeException( '"qit" binary does not exist in the parent directory.' . dirname( __DIR__ ) );
 	}
 }
 
