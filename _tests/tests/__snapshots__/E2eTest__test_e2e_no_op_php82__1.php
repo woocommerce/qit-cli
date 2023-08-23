@@ -27,7 +27,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 49 passed, 49 total | Tests: 17 skipped, 0 failed, 186 passed, 203 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 50 passed, 50 total | Tests: 13 skipped, 0 failed, 189 passed, 202 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -36,13 +36,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 49,
+                "numPassedTestSuites": 50,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 49,
+                "numTotalTestSuites": 50,
                 "numFailedTests": 0,
-                "numPassedTests": 186,
-                "numPendingTests": 17,
-                "numTotalTests": 203,
+                "numPassedTests": 189,
+                "numPendingTests": 13,
+                "numTotalTests": 202,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -867,6 +867,46 @@
                         }
                     },
                     {
+                        "file": "merchant\\/products\\/block-editor\\/create-simple-product-block-editor.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "General tab": [],
+                            "General tab > Create product": [
+                                {
+                                    "title": "can create a simple product",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can not create a product with duplicated SKU",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can a shopper add the simple product to the cart",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/products\\/block-editor\\/enable-block-product-editor.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Enable block product editor": [],
+                            "Enable block product editor > Enabled": [
+                                {
+                                    "title": "is not hooked up to sidebar \\"Add New\\"",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can enable the block product editor",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/settings-general.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -906,42 +946,6 @@
                                 {
                                     "title": "can remove tax classes",
                                     "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "new-product-editor\\/new-product-editor.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "New product editor": [],
-                            "New product editor > Default (disabled)": [
-                                {
-                                    "title": "is feature flag disabled",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "is not hooked up to sidebar \\"Add New\\"",
-                                    "status": "passed"
-                                }
-                            ],
-                            "New product editor > Enabled": [
-                                {
-                                    "title": "is feature flag enabled",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "is hooked up to sidebar \\"Add New\\"",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can be disabled from the header",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can be disabled from the feedback footer",
-                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1327,7 +1331,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 49 passed, 49 total | Tests: 17 skipped, 0 failed, 186 passed, 203 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 50 passed, 50 total | Tests: 13 skipped, 0 failed, 189 passed, 202 total."
             }
         }
     ]
