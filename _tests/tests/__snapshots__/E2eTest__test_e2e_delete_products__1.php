@@ -27,7 +27,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 4 failed, 45 passed, 49 total | Tests: 161 skipped, 7 failed, 35 passed, 203 total.",
+            "test_summary": "Test Suites: 0 skipped, 4 failed, 47 passed, 51 total | Tests: 163 skipped, 7 failed, 35 passed, 205 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -37,13 +37,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 4,
-                "numPassedTestSuites": 45,
+                "numPassedTestSuites": 47,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 49,
+                "numTotalTestSuites": 51,
                 "numFailedTests": 7,
                 "numPassedTests": 35,
-                "numPendingTests": 161,
-                "numTotalTests": 203,
+                "numPendingTests": 163,
+                "numTotalTests": 205,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -868,6 +868,67 @@
                         }
                     },
                     {
+                        "file": "merchant\\/products\\/block-editor\\/create-simple-product-block-editor.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "General tab": [],
+                            "General tab > Create product": [
+                                {
+                                    "title": "can create a simple product",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "can not create a product with duplicated SKU",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "can a shopper add the simple product to the cart",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/products\\/block-editor\\/disable-block-product-editor.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Disable block product editor": [
+                                {
+                                    "title": "is hooked up to sidebar \\"Add New\\"",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "can be disabled from the header",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "can be disabled from settings",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/products\\/block-editor\\/enable-block-product-editor.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Enable block product editor": [],
+                            "Enable block product editor > Enabled": [
+                                {
+                                    "title": "is not hooked up to sidebar \\"Add New\\"",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "can enable the block product editor",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/settings-general.spec.js",
                         "status": "passed",
                         "has_pending": true,
@@ -906,42 +967,6 @@
                                 },
                                 {
                                     "title": "can remove tax classes",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "new-product-editor\\/new-product-editor.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "New product editor": [],
-                            "New product editor > Default (disabled)": [
-                                {
-                                    "title": "is feature flag disabled",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "is not hooked up to sidebar \\"Add New\\"",
-                                    "status": "pending"
-                                }
-                            ],
-                            "New product editor > Enabled": [
-                                {
-                                    "title": "is feature flag enabled",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "is hooked up to sidebar \\"Add New\\"",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can be disabled from the header",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can be disabled from the feedback footer",
                                     "status": "pending"
                                 }
                             ]
@@ -1328,7 +1353,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 4 failed, 45 passed, 49 total | Tests: 161 skipped, 7 failed, 35 passed, 203 total."
+                "summary": "Test Suites: 0 skipped, 4 failed, 47 passed, 51 total | Tests: 163 skipped, 7 failed, 35 passed, 205 total."
             }
         },
         {
