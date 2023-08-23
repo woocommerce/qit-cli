@@ -27,7 +27,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 51 passed, 51 total | Tests: 13 skipped, 0 failed, 192 passed, 205 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 50 passed, 50 total | Tests: 13 skipped, 0 failed, 189 passed, 202 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -37,13 +37,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 51,
+                "numPassedTestSuites": 50,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 51,
+                "numTotalTestSuites": 50,
                 "numFailedTests": 0,
-                "numPassedTests": 192,
+                "numPassedTests": 189,
                 "numPendingTests": 13,
-                "numTotalTests": 205,
+                "numTotalTests": 202,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -890,27 +890,6 @@
                         }
                     },
                     {
-                        "file": "merchant\\/products\\/block-editor\\/disable-block-product-editor.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Disable block product editor": [
-                                {
-                                    "title": "is hooked up to sidebar \\"Add New\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can be disabled from the header",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can be disabled from settings",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "merchant\\/products\\/block-editor\\/enable-block-product-editor.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1353,7 +1332,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 51 passed, 51 total | Tests: 13 skipped, 0 failed, 192 passed, 205 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 50 passed, 50 total | Tests: 13 skipped, 0 failed, 189 passed, 202 total."
             }
         },
         {
