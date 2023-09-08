@@ -1377,10 +1377,6 @@
         {
             "debug_log": [
                 {
-                    "count": "1",
-                    "message": "PHP Warning: An unexpected error occurred. Something may be wrong with WordPress.org or this server\\u2019s configuration. If you continue to have problems, please try the support forums. (WordPress could not establish a secure connection to WordPress.org. Please contact your server administrator.) in \\/var\\/www\\/html\\/wp-includes\\/update.php on line 443"
-                },
-                {
                     "count": "3",
                     "message": "The wc_get_min_max_price_meta_query() function is deprecated since version 3.6."
                 }
