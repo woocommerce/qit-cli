@@ -218,6 +218,7 @@ function run_test_runs( array $test_runs ) {
 				'QIT_TEST_PATH'            => $t['path'],
 				'QIT_TEST_TYPE'            => $test_type,
 				'QIT_TEST_FUNCTION_NAME'   => $t['test_function_name'],
+				'QIT_WAIT_BEFORE_REQUEST'  => 'yes',
 				'QIT_RAN_TEST'             => false,
 				'QIT_REMOVE_FROM_SNAPSHOT' => $t['remove_from_snapshot'],
 			] );
