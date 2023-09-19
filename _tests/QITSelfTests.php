@@ -137,16 +137,23 @@ function generate_test_runs( array $test_types ): array {
 
 			$env = require $test . '/env.php';
 
-			$tests_to_run[ basename( $test_type ) ][] = [
-				'type'                 => basename( $test_type ),
-				'slug'                 => basename( $test ),
-				'php'                  => $env['php'] ?? '',
-				'wp'                   => $env['wp'] ?? '',
-				'woo'                  => $env['woo'] ?? '',
-				'features'             => $env['features'] ?? '',
-				'remove_from_snapshot' => $env['remove_from_snapshot'] ?? '',
-				'path'                 => $test,
-			];
+			$woo_versions = isset( $env['woo'] ) ? explode( ',', $env['woo'] ) : [ '' ];  // default to empty string if no versions.
+			$php_versions = isset( $env['php'] ) ? explode( ',', $env['php'] ) : [ '' ];  // default to empty string if no versions.
+
+			foreach ( $woo_versions as $woo_version ) {
+				foreach ( $php_versions as $php_version ) {
+					$tests_to_run[ basename( $test_type ) ][] = [
+						'type'                 => basename( $test_type ),
+						'slug'                 => basename( $test ),
+						'php'                  => $php_version,
+						'wp'                   => $env['wp'] ?? '',
+						'woo'                  => $woo_version,
+						'features'             => $env['features'] ?? '',
+						'remove_from_snapshot' => $env['remove_from_snapshot'] ?? '',
+						'path'                 => $test,
+					];
+				}
+			}
 		}
 	}
 
