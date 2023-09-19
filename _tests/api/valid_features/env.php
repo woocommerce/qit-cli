@@ -2,6 +2,6 @@
 return [
 	'php'      => '7.4',
 	'wp'       => 'rc',
-	'woo'      => 'rc',
+	'woo'      => 'rc,stable',
 	'features' => 'hpos,new_product_editor',
 ];
