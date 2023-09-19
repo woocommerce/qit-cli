@@ -1,6 +1,6 @@
 <?php
 return [
-	'php' => '7.4,8.2',
+	'php' => '7.4',
 	'wp'  => 'rc',
 	'woo' => 'rc,stable',
 ];
