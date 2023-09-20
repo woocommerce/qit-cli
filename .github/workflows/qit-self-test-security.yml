@@ -1,10 +1,10 @@
 name: QIT Self-Tests - Security
 
 on:
-  # Every day at 11am and 11pm UTC (6am and 6pm ET)
+  # Every day at 11:09am and 11:09pm UTC
   schedule:
-    - cron: '0 11 * * *'
-    - cron: '0 23 * * *'
+    - cron: '9 11 * * *'
+    - cron: '9 23 * * *'
   # Manually
   workflow_dispatch:
   # On push to trunk
