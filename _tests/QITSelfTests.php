@@ -10,6 +10,7 @@
  */
 
 use Jack\Symfony\ProcessManager;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Pipes\PipesInterface;
 use Symfony\Component\Process\Process;
@@ -137,16 +138,23 @@ function generate_test_runs( array $test_types ): array {
 
 			$env = require $test . '/env.php';
 
-			$tests_to_run[ basename( $test_type ) ][] = [
-				'type'                 => basename( $test_type ),
-				'slug'                 => basename( $test ),
-				'php'                  => $env['php'] ?? '',
-				'wp'                   => $env['wp'] ?? '',
-				'woo'                  => $env['woo'] ?? '',
-				'features'             => $env['features'] ?? '',
-				'remove_from_snapshot' => $env['remove_from_snapshot'] ?? '',
-				'path'                 => $test,
-			];
+			$woo_versions = isset( $env['woo'] ) ? explode( ',', $env['woo'] ) : [ '' ];  // default to empty string if no versions.
+			$php_versions = isset( $env['php'] ) ? explode( ',', $env['php'] ) : [ '' ];  // default to empty string if no versions.
+
+			foreach ( $woo_versions as $woo_version ) {
+				foreach ( $php_versions as $php_version ) {
+					$tests_to_run[ basename( $test_type ) ][] = [
+						'type'                 => basename( $test_type ),
+						'slug'                 => basename( $test ),
+						'php'                  => $php_version,
+						'wp'                   => $env['wp'] ?? '',
+						'woo'                  => $woo_version,
+						'features'             => $env['features'] ?? '',
+						'remove_from_snapshot' => $env['remove_from_snapshot'] ?? '',
+						'path'                 => $test,
+					];
+				}
+			}
 		}
 	}
 
@@ -154,18 +162,18 @@ function generate_test_runs( array $test_types ): array {
 }
 
 function run_test_runs( array $test_runs ) {
-	foreach ( $test_runs as $test_type => $test_type_test_runs ) {
+	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
 		generate_phpunit_files( $test_type, $test_type_test_runs );
 	}
 
-	foreach ( $test_runs as $test_type => $test_type_test_runs ) {
+	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
 		generate_zips( $test_type_test_runs );
 	}
 
 	$processes = [];
 
 	// Dispatch all tests in parallel using the qit binary.
-	foreach ( $test_runs as $test_type => $test_type_test_runs ) {
+	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
 		foreach ( $test_type_test_runs as $t ) {
 			$php = ( new PhpExecutableFinder() )->find( false );
 			$qit = realpath( __DIR__ . '/../qit' );
@@ -206,10 +214,12 @@ function run_test_runs( array $test_runs ) {
 
 			echo "[INFO] Preparing to run command {$p->getCommandLine()}\n";
 
+
 			$p->setEnv( [
 				'QIT_TEST_PATH'            => $t['path'],
-				'QIT_TEST_SLUG'            => $t['slug'],
 				'QIT_TEST_TYPE'            => $test_type,
+				'QIT_TEST_FUNCTION_NAME'   => $t['test_function_name'],
+				'QIT_WAIT_BEFORE_REQUEST'  => 'yes',
 				'QIT_RAN_TEST'             => false,
 				'QIT_REMOVE_FROM_SNAPSHOT' => $t['remove_from_snapshot'],
 			] );
@@ -232,6 +242,8 @@ function run_test_runs( array $test_runs ) {
 	} );
 
 	echo "All tests finished. Processing results...\n";
+
+	$failed_tests = [];
 
 	/**
 	 * After the process has finished, iterate over the output.
@@ -277,7 +289,7 @@ function run_test_runs( array $test_runs ) {
 					 * The "$" at the end is so that it does an exact match. For instance, the above regex would not match:
 					 * TestNamespace\TestCaseClass::testMethodPhp82
 					 */
-					sprintf( '--filter=::test_%s_%s$', $p->getEnv()['QIT_TEST_TYPE'], $p->getEnv()['QIT_TEST_SLUG'] ),
+					sprintf( '--filter=::%s$', $p->getEnv()['QIT_TEST_FUNCTION_NAME'] ),
 					'--testdox', // Nice formatting.
 				];
 
@@ -290,13 +302,17 @@ function run_test_runs( array $test_runs ) {
 
 				echo "[INFO] Preparing to run test: {$phpunit_process->getCommandLine()}\n";
 
-				$phpunit_process->mustRun( function ( $type, $out ) {
-					echo substr( $out, 0, 500 ) . "\n";
-				} );
+				try {
+					$phpunit_process->mustRun( function ( $type, $out ) {
+						echo substr( $out, 0, 500 ) . "\n";
+					} );
+				} catch( ProcessFailedException $e) {
+					$failed_tests[] = $e;
+				} finally {
+					cleanup_test( $p->getEnv()['QIT_TEST_PATH'] );
 
-				cleanup_test( $p->getEnv()['QIT_TEST_PATH'] );
-
-				$p->setEnv( [ 'QIT_RAN_TEST' => true ] );
+					$p->setEnv( [ 'QIT_RAN_TEST' => true ] );
+				}
 			}
 		}
 	}
@@ -306,17 +322,26 @@ function run_test_runs( array $test_runs ) {
 			throw new RuntimeException( "[Process {$p->getPid()}]: Test {$p->getEnv()['QIT_TEST_PATH']} did not run.\n" );
 		}
 	}
+
+	if ( ! empty( $failed_tests ) ) {
+		echo "The following tests failed:\n";
+		foreach ( $failed_tests as $failed_test ) {
+			echo $failed_test->getMessage() . "\n";
+		}
+		die( 1 );
+	}
 }
 
-function generate_phpunit_files( string $test_type, array $test_runs ): void {
+function generate_phpunit_files( string $test_type, array &$test_runs ): void {
 	$name     = ucfirst( $test_type ) . 'Test';
 	$filepath = __DIR__ . '/tests/' . $name . '.php';
 	$tests    = '';
 
-	foreach ( $test_runs as $test_run ) {
-		$tests .= <<<PHP
+	foreach ( $test_runs as &$test_run ) {
+		$test_run['test_function_name'] = sprintf( 'test_%s_%s_%s_%s', $test_run['type'], $test_run['slug'], $test_run['woo'], str_replace( '.', '', $test_run['php'] ) );
+		$tests                          .= <<<PHP
 
-	public function test_{$test_run['type']}_{$test_run['slug']}() {
+	public function {$test_run['test_function_name']}() {
 		\$this->assertMatchesSnapshot( \$this->validate_and_normalize( __DIR__ . '/../{$test_run['type']}/{$test_run['slug']}/test-result.json' ) );
 	}
 PHP;
