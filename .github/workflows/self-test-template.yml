@@ -21,6 +21,26 @@ jobs:
       QIT_DISABLE_ONBOARDING: yes
 
     steps:
+      - name: Conditional Wait
+        run: |
+          if [[ "${{ inputs.test_type }}" == "activation" ]]; then
+            echo "Test type is activation. No wait."
+          elif [[ "${{ inputs.test_type }}" == "api" ]]; then
+            echo "Test type is api. Waiting 30 seconds."
+            sleep 30
+          elif [[ "${{ inputs.test_type }}" == "e2e" ]]; then
+            echo "Test type is e2e. Waiting 60 seconds."
+            sleep 60
+          elif [[ "${{ inputs.test_type }}" == "phpstan" ]]; then
+            echo "Test type is phpstan. Waiting 90 seconds."
+            sleep 90
+          elif [[ "${{ inputs.test_type }}" == "security" ]]; then
+            echo "Test type is security. Waiting 120 seconds."
+            sleep 120
+          else
+            echo "Unknown test type. No wait."
+          fi
+
       - name: Checkout code
         uses: actions/checkout@v4
 

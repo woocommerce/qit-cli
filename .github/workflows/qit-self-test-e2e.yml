@@ -1,10 +1,10 @@
 name: QIT Self-Tests - E2E
 
 on:
-  # Every day at 11:05am and 11:05pm UTC
+  # Every day at 11am and 11pm UTC (6am and 6pm ET)
   schedule:
-    - cron: '5 11 * * *'
-    - cron: '5 23 * * *'
+    - cron: '0 11 * * *'
+    - cron: '0 23 * * *'
   # Manually
   workflow_dispatch:
   # On push to trunk

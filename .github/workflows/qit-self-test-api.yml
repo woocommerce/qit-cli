@@ -1,10 +1,10 @@
 name: QIT Self-Tests - API
 
 on:
-  # Every day at 11:03am and 11:03pm UTC
+  # Every day at 11am and 11pm UTC (6am and 6pm ET)
   schedule:
-    - cron: '3 11 * * *'
-    - cron: '3 23 * * *'
+    - cron: '0 11 * * *'
+    - cron: '0 23 * * *'
   # Manually
   workflow_dispatch:
   # On push to trunk
