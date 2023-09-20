@@ -2,7 +2,7 @@
 return [
 	'php'                  => '8.2',
 	'wp'                   => 'rc',
-	'woo'                  => 'rc',
+	'woo'                  => 'rc,stable',
 	/*
 	 * PHP 8.2 generates thousands of notices in the debug log.
 	 * These notices are not consistent between runs, you can
