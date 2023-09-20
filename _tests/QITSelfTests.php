@@ -10,6 +10,7 @@
  */
 
 use Jack\Symfony\ProcessManager;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Pipes\PipesInterface;
 use Symfony\Component\Process\Process;
@@ -242,6 +243,8 @@ function run_test_runs( array $test_runs ) {
 
 	echo "All tests finished. Processing results...\n";
 
+	$failed_tests = [];
+
 	/**
 	 * After the process has finished, iterate over the output.
 	 * We do this when it finishes because the output that is generated while
@@ -299,13 +302,17 @@ function run_test_runs( array $test_runs ) {
 
 				echo "[INFO] Preparing to run test: {$phpunit_process->getCommandLine()}\n";
 
-				$phpunit_process->mustRun( function ( $type, $out ) {
-					echo substr( $out, 0, 500 ) . "\n";
-				} );
+				try {
+					$phpunit_process->mustRun( function ( $type, $out ) {
+						echo substr( $out, 0, 500 ) . "\n";
+					} );
+				} catch( ProcessFailedException $e) {
+					$failed_tests[] = $e;
+				} finally {
+					cleanup_test( $p->getEnv()['QIT_TEST_PATH'] );
 
-				cleanup_test( $p->getEnv()['QIT_TEST_PATH'] );
-
-				$p->setEnv( [ 'QIT_RAN_TEST' => true ] );
+					$p->setEnv( [ 'QIT_RAN_TEST' => true ] );
+				}
 			}
 		}
 	}
@@ -314,6 +321,14 @@ function run_test_runs( array $test_runs ) {
 		if ( ! $p->getEnv()['QIT_RAN_TEST'] ) {
 			throw new RuntimeException( "[Process {$p->getPid()}]: Test {$p->getEnv()['QIT_TEST_PATH']} did not run.\n" );
 		}
+	}
+
+	if ( ! empty( $failed_tests ) ) {
+		echo "The following tests failed:\n";
+		foreach ( $failed_tests as $failed_test ) {
+			echo $failed_test->getMessage() . "\n";
+		}
+		die( 1 );
 	}
 }
 
