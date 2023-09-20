@@ -21,7 +21,7 @@ jobs:
       QIT_DISABLE_ONBOARDING: yes
 
     steps:
-      - name: Conditional Wait
+      - name: Wait before request to avoid 429
         run: |
           if [[ "${{ inputs.test_type }}" == "activation" ]]; then
             echo "Test type is activation. No wait."
