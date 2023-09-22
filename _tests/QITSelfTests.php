@@ -151,6 +151,7 @@ function generate_test_runs( array $test_types ): array {
 						'woo'                  => $woo_version,
 						'features'             => $env['features'] ?? '',
 						'remove_from_snapshot' => $env['remove_from_snapshot'] ?? '',
+						'params'               => $env['params'] ?? [],
 						'path'                 => $test,
 					];
 				}
@@ -207,13 +208,18 @@ function run_test_runs( array $test_runs ) {
 				$args[] = "--optional_features={$t['features']}";
 			}
 
+			if ( ! empty( $t['params'] ) ) {
+				foreach ( $t['params'] as $param_name => $param_value ) {
+					$args[] = "$param_name={$param_value}";
+				}
+			}
+
 			$args[] = Context::$sut_slug;
 
 			$p = new Process( $args );
 			$p->setTimeout( null ); // Let QIT CLI handle timeouts.
 
 			echo "[INFO] Preparing to run command {$p->getCommandLine()}\n";
-
 
 			$p->setEnv( [
 				'QIT_TEST_PATH'            => $t['path'],
@@ -306,7 +312,7 @@ function run_test_runs( array $test_runs ) {
 					$phpunit_process->mustRun( function ( $type, $out ) {
 						echo substr( $out, 0, 500 ) . "\n";
 					} );
-				} catch( ProcessFailedException $e) {
+				} catch ( ProcessFailedException $e ) {
 					$failed_tests[] = $e;
 				} finally {
 					cleanup_test( $p->getEnv()['QIT_TEST_PATH'] );
