@@ -25,7 +25,11 @@ $arrowFunction = fn($x) => $x + 1;
 str_contains('hello world', 'world');
 
 // Should flag for PHP < 8.1
-$fib = readonly fn(int $n): int => $n <= 0 ? 0 : $n <= 1 ? 1 : $fib($n - 1) + $fib($n - 2);
+class Bar {
+	readonly string $foo;
+}
 
 // Should flag for PHP < 8.2
-$shortArraySyntax = array<int>(1, 2, 3);
+readonly class Foo {
+
+}
