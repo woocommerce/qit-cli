@@ -27,7 +27,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 5 failed, 49 passed, 54 total | Tests: 159 skipped, 7 failed, 35 passed, 201 total.",
+            "test_summary": "Test Suites: 0 skipped, 4 failed, 50 passed, 54 total | Tests: 157 skipped, 7 failed, 37 passed, 201 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -36,13 +36,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 5,
-                "numPassedTestSuites": 49,
+                "numFailedTestSuites": 4,
+                "numPassedTestSuites": 50,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 54,
                 "numFailedTests": 7,
-                "numPassedTests": 35,
-                "numPendingTests": 159,
+                "numPassedTests": 37,
+                "numPendingTests": 157,
                 "numTotalTests": 201,
                 "testResults": [
                     {
@@ -230,17 +230,17 @@
                     },
                     {
                         "file": "customize-store\\/assembler-hub.spec.js",
-                        "status": "failed",
-                        "has_pending": true,
+                        "status": "passed",
+                        "has_pending": false,
                         "tests": {
                             "Store owner can view Assembler Hub for store customization": [
                                 {
                                     "title": "Can view the Assembler Hub page",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Visiting change header should show a list of block patterns to choose from",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -381,7 +381,7 @@
                                 },
                                 {
                                     "title": "should load the customer payment page",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can pay for the order through the customer payment page",
@@ -1355,7 +1355,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 5 failed, 49 passed, 54 total | Tests: 159 skipped, 7 failed, 35 passed, 201 total."
+                "summary": "Test Suites: 0 skipped, 4 failed, 50 passed, 54 total | Tests: 157 skipped, 7 failed, 37 passed, 201 total."
             }
         },
         {

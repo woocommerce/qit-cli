@@ -9,7 +9,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -27,7 +27,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 1 failed, 53 passed, 54 total | Tests: 3 skipped, 1 failed, 197 passed, 201 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 54 passed, 54 total | Tests: 2 skipped, 0 failed, 199 passed, 201 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -35,13 +35,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 53,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 54,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 54,
-                "numFailedTests": 1,
-                "numPassedTests": 197,
-                "numPendingTests": 3,
+                "numFailedTests": 0,
+                "numPassedTests": 199,
+                "numPendingTests": 2,
                 "numTotalTests": 201,
                 "testResults": [
                     {
@@ -229,17 +229,17 @@
                     },
                     {
                         "file": "customize-store\\/assembler-hub.spec.js",
-                        "status": "failed",
-                        "has_pending": true,
+                        "status": "passed",
+                        "has_pending": false,
                         "tests": {
                             "Store owner can view Assembler Hub for store customization": [
                                 {
                                     "title": "Can view the Assembler Hub page",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Visiting change header should show a list of block patterns to choose from",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -1354,7 +1354,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 53 passed, 54 total | Tests: 3 skipped, 1 failed, 197 passed, 201 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 54 passed, 54 total | Tests: 2 skipped, 0 failed, 199 passed, 201 total."
             }
         }
     ]
