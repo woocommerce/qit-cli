@@ -243,17 +243,6 @@ function run_test_runs( array $test_runs ) {
 
 	echo "All tests finished. Processing results...\n";
 
-	$results = [];
-
-	foreach ( $processes as $p ) {
-		$results[] = [
-			'process'     => $p,
-			'has_results' => false,
-			'failed'      => null,
-			'succeeded'   => null,
-		];
-	}
-
 	$failed_tests = [];
 
 	/**
@@ -264,9 +253,7 @@ function run_test_runs( array $test_runs ) {
 	 *
 	 * @see \Symfony\Component\Process\Pipes\PipesInterface::CHUNK_SIZE
 	 */
-	foreach ( $results as &$r ) {
-		$p = $r['process'];
-
+	foreach ($processes as $p ) {
 		$it = $p->getIterator( Process::ITER_SKIP_ERR | Process::ITER_KEEP_OUTPUT );
 		foreach ( $it as $out ) {
 			if ( ! is_null( json_decode( $out, true ) ) ) {
@@ -319,12 +306,9 @@ function run_test_runs( array $test_runs ) {
 					$phpunit_process->mustRun( function ( $type, $out ) {
 						echo substr( $out, 0, 500 ) . "\n";
 					} );
-					$r['succeeded'] = true;
 				} catch ( ProcessFailedException $e ) {
 					$failed_tests[] = $e;
-					$r['failed']    = true;
 				} finally {
-					$r['has_results'] = true;
 					cleanup_test( $p->getEnv()['QIT_TEST_PATH'] );
 
 					$p->setEnv( [ 'QIT_RAN_TEST' => true ] );
@@ -336,17 +320,6 @@ function run_test_runs( array $test_runs ) {
 	foreach ( $processes as $p ) {
 		if ( ! $p->getEnv()['QIT_RAN_TEST'] ) {
 			throw new RuntimeException( "[Process {$p->getPid()}]: Test {$p->getEnv()['QIT_TEST_PATH']} did not run.\n" );
-		}
-	}
-
-	foreach ( $results as &$r ) {
-		unset( $r['process'] );
-	}
-
-	foreach ( $results as $r ) {
-		if ( ! $r['has_results'] ) {
-			echo "No results found for test {$r['process']->getEnv()['QIT_TEST_PATH']}\n";
-			die( 1 );
 		}
 	}
 

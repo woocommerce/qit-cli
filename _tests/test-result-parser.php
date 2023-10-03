@@ -56,12 +56,14 @@ function test_result_parser( string $json, string $remove_from_snapshot = '' ): 
 				foreach ( $value as $k2 => &$v2 ) {
 					foreach ( $v2 as $key_log => &$value_log ) {
 						if ( $key_log === 'count' ) {
+							$value_log = (int) $value_log;
+
 							if ( $value_log < 50 ) {
 								// No-op. Exact match for counts below 50.
 							} elseif ( $value_log < 100 ) {
-								$value_log = ( $value_log % 5 === 0 ) ? $value_log : round( $value_log / 5 ) * 5;  // Round to the closest 5 if not already divisible by 5
+								$value_log = $value_log % 5 === 0 ? $value_log : round( $value_log / 5 ) * 5;  // Round to the closest 5 if not already divisible by 5.
 							} else {
-								$value_log = ( $value_log % 10 === 0 ) ? $value_log : round( $value_log / 10 ) * 10;  // Round to the closest 10 if not already divisible by 10
+								$value_log = $value_log % 10 === 0 ? $value_log : round( $value_log / 10 ) * 10;  // Round to the closest 10 if not already divisible by 10.
 							}
 						}
 

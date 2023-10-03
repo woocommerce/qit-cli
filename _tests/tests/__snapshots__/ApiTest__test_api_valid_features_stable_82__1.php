@@ -1377,7 +1377,7 @@
         {
             "debug_log": [
                 {
-                    "count": "250",
+                    "count": "260",
                     "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                 },
                 {

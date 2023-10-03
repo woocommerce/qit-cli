@@ -1377,7 +1377,7 @@
         {
             "debug_log": [
                 {
-                    "count": "4",
+                    "count": "3",
                     "message": "The wc_get_min_max_price_meta_query() function is deprecated since version 3.6."
                 }
             ]
