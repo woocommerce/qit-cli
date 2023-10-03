@@ -31,7 +31,8 @@
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
-            "test_result_json_extracted": "{EXTRACTED}"
+            "test_result_json_extracted": "{EXTRACTED}",
+            "debug_log_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
@@ -1333,6 +1334,14 @@
                 ],
                 "summary": "Test Suites: 0 skipped, 0 failed, 50 passed, 50 total | Tests: 13 skipped, 0 failed, 189 passed, 202 total."
             }
+        },
+        {
+            "debug_log": [
+                {
+                    "count": "3",
+                    "message": "The Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options::get_options function is deprecated since version 6.3."
+                }
+            ]
         }
     ]
 ]';

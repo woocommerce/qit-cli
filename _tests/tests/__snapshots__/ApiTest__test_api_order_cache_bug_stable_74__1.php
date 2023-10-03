@@ -1377,12 +1377,8 @@
         {
             "debug_log": [
                 {
-                    "count": "249",
+                    "count": "250",
                     "message": "PHP Notice: $order is Automattic\\\\WooCommerce\\\\Admin\\\\Overrides\\\\Order as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 41"
-                },
-                {
-                    "count": "3",
-                    "message": "The wc_get_min_max_price_meta_query() function is deprecated since version 3.6."
                 }
             ]
         }

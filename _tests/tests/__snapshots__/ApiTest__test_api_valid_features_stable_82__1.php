@@ -1377,12 +1377,8 @@
         {
             "debug_log": [
                 {
-                    "count": "254",
+                    "count": "250",
                     "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
-                },
-                {
-                    "count": "3",
-                    "message": "The wc_get_min_max_price_meta_query() function is deprecated since version 3.6."
                 }
             ]
         }

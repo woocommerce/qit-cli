@@ -306,7 +306,7 @@ function run_test_runs( array $test_runs ) {
 					$phpunit_process->mustRun( function ( $type, $out ) {
 						echo substr( $out, 0, 500 ) . "\n";
 					} );
-				} catch( ProcessFailedException $e) {
+				} catch ( ProcessFailedException $e ) {
 					$failed_tests[] = $e;
 				} finally {
 					cleanup_test( $p->getEnv()['QIT_TEST_PATH'] );
