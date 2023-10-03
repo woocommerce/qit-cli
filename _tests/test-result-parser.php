@@ -25,7 +25,7 @@ function test_result_parser( string $json, string $remove_from_snapshot = '' ): 
 				// Add the extracted item as a separate top-level item in the output array
 				$human_friendly_test_result[] = [ $key => $decodedValue ];
 				// Replace the original value with an indicator that the JSON has been extracted
-				$data["{$key}_extracted"] = '{EXTRACTED}';
+				$data[ "{$key}_extracted" ] = '{EXTRACTED}';
 
 				unset( $data[ $key ] );
 			}

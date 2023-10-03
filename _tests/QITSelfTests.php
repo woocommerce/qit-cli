@@ -253,7 +253,7 @@ function run_test_runs( array $test_runs ) {
 	 *
 	 * @see \Symfony\Component\Process\Pipes\PipesInterface::CHUNK_SIZE
 	 */
-	foreach ($processes as $p ) {
+	foreach ( $processes as $p ) {
 		$it = $p->getIterator( Process::ITER_SKIP_ERR | Process::ITER_KEEP_OUTPUT );
 		foreach ( $it as $out ) {
 			if ( ! is_null( json_decode( $out, true ) ) ) {
