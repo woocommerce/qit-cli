@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<ruleset name="WooCommerce Marketplace PHPCS Security Checks">
+    <rule ref="WordPress.Security.NonceVerification">
+        <severity>10</severity>
+    </rule>
+</ruleset>
