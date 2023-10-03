@@ -1383,10 +1383,6 @@
                 {
                     "count": "2",
                     "message": "PHP Deprecated: preg_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php on line 1768"
-                },
-                {
-                    "count": "3",
-                    "message": "The wc_get_min_max_price_meta_query() function is deprecated since version 3.6."
                 }
             ]
         }
