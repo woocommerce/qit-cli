@@ -10,5 +10,5 @@ return [
 	 * produce slightly different error counts, so we remove
 	 * debug_log from this test.
 	 */
-	'remove_from_snapshot' => 'debug_log',
+	#'remove_from_snapshot' => 'debug_log',
 ];
