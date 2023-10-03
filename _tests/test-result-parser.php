@@ -61,9 +61,21 @@ function test_result_parser( string $json, string $remove_from_snapshot = '' ): 
 							if ( $value_log < 50 ) {
 								// No-op. Exact match for counts below 50.
 							} elseif ( $value_log < 100 ) {
-								$value_log = $value_log % 5 === 0 ? $value_log : round( $value_log / 5 ) * 5;  // Round to the closest 5 if not already divisible by 5.
+								if ( $value_log % 5 === 0 ) {
+									echo "Skipping normalization as it's already divisible by 5\n";
+								} else {
+									echo "Normalizing debug_log.count from $value_log to ";
+									$value_log = round( $value_log / 5 ) * 5;  // Round to the closest 5 if not already divisible by 5.
+									echo "$value_log\n";
+								}
 							} else {
-								$value_log = $value_log % 10 === 0 ? $value_log : round( $value_log / 10 ) * 10;  // Round to the closest 10 if not already divisible by 10.
+								if ( $value_log % 10 === 0 ) {
+									echo "Skipping normalization as it's already divisible by 10\n";
+								} else {
+									echo "Normalizing debug_log.count from $value_log to ";
+									$value_log = round( $value_log / 10 ) * 10;  // Round to the closest 10 if not already divisible by 10.
+									echo "$value_log\n";
+								}
 							}
 						}
 
