@@ -138,6 +138,51 @@ class QITE2ETestCase extends TestCase {
 							}
 						}
 
+						// Sometimes the test site might fail to contact WP.org, this is beyond our control.
+						if ( stripos( $debug_log['message'], 'Something may be wrong with WordPress.org' ) !== false ) {
+							// If it happens only a few times, ignore it.
+							if ( $debug_log['count'] <= 3 ) {
+								echo "Removing 'Something may be wrong with WordPress.org' from debug_log.message\n";
+								unset( $value[ $k ] );
+								continue;
+							}
+						}
+
+						/*
+						 * Normalize PHP debug logs captured during test runs.
+						 *
+						 * The normalization process is focused on the 'count' key within the debug logs.
+						 * This allows for some flexibility in test runs where slight variations in log counts
+						 * might occur due to uncontrollable conditions like AJAX requests firing or not firing.
+						 *
+						 * Normalization rules for 'count':
+						 * - Exact values are retained for counts below 50.
+						 * - Counts between 50 and 100 are rounded to the nearest 5.
+						 * - Counts above 100 are rounded to the nearest 10.
+						 *
+						 * Additionally, certain known failure messages (e.g., WordPress.org connectivity issues)
+						 * are conditionally removed from the logs.
+						 */
+						if ( $debug_log['count'] < 50 ) {
+							// No-op. Exact match for counts below 50.
+						} elseif ( $debug_log['count'] < 100 ) {
+							if ( $debug_log['count'] % 5 === 0 ) {
+								echo "Skipping normalization as it's already divisible by 5\n";
+							} else {
+								echo "Normalizing debug_log.count from {$debug_log['count']} to ";
+								$debug_log['count'] = round( $debug_log['count'] / 5 ) * 5;  // Round to the closest 5 if not already divisible by 5.
+								echo "{$debug_log['count']}\n";
+							}
+						} else {
+							if ( $debug_log['count'] % 10 === 0 ) {
+								echo "Skipping normalization as it's already divisible by 10\n";
+							} else {
+								echo "Normalizing debug_log.count from {$debug_log['count']} to ";
+								$debug_log['count'] = round( $debug_log['count'] / 10 ) * 10;  // Round to the closest 10 if not already divisible by 10.
+								echo "{$debug_log['count']}\n";
+							}
+						}
+
 						// todo: regenerate snapshots and remove strval later.
 						$normalized_debug_log[] = array_map( 'strval', $debug_log );
 					}
