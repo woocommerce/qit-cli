@@ -1377,12 +1377,12 @@
         {
             "debug_log": [
                 {
-                    "count": "260",
-                    "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
+                    "count": "1",
+                    "message": "PHP Warning: An unexpected error occurred. Something may be wrong with WordPress.org or this server\\u2019s configuration. If you continue to have problems, please try the support forums. (WordPress could not establish a secure connection to WordPress.org. Please contact your server administrator.) in \\/var\\/www\\/html\\/wp-includes\\/update.php on line 730"
                 },
                 {
-                    "count": "3",
-                    "message": "The wc_get_min_max_price_meta_query() function is deprecated since version 3.6."
+                    "count": "253",
+                    "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                 }
             ]
         }
