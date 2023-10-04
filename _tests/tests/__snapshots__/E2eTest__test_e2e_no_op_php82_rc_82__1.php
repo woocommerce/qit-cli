@@ -1361,10 +1361,6 @@
         {
             "debug_log": [
                 {
-                    "count": "220",
-                    "message": "PHP Deprecated: preg_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php on line 1768"
-                },
-                {
                     "count": "1",
                     "message": "PHP Deprecated: strlen(): Passing null to parameter #1 ($string) of type string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/formatting.php on line 3765"
                 },
