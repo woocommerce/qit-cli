@@ -1361,10 +1361,6 @@
         {
             "debug_log": [
                 {
-                    "count": "220",
-                    "message": "PHP Deprecated: preg_replace(): Passing null to parameter #3 ($subject) of type array|string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php on line 1768"
-                },
-                {
                     "count": "2",
                     "message": "The Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options::get_options function is deprecated since version 6.3."
                 },
