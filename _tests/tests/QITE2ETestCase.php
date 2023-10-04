@@ -127,6 +127,11 @@ class QITE2ETestCase extends TestCase {
 							if ( $pos !== false ) {
 								// Remove stack trace from debug log.
 								$debug_log['message'] = substr( $debug_log['message'], 0, $pos );
+
+								// If the resulting entry is empty, skip it.
+								if ( empty( trim( $debug_log['message'] ) ) ) {
+									continue;
+								}
 							}
 						}
 
@@ -178,6 +183,11 @@ class QITE2ETestCase extends TestCase {
 						// todo: regenerate snapshots and remove strval later.
 						$normalized_debug_log[] = array_map( 'strval', $debug_log );
 					}
+
+					// Sort alphabetically by message.
+					usort( $normalized_debug_log, function ( $a, $b ) {
+						return strcmp( $a['message'], $b['message'] );
+					} );
 
 					return $normalized_debug_log;
 				},
