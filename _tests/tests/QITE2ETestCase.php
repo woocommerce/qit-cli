@@ -127,6 +127,11 @@ class QITE2ETestCase extends TestCase {
 							if ( $pos !== false ) {
 								// Remove stack trace from debug log.
 								$debug_log['message'] = substr( $debug_log['message'], 0, $pos );
+
+								// If the resulting entry is empty, skip it.
+								if ( empty( trim( $debug_log['message'] ) ) ) {
+									continue;
+								}
 							}
 						}
 
