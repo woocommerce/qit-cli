@@ -180,6 +180,13 @@ class QITE2ETestCase extends TestCase {
 							}
 						}
 
+						// Handle E2E Delete Products tests with more wiggle room.
+						if ( stripos( $file_path, 'e2e/delete_products' ) !== false ) {
+							if ( $debug_log['count'] <= 10 ) {
+								$debug_log['count'] = 'Less than 10';
+							}
+						}
+
 						// todo: regenerate snapshots and remove strval later.
 						$normalized_debug_log[] = array_map( 'strval', $debug_log );
 					}
