@@ -27,7 +27,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 50 passed, 50 total | Tests: 13 skipped, 0 failed, 189 passed, 202 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 54 passed, 54 total | Tests: 2 skipped, 0 failed, 199 passed, 201 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -37,13 +37,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 50,
+                "numPassedTestSuites": 54,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 50,
+                "numTotalTestSuites": 54,
                 "numFailedTests": 0,
-                "numPassedTests": 189,
-                "numPendingTests": 13,
-                "numTotalTests": 202,
+                "numPassedTests": 199,
+                "numPendingTests": 2,
+                "numTotalTests": 201,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -65,59 +65,8 @@
                     {
                         "file": "activate-and-setup\\/complete-onboarding-wizard.spec.js",
                         "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Store owner can complete onboarding wizard": [
-                                {
-                                    "title": "can complete the \\"Store Details\\" section",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can complete the industry section",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can save industry changes when navigating back to \\"Store Details\\"",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can discard industry changes when navigating back to \\"Store Details\\"",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can complete the product types section",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can complete the business section",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can unselect all business features and continue",
-                                    "status": "pending"
-                                }
-                            ],
-                            "A Liberian store can complete the selective bundle install but does not include WCPay.": [
-                                {
-                                    "title": "can choose the \\"Other\\" industry",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can choose not to install any extensions",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "should display the choose payments task, and not the WC Pay task",
-                                    "status": "pending"
-                                }
-                            ],
-                            "Store owner can go through setup Task List": [
-                                {
-                                    "title": "can setup shipping",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
+                        "has_pending": false,
+                        "tests": []
                     },
                     {
                         "file": "activate-and-setup\\/setup-onboarding.spec.js",
@@ -274,6 +223,23 @@
                             "A basic set of tests to ensure WP, wp-admin and my-account load > Sign in as customer": [
                                 {
                                     "title": "Load customer my account page",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "customize-store\\/assembler-hub.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Store owner can view Assembler Hub for store customization": [
+                                {
+                                    "title": "Can view the Assembler Hub page",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Visiting change header should show a list of block patterns to choose from",
                                     "status": "passed"
                                 }
                             ]
@@ -457,6 +423,10 @@
                                 },
                                 {
                                     "title": "can update order details",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can load billing details",
                                     "status": "passed"
                                 }
                             ],
@@ -1145,6 +1115,10 @@
                                     "status": "passed"
                                 },
                                 {
+                                    "title": "warn when customer is missing required details",
+                                    "status": "passed"
+                                },
+                                {
                                     "title": "allows customer to fill shipping details",
                                     "status": "passed"
                                 },
@@ -1181,6 +1155,23 @@
                         }
                     },
                     {
+                        "file": "shopper\\/my-account-addresses.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Customer can manage addresses in My Account > Addresses page": [
+                                {
+                                    "title": "can add billing address from my account",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can add shipping address from my account",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "shopper\\/my-account-create-account.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1188,6 +1179,19 @@
                             "Shopper My Account Create Account": [
                                 {
                                     "title": "can create a new account via my account",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "shopper\\/my-account-downloads.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Customer can manage downloadable file in My Account > Downloads page": [
+                                {
+                                    "title": "can see downloadable file and click to download it",
                                     "status": "passed"
                                 }
                             ]
@@ -1257,30 +1261,10 @@
                         }
                     },
                     {
-                        "file": "shopper\\/single-product.spec.js",
+                        "file": "shopper\\/product-grouped.spec.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
-                            "Single Product Page": [
-                                {
-                                    "title": "should be able to add simple products to the cart",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should be able to remove simple products from the cart",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Variable Product Page": [
-                                {
-                                    "title": "should be able to add variation products to the cart",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should be able to remove variation products from the cart",
-                                    "status": "passed"
-                                }
-                            ],
                             "Grouped Product Page": [
                                 {
                                     "title": "should be able to add grouped products to the cart",
@@ -1294,10 +1278,49 @@
                         }
                     },
                     {
-                        "file": "shopper\\/variable-product-updates.spec.js",
+                        "file": "shopper\\/product-simple.spec.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
+                            "Single Product Page": [
+                                {
+                                    "title": "should be able to see upsell and related products",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should be able to post a review and see it after",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should be able to see product description and image",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should be able to add simple products to the cart",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should be able to remove simple products from the cart",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "shopper\\/product-variable.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Variable Product Page": [
+                                {
+                                    "title": "should be able to add variation products to the cart",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should be able to remove variation products from the cart",
+                                    "status": "passed"
+                                }
+                            ],
                             "Shopper > Update variable product": [
                                 {
                                     "title": "Shopper can change variable attributes to the same value",
@@ -1332,7 +1355,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 50 passed, 50 total | Tests: 13 skipped, 0 failed, 189 passed, 202 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 54 passed, 54 total | Tests: 2 skipped, 0 failed, 199 passed, 201 total."
             }
         },
         {
