@@ -6,6 +6,8 @@
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "7.4",
+            "max_php_version": "",
+            "min_php_version": "",
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
