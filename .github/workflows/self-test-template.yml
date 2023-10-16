@@ -37,6 +37,9 @@ jobs:
           elif [[ "${{ inputs.test_type }}" == "security" ]]; then
             echo "Test type is security. Waiting 120 seconds."
             sleep 120
+          elif [[ "${{ inputs.test_type }}" == "phpcompatibility" ]]; then
+            echo "Test type is phpcompatibility. Waiting 150 seconds."
+            sleep 150
           else
             echo "Unknown test type. No wait."
           fi
