@@ -6,7 +6,7 @@
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "7.4",
-            "max_php_version": "8.2",
+            "max_php_version": "7.4",
             "min_php_version": "7.2",
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
@@ -29,7 +29,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 12 Warnings: 3",
+            "test_summary": "Errors: 5 Warnings: 7",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -41,14 +41,14 @@
                 "tool": {
                     "phpcs": {
                         "totals": {
-                            "errors": 12,
-                            "warnings": 3,
+                            "errors": 5,
+                            "warnings": 7,
                             "fixable": 1
                         },
                         "files": {
                             "\\/home\\/runner\\/work\\/compatibility-dashboard\\/compatibility-dashboard\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                                "errors": 12,
-                                "warnings": 3,
+                                "errors": 5,
+                                "warnings": 7,
                                 "messages": [
                                     {
                                         "message": "Trailing commas are not allowed in function calls in PHP 7.2 or earlier",
@@ -56,7 +56,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
-                                        "line": 19,
+                                        "line": 18,
                                         "column": 30
                                     },
                                     {
@@ -65,7 +65,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
-                                        "line": 22,
+                                        "line": 21,
                                         "column": 18
                                     },
                                     {
@@ -74,7 +74,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
-                                        "line": 29,
+                                        "line": 28,
                                         "column": 11
                                     },
                                     {
@@ -83,7 +83,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
-                                        "line": 29,
+                                        "line": 28,
                                         "column": 18
                                     },
                                     {
@@ -92,98 +92,71 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
-                                        "line": 33,
+                                        "line": 32,
                                         "column": 1
                                     },
                                     {
-                                        "message": "Function create_function() is deprecated since PHP 7.2 and removed since PHP 8.0; Use an anonymous function instead",
-                                        "source": "PHPCompatibility.FunctionUse.RemovedFunctions.create_functionDeprecatedRemoved",
+                                        "message": "Function create_function() is deprecated since PHP 7.2; Use an anonymous function instead",
+                                        "source": "PHPCompatibility.FunctionUse.RemovedFunctions.create_functionDeprecated",
                                         "severity": 5,
                                         "fixable": false,
-                                        "type": "ERROR",
-                                        "line": 39,
+                                        "type": "WARNING",
+                                        "line": 38,
                                         "column": 12
                                     },
                                     {
-                                        "message": "Specifying an autoloader using an __autoload() function is deprecated since PHP 7.2 and no longer supported since PHP 8.0",
-                                        "source": "PHPCompatibility.FunctionNameRestrictions.RemovedMagicAutoload.Removed",
+                                        "message": "Specifying an autoloader using an __autoload() function is deprecated since PHP 7.2",
+                                        "source": "PHPCompatibility.FunctionNameRestrictions.RemovedMagicAutoload.Deprecated",
                                         "severity": 5,
                                         "fixable": false,
-                                        "type": "ERROR",
-                                        "line": 43,
+                                        "type": "WARNING",
+                                        "line": 42,
                                         "column": 1
                                     },
                                     {
-                                        "message": "The constant \\"FILTER_FLAG_SCHEME_REQUIRED\\" is deprecated since PHP 7.3 and removed since PHP 8.0",
-                                        "source": "PHPCompatibility.Constants.RemovedConstants.filter_flag_scheme_requiredDeprecatedRemoved",
+                                        "message": "The constant \\"FILTER_FLAG_SCHEME_REQUIRED\\" is deprecated since PHP 7.3",
+                                        "source": "PHPCompatibility.Constants.RemovedConstants.filter_flag_scheme_requiredDeprecated",
                                         "severity": 5,
                                         "fixable": false,
-                                        "type": "ERROR",
-                                        "line": 49,
+                                        "type": "WARNING",
+                                        "line": 48,
                                         "column": 55
                                     },
                                     {
-                                        "message": "The constant \\"FILTER_FLAG_HOST_REQUIRED\\" is deprecated since PHP 7.3 and removed since PHP 8.0",
-                                        "source": "PHPCompatibility.Constants.RemovedConstants.filter_flag_host_requiredDeprecatedRemoved",
+                                        "message": "The constant \\"FILTER_FLAG_HOST_REQUIRED\\" is deprecated since PHP 7.3",
+                                        "source": "PHPCompatibility.Constants.RemovedConstants.filter_flag_host_requiredDeprecated",
                                         "severity": 5,
                                         "fixable": false,
-                                        "type": "ERROR",
-                                        "line": 49,
+                                        "type": "WARNING",
+                                        "line": 48,
                                         "column": 85
                                     },
                                     {
-                                        "message": "Passing the $glue and $pieces parameters in reverse order to implode has been deprecated since PHP 7.4 and is removed since PHP 8.0; $glue should be the first parameter and $pieces the second",
-                                        "source": "PHPCompatibility.ParameterValues.RemovedImplodeFlexibleParamOrder.Removed",
+                                        "message": "Passing the $glue and $pieces parameters in reverse order to implode has been deprecated since PHP 7.4; $glue should be the first parameter and $pieces the second",
+                                        "source": "PHPCompatibility.ParameterValues.RemovedImplodeFlexibleParamOrder.Deprecated",
                                         "severity": 5,
                                         "fixable": false,
-                                        "type": "ERROR",
-                                        "line": 53,
+                                        "type": "WARNING",
+                                        "line": 52,
                                         "column": 1
                                     },
                                     {
-                                        "message": "Curly brace syntax for accessing array elements and string offsets has been deprecated in PHP 7.4 and removed in PHP 8.0. Found: $array{0}",
-                                        "source": "PHPCompatibility.Syntax.RemovedCurlyBraceArrayAccess.Removed",
+                                        "message": "Curly brace syntax for accessing array elements and string offsets has been deprecated in PHP 7.4. Found: $array{0}",
+                                        "source": "PHPCompatibility.Syntax.RemovedCurlyBraceArrayAccess.Deprecated",
                                         "severity": 5,
                                         "fixable": true,
-                                        "type": "ERROR",
-                                        "line": 58,
+                                        "type": "WARNING",
+                                        "line": 57,
                                         "column": 18
                                     },
                                     {
-                                        "message": "Function get_magic_quotes_gpc() is deprecated since PHP 7.4 and removed since PHP 8.0",
-                                        "source": "PHPCompatibility.FunctionUse.RemovedFunctions.get_magic_quotes_gpcDeprecatedRemoved",
+                                        "message": "Function get_magic_quotes_gpc() is deprecated since PHP 7.4",
+                                        "source": "PHPCompatibility.FunctionUse.RemovedFunctions.get_magic_quotes_gpcDeprecated",
                                         "severity": 5,
                                         "fixable": false,
-                                        "type": "ERROR",
-                                        "line": 62,
+                                        "type": "WARNING",
+                                        "line": 61,
                                         "column": 17
-                                    },
-                                    {
-                                        "message": "Declaring a required parameter after an optional one is deprecated since PHP 8.0. Parameter $a is optional, while parameter $b is required.",
-                                        "source": "PHPCompatibility.FunctionDeclarations.RemovedOptionalBeforeRequiredParam.Deprecated",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "line": 66,
-                                        "column": 35
-                                    },
-                                    {
-                                        "message": "\\"Only Serializable\\" classes are deprecated since PHP 8.1. The magic __serialize() and __unserialize() methods need to be implemented for cross-version compatibility. Missing implementation of: __serialize() and __unserialize()",
-                                        "source": "PHPCompatibility.Interfaces.RemovedSerializable.Deprecated",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "line": 78,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Function utf8_encode() is deprecated since PHP 8.2; Use mb_convert_encoding(), UConverter::transcode() or iconv instead",
-                                        "source": "PHPCompatibility.FunctionUse.RemovedFunctions.utf8_encodeDeprecated",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "line": 90,
-                                        "column": 1
                                     }
                                 ]
                             }

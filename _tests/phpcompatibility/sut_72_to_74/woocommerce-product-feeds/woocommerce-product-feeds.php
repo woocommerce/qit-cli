@@ -1,8 +1,7 @@
 <?php
 
 /*
- * Plugin name: PHPCompatibility
- * Description: Should work in PHP 7.2 or higher.
+ * Plugin name: PHPCompatibility - Supports the default PHP version (currently PHP 7.2) up to PHP 7.4 (Declared incompatibility with PHP 8).
  */
 
 // Requires PHP 7.0.
@@ -21,15 +20,15 @@ $result = my_function(1, 2, 3,);  // Trailing comma in function call
 // Requires PHP 7.4 (should be flagged since this plugin supports PHP 7.2).
 $arrowFunction = fn($x) => $x + 1;
 
-// Requries PHP 8.0 (should be flagged since this plugin supports PHP 7.2).
+// Requries PHP 8.0 (should not be flagged since this plugin does not support PHP 8.0).
 str_contains('hello world', 'world');
 
-// Requires PHP 8.1 (should be flagged since this plugin supports PHP 7.2).
+// Requires PHP 8.1 (should not be flagged since this plugin does not support PHP 8.1).
 class Bar {
 	readonly string $foo;
 }
 
-// Requires PHP 8.2 (should be flagged since this plugin supports PHP 7.2).
+// Requires PHP 8.2 (should not be flagged since this plugin does not support PHP 8.2).
 readonly class Foo {
 
 }

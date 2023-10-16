@@ -2,7 +2,7 @@
 
 /*
  * Plugin name: PHPCompatibility
- * Description: Should work in PHP 7.2 or higher.
+ * Description: Should work in PHP 7.2 (Default PHP version) or higher.
  */
 
 // Requires PHP 7.0.

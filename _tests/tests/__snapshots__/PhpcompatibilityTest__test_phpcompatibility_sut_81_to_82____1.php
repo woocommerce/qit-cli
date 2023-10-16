@@ -7,7 +7,7 @@
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "7.4",
             "max_php_version": "8.2",
-            "min_php_version": "7.2",
+            "min_php_version": "8.1",
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
@@ -29,7 +29,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 12 Warnings: 3",
+            "test_summary": "Errors: 8 Warnings: 3",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -41,51 +41,15 @@
                 "tool": {
                     "phpcs": {
                         "totals": {
-                            "errors": 12,
+                            "errors": 8,
                             "warnings": 3,
                             "fixable": 1
                         },
                         "files": {
                             "\\/home\\/runner\\/work\\/compatibility-dashboard\\/compatibility-dashboard\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                                "errors": 12,
+                                "errors": 8,
                                 "warnings": 3,
                                 "messages": [
-                                    {
-                                        "message": "Trailing commas are not allowed in function calls in PHP 7.2 or earlier",
-                                        "source": "PHPCompatibility.Syntax.NewFunctionCallTrailingComma.FoundInFunctionCall",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "ERROR",
-                                        "line": 19,
-                                        "column": 30
-                                    },
-                                    {
-                                        "message": "The \\"fn\\" keyword for arrow functions is not present in PHP version 7.3 or earlier",
-                                        "source": "PHPCompatibility.Keywords.NewKeywords.t_fnFound",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "ERROR",
-                                        "line": 22,
-                                        "column": 18
-                                    },
-                                    {
-                                        "message": "Typed properties are not supported in PHP 7.3 or earlier. Found: string",
-                                        "source": "PHPCompatibility.Classes.NewTypedProperties.Found",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "ERROR",
-                                        "line": 29,
-                                        "column": 11
-                                    },
-                                    {
-                                        "message": "Readonly properties are not supported in PHP 8.0 or earlier. Property $foo was declared as readonly.",
-                                        "source": "PHPCompatibility.Classes.NewReadonlyProperties.Found",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "ERROR",
-                                        "line": 29,
-                                        "column": 18
-                                    },
                                     {
                                         "message": "Readonly classes are not supported in PHP 8.1 or earlier.",
                                         "source": "PHPCompatibility.Classes.NewReadonlyClasses.Found",

@@ -2,7 +2,7 @@
 
 /*
  * Plugin name: PHPCompatibility
- * Description: Should work in PHP 7.2 or higher.
+ * Description: Should work in PHP 8.1 and PHP 8.2.
  */
 
 // Requires PHP 7.0.
@@ -15,21 +15,21 @@ function voidReturnType(): void {}
 $object = new class { public const A = 'a'; };
 $objectType = $object::A ?? 'default'; // Null coalescing operator with class constant
 
-// Requires PHP 7.3 (should be flagged since this plugin supports PHP 7.2).
+// Requires PHP 7.3.
 $result = my_function(1, 2, 3,);  // Trailing comma in function call
 
-// Requires PHP 7.4 (should be flagged since this plugin supports PHP 7.2).
+// Requires PHP 7.4.
 $arrowFunction = fn($x) => $x + 1;
 
-// Requries PHP 8.0 (should be flagged since this plugin supports PHP 7.2).
+// Requries PHP 8.0.
 str_contains('hello world', 'world');
 
-// Requires PHP 8.1 (should be flagged since this plugin supports PHP 7.2).
+// Requires PHP 8.1.
 class Bar {
 	readonly string $foo;
 }
 
-// Requires PHP 8.2 (should be flagged since this plugin supports PHP 7.2).
+// Requires PHP 8.2 (should be flagged since this plugin supports PHP 8.1).
 readonly class Foo {
 
 }
