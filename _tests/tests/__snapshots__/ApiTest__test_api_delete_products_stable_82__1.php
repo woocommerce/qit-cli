@@ -1385,6 +1385,10 @@
                 {
                     "count": "1",
                     "message": "PHP Warning: Undefined array key \\"id\\" in \\/var\\/www\\/html\\/wp-includes\\/class-wp-list-util.php on line 170\\n"
+                },
+                {
+                    "count": "1",
+                    "message": "PHP Warning: Undefined property: wpdb::$use_mysqli in \\/var\\/www\\/html\\/wp-includes\\/class-wpdb.php on line 768"
                 }
             ]
         }

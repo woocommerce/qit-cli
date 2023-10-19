@@ -1377,7 +1377,12 @@
             }
         },
         {
-            "debug_log": []
+            "debug_log": [
+                {
+                    "count": "1",
+                    "message": "PHP Notice: Undefined property: wpdb::$use_mysqli in \\/var\\/www\\/html\\/wp-includes\\/class-wpdb.php on line 768"
+                }
+            ]
         }
     ]
 ]';
