@@ -46,7 +46,7 @@
                             "fixable": 1
                         },
                         "files": {
-                            "\\/home\\/runner\\/work\\/compatibility-dashboard\\/compatibility-dashboard\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
+                            "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
                                 "errors": 12,
                                 "warnings": 3,
                                 "messages": [

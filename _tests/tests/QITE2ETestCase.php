@@ -83,6 +83,8 @@ class QITE2ETestCase extends TestCase {
 					// Normalize tests running on "staging-compatibility" to "compatibility".
 					$value = str_replace( 'staging-compatibility', 'compatibility', $value );
 
+					$value = str_replace( '/home/runner/work/compatibility-dashboard/compatibility-dashboard/ci', '/home/runner/work/qit-runner/qit-runner/ci', $value );
+
 					// Decode if needed.
 					if ( $array ) {
 						$value = json_decode( $value, true );
