@@ -22,7 +22,7 @@ jobs:
 
     steps:
       - name: Wait before request to avoid 429
-        if: github.event_name == 'schedule'
+        if: github.event_name != 'workflow_dispatch'
         run: |
           if [[ "${{ inputs.test_type }}" == "activation" ]]; then
             echo "Test type is activation. No wait."
