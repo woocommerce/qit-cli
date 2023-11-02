@@ -29,7 +29,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 4 failed, 50 passed, 54 total | Tests: 157 skipped, 7 failed, 37 passed, 201 total.",
+            "test_summary": "Test Suites: 0 skipped, 4 failed, 49 passed, 53 total | Tests: 157 skipped, 7 failed, 35 passed, 199 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -39,13 +39,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 4,
-                "numPassedTestSuites": 50,
+                "numPassedTestSuites": 49,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 54,
+                "numTotalTestSuites": 53,
                 "numFailedTests": 7,
-                "numPassedTests": 37,
+                "numPassedTests": 35,
                 "numPendingTests": 157,
-                "numTotalTests": 201,
+                "numTotalTests": 199,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -225,23 +225,6 @@
                             "A basic set of tests to ensure WP, wp-admin and my-account load > Sign in as customer": [
                                 {
                                     "title": "Load customer my account page",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/assembler-hub.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Store owner can view Assembler Hub for store customization": [
-                                {
-                                    "title": "Can view the Assembler Hub page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Visiting change header should show a list of block patterns to choose from",
                                     "status": "passed"
                                 }
                             ]
@@ -1357,26 +1340,26 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 4 failed, 50 passed, 54 total | Tests: 157 skipped, 7 failed, 37 passed, 201 total."
+                "summary": "Test Suites: 0 skipped, 4 failed, 49 passed, 53 total | Tests: 157 skipped, 7 failed, 35 passed, 199 total."
             }
         },
         {
             "debug_log": [
                 {
                     "count": "Less than 10",
-                    "message": "PHP Notice: Function map_meta_cap was called incorrectly. When checking for the edit_post capability, you must always check it against a specific post. Please see Debugging in WordPress for more information. (This message was added in version 6.1.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 5905"
+                    "message": "PHP Notice: Function map_meta_cap was called incorrectly. When checking for the edit_post capability, you must always check it against a specific post. Please see Debugging in WordPress for more information. (This message was added in version 6.1.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6031"
                 },
                 {
                     "count": "Less than 10",
-                    "message": "PHP Notice: Trying to get property \'ID\' of non-object in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 2062"
+                    "message": "PHP Notice: Trying to get property \'ID\' of non-object in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 2145"
                 },
                 {
                     "count": "Less than 10",
-                    "message": "PHP Notice: Trying to get property \'post_mime_type\' of non-object in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 265"
+                    "message": "PHP Notice: Trying to get property \'post_mime_type\' of non-object in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 273"
                 },
                 {
                     "count": "Less than 10",
-                    "message": "PHP Notice: Trying to get property \'post_type\' of non-object in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 264"
+                    "message": "PHP Notice: Trying to get property \'post_type\' of non-object in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 272"
                 },
                 {
                     "count": "Less than 10",

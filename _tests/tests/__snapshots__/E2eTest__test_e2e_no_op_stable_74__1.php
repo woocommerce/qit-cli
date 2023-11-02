@@ -29,7 +29,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 54 passed, 54 total | Tests: 2 skipped, 0 failed, 199 passed, 201 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 53 passed, 53 total | Tests: 2 skipped, 0 failed, 197 passed, 199 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -39,13 +39,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 54,
+                "numPassedTestSuites": 53,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 54,
+                "numTotalTestSuites": 53,
                 "numFailedTests": 0,
-                "numPassedTests": 199,
+                "numPassedTests": 197,
                 "numPendingTests": 2,
-                "numTotalTests": 201,
+                "numTotalTests": 199,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -225,23 +225,6 @@
                             "A basic set of tests to ensure WP, wp-admin and my-account load > Sign in as customer": [
                                 {
                                     "title": "Load customer my account page",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/assembler-hub.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Store owner can view Assembler Hub for store customization": [
-                                {
-                                    "title": "Can view the Assembler Hub page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Visiting change header should show a list of block patterns to choose from",
                                     "status": "passed"
                                 }
                             ]
@@ -1357,11 +1340,15 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 54 passed, 54 total | Tests: 2 skipped, 0 failed, 199 passed, 201 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 53 passed, 53 total | Tests: 2 skipped, 0 failed, 197 passed, 199 total."
             }
         },
         {
             "debug_log": [
+                {
+                    "count": "1",
+                    "message": "PHP Notice: Undefined property: wpdb::$use_mysqli in \\/var\\/www\\/html\\/wp-includes\\/class-wpdb.php on line 768"
+                },
                 {
                     "count": "2",
                     "message": "The Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options::get_options function is deprecated since version 6.3."
