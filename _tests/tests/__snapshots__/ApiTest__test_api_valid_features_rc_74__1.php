@@ -1385,6 +1385,10 @@
                 {
                     "count": "560",
                     "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
+                },
+                {
+                    "count": "1",
+                    "message": "PHP Notice: Undefined property: wpdb::$use_mysqli in \\/var\\/www\\/html\\/wp-includes\\/class-wpdb.php on line 768"
                 }
             ]
         }

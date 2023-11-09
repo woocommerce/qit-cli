@@ -203,7 +203,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 							return 124;
 						}
 
-						sleep( 5 );
+						sleep( rand( 5, 15 ) );
 					} while ( true );
 				} else {
 					if ( $input->getOption( 'ignore-fail' ) ) {

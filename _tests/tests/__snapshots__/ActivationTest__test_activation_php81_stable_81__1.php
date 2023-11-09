@@ -68,12 +68,12 @@
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 310,
+                            "line": 324,
                             "function": "SUT\\\\{closure}"
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 334,
+                            "line": 348,
                             "function": "apply_filters",
                             "class": "WP_Hook",
                             "type": "->"
@@ -87,7 +87,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 632,
+                            "line": 643,
                             "function": "do_action"
                         },
                         {
@@ -133,12 +133,12 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 310,
+                            "line": 324,
                             "function": "SUT\\\\{closure}"
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 334,
+                            "line": 348,
                             "function": "apply_filters",
                             "class": "WP_Hook",
                             "type": "->"
@@ -152,12 +152,12 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp.php",
-                            "line": 796,
+                            "line": 830,
                             "function": "do_action_ref_array"
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1335,
+                            "line": 1336,
                             "function": "main",
                             "class": "WP",
                             "type": "->"
@@ -181,12 +181,12 @@
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 310,
+                            "line": 324,
                             "function": "SUT\\\\{closure}"
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 334,
+                            "line": 348,
                             "function": "apply_filters",
                             "class": "WP_Hook",
                             "type": "->"
@@ -200,7 +200,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 632,
+                            "line": 643,
                             "function": "do_action"
                         },
                         {
@@ -246,12 +246,12 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 310,
+                            "line": 324,
                             "function": "SUT\\\\{closure}"
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 334,
+                            "line": 348,
                             "function": "apply_filters",
                             "class": "WP_Hook",
                             "type": "->"
@@ -265,12 +265,12 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp.php",
-                            "line": 796,
+                            "line": 830,
                             "function": "do_action_ref_array"
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1335,
+                            "line": 1336,
                             "function": "main",
                             "class": "WP",
                             "type": "->"
@@ -294,12 +294,12 @@
                     "backtrace": [
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 310,
+                            "line": 324,
                             "function": "SUT\\\\{closure}"
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 334,
+                            "line": 348,
                             "function": "apply_filters",
                             "class": "WP_Hook",
                             "type": "->"
@@ -313,7 +313,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 632,
+                            "line": 643,
                             "function": "do_action"
                         },
                         {
@@ -359,12 +359,12 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 310,
+                            "line": 324,
                             "function": "SUT\\\\{closure}"
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 334,
+                            "line": 348,
                             "function": "apply_filters",
                             "class": "WP_Hook",
                             "type": "->"
@@ -378,12 +378,12 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp.php",
-                            "line": 796,
+                            "line": 830,
                             "function": "do_action_ref_array"
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1335,
+                            "line": 1336,
                             "function": "main",
                             "class": "WP",
                             "type": "->"

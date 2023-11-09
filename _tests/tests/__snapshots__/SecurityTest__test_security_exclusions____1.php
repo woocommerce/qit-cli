@@ -29,7 +29,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 10 Warnings: 6",
+            "test_summary": "Errors: 10 Warnings: 7",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -42,7 +42,7 @@
                     "phpcs": {
                         "totals": {
                             "errors": 4,
-                            "warnings": 6,
+                            "warnings": 7,
                             "fixable": 0
                         },
                         "files": {
@@ -104,7 +104,7 @@
                             },
                             "\\/home\\/runner\\/work\\/compatibility-dashboard\\/compatibility-dashboard\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
                                 "errors": 2,
-                                "warnings": 3,
+                                "warnings": 4,
                                 "messages": [
                                     {
                                         "message": "Detected usage of a non-sanitized input variable: $_POST[\'foo\']",
@@ -147,13 +147,23 @@
                                         "column": 3
                                     },
                                     {
+                                        "message": "wp_redirect() found. Using wp_safe_redirect(), along with the allowed_redirect_hosts filter if needed, can help avoid any chances of malicious redirects within code. It is also important to remember to call exit() after a redirect so that no other unwanted code is executed.",
+                                        "source": "WordPress.Security.SafeRedirect.wp_redirect_wp_redirect",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "WARNING",
+                                        "codeFragment": "\\t\\twp_redirect( $_GET[\'foo\'] ); \\/\\/ Should be flagged by WordPress.Security.SafeRedirect.wp_redirect_wp_redirect.\\n",
+                                        "line": 20,
+                                        "column": 3
+                                    },
+                                    {
                                         "message": "Detected usage of the \\"determine_user\\" filter. Please double-check if this filter is safe and ignore this warning to confirm.",
                                         "source": "QITStandard.PHP.DangerousFilters.RiskyFilterDetected",
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
                                         "codeFragment": "add_filter( \'determine_user\', \'callable\' ); \\/\\/ Risky filter warning.",
-                                        "line": 20,
+                                        "line": 27,
                                         "column": 1
                                     }
                                 ]
