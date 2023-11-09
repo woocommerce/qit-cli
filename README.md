@@ -5,6 +5,7 @@
 [![QIT Self-Tests - PHPStan](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-phpstan.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-phpstan.yml)
 [![QIT Self-Tests - Security](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-security.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-security.yml)
 [![QIT Self-Tests - PHPCompatibilityWP](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-phpcompatibility.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-phpcompatibility.yml)
+[![QIT Self-Tests - Malware](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-malware.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-malware.yml)
 
 <p align="center"><img src="https://woo.com/wp-content/themes/woo/images/logo-woocommerce-bubble.svg" alt="WooCommerce" style="width:100px;height:auto;"></p>
 
@@ -46,6 +47,7 @@ _(Pro Tip: Opting for the Composer installation method simplifies the process of
 - `qit run:e2e my-extension --zip` - Runs the tests using an unreleased development build zip.
 - `qit run:e2e my-extension --additional_wordpress_plugins=gutenberg` - Activates the "Gutenberg" feature plugin in the test environment as well.
 - `qit run:e2e my-extension --optional_features=hpos` - Enables the [WooCommerce "High Performance Order Storage"](https://developer.woocommerce.com/roadmap/high-performance-order-storage/) feature in the test site.
+- 
 
 You can use these parameters individually or in combination to create different scenarios for your tests. Run `qit run:<test-type> --help` to see all the available options. Different test types will have different options to choose from.
 
