@@ -60,6 +60,8 @@ QIT currently supports the following types of tests:
 - [Security Test](https://woocommerce.github.io/qit-documentation/#/test-types/security)
 - [PHPStan Test](https://woocommerce.github.io/qit-documentation/#/test-types/phpstan)
 - [API Test](https://woocommerce.github.io/qit-documentation/#/test-types/api)
+- [PHP Compatibility](https://woocommerce.github.io/qit-documentation/#/test-types/phpcompatibility)
+- [Malware Test](https://woocommerce.github.io/qit-documentation/#/test-types/malware)
 - _PHP Minimum and Maximum Version Compatibility (Coming soon)_
 - _Performance Test (Coming soon)_
 
