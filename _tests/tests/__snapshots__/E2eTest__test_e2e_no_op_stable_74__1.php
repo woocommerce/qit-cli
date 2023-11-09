@@ -1346,10 +1346,6 @@
         {
             "debug_log": [
                 {
-                    "count": "1",
-                    "message": "PHP Notice: Undefined property: wpdb::$use_mysqli in \\/var\\/www\\/html\\/wp-includes\\/class-wpdb.php on line 768"
-                },
-                {
                     "count": "2",
                     "message": "The Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options::get_options function is deprecated since version 6.3."
                 }

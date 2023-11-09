@@ -1351,11 +1351,7 @@
                 },
                 {
                     "count": "Less than 10",
-<<<<<<< HEAD
                     "message": "PHP Notice: Trying to get property \'ID\' of non-object in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 2132"
-=======
-                    "message": "PHP Notice: Trying to get property \'ID\' of non-object in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 2145"
->>>>>>> trunk
                 },
                 {
                     "count": "Less than 10",

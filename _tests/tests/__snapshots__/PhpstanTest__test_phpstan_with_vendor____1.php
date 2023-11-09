@@ -43,7 +43,7 @@
                     "file_errors": 2
                 },
                 "files": {
-                    "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/not-vendor\\/src\\/Baz.php": {
+                    "\\/home\\/runner\\/work\\/compatibility-dashboard\\/compatibility-dashboard\\/ci\\/plugins\\/woocommerce-product-feeds\\/not-vendor\\/src\\/Baz.php": {
                         "errors": 1,
                         "messages": [
                             {
@@ -53,7 +53,7 @@
                             }
                         ]
                     },
-                    "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
+                    "\\/home\\/runner\\/work\\/compatibility-dashboard\\/compatibility-dashboard\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
                         "errors": 1,
                         "messages": [
                             {
