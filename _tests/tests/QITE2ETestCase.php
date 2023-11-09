@@ -83,6 +83,9 @@ class QITE2ETestCase extends TestCase {
 					// Normalize tests running on "staging-compatibility" to "compatibility".
 					$value = str_replace( 'staging-compatibility', 'compatibility', $value );
 
+					// Normalize the repo.
+					$value = str_replace( 'compatibility-dashboard', 'qit-runner', $value );
+
 					// Decode if needed.
 					if ( $array ) {
 						$value = json_decode( $value, true );
@@ -120,6 +123,8 @@ class QITE2ETestCase extends TestCase {
 
 						// Normalize tests running on staging-compatibility to compatibility.
 						$debug_log['message'] = str_replace( 'staging-compatibility', 'compatibility', $debug_log['message'] );
+
+						$debug_log['message'] = str_replace( 'compatibility-dashboard', 'qit-runner', $debug_log['message'] );
 
 						if ( stripos( $file_path, 'api/delete_products' ) !== false ) {
 							$pos = stripos( $debug_log['message'], 'Stack Trace:' );
