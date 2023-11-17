@@ -29,7 +29,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 53 passed, 53 total | Tests: 2 skipped, 0 failed, 197 passed, 199 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 56 passed, 56 total | Tests: 4 skipped, 0 failed, 207 passed, 211 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -39,13 +39,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 53,
+                "numPassedTestSuites": 56,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 53,
+                "numTotalTestSuites": 56,
                 "numFailedTests": 0,
-                "numPassedTests": 197,
-                "numPendingTests": 2,
-                "numTotalTests": 199,
+                "numPassedTests": 207,
+                "numPendingTests": 4,
+                "numTotalTests": 211,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -63,12 +63,6 @@
                                 }
                             ]
                         }
-                    },
-                    {
-                        "file": "activate-and-setup\\/complete-onboarding-wizard.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": []
                     },
                     {
                         "file": "activate-and-setup\\/setup-onboarding.spec.js",
@@ -231,6 +225,23 @@
                         }
                     },
                     {
+                        "file": "customize-store\\/assembler-hub.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Store owner can view Assembler Hub for store customization": [
+                                {
+                                    "title": "Can view the Assembler Hub page",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "Visiting change header should show a list of block patterns to choose from",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/create-order.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -376,6 +387,19 @@
                         }
                     },
                     {
+                        "file": "merchant\\/order-bulk-edit.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Bulk edit orders": [
+                                {
+                                    "title": "can bulk update order status",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/order-coupon.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -407,7 +431,15 @@
                                     "status": "passed"
                                 },
                                 {
+                                    "title": "can update order status to cancelled",
+                                    "status": "passed"
+                                },
+                                {
                                     "title": "can update order details",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can add and delete order notes",
                                     "status": "passed"
                                 },
                                 {
@@ -828,6 +860,12 @@
                         "has_pending": false,
                         "tests": {
                             "General tab": [],
+                            "General tab > Simple product form": [
+                                {
+                                    "title": "renders each block without error",
+                                    "status": "passed"
+                                }
+                            ],
                             "General tab > Create product": [
                                 {
                                     "title": "can create a simple product",
@@ -1140,6 +1178,23 @@
                         }
                     },
                     {
+                        "file": "shopper\\/mini-cart.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Mini Cart block page": [
+                                {
+                                    "title": "can see empty mini cart",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can proceed to mini cart, observe it and proceed to the checkout",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "shopper\\/my-account-addresses.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1225,27 +1280,6 @@
                         }
                     },
                     {
-                        "file": "shopper\\/product-browse-search-sort.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Search, browse by categories and sort items in the shop": [
-                                {
-                                    "title": "should let user search the store",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should let user browse products by categories",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should let user sort the products in the shop",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "shopper\\/product-grouped.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1292,6 +1326,31 @@
                         }
                     },
                     {
+                        "file": "shopper\\/product-tags-attributes.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Browse product tags and attributes from the product page": [
+                                {
+                                    "title": "should see shop catalog with all its products",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should see and sort tags page with all the products",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should see and sort attributes page with all its products",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can see products showcase",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "shopper\\/product-variable.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1327,6 +1386,27 @@
                         }
                     },
                     {
+                        "file": "shopper\\/shop-search-browse-sort.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Search, browse by categories and sort items in the shop": [
+                                {
+                                    "title": "should let user search the store",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should let user browse products by categories",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should let user sort the products in the shop",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "smoke-tests\\/upload-plugin.spec.js",
                         "status": "passed",
                         "has_pending": true,
@@ -1340,11 +1420,15 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 53 passed, 53 total | Tests: 2 skipped, 0 failed, 197 passed, 199 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 56 passed, 56 total | Tests: 4 skipped, 0 failed, 207 passed, 211 total."
             }
         },
         {
             "debug_log": [
+                {
+                    "count": "1",
+                    "message": "PHP Notice: Function FeaturesController::get_compatible_plugins_for_feature was called incorrectly. FeaturesController::get_compatible_plugins_for_feature should not be called before the woocommerce_init action. Backtrace: include(\'phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/php\\/boot-phar.php\'), include(\'phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/wp-cli.php\'), WP_CLI\\\\bootstrap, WP_CLI\\\\Bootstrap\\\\LaunchRunner->process, WP_CLI\\\\Runner->start, WP_CLI\\\\Runner->run_command_and_exit, WP_CLI\\\\Runner->run_command, WP_CLI\\\\Dispatcher\\\\Subcommand->invoke, call_user_func, WP_CLI\\\\Dispatcher\\\\CommandFactory::WP_CLI\\\\Dispatcher\\\\{closure}, call_user_func, Plugin_Command->activate, activate_plugin, do_action(\'activate_woocommerce\\/woocommerce.php\'), WP_Hook->do_action, WP_Hook->apply_filters, WC_Install::install, WC_Install::create_options, WC_Settings_Page->get_settings, WC_Settings_Page->get_settings_for_section, apply_filters(\'woocommerce_get_settings_advanced\'), WP_Hook->apply_filters, Automattic\\\\WooCommerce\\\\Internal\\\\Fea in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6031"
+                },
                 {
                     "count": "2",
                     "message": "The Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options::get_options function is deprecated since version 6.3."
