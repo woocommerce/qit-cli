@@ -29,7 +29,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 4 failed, 52 passed, 56 total | Tests: 169 skipped, 7 failed, 35 passed, 211 total.",
+            "test_summary": "Test Suites: 0 skipped, 4 failed, 53 passed, 57 total | Tests: 169 skipped, 7 failed, 36 passed, 212 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -39,13 +39,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 4,
-                "numPassedTestSuites": 52,
+                "numPassedTestSuites": 53,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 56,
+                "numTotalTestSuites": 57,
                 "numFailedTests": 7,
-                "numPassedTests": 35,
+                "numPassedTests": 36,
                 "numPendingTests": 169,
-                "numTotalTests": 211,
+                "numTotalTests": 212,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -194,6 +194,19 @@
                                 },
                                 {
                                     "title": "Enabling cash on delivery enables the payment method",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "admin-tasks\\/webhooks.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Manage webhooks": [
+                                {
+                                    "title": "Webhook cannot be bulk deleted without nonce",
                                     "status": "passed"
                                 }
                             ]
@@ -1420,7 +1433,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 4 failed, 52 passed, 56 total | Tests: 169 skipped, 7 failed, 35 passed, 211 total."
+                "summary": "Test Suites: 0 skipped, 4 failed, 53 passed, 57 total | Tests: 169 skipped, 7 failed, 36 passed, 212 total."
             }
         },
         {
