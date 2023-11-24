@@ -1377,12 +1377,7 @@
             }
         },
         {
-            "debug_log": [
-                {
-                    "count": "1",
-                    "message": "PHP Notice: Function FeaturesController::get_compatible_plugins_for_feature was called incorrectly. FeaturesController::get_compatible_plugins_for_feature should not be called before the woocommerce_init action. Backtrace: include(\'phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/php\\/boot-phar.php\'), include(\'phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/wp-cli.php\'), WP_CLI\\\\bootstrap, WP_CLI\\\\Bootstrap\\\\LaunchRunner->process, WP_CLI\\\\Runner->start, WP_CLI\\\\Runner->run_command_and_exit, WP_CLI\\\\Runner->run_command, WP_CLI\\\\Dispatcher\\\\Subcommand->invoke, call_user_func, WP_CLI\\\\Dispatcher\\\\CommandFactory::WP_CLI\\\\Dispatcher\\\\{closure}, call_user_func, Plugin_Command->activate, activate_plugin, do_action(\'activate_woocommerce\\/woocommerce.php\'), WP_Hook->do_action, WP_Hook->apply_filters, WC_Install::install, WC_Install::create_options, WC_Settings_Page->get_settings, WC_Settings_Page->get_settings_for_section, apply_filters(\'woocommerce_get_settings_advanced\'), WP_Hook->apply_filters, Automattic\\\\WooCommerce\\\\Internal\\\\Features\\\\FeaturesController->__call, call_user_func_array, Automattic\\\\WooCommerce\\\\Internal\\\\Features\\\\FeaturesController->add_feature_settings, array_map, Automattic\\\\WooCommerce\\\\Internal\\\\Features\\\\FeaturesController->Automattic\\\\WooCommerce\\\\Internal\\\\Features\\\\{closure}, call_user_func, Automattic\\\\WooCommerce\\\\Internal\\\\DataStores\\\\Orders\\\\CustomOrdersTableController->Automattic\\\\WooCommerce\\\\Internal\\\\DataStores\\\\Orders\\\\{closure}, Automattic\\\\WooCommerce\\\\Internal\\\\Features\\\\FeaturesController->get_compatible_plugins_for_feature, Automattic\\\\WooCommerce\\\\Internal\\\\Features\\\\FeaturesController->verify_did_woocommerce_init, Automattic\\\\WooCommerce\\\\Proxies\\\\LegacyProxy->call_function, call_user_func_array, wc_doing_it_wrong Please see Debugging in WordPress for more information. (This message was added in version 7.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6031"
-                }
-            ]
+            "debug_log": []
         }
     ]
 ]';
