@@ -19,7 +19,8 @@
             "woo_extension": {
                 "id": 18619,
                 "host": "wccom",
-                "name": "Google Product Feed"
+                "name": "Google Product Feed",
+                "type": "extension"
             },
             "client": "qit_cli",
             "event": "cli_development_extension_test",
