@@ -22,7 +22,7 @@ class Context {
 
 	/*
 	 * To run tests in QIT, we need to assign the results to a plugin in the Marketplace.
-	 * We use the extension "woocommerce-product-feeds" and theme "storefront", because their owned by the test user in Staging.
+	 * We use the extension "woocommerce-product-feeds" and theme "storefront", because they're owned by the test user in Staging.
 	 */
 	public static $extension_slug = 'woocommerce-product-feeds';
 	public static $theme_slug     = 'wporg-theme-storefront';
