@@ -32,9 +32,10 @@
             "test_results_manager_expiration": 1234567890,
             "test_summary": "Errors: 0, File Errors: 0",
             "debug_log": "",
-            "version": "Undefined",
+            "version": "1.0.0",
             "update_complete": true,
             "ai_suggestion_status": "none",
+            "malware_whitelist_paths": [],
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {

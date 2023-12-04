@@ -34,6 +34,7 @@
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
+            "malware_whitelist_paths": [],
             "test_result_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
