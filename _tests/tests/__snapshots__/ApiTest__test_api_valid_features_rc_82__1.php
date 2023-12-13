@@ -11,7 +11,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -29,7 +29,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 2 failed, 18 passed, 20 total | Tests: 17 skipped, 2 failed, 238 passed, 257 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 20 passed, 20 total | Tests: 2 skipped, 0 failed, 255 passed, 257 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -38,13 +38,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 2,
-                "numPassedTestSuites": 18,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 20,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 20,
-                "numFailedTests": 2,
-                "numPassedTests": 238,
-                "numPendingTests": 17,
+                "numFailedTests": 0,
+                "numPassedTests": 255,
+                "numPendingTests": 2,
                 "numTotalTests": 257,
                 "testResults": [
                     {
@@ -446,90 +446,90 @@
                     },
                     {
                         "file": "orders\\/orders.test.js",
-                        "status": "failed",
-                        "has_pending": true,
+                        "status": "passed",
+                        "has_pending": false,
                         "tests": {
                             "Orders API tests": [
                                 {
                                     "title": "can create an order",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can add shipping and billing contacts to an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can permanently delete an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Orders API tests > List all orders": [
                                 {
                                     "title": "pagination",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "inclusion \\/ exclusion",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "parent",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "status",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "customer",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "product",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "dp (precision)",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "search",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Orders API tests > orderby": [
                                 {
                                     "title": "default",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "date",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "id",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "include",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "payment-gateways\\/payment-gateways-crud.test.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Payment Gateways API tests": [
                                 {
                                     "title": "can view all payment gateways",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can view a payment gateway",
@@ -1373,13 +1373,13 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 2 failed, 18 passed, 20 total | Tests: 17 skipped, 2 failed, 238 passed, 257 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 20 passed, 20 total | Tests: 2 skipped, 0 failed, 255 passed, 257 total."
             }
         },
         {
             "debug_log": [
                 {
-                    "count": "520",
+                    "count": "560",
                     "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                 }
             ]

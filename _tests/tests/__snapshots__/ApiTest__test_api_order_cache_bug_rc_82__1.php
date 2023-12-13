@@ -11,7 +11,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -29,7 +29,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 10 failed, 10 passed, 20 total | Tests: 88 skipped, 27 failed, 142 passed, 257 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 20 passed, 20 total | Tests: 2 skipped, 0 failed, 255 passed, 257 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -38,13 +38,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 10,
-                "numPassedTestSuites": 10,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 20,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 20,
-                "numFailedTests": 27,
-                "numPassedTests": 142,
-                "numPendingTests": 88,
+                "numFailedTests": 0,
+                "numPassedTests": 255,
+                "numPendingTests": 2,
                 "numTotalTests": 257,
                 "testResults": [
                     {
@@ -112,92 +112,92 @@
                     },
                     {
                         "file": "customers\\/customers-crud.test.js",
-                        "status": "failed",
-                        "has_pending": true,
+                        "status": "passed",
+                        "has_pending": false,
                         "tests": {
                             "Customers API tests: CRUD": [],
                             "Customers API tests: CRUD > Retrieve after env setup": [
                                 {
                                     "title": "can retrieve admin user",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve subscriber user",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "retrieve user with id 0 is invalid",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve customers",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve all customers",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Customers API tests: CRUD > Create a customer": [
                                 {
                                     "title": "can create a customer",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Customers API tests: CRUD > Retrieve after create": [
                                 {
                                     "title": "can retrieve a customer",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve all customers",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Customers API tests: CRUD > Update a customer": [
                                 {
                                     "title": "can update the admin user\\/customer",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "retrieve after update admin",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can update the subscriber user\\/customer",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "retrieve after update subscriber",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can update a customer",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "retrieve after update customer",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Customers API tests: CRUD > Delete a customer": [
                                 {
                                     "title": "can permanently delete an customer",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Customers API tests: CRUD > Batch update customers": [
                                 {
                                     "title": "can batch create customers",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can batch update customers",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can batch delete customers",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -246,26 +246,26 @@
                     },
                     {
                         "file": "orders\\/order-complex.test.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Orders API test": [
                                 {
                                     "title": "can add complex order",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "orders\\/order-search.test.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Order Search API tests": [
                                 {
                                     "title": "can search by orderId",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search by billing first name",
@@ -285,7 +285,7 @@
                                 },
                                 {
                                     "title": "can search by billing post code",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search by billing phone",
@@ -305,11 +305,11 @@
                                 },
                                 {
                                     "title": "can search by shipping address 2",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search by shipping city",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search by shipping post code",
@@ -328,8 +328,8 @@
                     },
                     {
                         "file": "orders\\/orders-crud.test.js",
-                        "status": "failed",
-                        "has_pending": true,
+                        "status": "passed",
+                        "has_pending": false,
                         "tests": {
                             "Orders API tests: CRUD": [],
                             "Orders API tests: CRUD > Create an order": [
@@ -339,197 +339,197 @@
                                 },
                                 {
                                     "title": "can create an order with status pending",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create an order with status processing",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create an order with status on-hold",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create an order with status completed",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create an order with status cancelled",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create an order with status refunded",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create an order with status failed",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Orders API tests: CRUD > Create an order > Order Notes tests": [
                                 {
                                     "title": "can create a order note",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve an order note",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve all order notes",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "cannot update an order note",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can permanently delete an order note",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Orders API tests: CRUD > Retrieve an order": [
                                 {
                                     "title": "can retrieve an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Orders API tests: CRUD > Update an order": [
                                 {
                                     "title": "can update status of an order to pending",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can update status of an order to processing",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can update status of an order to on-hold",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can update status of an order to completed",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can update status of an order to cancelled",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can update status of an order to refunded",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can update status of an order to failed",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can add shipping and billing contacts to an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can add a product to an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can pay for an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Orders API tests: CRUD > Delete an order": [
                                 {
                                     "title": "can permanently delete an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "orders\\/orders.test.js",
-                        "status": "failed",
-                        "has_pending": true,
+                        "status": "passed",
+                        "has_pending": false,
                         "tests": {
                             "Orders API tests": [
                                 {
                                     "title": "can create an order",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can add shipping and billing contacts to an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can permanently delete an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Orders API tests > List all orders": [
                                 {
                                     "title": "pagination",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "inclusion \\/ exclusion",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "parent",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "status",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "customer",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "product",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "dp (precision)",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "search",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Orders API tests > orderby": [
                                 {
                                     "title": "default",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "date",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "id",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "include",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "payment-gateways\\/payment-gateways-crud.test.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Payment Gateways API tests": [
                                 {
                                     "title": "can view all payment gateways",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can view a payment gateway",
@@ -544,120 +544,120 @@
                     },
                     {
                         "file": "products\\/product-list.test.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Products API tests: List All Products": [],
                             "Products API tests: List All Products > List all products": [
                                 {
                                     "title": "defaults",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "pagination",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "search",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "inclusion \\/ exclusion",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "slug",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "sku",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "type",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "featured",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "categories",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "on sale",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "price",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "before \\/ after",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "attributes",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "status",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "shipping class",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "tax class",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "stock status",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "tags",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "parent",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Products API tests: List All Products > List all products > orderby": [
                                 {
                                     "title": "default",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "date",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "id",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "title",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "slug orderby",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "price orderby",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "include",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "rating (desc)",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "rating (asc)",
@@ -669,20 +669,20 @@
                                 },
                                 {
                                     "title": "popularity (desc)",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "products\\/products-crud.test.js",
-                        "status": "failed",
-                        "has_pending": true,
+                        "status": "passed",
+                        "has_pending": false,
                         "tests": {
                             "Products API tests: CRUD": [
                                 {
                                     "title": "can add a simple product",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can add a virtual product",
@@ -690,15 +690,15 @@
                                 },
                                 {
                                     "title": "can view a single product",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can update a single product",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can delete a product",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "Products API tests: CRUD > Product attributes tests: CRUD": [
@@ -782,7 +782,7 @@
                             "Products API tests: CRUD > Product review tests: CRUD": [
                                 {
                                     "title": "can add a product review",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "cannot add a product review with invalid product_id",
@@ -790,27 +790,27 @@
                                 },
                                 {
                                     "title": "cannot add a duplicate product review",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve a product review",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve all product reviews",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can update a product review",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can permanently delete a product review",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can batch update product reviews",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "Products API tests: CRUD > Product shipping classes tests: CRUD": [
@@ -832,7 +832,7 @@
                                 },
                                 {
                                     "title": "can permanently delete a product shipping class",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can batch update product shipping classes",
@@ -880,19 +880,19 @@
                                 },
                                 {
                                     "title": "can retrieve all product variations",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can update a product variation",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can permanently delete a product variation",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can batch update product variations",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Products API tests: CRUD > Batch update products": [
@@ -906,14 +906,14 @@
                                 },
                                 {
                                     "title": "can batch delete products",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "refunds\\/refunds.test.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Refunds API tests": [
@@ -931,7 +931,7 @@
                                 },
                                 {
                                     "title": "can delete a refund",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -979,8 +979,8 @@
                     },
                     {
                         "file": "settings\\/settings-crud.test.js",
-                        "status": "failed",
-                        "has_pending": true,
+                        "status": "passed",
+                        "has_pending": false,
                         "tests": {
                             "Settings API tests: CRUD": [],
                             "Settings API tests: CRUD > List all settings groups": [
@@ -1100,19 +1100,19 @@
                             "Settings API tests: CRUD > List all Email Customer Note settings": [
                                 {
                                     "title": "can retrieve all email customer note settings",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Email Customer Reset Password settings": [
                                 {
                                     "title": "can retrieve all email customer reset password settings",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Email Customer New Account settings": [
                                 {
                                     "title": "can retrieve all email customer new account settings",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -1373,18 +1373,14 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 10 failed, 10 passed, 20 total | Tests: 88 skipped, 27 failed, 142 passed, 257 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 20 passed, 20 total | Tests: 2 skipped, 0 failed, 255 passed, 257 total."
             }
         },
         {
             "debug_log": [
                 {
-                    "count": "420",
+                    "count": "550",
                     "message": "PHP Notice: $order is Automattic\\\\WooCommerce\\\\Admin\\\\Overrides\\\\Order as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 41"
-                },
-                {
-                    "count": "5",
-                    "message": "PHP Warning: Undefined array key \\"id\\" in \\/var\\/www\\/html\\/wp-includes\\/class-wp-list-util.php on line 170"
                 }
             ]
         }
