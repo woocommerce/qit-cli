@@ -171,7 +171,7 @@ function run_test_runs( array $test_runs ) {
 		generate_zips( $test_type_test_runs );
 	}
 
-	$processes = [];
+	$qit_run_processes = [];
 
 	// Dispatch all tests in parallel using the qit binary.
 	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
@@ -216,34 +216,51 @@ function run_test_runs( array $test_runs ) {
 
 			$args[] = Context::$sut_slug;
 
-			$p = new Process( $args );
-			$p->setTimeout( null ); // Let QIT CLI handle timeouts.
+			$qit_process = new Process( $args );
+			$qit_process->setTimeout( null ); // Let QIT CLI handle timeouts.
 
-			echo "[INFO] Preparing to run command {$p->getCommandLine()}\n";
+			echo "[INFO] Preparing to run command {$qit_process->getCommandLine()}\n";
 
-			$p->setEnv( [
+			$qit_process->setEnv( [
 				'QIT_TEST_PATH'            => $t['path'],
 				'QIT_TEST_TYPE'            => $test_type,
 				'QIT_TEST_FUNCTION_NAME'   => $t['test_function_name'],
 				'QIT_WAIT_BEFORE_REQUEST'  => 'yes',
 				'QIT_RAN_TEST'             => false,
 				'QIT_REMOVE_FROM_SNAPSHOT' => $t['remove_from_snapshot'],
+				// Debug info:
+				'type'                     => $t['type'],
+				'slug'                     => $t['slug'],
+				'php'                      => $t['php'],
+				'wp'                       => $t['wp'],
+				'woo'                      => $t['woo'],
+				'features'                 => $t['features'],
 			] );
 
-			$processes[] = $p;
+			$qit_run_processes[] = $qit_process;
 		}
 	}
 
-	$process_manager = new ProcessManager();
+	$qit_run_processes_manager = new ProcessManager();
 
-	echo "Starting tests in Parallel...\n";
+	echo sprintf( "\nRunning %d tests in parallel...\n", count( $qit_run_processes ) );
 
-	$process_manager->runParallel( $processes, 25, 10000, function ( string $type, string $out, Process $process ) {
+	$qit_run_processes_manager->runParallel( $qit_run_processes, 20, 10000, function ( string $type, string $out, Process $process ) {
 		// This is the callback that will be called when a process generates output.
 		// Ignore any output that is JSON, or is too long, and is possibly a chunked JSON.
 		if ( is_null( json_decode( $out, true ) ) && strlen( $out ) < PipesInterface::CHUNK_SIZE * 0.9 ) {
 			// Print anything that is not JSON.
-			echo "[Process {$process->getPid()}]: $out\n";
+			echo sprintf(
+				"\n[Process ID %s [Type %s] [Slug %s] [PHP %s] [WP %s] [Woo %s] [Features %s])]: \n %s\n",
+				$process->getPid(),
+				$process->getEnv()['type'],
+				$process->getEnv()['slug'],
+				$process->getEnv()['php'],
+				$process->getEnv()['wp'],
+				$process->getEnv()['woo'],
+				$process->getEnv()['features'],
+				trim( $out )
+			);
 		}
 	} );
 
@@ -259,8 +276,8 @@ function run_test_runs( array $test_runs ) {
 	 *
 	 * @see \Symfony\Component\Process\Pipes\PipesInterface::CHUNK_SIZE
 	 */
-	foreach ( $processes as $p ) {
-		$it = $p->getIterator( Process::ITER_SKIP_ERR | Process::ITER_KEEP_OUTPUT );
+	foreach ( $qit_run_processes as $qit_process ) {
+		$it = $qit_process->getIterator( Process::ITER_SKIP_ERR | Process::ITER_KEEP_OUTPUT );
 		foreach ( $it as $out ) {
 			if ( ! is_null( json_decode( $out, true ) ) ) {
 				/*
@@ -268,7 +285,7 @@ function run_test_runs( array $test_runs ) {
 				 * - Save the output in a file.
 				 * - Run the PHPUnit test.
 				 */
-				$snapshot_filepath = $p->getEnv()['QIT_TEST_PATH'] . '/test-result.json';
+				$snapshot_filepath = $qit_process->getEnv()['QIT_TEST_PATH'] . '/test-result.json';
 
 				if ( file_exists( $snapshot_filepath ) ) {
 					if ( ! unlink( $snapshot_filepath ) ) {
@@ -276,10 +293,10 @@ function run_test_runs( array $test_runs ) {
 					}
 				}
 
-				$human_friendly_test_result = test_result_parser( $out, $p->getEnv()['QIT_REMOVE_FROM_SNAPSHOT'] );
+				$human_friendly_test_result = test_result_parser( $out, $qit_process->getEnv()['QIT_REMOVE_FROM_SNAPSHOT'] );
 
-				if ( ! file_put_contents( $p->getEnv()['QIT_TEST_PATH'] . '/test-result.json', $human_friendly_test_result ) ) {
-					echo "[Process {$p->getPid()}]: Failed to write test output to file.\n";
+				if ( ! file_put_contents( $qit_process->getEnv()['QIT_TEST_PATH'] . '/test-result.json', $human_friendly_test_result ) ) {
+					echo "[Process {$qit_process->getPid()}]: Failed to write test output to file.\n";
 					throw new RuntimeException( 'Failed to write test output to file.' );
 				}
 
@@ -287,7 +304,7 @@ function run_test_runs( array $test_runs ) {
 				//php ./vendor/bin/phpunit tests/ActivationTest.php --filter=test_php81_activation -d --update-snapshots
 				$args = [
 					__DIR__ . '/vendor/bin/phpunit',
-					__DIR__ . '/tests/' . ucfirst( $p->getEnv()['QIT_TEST_TYPE'] ) . 'Test.php',
+					__DIR__ . '/tests/' . ucfirst( $qit_process->getEnv()['QIT_TEST_TYPE'] ) . 'Test.php',
 					/*
 					 * Match a single test method by regex.
 					 * Example test method: TestNamespace\TestCaseClass::testMethod
@@ -295,7 +312,7 @@ function run_test_runs( array $test_runs ) {
 					 * The "$" at the end is so that it does an exact match. For instance, the above regex would not match:
 					 * TestNamespace\TestCaseClass::testMethodPhp82
 					 */
-					sprintf( '--filter=::%s$', $p->getEnv()['QIT_TEST_FUNCTION_NAME'] ),
+					sprintf( '--filter=::%s$', $qit_process->getEnv()['QIT_TEST_FUNCTION_NAME'] ),
 					'--testdox', // Nice formatting.
 				];
 
@@ -315,17 +332,17 @@ function run_test_runs( array $test_runs ) {
 				} catch ( ProcessFailedException $e ) {
 					$failed_tests[] = $e;
 				} finally {
-					cleanup_test( $p->getEnv()['QIT_TEST_PATH'] );
+					cleanup_test( $qit_process->getEnv()['QIT_TEST_PATH'] );
 
-					$p->setEnv( [ 'QIT_RAN_TEST' => true ] );
+					$qit_process->setEnv( [ 'QIT_RAN_TEST' => true ] );
 				}
 			}
 		}
 	}
 
-	foreach ( $processes as $p ) {
-		if ( ! $p->getEnv()['QIT_RAN_TEST'] ) {
-			throw new RuntimeException( "[Process {$p->getPid()}]: Test {$p->getEnv()['QIT_TEST_PATH']} did not run.\n" );
+	foreach ( $qit_run_processes as $qit_process ) {
+		if ( ! $qit_process->getEnv()['QIT_RAN_TEST'] ) {
+			throw new RuntimeException( "[Process {$qit_process->getPid()}]: Test {$qit_process->getEnv()['QIT_TEST_PATH']} did not run.\n" );
 		}
 	}
 
@@ -381,7 +398,7 @@ PHP;
 }
 
 function generate_zips( array $test_type_test_runs ) {
-	$processes = [];
+	$zip_processes = [];
 	foreach ( $test_type_test_runs as $t ) {
 		$path = $t['path'];
 		$slug = Context::$sut_slug;
@@ -402,12 +419,33 @@ function generate_zips( array $test_type_test_runs ) {
 			"rm -f sut.zip && zip -r sut.zip $slug",
 		];
 
-		$processes[] = new Symfony\Component\Process\Process( $args );
+		$zip_process = new Symfony\Component\Process\Process( $args );
+
+		$zip_process->setEnv( [
+			'type'     => $t['type'],
+			'slug'     => $t['slug'],
+			'php'      => $t['php'],
+			'wp'       => $t['wp'],
+			'woo'      => $t['woo'],
+			'features' => $t['features'],
+		] );
+
+		$zip_processes[] = $zip_process;
 	}
 
-	$process_manager = new ProcessManager();
-	$process_manager->runParallel( $processes, 25, 10000, function ( string $type, string $out, Process $process ) {
-		echo "[Process {$process->getPid()}] $out";
+	$zip_processes_manager = new ProcessManager();
+	$zip_processes_manager->runParallel( $zip_processes, 25, 10000, function ( string $type, string $out, Process $process ) {
+		echo sprintf(
+			"\n[Process ID %s [Type %s] [Slug %s] [PHP %s] [WP %s] [Woo %s] [Features %s])]: \n %s\n",
+			$process->getPid(),
+			$process->getEnv()['type'],
+			$process->getEnv()['slug'],
+			$process->getEnv()['php'],
+			$process->getEnv()['wp'],
+			$process->getEnv()['woo'],
+			$process->getEnv()['features'],
+			trim( $out )
+		);
 	} );
 }
 
