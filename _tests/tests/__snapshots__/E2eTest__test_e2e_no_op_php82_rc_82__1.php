@@ -29,7 +29,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 2 failed, 61 passed, 63 total | Tests: 206 skipped, 7 failed, 34 passed, 247 total.",
+            "test_summary": "Test Suites: 0 skipped, 2 failed, 61 passed, 63 total | Tests: 204 skipped, 7 failed, 36 passed, 247 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,8 +43,8 @@
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 63,
                 "numFailedTests": 7,
-                "numPassedTests": 34,
-                "numPendingTests": 206,
+                "numPassedTests": 36,
+                "numPendingTests": 204,
                 "numTotalTests": 247,
                 "testResults": [
                     {
@@ -85,7 +85,7 @@
                             "Analytics-related tests": [
                                 {
                                     "title": "confirms correct summary numbers on overview page",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "downloads revenue report as CSV",
@@ -93,7 +93,7 @@
                                 },
                                 {
                                     "title": "use date filter on overview page",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "use date filter on revenue report",
@@ -359,11 +359,11 @@
                                 },
                                 {
                                     "title": "add shipping zone for British Columbia with Free shipping",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "add shipping zone for Canada with Flat rate",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "add shipping zone with region and then delete the region",
@@ -1639,7 +1639,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 2 failed, 61 passed, 63 total | Tests: 206 skipped, 7 failed, 34 passed, 247 total."
+                "summary": "Test Suites: 0 skipped, 2 failed, 61 passed, 63 total | Tests: 204 skipped, 7 failed, 36 passed, 247 total."
             }
         },
         {

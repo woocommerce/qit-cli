@@ -29,7 +29,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 5 failed, 58 passed, 63 total | Tests: 204 skipped, 7 failed, 36 passed, 247 total.",
+            "test_summary": "Test Suites: 0 skipped, 4 failed, 58 passed, 62 total | Tests: 197 skipped, 7 failed, 36 passed, 240 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -38,14 +38,14 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 5,
+                "numFailedTestSuites": 4,
                 "numPassedTestSuites": 58,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 63,
+                "numTotalTestSuites": 62,
                 "numFailedTests": 7,
                 "numPassedTests": 36,
-                "numPendingTests": 204,
-                "numTotalTests": 247,
+                "numPendingTests": 197,
+                "numTotalTests": 240,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -73,43 +73,6 @@
                                 {
                                     "title": "can make sure WooCommerce is activated.",
                                     "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "admin-analytics\\/analytics-data.spec.js",
-                        "status": "failed",
-                        "has_pending": true,
-                        "tests": {
-                            "Analytics-related tests": [
-                                {
-                                    "title": "confirms correct summary numbers on overview page",
-                                    "status": "failed"
-                                },
-                                {
-                                    "title": "downloads revenue report as CSV",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "use date filter on overview page",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "use date filter on revenue report",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "set custom date range on revenue report",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "use advanced filters on orders report",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "analytics settings",
-                                    "status": "pending"
                                 }
                             ]
                         }
@@ -427,7 +390,7 @@
                                 },
                                 {
                                     "title": "should load the customer payment page",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can pay for the order through the customer payment page",
@@ -1639,7 +1602,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 5 failed, 58 passed, 63 total | Tests: 204 skipped, 7 failed, 36 passed, 247 total."
+                "summary": "Test Suites: 0 skipped, 4 failed, 58 passed, 62 total | Tests: 197 skipped, 7 failed, 36 passed, 240 total."
             }
         },
         {
