@@ -29,7 +29,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 4 failed, 58 passed, 62 total | Tests: 197 skipped, 7 failed, 36 passed, 240 total.",
+            "test_summary": "Test Suites: 0 skipped, 5 failed, 57 passed, 62 total | Tests: 194 skipped, 7 failed, 33 passed, 234 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -38,14 +38,14 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 4,
-                "numPassedTestSuites": 58,
+                "numFailedTestSuites": 5,
+                "numPassedTestSuites": 57,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 62,
                 "numFailedTests": 7,
-                "numPassedTests": 36,
-                "numPendingTests": 197,
-                "numTotalTests": 240,
+                "numPassedTests": 33,
+                "numPendingTests": 194,
+                "numTotalTests": 234,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -317,37 +317,13 @@
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
-                                    "title": "add shipping zone for Mayne Island with free Local pickup",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "add shipping zone for British Columbia with Free shipping",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "add shipping zone for Canada with Flat rate",
-                                    "status": "passed"
-                                },
-                                {
                                     "title": "add shipping zone with region and then delete the region",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "add and delete shipping method",
                                     "status": "passed"
                                 }
                             ],
                             "Verifies shipping options from customer perspective": [
                                 {
                                     "title": "allows customer to benefit from a free Local pickup if on Mayne Island",
-                                    "status": "failed"
-                                },
-                                {
-                                    "title": "allows customer to benefit from a free Free shipping if in BC",
-                                    "status": "failed"
-                                },
-                                {
-                                    "title": "allows customer to pay for a Flat rate shipping method",
                                     "status": "failed"
                                 }
                             ]
@@ -381,7 +357,7 @@
                     {
                         "file": "merchant\\/customer-payment-page.spec.js",
                         "status": "failed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Merchant Flow: Orders > Customer Payment Page": [
                                 {
@@ -394,7 +370,7 @@
                                 },
                                 {
                                     "title": "can pay for the order through the customer payment page",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -402,25 +378,25 @@
                     {
                         "file": "merchant\\/order-bulk-edit.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Bulk edit orders": [
                                 {
                                     "title": "can bulk update order status",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/order-coupon.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Apply Coupon": [
                                 {
                                     "title": "can apply a coupon",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can remove a coupon",
@@ -1602,7 +1578,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 4 failed, 58 passed, 62 total | Tests: 197 skipped, 7 failed, 36 passed, 240 total."
+                "summary": "Test Suites: 0 skipped, 5 failed, 57 passed, 62 total | Tests: 194 skipped, 7 failed, 33 passed, 234 total."
             }
         },
         {

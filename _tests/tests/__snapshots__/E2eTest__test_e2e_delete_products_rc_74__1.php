@@ -29,7 +29,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 2 failed, 60 passed, 62 total | Tests: 201 skipped, 7 failed, 32 passed, 240 total.",
+            "test_summary": "Test Suites: 0 skipped, 5 failed, 57 passed, 62 total | Tests: 194 skipped, 7 failed, 33 passed, 234 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -38,14 +38,14 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 2,
-                "numPassedTestSuites": 60,
+                "numFailedTestSuites": 5,
+                "numPassedTestSuites": 57,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 62,
                 "numFailedTests": 7,
-                "numPassedTests": 32,
-                "numPendingTests": 201,
-                "numTotalTests": 240,
+                "numPassedTests": 33,
+                "numPendingTests": 194,
+                "numTotalTests": 234,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -313,55 +313,31 @@
                     {
                         "file": "merchant\\/create-shipping-zones.spec.js",
                         "status": "failed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
-                                    "title": "add shipping zone for Mayne Island with free Local pickup",
-                                    "status": "failed"
-                                },
-                                {
-                                    "title": "add shipping zone for British Columbia with Free shipping",
-                                    "status": "failed"
-                                },
-                                {
-                                    "title": "add shipping zone for Canada with Flat rate",
-                                    "status": "failed"
-                                },
-                                {
                                     "title": "add shipping zone with region and then delete the region",
                                     "status": "passed"
-                                },
-                                {
-                                    "title": "add and delete shipping method",
-                                    "status": "failed"
                                 }
                             ],
                             "Verifies shipping options from customer perspective": [
                                 {
                                     "title": "allows customer to benefit from a free Local pickup if on Mayne Island",
                                     "status": "failed"
-                                },
-                                {
-                                    "title": "allows customer to benefit from a free Free shipping if in BC",
-                                    "status": "failed"
-                                },
-                                {
-                                    "title": "allows customer to pay for a Flat rate shipping method",
-                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/create-simple-product.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "Add New Simple Product Page": [
                                 {
                                     "title": "can create simple virtual product",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can have a shopper add the simple virtual product to the cart",
@@ -380,21 +356,21 @@
                     },
                     {
                         "file": "merchant\\/customer-payment-page.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
+                        "status": "failed",
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Merchant Flow: Orders > Customer Payment Page": [
                                 {
                                     "title": "should show the customer payment page link on a pending order",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "should load the customer payment page",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can pay for the order through the customer payment page",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -402,25 +378,25 @@
                     {
                         "file": "merchant\\/order-bulk-edit.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Bulk edit orders": [
                                 {
                                     "title": "can bulk update order status",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/order-coupon.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Apply Coupon": [
                                 {
                                     "title": "can apply a coupon",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can remove a coupon",
@@ -1602,11 +1578,28 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 2 failed, 60 passed, 62 total | Tests: 201 skipped, 7 failed, 32 passed, 240 total."
+                "summary": "Test Suites: 0 skipped, 5 failed, 57 passed, 62 total | Tests: 194 skipped, 7 failed, 33 passed, 234 total."
             }
         },
         {
-            "debug_log": []
+            "debug_log": [
+                {
+                    "count": "Less than 10",
+                    "message": "PHP Notice: Function map_meta_cap was called incorrectly. When checking for the edit_post capability, you must always check it against a specific post. Please see Debugging in WordPress for more information. (This message was added in version 6.1.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6031"
+                },
+                {
+                    "count": "Less than 10",
+                    "message": "PHP Notice: Trying to get property \'ID\' of non-object in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 2132"
+                },
+                {
+                    "count": "Less than 10",
+                    "message": "PHP Notice: Trying to get property \'post_mime_type\' of non-object in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 273"
+                },
+                {
+                    "count": "Less than 10",
+                    "message": "PHP Notice: Trying to get property \'post_type\' of non-object in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 272"
+                }
+            ]
         }
     ]
 ]';
