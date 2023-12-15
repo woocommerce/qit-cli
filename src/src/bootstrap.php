@@ -75,7 +75,7 @@ $container->singleton( Environment::class );
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 
 /*
- * If the paramter "--json" is present, make sure only JSON
+ * If the parameter "--json" is present, make sure only JSON
  * is outputted, ignoring all output that is not JSON.
  */
 if ( in_array( '--json', $GLOBALS['argv'], true ) ) {
