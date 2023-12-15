@@ -29,7 +29,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 4 failed, 52 passed, 56 total | Tests: 169 skipped, 7 failed, 35 passed, 211 total.",
+            "test_summary": "Test Suites: 0 skipped, 5 failed, 57 passed, 62 total | Tests: 194 skipped, 7 failed, 33 passed, 234 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -38,14 +38,14 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 4,
-                "numPassedTestSuites": 52,
+                "numFailedTestSuites": 5,
+                "numPassedTestSuites": 57,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 56,
+                "numTotalTestSuites": 62,
                 "numFailedTests": 7,
-                "numPassedTests": 35,
-                "numPendingTests": 169,
-                "numTotalTests": 211,
+                "numPassedTests": 33,
+                "numPendingTests": 194,
+                "numTotalTests": 234,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -200,6 +200,19 @@
                         }
                     },
                     {
+                        "file": "admin-tasks\\/webhooks.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Manage webhooks": [
+                                {
+                                    "title": "Webhook cannot be bulk deleted without nonce",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "basic.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -304,37 +317,13 @@
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
-                                    "title": "add shipping zone for Mayne Island with free Local pickup",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "add shipping zone for British Columbia with Free shipping",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "add shipping zone for Canada with Flat rate",
-                                    "status": "passed"
-                                },
-                                {
                                     "title": "add shipping zone with region and then delete the region",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "add and delete shipping method",
                                     "status": "passed"
                                 }
                             ],
                             "Verifies shipping options from customer perspective": [
                                 {
                                     "title": "allows customer to benefit from a free Local pickup if on Mayne Island",
-                                    "status": "failed"
-                                },
-                                {
-                                    "title": "allows customer to benefit from a free Free shipping if in BC",
-                                    "status": "failed"
-                                },
-                                {
-                                    "title": "allows customer to pay for a Flat rate shipping method",
                                     "status": "failed"
                                 }
                             ]
@@ -368,7 +357,7 @@
                     {
                         "file": "merchant\\/customer-payment-page.spec.js",
                         "status": "failed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Merchant Flow: Orders > Customer Payment Page": [
                                 {
@@ -381,7 +370,7 @@
                                 },
                                 {
                                     "title": "can pay for the order through the customer payment page",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -389,25 +378,25 @@
                     {
                         "file": "merchant\\/order-bulk-edit.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Bulk edit orders": [
                                 {
                                     "title": "can bulk update order status",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/order-coupon.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Apply Coupon": [
                                 {
                                     "title": "can apply a coupon",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can remove a coupon",
@@ -945,7 +934,125 @@
                         }
                     },
                     {
-                        "file": "shopper\\/calculate-shipping.spec.js",
+                        "file": "shopper\\/cart-block-calculate-shipping.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Cart Block Calculate Shipping": [
+                                {
+                                    "title": "create Cart Block page",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "allows customer to calculate Free Shipping in cart block if in Netherlands",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "allows customer to calculate Flat rate and Local pickup in cart block if in Portugal",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "should show correct total cart block price after updating quantity",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "should show correct total cart block price with 2 different products and flat rate\\/local pickup",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "shopper\\/cart-block-calculate-tax.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Shopper Cart Block Tax Display": [
+                                {
+                                    "title": "can create Cart Block page",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "that inclusive tax is displayed properly in Cart Block page",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "that exclusive tax is displayed properly in Cart Block page",
+                                    "status": "pending"
+                                }
+                            ],
+                            "Shopper Cart Block Tax Rounding": [
+                                {
+                                    "title": "that tax rounding is present at subtotal level",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "that tax rounding is off at subtotal level",
+                                    "status": "pending"
+                                }
+                            ],
+                            "Shopper Cart Block Tax Levels": [
+                                {
+                                    "title": "that applying taxes in cart block of 4 different levels calculates properly",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "that applying taxes in Cart Block of 2 different levels (2 excluded) calculates properly",
+                                    "status": "pending"
+                                }
+                            ],
+                            "Shipping Cart Block Tax": [
+                                {
+                                    "title": "that tax is applied in Cart Block to shipping as well as order",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "shopper\\/cart-block-coupons.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Cart Block Applying Coupons": [
+                                {
+                                    "title": "can create Cart Block page",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "allows cart block to apply coupon of any type",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "allows cart block to apply multiple coupons",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "prevents cart block applying same coupon twice",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "shopper\\/cart-block.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Cart Block page": [
+                                {
+                                    "title": "can see empty cart block",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "can add product to cart block, increase quantity, manage cross-sell products and proceed to checkout",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "shopper\\/cart-calculate-shipping.spec.js",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1190,6 +1297,10 @@
                                 {
                                     "title": "can proceed to mini cart, observe it and proceed to the checkout",
                                     "status": "pending"
+                                },
+                                {
+                                    "title": "can see mini cart total price inclusive with tax",
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1407,6 +1518,53 @@
                         }
                     },
                     {
+                        "file": "shopper\\/tax\\/checkout-calculate-tax.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Shopper Tax Display Tests": [
+                                {
+                                    "title": "checks that taxes are calculated properly on totals, inclusive tax displayed properly",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "checks that taxes are calculated and displayed correctly exclusive on shop, cart and checkout",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "checks that display suffix is shown",
+                                    "status": "pending"
+                                }
+                            ],
+                            "Shopper Tax Rounding": [
+                                {
+                                    "title": "checks rounding at subtotal level",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "checks rounding off at subtotal level",
+                                    "status": "pending"
+                                }
+                            ],
+                            "Shopper Tax Levels": [
+                                {
+                                    "title": "checks applying taxes of 4 different levels",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "checks applying taxes of 2 different levels (2 excluded)",
+                                    "status": "pending"
+                                }
+                            ],
+                            "Shipping Tax": [
+                                {
+                                    "title": "checks that tax is applied to shipping as well as order",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "smoke-tests\\/upload-plugin.spec.js",
                         "status": "passed",
                         "has_pending": true,
@@ -1420,7 +1578,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 4 failed, 52 passed, 56 total | Tests: 169 skipped, 7 failed, 35 passed, 211 total."
+                "summary": "Test Suites: 0 skipped, 5 failed, 57 passed, 62 total | Tests: 194 skipped, 7 failed, 33 passed, 234 total."
             }
         },
         {
