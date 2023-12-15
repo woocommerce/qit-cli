@@ -20,7 +20,7 @@
                 "id": 18619,
                 "host": "wccom",
                 "name": "Google Product Feed",
-                "type": "extension"
+                "type": "plugin"
             },
             "client": "qit_cli",
             "event": "cli_development_extension_test",
@@ -35,6 +35,7 @@
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
+            "malware_whitelist_paths": [],
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {
