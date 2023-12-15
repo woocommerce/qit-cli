@@ -11,7 +11,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -30,7 +30,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 0, File Errors: 0",
+            "test_summary": "Errors: 0, File Errors: 2",
             "debug_log": "",
             "version": "1.0.0",
             "update_complete": true,
@@ -42,9 +42,25 @@
             "test_result_json": {
                 "totals": {
                     "errors": 0,
-                    "file_errors": 0
+                    "file_errors": 2
                 },
-                "files": [],
+                "files": {
+                    "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/themes\\/wporg-theme-storefront\\/index.php": {
+                        "errors": 2,
+                        "messages": [
+                            {
+                                "message": "Instantiated class Bar not found.",
+                                "line": 17,
+                                "ignorable": true
+                            },
+                            {
+                                "message": "Result of function example_return_void (void) is used.",
+                                "line": 18,
+                                "ignorable": true
+                            }
+                        ]
+                    }
+                },
                 "errors": []
             }
         }
