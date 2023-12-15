@@ -36,32 +36,43 @@ class ListCommand extends Command {
 		$test_types_list = implode( ', ', $this->environment->get_cache()->get_manager_sync_data( 'test_types' ) );
 		$this
 			->setDescription( 'List test runs.' )
+			->addOption( 'extensions', 'e', InputOption::VALUE_OPTIONAL, '(Optional) Retrieve results for these extensions (Accepts slugs or IDs, comma-separated).' )
 			->addOption( 'test_status', 's', InputOption::VALUE_OPTIONAL, '(Optional) What test status to retrieve.' )
 			->addOption( 'test_types', 't', InputOption::VALUE_OPTIONAL, '(Optional) What test types to retrieve. Allowed values: ' . $test_types_list, $test_types_list )
 			->addOption( 'page', 'p', InputOption::VALUE_OPTIONAL, '(Optional) The page to get.', 1 )
-			->addOption( 'per_page', 'e', InputOption::VALUE_OPTIONAL, '(Optional) How many results per page.', 10 )
-			->addOption( 'woo_ids', 'w', InputOption::VALUE_OPTIONAL, '(Optional) Retrieve results for these Woo IDs.' )
-			->setHelp( 'View a list of test runs.' );
+			->addOption( 'per_page', 'pp', InputOption::VALUE_OPTIONAL, '(Optional) How many results per page.', 10 )
+			->setHelp( <<<'HELP'
+View a list of test runs. You can also filter by extension, status, type, etc. Eg
+
+	qit list-tests --extensions=woocommerce,woocommerce-admin --test_status=success --test_types=security,e2e --page=1 --per_page=10
+HELP
+			);
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
-		if ( $input->getOption( 'woo_ids' ) ) {
-			$woo_ids = $input->getOption( 'woo_ids' );
+		if ( $input->getOption( 'extensions' ) ) {
+			foreach ( explode( ',', $input->getOption( 'extensions' ) ) as $e ) {
+				if ( is_numeric( $e ) ) {
+					$extensions[] = $e;
+				} else {
+					$extensions[] = $this->woo_extensions_list->get_woo_extension_id_by_slug( $e );
+				}
+			}
 		} else {
-			$woo_ids = [];
+			$extensions = [];
 
 			foreach ( $this->woo_extensions_list->get_woo_extension_list() as $i ) {
-				$woo_ids[] = $i['id'];
+				$extensions[] = $i['id'];
 			}
 
-			$woo_ids = implode( ',', $woo_ids );
+			$extensions = implode( ',', $extensions );
 		}
 
 		try {
 			$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get' ) )
 				->with_method( 'POST' )
 				->with_post_body( [
-					'woo_ids'     => $woo_ids,
+					'woo_ids'     => $extensions,
 					'test_status' => $input->getOption( 'test_status' ),
 					'test_types'  => $input->getOption( 'test_types' ),
 					'page'        => $input->getOption( 'page' ),
@@ -99,6 +110,10 @@ class ListCommand extends Command {
 			'client',
 			'event',
 			'debug_log',
+			'ai_suggestion_status',
+			'send_notifications',
+			'test_summary',
+			'status_emoji',
 		];
 
 		// Prepare the data to be rendered.
@@ -107,7 +122,10 @@ class ListCommand extends Command {
 			foreach ( $t as $test_key => &$v ) {
 				if ( $test_key === 'woo_extension' ) {
 					if ( array_key_exists( 'version', $t ) ) {
-						$v = sprintf( '%s (%s)', $this->getHelper( 'formatter' )->truncate( $v['name'], 20, '.' ), $t['version'] );
+						$v = sprintf( '%s', $this->getHelper( 'formatter' )->truncate( $v['name'], 20, '.' ) );
+						if ( ! empty( $t['version'] ) ) {
+							$v .= " ({$t['version']})";
+						}
 					}
 				}
 			}
@@ -125,6 +143,25 @@ class ListCommand extends Command {
 							$v = 'Yes';
 						}
 						break;
+					case 'status':
+						if ( ! empty( $v ) ) {
+							switch ( $v ) {
+								case 'success':
+									// Green color for success.
+									$v = "\033[32m" . $v . "\033[0m";
+									break;
+								case 'failed':
+									// Red color for failed.
+									$v = "\033[31m" . $v . "\033[0m";
+									break;
+								case 'warning':
+									// Yellow color for warning.
+									$v = "\033[33m" . $v . "\033[0m";
+									break;
+							}
+						}
+						break;
+
 				}
 
 				if ( ! is_scalar( $v ) ) {
