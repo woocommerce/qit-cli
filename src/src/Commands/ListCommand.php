@@ -46,7 +46,7 @@ View a list of test runs. You can also filter by extension, status, type, etc. E
 
 	qit list-tests --extensions=woocommerce,woocommerce-admin --test_status=success --test_types=security,e2e --page=1 --per_page=10
 HELP
-);
+			);
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -145,17 +145,17 @@ HELP
 						break;
 					case 'status':
 						if ( ! empty( $v ) ) {
-							switch ($v) {
+							switch ( $v ) {
 								case 'success':
-									// Green color for success
+									// Green color for success.
 									$v = "\033[32m" . $v . "\033[0m";
 									break;
 								case 'failed':
-									// Red color for failed
+									// Red color for failed.
 									$v = "\033[31m" . $v . "\033[0m";
 									break;
 								case 'warning':
-									// Yellow color for warning
+									// Yellow color for warning.
 									$v = "\033[33m" . $v . "\033[0m";
 									break;
 							}
