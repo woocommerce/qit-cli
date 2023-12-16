@@ -451,12 +451,12 @@ function generate_zips( array $test_type_test_runs ) {
 		$path = $t['path'];
 		$slug = Context::$sut_slug;
 
-		$generated_zips[] = md5( $path . $slug );
-
-		if ( in_array( md5( $path . $slug ), $generated_zips ) ) {
+		if ( in_array( md5( $path . $slug ), $generated_zips, true ) ) {
 			echo "[INFO] Skipping zip generation for test: {$t['test_function_name']} (Another test in same dir already zipped)\n";
 			continue;
 		}
+
+		$generated_zips[] = md5( $path . $slug );
 
 		if ( getenv( 'CI' ) ) {
 			// In CI environment, execute the zipping command directly to avoid downloading the zip docker image.
