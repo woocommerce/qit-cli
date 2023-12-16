@@ -9,6 +9,7 @@ class ParallelOutput {
 	public function __construct() {
 		$this->outputBuffer = [];
 		$this->headers      = [];
+		register_shutdown_function( [ $this, 'onShutdown' ] );
 	}
 
 	public function processOutputCallback( $out, Process $process ) {
@@ -24,8 +25,9 @@ class ParallelOutput {
 		// Append new output to the buffer for the task
 		$this->outputBuffer[ $taskId ] .= trim( $out ) . "\n";
 
-		// Optionally display outputs immediately
-		$this->displayBufferedOutputs();
+		if ( ! getenv( "CI" ) ) {
+			$this->displayBufferedOutputs();
+		}
 	}
 
 	protected function displayBufferedOutputs() {
@@ -36,6 +38,16 @@ class ParallelOutput {
 		foreach ( $this->outputBuffer as $taskId => $output ) {
 			echo "\033[1;33m" . $this->headers[ $taskId ] . "\033[0m"; // Yellow for headers
 			echo $output . "\n";
+		}
+	}
+
+	public function onShutdown() {
+		if ( getenv( "CI" ) ) {
+			// Print the accumulated output for each task in CI environment
+			foreach ( $this->outputBuffer as $taskId => $output ) {
+				echo "\033[1;33m" . $this->headers[ $taskId ] . "\033[0m\n"; // Yellow for headers
+				echo $output; // Print the accumulated output
+			}
 		}
 	}
 }
