@@ -450,21 +450,32 @@ function generate_zips( array $test_type_test_runs ) {
 		$path = $t['path'];
 		$slug = Context::$sut_slug;
 
-		$args = [
-			"docker",
-			'run',
-			'--rm',
-			'--user',
-			posix_getuid() . ":" . posix_getgid(),
-			'-w',
-			'/app',
-			'-v',
-			"$path:/app",
-			'joshkeegan/zip:latest',
-			'sh',
-			'-c',
-			"rm -f sut.zip && zip -r sut.zip $slug",
-		];
+		if ( getenv( 'CI' ) ) {
+			// In CI environment, execute the zipping command directly to avoid downloading the zip docker image.
+			$args = [
+				'sh',
+				'-c',
+				"cd $path && rm -f sut.zip && zip -r sut.zip $slug"
+			];
+		} else {
+			// Use docker zip on local.
+			$args = [
+				"docker",
+				'run',
+				'--rm',
+				'--user',
+				posix_getuid() . ":" . posix_getgid(),
+				'-w',
+				'/app',
+				'-v',
+				"$path:/app",
+				'joshkeegan/zip:latest',
+				'sh',
+				'-c',
+				"rm -f sut.zip && zip -r sut.zip $slug",
+			];
+		}
+
 
 		$zip_process = new Symfony\Component\Process\Process( $args );
 
