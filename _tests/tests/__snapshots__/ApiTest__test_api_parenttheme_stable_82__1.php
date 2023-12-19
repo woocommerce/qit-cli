@@ -17,9 +17,9 @@
             "is_development": true,
             "send_notifications": false,
             "woo_extension": {
-                "id": 565154,
-                "host": "wporg",
-                "name": "Storefront",
+                "id": 1822936,
+                "host": "wccom",
+                "name": "Bistro",
                 "type": "theme"
             },
             "client": "qit_cli",
@@ -31,7 +31,7 @@
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
             "test_summary": "Test Suites: 0 skipped, 0 failed, 20 passed, 20 total | Tests: 2 skipped, 0 failed, 255 passed, 257 total.",
-            "version": "1.0.0",
+            "version": "1.0.15",
             "update_complete": true,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
