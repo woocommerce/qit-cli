@@ -19,18 +19,18 @@ class Context {
 	public static $action;
 	public static $suite;
 	public static $test;
-	public static $sut_slug;
+
+	/*
+	 * To run tests in QIT, we need to assign the results to a plugin in the Marketplace.
+	 * We use the extension "woocommerce-product-feeds" and theme "storefront", because they're owned by the test user in Staging.
+	 */
+	public static $extension_slug = 'woocommerce-product-feeds';
+	public static $theme_slug     = 'wporg-theme-storefront';
 }
 
 Context::$action = $GLOBALS['argv'][1] ?? 'run';
 Context::$suite  = $GLOBALS['argv'][2] ?? null;
 Context::$test   = $GLOBALS['argv'][3] ?? null;
-
-/*
- * To run tests in QIT, we need to assign the results to a plugin in the Marketplace.
- * We use "woocommerce-product-feeds", because it's a plugin owned by the test user in Staging.
- */
-Context::$sut_slug = 'woocommerce-product-feeds';
 
 require_once __DIR__ . '/test-result-parser.php';
 require_once __DIR__ . '/ParallelOutput.php';
@@ -146,6 +146,13 @@ function generate_test_runs( array $test_types ): array {
 
 			foreach ( $woo_versions as $woo_version ) {
 				foreach ( $php_versions as $php_version ) {
+
+					if ( file_exists( $test . '/' . Context::$extension_slug ) ) {
+						$sut_slug = Context::$extension_slug;
+					} else {
+						$sut_slug = Context::$theme_slug;
+					}
+
 					$tests_to_run[ basename( $test_type ) ][] = [
 						'type'                 => basename( $test_type ),
 						'slug'                 => basename( $test ),
@@ -156,6 +163,7 @@ function generate_test_runs( array $test_types ): array {
 						'remove_from_snapshot' => $env['remove_from_snapshot'] ?? '',
 						'params'               => $env['params'] ?? [],
 						'path'                 => $test,
+						'sut_slug'             => $sut_slug,
 					];
 				}
 			}
@@ -197,8 +205,9 @@ function run_test_runs( array $test_runs ) {
 	// Dispatch all tests in parallel using the qit binary.
 	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
 		foreach ( $test_type_test_runs as $t ) {
-			$php = ( new PhpExecutableFinder() )->find( false );
-			$qit = realpath( __DIR__ . '/../qit' );
+			$php      = ( new PhpExecutableFinder() )->find( false );
+			$qit      = realpath( __DIR__ . '/../qit' );
+			$sut_slug = $t['sut_slug'];
 
 			$args = [
 				$php,
@@ -235,7 +244,7 @@ function run_test_runs( array $test_runs ) {
 				}
 			}
 
-			$args[] = Context::$sut_slug;
+			$args[] = $sut_slug;
 
 			$qit_process = new Process( $args );
 			$qit_process->setTimeout( null ); // Let QIT CLI handle timeouts.
@@ -449,7 +458,7 @@ function generate_zips( array $test_type_test_runs ) {
 	$generated_zips = [];
 	foreach ( $test_type_test_runs as $t ) {
 		$path = $t['path'];
-		$slug = Context::$sut_slug;
+		$slug = $t['sut_slug'];
 
 		if ( in_array( md5( $path . $slug ), $generated_zips, true ) ) {
 			echo "[INFO] Skipping zip generation for test: {$t['test_function_name']} (Another test in same dir already zipped)\n";
