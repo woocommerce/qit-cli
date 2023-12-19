@@ -11,15 +11,15 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
             "send_notifications": false,
             "woo_extension": {
-                "id": 565154,
-                "host": "wporg",
-                "name": "Storefront",
+                "id": 1822936,
+                "host": "wccom",
+                "name": "Bistro",
                 "type": "theme"
             },
             "client": "qit_cli",
@@ -30,8 +30,8 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 1 failed, 19 passed, 20 total | Tests: 2 skipped, 1 failed, 254 passed, 257 total.",
-            "version": "1.0.0",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 20 passed, 20 total | Tests: 2 skipped, 0 failed, 255 passed, 257 total.",
+            "version": "1.0.15",
             "update_complete": true,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
@@ -40,12 +40,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 19,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 20,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 20,
-                "numFailedTests": 1,
-                "numPassedTests": 254,
+                "numFailedTests": 0,
+                "numPassedTests": 255,
                 "numPendingTests": 2,
                 "numTotalTests": 257,
                 "testResults": [
@@ -525,13 +525,13 @@
                     },
                     {
                         "file": "payment-gateways\\/payment-gateways-crud.test.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Payment Gateways API tests": [
                                 {
                                     "title": "can view all payment gateways",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can view a payment gateway",
@@ -1375,7 +1375,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 19 passed, 20 total | Tests: 2 skipped, 1 failed, 254 passed, 257 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 20 passed, 20 total | Tests: 2 skipped, 0 failed, 255 passed, 257 total."
             }
         },
         {
