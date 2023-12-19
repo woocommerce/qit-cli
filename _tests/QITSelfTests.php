@@ -25,7 +25,7 @@ class Context {
 	 * We use the extension "woocommerce-product-feeds" and theme "storefront", because they're owned by the test user in Staging.
 	 */
 	public static $extension_slug = 'woocommerce-product-feeds';
-	public static $theme_slug     = 'wporg-theme-storefront';
+	public static $theme_slug     = 'bistro';
 }
 
 Context::$action = $GLOBALS['argv'][1] ?? 'run';
