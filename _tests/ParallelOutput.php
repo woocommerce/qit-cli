@@ -55,7 +55,7 @@ class ParallelOutput {
 	protected function formatStatusWithTime( $taskId, $status ) {
 		$elapsed = microtime( true ) - $this->startTimes[ $taskId ];
 		$minutes = floor( $elapsed / 60 );
-		$seconds = str_pad( floor( $elapsed % 60 ), 2, '0', STR_PAD_LEFT );
+		$seconds = str_pad( (int) ceil( $elapsed % 60 ), 2, '0', STR_PAD_LEFT );
 
 		return "[$minutes:$seconds] $taskId $status";
 	}
