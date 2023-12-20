@@ -407,9 +407,8 @@ function handle_qit_response( Process $qit_process, string $out, array &$failed_
 	// echo "[INFO] Preparing to run test: {$phpunit_process->getCommandLine()}\n";
 
 	try {
-		$phpunit_process->mustRun( function ( $type, $out ) use ( $phpunit_process ) {
-			$GLOBALS['parallelOutput']->processOutputCallback( $out, $phpunit_process );
-		} );
+		$phpunit_process->mustRun();
+		$GLOBALS['parallelOutput']->processOutputCallback( $phpunit_process->getOutput(), $phpunit_process );
 	} catch ( ProcessFailedException $e ) {
 		$failed_tests[] = $e;
 	} finally {
