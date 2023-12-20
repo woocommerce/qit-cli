@@ -174,15 +174,25 @@ function generate_test_runs( array $test_types ): array {
 }
 
 function add_task_id_to_process( Process $process, array $test_run ) {
-	$task_id = sprintf(
-		"[Test Type %s [Slug %s] [PHP %s] [WP %s] [Woo %s] [Features %s])]: \n",
-		$test_run['type'],
-		$test_run['slug'],
-		$test_run['php'],
-		$test_run['wp'],
-		$test_run['woo'],
-		$test_run['features']
-	);
+	$task_id_parts = [
+		sprintf( "[%s -", ucwords( $test_run['type'] ) ),
+		sprintf( "%s]", $test_run['slug'] )
+	];
+
+	if ( ! empty( $test_run['php'] ) ) {
+		$task_id_parts[] = sprintf( "[PHP %s]", $test_run['php'] );
+	}
+	if ( ! empty( $test_run['wp'] ) ) {
+		$task_id_parts[] = sprintf( "[WP %s]", $test_run['wp'] );
+	}
+	if ( ! empty( $test_run['woo'] ) ) {
+		$task_id_parts[] = sprintf( "[Woo %s]", $test_run['woo'] );
+	}
+	if ( ! empty( $test_run['features'] ) ) {
+		$task_id_parts[] = sprintf( "[Features %s]", $test_run['features'] );
+	}
+
+	$task_id = implode( ' ', $task_id_parts ) . ": ";
 
 	$process->setEnv( array_merge( $process->getEnv(), [ 'qit_task_id' => $task_id ] ) );
 }
@@ -397,9 +407,8 @@ function handle_qit_response( Process $qit_process, string $out, array &$failed_
 	// echo "[INFO] Preparing to run test: {$phpunit_process->getCommandLine()}\n";
 
 	try {
-		$phpunit_process->mustRun( function ( $type, $out ) use ( $phpunit_process ) {
-			$GLOBALS['parallelOutput']->processOutputCallback( $out, $phpunit_process );
-		} );
+		$phpunit_process->mustRun();
+		$GLOBALS['parallelOutput']->processOutputCallback( $phpunit_process->getOutput(), $phpunit_process );
 	} catch ( ProcessFailedException $e ) {
 		$failed_tests[] = $e;
 	} finally {
