@@ -41,7 +41,7 @@ class ParallelOutput {
 		$taskId = $process->getEnv()['qit_task_id'];
 
 		if ( $process->isRunning() ) {
-			$status = "\u{1F3C3} Running...";  // Runner emoji
+			$status = "\u{23F3} Running...";  // Running emoji
 		} elseif ( $process->isSuccessful() ) {
 			$status = "\u{2705} Success";      // Check mark emoji
 		} else {
