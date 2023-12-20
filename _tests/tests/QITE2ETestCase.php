@@ -160,7 +160,8 @@ class QITE2ETestCase extends TestCase {
 						 * Normalization rules for 'count':
 						 * - Exact values are retained for counts below 50.
 						 * - Counts between 50 and 100 are rounded to the nearest 5.
-						 * - Counts above 100 are rounded to the nearest 10.
+						 * - Counts between 100 and 200 are rounded to the nearest 10.
+						 * - Counts above 200 are rounded to the nearest 25.
 						 *
 						 * Additionally, certain known failure messages (e.g., WordPress.org connectivity issues)
 						 * are conditionally removed from the logs.
@@ -175,12 +176,20 @@ class QITE2ETestCase extends TestCase {
 								$debug_log['count'] = round( $debug_log['count'] / 5 ) * 5;  // Round to the closest 5 if not already divisible by 5.
 								echo "{$debug_log['count']}\n";
 							}
-						} else {
+						} elseif ( $debug_log['count'] < 200 ) {
 							if ( $debug_log['count'] % 10 === 0 ) {
 								echo "Skipping normalization as it's already divisible by 10\n";
 							} else {
 								echo "Normalizing debug_log.count from {$debug_log['count']} to ";
 								$debug_log['count'] = round( $debug_log['count'] / 10 ) * 10;  // Round to the closest 10 if not already divisible by 10.
+								echo "{$debug_log['count']}\n";
+							}
+						} else {
+							if ( $debug_log['count'] % 25 === 0 ) {
+								echo "Skipping normalization as it's already divisible by 25\n";
+							} else {
+								echo "Normalizing debug_log.count from {$debug_log['count']} to ";
+								$debug_log['count'] = round( $debug_log['count'] / 25 ) * 25;  // Round to the closest 25 if not already divisible by 25.
 								echo "{$debug_log['count']}\n";
 							}
 						}
