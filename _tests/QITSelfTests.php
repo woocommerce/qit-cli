@@ -259,8 +259,6 @@ function run_test_runs( array $test_runs ) {
 			$qit_process = new Process( $args );
 			$qit_process->setTimeout( null ); // Let QIT CLI handle timeouts.
 
-			// echo "[INFO] Preparing to run command {$qit_process->getCommandLine()}\n";
-
 			$qit_process->setEnv( [
 				'QIT_TEST_PATH'            => $t['path'],
 				'QIT_TEST_TYPE'            => $test_type,
@@ -476,31 +474,21 @@ function generate_zips( array $test_type_test_runs ) {
 
 		$generated_zips[] = md5( $path . $slug );
 
-		if ( getenv( 'CI' ) ) {
-			// In CI environment, execute the zipping command directly to avoid downloading the zip docker image.
-			$args = [
-				'sh',
-				'-c',
-				"cd $path && rm -f sut.zip && zip -r sut.zip $slug"
-			];
-		} else {
-			// Use docker zip on local.
-			$args = [
-				"docker",
-				'run',
-				'--rm',
-				'--user',
-				posix_getuid() . ":" . posix_getgid(),
-				'-w',
-				'/app',
-				'-v',
-				"$path:/app",
-				'joshkeegan/zip:latest',
-				'sh',
-				'-c',
-				"rm -f sut.zip && zip -r sut.zip $slug",
-			];
-		}
+		$args = [
+			"docker",
+			'run',
+			'--rm',
+			'--user',
+			posix_getuid() . ":" . posix_getgid(),
+			'-w',
+			'/app',
+			'-v',
+			"$path:/app",
+			'joshkeegan/zip:latest',
+			'sh',
+			'-c',
+			"rm -f sut.zip && zip -r sut.zip $slug",
+		];
 
 
 		$zip_process = new Symfony\Component\Process\Process( $args );
