@@ -477,13 +477,6 @@ function generate_zips( array $test_type_test_runs ) {
 		$generated_zips[] = md5( $path . $slug );
 
 		if ( getenv( 'CI' ) ) {
-			// In CI environment, execute the zipping command directly to avoid downloading the zip docker image.
-			$args = [
-				'bash',
-				'-c',
-				"cd $path && rm -f sut.zip && zip -r sut.zip $slug"
-			];
-		} else {
 			// Use docker zip on local.
 			$args = [
 				"docker",
