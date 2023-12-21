@@ -66,14 +66,16 @@ jobs:
       ### Cache ZIP Image
       - name: Set up date
         id: date
-        run: echo "::set-output name=year::$(date +'%Y')" && echo "::set-output name=month::$(date +'%m')"
+        run: |
+          echo "ZIP_YEAR=$(date +'%Y')" >> $GITHUB_ENV
+          echo "ZIP_MONTH=$(date +'%m')" >> $GITHUB_ENV
 
       - name: Restore ZIP Image Cache if it exists
         id: cache-docker-zip
         uses: actions/cache@v3
         with:
           path: cache-zip
-          key: cache-docker-zip-${{ format('{0}-{1}', steps.date.outputs.year, steps.date.outputs.month) }}
+          key: cache-docker-zip-${{ env.ZIP_YEAR }}-${{ env.ZIP_MONTH }}
 
       - name: Update ZIP Image Cache if cache miss
         if: steps.cache-docker-zip.outputs.cache-hit != 'true'
