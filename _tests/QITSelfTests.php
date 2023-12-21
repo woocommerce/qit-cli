@@ -259,7 +259,7 @@ function run_test_runs( array $test_runs ) {
 			$qit_process = new Process( $args );
 			$qit_process->setTimeout( null ); // Let QIT CLI handle timeouts.
 
-			echo "[INFO] Preparing to run command {$qit_process->getCommandLine()}\n";
+			$GLOBALS['parallelOutput']->processOutputCallback( "[INFO] Preparing to run command {$qit_process->getCommandLine()}\n", $qit_process );
 
 			$qit_process->setEnv( [
 				'QIT_TEST_PATH'            => $t['path'],
