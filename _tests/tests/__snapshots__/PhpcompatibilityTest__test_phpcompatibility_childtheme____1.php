@@ -17,9 +17,9 @@
             "is_development": true,
             "send_notifications": false,
             "woo_extension": {
-                "id": 565154,
-                "host": "wporg",
-                "name": "Storefront",
+                "id": 1822936,
+                "host": "wccom",
+                "name": "Bistro",
                 "type": "theme"
             },
             "client": "qit_cli",
@@ -48,7 +48,7 @@
                             "fixable": 1
                         },
                         "files": {
-                            "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/themes\\/wporg-theme-storefront\\/front-page.php": {
+                            "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/themes\\/bistro\\/front-page.php": {
                                 "errors": 12,
                                 "warnings": 3,
                                 "messages": [

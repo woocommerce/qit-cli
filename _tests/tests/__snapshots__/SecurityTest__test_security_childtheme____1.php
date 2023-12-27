@@ -17,9 +17,9 @@
             "is_development": true,
             "send_notifications": false,
             "woo_extension": {
-                "id": 565154,
-                "host": "wporg",
-                "name": "Storefront",
+                "id": 1822936,
+                "host": "wccom",
+                "name": "Bistro",
                 "type": "theme"
             },
             "client": "qit_cli",
@@ -32,7 +32,7 @@
             "test_results_manager_expiration": 1234567890,
             "test_summary": "Errors: 4 Warnings: 3",
             "debug_log": "",
-            "version": "1.0.0",
+            "version": "1.0.15",
             "update_complete": true,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
@@ -48,7 +48,7 @@
                             "fixable": 0
                         },
                         "files": {
-                            "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/themes\\/wporg-theme-storefront\\/functions.php": {
+                            "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/themes\\/bistro\\/functions.php": {
                                 "errors": 2,
                                 "warnings": 3,
                                 "messages": [
@@ -113,7 +113,7 @@
                             "fixable": 0
                         },
                         "files": {
-                            "\\/wporg-theme-storefront\\/functions.php": {
+                            "\\/bistro\\/functions.php": {
                                 "errors": 2,
                                 "warnings": 0,
                                 "messages": [

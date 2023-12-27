@@ -17,9 +17,9 @@
             "is_development": true,
             "send_notifications": false,
             "woo_extension": {
-                "id": 565154,
-                "host": "wporg",
-                "name": "Storefront",
+                "id": 1822936,
+                "host": "wccom",
+                "name": "Bistro",
                 "type": "theme"
             },
             "client": "qit_cli",
@@ -32,7 +32,7 @@
             "test_results_manager_expiration": 1234567890,
             "test_summary": "6 Errors Detected. (1 Fatal, 2 Warnings, 3 Notices)",
             "debug_log": "",
-            "version": "1.0.0",
+            "version": "1.0.15",
             "update_complete": true,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
@@ -67,11 +67,11 @@
                     "is_fatal": "No",
                     "error_type": "E_USER_NOTICE",
                     "error_message": "Notice on all requests - Child theme",
-                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/wporg-theme-storefront\\/functions.php",
+                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
                     "error_line": 12,
                     "backtrace": [
                         {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/wporg-theme-storefront\\/functions.php",
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
                             "line": 12,
                             "function": "trigger_error"
                         },
@@ -124,11 +124,11 @@
                     "is_fatal": "No",
                     "error_type": "E_USER_WARNING",
                     "error_message": "Warning on all requests - Child theme",
-                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/wporg-theme-storefront\\/functions.php",
+                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
                     "error_line": 8,
                     "backtrace": [
                         {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/wporg-theme-storefront\\/functions.php",
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
                             "line": 8,
                             "function": "trigger_error"
                         },
@@ -177,11 +177,11 @@
                     "is_fatal": "No",
                     "error_type": "E_USER_NOTICE",
                     "error_message": "Notice on all requests - Child theme",
-                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/wporg-theme-storefront\\/functions.php",
+                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
                     "error_line": 12,
                     "backtrace": [
                         {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/wporg-theme-storefront\\/functions.php",
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
                             "line": 12,
                             "function": "trigger_error"
                         },
@@ -234,7 +234,7 @@
                     "is_fatal": "Yes",
                     "error_type": "E_ERROR",
                     "error_message": "Call to undefined function call_to_undefined_function()",
-                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/wporg-theme-storefront\\/functions.php",
+                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
                     "error_line": 5,
                     "backtrace": [
                         {
@@ -249,11 +249,11 @@
                     "is_fatal": "No",
                     "error_type": "E_USER_NOTICE",
                     "error_message": "Notice on all requests - Child theme",
-                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/wporg-theme-storefront\\/functions.php",
+                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
                     "error_line": 12,
                     "backtrace": [
                         {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/wporg-theme-storefront\\/functions.php",
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
                             "line": 12,
                             "function": "trigger_error"
                         },
@@ -306,11 +306,11 @@
                     "is_fatal": "No",
                     "error_type": "E_USER_WARNING",
                     "error_message": "Warning on all requests - Child theme",
-                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/wporg-theme-storefront\\/functions.php",
+                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
                     "error_line": 8,
                     "backtrace": [
                         {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/wporg-theme-storefront\\/functions.php",
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
                             "line": 8,
                             "function": "trigger_error"
                         },

@@ -25,7 +25,7 @@ class Context {
 	 * We use the extension "woocommerce-product-feeds" and theme "storefront", because they're owned by the test user in Staging.
 	 */
 	public static $extension_slug = 'woocommerce-product-feeds';
-	public static $theme_slug     = 'wporg-theme-storefront';
+	public static $theme_slug     = 'bistro';
 }
 
 Context::$action = $GLOBALS['argv'][1] ?? 'run';
@@ -174,15 +174,25 @@ function generate_test_runs( array $test_types ): array {
 }
 
 function add_task_id_to_process( Process $process, array $test_run ) {
-	$task_id = sprintf(
-		"[Test Type %s [Slug %s] [PHP %s] [WP %s] [Woo %s] [Features %s])]: \n",
-		$test_run['type'],
-		$test_run['slug'],
-		$test_run['php'],
-		$test_run['wp'],
-		$test_run['woo'],
-		$test_run['features']
-	);
+	$task_id_parts = [
+		sprintf( "[%s -", ucwords( $test_run['type'] ) ),
+		sprintf( "%s]", $test_run['slug'] )
+	];
+
+	if ( ! empty( $test_run['php'] ) ) {
+		$task_id_parts[] = sprintf( "[PHP %s]", $test_run['php'] );
+	}
+	if ( ! empty( $test_run['wp'] ) ) {
+		$task_id_parts[] = sprintf( "[WP %s]", $test_run['wp'] );
+	}
+	if ( ! empty( $test_run['woo'] ) ) {
+		$task_id_parts[] = sprintf( "[Woo %s]", $test_run['woo'] );
+	}
+	if ( ! empty( $test_run['features'] ) ) {
+		$task_id_parts[] = sprintf( "[Features %s]", $test_run['features'] );
+	}
+
+	$task_id = implode( ' ', $task_id_parts ) . ": ";
 
 	$process->setEnv( array_merge( $process->getEnv(), [ 'qit_task_id' => $task_id ] ) );
 }
@@ -248,8 +258,6 @@ function run_test_runs( array $test_runs ) {
 
 			$qit_process = new Process( $args );
 			$qit_process->setTimeout( null ); // Let QIT CLI handle timeouts.
-
-			// echo "[INFO] Preparing to run command {$qit_process->getCommandLine()}\n";
 
 			$qit_process->setEnv( [
 				'QIT_TEST_PATH'            => $t['path'],
@@ -397,9 +405,8 @@ function handle_qit_response( Process $qit_process, string $out, array &$failed_
 	// echo "[INFO] Preparing to run test: {$phpunit_process->getCommandLine()}\n";
 
 	try {
-		$phpunit_process->mustRun( function ( $type, $out ) use ( $phpunit_process ) {
-			$GLOBALS['parallelOutput']->processOutputCallback( $out, $phpunit_process );
-		} );
+		$phpunit_process->mustRun();
+		$GLOBALS['parallelOutput']->processOutputCallback( $phpunit_process->getOutput(), $phpunit_process );
 	} catch ( ProcessFailedException $e ) {
 		$failed_tests[] = $e;
 	} finally {
@@ -454,10 +461,18 @@ PHP;
 }
 
 function generate_zips( array $test_type_test_runs ) {
-	$zip_processes = [];
+	$zip_processes  = [];
+	$generated_zips = [];
 	foreach ( $test_type_test_runs as $t ) {
 		$path = $t['path'];
 		$slug = $t['sut_slug'];
+
+		if ( in_array( md5( $path . $slug ), $generated_zips, true ) ) {
+			echo "[INFO] Skipping zip generation for test: {$t['test_function_name']} (Another test in same dir already zipped)\n";
+			continue;
+		}
+
+		$generated_zips[] = md5( $path . $slug );
 
 		$args = [
 			"docker",
@@ -474,6 +489,7 @@ function generate_zips( array $test_type_test_runs ) {
 			'-c',
 			"rm -f sut.zip && zip -r sut.zip $slug",
 		];
+
 
 		$zip_process = new Symfony\Component\Process\Process( $args );
 
