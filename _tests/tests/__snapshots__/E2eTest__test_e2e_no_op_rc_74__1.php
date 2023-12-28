@@ -11,7 +11,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -30,7 +30,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 1 failed, 63 passed, 64 total | Tests: 3 skipped, 1 failed, 249 passed, 253 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 63 passed, 63 total | Tests: 3 skipped, 0 failed, 243 passed, 246 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -40,14 +40,14 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 63,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 64,
-                "numFailedTests": 1,
-                "numPassedTests": 249,
+                "numTotalTestSuites": 63,
+                "numFailedTests": 0,
+                "numPassedTests": 243,
                 "numPendingTests": 3,
-                "numTotalTests": 253,
+                "numTotalTests": 246,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -74,43 +74,6 @@
                             "Store owner can login and make sure WooCommerce is activated": [
                                 {
                                     "title": "can make sure WooCommerce is activated.",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "admin-analytics\\/analytics-data.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
-                        "tests": {
-                            "Analytics-related tests": [
-                                {
-                                    "title": "confirms correct summary numbers on overview page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "downloads revenue report as CSV",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "use date filter on overview page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "use date filter on revenue report",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "set custom date range on revenue report",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "use advanced filters on orders report",
-                                    "status": "failed"
-                                },
-                                {
-                                    "title": "analytics settings",
                                     "status": "passed"
                                 }
                             ]
@@ -1675,7 +1638,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 63 passed, 64 total | Tests: 3 skipped, 1 failed, 249 passed, 253 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 63 passed, 63 total | Tests: 3 skipped, 0 failed, 243 passed, 246 total."
             }
         },
         {

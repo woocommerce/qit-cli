@@ -30,7 +30,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 62 passed, 62 total | Tests: 4 skipped, 0 failed, 230 passed, 234 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 62 passed, 62 total | Tests: 4 skipped, 0 failed, 236 passed, 240 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,9 +45,9 @@
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 62,
                 "numFailedTests": 0,
-                "numPassedTests": 230,
+                "numPassedTests": 236,
                 "numPendingTests": 4,
-                "numTotalTests": 234,
+                "numTotalTests": 240,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -319,13 +319,37 @@
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
+                                    "title": "add shipping zone for Mayne Island with free Local pickup",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "add shipping zone for British Columbia with Free shipping",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "add shipping zone for Canada with Flat rate",
+                                    "status": "passed"
+                                },
+                                {
                                     "title": "add shipping zone with region and then delete the region",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "add and delete shipping method",
                                     "status": "passed"
                                 }
                             ],
                             "Verifies shipping options from customer perspective": [
                                 {
                                     "title": "allows customer to benefit from a free Local pickup if on Mayne Island",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "allows customer to benefit from a free Free shipping if in BC",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "allows customer to pay for a Flat rate shipping method",
                                     "status": "passed"
                                 }
                             ]
@@ -1580,7 +1604,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 62 passed, 62 total | Tests: 4 skipped, 0 failed, 230 passed, 234 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 62 passed, 62 total | Tests: 4 skipped, 0 failed, 236 passed, 240 total."
             }
         },
         {
