@@ -30,7 +30,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 62 passed, 62 total | Tests: 4 skipped, 0 failed, 230 passed, 234 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 64 passed, 64 total | Tests: 3 skipped, 0 failed, 248 passed, 251 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,13 +41,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 62,
+                "numPassedTestSuites": 64,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 62,
+                "numTotalTestSuites": 64,
                 "numFailedTests": 0,
-                "numPassedTests": 230,
-                "numPendingTests": 4,
-                "numTotalTests": 234,
+                "numPassedTests": 248,
+                "numPendingTests": 3,
+                "numTotalTests": 251,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -74,6 +74,39 @@
                             "Store owner can login and make sure WooCommerce is activated": [
                                 {
                                     "title": "can make sure WooCommerce is activated.",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "admin-analytics\\/analytics-data.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Analytics-related tests": [
+                                {
+                                    "title": "confirms correct summary numbers on overview page",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "downloads revenue report as CSV",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "use date filter on overview page",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "use date filter on revenue report",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "set custom date range on revenue report",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "analytics settings",
                                     "status": "passed"
                                 }
                             ]
@@ -257,6 +290,43 @@
                         }
                     },
                     {
+                        "file": "merchant\\/command-palette.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Use Command Palette commands": [
+                                {
+                                    "title": "can use the \\"Add new product\\" command",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can use the \\"Add new order\\" command",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can use the \\"Products\\" command",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can use the \\"Orders\\" command",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can use the product search command",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can use a settings command",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can use an analytics command",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/create-order.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -319,13 +389,33 @@
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
+                                    "title": "add shipping zone for Mayne Island with free Local pickup",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "add shipping zone for Canada with Flat rate",
+                                    "status": "passed"
+                                },
+                                {
                                     "title": "add shipping zone with region and then delete the region",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "add and delete shipping method",
                                     "status": "passed"
                                 }
                             ],
                             "Verifies shipping options from customer perspective": [
                                 {
                                     "title": "allows customer to benefit from a free Local pickup if on Mayne Island",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "allows customer to benefit from a free Free shipping if in BC",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "allows customer to pay for a Flat rate shipping method",
                                     "status": "passed"
                                 }
                             ]
@@ -635,7 +725,7 @@
                     {
                         "file": "merchant\\/page-loads.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Page Load > Load WooCommerce sub pages": [
                                 {
@@ -649,10 +739,6 @@
                                 {
                                     "title": "Can load Customers",
                                     "status": "passed"
-                                },
-                                {
-                                    "title": "Can load Coupons",
-                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Reports",
@@ -1524,7 +1610,8 @@
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
-                            "Shopper Tax Display Tests": [
+                            "Tax rates in the cart and checkout": [],
+                            "Tax rates in the cart and checkout > Shopper Tax Display Tests": [
                                 {
                                     "title": "checks that taxes are calculated properly on totals, inclusive tax displayed properly",
                                     "status": "passed"
@@ -1538,7 +1625,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "Shopper Tax Rounding": [
+                            "Tax rates in the cart and checkout > Shopper Tax Rounding": [
                                 {
                                     "title": "checks rounding at subtotal level",
                                     "status": "passed"
@@ -1548,7 +1635,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "Shopper Tax Levels": [
+                            "Tax rates in the cart and checkout > Shopper Tax Levels": [
                                 {
                                     "title": "checks applying taxes of 4 different levels",
                                     "status": "passed"
@@ -1558,7 +1645,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "Shipping Tax": [
+                            "Tax rates in the cart and checkout > Shipping Tax": [
                                 {
                                     "title": "checks that tax is applied to shipping as well as order",
                                     "status": "passed"
@@ -1580,7 +1667,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 62 passed, 62 total | Tests: 4 skipped, 0 failed, 230 passed, 234 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 64 passed, 64 total | Tests: 3 skipped, 0 failed, 248 passed, 251 total."
             }
         },
         {

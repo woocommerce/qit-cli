@@ -31,9 +31,10 @@ watch:
 # Build the Phar file of the CD Client.
 build:
 	@cp -r src src-tmp
-	@docker run --rm \
+	@COMPOSER_HOME_DIR=$$(composer config --global home); \
+		docker run --rm \
 			--volume ${PWD}/src-tmp:/app \
-			--volume ${COMPOSER_HOME:-$HOME/.composer}:/tmp \
+			--volume $${COMPOSER_HOME_DIR}:/tmp \
 			--user "$(shell id -u):$(shell id -g)" \
 			composer \
 			install --no-dev --quiet --optimize-autoloader --ignore-platform-reqs
