@@ -257,7 +257,7 @@ function run_test_runs( array $test_runs ) {
 			$args[] = $sut_slug;
 
 			$qit_process = new Process( $args );
-			$qit_process->setTimeout( null ); // Let QIT CLI handle timeouts.
+			$qit_process->setTimeout( null ); // Let QIT CLI handle the timeouts.
 
 			$qit_process->setEnv( [
 				'QIT_TEST_PATH'            => $t['path'],
