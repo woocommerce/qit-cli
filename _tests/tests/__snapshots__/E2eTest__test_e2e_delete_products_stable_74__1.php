@@ -30,7 +30,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 4 failed, 60 passed, 64 total | Tests: 204 skipped, 7 failed, 41 passed, 252 total.",
+            "test_summary": "Test Suites: 0 skipped, 4 failed, 60 passed, 64 total | Tests: 204 skipped, 7 failed, 40 passed, 251 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,9 +45,9 @@
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 64,
                 "numFailedTests": 7,
-                "numPassedTests": 41,
+                "numPassedTests": 40,
                 "numPendingTests": 204,
-                "numTotalTests": 252,
+                "numTotalTests": 251,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -390,10 +390,6 @@
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
                                     "title": "add shipping zone for Mayne Island with free Local pickup",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "add shipping zone for British Columbia with Free shipping",
                                     "status": "passed"
                                 },
                                 {
@@ -1671,7 +1667,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 4 failed, 60 passed, 64 total | Tests: 204 skipped, 7 failed, 41 passed, 252 total."
+                "summary": "Test Suites: 0 skipped, 4 failed, 60 passed, 64 total | Tests: 204 skipped, 7 failed, 40 passed, 251 total."
             }
         },
         {
