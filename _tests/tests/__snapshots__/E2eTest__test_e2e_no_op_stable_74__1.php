@@ -11,7 +11,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -30,7 +30,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 64 passed, 64 total | Tests: 3 skipped, 0 failed, 249 passed, 252 total.",
+            "test_summary": "Test Suites: 0 skipped, 1 failed, 63 passed, 64 total | Tests: 3 skipped, 1 failed, 248 passed, 252 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -40,12 +40,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 64,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 63,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 64,
-                "numFailedTests": 0,
-                "numPassedTests": 249,
+                "numFailedTests": 1,
+                "numPassedTests": 248,
                 "numPendingTests": 3,
                 "numTotalTests": 252,
                 "testResults": [
@@ -384,7 +384,7 @@
                     },
                     {
                         "file": "merchant\\/create-shipping-zones.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
@@ -394,7 +394,7 @@
                                 },
                                 {
                                     "title": "add shipping zone for British Columbia with Free shipping",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "add shipping zone for Canada with Flat rate",
@@ -1671,7 +1671,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 64 passed, 64 total | Tests: 3 skipped, 0 failed, 249 passed, 252 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 63 passed, 64 total | Tests: 3 skipped, 1 failed, 248 passed, 252 total."
             }
         },
         {
