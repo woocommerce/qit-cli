@@ -33,7 +33,7 @@ build:
 	@cp -r src src-tmp
 	@docker run --rm \
 			--volume ${PWD}/src-tmp:/app \
-			--volume ${COMPOSER_HOME:-$HOME/.composer}:/tmp \
+			--volume ${HOME}/.composer}:/tmp \
 			--user "$(shell id -u):$(shell id -g)" \
 			composer \
 			install --no-dev --quiet --optimize-autoloader --ignore-platform-reqs
