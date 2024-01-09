@@ -30,7 +30,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 5 failed, 57 passed, 62 total | Tests: 194 skipped, 7 failed, 33 passed, 234 total.",
+            "test_summary": "Test Suites: 0 skipped, 4 failed, 60 passed, 64 total | Tests: 204 skipped, 7 failed, 41 passed, 252 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -40,14 +40,14 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 5,
-                "numPassedTestSuites": 57,
+                "numFailedTestSuites": 4,
+                "numPassedTestSuites": 60,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 62,
+                "numTotalTestSuites": 64,
                 "numFailedTests": 7,
-                "numPassedTests": 33,
-                "numPendingTests": 194,
-                "numTotalTests": 234,
+                "numPassedTests": 41,
+                "numPendingTests": 204,
+                "numTotalTests": 252,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -75,6 +75,39 @@
                                 {
                                     "title": "can make sure WooCommerce is activated.",
                                     "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "admin-analytics\\/analytics-data.spec.js",
+                        "status": "failed",
+                        "has_pending": true,
+                        "tests": {
+                            "Analytics-related tests": [
+                                {
+                                    "title": "confirms correct summary numbers on overview page",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "downloads revenue report as CSV",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "use date filter on overview page",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "use date filter on revenue report",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "set custom date range on revenue report",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "analytics settings",
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -257,6 +290,43 @@
                         }
                     },
                     {
+                        "file": "merchant\\/command-palette.spec.js",
+                        "status": "failed",
+                        "has_pending": false,
+                        "tests": {
+                            "Use Command Palette commands": [
+                                {
+                                    "title": "can use the \\"Add new product\\" command",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can use the \\"Add new order\\" command",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can use the \\"Products\\" command",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can use the \\"Orders\\" command",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can use the product search command",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "can use a settings command",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can use an analytics command",
+                                    "status": "failed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/create-order.spec.js",
                         "status": "failed",
                         "has_pending": true,
@@ -319,7 +389,23 @@
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
+                                    "title": "add shipping zone for Mayne Island with free Local pickup",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "add shipping zone for British Columbia with Free shipping",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "add shipping zone for Canada with Flat rate",
+                                    "status": "passed"
+                                },
+                                {
                                     "title": "add shipping zone with region and then delete the region",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "add and delete shipping method",
                                     "status": "passed"
                                 }
                             ],
@@ -327,19 +413,27 @@
                                 {
                                     "title": "allows customer to benefit from a free Local pickup if on Mayne Island",
                                     "status": "failed"
+                                },
+                                {
+                                    "title": "allows customer to benefit from a free Free shipping if in BC",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "allows customer to pay for a Flat rate shipping method",
+                                    "status": "failed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/create-simple-product.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Add New Simple Product Page": [
                                 {
                                     "title": "can create simple virtual product",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can have a shopper add the simple virtual product to the cart",
@@ -358,21 +452,21 @@
                     },
                     {
                         "file": "merchant\\/customer-payment-page.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Merchant Flow: Orders > Customer Payment Page": [
                                 {
                                     "title": "should show the customer payment page link on a pending order",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should load the customer payment page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can pay for the order through the customer payment page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -380,25 +474,25 @@
                     {
                         "file": "merchant\\/order-bulk-edit.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Bulk edit orders": [
                                 {
                                     "title": "can bulk update order status",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/order-coupon.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Apply Coupon": [
                                 {
                                     "title": "can apply a coupon",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can remove a coupon",
@@ -648,10 +742,6 @@
                                 },
                                 {
                                     "title": "Can load Customers",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Can load Coupons",
                                     "status": "pending"
                                 },
                                 {
@@ -1524,7 +1614,8 @@
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
-                            "Shopper Tax Display Tests": [
+                            "Tax rates in the cart and checkout": [],
+                            "Tax rates in the cart and checkout > Shopper Tax Display Tests": [
                                 {
                                     "title": "checks that taxes are calculated properly on totals, inclusive tax displayed properly",
                                     "status": "pending"
@@ -1538,7 +1629,7 @@
                                     "status": "pending"
                                 }
                             ],
-                            "Shopper Tax Rounding": [
+                            "Tax rates in the cart and checkout > Shopper Tax Rounding": [
                                 {
                                     "title": "checks rounding at subtotal level",
                                     "status": "pending"
@@ -1548,7 +1639,7 @@
                                     "status": "pending"
                                 }
                             ],
-                            "Shopper Tax Levels": [
+                            "Tax rates in the cart and checkout > Shopper Tax Levels": [
                                 {
                                     "title": "checks applying taxes of 4 different levels",
                                     "status": "pending"
@@ -1558,7 +1649,7 @@
                                     "status": "pending"
                                 }
                             ],
-                            "Shipping Tax": [
+                            "Tax rates in the cart and checkout > Shipping Tax": [
                                 {
                                     "title": "checks that tax is applied to shipping as well as order",
                                     "status": "pending"
@@ -1580,28 +1671,11 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 5 failed, 57 passed, 62 total | Tests: 194 skipped, 7 failed, 33 passed, 234 total."
+                "summary": "Test Suites: 0 skipped, 4 failed, 60 passed, 64 total | Tests: 204 skipped, 7 failed, 41 passed, 252 total."
             }
         },
         {
-            "debug_log": [
-                {
-                    "count": "Less than 10",
-                    "message": "PHP Notice: Function map_meta_cap was called incorrectly. When checking for the edit_post capability, you must always check it against a specific post. Please see Debugging in WordPress for more information. (This message was added in version 6.1.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6031"
-                },
-                {
-                    "count": "Less than 10",
-                    "message": "PHP Notice: Trying to get property \'ID\' of non-object in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 2132"
-                },
-                {
-                    "count": "Less than 10",
-                    "message": "PHP Notice: Trying to get property \'post_mime_type\' of non-object in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 273"
-                },
-                {
-                    "count": "Less than 10",
-                    "message": "PHP Notice: Trying to get property \'post_type\' of non-object in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 272"
-                }
-            ]
+            "debug_log": []
         }
     ]
 ]';

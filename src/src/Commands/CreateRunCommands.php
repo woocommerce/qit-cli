@@ -290,8 +290,8 @@ class CreateRunCommands extends DynamicCommandCreator {
 			'timeout',
 			't',
 			InputOption::VALUE_OPTIONAL,
-			'(Optional) Seconds to wait for a test to finish before failing the command. Default is 30 minutes. Min 10 seconds. Max 2 hours. (requires "--wait")',
-			1800
+			'(Optional) Seconds to wait for a test to finish before failing the command. Default is 60 minutes. Min 10 seconds. Max 2 hours. (requires "--wait")',
+			3600
 		);
 
 		// If set, exit status code will be zero even if test fails.
