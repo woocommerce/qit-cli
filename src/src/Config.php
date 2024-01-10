@@ -81,6 +81,11 @@ class Config {
 			return false;
 		}
 
+		// There's no point in showing the onboarding wizard in a CI context.
+		if ( getenv( 'CI' ) ) {
+			return false;
+		}
+
 		// Consistent behavior if we are running the onboarding command directly.
 		if ( App::make( Input::class )->getFirstArgument() === OnboardingCommand::getDefaultName() ) {
 			return true;
