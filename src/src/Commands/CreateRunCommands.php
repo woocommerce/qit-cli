@@ -232,7 +232,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 					$table
 						->setHorizontal()
 						->setStyle( 'compact' )
-						->setHeaders( [ 'Test ID', 'Result URL' ] );
+						->setHeaders( [ 'Run Id', 'Result URL' ] );
 					$table->addRow( [ $response['run_id'], $response['test_results_manager_url'] ] );
 					$table->render();
 					$output->writeln( '' );
