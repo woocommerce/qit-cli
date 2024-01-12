@@ -157,13 +157,11 @@ class CreateRunCommands extends DynamicCommandCreator {
 					return Command::FAILURE;
 				}
 
-				if ( ! isset( $response['run_id'] ) || ! isset( $response['test_results_manager_url'] ) ) {
-					$output->writeln( 'Unexpected response. Missing "run_id" or "test_results_manager_url".' );
+				if ( ( ! isset( $response['test_run_id'] ) && ! isset( $response['run_id'] ) ) || ! isset( $response['test_results_manager_url'] ) ) {
+					$output->writeln( 'Unexpected response. Missing "test_run_id" or "test_results_manager_url".' );
 
 					return Command::FAILURE;
 				}
-
-				$waited = false;
 
 				if ( $input->getOption( 'wait' ) ) {
 					// Show a message if user aborts waiting.
@@ -191,7 +189,6 @@ class CreateRunCommands extends DynamicCommandCreator {
 						] ), $output );
 
 						if ( $finished === 0 ) {
-							$waited = true;
 							break;
 						}
 
@@ -205,13 +202,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 
 						sleep( rand( 5, 15 ) );
 					} while ( true );
-				} else {
-					if ( $input->getOption( 'ignore-fail' ) ) {
-						$output->writeln( '<error>"--ignore-fail" can only be used with "--wait".</error>' );
-					}
-				}
 
-				if ( $waited ) {
 					$output->writeln( sprintf( '<info>Test run completed.</info>' ) );
 					$command = $this->getApplication()->find( GetCommand::getDefaultName() );
 
@@ -227,23 +218,33 @@ class CreateRunCommands extends DynamicCommandCreator {
 						return $exit_code;
 					}
 				} else {
-					$output->writeln( sprintf( '<info>Test started on the QIT Servers!</info>' ) );
-					$table = new Table( $output );
-					$table
-						->setHorizontal()
-						->setStyle( 'compact' )
-						->setHeaders( [ 'Run Id', 'Result URL' ] );
-					$table->addRow( [ $response['run_id'], $response['test_results_manager_url'] ] );
-					$table->render();
-					$output->writeln( '' );
+					if ( $input->getOption( 'ignore-fail' ) ) {
+						$output->writeln( '<error>"--ignore-fail" can only be used with "--wait".</error>' );
+					}
+				}
 
-					// Get the name of the script entrypoint.
-					$bin = isset( $_SERVER['argv'][0] ) ? basename( $_SERVER['argv'][0] ) : '';
-
-					$output->writeln( sprintf( '<info>You can follow up on the result of the test using the URL above, with the command "%s %s %d", or by passing the "--wait" option when running tests.</info>', $bin, GetCommand::getDefaultName(), $response['run_id'] ) );
+				if ( $input->getOption( 'json' ) ) {
+					$output->write( $json );
 
 					return Command::SUCCESS;
 				}
+
+				$output->writeln( sprintf( '<info>Test started on the QIT Servers!</info>' ) );
+				$table = new Table( $output );
+				$table
+					->setHorizontal()
+					->setStyle( 'compact' )
+					->setHeaders( [ 'Run ID', 'Result URL' ] );
+				$table->addRow( [ $response['run_id'], $response['test_results_manager_url'] ] );
+				$table->render();
+				$output->writeln( '' );
+
+				// Get the name of the script entrypoint.
+				$bin = isset( $_SERVER['argv'][0] ) ? basename( $_SERVER['argv'][0] ) : '';
+
+				$output->writeln( sprintf( '<info>You can follow up on the result of the test using the URL above, with the command "%s %s %d", or by passing the "--wait" option when running tests.</info>', $bin, GetCommand::getDefaultName(), $response['run_id'] ) );
+
+				return Command::SUCCESS;
 			}
 		};
 
