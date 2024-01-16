@@ -157,7 +157,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 					return Command::FAILURE;
 				}
 
-				if ( ( ! isset( $response['test_run_id'] ) && ! isset( $response['run_id'] ) ) || ! isset( $response['test_results_manager_url'] ) ) {
+				if ( ! isset( $response['test_run_id'] ) || ! isset( $response['test_results_manager_url'] ) ) {
 					$output->writeln( 'Unexpected response. Missing "test_run_id" or "test_results_manager_url".' );
 
 					return Command::FAILURE;
@@ -184,7 +184,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 
 						// When checking for finished status, return status code is 0 if finished, 1 if not.
 						$finished = $command->run( new ArrayInput( [
-							'test_run_id'      => $response['run_id'],
+							'test_run_id'      => $response['test_run_id'],
 							'--check_finished' => true,
 						] ), $output );
 
@@ -208,7 +208,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 
 					// If waiting, the exit status code will come from the GetCommand.
 					$exit_code = $command->run( new ArrayInput( [
-						'test_run_id' => $response['run_id'],
+						'test_run_id' => $response['test_run_id'],
 						'--json'      => $input->getOption( 'json' ),
 					] ), $output );
 
@@ -234,15 +234,15 @@ class CreateRunCommands extends DynamicCommandCreator {
 				$table
 					->setHorizontal()
 					->setStyle( 'compact' )
-					->setHeaders( [ 'Run ID', 'Result URL' ] );
-				$table->addRow( [ $response['run_id'], $response['test_results_manager_url'] ] );
+					->setHeaders( [ 'Test Run ID', 'Result URL' ] );
+				$table->addRow( [ $response['test_run_id'], $response['test_results_manager_url'] ] );
 				$table->render();
 				$output->writeln( '' );
 
 				// Get the name of the script entrypoint.
 				$bin = isset( $_SERVER['argv'][0] ) ? basename( $_SERVER['argv'][0] ) : '';
 
-				$output->writeln( sprintf( '<info>You can follow up on the result of the test using the URL above, with the command "%s %s %d", or by passing the "--wait" option when running tests.</info>', $bin, GetCommand::getDefaultName(), $response['run_id'] ) );
+				$output->writeln( sprintf( '<info>You can follow up on the result of the test using the URL above, with the command "%s %s %d", or by passing the "--wait" option when running tests.</info>', $bin, GetCommand::getDefaultName(), $response['test_run_id'] ) );
 
 				return Command::SUCCESS;
 			}
