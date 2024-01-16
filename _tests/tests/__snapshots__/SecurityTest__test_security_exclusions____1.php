@@ -1,6 +1,7 @@
 <?php return '[
     [
         {
+            "test_run_id": 123456,
             "run_id": 123456,
             "test_type": "security",
             "wordpress_version": "6.0.0-normalized",
