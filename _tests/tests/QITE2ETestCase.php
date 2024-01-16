@@ -38,6 +38,12 @@ class QITE2ETestCase extends TestCase {
 		}
 
 		$rules = [
+			'test_run_id'                          => [
+				'normalize' => 123456,
+				'validate'  => static function ( $value ) {
+					return preg_match( '/^\d+$/', $value );
+				}
+			],
 			'run_id'                          => [
 				'normalize' => 123456,
 				'validate'  => static function ( $value ) {
