@@ -19,7 +19,7 @@ class GetCommand extends Command {
 		$this
 			->setDescription( 'Get a single test run.' )
 			->setHelp( 'Get a single test run. Exit status codes: 0 (success), 1 (failed), 2 (warning), 3 (others).' )
-			->addArgument( 'test_run_id', InputArgument::REQUIRED )
+			->addArgument( 'test_run_id', InputArgument::REQUIRED, 'The ID of the test run.' )
 			->addOption( 'open', 'o', InputOption::VALUE_NEGATABLE, 'Open the test run in the browser.', false )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
 			->addOption( 'check_finished', null, InputOption::VALUE_NONE, 'Return success if test has finished. Failure if not.', null );
@@ -92,7 +92,7 @@ class GetCommand extends Command {
 			return $exit_status_code;
 		}
 
-		$columns_to_hide = [ 'test_result_aws_expiration', 'test_results_manager_expiration', 'test_result_json', 'event', 'client' ];
+		$columns_to_hide = [ 'test_result_aws_expiration', 'test_results_manager_expiration', 'test_result_json', 'event', 'client', 'run_id', 'send_notifications', 'update_complete', 'ai_suggestion_status' ];
 
 		// Prepare the data to be rendered.
 		foreach ( $test_run as $test_key => &$v ) {

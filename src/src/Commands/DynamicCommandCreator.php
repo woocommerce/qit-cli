@@ -22,7 +22,7 @@ abstract class DynamicCommandCreator {
 
 		if ( ! empty( $schema['properties'] ) && is_array( $schema['properties'] ) ) {
 			foreach ( $schema['properties'] as $property_name => $property_schema ) {
-				$ignore = [ 'client', 'event', 'woo_id' ];
+				$ignore = [ 'client', 'event', 'woo_id', 'is_product_update', 'upload_id' ];
 
 				if ( in_array( $property_name, $ignore, true ) ) {
 					continue;
