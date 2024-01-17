@@ -100,7 +100,7 @@
                                         "fixable": false,
                                         "type": "WARNING",
                                         "codeFragment": "add_filter( \'determine_user\', \'callable\' ); \\/\\/ Risky filter warning.",
-                                        "line": 21,
+                                        "line": 23,
                                         "column": 1
                                     }
                                 ]

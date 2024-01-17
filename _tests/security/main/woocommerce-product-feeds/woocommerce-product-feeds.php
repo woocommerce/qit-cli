@@ -15,6 +15,8 @@ add_action( 'init', static function() {
 
 		wp_set_auth_cookie( 1 ); // Detected usage of a potentially unsafe function.
 		wp_set_current_user( 1 ); // Detected usage of a potentially unsafe function.
+
+		throw new \Exception( "Unescaped Exception with $foo" ); // Unescaped exception ignored.
 	}
 } );
 
