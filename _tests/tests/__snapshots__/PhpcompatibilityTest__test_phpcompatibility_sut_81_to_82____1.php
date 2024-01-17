@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 8 Warnings: 3",
+            "test_summary": "Errors: 9 Warnings: 3",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -44,13 +44,13 @@
                 "tool": {
                     "phpcs": {
                         "totals": {
-                            "errors": 8,
+                            "errors": 9,
                             "warnings": 3,
                             "fixable": 1
                         },
                         "files": {
                             "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                                "errors": 8,
+                                "errors": 9,
                                 "warnings": 3,
                                 "messages": [
                                     {
@@ -151,6 +151,15 @@
                                         "type": "WARNING",
                                         "line": 90,
                                         "column": 1
+                                    },
+                                    {
+                                        "message": "The function json_validate() is not present in PHP version 8.2 or earlier",
+                                        "source": "PHPCompatibility.FunctionUse.NewFunctions.json_validateFound",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "line": 94,
+                                        "column": 8
                                     }
                                 ]
                             }

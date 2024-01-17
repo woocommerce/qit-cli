@@ -84,3 +84,18 @@ $example->dynamicProperty = 'Deprecated';
 // Deprecated: utf8_encode and utf8_decode functions
 utf8_encode('Deprecated');
 
+// Requires PHP 8.3
+// Test: JSON validation
+assert(json_validate('{ "key": "value" }'));
+
+// Deprecated in PHP 8.3: Using get_class() without arguments
+// Deprecated in PHP 8.3: Using get_parent_class() without arguments
+class TestClass {
+	public function someMethod() {
+		$className = get_class();
+	}
+
+	public function anotherMethod() {
+		$parentClassName = get_parent_class();
+	}
+}
