@@ -7,7 +7,7 @@
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "7.4",
-            "max_php_version": "8.2",
+            "max_php_version": "8.3",
             "min_php_version": "7.2",
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 12 Warnings: 3",
+            "test_summary": "Errors: 13 Warnings: 5",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -44,14 +44,14 @@
                 "tool": {
                     "phpcs": {
                         "totals": {
-                            "errors": 12,
-                            "warnings": 3,
+                            "errors": 13,
+                            "warnings": 5,
                             "fixable": 1
                         },
                         "files": {
                             "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/themes\\/bistro\\/front-page.php": {
-                                "errors": 12,
-                                "warnings": 3,
+                                "errors": 13,
+                                "warnings": 5,
                                 "messages": [
                                     {
                                         "message": "Trailing commas are not allowed in function calls in PHP 7.2 or earlier",
@@ -187,6 +187,33 @@
                                         "type": "WARNING",
                                         "line": 85,
                                         "column": 1
+                                    },
+                                    {
+                                        "message": "The function json_validate() is not present in PHP version 8.2 or earlier",
+                                        "source": "PHPCompatibility.FunctionUse.NewFunctions.json_validateFound",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "line": 89,
+                                        "column": 8
+                                    },
+                                    {
+                                        "message": "Calling get_class() without the $object argument is deprecated since PHP 8.3.",
+                                        "source": "PHPCompatibility.ParameterValues.RemovedGetClassNoArgs.ArgMissing",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "WARNING",
+                                        "line": 95,
+                                        "column": 16
+                                    },
+                                    {
+                                        "message": "Calling get_parent_class() without the $object_or_class argument is deprecated since PHP 8.3.",
+                                        "source": "PHPCompatibility.ParameterValues.RemovedGetClassNoArgs.ArgMissing",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "WARNING",
+                                        "line": 99,
+                                        "column": 22
                                     }
                                 ]
                             }
