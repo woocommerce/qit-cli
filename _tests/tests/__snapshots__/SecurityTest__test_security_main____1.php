@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 4 Warnings: 3",
+            "test_summary": "Errors: 5 Warnings: 3",
             "debug_log": "",
             "version": "0.1-test-version",
             "update_complete": true,
@@ -44,13 +44,13 @@
                 "tool": {
                     "phpcs": {
                         "totals": {
-                            "errors": 2,
+                            "errors": 3,
                             "warnings": 3,
                             "fixable": 0
                         },
                         "files": {
                             "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                                "errors": 2,
+                                "errors": 3,
                                 "warnings": 3,
                                 "messages": [
                                     {
@@ -94,13 +94,23 @@
                                         "column": 3
                                     },
                                     {
+                                        "message": "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'\\"Unescaped Exception with $foo\\"\'.",
+                                        "source": "WordPress.Security.EscapeOutput.ExceptionNotEscaped",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "codeFragment": "\\t\\tthrow new \\\\Exception( \\"Unescaped Exception with $foo\\" ); \\/\\/ Unescaped exception ignored.\\n",
+                                        "line": 19,
+                                        "column": 25
+                                    },
+                                    {
                                         "message": "Detected usage of the \\"determine_user\\" filter. Please double-check if this filter is safe and ignore this warning to confirm.",
                                         "source": "QITStandard.PHP.DangerousFilters.RiskyFilterDetected",
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
                                         "codeFragment": "add_filter( \'determine_user\', \'callable\' ); \\/\\/ Risky filter warning.",
-                                        "line": 21,
+                                        "line": 23,
                                         "column": 1
                                     }
                                 ]
