@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 5 Warnings: 3",
+            "test_summary": "Errors: 4 Warnings: 3",
             "debug_log": "",
             "version": "0.1-test-version",
             "update_complete": true,
@@ -44,13 +44,13 @@
                 "tool": {
                     "phpcs": {
                         "totals": {
-                            "errors": 3,
+                            "errors": 2,
                             "warnings": 3,
                             "fixable": 0
                         },
                         "files": {
                             "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                                "errors": 3,
+                                "errors": 2,
                                 "warnings": 3,
                                 "messages": [
                                     {
@@ -92,16 +92,6 @@
                                         "codeFragment": "\\t\\twp_set_current_user( 1 ); \\/\\/ Detected usage of a potentially unsafe function.\\n",
                                         "line": 17,
                                         "column": 3
-                                    },
-                                    {
-                                        "message": "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'\\"Unescaped Exception with $foo\\"\'.",
-                                        "source": "WordPress.Security.EscapeOutput.ExceptionNotEscaped",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "ERROR",
-                                        "codeFragment": "\\t\\tthrow new \\\\Exception( \\"Unescaped Exception with $foo\\" ); \\/\\/ Unescaped exception ignored.\\n",
-                                        "line": 19,
-                                        "column": 25
                                     },
                                     {
                                         "message": "Detected usage of the \\"determine_user\\" filter. Please double-check if this filter is safe and ignore this warning to confirm.",
