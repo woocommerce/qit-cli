@@ -31,13 +31,16 @@ class Context {
 	public static $theme_slug = 'bistro';
 }
 
-Context::$action = $GLOBALS['argv'][1] ?? 'run';
-Context::$suite  = $GLOBALS['argv'][2] ?? null;
-Context::$test   = $GLOBALS['argv'][3] ?? null;
+$params = $GLOBALS['argv'];
 
-if ( in_array( '--debug', $GLOBALS['argv'], true ) ) {
+if ( ( $debugKey = array_search( '--debug', $params, true ) ) !== false ) {
 	Context::$debug_mode = true;
+	unset( $params[ $debugKey ] );
 }
+
+Context::$action = $params[1] ?? 'run';
+Context::$suite  = $params[2] ?? null;
+Context::$test   = $params[3] ?? null;
 
 require_once __DIR__ . '/test-result-parser.php';
 require_once __DIR__ . '/ParallelOutput.php';
