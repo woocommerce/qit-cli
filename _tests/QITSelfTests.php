@@ -19,21 +19,38 @@ class Context {
 	public static $action;
 	public static $suite;
 	public static $test;
+	public static $debug_mode;
+
+	public static $to_delete = [];
 
 	/*
 	 * To run tests in QIT, we need to assign the results to a plugin in the Marketplace.
 	 * We use the extension "woocommerce-product-feeds" and theme "storefront", because they're owned by the test user in Staging.
 	 */
 	public static $extension_slug = 'woocommerce-product-feeds';
-	public static $theme_slug     = 'bistro';
+	public static $theme_slug = 'bistro';
 }
 
 Context::$action = $GLOBALS['argv'][1] ?? 'run';
 Context::$suite  = $GLOBALS['argv'][2] ?? null;
 Context::$test   = $GLOBALS['argv'][3] ?? null;
 
+if ( in_array( '--debug', $GLOBALS['argv'], true ) ) {
+	Context::$debug_mode = true;
+}
+
 require_once __DIR__ . '/test-result-parser.php';
 require_once __DIR__ . '/ParallelOutput.php';
+
+register_shutdown_function( function () {
+	foreach ( Context::$to_delete as $file ) {
+		if ( file_exists( $file ) ) {
+			if ( ! unlink( $file ) ) {
+				throw new RuntimeException( "Failed to delete file: $file" );
+			}
+		}
+	}
+} );
 
 try {
 	validate_context();
@@ -64,7 +81,7 @@ try {
 
 	run_test_runs( generate_test_runs( $test_types ) );
 } catch ( \Exception $e ) {
-	echo $e->getMessage();
+	$GLOBALS['parallelOutput']->addRawOutput( $e->getMessage() );
 	die( 1 );
 }
 
@@ -134,7 +151,7 @@ function generate_test_runs( array $test_types ): array {
 			// If we defined a single test to run, skip those that are not it.
 			if ( ! is_null( Context::$test ) ) {
 				if ( basename( $test ) !== Context::$test ) {
-					echo sprintf( "Skipping %s, running only %s\n", basename( $test ), Context::$test );
+					$GLOBALS['parallelOutput']->addRawOutput( sprintf( "Skipping %s, running only %s\n", basename( $test ), Context::$test ) );
 					continue;
 				}
 			}
@@ -203,10 +220,6 @@ function copy_task_id_to_process( Process $process_with_task_id, Process $proces
 
 function run_test_runs( array $test_runs ) {
 	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
-		generate_phpunit_files( $test_type, $test_type_test_runs );
-	}
-
-	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
 		generate_zips( $test_type_test_runs );
 	}
 
@@ -214,7 +227,7 @@ function run_test_runs( array $test_runs ) {
 
 	// Dispatch all tests in parallel using the qit binary.
 	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
-		foreach ( $test_type_test_runs as $t ) {
+		foreach ( $test_type_test_runs as &$t ) {
 			$php      = ( new PhpExecutableFinder() )->find( false );
 			$qit      = realpath( __DIR__ . '/../qit' );
 			$sut_slug = $t['sut_slug'];
@@ -231,6 +244,10 @@ function run_test_runs( array $test_runs ) {
 				'--ignore-fail',
 				"--zip={$t['path']}/sut.zip"
 			];
+
+			if ( Context::$debug_mode ) {
+				$args[] = '-vvv';
+			}
 
 			if ( ! empty( $t['php'] ) ) {
 				$args[] = "--php_version={$t['php']}";
@@ -259,24 +276,37 @@ function run_test_runs( array $test_runs ) {
 			$qit_process = new Process( $args );
 			$qit_process->setTimeout( null ); // Let QIT CLI handle the timeouts.
 
+			$normalized_t = $t;
+			unset( $normalized_t['path'] );
+
+			$t['test_function_name'] = sprintf( 'test_%s', md5( json_encode( $normalized_t ) ) );
+			$t['non_json_output_file'] = tempnam( sys_get_temp_dir(), 'qit_non_json_' );
+
 			$qit_process->setEnv( [
 				'QIT_TEST_PATH'            => $t['path'],
 				'QIT_TEST_TYPE'            => $test_type,
 				'QIT_TEST_FUNCTION_NAME'   => $t['test_function_name'],
-				'QIT_WAIT_BEFORE_REQUEST'  => 'yes',
+				'QIT_WAIT_BEFORE_REQUEST'  => 'no',
 				'QIT_RAN_TEST'             => false,
 				'QIT_REMOVE_FROM_SNAPSHOT' => $t['remove_from_snapshot'],
+				'QIT_NON_JSON_OUTPUT'      => $t['non_json_output_file'],
 			] );
 
 			add_task_id_to_process( $qit_process, $t );
 
 			$qit_run_processes[] = $qit_process;
+
+			$t['qit_process'] = $qit_process;
 		}
+	}
+
+	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
+		generate_phpunit_files( $test_type, $test_type_test_runs );
 	}
 
 	$qit_run_processes_manager = new ProcessManager();
 
-	echo sprintf( "\nRunning %d tests in parallel...\n", count( $qit_run_processes ) );
+	$GLOBALS['parallelOutput']->addRawOutput( sprintf( "\nRunning %d tests in parallel...\n", count( $qit_run_processes ) ) );
 
 	$json_buffer  = [];
 	$failed_tests = [];
@@ -354,6 +384,14 @@ function run_test_runs( array $test_runs ) {
 	}
 }
 
+function make_test_result_json_filename( Process $process ): string {
+	return "{$process->getEnv()['QIT_TEST_FUNCTION_NAME']}.json";
+}
+
+function make_test_result_json_filepath( Process $process ): string {
+	return sprintf( '%s/%s', $process->getEnv()['QIT_TEST_PATH'], make_test_result_json_filename( $process ) );
+}
+
 function handle_qit_response( Process $qit_process, string $out, array &$failed_tests ): void {
 	$result = json_decode( $out, true );
 
@@ -362,7 +400,7 @@ function handle_qit_response( Process $qit_process, string $out, array &$failed_
 	 * - Save the output in a file.
 	 * - Run the PHPUnit test.
 	 */
-	$snapshot_filepath = $qit_process->getEnv()['QIT_TEST_PATH'] . '/test-result.json';
+	$snapshot_filepath = make_test_result_json_filepath( $qit_process );
 
 	if ( file_exists( $snapshot_filepath ) ) {
 		if ( ! unlink( $snapshot_filepath ) ) {
@@ -372,10 +410,12 @@ function handle_qit_response( Process $qit_process, string $out, array &$failed_
 
 	$human_friendly_test_result = test_result_parser( $out, $qit_process->getEnv()['QIT_REMOVE_FROM_SNAPSHOT'] );
 
-	if ( ! file_put_contents( $qit_process->getEnv()['QIT_TEST_PATH'] . '/test-result.json', $human_friendly_test_result ) ) {
+	if ( ! file_put_contents( $snapshot_filepath, $human_friendly_test_result ) ) {
 		echo "[Process {$qit_process->getPid()}]: Failed to write test output to file.\n";
 		throw new RuntimeException( 'Failed to write test output to file.' );
 	}
+
+	Context::$to_delete[] = $snapshot_filepath;
 
 	// Run the test itself.
 	//php ./vendor/bin/phpunit tests/ActivationTest.php --filter=test_php81_activation -d --update-snapshots
@@ -412,7 +452,7 @@ function handle_qit_response( Process $qit_process, string $out, array &$failed_
 	} finally {
 		cleanup_test( $qit_process->getEnv()['QIT_TEST_PATH'] );
 
-		$qit_process->setEnv( [ 'QIT_RAN_TEST' => true ] );
+		$qit_process->setEnv( array_merge( $qit_process->getEnv(), [ 'QIT_RAN_TEST' => true, ] ) );
 	}
 
 	$GLOBALS['parallelOutput']->processOutputCallback( "\n\nTest Report: " . $result['test_results_manager_url'] . "\n", $phpunit_process );
@@ -424,11 +464,12 @@ function generate_phpunit_files( string $test_type, array &$test_runs ): void {
 	$tests    = '';
 
 	foreach ( $test_runs as &$test_run ) {
-		$test_run['test_function_name'] = sprintf( 'test_%s_%s_%s_%s', $test_run['type'], $test_run['slug'], $test_run['woo'], str_replace( '.', '', $test_run['php'] ) );
-		$tests                          .= <<<PHP
+		$json_name = make_test_result_json_filename( $test_run['qit_process'] );
+
+		$tests .= <<<PHP
 
 	public function {$test_run['test_function_name']}() {
-		\$this->assertMatchesSnapshot( \$this->validate_and_normalize( __DIR__ . '/../{$test_run['type']}/{$test_run['slug']}/test-result.json' ) );
+		\$this->assertMatchesSnapshot( \$this->validate_and_normalize( __DIR__ . '/../{$test_run['type']}/{$test_run['slug']}/$json_name' ) );
 	}
 PHP;
 
@@ -468,7 +509,7 @@ function generate_zips( array $test_type_test_runs ) {
 		$slug = $t['sut_slug'];
 
 		if ( in_array( md5( $path . $slug ), $generated_zips, true ) ) {
-			echo "[INFO] Skipping zip generation for test: {$t['test_function_name']} (Another test in same dir already zipped)\n";
+			$GLOBALS['parallelOutput']->addRawOutput( "[INFO] Skipping zip generation for test: {$t['test_function_name']} (Another test in same dir already zipped)\n" );
 			continue;
 		}
 
@@ -519,7 +560,7 @@ function generate_zips( array $test_type_test_runs ) {
 }
 
 function cleanup_test( $test_type_path ) {
-	foreach ( [ 'test-result.json', 'sut.zip' ] as $file ) {
+	foreach ( [ 'sut.zip' ] as $file ) {
 		if ( file_exists( "$test_type_path/$file" ) ) {
 			if ( ! unlink( "$test_type_path/$file" ) ) {
 				throw new RuntimeException( "Failed to delete test result file: $test_type_path/$file" );

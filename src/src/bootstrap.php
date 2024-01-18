@@ -85,6 +85,10 @@ if ( in_array( '--json', $GLOBALS['argv'], true ) ) {
 				if ( ! is_null( json_decode( $bucket->data ) ) ) {
 					$consumed += $bucket->datalen;
 					stream_bucket_append( $out, $bucket );
+				} else {
+					if ( ! empty( getenv( 'QIT_NON_JSON_OUTPUT' ) ) ) {
+						file_put_contents( getenv( 'QIT_NON_JSON_OUTPUT' ), $bucket->data, FILE_APPEND );
+					}
 				}
 			}
 
