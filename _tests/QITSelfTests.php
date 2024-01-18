@@ -43,7 +43,8 @@ require_once __DIR__ . '/test-result-parser.php';
 require_once __DIR__ . '/ParallelOutput.php';
 
 register_shutdown_function( function () {
-	foreach ( Context::$to_delete as $file ) {
+	$to_delete = array_unique( Context::$to_delete );
+	foreach ( $to_delete as $file ) {
 		if ( file_exists( $file ) ) {
 			if ( ! unlink( $file ) ) {
 				throw new RuntimeException( "Failed to delete file: $file" );
@@ -245,6 +246,8 @@ function run_test_runs( array $test_runs ) {
 				"--zip={$t['path']}/sut.zip"
 			];
 
+			Context::$to_delete[] = "{$t['path']}/sut.zip";
+
 			if ( Context::$debug_mode ) {
 				$args[] = '-vvv';
 			}
@@ -279,14 +282,18 @@ function run_test_runs( array $test_runs ) {
 			$normalized_t = $t;
 			unset( $normalized_t['path'] );
 
-			$t['test_function_name'] = sprintf( 'test_%s', md5( json_encode( $normalized_t ) ) );
+			/*
+			 * Here we need a unique name that is human-readable, so that we can easily identify the test in the output.
+			 * We use the md5 of the test data to make sure it's unique.
+			 */
+			$t['test_function_name'] = sprintf( 'test_%s_%s_%s_%s_%s', $t['type'], $t['slug'], $t['woo'], str_replace( '.', '', $t['php'] ), md5( json_encode( $normalized_t ) ) );
 			$t['non_json_output_file'] = tempnam( sys_get_temp_dir(), 'qit_non_json_' );
 
 			$qit_process->setEnv( [
 				'QIT_TEST_PATH'            => $t['path'],
 				'QIT_TEST_TYPE'            => $test_type,
 				'QIT_TEST_FUNCTION_NAME'   => $t['test_function_name'],
-				'QIT_WAIT_BEFORE_REQUEST'  => 'no',
+				'QIT_WAIT_BEFORE_REQUEST'  => 'yes',
 				'QIT_RAN_TEST'             => false,
 				'QIT_REMOVE_FROM_SNAPSHOT' => $t['remove_from_snapshot'],
 				'QIT_NON_JSON_OUTPUT'      => $t['non_json_output_file'],
@@ -450,8 +457,6 @@ function handle_qit_response( Process $qit_process, string $out, array &$failed_
 	} catch ( ProcessFailedException $e ) {
 		$failed_tests[] = $e;
 	} finally {
-		cleanup_test( $qit_process->getEnv()['QIT_TEST_PATH'] );
-
 		$qit_process->setEnv( array_merge( $qit_process->getEnv(), [ 'QIT_RAN_TEST' => true, ] ) );
 	}
 
@@ -509,7 +514,7 @@ function generate_zips( array $test_type_test_runs ) {
 		$slug = $t['sut_slug'];
 
 		if ( in_array( md5( $path . $slug ), $generated_zips, true ) ) {
-			$GLOBALS['parallelOutput']->addRawOutput( "[INFO] Skipping zip generation for test: {$t['test_function_name']} (Another test in same dir already zipped)\n" );
+			$GLOBALS['parallelOutput']->addRawOutput( "[INFO] Skipping zip generation for test in {$t['path']} (Another test in same dir already zipped)\n" );
 			continue;
 		}
 
@@ -555,20 +560,6 @@ function generate_zips( array $test_type_test_runs ) {
 	foreach ( $zip_processes as $zip_process ) {
 		if ( ! $zip_process->isSuccessful() ) {
 			throw new RuntimeException( "Failed to create zip file for test: {$zip_process->getEnv()['qit_task_id']}" );
-		}
-	}
-}
-
-function cleanup_test( $test_type_path ) {
-	foreach ( [ 'sut.zip' ] as $file ) {
-		if ( file_exists( "$test_type_path/$file" ) ) {
-			if ( ! unlink( "$test_type_path/$file" ) ) {
-				throw new RuntimeException( "Failed to delete test result file: $test_type_path/$file" );
-			} else {
-				echo "[Cleanup] Deleted file $test_type_path/$file\n";
-			}
-		} else {
-			echo "[Cleanup] File does not exist $test_type_path/$file\n";
 		}
 	}
 }
