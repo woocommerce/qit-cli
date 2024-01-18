@@ -3,17 +3,24 @@
 use Symfony\Component\Process\Process;
 
 class ParallelOutput {
+	private $rawOutput;
 	private $outputBuffer;
 	private $headers;
 	private $processStatus;
 	private $startTimes;
 
 	public function __construct() {
+		$this->rawOutput     = '';
 		$this->outputBuffer  = [];
 		$this->headers       = [];
 		$this->processStatus = [];
 		$this->startTimes    = [];
+		$this->nonJsonOutput = [];
 		register_shutdown_function( [ $this, 'onShutdown' ] );
+	}
+
+	public function addRawOutput( string $output ) {
+		$this->rawOutput .= $output;
 	}
 
 	public function processOutputCallback( $out, Process $process ) {
@@ -22,9 +29,14 @@ class ParallelOutput {
 
 		// Check and store the header for the task
 		if ( ! isset( $this->headers[ $taskId ] ) ) {
-			$this->headers[ $taskId ]      = $process->getEnv()['qit_task_id'] . "\n";
-			$this->outputBuffer[ $taskId ] = "";
-			$this->startTimes[ $taskId ]   = microtime( true );
+			$this->headers[ $taskId ]       = $process->getEnv()['qit_task_id'] . "\n";
+			$this->outputBuffer[ $taskId ]  = "";
+			$this->nonJsonOutput[ $taskId ] = $process->getEnv()['QIT_NON_JSON_OUTPUT'] ?? '';
+			$this->startTimes[ $taskId ]    = microtime( true );
+		}
+
+		if ( empty( $this->nonJsonOutput[ $taskId ] ) && ! empty( $process->getEnv()['QIT_NON_JSON_OUTPUT'] ) ) {
+			$this->nonJsonOutput[ $taskId ] = $process->getEnv()['QIT_NON_JSON_OUTPUT'];
 		}
 
 		// Append new output to the buffer for the task
@@ -64,10 +76,18 @@ class ParallelOutput {
 		// Clear the terminal screen
 		system( 'clear' );
 
+		echo $this->rawOutput . "\n";
+
 		// Display the buffer with headers for each task
 		foreach ( $this->outputBuffer as $taskId => $output ) {
 			echo "\033[1;33m" . $this->headers[ $taskId ] . "\033[0m"; // Yellow for headers
 			echo $output . "\n";
+
+			if ( ! empty( $this->nonJsonOutput[ $taskId ] ) && file_exists( $this->nonJsonOutput[ $taskId ] ) ) {
+				echo file_get_contents( $this->nonJsonOutput[ $taskId ] ) . "\n";
+			} else {
+				echo "No non-json output file found for task $taskId\n";
+			}
 		}
 
 		// Print the summary section
@@ -79,10 +99,18 @@ class ParallelOutput {
 
 	public function onShutdown() {
 		if ( getenv( "CI" ) ) {
+			echo $this->rawOutput . "\n";
+
 			// Print the accumulated output for each task in CI environment
 			foreach ( $this->outputBuffer as $taskId => $output ) {
 				echo "\033[1;33m" . $this->headers[ $taskId ] . "\033[0m\n"; // Yellow for headers
-				echo $output; // Print the accumulated output
+				echo $output . "\n"; // Print the accumulated output
+
+				if ( ! empty( $this->nonJsonOutput[ $taskId ] ) && file_exists( $this->nonJsonOutput[ $taskId ] ) ) {
+					echo file_get_contents( $this->nonJsonOutput[ $taskId ] ) . "\n";
+				} else {
+					echo "No non-json output file found for task $taskId\n";
+				}
 			}
 
 			// Print the summary section

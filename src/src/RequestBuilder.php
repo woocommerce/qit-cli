@@ -217,11 +217,9 @@ class RequestBuilder {
 			 * Remove some sensitive data from external request logs just to protect the user from itself
 			 * in case it's running on verbose mode in CI.
 			 */
-			if ( getenv( 'CI' ) ) {
-				foreach ( [ 'app_pass', 'partner_app_pass', 'manager_secret' ] as $protected_key ) {
-					if ( ! empty( $request_in_logs['post_body'][ $protected_key ] ) ) {
-						$request_in_logs['post_body'][ $protected_key ] = '***';
-					}
+			foreach ( [ 'app_pass', 'partner_app_pass', 'manager_secret' ] as $protected_key ) {
+				if ( ! empty( $request_in_logs['post_body'][ $protected_key ] ) ) {
+					$request_in_logs['post_body'][ $protected_key ] = '***';
 				}
 			}
 
