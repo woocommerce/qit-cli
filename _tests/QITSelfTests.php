@@ -286,7 +286,17 @@ function run_test_runs( array $test_runs ) {
 			 * Here we need a unique name that is human-readable, so that we can easily identify the test in the output.
 			 * We use the md5 of the test data to make sure it's unique.
 			 */
-			$t['test_function_name'] = sprintf( 'test_%s_%s_%s_%s_%s', $t['type'], $t['slug'], $t['woo'], str_replace( '.', '', $t['php'] ), md5( json_encode( $normalized_t ) ) );
+			$t['test_function_name'] = sprintf(
+				'test_%s_%s_woo%s_php%s_wp%s_%s',
+				$t['type'],
+				$t['slug'],
+				str_replace( '.', '', $t['woo'] ),
+				str_replace( '.', '', $t['php'] ),
+				str_replace( '.', '', $t['wp'] ),
+				md5( json_encode( $normalized_t )
+				)
+			);
+			
 			$t['non_json_output_file'] = tempnam( sys_get_temp_dir(), 'qit_non_json_' );
 
 			$qit_process->setEnv( [
