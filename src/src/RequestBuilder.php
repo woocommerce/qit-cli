@@ -159,9 +159,14 @@ class RequestBuilder {
 			CURLOPT_URL            => $this->url,
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_POSTREDIR      => CURL_REDIR_POST_ALL,
 			CURLOPT_CONNECTTIMEOUT => $this->timeout_in_seconds,
 			CURLOPT_TIMEOUT        => $this->timeout_in_seconds,
 		];
+
+		if ( App::make( Output::class )->isVeryVerbose() ) {
+			$curl_parameters[ CURLOPT_VERBOSE ] = true;
+		}
 
 		$this->post_body['client'] = 'qit_cli';
 

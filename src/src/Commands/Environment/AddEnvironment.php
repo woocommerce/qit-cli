@@ -64,7 +64,7 @@ class AddEnvironment extends Command {
 
 			switch ( $this->getHelper( 'question' )->ask( $input, $output, $question ) ) {
 				case 'Production (Default)':
-					$manager_url     = 'https://compatibilitydashboard.wpcomstaging.com';
+					$manager_url     = 'https://qit.woo.com';
 					$secret_store_id = '(Secret ID: 10523)';
 					$environment     = Environment::$allowed_environments['production'];
 					break;
