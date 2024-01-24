@@ -95,7 +95,7 @@ function get_manager_url(): string {
 		return $env;
 	}
 
-	return 'https://compatibilitydashboard.wpcomstaging.com';
+	return 'https://qit.woo.com';
 }
 
 /**

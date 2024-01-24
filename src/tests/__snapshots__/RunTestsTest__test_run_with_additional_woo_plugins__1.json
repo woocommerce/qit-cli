@@ -1,5 +1,5 @@
 {
-    "url": "https:\/\/compatibilitydashboard.wpcomstaging.com\/wp-json\/cd\/v1\/enqueue-e2e",
+    "url": "https:\/\/qit.woo.com\/wp-json\/cd\/v1\/enqueue-e2e",
     "method": "POST",
     "post_body": {
         "additional_woo_plugins": "456,789",
