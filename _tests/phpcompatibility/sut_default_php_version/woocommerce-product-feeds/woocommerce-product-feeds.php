@@ -29,6 +29,22 @@ class Bar {
 	readonly string $foo;
 }
 
+/*
+ * Attributes require PHP 8, but we disabled this check for now because
+ * it is generally backwards compatible, it's only invalid syntax in PHP 7
+ * if it's multi-line (which is rare).
+ *
+ * We are following up in the PHPCompatibility repo and once it can differentiate
+ * between backwards-compatible attribute syntax and invalid syntax, we will re-enable
+ * this check.
+ */
+class MyArrayIterator extends ArrayIterator {
+	#[ReturnTypeWillChange]
+	public function current() {
+		return parent::current();
+	}
+}
+
 // Requires PHP 8.2 (should be flagged since this plugin supports PHP 7.2).
 readonly class Foo {
 
