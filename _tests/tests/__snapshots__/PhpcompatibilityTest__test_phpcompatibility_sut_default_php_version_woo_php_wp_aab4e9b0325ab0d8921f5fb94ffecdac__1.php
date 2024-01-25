@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 14 Warnings: 5",
+            "test_summary": "Errors: 13 Warnings: 5",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -44,13 +44,13 @@
                 "tool": {
                     "phpcs": {
                         "totals": {
-                            "errors": 14,
+                            "errors": 13,
                             "warnings": 5,
                             "fixable": 1
                         },
                         "files": {
                             "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                                "errors": 14,
+                                "errors": 13,
                                 "warnings": 5,
                                 "messages": [
                                     {
@@ -88,15 +88,6 @@
                                         "type": "ERROR",
                                         "line": 29,
                                         "column": 18
-                                    },
-                                    {
-                                        "message": "Attributes are not supported in PHP 7.4 or earlier. Found: #[ReturnTypeWillChange]",
-                                        "source": "PHPCompatibility.Attributes.NewAttributes.Found",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "ERROR",
-                                        "line": 42,
-                                        "column": 2
                                     },
                                     {
                                         "message": "Readonly classes are not supported in PHP 8.1 or earlier.",
