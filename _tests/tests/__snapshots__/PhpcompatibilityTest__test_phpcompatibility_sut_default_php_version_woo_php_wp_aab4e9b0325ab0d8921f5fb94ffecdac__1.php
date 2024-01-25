@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 13 Warnings: 5",
+            "test_summary": "Errors: 14 Warnings: 5",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -44,13 +44,13 @@
                 "tool": {
                     "phpcs": {
                         "totals": {
-                            "errors": 13,
+                            "errors": 14,
                             "warnings": 5,
                             "fixable": 1
                         },
                         "files": {
                             "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                                "errors": 13,
+                                "errors": 14,
                                 "warnings": 5,
                                 "messages": [
                                     {
@@ -90,12 +90,21 @@
                                         "column": 18
                                     },
                                     {
+                                        "message": "Attributes are not supported in PHP 7.4 or earlier. Found: #[ReturnTypeWillChange]",
+                                        "source": "PHPCompatibility.Attributes.NewAttributes.Found",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "line": 42,
+                                        "column": 2
+                                    },
+                                    {
                                         "message": "Readonly classes are not supported in PHP 8.1 or earlier.",
                                         "source": "PHPCompatibility.Classes.NewReadonlyClasses.Found",
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
-                                        "line": 33,
+                                        "line": 49,
                                         "column": 1
                                     },
                                     {
@@ -104,7 +113,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
-                                        "line": 39,
+                                        "line": 55,
                                         "column": 12
                                     },
                                     {
@@ -113,7 +122,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
-                                        "line": 43,
+                                        "line": 59,
                                         "column": 1
                                     },
                                     {
@@ -122,7 +131,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
-                                        "line": 49,
+                                        "line": 65,
                                         "column": 55
                                     },
                                     {
@@ -131,7 +140,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
-                                        "line": 49,
+                                        "line": 65,
                                         "column": 85
                                     },
                                     {
@@ -140,7 +149,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
-                                        "line": 53,
+                                        "line": 69,
                                         "column": 1
                                     },
                                     {
@@ -149,7 +158,7 @@
                                         "severity": 5,
                                         "fixable": true,
                                         "type": "ERROR",
-                                        "line": 58,
+                                        "line": 74,
                                         "column": 18
                                     },
                                     {
@@ -158,7 +167,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
-                                        "line": 62,
+                                        "line": 78,
                                         "column": 17
                                     },
                                     {
@@ -167,7 +176,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
-                                        "line": 66,
+                                        "line": 82,
                                         "column": 35
                                     },
                                     {
@@ -176,7 +185,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
-                                        "line": 78,
+                                        "line": 94,
                                         "column": 1
                                     },
                                     {
@@ -185,7 +194,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
-                                        "line": 90,
+                                        "line": 106,
                                         "column": 1
                                     },
                                     {
@@ -194,7 +203,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
-                                        "line": 94,
+                                        "line": 110,
                                         "column": 8
                                     },
                                     {
@@ -203,7 +212,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
-                                        "line": 100,
+                                        "line": 116,
                                         "column": 16
                                     },
                                     {
@@ -212,7 +221,7 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
-                                        "line": 104,
+                                        "line": 120,
                                         "column": 22
                                     }
                                 ]
