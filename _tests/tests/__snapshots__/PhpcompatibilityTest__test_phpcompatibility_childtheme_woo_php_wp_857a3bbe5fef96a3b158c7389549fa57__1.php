@@ -33,7 +33,7 @@
             "test_results_manager_expiration": 1234567890,
             "test_summary": "Errors: 13 Warnings: 5",
             "debug_log": "",
-            "version": "Undefined",
+            "version": "1.0.15",
             "update_complete": true,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
