@@ -15,9 +15,8 @@ class Auth {
 	 */
 	public function get_partner_auth() {
 		// Migrate "application_password" to "qit_token" if it exists.
-		if ( ! empty( $this->environment->get_cache()->get( 'application_password' ) ) ) {
+		if ( empty( $this->environment->get_cache()->get( 'qit_token' ) ) && ! empty( $this->environment->get_cache()->get( 'application_password' ) ) ) {
 			$this->environment->get_cache()->set( 'qit_token', $this->environment->get_cache()->get( 'application_password' ), - 1 );
-			$this->environment->get_cache()->delete( 'application_password' );
 		}
 
 		$user      = $this->environment->get_cache()->get( 'user' );
