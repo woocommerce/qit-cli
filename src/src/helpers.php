@@ -85,6 +85,17 @@ function get_manager_url(): string {
 	$override = App::make( Environment::class )->get_cache()->get( 'manager_url' );
 
 	if ( ! is_null( $override ) ) {
+		// If it's not staging.
+		if ( strpos( $override, 'staging' ) === false ) {
+			// And it's contains the old domain.
+			if ( strpos( $override, 'compatibilitydashboard.wpcomstaging' ) !== false ) {
+				// Update it to the new domain.
+				App::make( Environment::class )->get_cache()->set( 'manager_url', 'https://qit.woo.com', - 1 );
+
+				return 'https://qit.woo.com';
+			}
+		}
+
 		return (string) $override;
 	}
 
@@ -95,7 +106,7 @@ function get_manager_url(): string {
 		return $env;
 	}
 
-	return 'https://compatibilitydashboard.wpcomstaging.com';
+	return 'https://qit.woo.com';
 }
 
 /**
