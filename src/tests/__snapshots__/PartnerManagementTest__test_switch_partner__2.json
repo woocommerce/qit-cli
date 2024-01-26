@@ -3,7 +3,7 @@
         "expire": -1,
         "value": "foo_user"
     },
-    "application_password": {
+    "qit_token": {
         "expire": -1,
         "value": "foo_pass"
     },
