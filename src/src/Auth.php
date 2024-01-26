@@ -20,7 +20,6 @@ class Auth {
 			$this->environment->get_cache()->delete( 'application_password' );
 		}
 
-
 		$user      = $this->environment->get_cache()->get( 'user' );
 		$qit_token = $this->environment->get_cache()->get( 'qit_token' );
 

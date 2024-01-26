@@ -54,7 +54,7 @@ class OnboardingCommand extends Command {
 			$command = $this->getApplication()->find( AddPartner::getDefaultName() );
 
 			return $command->run( new ArrayInput( [
-				'--user'                 => $user,
+				'--user'      => $user,
 				'--qit_token' => $app_pass,
 			] ), $output );
 		} else {
