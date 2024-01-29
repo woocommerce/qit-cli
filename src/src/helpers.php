@@ -6,7 +6,7 @@ function is_windows(): bool {
 	return defined( 'PHP_WINDOWS_VERSION_BUILD' );
 }
 
-function validate_authentication( string $username, string $application_password ): void {
+function validate_authentication( string $username, string $qit_token ): void {
 	$is_ci = getenv( 'CI' );
 
 	try {
@@ -14,11 +14,11 @@ function validate_authentication( string $username, string $application_password
 			->with_method( 'POST' )
 			->with_retry( $is_ci ? 8 : 2 ) // Retry many times due to parallel test runs in CI which might cause 429.
 			->with_post_body( [
-				'app_pass' => base64_encode( sprintf( '%s:%s', $username, $application_password ) ),
+				'app_pass' => base64_encode( sprintf( '%s:%s', $username, $qit_token ) ),
 			] )
 			->request();
 	} catch ( \Exception $e ) {
-		throw new \Exception( sprintf( 'Could not authenticate to %s using the provided username and application password.', get_wccom_url() ) );
+		throw new \Exception( sprintf( 'Could not authenticate to %s using the provided username and QIT Token. Questions? https://woocommerce.github.io/qit-documentation/#/authenticating', get_wccom_url() ) );
 	}
 }
 

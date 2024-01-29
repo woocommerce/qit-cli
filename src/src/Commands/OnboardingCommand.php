@@ -10,7 +10,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Console\Terminal;
 use function QIT_CLI\get_manager_url;
 
 class OnboardingCommand extends Command {
@@ -23,37 +22,7 @@ class OnboardingCommand extends Command {
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		$io = new SymfonyStyle( $input, $output );
-		$io->title( 'Woo Quality Insights Toolkit CLI' );
-
-		$io->section( <<<SECTION
-Documentation: https://woocommerce.github.io/qit-documentation/
-Running Tests: https://woocommerce.github.io/qit-documentation/#/cli/running-tests
-SECTION
-		);
-
-		$io->writeln( '<comment>Examples:</comment>' );
-
-		$io->writeln( "\n<info>Running a Security Test:</info>" );
-		$io->writeln( './qit run:security my-extension-slug' );
-
-		$io->writeln( "\n<info>Running a Security Test against a development build:</info>" );
-		$io->writeln( './qit run:security my-extension-slug --zip=my-extension-slug.zip' );
-
-		$io->writeln( "\n<info>Running a WooCommerce Core E2E test with configurable options against a dev build:</info>" );
-		$io->writeln(<<<COMMAND
-./qit run:e2e my-extension-slug \
-	--woocommerce_version=7.6.0-rc.2 \
-	--php_version=8.2 \
-	--wordpress_version=6.2 \
-	--optional_features=hpos \
-	--additional_woo_plugins=woocommerce-shipping \
-	--additional_wordpress_plugins=hello-dolly \
-	--zip=my-extension-slug.zip
-
-COMMAND
-		);
-
-		$io->writeln( sprintf( '<comment>%s</comment>', str_repeat( '-', ( new Terminal() )->getWidth() ) ) );
+		$io->title( 'Quality Insights Toolkit (QIT)' );
 
 		$output->write( "\n<comment>Connecting to QIT servers... </comment>" );
 
@@ -70,26 +39,25 @@ COMMAND
 		$question_helper = $this->getHelper( 'question' );
 
 		if ( $is_proxied ) {
-			$io->section( 'Onboarding as Automattician (Connected to Proxy)' );
+			$io->section( 'Authenticate as Automattician (Connected to Proxy)' );
 
 			$io->writeln( $proxied_instructions . "\n" );
 
 			$user = new Question( 'Please enter the user: ' );
 			$user = $question_helper->ask( $input, $output, $user );
 
-			$app_pass = new Question( 'Please enter the application password: ' );
+			$app_pass = new Question( 'Please enter the QIT Token: ' );
 			$app_pass->setHidden( true );
 			$app_pass = $question_helper->ask( $input, $output, $app_pass );
 
 			$command = $this->getApplication()->find( AddPartner::getDefaultName() );
 
 			return $command->run( new ArrayInput( [
-				'--user'                 => $user,
-				'--application_password' => $app_pass,
+				'--user'      => $user,
+				'--qit_token' => $app_pass,
 			] ), $output );
 		} else {
-			$io->section( 'Onboarding as Partner of the Woo Marketplace' );
-			$io->info( 'If you are an Automattic employee, please connect to the proxy and run the CLI again.' );
+			$io->section( 'Authenticate as Woo.com Partner Developer' );
 
 			$command = $this->getApplication()->find( AddPartner::getDefaultName() );
 

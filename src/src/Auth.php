@@ -13,12 +13,17 @@ class Auth {
 	/**
 	 * @return string|null base64 encoded string of user:application_password, or null if not defined.
 	 */
-	public function get_app_pass() {
-		$user                 = $this->environment->get_cache()->get( 'user' );
-		$application_password = $this->environment->get_cache()->get( 'application_password' );
+	public function get_partner_auth() {
+		// Migrate "application_password" to "qit_token" if it exists.
+		if ( empty( $this->environment->get_cache()->get( 'qit_token' ) ) && ! empty( $this->environment->get_cache()->get( 'application_password' ) ) ) {
+			$this->environment->get_cache()->set( 'qit_token', $this->environment->get_cache()->get( 'application_password' ), - 1 );
+		}
 
-		if ( ! empty( $user ) && ! empty( $application_password ) ) {
-			return base64_encode( sprintf( '%s:%s', $user, $application_password ) );
+		$user      = $this->environment->get_cache()->get( 'user' );
+		$qit_token = $this->environment->get_cache()->get( 'qit_token' );
+
+		if ( ! empty( $user ) && ! empty( $qit_token ) ) {
+			return base64_encode( sprintf( '%s:%s', $user, $qit_token ) );
 		}
 
 		return null;
@@ -33,13 +38,13 @@ class Auth {
 
 	/**
 	 * @param string $user
-	 * @param string $app_pass
+	 * @param string $qit_token
 	 *
 	 * @return void
 	 */
-	public function set_auth_app_pass( $user, $app_pass ): void {
+	public function set_partner_auth( $user, $qit_token ): void {
 		$this->environment->get_cache()->set( 'user', $user, - 1 );
-		$this->environment->get_cache()->set( 'application_password', $app_pass, - 1 );
+		$this->environment->get_cache()->set( 'qit_token', $qit_token, - 1 );
 	}
 
 	/**

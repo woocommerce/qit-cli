@@ -186,8 +186,8 @@ class RequestBuilder {
 					$curl_parameters[ CURLOPT_PROXY ]     = Config::get_proxy_url();
 					$curl_parameters[ CURLOPT_PROXYTYPE ] = CURLPROXY_SOCKS5;
 				}
-			} elseif ( ! is_null( App::make( Auth::class )->get_app_pass() ) ) {
-				$this->post_body['partner_app_pass'] = App::make( Auth::class )->get_app_pass();
+			} elseif ( ! is_null( App::make( Auth::class )->get_partner_auth() ) ) {
+				$this->post_body['partner_app_pass'] = App::make( Auth::class )->get_partner_auth();
 			}
 		}
 
