@@ -15,9 +15,9 @@ For more detailed information on QIT and how to use it, refer to the [official d
 
 ## Quality Insights Toolkit (QIT)
 
-Streamlines the testing of plugins and themes, ensuring they meet the high standards of the Woo.com Marketplace.
+Official tool to streamline the testing of plugins and themes, ensuring they meet the high standards of the Woo.com Marketplace.
 
-- Managed Automated Tests for Woo.com Marketplace Plugins and Themes
+- **Comprehensive Testing Suite**: Includes various tests to ensure thorough quality checks.
   - [Woo E2E Test](https://woocommerce.github.io/qit-documentation/#/test-types/e2e)
   - [Woo API Test](https://woocommerce.github.io/qit-documentation/#/test-types/api)
   - [Activation Test](https://woocommerce.github.io/qit-documentation/#/test-types/activation)
@@ -27,14 +27,15 @@ Streamlines the testing of plugins and themes, ensuring they meet the high stand
   - [Malware Test](https://woocommerce.github.io/qit-documentation/#/test-types/malware)
   - _Performance Tests (Work-in-progress)_
   - _Custom E2E Tests (Work-in-progress)_
-- Support for GitHub integration
-- Beautiful test reports
-- Configurable PHP version, WordPress version, WooCommerce version, and more
-- See all PHP notices, warnings, and errors that happens during the test
-- Support for tests with different WooCommerce feature flags
-- Support for activating additional WordPress plugins for compatibility testing
-- Support for testing with unreleased development builds, or published stable versions
-- Support for test result notifications
+
+- **Configurable Environment**: Configurable PHP, WordPress, WooCommerce versions, and more.
+- **In-Depth Analysis**: Tracks all PHP notices, warnings, and errors during testing.
+- **Feature Flags**: Supports various WooCommerce feature flags for extended coverage.
+- **Compatibility Testing**: Support activation of additional WordPress plugins for compatibility testing.
+- **Development & Stable Versions**: Test with both development builds and published stable versions.
+- **GitHub Integration**: Integrate QIT into your PR reviews with GitHub Actions.
+- **Test Reports**: Detailed test reports to help you understand the results.
+- **Notifications**: Stay informed with test result notifications.
 
 <p align="center">
   <img src="https://github.com/woocommerce/qit-cli/assets/9341686/640698a7-01c3-498a-8bb2-7c5e337e0a9c" alt="Qit Quick Demo">
