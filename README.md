@@ -27,7 +27,6 @@ Official tool to streamline the testing of plugins and themes, ensuring they mee
   - [Malware Test](https://woocommerce.github.io/qit-documentation/#/test-types/malware)
   - _Performance Tests (Work-in-progress)_
   - _Custom E2E Tests (Work-in-progress)_
-
 - **Configurable Environment**: Configurable PHP, WordPress, WooCommerce versions, and more.
 - **In-Depth Analysis**: Tracks all PHP notices, warnings, and errors during testing.
 - **Feature Flags**: Supports various WooCommerce feature flags for extended coverage.
