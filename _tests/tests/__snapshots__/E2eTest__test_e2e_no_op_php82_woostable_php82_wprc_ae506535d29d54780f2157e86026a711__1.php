@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 64 passed, 64 total | Tests: 3 skipped, 0 failed, 247 passed, 250 total.",
+            "test_summary": "Test Suites: 0 skipped, 1 failed, 68 passed, 69 total | Tests: 6 skipped, 1 failed, 254 passed, 261 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,14 +41,14 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 64,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 68,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 64,
-                "numFailedTests": 0,
-                "numPassedTests": 247,
-                "numPendingTests": 3,
-                "numTotalTests": 250,
+                "numTotalTestSuites": 69,
+                "numFailedTests": 1,
+                "numPassedTests": 254,
+                "numPendingTests": 6,
+                "numTotalTests": 261,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -82,7 +82,7 @@
                     },
                     {
                         "file": "admin-analytics\\/analytics-data.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Analytics-related tests": [
@@ -105,6 +105,10 @@
                                 {
                                     "title": "set custom date range on revenue report",
                                     "status": "passed"
+                                },
+                                {
+                                    "title": "use advanced filters on orders report",
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "analytics settings",
@@ -209,6 +213,19 @@
                             "Coupons page": [
                                 {
                                     "title": "A user can view the coupons overview without it crashing",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "admin-marketing\\/overview.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Marketing page": [
+                                {
+                                    "title": "A user can view the Marketing > Overview page without it crashing",
                                     "status": "passed"
                                 }
                             ]
@@ -328,6 +345,19 @@
                         }
                     },
                     {
+                        "file": "merchant\\/create-coupon.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Add New Coupon Page": [
+                                {
+                                    "title": "can create new coupon",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/create-order.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -389,6 +419,14 @@
                         "has_pending": false,
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
+                                {
+                                    "title": "add shipping zone for Mayne Island with free Local pickup",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "add shipping zone for British Columbia with Free shipping",
+                                    "status": "passed"
+                                },
                                 {
                                     "title": "add shipping zone for Canada with Flat rate",
                                     "status": "passed"
@@ -957,6 +995,27 @@
                         }
                     },
                     {
+                        "file": "merchant\\/products\\/block-editor\\/disable-block-product-editor.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Disable block product editor": [
+                                {
+                                    "title": "is hooked up to sidebar \\"Add New\\"",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can be disabled from the header",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "can be disabled from settings",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/products\\/block-editor\\/enable-block-product-editor.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1476,6 +1535,19 @@
                         }
                     },
                     {
+                        "file": "shopper\\/order-email-receiving.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Shopper Order Email Receiving": [
+                                {
+                                    "title": "should receive order email after purchasing an item",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "shopper\\/product-grouped.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1651,6 +1723,23 @@
                         }
                     },
                     {
+                        "file": "smoke-tests\\/update-woocommerce.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "WooCommerce update": [
+                                {
+                                    "title": "can update WooCommerce to \\"undefined\\"",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "can run the database update",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "smoke-tests\\/upload-plugin.spec.js",
                         "status": "passed",
                         "has_pending": true,
@@ -1664,7 +1753,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 64 passed, 64 total | Tests: 3 skipped, 0 failed, 247 passed, 250 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 68 passed, 69 total | Tests: 6 skipped, 1 failed, 254 passed, 261 total."
             }
         },
         {
