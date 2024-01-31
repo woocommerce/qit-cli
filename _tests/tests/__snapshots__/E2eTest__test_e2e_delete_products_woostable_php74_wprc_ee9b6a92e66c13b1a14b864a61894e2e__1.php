@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 4 failed, 60 passed, 64 total | Tests: 204 skipped, 7 failed, 39 passed, 250 total.",
+            "test_summary": "Test Suites: 0 skipped, 4 failed, 65 passed, 69 total | Tests: 213 skipped, 7 failed, 41 passed, 261 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -42,13 +42,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 4,
-                "numPassedTestSuites": 60,
+                "numPassedTestSuites": 65,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 64,
+                "numTotalTestSuites": 69,
                 "numFailedTests": 7,
-                "numPassedTests": 39,
-                "numPendingTests": 204,
-                "numTotalTests": 250,
+                "numPassedTests": 41,
+                "numPendingTests": 213,
+                "numTotalTests": 261,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -104,6 +104,10 @@
                                 },
                                 {
                                     "title": "set custom date range on revenue report",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "use advanced filters on orders report",
                                     "status": "pending"
                                 },
                                 {
@@ -209,6 +213,19 @@
                             "Coupons page": [
                                 {
                                     "title": "A user can view the coupons overview without it crashing",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "admin-marketing\\/overview.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Marketing page": [
+                                {
+                                    "title": "A user can view the Marketing > Overview page without it crashing",
                                     "status": "passed"
                                 }
                             ]
@@ -328,6 +345,19 @@
                         }
                     },
                     {
+                        "file": "merchant\\/create-coupon.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Add New Coupon Page": [
+                                {
+                                    "title": "can create new coupon",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/create-order.spec.js",
                         "status": "failed",
                         "has_pending": true,
@@ -386,9 +416,17 @@
                     {
                         "file": "merchant\\/create-shipping-zones.spec.js",
                         "status": "failed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
+                                {
+                                    "title": "add shipping zone for Mayne Island with free Local pickup",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "add shipping zone for British Columbia with Free shipping",
+                                    "status": "pending"
+                                },
                                 {
                                     "title": "add shipping zone for Canada with Flat rate",
                                     "status": "passed"
@@ -957,6 +995,27 @@
                         }
                     },
                     {
+                        "file": "merchant\\/products\\/block-editor\\/disable-block-product-editor.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Disable block product editor": [
+                                {
+                                    "title": "is hooked up to sidebar \\"Add New\\"",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "can be disabled from the header",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "can be disabled from settings",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/products\\/block-editor\\/enable-block-product-editor.spec.js",
                         "status": "passed",
                         "has_pending": true,
@@ -1476,6 +1535,19 @@
                         }
                     },
                     {
+                        "file": "shopper\\/order-email-receiving.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Shopper Order Email Receiving": [
+                                {
+                                    "title": "should receive order email after purchasing an item",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "shopper\\/product-grouped.spec.js",
                         "status": "passed",
                         "has_pending": true,
@@ -1651,6 +1723,23 @@
                         }
                     },
                     {
+                        "file": "smoke-tests\\/update-woocommerce.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "WooCommerce update": [
+                                {
+                                    "title": "can update WooCommerce to \\"undefined\\"",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "can run the database update",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "smoke-tests\\/upload-plugin.spec.js",
                         "status": "passed",
                         "has_pending": true,
@@ -1664,7 +1753,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 4 failed, 60 passed, 64 total | Tests: 204 skipped, 7 failed, 39 passed, 250 total."
+                "summary": "Test Suites: 0 skipped, 4 failed, 65 passed, 69 total | Tests: 213 skipped, 7 failed, 41 passed, 261 total."
             }
         },
         {
