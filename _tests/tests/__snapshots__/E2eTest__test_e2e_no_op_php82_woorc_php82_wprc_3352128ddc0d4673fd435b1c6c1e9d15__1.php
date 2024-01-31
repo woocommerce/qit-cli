@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 3 failed, 72 passed, 75 total | Tests: 11 skipped, 3 failed, 282 passed, 296 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 75 passed, 75 total | Tests: 14 skipped, 0 failed, 282 passed, 296 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,13 +41,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 3,
-                "numPassedTestSuites": 72,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 75,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 75,
-                "numFailedTests": 3,
+                "numFailedTests": 0,
                 "numPassedTests": 282,
-                "numPendingTests": 11,
+                "numPendingTests": 14,
                 "numTotalTests": 296,
                 "testResults": [
                     {
@@ -1260,8 +1260,8 @@
                     },
                     {
                         "file": "shopper\\/cart-checkout-block-calculate-tax.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Shopper Cart & Checkout Block Tax Display": [
                                 {
@@ -1304,7 +1304,7 @@
                             "Shipping Cart & Checkout Block Tax": [
                                 {
                                     "title": "that tax is applied in Cart Block to shipping as well as order",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1480,8 +1480,8 @@
                     },
                     {
                         "file": "shopper\\/checkout-block.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Checkout Block page": [
                                 {
@@ -1510,7 +1510,7 @@
                                 },
                                 {
                                     "title": "can choose different shipping types in the checkout",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
@@ -1859,8 +1859,8 @@
                     },
                     {
                         "file": "shopper\\/tax\\/checkout-calculate-tax.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Tax rates in the cart and checkout": [],
                             "Tax rates in the cart and checkout > Shopper Tax Display Tests": [
@@ -1900,7 +1900,7 @@
                             "Tax rates in the cart and checkout > Shipping Tax": [
                                 {
                                     "title": "checks that tax is applied to shipping as well as order",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1949,7 +1949,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 3 failed, 72 passed, 75 total | Tests: 11 skipped, 3 failed, 282 passed, 296 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 75 passed, 75 total | Tests: 14 skipped, 0 failed, 282 passed, 296 total."
             }
         },
         {
