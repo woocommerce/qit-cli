@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 4 failed, 65 passed, 69 total | Tests: 211 skipped, 7 failed, 43 passed, 261 total.",
+            "test_summary": "Test Suites: 0 skipped, 4 failed, 65 passed, 69 total | Tests: 212 skipped, 6 failed, 43 passed, 261 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,9 +45,9 @@
                 "numPassedTestSuites": 65,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 69,
-                "numFailedTests": 7,
+                "numFailedTests": 6,
                 "numPassedTests": 43,
-                "numPendingTests": 211,
+                "numPendingTests": 212,
                 "numTotalTests": 261,
                 "testResults": [
                     {
@@ -416,7 +416,7 @@
                     {
                         "file": "merchant\\/create-shipping-zones.spec.js",
                         "status": "failed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
@@ -451,7 +451,7 @@
                                 },
                                 {
                                     "title": "allows customer to pay for a Flat rate shipping method",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1753,7 +1753,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 4 failed, 65 passed, 69 total | Tests: 211 skipped, 7 failed, 43 passed, 261 total."
+                "summary": "Test Suites: 0 skipped, 4 failed, 65 passed, 69 total | Tests: 212 skipped, 6 failed, 43 passed, 261 total."
             }
         },
         {

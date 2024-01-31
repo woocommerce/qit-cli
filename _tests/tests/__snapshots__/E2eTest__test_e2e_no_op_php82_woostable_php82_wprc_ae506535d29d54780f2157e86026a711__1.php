@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 1 failed, 68 passed, 69 total | Tests: 6 skipped, 1 failed, 254 passed, 261 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 69 passed, 69 total | Tests: 7 skipped, 0 failed, 254 passed, 261 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,13 +41,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 68,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 69,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 69,
-                "numFailedTests": 1,
+                "numFailedTests": 0,
                 "numPassedTests": 254,
-                "numPendingTests": 6,
+                "numPendingTests": 7,
                 "numTotalTests": 261,
                 "testResults": [
                     {
@@ -82,8 +82,8 @@
                     },
                     {
                         "file": "admin-analytics\\/analytics-data.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Analytics-related tests": [
                                 {
@@ -108,7 +108,7 @@
                                 },
                                 {
                                     "title": "use advanced filters on orders report",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "analytics settings",
@@ -1753,7 +1753,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 68 passed, 69 total | Tests: 6 skipped, 1 failed, 254 passed, 261 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 69 passed, 69 total | Tests: 7 skipped, 0 failed, 254 passed, 261 total."
             }
         },
         {
