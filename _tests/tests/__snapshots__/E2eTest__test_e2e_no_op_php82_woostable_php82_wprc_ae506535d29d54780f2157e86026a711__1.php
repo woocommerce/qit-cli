@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 69 passed, 69 total | Tests: 7 skipped, 0 failed, 254 passed, 261 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 69 passed, 69 total | Tests: 9 skipped, 0 failed, 252 passed, 261 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -46,8 +46,8 @@
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 69,
                 "numFailedTests": 0,
-                "numPassedTests": 254,
-                "numPendingTests": 7,
+                "numPassedTests": 252,
+                "numPendingTests": 9,
                 "numTotalTests": 261,
                 "testResults": [
                     {
@@ -416,16 +416,16 @@
                     {
                         "file": "merchant\\/create-shipping-zones.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
                                     "title": "add shipping zone for Mayne Island with free Local pickup",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "add shipping zone for British Columbia with Free shipping",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "add shipping zone for Canada with Flat rate",
@@ -1753,7 +1753,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 69 passed, 69 total | Tests: 7 skipped, 0 failed, 254 passed, 261 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 69 passed, 69 total | Tests: 9 skipped, 0 failed, 252 passed, 261 total."
             }
         },
         {

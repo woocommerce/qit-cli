@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 4 failed, 65 passed, 69 total | Tests: 212 skipped, 6 failed, 43 passed, 261 total.",
+            "test_summary": "Test Suites: 0 skipped, 4 failed, 65 passed, 69 total | Tests: 213 skipped, 7 failed, 41 passed, 261 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,9 +45,9 @@
                 "numPassedTestSuites": 65,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 69,
-                "numFailedTests": 6,
-                "numPassedTests": 43,
-                "numPendingTests": 212,
+                "numFailedTests": 7,
+                "numPassedTests": 41,
+                "numPendingTests": 213,
                 "numTotalTests": 261,
                 "testResults": [
                     {
@@ -421,11 +421,11 @@
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
                                     "title": "add shipping zone for Mayne Island with free Local pickup",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "add shipping zone for British Columbia with Free shipping",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "add shipping zone for Canada with Flat rate",
@@ -451,7 +451,7 @@
                                 },
                                 {
                                     "title": "allows customer to pay for a Flat rate shipping method",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -1753,7 +1753,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 4 failed, 65 passed, 69 total | Tests: 212 skipped, 6 failed, 43 passed, 261 total."
+                "summary": "Test Suites: 0 skipped, 4 failed, 65 passed, 69 total | Tests: 213 skipped, 7 failed, 41 passed, 261 total."
             }
         },
         {
