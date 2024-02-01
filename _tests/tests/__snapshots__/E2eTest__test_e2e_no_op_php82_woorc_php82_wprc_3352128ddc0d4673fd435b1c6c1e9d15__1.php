@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 75 passed, 75 total | Tests: 14 skipped, 0 failed, 282 passed, 296 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 74 passed, 74 total | Tests: 14 skipped, 0 failed, 275 passed, 289 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -42,13 +42,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 75,
+                "numPassedTestSuites": 74,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 75,
+                "numTotalTestSuites": 74,
                 "numFailedTests": 0,
-                "numPassedTests": 282,
+                "numPassedTests": 275,
                 "numPendingTests": 14,
-                "numTotalTests": 296,
+                "numTotalTests": 289,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -98,43 +98,6 @@
                             "Store owner can login and make sure WooCommerce is activated": [
                                 {
                                     "title": "can make sure WooCommerce is activated.",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "admin-analytics\\/analytics-data.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Analytics-related tests": [
-                                {
-                                    "title": "confirms correct summary numbers on overview page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "downloads revenue report as CSV",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "use date filter on overview page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "use date filter on revenue report",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "set custom date range on revenue report",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "use advanced filters on orders report",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "analytics settings",
                                     "status": "passed"
                                 }
                             ]
@@ -1949,7 +1912,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 75 passed, 75 total | Tests: 14 skipped, 0 failed, 282 passed, 296 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 74 passed, 74 total | Tests: 14 skipped, 0 failed, 275 passed, 289 total."
             }
         },
         {
@@ -1957,10 +1920,6 @@
                 {
                     "count": "3",
                     "message": "PHP Deprecated: strlen(): Passing null to parameter #1 ($string) of type string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/formatting.php on line 3771"
-                },
-                {
-                    "count": "4",
-                    "message": "The Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options::update_options function is deprecated since version 6.3."
                 }
             ]
         }

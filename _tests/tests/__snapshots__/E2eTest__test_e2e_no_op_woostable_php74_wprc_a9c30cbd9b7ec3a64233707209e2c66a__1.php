@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 69 passed, 69 total | Tests: 9 skipped, 0 failed, 252 passed, 261 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 68 passed, 68 total | Tests: 8 skipped, 0 failed, 246 passed, 254 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -42,13 +42,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 69,
+                "numPassedTestSuites": 68,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 69,
+                "numTotalTestSuites": 68,
                 "numFailedTests": 0,
-                "numPassedTests": 252,
-                "numPendingTests": 9,
-                "numTotalTests": 261,
+                "numPassedTests": 246,
+                "numPendingTests": 8,
+                "numTotalTests": 254,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -75,43 +75,6 @@
                             "Store owner can login and make sure WooCommerce is activated": [
                                 {
                                     "title": "can make sure WooCommerce is activated.",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "admin-analytics\\/analytics-data.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Analytics-related tests": [
-                                {
-                                    "title": "confirms correct summary numbers on overview page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "downloads revenue report as CSV",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "use date filter on overview page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "use date filter on revenue report",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "set custom date range on revenue report",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "use advanced filters on orders report",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "analytics settings",
                                     "status": "passed"
                                 }
                             ]
@@ -1753,7 +1716,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 69 passed, 69 total | Tests: 9 skipped, 0 failed, 252 passed, 261 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 68 passed, 68 total | Tests: 8 skipped, 0 failed, 246 passed, 254 total."
             }
         },
         {
