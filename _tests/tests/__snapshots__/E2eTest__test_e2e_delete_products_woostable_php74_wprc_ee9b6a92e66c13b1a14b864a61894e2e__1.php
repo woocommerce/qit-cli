@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 4 failed, 65 passed, 69 total | Tests: 213 skipped, 7 failed, 41 passed, 261 total.",
+            "test_summary": "Test Suites: 0 skipped, 4 failed, 64 passed, 68 total | Tests: 206 skipped, 7 failed, 41 passed, 254 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -42,13 +42,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 4,
-                "numPassedTestSuites": 65,
+                "numPassedTestSuites": 64,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 69,
+                "numTotalTestSuites": 68,
                 "numFailedTests": 7,
                 "numPassedTests": 41,
-                "numPendingTests": 213,
-                "numTotalTests": 261,
+                "numPendingTests": 206,
+                "numTotalTests": 254,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -76,43 +76,6 @@
                                 {
                                     "title": "can make sure WooCommerce is activated.",
                                     "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "admin-analytics\\/analytics-data.spec.js",
-                        "status": "failed",
-                        "has_pending": true,
-                        "tests": {
-                            "Analytics-related tests": [
-                                {
-                                    "title": "confirms correct summary numbers on overview page",
-                                    "status": "failed"
-                                },
-                                {
-                                    "title": "downloads revenue report as CSV",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "use date filter on overview page",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "use date filter on revenue report",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "set custom date range on revenue report",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "use advanced filters on orders report",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "analytics settings",
-                                    "status": "pending"
                                 }
                             ]
                         }
@@ -458,13 +421,13 @@
                     },
                     {
                         "file": "merchant\\/create-simple-product.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "Add New Simple Product Page": [
                                 {
                                     "title": "can create simple virtual product",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can have a shopper add the simple virtual product to the cart",
@@ -1753,11 +1716,28 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 4 failed, 65 passed, 69 total | Tests: 213 skipped, 7 failed, 41 passed, 261 total."
+                "summary": "Test Suites: 0 skipped, 4 failed, 64 passed, 68 total | Tests: 206 skipped, 7 failed, 41 passed, 254 total."
             }
         },
         {
-            "debug_log": []
+            "debug_log": [
+                {
+                    "count": "Less than 10",
+                    "message": "PHP Notice: Function map_meta_cap was called incorrectly. When checking for the edit_post capability, you must always check it against a specific post. Please see Debugging in WordPress for more information. (This message was added in version 6.1.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6031"
+                },
+                {
+                    "count": "Less than 10",
+                    "message": "PHP Notice: Trying to get property \'ID\' of non-object in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 2132"
+                },
+                {
+                    "count": "Less than 10",
+                    "message": "PHP Notice: Trying to get property \'post_mime_type\' of non-object in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 273"
+                },
+                {
+                    "count": "Less than 10",
+                    "message": "PHP Notice: Trying to get property \'post_type\' of non-object in \\/var\\/www\\/html\\/wp-admin\\/includes\\/post.php on line 272"
+                }
+            ]
         }
     ]
 ]';
