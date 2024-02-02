@@ -113,6 +113,15 @@ class QITE2ETestCase extends TestCase {
 						return $value;
 					}
 
+					if ( stripos( $file_path, 'e2e/delete_products' ) !== false ) {
+						return [
+							[
+								'count'   => '0',
+								'message' => 'Debug log is ignored for e2e/delete_products tests.',
+							],
+						];
+					}
+
 					$normalized_debug_log = [];
 
                     /*
