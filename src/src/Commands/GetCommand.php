@@ -32,6 +32,7 @@ class GetCommand extends Command {
 				->with_post_body( [
 					'test_run_id' => $input->getArgument( 'test_run_id' ),
 				] )
+				->with_retry( 3 )
 				->request();
 		} catch ( \Exception $e ) {
 			$output->writeln( "<error>{$e->getMessage()}</error>" );
