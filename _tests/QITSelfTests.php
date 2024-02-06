@@ -17,8 +17,9 @@ use Symfony\Component\Process\Process;
 
 class Context {
 	public static $action;
-	public static $suite;
-	public static $test;
+	public static $test_types;
+	public static $scenarios;
+	public static $env_filters;
 	public static $debug_mode;
 
 	public static $to_delete = [];
@@ -39,11 +40,43 @@ if ( ( $debugKey = array_search( '--debug', $params, true ) ) !== false ) {
 }
 
 Context::$action = $params[1] ?? 'run';
-Context::$suite  = $params[2] ?? null;
-Context::$test   = $params[3] ?? null;
+
+# Comma-separated list of test-types to run, eg: e2e,api
+if ( isset( $params[2] ) ) {
+	Context::$test_types = array_map( 'trim', explode( ',', $params[2] ) );
+} else {
+	Context::$test_types = null;
+}
+
+# Comma-separated list of scenarios to run, eg: no_op,no_op_php82,delete_products
+if ( isset( $params[3] ) ) {
+	Context::$scenarios = array_map( 'trim', explode( ',', $params[3] ) );
+} else {
+	Context::$scenarios = null;
+}
+
+Context::$env_filters = [];
+
+foreach (
+	// Check for "--env_filter=<KEY>=<VALUE>"
+	array_filter( $params, static function ( $param ) {
+		return strpos( $param, '--env_filter=' ) === 0;
+	} ) as $env_filter
+) {
+	// Remove the '--env_filter=' prefix and then split the remaining string by '='
+	[ $key, $value ] = explode( '=', substr( $env_filter, 13 ), 2 );
+
+	if ( array_key_exists( $key, Context::$env_filters ) ) {
+		echo "Duplicate key '{$key}' found in env filters.";
+		die( 1 );
+	}
+
+	Context::$env_filters[ $key ] = $value;
+}
 
 require_once __DIR__ . '/test-result-parser.php';
 require_once __DIR__ . '/ParallelOutput.php';
+require_once __DIR__ . '/ProcessManager.php';
 
 register_shutdown_function( function () {
 	$to_delete = array_unique( Context::$to_delete );
@@ -65,11 +98,9 @@ try {
 
 	$test_types = get_test_types();
 
-	if ( ! is_null( Context::$suite ) ) {
-		$suites = explode( ',', Context::$suite );
-
-		$test_types = array_filter( $test_types, function ( $test_type_path ) use ( $suites ) {
-			return in_array( basename( $test_type_path ), $suites );
+	if ( ! is_null( Context::$test_types ) ) {
+		$test_types = array_filter( $test_types, function ( $test_type_path ) {
+			return in_array( basename( $test_type_path ), Context::$test_types, true );
 		} );
 	}
 
@@ -80,7 +111,7 @@ try {
 	}
 
 	if ( empty( $test_types ) ) {
-		throw new Exception( 'No test suites found.' );
+		throw new Exception( 'No test types found.' );
 	}
 
 	run_test_runs( generate_test_runs( $test_types ) );
@@ -153,9 +184,9 @@ function generate_test_runs( array $test_types ): array {
 		$tests_to_run[ basename( $test_type ) ] = [];
 		foreach ( get_tests_in_test_type( $test_type ) as $test ) {
 			// If we defined a single test to run, skip those that are not it.
-			if ( ! is_null( Context::$test ) ) {
-				if ( basename( $test ) !== Context::$test ) {
-					$GLOBALS['parallelOutput']->addRawOutput( sprintf( "Skipping %s, running only %s\n", basename( $test ), Context::$test ) );
+			if ( ! is_null( Context::$scenarios ) ) {
+				if ( ! in_array( basename( $test ), Context::$scenarios ) ) {
+					$GLOBALS['parallelOutput']->addRawOutput( sprintf( "Skipping %s, running only %s\n", basename( $test ), implode( ',', Context::$scenarios ) ) );
 					continue;
 				}
 			}
@@ -172,6 +203,32 @@ function generate_test_runs( array $test_types ): array {
 						$sut_slug = Context::$extension_slug;
 					} else {
 						$sut_slug = Context::$theme_slug;
+					}
+
+					if ( ! empty( Context::$env_filters ) ) {
+						$env_matches = true;
+						foreach ( Context::$env_filters as $key => $value ) {
+							if ( ! isset( $env[ $key ] ) ) {
+								$env_matches = false;
+								break;
+							}
+
+							switch ( $key ) {
+								case 'woo':
+									$env_matches = $value === $woo_version;
+									break;
+								case 'php':
+									$env_matches = $value === $php_version;
+									break;
+								default:
+									$env_matches = $value === $env[ $key ];
+									break;
+							}
+						}
+						if ( ! $env_matches ) {
+							$GLOBALS['parallelOutput']->addRawOutput( sprintf( "Skipping %s, does not match env filters\n", basename( $test ) ) );
+							continue;
+						}
 					}
 
 					$tests_to_run[ basename( $test_type ) ][] = [
