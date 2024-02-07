@@ -76,7 +76,6 @@ foreach (
 
 require_once __DIR__ . '/test-result-parser.php';
 require_once __DIR__ . '/ParallelOutput.php';
-require_once __DIR__ . '/ProcessManager.php';
 
 register_shutdown_function( function () {
 	$to_delete = array_unique( Context::$to_delete );
