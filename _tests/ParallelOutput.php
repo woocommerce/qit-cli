@@ -46,7 +46,11 @@ class ParallelOutput {
 			$this->displayBufferedOutputs();
 		}
 
-		$this->updateProcessStatus( $process, $out ); // You need to implement this method
+		if ( \PHP_VERSION_ID >= 80300 ) {
+			// This can break on PHP less than 8.3 until this is merged:
+			// https://github.com/symfony/symfony/pull/53821
+			$this->updateProcessStatus( $process, $out );
+		}
 	}
 
 	protected function updateProcessStatus( Process $process, $output ) {
