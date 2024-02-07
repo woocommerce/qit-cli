@@ -223,7 +223,12 @@ function generate_test_runs( array $test_types ): array {
 									$env_matches = $value === $env[ $key ];
 									break;
 							}
+
+							if ( ! $env_matches ) {
+								break;
+							}
 						}
+
 						if ( ! $env_matches ) {
 							$GLOBALS['parallelOutput']->addRawOutput( sprintf( "Skipping %s, does not match env filters\n", basename( $test ) ) );
 							continue;
