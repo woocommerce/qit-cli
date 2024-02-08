@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 74 passed, 74 total | Tests: 15 skipped, 0 failed, 274 passed, 289 total.",
+            "test_summary": "Test Suites: 0 skipped, 1 failed, 73 passed, 74 total | Tests: 14 skipped, 1 failed, 274 passed, 289 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,13 +41,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 74,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 73,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 74,
-                "numFailedTests": 0,
+                "numFailedTests": 1,
                 "numPassedTests": 274,
-                "numPendingTests": 15,
+                "numPendingTests": 14,
                 "numTotalTests": 289,
                 "testResults": [
                     {
@@ -1518,8 +1518,8 @@
                     },
                     {
                         "file": "shopper\\/checkout.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
+                        "status": "failed",
+                        "has_pending": false,
                         "tests": {
                             "Checkout page": [
                                 {
@@ -1544,7 +1544,7 @@
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "allows existing customer to place order",
@@ -1912,7 +1912,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 74 passed, 74 total | Tests: 15 skipped, 0 failed, 274 passed, 289 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 73 passed, 74 total | Tests: 14 skipped, 1 failed, 274 passed, 289 total."
             }
         },
         {
