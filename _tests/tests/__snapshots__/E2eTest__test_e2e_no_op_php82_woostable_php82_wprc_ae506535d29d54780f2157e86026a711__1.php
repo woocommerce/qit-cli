@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 1 failed, 67 passed, 68 total | Tests: 8 skipped, 1 failed, 245 passed, 254 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 68 passed, 68 total | Tests: 9 skipped, 0 failed, 245 passed, 254 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,13 +41,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 67,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 68,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 68,
-                "numFailedTests": 1,
+                "numFailedTests": 0,
                 "numPassedTests": 245,
-                "numPendingTests": 8,
+                "numPendingTests": 9,
                 "numTotalTests": 254,
                 "testResults": [
                     {
@@ -1276,8 +1276,8 @@
                     },
                     {
                         "file": "shopper\\/checkout-coupons.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Checkout coupons": [
                                 {
@@ -1298,7 +1298,7 @@
                                 },
                                 {
                                     "title": "allows checkout to apply multiple coupons",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "restores checkout total when coupons are removed",
@@ -1716,7 +1716,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 67 passed, 68 total | Tests: 8 skipped, 1 failed, 245 passed, 254 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 68 passed, 68 total | Tests: 9 skipped, 0 failed, 245 passed, 254 total."
             }
         },
         {
