@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 74 passed, 74 total | Tests: 14 skipped, 0 failed, 275 passed, 289 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 74 passed, 74 total | Tests: 15 skipped, 0 failed, 274 passed, 289 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -46,8 +46,8 @@
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 74,
                 "numFailedTests": 0,
-                "numPassedTests": 275,
-                "numPendingTests": 14,
+                "numPassedTests": 274,
+                "numPendingTests": 15,
                 "numTotalTests": 289,
                 "testResults": [
                     {
@@ -1519,7 +1519,7 @@
                     {
                         "file": "shopper\\/checkout.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Checkout page": [
                                 {
@@ -1544,7 +1544,7 @@
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows existing customer to place order",
@@ -1912,16 +1912,11 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 74 passed, 74 total | Tests: 14 skipped, 0 failed, 275 passed, 289 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 74 passed, 74 total | Tests: 15 skipped, 0 failed, 274 passed, 289 total."
             }
         },
         {
-            "debug_log": [
-                {
-                    "count": "3",
-                    "message": "PHP Deprecated: strlen(): Passing null to parameter #1 ($string) of type string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/formatting.php on line 3771"
-                }
-            ]
+            "debug_log": []
         }
     ]
 ]';
