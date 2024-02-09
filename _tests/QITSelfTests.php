@@ -41,7 +41,7 @@ if ( ( $debugKey = array_search( '--debug', $params, true ) ) !== false ) {
 
 Context::$action = $params[1] ?? 'run';
 
-# Comma-separated list of test-types to run, eg: e2e,api
+# Comma-separated list of test-types to run, eg: woo-e2e,woo-api
 if ( isset( $params[2] ) ) {
 	Context::$test_types = array_map( 'trim', explode( ',', $params[2] ) );
 } else {
@@ -105,7 +105,7 @@ try {
 
 	if ( getenv( 'QIT_SKIP_E2E' ) === 'yes' ) {
 		$test_types = array_filter( $test_types, function ( $test_type_path ) {
-			return basename( $test_type_path ) !== 'e2e';
+			return basename( $test_type_path ) !== 'woo-e2e';
 		} );
 	}
 
