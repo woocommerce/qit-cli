@@ -306,6 +306,24 @@ class CreateRunCommands extends DynamicCommandCreator {
 
 		$command->add_option_to_send( 'zip' );
 
+		if ( $test_type === 'api' ) {
+			$command->setHidden( true );
+		}
+
+		// This will be hidden while custom test type is in development, but kept as an alias to "woo-e2e".
+		if ( $test_type === 'e2e' ) {
+			try {
+				$hide_e2e = $this->environment->get_cache()->get_manager_sync_data( 'hide_e2e' );
+			} catch ( \Exception $e ) {
+				// If it throws it's because it's not set, so we hide it.
+				$hide_e2e = true;
+			}
+
+			if ( $hide_e2e ) {
+				$command->setHidden( true );
+			}
+		}
+
 		$application->add( $command );
 	}
 }
