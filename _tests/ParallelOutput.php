@@ -16,7 +16,7 @@ class ParallelOutput {
 		$this->processStatus = [];
 		$this->startTimes    = [];
 		$this->nonJsonOutput = [];
-		register_shutdown_function( [ $this, 'onShutdown' ] );
+		register_shutdown_function( [ $this, 'displayBufferedOutputs' ] );
 	}
 
 	public function addRawOutput( string $output ) {
@@ -94,30 +94,6 @@ class ParallelOutput {
 		echo "\n\033[1;32mSummary Section:\033[0m\n"; // Green for summary section header
 		foreach ( $this->processStatus as $status ) {
 			echo "$status\n";
-		}
-	}
-
-	public function onShutdown() {
-		if ( getenv( "CI" ) ) {
-			echo $this->rawOutput . "\n";
-
-			// Print the accumulated output for each task in CI environment
-			foreach ( $this->outputBuffer as $taskId => $output ) {
-				echo "\033[1;33m" . $this->headers[ $taskId ] . "\033[0m\n"; // Yellow for headers
-				echo $output . "\n"; // Print the accumulated output
-
-				if ( ! empty( $this->nonJsonOutput[ $taskId ] ) && file_exists( $this->nonJsonOutput[ $taskId ] ) ) {
-					echo file_get_contents( $this->nonJsonOutput[ $taskId ] ) . "\n";
-				} else {
-					echo "No non-json output file found for task $taskId\n";
-				}
-			}
-
-			// Print the summary section
-			echo "\n\033[1;32mSummary Section:\033[0m\n"; // Green for summary section header
-			foreach ( $this->processStatus as $status ) {
-				echo "$status\n";
-			}
 		}
 	}
 }
