@@ -345,6 +345,7 @@ function run_test_runs( array $test_runs ) {
 
 			$normalized_t = $t;
 			unset( $normalized_t['path'] );
+			$normalized_t['type'] = str_replace( '-', '_', $normalized_t['type'] );
 
 			/*
 			 * Here we need a unique name that is human-readable, so that we can easily identify the test in the output.
@@ -352,7 +353,7 @@ function run_test_runs( array $test_runs ) {
 			 */
 			$t['test_function_name'] = sprintf(
 				'test_%s_%s_woo%s_php%s_wp%s_%s',
-				$t['type'],
+				$normalized_t['type'],
 				$t['slug'],
 				str_replace( '.', '', $t['woo'] ),
 				str_replace( '.', '', $t['php'] ),
@@ -473,6 +474,10 @@ function make_test_result_json_filepath( Process $process ): string {
 	return sprintf( '%s/%s', $process->getEnv()['QIT_TEST_PATH'], make_test_result_json_filename( $process ) );
 }
 
+function generate_test_file_name( string $test_type ) {
+	return ucfirst( str_replace( '-', '', $test_type ) ) . 'Test.php';
+}
+
 function handle_qit_response( Process $qit_process, string $out, array &$failed_tests ): void {
 	$result = json_decode( $out, true );
 
@@ -502,7 +507,7 @@ function handle_qit_response( Process $qit_process, string $out, array &$failed_
 	//php ./vendor/bin/phpunit tests/ActivationTest.php --filter=test_php81_activation -d --update-snapshots
 	$args = [
 		__DIR__ . '/vendor/bin/phpunit',
-		__DIR__ . '/tests/' . ucfirst( $qit_process->getEnv()['QIT_TEST_TYPE'] ) . 'Test.php',
+		__DIR__ . '/tests/' . generate_test_file_name( $qit_process->getEnv()['QIT_TEST_TYPE'] ),
 		/*
 		 * Match a single test method by regex.
 		 * Example test method: TestNamespace\TestCaseClass::testMethod
@@ -538,8 +543,8 @@ function handle_qit_response( Process $qit_process, string $out, array &$failed_
 }
 
 function generate_phpunit_files( string $test_type, array &$test_runs ): void {
-	$name     = ucfirst( $test_type ) . 'Test';
-	$filepath = __DIR__ . '/tests/' . $name . '.php';
+	$name = str_replace( '.php', '', generate_test_file_name( $test_type ) );
+	$filepath = __DIR__ . '/tests/' . generate_test_file_name( $test_type );
 	$tests    = '';
 
 	foreach ( $test_runs as &$test_run ) {
