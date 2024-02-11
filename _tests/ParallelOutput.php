@@ -72,7 +72,7 @@ class ParallelOutput {
 		return "[$minutes:$seconds] $taskId $status";
 	}
 
-	protected function displayBufferedOutputs() {
+	public function displayBufferedOutputs() {
 		// Clear the terminal screen
 		system( 'clear' );
 
