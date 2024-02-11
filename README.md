@@ -18,8 +18,8 @@ For more detailed information on QIT and how to use it, refer to the [official d
 Official tool to streamline the testing of plugins and themes, ensuring they meet the high standards of the Woo.com Marketplace.
 
 - **Comprehensive Testing Suite**: Includes various tests to ensure thorough quality checks.
-  - [Woo E2E Test](https://woocommerce.github.io/qit-documentation/#/test-types/e2e)
-  - [Woo API Test](https://woocommerce.github.io/qit-documentation/#/test-types/api)
+  - [Woo E2E Test](https://woocommerce.github.io/qit-documentation/#/test-types/woo-e2e)
+  - [Woo API Test](https://woocommerce.github.io/qit-documentation/#/test-types/woo-api)
   - [Activation Test](https://woocommerce.github.io/qit-documentation/#/test-types/activation)
   - [Security Test](https://woocommerce.github.io/qit-documentation/#/test-types/security)
   - [PHPStan Test](https://woocommerce.github.io/qit-documentation/#/test-types/phpstan)

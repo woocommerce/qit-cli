@@ -1,4 +1,4 @@
-name: QIT Self-Tests - API
+name: QIT Self-Tests - Woo API
 
 on:
   # Every day at 11am and 11pm UTC (6am and 6pm ET)
@@ -16,7 +16,7 @@ jobs:
   api_tests:
     uses: ./.github/workflows/self-test-template.yml
     with:
-      test_type: api
+      test_type: woo-api
     secrets:
       QIT_USER: ${{ secrets.QIT_USER }}
       QIT_ACCESS_TOKEN: ${{ secrets.QIT_ACCESS_TOKEN }}
