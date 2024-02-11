@@ -1,4 +1,4 @@
-name: QIT Self-Tests - E2E
+name: QIT Self-Tests - Woo E2E
 
 on:
   # Every day at 11am and 11pm UTC (6am and 6pm ET)
