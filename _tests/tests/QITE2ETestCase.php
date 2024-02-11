@@ -113,11 +113,11 @@ class QITE2ETestCase extends TestCase {
 						return $value;
 					}
 
-					if ( stripos( $file_path, 'e2e/delete_products' ) !== false ) {
+					if ( stripos( $file_path, 'woo-e2e/delete_products' ) !== false ) {
 						return [
 							[
 								'count'   => '0',
-								'message' => 'Debug log is ignored for e2e/delete_products tests.',
+								'message' => 'Debug log is ignored for woo-e2e/delete_products tests.',
 							],
 						];
 					}
@@ -141,7 +141,7 @@ class QITE2ETestCase extends TestCase {
 
 						$debug_log['message'] = str_replace( 'compatibility-dashboard', 'qit-runner', $debug_log['message'] );
 
-						if ( stripos( $file_path, 'api/delete_products' ) !== false ) {
+						if ( stripos( $file_path, 'woo-api/delete_products' ) !== false ) {
 							$pos = stripos( $debug_log['message'], 'Stack Trace:' );
 
 							if ( $pos !== false ) {
@@ -209,8 +209,8 @@ class QITE2ETestCase extends TestCase {
 							}
 						}
 
-						// Handle E2E Delete Products tests with more wiggle room.
-						if ( stripos( $file_path, 'e2e/delete_products' ) !== false ) {
+						// Handle Woo E2E Delete Products tests with more wiggle room.
+						if ( stripos( $file_path, 'woo-e2e/delete_products' ) !== false ) {
 							if ( $debug_log['count'] <= 10 ) {
 								$debug_log['count'] = 'Less than 10';
 							}

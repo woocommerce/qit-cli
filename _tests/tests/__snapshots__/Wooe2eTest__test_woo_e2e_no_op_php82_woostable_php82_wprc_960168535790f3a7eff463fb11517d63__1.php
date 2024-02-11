@@ -3,10 +3,10 @@
         {
             "test_run_id": 123456,
             "run_id": 123456,
-            "test_type": "e2e",
+            "test_type": "woo-e2e",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
-            "php_version": "7.4",
+            "php_version": "8.2",
             "max_php_version": "",
             "min_php_version": "",
             "additional_woo_plugins": [],
@@ -1720,7 +1720,12 @@
             }
         },
         {
-            "debug_log": []
+            "debug_log": [
+                {
+                    "count": "1",
+                    "message": "PHP Deprecated: strlen(): Passing null to parameter #1 ($string) of type string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/formatting.php on line 3771"
+                }
+            ]
         }
     ]
 ]';

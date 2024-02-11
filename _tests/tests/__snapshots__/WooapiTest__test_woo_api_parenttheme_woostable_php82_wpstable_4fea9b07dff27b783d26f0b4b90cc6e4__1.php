@@ -3,7 +3,7 @@
         {
             "test_run_id": 123456,
             "run_id": 123456,
-            "test_type": "api",
+            "test_type": "woo-api",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "8.2",
@@ -18,21 +18,21 @@
             "is_development": true,
             "send_notifications": false,
             "woo_extension": {
-                "id": 18619,
+                "id": 1822936,
                 "host": "wccom",
-                "name": "Google Product Feed",
-                "type": "plugin"
+                "name": "Bistro",
+                "type": "theme"
             },
             "client": "qit_cli",
             "event": "cli_development_extension_test",
             "optional_features": {
-                "hpos": true,
-                "new_product_editor": true
+                "hpos": false,
+                "new_product_editor": false
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
             "test_summary": "Test Suites: 0 skipped, 0 failed, 20 passed, 20 total | Tests: 2 skipped, 0 failed, 255 passed, 257 total.",
-            "version": "Undefined",
+            "version": "1.0.15",
             "update_complete": true,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
@@ -1380,12 +1380,7 @@
             }
         },
         {
-            "debug_log": [
-                {
-                    "count": "550",
-                    "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
-                }
-            ]
+            "debug_log": []
         }
     ]
 ]';

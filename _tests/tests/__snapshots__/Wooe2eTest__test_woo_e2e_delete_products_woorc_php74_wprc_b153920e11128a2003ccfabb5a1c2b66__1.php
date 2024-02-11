@@ -3,7 +3,7 @@
         {
             "test_run_id": 123456,
             "run_id": 123456,
-            "test_type": "e2e",
+            "test_type": "woo-e2e",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "7.4",
@@ -1919,7 +1919,7 @@
             "debug_log": [
                 {
                     "count": "0",
-                    "message": "Debug log is ignored for e2e\\/delete_products tests."
+                    "message": "Debug log is ignored for woo-e2e\\/delete_products tests."
                 }
             ]
         }
