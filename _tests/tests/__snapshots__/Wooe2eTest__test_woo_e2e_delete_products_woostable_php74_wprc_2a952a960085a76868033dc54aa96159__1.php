@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 4 failed, 64 passed, 68 total | Tests: 206 skipped, 7 failed, 41 passed, 254 total.",
+            "test_summary": "Test Suites: 0 skipped, 4 failed, 63 passed, 67 total | Tests: 204 skipped, 7 failed, 36 passed, 247 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -42,13 +42,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 4,
-                "numPassedTestSuites": 64,
+                "numPassedTestSuites": 63,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 68,
+                "numTotalTestSuites": 67,
                 "numFailedTests": 7,
-                "numPassedTests": 41,
-                "numPendingTests": 206,
-                "numTotalTests": 254,
+                "numPassedTests": 36,
+                "numPendingTests": 204,
+                "numTotalTests": 247,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -271,43 +271,6 @@
                         }
                     },
                     {
-                        "file": "merchant\\/command-palette.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
-                        "tests": {
-                            "Use Command Palette commands": [
-                                {
-                                    "title": "can use the \\"Add new product\\" command",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can use the \\"Add new order\\" command",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can use the \\"Products\\" command",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can use the \\"Orders\\" command",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can use the product search command",
-                                    "status": "failed"
-                                },
-                                {
-                                    "title": "can use a settings command",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can use an analytics command",
-                                    "status": "failed"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "merchant\\/create-coupon.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -446,17 +409,17 @@
                     },
                     {
                         "file": "merchant\\/customer-payment-page.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "WooCommerce Merchant Flow: Orders > Customer Payment Page": [
                                 {
                                     "title": "should show the customer payment page link on a pending order",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "should load the customer payment page",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can pay for the order through the customer payment page",
@@ -1716,7 +1679,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 4 failed, 64 passed, 68 total | Tests: 206 skipped, 7 failed, 41 passed, 254 total."
+                "summary": "Test Suites: 0 skipped, 4 failed, 63 passed, 67 total | Tests: 204 skipped, 7 failed, 36 passed, 247 total."
             }
         },
         {

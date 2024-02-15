@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 68 passed, 68 total | Tests: 9 skipped, 0 failed, 245 passed, 254 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 67 passed, 67 total | Tests: 9 skipped, 0 failed, 238 passed, 247 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -42,13 +42,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 68,
+                "numPassedTestSuites": 67,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 68,
+                "numTotalTestSuites": 67,
                 "numFailedTests": 0,
-                "numPassedTests": 245,
+                "numPassedTests": 238,
                 "numPendingTests": 9,
-                "numTotalTests": 254,
+                "numTotalTests": 247,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -266,43 +266,6 @@
                                 {
                                     "title": "Visiting change header should show a list of block patterns to choose from",
                                     "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "merchant\\/command-palette.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Use Command Palette commands": [
-                                {
-                                    "title": "can use the \\"Add new product\\" command",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can use the \\"Add new order\\" command",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can use the \\"Products\\" command",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can use the \\"Orders\\" command",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can use the product search command",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can use a settings command",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can use an analytics command",
-                                    "status": "passed"
                                 }
                             ]
                         }
@@ -1716,7 +1679,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 68 passed, 68 total | Tests: 9 skipped, 0 failed, 245 passed, 254 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 67 passed, 67 total | Tests: 9 skipped, 0 failed, 238 passed, 247 total."
             }
         },
         {
