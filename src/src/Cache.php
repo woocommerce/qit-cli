@@ -8,8 +8,8 @@ class Cache {
 	/** @var array<scalar|array<scalar>> $cache */
 	protected $cache = [];
 
-	/** @var ManagerBackend $environment */
-	protected $environment;
+	/** @var ManagerBackend $manager_backend */
+	protected $manager_backend;
 
 	/** @var bool */
 	protected $did_init = false;
@@ -26,8 +26,8 @@ class Cache {
 		return $this->cache_file_path;
 	}
 
-	public function make_cache_path_for_manager_environment( string $environment ): string {
-		return Config::get_qit_dir() . ".env-$environment.json";
+	public function make_cache_path_for_manager_environment( string $manager_backend ): string {
+		return Config::get_qit_dir() . ".env-$manager_backend.json";
 	}
 
 	/**

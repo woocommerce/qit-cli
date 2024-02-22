@@ -15,8 +15,8 @@ use function QIT_CLI\get_manager_url;
 
 class CreateMassTestCommands extends DynamicCommandCreator {
 
-	/** @var ManagerBackend $environment */
-	protected $environment;
+	/** @var ManagerBackend $manager_backend */
+	protected $manager_backend;
 
 	/** @var Auth $auth */
 	protected $auth;
@@ -24,10 +24,10 @@ class CreateMassTestCommands extends DynamicCommandCreator {
 	/** @var OutputInterface $output */
 	protected $output;
 
-	public function __construct( ManagerBackend $environment, Auth $auth ) {
-		$this->environment = $environment;
-		$this->auth        = $auth;
-		$this->output      = App::make( Output::class );
+	public function __construct( ManagerBackend $manager_backend, Auth $auth ) {
+		$this->manager_backend = $manager_backend;
+		$this->auth            = $auth;
+		$this->output          = App::make( Output::class );
 	}
 
 	public function register_commands( Application $application ): void {
@@ -58,7 +58,7 @@ class CreateMassTestCommands extends DynamicCommandCreator {
 			->setName( 'mass-test' );
 
 		try {
-			$schema = $this->environment->get_cache()->get_manager_sync_data( 'schemas' )['mass'] ?? null;
+			$schema = $this->manager_backend->get_cache()->get_manager_sync_data( 'schemas' )['mass'] ?? null;
 
 			if ( ! is_array( $schema ) ) {
 				throw new \Exception();

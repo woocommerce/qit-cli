@@ -45,8 +45,8 @@ class Config {
 		return (bool) App::make( self::class )->get( 'development_mode' );
 	}
 
-	public static function set_current_manager_environment( string $environment ): void {
-		App::make( self::class )->set( 'current_environment', $environment );
+	public static function set_current_manager_environment( string $manager_backend ): void {
+		App::make( self::class )->set( 'current_environment', $manager_backend );
 	}
 
 	public static function get_current_manager_backend(): string {

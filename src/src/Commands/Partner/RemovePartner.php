@@ -11,11 +11,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 class RemovePartner extends Command {
 	protected static $defaultName = 'partner:remove'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var ManagerBackend $environment */
-	protected $environment;
+	/** @var ManagerBackend $manager_backend */
+	protected $manager_backend;
 
 	public function __construct( ManagerBackend $manager_backend ) {
-		$this->environment = $manager_backend;
+		$this->manager_backend = $manager_backend;
 		parent::__construct();
 	}
 
@@ -29,7 +29,7 @@ class RemovePartner extends Command {
 		$user = $input->getArgument( 'user' );
 
 		try {
-			$this->environment->remove_partner( $user );
+			$this->manager_backend->remove_partner( $user );
 		} catch ( \InvalidArgumentException $e ) {
 			$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 

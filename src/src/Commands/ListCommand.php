@@ -16,8 +16,8 @@ use function QIT_CLI\get_manager_url;
 class ListCommand extends Command {
 	protected static $defaultName = 'list-tests'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var ManagerBackend $environment */
-	protected $environment;
+	/** @var ManagerBackend $manager_backend */
+	protected $manager_backend;
 
 	/** @var Auth $auth */
 	protected $auth;
@@ -26,14 +26,14 @@ class ListCommand extends Command {
 	protected $woo_extensions_list;
 
 	public function __construct( ManagerBackend $manager_backend, Auth $auth, WooExtensionsList $woo_extensions_list ) {
-		$this->environment         = $manager_backend;
+		$this->manager_backend     = $manager_backend;
 		$this->auth                = $auth;
 		$this->woo_extensions_list = $woo_extensions_list;
 		parent::__construct();
 	}
 
 	protected function configure() {
-		$test_types_list = implode( ', ', $this->environment->get_cache()->get_manager_sync_data( 'test_types' ) );
+		$test_types_list = implode( ', ', $this->manager_backend->get_cache()->get_manager_sync_data( 'test_types' ) );
 		$this
 			->setDescription( 'List test runs.' )
 			->addOption( 'extensions', 'e', InputOption::VALUE_OPTIONAL, '(Optional) Retrieve results for these extensions (Accepts slugs or IDs, comma-separated).' )

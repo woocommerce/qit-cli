@@ -14,11 +14,11 @@ use Symfony\Component\Console\Question\Question;
 class SetProxyCommand extends Command {
 	protected static $defaultName = 'proxy'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var ManagerBackend $environment */
-	protected $environment;
+	/** @var ManagerBackend $manager_backend */
+	protected $manager_backend;
 
 	public function __construct( ManagerBackend $manager_backend ) {
-		$this->environment = $manager_backend;
+		$this->manager_backend = $manager_backend;
 		parent::__construct();
 	}
 

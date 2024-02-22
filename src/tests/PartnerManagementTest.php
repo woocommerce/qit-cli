@@ -126,12 +126,12 @@ class PartnerManagementTest extends QITTestCase {
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertEquals( 1, $this->application_tester->getStatusCode() );
-		$this->assertStringContainsString( 'Cannot switch to environment', $this->application_tester->getErrorOutput() );
+		$this->assertStringContainsString( 'Cannot switch to backend', $this->application_tester->getErrorOutput() );
 
 		// Switch to "local" environment.
 		$this->application_tester->run( [
 			'command' => SwitchBackend::getDefaultName(),
-			'environment'    => 'local',
+			'backend'    => 'local',
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );

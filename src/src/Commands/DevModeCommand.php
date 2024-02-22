@@ -11,11 +11,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 class DevModeCommand extends Command {
 	protected static $defaultName = 'dev'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var ManagerBackend $environment */
-	protected $environment;
+	/** @var ManagerBackend $manager_backend */
+	protected $manager_backend;
 
 	public function __construct( ManagerBackend $manager_backend ) {
-		$this->environment = $manager_backend;
+		$this->manager_backend = $manager_backend;
 		parent::__construct();
 	}
 

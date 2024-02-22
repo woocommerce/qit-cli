@@ -31,7 +31,7 @@ class SwitchBackend extends Command {
 		// Optionaly allow the environment to be passed as an argument.
 		if ( ! empty( $input->getArgument( 'backend' ) ) ) {
 			$this->manager_backend->switch_to_manager_backend( strtolower( $input->getArgument( 'backend' ) ) );
-			$output->writeln( sprintf('<info>Manager backend switched to %s.</info>', $input->getArgument( 'backend' ) ) );
+			$output->writeln( sprintf( '<info>Manager backend switched to %s.</info>', $input->getArgument( 'backend' ) ) );
 
 			return Command::SUCCESS;
 		}

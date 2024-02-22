@@ -26,10 +26,10 @@ class RemoveBackend extends Command {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
-		$environment = $input->getArgument( 'environment' );
+		$manager_backend = $input->getArgument( 'environment' );
 
 		try {
-			$this->manager_backend->remove_manager_backend( $environment );
+			$this->manager_backend->remove_manager_backend( $manager_backend );
 		} catch ( \InvalidArgumentException $e ) {
 			$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 
@@ -40,7 +40,7 @@ class RemoveBackend extends Command {
 			return Command::SUCCESS;
 		}
 
-		$output->writeln( "<info>ManagerBackend '$environment' unset successfully.</info>" );
+		$output->writeln( "<info>ManagerBackend '$manager_backend' unset successfully.</info>" );
 
 		return Command::SUCCESS;
 	}

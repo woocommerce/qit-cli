@@ -3,11 +3,11 @@
 namespace QIT_CLI;
 
 class Auth {
-	/** @var ManagerBackend $environment */
-	protected $environment;
+	/** @var ManagerBackend $manager_backend */
+	protected $manager_backend;
 
-	public function __construct( ManagerBackend $environment ) {
-		$this->environment = $environment;
+	public function __construct( ManagerBackend $manager_backend ) {
+		$this->manager_backend = $manager_backend;
 	}
 
 	/**
@@ -15,12 +15,12 @@ class Auth {
 	 */
 	public function get_partner_auth() {
 		// Migrate "application_password" to "qit_token" if it exists.
-		if ( empty( $this->environment->get_cache()->get( 'qit_token' ) ) && ! empty( $this->environment->get_cache()->get( 'application_password' ) ) ) {
-			$this->environment->get_cache()->set( 'qit_token', $this->environment->get_cache()->get( 'application_password' ), - 1 );
+		if ( empty( $this->manager_backend->get_cache()->get( 'qit_token' ) ) && ! empty( $this->manager_backend->get_cache()->get( 'application_password' ) ) ) {
+			$this->manager_backend->get_cache()->set( 'qit_token', $this->manager_backend->get_cache()->get( 'application_password' ), - 1 );
 		}
 
-		$user      = $this->environment->get_cache()->get( 'user' );
-		$qit_token = $this->environment->get_cache()->get( 'qit_token' );
+		$user      = $this->manager_backend->get_cache()->get( 'user' );
+		$qit_token = $this->manager_backend->get_cache()->get( 'qit_token' );
 
 		if ( ! empty( $user ) && ! empty( $qit_token ) ) {
 			return base64_encode( sprintf( '%s:%s', $user, $qit_token ) );
@@ -33,7 +33,7 @@ class Auth {
 	 * @return string|null MANAGER_SECRET, or null if not defined.
 	 */
 	public function get_manager_secret() {
-		return $this->environment->get_cache()->get( 'manager_secret' );
+		return $this->manager_backend->get_cache()->get( 'manager_secret' );
 	}
 
 	/**
@@ -43,8 +43,8 @@ class Auth {
 	 * @return void
 	 */
 	public function set_partner_auth( $user, $qit_token ): void {
-		$this->environment->get_cache()->set( 'user', $user, - 1 );
-		$this->environment->get_cache()->set( 'qit_token', $qit_token, - 1 );
+		$this->manager_backend->get_cache()->set( 'user', $user, - 1 );
+		$this->manager_backend->get_cache()->set( 'qit_token', $qit_token, - 1 );
 	}
 
 	/**
@@ -53,10 +53,10 @@ class Auth {
 	 * @return void
 	 */
 	public function set_manager_secret( $manager_secret ): void {
-		$this->environment->get_cache()->set( 'manager_secret', $manager_secret, - 1 );
+		$this->manager_backend->get_cache()->set( 'manager_secret', $manager_secret, - 1 );
 	}
 
 	public function delete_manager_secret(): void {
-		$this->environment->get_cache()->delete( 'manager_secret' );
+		$this->manager_backend->get_cache()->delete( 'manager_secret' );
 	}
 }
