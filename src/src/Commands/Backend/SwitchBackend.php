@@ -24,14 +24,15 @@ class SwitchBackend extends Command {
 	protected function configure() {
 		$this
 			->setDescription( 'Switch to another Manager Backend.' )
-			->addArgument( 'backend', InputArgument::OPTIONAL, '(Optional) The backend to switch to.' );
+			->addArgument( 'backend', InputArgument::OPTIONAL, '(Optional) The backend to switch to.' )
+			->setAliases( [ 'switch' ] );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		// Optionaly allow the environment to be passed as an argument.
 		if ( ! empty( $input->getArgument( 'backend' ) ) ) {
 			$this->manager_backend->switch_to_manager_backend( strtolower( $input->getArgument( 'backend' ) ) );
-			$output->writeln( sprintf( '<info>Manager backend switched to %s.</info>', $input->getArgument( 'backend' ) ) );
+			$output->writeln( sprintf( '<info>Backend switched to "%s".</info>', $input->getArgument( 'backend' ) ) );
 
 			return Command::SUCCESS;
 		}
