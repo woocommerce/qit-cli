@@ -3,6 +3,7 @@
 namespace QIT_CLI\Commands\Backend;
 
 use QIT_CLI\Auth;
+use QIT_CLI\Cache;
 use QIT_CLI\ManagerBackend;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
@@ -25,10 +26,14 @@ class AddBackend extends Command {
 	/** @var ManagerBackend $manager_backend */
 	protected $manager_backend;
 
-	public function __construct( ManagerBackend $manager_backend, Auth $auth, WooExtensionsList $woo_extensions_list ) {
+	/** @var Cache $cache */
+	protected $cache;
+
+	public function __construct( ManagerBackend $manager_backend, Cache $cache, Auth $auth, WooExtensionsList $woo_extensions_list ) {
 		$this->manager_backend     = $manager_backend;
 		$this->auth                = $auth;
 		$this->woo_extensions_list = $woo_extensions_list;
+		$this->cache               = $cache;
 		parent::__construct();
 	}
 
@@ -114,7 +119,7 @@ class AddBackend extends Command {
 		}
 
 		$this->auth->set_manager_secret( $qit_secret );
-		$this->manager_backend->get_cache()->set( 'manager_url', $manager_url, - 1 );
+		$this->cache->set( 'manager_url', $manager_url, - 1 );
 
 		$output->writeln( "Validating your Manager Secret against $manager_url..." );
 		try {
@@ -124,7 +129,7 @@ class AddBackend extends Command {
 			}
 		} catch ( \Exception $e ) {
 			$this->auth->delete_manager_secret();
-			$this->manager_backend->get_cache()->delete( 'manager_url' );
+			$this->cache->delete( 'manager_url' );
 			$output->writeln( sprintf( '<error>We could not authenticate to %s using the provided Manager Secret.</error>', escapeshellarg( $manager_url ) ) );
 
 			return Command::FAILURE;

@@ -23,7 +23,7 @@ class ManagerBackend {
 		$this->cache = $cache;
 	}
 
-	public function is_allowed_manager_backend( string $manager_backend ): bool {
+	protected function is_allowed_manager_backend( string $manager_backend ): bool {
 		// Partner environment.
 		if ( substr( $manager_backend, 0, 8 ) === 'partner-' ) {
 			$parts = explode( '-', $manager_backend );
@@ -57,7 +57,7 @@ class ManagerBackend {
 			throw new \InvalidArgumentException( 'Invalid Manager backend.' );
 		}
 
-		$new_manager_backend_file = $this->cache->make_cache_path_for_manager_environment( $manager_backend );
+		$new_manager_backend_file = $this->cache->make_cache_path( $manager_backend );
 
 		if ( file_exists( $new_manager_backend_file ) ) {
 			$unlinked = unlink( $new_manager_backend_file );
@@ -107,12 +107,11 @@ class ManagerBackend {
 			throw new \InvalidArgumentException( 'Invalid backend.' );
 		}
 
-		if ( ! file_exists( $this->cache->make_cache_path_for_manager_environment( $manager_backend ) ) ) {
+		if ( ! file_exists( $this->cache->make_cache_path( $manager_backend ) ) ) {
 			throw new \RuntimeException( "Cannot switch to backend '$manager_backend', as it has not been configured yet." );
 		}
 
 		Config::set_current_manager_environment( $manager_backend );
-		$this->cache = App::make( Cache::class );
 	}
 
 	public function add_partner( string $partner, bool $switch_now = true ): void {
@@ -131,7 +130,7 @@ class ManagerBackend {
 		return $this->manager_backend_exists( $this->get_partner_filename( $partner ) );
 	}
 
-	public function get_partner_filename( string $partner ): string {
+	protected function get_partner_filename( string $partner ): string {
 		$current_backend = Config::get_current_manager_backend();
 
 		/*
@@ -155,11 +154,7 @@ class ManagerBackend {
 			throw new \InvalidArgumentException( "The environment $manager_backend is not allowed." );
 		}
 
-		return file_exists( $this->cache->make_cache_path_for_manager_environment( $manager_backend ) );
-	}
-
-	public function get_cache(): Cache {
-		return $this->cache;
+		return file_exists( $this->cache->make_cache_path( $manager_backend ) );
 	}
 
 	/**
@@ -241,7 +236,7 @@ class ManagerBackend {
 			throw new \RuntimeException( "Manager environment '$manager_backend' does not exist/is not configured yet." );
 		}
 
-		$unlinked = unlink( $this->cache->make_cache_path_for_manager_environment( $manager_backend ) );
+		$unlinked = unlink( $this->cache->make_cache_path( $manager_backend ) );
 
 		if ( ! $unlinked ) {
 			throw new \RuntimeException( sprintf( 'Could not remove Manager environment "%s". Please delete the cache file manually: %s', $manager_backend, $this->cache->get_cache_file_path() ) );

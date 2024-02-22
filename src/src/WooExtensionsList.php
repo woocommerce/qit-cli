@@ -3,8 +3,8 @@
 namespace QIT_CLI;
 
 class WooExtensionsList {
-	/** @var ManagerBackend $manager_backend */
-	protected $manager_backend;
+	/** @var Cache $cache */
+	protected $cache;
 
 	/** @var string $woo_extensions_cache_key */
 	protected $woo_extensions_cache_key;
@@ -12,8 +12,8 @@ class WooExtensionsList {
 	/** @var ManagerSync $manager_sync */
 	protected $manager_sync;
 
-	public function __construct( ManagerBackend $manager_backend, ManagerSync $manager_sync ) {
-		$this->manager_backend          = $manager_backend;
+	public function __construct( Cache $cache, ManagerSync $manager_sync ) {
+		$this->cache                    = $cache;
 		$this->manager_sync             = $manager_sync;
 		$this->woo_extensions_cache_key = sprintf( 'woo_extensions_%s', md5( get_manager_url() ) );
 	}
@@ -32,7 +32,7 @@ class WooExtensionsList {
 	 */
 	public function get_woo_extension_list(): array {
 		try {
-			return $this->manager_backend->get_cache()->get_manager_sync_data( 'extensions' );
+			return $this->cache->get_manager_sync_data( 'extensions' );
 		} catch ( \Exception $e ) {
 			return [];
 		}

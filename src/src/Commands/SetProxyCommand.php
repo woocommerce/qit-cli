@@ -3,7 +3,6 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\Config;
-use QIT_CLI\ManagerBackend;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,14 +12,6 @@ use Symfony\Component\Console\Question\Question;
 
 class SetProxyCommand extends Command {
 	protected static $defaultName = 'proxy'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
-
-	/** @var ManagerBackend $manager_backend */
-	protected $manager_backend;
-
-	public function __construct( ManagerBackend $manager_backend ) {
-		$this->manager_backend = $manager_backend;
-		parent::__construct();
-	}
 
 	protected function configure() {
 		$this

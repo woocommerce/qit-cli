@@ -75,14 +75,14 @@ function open_in_browser( string $url ): void {
  * @return string The URL of the WCCOM Marketplace to use.
  */
 function get_wccom_url(): string {
-	return App::make( ManagerBackend::class )->get_cache()->get_manager_sync_data( 'wccom_url' );
+	return App::make( Cache::class )->get_manager_sync_data( 'wccom_url' );
 }
 
 /**
  * @return string The URL to the CD Manager instance to use.
  */
 function get_manager_url(): string {
-	$override = App::make( ManagerBackend::class )->get_cache()->get( 'manager_url' );
+	$override = App::make( Cache::class )->get( 'manager_url' );
 
 	if ( ! is_null( $override ) ) {
 		// If it's not staging.
@@ -90,7 +90,7 @@ function get_manager_url(): string {
 			// And it's contains the old domain.
 			if ( strpos( $override, 'compatibilitydashboard.wpcomstaging' ) !== false ) {
 				// Update it to the new domain.
-				App::make( ManagerBackend::class )->get_cache()->set( 'manager_url', 'https://qit.woo.com', - 1 );
+				App::make( Cache::class )->set( 'manager_url', 'https://qit.woo.com', - 1 );
 
 				return 'https://qit.woo.com';
 			}

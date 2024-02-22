@@ -4,7 +4,7 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Auth;
-use QIT_CLI\ManagerBackend;
+use QIT_CLI\Cache;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
@@ -20,8 +20,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
 class CreateRunCommands extends DynamicCommandCreator {
-	/** @var ManagerBackend $manager_backend */
-	protected $manager_backend;
+	/** @var Cache $cache */
+	protected $cache;
 
 	/** @var Auth $auth */
 	protected $auth;
@@ -35,8 +35,8 @@ class CreateRunCommands extends DynamicCommandCreator {
 	/** @var WooExtensionsList $woo_extensions_list */
 	protected $woo_extensions_list;
 
-	public function __construct( ManagerBackend $manager_backend, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list ) {
-		$this->manager_backend     = $manager_backend;
+	public function __construct( Cache $cache, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list ) {
+		$this->cache               = $cache;
 		$this->auth                = $auth;
 		$this->output              = App::make( Output::class );
 		$this->upload              = $upload;
@@ -44,8 +44,8 @@ class CreateRunCommands extends DynamicCommandCreator {
 	}
 
 	public function register_commands( Application $application ): void {
-		foreach ( $this->manager_backend->get_cache()->get_manager_sync_data( 'test_types' ) as $test_type ) {
-			$this->register_command_by_schema( $application, $test_type, $this->manager_backend->get_cache()->get_manager_sync_data( 'schemas' )[ $test_type ] );
+		foreach ( $this->cache->get_manager_sync_data( 'test_types' ) as $test_type ) {
+			$this->register_command_by_schema( $application, $test_type, $this->cache->get_manager_sync_data( 'schemas' )[ $test_type ] );
 		}
 	}
 
@@ -313,7 +313,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 		// This will be hidden while custom test type is in development, but kept as an alias to "woo-e2e".
 		if ( $test_type === 'e2e' ) {
 			try {
-				$hide_e2e = $this->manager_backend->get_cache()->get_manager_sync_data( 'hide_e2e' );
+				$hide_e2e = $this->cache->get_manager_sync_data( 'hide_e2e' );
 			} catch ( \Exception $e ) {
 				// If it throws it's because it's not set, so we hide it.
 				$hide_e2e = true;

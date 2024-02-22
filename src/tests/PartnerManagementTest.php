@@ -3,6 +3,7 @@
 namespace QIT_CLI_Tests;
 
 use QIT_CLI\App;
+use QIT_CLI\Cache;
 use QIT_CLI\Commands\Backend\AddBackend;
 use QIT_CLI\Commands\Backend\SwitchBackend;
 use QIT_CLI\Commands\Partner\AddPartner;
@@ -39,7 +40,7 @@ class PartnerManagementTest extends QITTestCase {
 	}
 
 	protected function get_snapshot_friendly_cache(): string {
-		$json = file_get_contents( App::make( ManagerBackend::class )->get_cache()->get_cache_file_path() );
+		$json = file_get_contents( App::make( Cache::class )->get_cache_file_path() );
 
 		/*
 		 * To ensure consistent snapshot testing results, replace the time-dependent "expire" property in the JSON

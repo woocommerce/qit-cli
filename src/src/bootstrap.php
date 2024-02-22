@@ -1,6 +1,7 @@
 <?php
 
 use QIT_CLI\App;
+use QIT_CLI\Cache;
 use QIT_CLI\Commands\ConfigDirCommand;
 use QIT_CLI\Commands\CreateMassTestCommands;
 use QIT_CLI\Commands\CreateRunCommands;
@@ -71,6 +72,7 @@ $container->singleton( Output::class, function () {
 $container->singleton( ManagerSync::class );
 $container->singleton( Config::class );
 $container->singleton( ManagerBackend::class );
+$container->singleton( Cache::class );
 
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 
@@ -214,7 +216,7 @@ if ( $has_environment ) {
 }
 
 if ( $container->make( Output::class )->isVerbose() ) {
-	$container->make( Output::class )->writeln( sprintf( '<info>QIT ManagerBackend: %s</info>', Config::get_current_manager_backend() ) );
+	$container->make( Output::class )->writeln( sprintf( '<info>QIT Manager Backend: %s</info>', Config::get_current_manager_backend() ) );
 }
 
 return $application;
