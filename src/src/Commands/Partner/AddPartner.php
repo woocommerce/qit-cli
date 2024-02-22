@@ -3,7 +3,7 @@
 namespace QIT_CLI\Commands\Partner;
 
 use QIT_CLI\Auth;
-use QIT_CLI\Environment;
+use QIT_CLI\ManagerBackend;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,11 +24,11 @@ class AddPartner extends Command {
 	/** @var WooExtensionsList $woo_extensions_list */
 	protected $woo_extensions_list;
 
-	/** @var Environment $environment */
+	/** @var ManagerBackend $environment */
 	protected $environment;
 
-	public function __construct( Environment $environment, Auth $auth, WooExtensionsList $woo_extensions_list ) {
-		$this->environment         = $environment;
+	public function __construct( ManagerBackend $manager_backend, Auth $auth, WooExtensionsList $woo_extensions_list ) {
+		$this->environment         = $manager_backend;
 		$this->auth                = $auth;
 		$this->woo_extensions_list = $woo_extensions_list;
 		parent::__construct();
@@ -139,7 +139,7 @@ TEXT;
 			$this->environment->remove_partner( $user_environment );
 		}
 
-		$this->environment->create_partner( $user_environment );
+		$this->environment->add_partner( $user_environment );
 
 		$this->auth->set_partner_auth( $user, $qit_token );
 		$this->environment->get_cache()->set( 'manager_url', $manager_url, - 1 );

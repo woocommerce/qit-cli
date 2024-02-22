@@ -4,7 +4,7 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Auth;
-use QIT_CLI\Environment;
+use QIT_CLI\ManagerBackend;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Application;
@@ -15,7 +15,7 @@ use function QIT_CLI\get_manager_url;
 
 class CreateMassTestCommands extends DynamicCommandCreator {
 
-	/** @var Environment $environment */
+	/** @var ManagerBackend $environment */
 	protected $environment;
 
 	/** @var Auth $auth */
@@ -24,7 +24,7 @@ class CreateMassTestCommands extends DynamicCommandCreator {
 	/** @var OutputInterface $output */
 	protected $output;
 
-	public function __construct( Environment $environment, Auth $auth ) {
+	public function __construct( ManagerBackend $environment, Auth $auth ) {
 		$this->environment = $environment;
 		$this->auth        = $auth;
 		$this->output      = App::make( Output::class );

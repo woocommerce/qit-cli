@@ -8,7 +8,7 @@ class Cache {
 	/** @var array<scalar|array<scalar>> $cache */
 	protected $cache = [];
 
-	/** @var Environment $environment */
+	/** @var ManagerBackend $environment */
 	protected $environment;
 
 	/** @var bool */
@@ -18,7 +18,7 @@ class Cache {
 	protected $cache_file_path;
 
 	public function __construct() {
-		$this->cache_file_path = $this->make_cache_path_for_environment( Config::get_current_environment() );
+		$this->cache_file_path = $this->make_cache_path_for_manager_environment( Config::get_current_manager_backend() );
 		$this->init_cache();
 	}
 
@@ -26,7 +26,7 @@ class Cache {
 		return $this->cache_file_path;
 	}
 
-	public function make_cache_path_for_environment( string $environment ): string {
+	public function make_cache_path_for_manager_environment( string $environment ): string {
 		return Config::get_qit_dir() . ".env-$environment.json";
 	}
 
@@ -123,7 +123,7 @@ class Cache {
 		$cache = json_decode( $data, true );
 
 		if ( ! is_array( $cache ) ) {
-			throw new \RuntimeException( 'Could not parse cache file. Resetting environment, please remove the current Partner/Environment and add it again.' );
+			throw new \RuntimeException( 'Could not parse cache file. Resetting environment, please remove the current Partner/ManagerBackend and add it again.' );
 		}
 
 		$this->cache = $cache;

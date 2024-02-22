@@ -1,21 +1,21 @@
 <?php
 
-namespace QIT_CLI\Commands\Environment;
+namespace QIT_CLI\Commands\Backend;
 
-use QIT_CLI\Environment;
+use QIT_CLI\ManagerBackend;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class RemoveEnvironment extends Command {
-	protected static $defaultName = 'env:remove'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+class RemoveBackend extends Command {
+	protected static $defaultName = 'backend:remove'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Environment $environment */
-	protected $environment;
+	/** @var ManagerBackend $manager_backend */
+	protected $manager_backend;
 
-	public function __construct( Environment $environment ) {
-		$this->environment = $environment;
+	public function __construct( ManagerBackend $manager_backend ) {
+		$this->manager_backend = $manager_backend;
 		parent::__construct();
 	}
 
@@ -29,7 +29,7 @@ class RemoveEnvironment extends Command {
 		$environment = $input->getArgument( 'environment' );
 
 		try {
-			$this->environment->remove_environment( $environment );
+			$this->manager_backend->remove_manager_backend( $environment );
 		} catch ( \InvalidArgumentException $e ) {
 			$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 
@@ -40,7 +40,7 @@ class RemoveEnvironment extends Command {
 			return Command::SUCCESS;
 		}
 
-		$output->writeln( "<info>Environment '$environment' unset successfully.</info>" );
+		$output->writeln( "<info>ManagerBackend '$environment' unset successfully.</info>" );
 
 		return Command::SUCCESS;
 	}

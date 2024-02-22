@@ -3,7 +3,7 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\Auth;
-use QIT_CLI\Environment;
+use QIT_CLI\ManagerBackend;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
@@ -16,7 +16,7 @@ use function QIT_CLI\get_manager_url;
 class ListCommand extends Command {
 	protected static $defaultName = 'list-tests'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Environment $environment */
+	/** @var ManagerBackend $environment */
 	protected $environment;
 
 	/** @var Auth $auth */
@@ -25,8 +25,8 @@ class ListCommand extends Command {
 	/** @var WooExtensionsList $woo_extensions_list */
 	protected $woo_extensions_list;
 
-	public function __construct( Environment $environment, Auth $auth, WooExtensionsList $woo_extensions_list ) {
-		$this->environment         = $environment;
+	public function __construct( ManagerBackend $manager_backend, Auth $auth, WooExtensionsList $woo_extensions_list ) {
+		$this->environment         = $manager_backend;
 		$this->auth                = $auth;
 		$this->woo_extensions_list = $woo_extensions_list;
 		parent::__construct();

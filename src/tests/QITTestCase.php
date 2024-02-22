@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use QIT_CLI\App;
 use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Config;
-use QIT_CLI\Environment;
+use QIT_CLI\ManagerBackend;
 use QIT_CLI\ManagerSync;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\ApplicationTester;
@@ -17,8 +17,8 @@ abstract class QITTestCase extends TestCase {
 
 		qit_tests_clean_config_dir();
 		App::offsetUnset( Config::class );
-		Config::set_current_environment( 'tests' );
-		App::make( Environment::class )->create_environment( 'tests' );
+		Config::set_current_manager_environment( 'tests' );
+		App::make( ManagerBackend::class )->add_manager_backend( 'tests' );
 		App::setVar( sprintf( 'mock_%s%s', \QIT_CLI\get_manager_url(), '/wp-json/cd/v1/cli/sync' ), file_get_contents( __DIR__ . '/data/sync.json' ) );
 		App::make( ManagerSync::class )->maybe_sync( true );
 	}

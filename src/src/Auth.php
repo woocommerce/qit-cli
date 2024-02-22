@@ -3,10 +3,10 @@
 namespace QIT_CLI;
 
 class Auth {
-	/** @var Environment $environment */
+	/** @var ManagerBackend $environment */
 	protected $environment;
 
-	public function __construct( Environment $environment ) {
+	public function __construct( ManagerBackend $environment ) {
 		$this->environment = $environment;
 	}
 

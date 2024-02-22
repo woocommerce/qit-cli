@@ -3,7 +3,7 @@
 namespace QIT_CLI;
 
 class WooExtensionsList {
-	/** @var Environment $environment */
+	/** @var ManagerBackend $environment */
 	protected $environment;
 
 	/** @var string $woo_extensions_cache_key */
@@ -12,7 +12,7 @@ class WooExtensionsList {
 	/** @var ManagerSync $manager_sync */
 	protected $manager_sync;
 
-	public function __construct( Environment $environment, ManagerSync $manager_sync ) {
+	public function __construct( ManagerBackend $environment, ManagerSync $manager_sync ) {
 		$this->environment              = $environment;
 		$this->manager_sync             = $manager_sync;
 		$this->woo_extensions_cache_key = sprintf( 'woo_extensions_%s', md5( get_manager_url() ) );

@@ -4,7 +4,7 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Auth;
-use QIT_CLI\Environment;
+use QIT_CLI\ManagerBackend;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
@@ -20,7 +20,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
 class CreateRunCommands extends DynamicCommandCreator {
-	/** @var Environment $environment */
+	/** @var ManagerBackend $environment */
 	protected $environment;
 
 	/** @var Auth $auth */
@@ -35,7 +35,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 	/** @var WooExtensionsList $woo_extensions_list */
 	protected $woo_extensions_list;
 
-	public function __construct( Environment $environment, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list ) {
+	public function __construct( ManagerBackend $environment, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list ) {
 		$this->environment         = $environment;
 		$this->auth                = $auth;
 		$this->output              = App::make( Output::class );

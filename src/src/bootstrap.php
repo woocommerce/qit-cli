@@ -5,10 +5,10 @@ use QIT_CLI\Commands\ConfigDirCommand;
 use QIT_CLI\Commands\CreateMassTestCommands;
 use QIT_CLI\Commands\CreateRunCommands;
 use QIT_CLI\Commands\DevModeCommand;
-use QIT_CLI\Commands\Environment\AddEnvironment;
-use QIT_CLI\Commands\Environment\CurrentEnvironment;
-use QIT_CLI\Commands\Environment\RemoveEnvironment;
-use QIT_CLI\Commands\Environment\SwitchEnvironment;
+use QIT_CLI\Commands\Backend\AddBackend;
+use QIT_CLI\Commands\Backend\CurrentBackend;
+use QIT_CLI\Commands\Backend\RemoveBackend;
+use QIT_CLI\Commands\Backend\SwitchBackend;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\ListCommand;
 use QIT_CLI\Commands\OnboardingCommand;
@@ -21,7 +21,7 @@ use QIT_CLI\Commands\SyncCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Config;
 use QIT_CLI\Diagnosis;
-use QIT_CLI\Environment;
+use QIT_CLI\ManagerBackend;
 use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\Exceptions\UpdateRequiredException;
 use QIT_CLI\IO\Input;
@@ -70,7 +70,7 @@ $container->singleton( Output::class, function () {
 
 $container->singleton( ManagerSync::class );
 $container->singleton( Config::class );
-$container->singleton( Environment::class );
+$container->singleton( ManagerBackend::class );
 
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 
@@ -122,9 +122,9 @@ try {
 	$application->add( $container->make( ConfigDirCommand::class ) );
 
 	if ( Config::is_development_mode() ) {
-		$application->add( $container->make( AddEnvironment::class ) );
+		$application->add( $container->make( AddBackend::class ) );
 		$application->add( $container->make( SetProxyCommand::class ) );
-		$application->add( $container->make( SwitchEnvironment::class ) );
+		$application->add( $container->make( SwitchBackend::class ) );
 
 	}
 
@@ -140,7 +140,7 @@ try {
 if ( Config::needs_onboarding() ) {
 	try {
 		$application->add( $container->make( AddPartner::class ) );
-		$application->add( $container->make( AddEnvironment::class ) );
+		$application->add( $container->make( AddBackend::class ) );
 
 		$onboarding = $container->make( OnboardingCommand::class );
 		$onboarding->setApplication( $application );
@@ -162,32 +162,32 @@ $application->add( $container->make( OnboardingCommand::class ) );
 $application->add( $container->make( AddPartner::class ) );
 
 // Only show option to Remove Partner if there are Partners to remove.
-if ( count( Environment::get_configured_environments( true ) ) > 0 ) {
+if ( count( ManagerBackend::get_configured_manager_backends( true ) ) > 0 ) {
 	$has_environment = true;
 	$application->add( $container->make( RemovePartner::class ) );
 }
 
 // Only show option to Switch to another partner if there are more than one Partner.
-if ( count( Environment::get_configured_environments( true ) ) > 1 ) {
+if ( count( ManagerBackend::get_configured_manager_backends( true ) ) > 1 ) {
 	$application->add( $container->make( SwitchPartner::class ) );
 }
 
 // Dev commands.
 if ( Config::is_development_mode() ) {
-	$application->add( $container->make( AddEnvironment::class ) );
+	$application->add( $container->make( AddBackend::class ) );
 	$application->add( $container->make( SetProxyCommand::class ) );
 	$application->add( $container->make( SyncCommand::class ) );
 
 	// Only show options to remove and see the current environment if there's at least one environment added.
-	if ( count( Environment::get_configured_environments( false ) ) > 0 ) {
+	if ( count( ManagerBackend::get_configured_manager_backends( false ) ) > 0 ) {
 		$has_environment = true;
-		$application->add( $container->make( RemoveEnvironment::class ) );
-		$application->add( $container->make( CurrentEnvironment::class ) );
+		$application->add( $container->make( RemoveBackend::class ) );
+		$application->add( $container->make( CurrentBackend::class ) );
 	}
 
 	// Only show option to Switch to another environment if there are more than one environment.
-	if ( count( Environment::get_configured_environments( false ) ) > 1 ) {
-		$application->add( $container->make( SwitchEnvironment::class ) );
+	if ( count( ManagerBackend::get_configured_manager_backends( false ) ) > 1 ) {
+		$application->add( $container->make( SwitchBackend::class ) );
 	}
 }
 
@@ -214,7 +214,7 @@ if ( $has_environment ) {
 }
 
 if ( $container->make( Output::class )->isVerbose() ) {
-	$container->make( Output::class )->writeln( sprintf( '<info>QIT Environment: %s</info>', Config::get_current_environment() ) );
+	$container->make( Output::class )->writeln( sprintf( '<info>QIT ManagerBackend: %s</info>', Config::get_current_manager_backend() ) );
 }
 
 return $application;

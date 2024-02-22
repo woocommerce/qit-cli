@@ -2,7 +2,7 @@
 
 namespace QIT_CLI\Commands\Partner;
 
-use QIT_CLI\Environment;
+use QIT_CLI\ManagerBackend;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,11 +11,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 class RemovePartner extends Command {
 	protected static $defaultName = 'partner:remove'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Environment $environment */
+	/** @var ManagerBackend $environment */
 	protected $environment;
 
-	public function __construct( Environment $environment ) {
-		$this->environment = $environment;
+	public function __construct( ManagerBackend $manager_backend ) {
+		$this->environment = $manager_backend;
 		parent::__construct();
 	}
 

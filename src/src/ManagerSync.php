@@ -12,7 +12,7 @@ class ManagerSync {
 	/** @var Auth $auth */
 	protected $auth;
 
-	/** @var Environment $environment */
+	/** @var ManagerBackend $environment */
 	protected $environment;
 
 	/** @var OutputInterface $output */
@@ -21,7 +21,7 @@ class ManagerSync {
 	/** @var string $sync_cache_key */
 	public $sync_cache_key;
 
-	public function __construct( Environment $environment, Auth $auth ) {
+	public function __construct( ManagerBackend $environment, Auth $auth ) {
 		$this->auth           = $auth;
 		$this->environment    = $environment;
 		$this->output         = App::make( Output::class );

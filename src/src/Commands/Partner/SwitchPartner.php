@@ -3,7 +3,7 @@
 namespace QIT_CLI\Commands\Partner;
 
 use QIT_CLI\Config;
-use QIT_CLI\Environment;
+use QIT_CLI\ManagerBackend;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,11 +13,11 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 class SwitchPartner extends Command {
 	protected static $defaultName = 'partner:switch'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Environment $environment */
+	/** @var ManagerBackend $environment */
 	protected $environment;
 
-	public function __construct( Environment $environment ) {
-		$this->environment = $environment;
+	public function __construct( ManagerBackend $manager_backend ) {
+		$this->environment = $manager_backend;
 		parent::__construct();
 	}
 
@@ -36,7 +36,7 @@ class SwitchPartner extends Command {
 			return Command::SUCCESS;
 		}
 
-		$environments = Environment::get_configured_environments( true );
+		$environments = ManagerBackend::get_configured_manager_backends( true );
 
 		if ( empty( $environments ) ) {
 			$output->writeln( '<info>No Partners configured.</info>' );
@@ -44,7 +44,7 @@ class SwitchPartner extends Command {
 			return Command::SUCCESS;
 		}
 
-		$current_environment = Config::get_current_environment();
+		$current_environment = Config::get_current_manager_backend();
 
 		$human_readable_partner = explode( '-', $current_environment );
 		$human_readable_partner = end( $human_readable_partner );
