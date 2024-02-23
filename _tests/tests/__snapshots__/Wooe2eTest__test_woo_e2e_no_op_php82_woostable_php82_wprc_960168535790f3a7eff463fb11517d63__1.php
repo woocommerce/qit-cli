@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 67 passed, 67 total | Tests: 9 skipped, 0 failed, 238 passed, 247 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 73 passed, 73 total | Tests: 15 skipped, 0 failed, 267 passed, 282 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -42,13 +42,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 67,
+                "numPassedTestSuites": 73,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 67,
+                "numTotalTestSuites": 73,
                 "numFailedTests": 0,
-                "numPassedTests": 238,
-                "numPendingTests": 9,
-                "numTotalTests": 247,
+                "numPassedTests": 267,
+                "numPendingTests": 15,
+                "numTotalTests": 282,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -62,6 +62,29 @@
                                 },
                                 {
                                     "title": "can configure permalink settings",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "activate-and-setup\\/core-profiler.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Store owner can complete the core profiler": [
+                                {
+                                    "title": "Can complete the core profiler skipping extension install",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Can complete the core profiler installing default extensions",
+                                    "status": "pending"
+                                }
+                            ],
+                            "Store owner can skip the core profiler": [
+                                {
+                                    "title": "Can click skip guided setup",
                                     "status": "passed"
                                 }
                             ]
@@ -260,7 +283,11 @@
                         "tests": {
                             "Store owner can view Assembler Hub for store customization": [
                                 {
-                                    "title": "Can view the Assembler Hub page",
+                                    "title": "Can not access the Assembler Hub page when the theme is not customized",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "Can view the Assembler Hub page when the theme is already customized",
                                     "status": "pending"
                                 },
                                 {
@@ -342,16 +369,16 @@
                     {
                         "file": "merchant\\/create-shipping-zones.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
                                     "title": "add shipping zone for Mayne Island with free Local pickup",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "add shipping zone for British Columbia with Free shipping",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "add shipping zone for Canada with Flat rate",
@@ -749,6 +776,27 @@
                         }
                     },
                     {
+                        "file": "merchant\\/product-delete.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Products > Delete Product": [
+                                {
+                                    "title": "can delete a product from edit view",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can quick delete a product from product list",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "can permanently delete a product from trash list",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/product-edit.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -756,6 +804,35 @@
                             "Products > Edit Product": [
                                 {
                                     "title": "can edit a product and save the changes",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/product-images.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Products > Product Images": [
+                                {
+                                    "title": "can set product image",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can update the product image",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can delete the product image",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create a product gallery",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can update a product gallery",
                                     "status": "passed"
                                 }
                             ]
@@ -1033,53 +1110,6 @@
                         }
                     },
                     {
-                        "file": "shopper\\/cart-block-calculate-tax.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Shopper Cart Block Tax Display": [
-                                {
-                                    "title": "can create Cart Block page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "that inclusive tax is displayed properly in Cart Block page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "that exclusive tax is displayed properly in Cart Block page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Shopper Cart Block Tax Rounding": [
-                                {
-                                    "title": "that tax rounding is present at subtotal level",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "that tax rounding is off at subtotal level",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Shopper Cart Block Tax Levels": [
-                                {
-                                    "title": "that applying taxes in cart block of 4 different levels calculates properly",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "that applying taxes in Cart Block of 2 different levels (2 excluded) calculates properly",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Shipping Cart Block Tax": [
-                                {
-                                    "title": "that tax is applied in Cart Block to shipping as well as order",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "shopper\\/cart-block-coupons.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1099,6 +1129,10 @@
                                 },
                                 {
                                     "title": "prevents cart block applying same coupon twice",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "prevents cart block applying coupon with usage limit",
                                     "status": "passed"
                                 }
                             ]
@@ -1151,34 +1185,134 @@
                         }
                     },
                     {
-                        "file": "shopper\\/cart-coupons.spec.js",
+                        "file": "shopper\\/cart-checkout-block-calculate-tax.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Shopper Cart & Checkout Block Tax Display": [
+                                {
+                                    "title": "can create Cart Block page",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create Checkout Block page",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "that inclusive tax is displayed properly in blockbased Cart & Checkout pages",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "that exclusive tax is displayed properly in blockbased Cart & Checkout pages",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Shopper Cart & Checkout Block Tax Rounding": [
+                                {
+                                    "title": "that tax rounding is present at subtotal level in blockbased Cart & Checkout pages",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "that tax rounding is off at subtotal level in blockbased Cart & Checkout pages",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Shopper Cart & Checkout Block Tax Levels": [
+                                {
+                                    "title": "that applying taxes in cart block of 4 different levels calculates properly",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "that applying taxes in blockbased Cart & Checkout of 2 different levels (2 excluded) calculates properly",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Shipping Cart & Checkout Block Tax": [
+                                {
+                                    "title": "that tax is applied in Cart Block to shipping as well as order",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "shopper\\/cart-checkout-coupons.spec.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
-                            "Cart applying coupons": [
+                            "Cart & Checkout applying coupons": [
                                 {
-                                    "title": "allows cart to apply coupon of type fixed_cart",
+                                    "title": "allows applying coupon of type fixed_cart",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "allows cart to apply coupon of type percent",
+                                    "title": "allows applying coupon of type percent",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "allows cart to apply coupon of type fixed_product",
+                                    "title": "allows applying coupon of type fixed_product",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "prevents cart applying same coupon twice",
+                                    "title": "prevents applying same coupon twice",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "allows cart to apply multiple coupons",
+                                    "title": "allows applying multiple coupons",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "restores cart total when coupons are removed",
+                                    "title": "restores total when coupons are removed",
                                     "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "shopper\\/cart-checkout-restricted-coupons.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Cart & Checkout Restricted Coupons": [
+                                {
+                                    "title": "expired coupon cannot be used",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "coupon requiring min and max amounts and can only be used alone can only be used within limits",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "coupon cannot be used on sale item",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "coupon can only be used twice",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "coupon cannot be used on certain products\\/categories (included product\\/category)",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "coupon can be used on certain products\\/categories",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "coupon cannot be used on specific products\\/categories (excluded product\\/category)",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "coupon can be used on other products\\/categories",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "coupon cannot be used by any customer (email restricted)",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "coupon can be used by the right customer (email restricted) but only once",
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1233,38 +1367,87 @@
                                 {
                                     "title": "should go to the checkout page when \\"Proceed to Checkout\\" is clicked",
                                     "status": "passed"
+                                },
+                                {
+                                    "title": "can manage cross-sell products and maximum item quantity",
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
-                        "file": "shopper\\/checkout-coupons.spec.js",
+                        "file": "shopper\\/checkout-block-coupons.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Checkout Block Applying Coupons": [
+                                {
+                                    "title": "can create checkout block page",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "allows checkout block to apply coupon of any type",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "allows checkout block to apply multiple coupons",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "prevents checkout block applying same coupon twice",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "prevents checkout block applying coupon with usage limit",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "shopper\\/checkout-block.spec.js",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
-                            "Checkout coupons": [
+                            "Checkout Block page": [
                                 {
-                                    "title": "allows checkout to apply coupon of type fixed_cart",
+                                    "title": "can see empty checkout block page",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "allows checkout to apply coupon of type percent",
+                                    "title": "allows customer to choose available payment methods",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "allows checkout to apply coupon of type fixed_product",
+                                    "title": "allows customer to fill shipping details",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "prevents checkout applying same coupon twice",
+                                    "title": "allows customer to fill different shipping and billing details",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "allows checkout to apply multiple coupons",
+                                    "title": "warn when customer is missing required details",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "allows customer to fill shipping details and toggle different billing",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can choose different shipping types in the checkout",
                                     "status": "pending"
                                 },
                                 {
-                                    "title": "restores checkout total when coupons are removed",
+                                    "title": "allows guest customer to place an order",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "allows existing customer to place an order",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create an account during checkout",
                                     "status": "passed"
                                 }
                             ]
@@ -1299,7 +1482,7 @@
                     {
                         "file": "shopper\\/checkout.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Checkout page": [
                                 {
@@ -1324,7 +1507,7 @@
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows existing customer to place order",
@@ -1603,7 +1786,7 @@
                     {
                         "file": "shopper\\/tax\\/checkout-calculate-tax.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Tax rates in the cart and checkout": [],
                             "Tax rates in the cart and checkout > Shopper Tax Display Tests": [
@@ -1643,6 +1826,19 @@
                             "Tax rates in the cart and checkout > Shipping Tax": [
                                 {
                                     "title": "checks that tax is applied to shipping as well as order",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "shopper\\/wordpress-post.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "WordPress": [
+                                {
+                                    "title": "logged-in customer can comment on a post",
                                     "status": "passed"
                                 }
                             ]
@@ -1679,16 +1875,11 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 67 passed, 67 total | Tests: 9 skipped, 0 failed, 238 passed, 247 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 73 passed, 73 total | Tests: 15 skipped, 0 failed, 267 passed, 282 total."
             }
         },
         {
-            "debug_log": [
-                {
-                    "count": "1",
-                    "message": "PHP Deprecated: strlen(): Passing null to parameter #1 ($string) of type string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/formatting.php on line 3771"
-                }
-            ]
+            "debug_log": []
         }
     ]
 ]';
