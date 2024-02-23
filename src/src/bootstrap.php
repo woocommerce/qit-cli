@@ -153,7 +153,7 @@ if ( Config::needs_onboarding() ) {
 	}
 }
 
-$has_environment = false;
+$is_connected_to_backend = false;
 
 // Global commands.
 $application->add( $container->make( DevModeCommand::class ) );
@@ -165,7 +165,7 @@ $application->add( $container->make( AddPartner::class ) );
 
 // Only show option to Remove Partner if there are Partners to remove.
 if ( count( ManagerBackend::get_configured_manager_backends( true ) ) > 0 ) {
-	$has_environment = true;
+	$is_connected_to_backend = true;
 	$application->add( $container->make( RemovePartner::class ) );
 }
 
@@ -182,7 +182,7 @@ if ( Config::is_development_mode() ) {
 
 	// Only show options to remove and see the current environment if there's at least one environment added.
 	if ( count( ManagerBackend::get_configured_manager_backends( false ) ) > 0 ) {
-		$has_environment = true;
+		$is_connected_to_backend = true;
 		$application->add( $container->make( RemoveBackend::class ) );
 		$application->add( $container->make( CurrentBackend::class ) );
 	}
@@ -193,7 +193,7 @@ if ( Config::is_development_mode() ) {
 	}
 }
 
-if ( $has_environment ) {
+if ( $is_connected_to_backend ) {
 	// Dynamically create commands to run tests, based on Schema fetched from Manager REST API.
 	$container->make( CreateRunCommands::class )->register_commands( $application );
 
