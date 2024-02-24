@@ -2,9 +2,11 @@
 
 namespace QIT_CLI\Commands;
 
+use QIT_CLI\App;
+use QIT_CLI\IO\Output;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class DynamicCommandCreator {
 	abstract public function register_commands( Application $application ): void;
@@ -15,7 +17,7 @@ abstract class DynamicCommandCreator {
 	 *
 	 * @return void
 	 */
-	protected function add_schema_to_command( DynamicCommand $command, array $schema ): void {
+	public static function add_schema_to_command( Command $command, array $schema, array $exceptions = [] ): void {
 		if ( ! empty( $schema['description'] ) ) {
 			$command->setDescription( $schema['description'] );
 		}
@@ -24,7 +26,7 @@ abstract class DynamicCommandCreator {
 			foreach ( $schema['properties'] as $property_name => $property_schema ) {
 				$ignore = [ 'client', 'event', 'woo_id', 'is_product_update', 'upload_id' ];
 
-				if ( in_array( $property_name, $ignore, true ) ) {
+				if ( in_array( $property_name, array_merge( $exceptions, $ignore ), true ) ) {
 					continue;
 				}
 
@@ -74,7 +76,7 @@ abstract class DynamicCommandCreator {
 					}
 				}
 
-				if ( isset( $this->output ) && $this->output instanceof OutputInterface && $this->output->isVerbose() ) {
+				if ( App::make( Output::class )->isVerbose() ) {
 					$schema_to_show = $property_schema;
 					unset( $schema_to_show['description'] );
 					$description = sprintf( '%s (Schema: %s)', $description, json_encode( $schema_to_show ) );

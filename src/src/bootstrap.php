@@ -10,6 +10,10 @@ use QIT_CLI\Commands\Backend\AddBackend;
 use QIT_CLI\Commands\Backend\CurrentBackend;
 use QIT_CLI\Commands\Backend\RemoveBackend;
 use QIT_CLI\Commands\Backend\SwitchBackend;
+use QIT_CLI\Commands\Environment\DownEnvironmentCommand;
+use QIT_CLI\Commands\Environment\ListEnvironmentCommand;
+use QIT_CLI\Commands\Environment\RestartEnvironmentCommand;
+use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\ListCommand;
 use QIT_CLI\Commands\OnboardingCommand;
@@ -40,6 +44,13 @@ if ( ! isset( $container ) ) {
 }
 
 App::setVar( 'CLI_VERSION', '@QIT_CLI_VERSION@' );
+
+define( 'MINUTE_IN_SECONDS', 60 );
+define( 'HOUR_IN_SECONDS', 60 * MINUTE_IN_SECONDS );
+define( 'DAY_IN_SECONDS', 24 * HOUR_IN_SECONDS );
+define( 'WEEK_IN_SECONDS', 7 * DAY_IN_SECONDS );
+define( 'MONTH_IN_SECONDS', 30 * DAY_IN_SECONDS );
+define( 'YEAR_IN_SECONDS', 365 * DAY_IN_SECONDS );
 
 // Initialize Console.
 $application = new class( 'Quality Insights Toolkit CLI', App::getVar( 'CLI_VERSION' ) ) extends Application {
@@ -160,6 +171,7 @@ $application->add( $container->make( DevModeCommand::class ) );
 $application->add( $container->make( ConfigDirCommand::class ) );
 $application->add( $container->make( OnboardingCommand::class ) );
 
+
 // Partner commands.
 $application->add( $container->make( AddPartner::class ) );
 
@@ -212,6 +224,16 @@ if ( $is_connected_to_backend ) {
 	if ( Config::is_development_mode() ) {
 		// Dynamically crete Mass Test run command.
 		$container->make( CreateMassTestCommands::class )->register_commands( $application );
+	}
+
+	// Environment commands.
+	try {
+		$application->add( $container->make( UpEnvironmentCommand::class ) );
+		$application->add( $container->make( DownEnvironmentCommand::class ) );
+		$application->add( $container->make( RestartEnvironmentCommand::class ) );
+		$application->add( $container->make( ListEnvironmentCommand::class ) );
+	} catch ( \Exception $e ) {
+		App::make( Output::class )->writeln( $e->getMessage() );
 	}
 }
 

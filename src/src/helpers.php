@@ -132,3 +132,24 @@ function generate_uuid4() {
 		mt_rand( 0, 0xffff )
 	);
 }
+
+/**
+ * @param int $seconds The number of seconds to format.
+ *
+ * @return string A human-readable string representing the elapsed time.
+ */
+function format_elapsed_time( int $seconds ): string {
+	$periods = [ 'second', 'minute', 'hour', 'day', 'week', 'month', 'year' ];
+	$lengths = [ 60, 60, 24, 7, 4.35, 12 ];
+
+	for ( $i = 0; $seconds >= $lengths[ $i ] && $i < count( $lengths ) - 1; $i ++ ) {
+		$seconds /= $lengths[ $i ];
+	}
+
+	$seconds = round( $seconds );
+	if ( $seconds != 1 ) {
+		$periods[ $i ] .= 's';
+	}
+
+	return "$seconds $periods[$i] ago";
+}
