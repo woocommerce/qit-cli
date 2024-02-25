@@ -1,0 +1,10 @@
+{
+    "type": "test",
+    "temporary_env": "\/tmp\/test",
+    "created_at": 123,
+    "status": "running",
+    "docker_images": [
+        "test1",
+        "test2"
+    ]
+}

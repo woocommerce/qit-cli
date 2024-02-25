@@ -2,9 +2,7 @@
 
 namespace QIT_CLI\Environment;
 
-use http\Env;
-
-class EnvInfo {
+class EnvInfo implements \JsonSerializable {
 	/** @var string */
 	public $type;
 
@@ -17,18 +15,31 @@ class EnvInfo {
 	/** @var string */
 	public $status;
 
-	public static function from_array( array $data ): EnvInfo {
-		$env_info = new EnvInfo();
-		foreach ( $data as $key => $value ) {
-			if ( property_exists( $env_info, $key ) ) {
-				$env_info->$key = $value;
+	/**
+	 * @var array<string> Array of docker images associated with this environment.
+	 * @example [ 'qit_php_123456', 'qit_db_123456', 'qit_nginx_123456' ]
+	 */
+	public $docker_images;
+
+	public function get_id(): string {
+		return md5($this->temporary_env);
+	}
+
+	public function jsonSerialize() {
+		return $this;
+	}
+
+	public static function from_json( string $json ): EnvInfo {
+		$env_info = json_decode( $json, true );
+
+		$instance = new self();
+
+		foreach ( $env_info as $key => $value ) {
+			if ( property_exists( $instance, $key ) ) {
+				$instance->$key = $value;
 			}
 		}
 
-		return $env_info;
-	}
-
-	public function get_id(): string {
-		return md5( $this->temporary_env );
+		return $instance;
 	}
 }

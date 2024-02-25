@@ -2,14 +2,14 @@
 
 namespace QIT_CLI\Commands\Environment;
 
-use QIT_CLI\Environment\E2EEnvironment;
 use QIT_CLI\Environment\EnvInfo;
 use QIT_CLI\Environment\EnvironmentMonitor;
+use QIT_CLI\Environment\Environments\E2EEnvironment;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use function QIT_CLI\format_elapsed_time;
 
 class DownEnvironmentCommand extends Command {

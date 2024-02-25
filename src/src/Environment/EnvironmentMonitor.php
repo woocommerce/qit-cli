@@ -15,13 +15,14 @@ class EnvironmentMonitor {
 		$this->cache = $cache;
 	}
 
+	/**
+	 * @return array<EnvInfo>
+	 */
 	public function get(): array {
 		$this->environment_monitor = $this->cache->get( 'environment_monitor' ) ?? [];
 
-		foreach ( $this->environment_monitor as $key => $env_info ) {
-			if ( is_array( $env_info ) ) {
-				$this->environment_monitor[ $key ] = EnvInfo::from_array( $env_info );
-			}
+		foreach ( $this->environment_monitor as $key => $env_info_json ) {
+			$this->environment_monitor[ $key ] = EnvInfo::from_json( $env_info_json );
 		}
 
 		return $this->environment_monitor;
@@ -54,7 +55,7 @@ class EnvironmentMonitor {
 
 	public function environment_added_or_updated( EnvInfo $env_info ): bool {
 		$environments                        = $this->get();
-		$environments[ $env_info->get_id() ] = $env_info;
+		$environments[ $env_info->get_id() ] = json_encode( $env_info );
 		$this->cache->set( 'environment_monitor', $environments, WEEK_IN_SECONDS );
 
 		return true;
