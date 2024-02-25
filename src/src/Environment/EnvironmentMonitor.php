@@ -5,9 +5,6 @@ namespace QIT_CLI\Environment;
 use QIT_CLI\Cache;
 
 class EnvironmentMonitor {
-	/** @var array|mixed */
-	protected $environment_monitor;
-
 	/** @var Cache $cache */
 	protected $cache;
 
@@ -19,20 +16,13 @@ class EnvironmentMonitor {
 	 * @return array<EnvInfo>
 	 */
 	public function get(): array {
-		$this->environment_monitor = $this->cache->get( 'environment_monitor' ) ?? [];
-
-		foreach ( $this->environment_monitor as $key => $env_info_json ) {
-			$this->environment_monitor[ $key ] = EnvInfo::from_json( $env_info_json );
-		}
-
-		return $this->environment_monitor;
+		return array_map( function ( $env_info_json ) {
+			return EnvInfo::from_array( $env_info_json );
+		}, json_decode( $this->cache->get( 'environment_monitor' ), true ) ?? [] );
 	}
 
-	public function get_env_info_by_id( string $env_info_id ) {
-		$environments = $this->get();
-
-		/** @var EnvInfo $env_info */
-		foreach ( $environments as $env_info ) {
+	public function get_env_info_by_id( string $env_info_id ): EnvInfo {
+		foreach ( $this->get() as $env_info ) {
 			if ( $env_info->get_id() === $env_info_id ) {
 				return $env_info;
 			}
@@ -41,10 +31,8 @@ class EnvironmentMonitor {
 		throw new \Exception( 'Environment not found.' );
 	}
 
-	public function get_env_info_by_path( string $temporary_path ) {
-		$environments = $this->get();
-
-		foreach ( $environments as $env_info ) {
+	public function get_env_info_by_path( string $temporary_path ): EnvInfo {
+		foreach ( $this->get() as $env_info ) {
 			if ( $env_info->temporary_env === $temporary_path ) {
 				return $env_info;
 			}
@@ -55,15 +43,21 @@ class EnvironmentMonitor {
 
 	public function environment_added_or_updated( EnvInfo $env_info ): bool {
 		$environments                        = $this->get();
-		$environments[ $env_info->get_id() ] = json_encode( $env_info );
-		$this->cache->set( 'environment_monitor', $environments, WEEK_IN_SECONDS );
+		$environments[ $env_info->get_id() ] = $env_info;
+		$this->cache->set( 'environment_monitor', json_encode( $environments ), WEEK_IN_SECONDS );
 
 		return true;
 	}
 
 	public function environment_stopped( EnvInfo $env_info ): bool {
-		$this->cache->set( 'environment_monitor', array_diff_key( $this->get(), [ $env_info->get_id() => true ] ), WEEK_IN_SECONDS );
+		// Filter out the stopped environment.
+		$environments = array_filter( $this->get(), function ( $key ) use ( $env_info ) {
+			return $key !== $env_info->get_id();
+		}, ARRAY_FILTER_USE_KEY );
+
+		$this->cache->set( 'environment_monitor', json_encode( $environments ), WEEK_IN_SECONDS );
 
 		return true;
 	}
+
 }

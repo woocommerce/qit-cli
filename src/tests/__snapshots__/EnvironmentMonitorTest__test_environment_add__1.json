@@ -3,6 +3,7 @@
         "type": "e2e",
         "temporary_env": "\/path\/to\/temporary-envs\/foo",
         "created_at": 1708728299,
-        "status": "pending"
+        "status": "pending",
+        "docker_images": null
     }
 }

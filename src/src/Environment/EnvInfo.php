@@ -29,12 +29,10 @@ class EnvInfo implements \JsonSerializable {
 		return $this;
 	}
 
-	public static function from_json( string $json ): EnvInfo {
-		$env_info = json_decode( $json, true );
-
+	public static function from_array( array $decoded_json ): EnvInfo {
 		$instance = new self();
 
-		foreach ( $env_info as $key => $value ) {
+		foreach ( $decoded_json as $key => $value ) {
 			if ( property_exists( $instance, $key ) ) {
 				$instance->$key = $value;
 			}
