@@ -32,7 +32,7 @@ class RestartEnvironmentCommand extends Command {
 	}
 
 	protected function configure() {
-		$this->setDescription( 'Restarts the local test environment.' );
+		$this->setDescription( 'Restarts a local test environment.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {

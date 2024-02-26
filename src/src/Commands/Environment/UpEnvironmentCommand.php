@@ -32,7 +32,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 
 		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'], [ 'compatibility' ] );
 
-		$this->setDescription( 'Starts the local test environment.' )
+		$this->setDescription( 'Starts a local test environment.' )
 		     ->setAliases( [ 'env:start' ] );
 	}
 

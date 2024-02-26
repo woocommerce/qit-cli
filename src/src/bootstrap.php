@@ -80,6 +80,8 @@ $container->singleton( Output::class, function () {
 	return new ConsoleOutput();
 } );
 
+$container->bind( OutputInterface::class, $container->make( Output::class ) );
+$container->bind( InputInterface::class, $container->make( Input::class ) );
 $container->singleton( ManagerSync::class );
 $container->singleton( Config::class );
 $container->singleton( ManagerBackend::class );
@@ -240,5 +242,7 @@ if ( $is_connected_to_backend ) {
 if ( $container->make( Output::class )->isVerbose() ) {
 	$container->make( Output::class )->writeln( sprintf( '<info>QIT Manager Backend: %s</info>', Config::get_current_manager_backend() ) );
 }
+
+App::make( \QIT_CLI\Environment\EnvironmentOrphanCleanup::class )->cleanup_orphans();
 
 return $application;

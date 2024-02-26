@@ -68,7 +68,7 @@ class DownEnvironmentCommand extends Command {
 
 	private function stopEnvironment( string $temporary_environment, OutputInterface $output ) {
 		// Implement the logic to stop the environment
-		$this->e2e_environment->down( $temporary_environment );
+		$this->e2e_environment->down( $this->environment_monitor->get_env_info_by_id( $temporary_environment ) );
 		$output->writeln( "<info>Environment '$temporary_environment' stopped.</info>" );
 	}
 }

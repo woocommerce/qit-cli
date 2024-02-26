@@ -49,6 +49,9 @@ class ListEnvironmentCommand extends Command {
 				if ( $k === 'created_at' ) {
 					$v = $elapsed;
 				}
+				if ( is_array( $v ) ) {
+					$v = implode( ', ', $v );
+				}
 				$definitions[] = [ ucwords( $k ) => $v ];
 			}
 
