@@ -23,7 +23,7 @@ class EnvironmentMonitor {
 
 	public function get_env_info_by_id( string $env_info_id ): EnvInfo {
 		foreach ( $this->get() as $env_info ) {
-			if ( $env_info->get_id() === $env_info_id ) {
+			if ( $env_info->env_id === $env_info_id ) {
 				return $env_info;
 			}
 		}
@@ -42,8 +42,8 @@ class EnvironmentMonitor {
 	}
 
 	public function environment_added_or_updated( EnvInfo $env_info ): bool {
-		$environments                        = $this->get();
-		$environments[ $env_info->get_id() ] = $env_info;
+		$environments                      = $this->get();
+		$environments[ $env_info->env_id ] = $env_info;
 		$this->cache->set( 'environment_monitor', json_encode( $environments ), WEEK_IN_SECONDS );
 
 		return true;
@@ -52,7 +52,7 @@ class EnvironmentMonitor {
 	public function environment_stopped( EnvInfo $env_info ): bool {
 		// Filter out the stopped environment.
 		$environments = array_filter( $this->get(), function ( $key ) use ( $env_info ) {
-			return $key !== $env_info->get_id();
+			return $key !== $env_info->env_id;
 		}, ARRAY_FILTER_USE_KEY );
 
 		$this->cache->set( 'environment_monitor', json_encode( $environments ), WEEK_IN_SECONDS );

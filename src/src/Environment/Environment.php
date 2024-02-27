@@ -63,7 +63,9 @@ abstract class Environment {
 
 	abstract public function get_name(): string;
 
-	abstract protected function prepare_generate_docker_compose( Process $process ): void;
+	abstract protected function post_generate_docker_compose( EnvInfo $env_info ): void;
+
+	abstract protected function post_up( EnvInfo $env_info ): void;
 
 	public function up(): void {
 		// Start the benchmark.
@@ -75,6 +77,7 @@ abstract class Environment {
 		$env_info = $this->init_env_info();
 		$this->environment_monitor->environment_added_or_updated( $env_info );
 		$this->generate_docker_compose();
+		$this->post_generate_docker_compose( $env_info );
 		$this->up_docker_compose( $env_info );
 
 		$server_started = microtime( true );
@@ -106,6 +109,7 @@ abstract class Environment {
 		$env_info                = new EnvInfo();
 		$env_info->type          = $this->get_name();
 		$env_info->temporary_env = $this->temporary_environment_path;
+		$env_info->env_id        = $this->temporary_environment_id;
 		$env_info->created_at    = time();
 		$env_info->status        = 'pending';
 
@@ -114,7 +118,6 @@ abstract class Environment {
 
 	protected function generate_docker_compose(): void {
 		$process = new Process( [ PHP_BINARY, $this->temporary_environment_path . '/docker-compose-generator.php' ] );
-		$this->prepare_generate_docker_compose( $process );
 		$process->setEnv( array_merge( $process->getEnv(), [
 			'CACHE_DIR'  => $this->cache_dir,
 			'QIT_ENV_ID' => $this->temporary_environment_id,
@@ -149,6 +152,10 @@ abstract class Environment {
 		$env_info->status = 'started';
 
 		$this->environment_monitor->environment_added_or_updated( $env_info );
+
+		return;
+
+		$this->post_up( $env_info );
 	}
 
 	public function down( EnvInfo $env_info ): void {
@@ -197,6 +204,45 @@ abstract class Environment {
 		}
 
 		$env_info->docker_images = $containers;
+	}
+
+	protected function get_nginx_port( EnvInfo $env_info ): int {
+		$nginx_container = $env_info->get_docker_container( 'nginx' );
+		if ( ! $nginx_container ) {
+			throw new \Exception( "Nginx container not found in docker containers." );
+		}
+
+		$docker                 = $this->docker->find_docker();
+		$get_nginx_port_process = new Process( [ $docker, 'port', $nginx_container, '80' ] );
+		$get_nginx_port_process->run();
+
+		if ( ! $get_nginx_port_process->isSuccessful() ) {
+			throw new \RuntimeException( $get_nginx_port_process->getErrorOutput() );
+		}
+
+		$output = $get_nginx_port_process->getOutput();
+		// The expected output format might be "0.0.0.0:PORT" or just "PORT"
+		$output = trim( $output );
+		if ( empty( $output ) ) {
+			throw new \Exception( "No output received from docker port command." );
+		}
+
+		// Extract port from the output
+		if ( strpos( $output, ':' ) !== false ) {
+			// If the output contains ":", split and get the port
+			$parts = explode( ':', $output );
+			$port  = end( $parts ); // Get the last part which should be the port
+		} else {
+			// If there's no ":", assume the entire output is the port
+			$port = $output;
+		}
+
+		// Validate that the port is an integer
+		if ( ! is_numeric( $port ) || intval( $port ) != $port ) {
+			throw new \Exception( "Invalid port number extracted: " . $port );
+		}
+
+		return (int) $port;
 	}
 
 	public static function get_temp_envs_dir(): string {

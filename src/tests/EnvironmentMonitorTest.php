@@ -79,7 +79,7 @@ class EnvironmentMonitorTest extends QITTestCase {
 		$env_info            = $this->make_env_info();
 		$environment_monitor->environment_added_or_updated( $env_info );
 
-		$env_info2 = $environment_monitor->get_env_info_by_id( $env_info->get_id() );
+		$env_info2 = $environment_monitor->get_env_info_by_id( $env_info->env_id );
 
 		$this->assertEquals( $env_info, $env_info2 );
 	}

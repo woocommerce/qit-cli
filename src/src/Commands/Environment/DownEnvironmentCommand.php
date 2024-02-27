@@ -42,33 +42,35 @@ class DownEnvironmentCommand extends Command {
 
 		if ( count( $running_environments ) === 1 ) {
 			// Stop the single running environment
-			$this->stopEnvironment( array_key_first( $running_environments ), $output );
+			$this->stop_environment( array_shift( $running_environments ), $output );
 
 			return Command::SUCCESS;
 		}
 
-		$running_environments = array_map( function ( EnvInfo $environment ) {
-			return sprintf( '%s (started %s ago)', $environment->temporary_env, format_elapsed_time( time() - $environment->started ) );
+		$environment_choices = array_map( function ( EnvInfo $environment ) {
+			return sprintf( "Created: %s, Status: %s",
+				date( 'Y-m-d H:i', $environment->created_at ),
+				$environment->status );
 		}, $running_environments );
 
 		// More than one environment running, let user choose which one to stop
 		$helper   = new QuestionHelper();
 		$question = new ChoiceQuestion(
 			'Please select the environment to stop (defaults to the first):',
-			array_keys( $running_environments ),
-			0
+			$environment_choices,
+			array_key_first( array_slice( $environment_choices, 0, 1 ) )
 		);
 		$question->setErrorMessage( 'Environment %s is invalid.' );
 
 		$selectedEnvironment = $helper->ask( $input, $output, $question );
-		$this->stopEnvironment( $selectedEnvironment, $output );
+		$this->stop_environment( $this->environment_monitor->get_env_info_by_id( $selectedEnvironment ), $output );
 
 		return Command::SUCCESS;
 	}
 
-	private function stopEnvironment( string $temporary_environment, OutputInterface $output ) {
-		// Implement the logic to stop the environment
-		$this->e2e_environment->down( $this->environment_monitor->get_env_info_by_id( $temporary_environment ) );
-		$output->writeln( "<info>Environment '$temporary_environment' stopped.</info>" );
+	private function stop_environment( EnvInfo $environment, OutputInterface $output ) {
+		$this->e2e_environment->down( $environment );
+		$environment_id = $environment->env_id;
+		$output->writeln( "<info>Environment '$environment_id' stopped.</info>" );
 	}
 }
