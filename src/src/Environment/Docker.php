@@ -54,6 +54,11 @@ class Docker {
 		$process = new Process( $docker_command );
 		$process->setTty( true );
 
+		if ( $this->output->isVerbose() ) {
+			// Print the command that will run.
+			$this->output->writeln( $process->getCommandLine() );
+		}
+
 		$process->run( function ( $type, $buffer ) {
 			$this->output->write( $buffer );
 		} );

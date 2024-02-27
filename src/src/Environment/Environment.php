@@ -153,8 +153,6 @@ abstract class Environment {
 
 		$this->environment_monitor->environment_added_or_updated( $env_info );
 
-		return;
-
 		$this->post_up( $env_info );
 	}
 

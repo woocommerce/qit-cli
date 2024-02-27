@@ -27,19 +27,19 @@ class E2EEnvironment extends Environment {
 	}
 
 	protected function post_up( EnvInfo $env_info ): void {
-		/**
-		 * : ${QIT_ENV_ID:?Please set the QIT_ENV_ID environment variable}
-		 * : ${PHP_EXTENSIONS:?Please set the PHP_EXTENSIONS environment variable}
-		 * : ${WORDPRESS_VERSION:?Please set the WORDPRESS_VERSION environment variable}
-		 * : ${WOOCOMMERCE_VERSION:?Please set the WOOCOMMERCE_VERSION environment variable}
-		 * : ${SUT_SLUG:?Please set the SUT_SLUG environment variable}
-		 */
-		$this->docker->run_inside_docker( $env_info, [ '/bin/bash', '/qit/bin/environment-bootstrap.sh' ], [
-			'PHP_EXTENSIONS'      => json_encode( '' ),
+		$php_extensions = [];
+
+		if ( ! empty( $php_extensions ) ) {
+			$this->docker->run_inside_docker( $env_info, [ '/bin/bash', '/qit/bin/php-extensions.sh' ], [
+				'PHP_EXTENSIONS' => '', // Space-separated list of PHP extensions.
+			], '0:0' );
+		}
+
+		$this->docker->run_inside_docker( $env_info, [ '/bin/bash', '/qit/bin/wordpress-setup.sh' ], [
 			'WORDPRESS_VERSION'   => 'latest',
 			'WOOCOMMERCE_VERSION' => '8.6.0',
 			'SUT_SLUG'            => 'automatewoo',
 			'SITE_URL'            => 'http://qit.test:' . $this->get_nginx_port( $env_info ),
-		], '0:0' );
+		] );
 	}
 }

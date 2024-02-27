@@ -53,17 +53,25 @@ class DownEnvironmentCommand extends Command {
 				$environment->status );
 		}, $running_environments );
 
+		$environment_choices['all'] = 'Stop all environments';
+
 		// More than one environment running, let user choose which one to stop
 		$helper   = new QuestionHelper();
 		$question = new ChoiceQuestion(
-			'Please select the environment to stop (defaults to the first):',
+			'Please select the environment to stop (or choose to stop all):',
 			$environment_choices,
-			array_key_first( array_slice( $environment_choices, 0, 1 ) )
+			'all'
 		);
 		$question->setErrorMessage( 'Environment %s is invalid.' );
 
 		$selectedEnvironment = $helper->ask( $input, $output, $question );
-		$this->stop_environment( $this->environment_monitor->get_env_info_by_id( $selectedEnvironment ), $output );
+		if ( $selectedEnvironment === 'all' ) {
+			foreach ( $running_environments as $environment ) {
+				$this->stop_environment( $environment, $output );
+			}
+		} else {
+			$this->stop_environment( $this->environment_monitor->get_env_info_by_id( $selectedEnvironment ), $output );
+		}
 
 		return Command::SUCCESS;
 	}
