@@ -7,14 +7,14 @@ on:
     - cron: '0 23 * * *'
   # Manually
   workflow_dispatch:
-  # On push to trunk
-  push:
-    branches:
-      - trunk
 
 jobs:
   environment_tests:
-    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, windows-latest, macos-latest]
+        #php: ['7.2', '7.4', '8.0'] # Example PHP versions, adjust as necessary
+    runs-on: ${{ matrix.os }}
     env:
       NO_COLOR: 1
       QIT_DISABLE_ONBOARDING: yes
@@ -27,18 +27,23 @@ jobs:
         with:
           php-version: '7.2'
 
-      - name: Composer install
-        working-directory: _tests
-        run: composer install
-
       - name: Enable dev mode
         run: ./qit dev
 
       - name: Connect to Staging QIT
         run: ./qit backend:add --environment="staging" --qit_secret="${{ secrets.QIT_STAGING_SECRET }}" --manager_url="https://stagingcompatibilitydashboard.wpcomstaging.com"
 
-      - name: Add "qit.test" to /etc/hosts
+      - name: Add "qit.test" to hosts file (Linux)
+        if: matrix.os == 'ubuntu-20.04'
         run: sudo echo "127.0.0.1 qit.test" | sudo tee -a /etc/hosts
+
+      - name: Add "qit.test" to hosts file (Windows)
+        if: matrix.os == 'windows-latest'
+        run: echo "127.0.0.1 qit.test" | Out-File -Append -Encoding ASCII -FilePath C:\Windows\System32\drivers\etc\hosts
+
+      - name: Add "qit.test" to hosts file (macOS)
+        if: matrix.os == 'macos-latest'
+        run: sudo echo "127.0.0.1 qit.test" >> /etc/hosts
 
       - name: Start environment and get URL
         run: |
