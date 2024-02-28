@@ -2,8 +2,12 @@
 
 namespace QIT_CLI\Environment\Environments;
 
+use QIT_CLI\App;
 use QIT_CLI\Environment\EnvInfo;
 use QIT_CLI\Environment\Environment;
+use Symfony\Component\Console\Input\Input;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class E2EEnvironment extends Environment {
 	/** @var string */
@@ -28,6 +32,7 @@ class E2EEnvironment extends Environment {
 
 	protected function post_up( EnvInfo $env_info ): void {
 		$env_info->nginx_port = $this->get_nginx_port( $env_info );
+		$this->environment_monitor->environment_added_or_updated( $env_info );
 
 		$php_extensions = [];
 
@@ -46,6 +51,13 @@ class E2EEnvironment extends Environment {
 	}
 
 	protected function additional_output( EnvInfo $env_info ): void {
-		$this->output->writeln( sprintf( 'Environment URL: <info>http://qit.test:%d</info>', $env_info->nginx_port ) );
+		$io = new SymfonyStyle( App::make( InputInterface::class ), $this->output );
+		$io->section( 'Disposable Test Environment Created - ' . $env_info->env_id );
+
+		$io->writeln( sprintf( 'URL: %s', 'http://qit.test:' . $env_info->nginx_port ) );
+		$io->writeln( sprintf( 'Admin: %s/wp-admin', 'http://qit.test:' . $env_info->nginx_port ) );
+		$io->writeln( 'Admin Credentials: admin/password' );
+		$io->writeln( 'Customer Credentials: customer/password' );
+		$io->writeln( sprintf( 'Path: %s', $env_info->temporary_env ) );
 	}
 }

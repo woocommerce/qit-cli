@@ -244,7 +244,7 @@ abstract class Environment {
 	}
 
 	public static function get_temp_envs_dir(): string {
-		$dir = Config::get_qit_dir() . '/temporary-envs/';
+		$dir = rtrim( Config::get_qit_dir(), DIRECTORY_SEPARATOR ) . '/temporary-envs/';
 
 		if ( ! file_exists( $dir ) && ! mkdir( $dir, 0755 ) ) {
 			throw new \RuntimeException( "Failed to create temporary environments directory." );

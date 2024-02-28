@@ -25,6 +25,26 @@ class Docker {
 		}
 	}
 
+	public function enter_environment( EnvInfo $env_info, string $docker_image = 'php', string $terminal = '/bin/bash' ): void {
+		$docker_image = $env_info->get_docker_container( $docker_image );
+
+		$process = new Process( [ $this->find_docker(), 'exec', '-it', $docker_image, $terminal ] );
+		$process->setTty( true );
+
+		if ( $this->output->isVerbose() ) {
+			// Print the command that will run.
+			$this->output->writeln( $process->getCommandLine() );
+		}
+
+		$process->run( function ( $type, $buffer ) {
+			$this->output->write( $buffer );
+		} );
+
+		if ( ! $process->isSuccessful() ) {
+			throw new \RuntimeException( 'Failed to enter environment' );
+		}
+	}
+
 	public function run_inside_docker( EnvInfo $env_info, array $command, array $env_vars = [], string $user = '', string $image = 'php' ): void {
 		$docker_image   = $env_info->get_docker_container( $image );
 		$docker_command = [ $this->find_docker(), 'exec', '-it' ];
