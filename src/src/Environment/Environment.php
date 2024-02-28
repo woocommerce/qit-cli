@@ -211,6 +211,11 @@ abstract class Environment {
 		$containers = array_unique( $containers );
 
 		if ( empty( $containers ) ) {
+			// Add Debug information
+			$this->output->writeln( $up_dry_run_process->getOutput() );
+			$this->output->writeln( $up_dry_run_process->getErrorOutput() );
+			$this->output->writeln( $up_dry_run_process->getCommandLine() );
+			$this->output->writeln( $up_dry_run_process->getExitCode() );
 			throw new \RuntimeException( 'Failed to start the environment. No containers found.' );
 		}
 
