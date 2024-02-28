@@ -97,7 +97,11 @@ class Docker {
 			$this->output->writeln( $process->getCommandLine() );
 		}
 
+		echo $process->getCommandLine();
+
+		echo "Running...\n";
 		$process->run( function ( $type, $buffer ) {
+			echo $buffer;
 			$this->output->write( $buffer );
 		} );
 
