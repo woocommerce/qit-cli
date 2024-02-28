@@ -61,23 +61,34 @@ jobs:
         run: |
           php -r "echo 'Site URL: ' . getenv('SITE_URL');"
 
-      - name: Test Site Up
+      - name: Test Site Up (Unix)
+        if: runner.os != 'Windows'
         run: |
-          php -r "$siteUrl = getenv('SITE_URL');
-          $ch = curl_init($siteUrl);
-          curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-          curl_exec($ch);
-          $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-          if ($statusCode === 200) {
-              echo 'Site is up';
+          statusCode=$(curl -o /dev/null -s -w "%{http_code}" ${{ env.SITE_URL }})
+          if [ "$statusCode" -eq 200 ]; then
+            echo "Site is up"
+          else
+            echo "Site is not up, status code: $statusCode"
+            exit 1
+          fi
+
+      - name: Test Site Up (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          $statusCode = (Invoke-WebRequest -Uri $env:SITE_URL -UseBasicParsing).StatusCode
+          if ($statusCode -eq 200) {
+            echo "Site is up"
           } else {
-              echo 'Site is not up, status code: ' . $statusCode;
-              exit(1);
-          }"
+            echo "Site is not up, status code: $statusCode"
+            exit 1
+          }
 
-      - name: Query WP JSON
+      - name: Query WP JSON (Unix)
+        if: runner.os != 'Windows'
         run: |
-          php -r "$siteUrl = getenv('SITE_URL');
-          $response = file_get_contents($siteUrl . '/wp-json');
-          echo $response;"
+          curl -s "${{ env.SITE_URL }}/wp-json"
 
+      - name: Query WP JSON (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          Invoke-RestMethod -Uri "$env:SITE_URL/wp-json" -UseBasicParsing
