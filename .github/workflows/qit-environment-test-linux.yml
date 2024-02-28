@@ -55,7 +55,9 @@ jobs:
         run: |
           set -e
           echo "Starting environment and retrieving site URL..."
-          siteUrl=$(./qit env:up | tee /dev/tty | tail -n 1)
+          output=$(./qit env:up)
+          echo "$output"
+          siteUrl=$(echo "$output" | tail -n 1)
           if [ -z "$siteUrl" ]; then
             echo "Failed to get site URL"
             exit 1
