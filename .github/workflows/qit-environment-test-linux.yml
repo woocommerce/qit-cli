@@ -1,15 +1,41 @@
 name: QIT Environment Test - Linux
 
 on:
+  # Every day at 11am and 11pm UTC (6am and 6pm ET)
+  schedule:
+    - cron: '0 11 * * *'
+    - cron: '0 23 * * *'
   # Manually
   workflow_dispatch:
+  # On push to trunk
+  push:
+    branches:
+      - trunk
 
 jobs:
-    environment_tests:
-      runs-on: ubuntu-20.04
-      env:
-        NO_COLOR: 1
-        QIT_DISABLE_ONBOARDING: yes
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
+  environment_tests:
+    runs-on: ubuntu-20.04
+    env:
+      NO_COLOR: 1
+      QIT_DISABLE_ONBOARDING: yes
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.2'
+
+      - name: Composer install
+        working-directory: _tests
+        run: composer install
+
+      - name: Enable dev mode
+        run: ./qit dev
+
+      - name: Connect to Staging QIT
+        run: ./qit backend:add --environment="staging" --qit_secret="${{ secrets.QIT_STAGING_SECRET }}" --manager_url="https://stagingcompatibilitydashboard.wpcomstaging.com"
+
+      - name: Start environment
+        run: ./qit env:up
