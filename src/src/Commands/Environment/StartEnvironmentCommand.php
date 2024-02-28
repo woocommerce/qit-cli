@@ -11,14 +11,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UpEnvironmentCommand extends DynamicCommand {
+class StartEnvironmentCommand extends DynamicCommand {
 	/** @var E2EEnvironment */
 	protected $e2e_environment;
 
 	/** @var Cache */
 	protected $cache;
 
-	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected static $defaultName = 'env:start'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	public function __construct( E2EEnvironment $e2e_environment, Cache $cache ) {
 		$this->e2e_environment = $e2e_environment;
@@ -42,7 +42,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 
 		$this->setDescription( 'Starts a local test environment.' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
-			->setAliases( [ 'env:start' ] );
+			->setAliases( [ 'env:up' ] );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {

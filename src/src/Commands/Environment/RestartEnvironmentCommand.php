@@ -16,10 +16,10 @@ class RestartEnvironmentCommand extends Command {
 	/** @var Cache */
 	protected $cache;
 
-	/** @var UpEnvironmentCommand */
+	/** @var StartEnvironmentCommand */
 	protected $up_command;
 
-	/** @var DownEnvironmentCommand */
+	/** @var StopEnvironmentCommand */
 	protected $down_command;
 
 	protected static $defaultName = 'env:restart'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
@@ -27,8 +27,8 @@ class RestartEnvironmentCommand extends Command {
 	public function __construct(
 		E2EEnvironment $e2e_environment,
 		Cache $cache,
-		UpEnvironmentCommand $up_command,
-		DownEnvironmentCommand $down_command
+		StartEnvironmentCommand $up_command,
+		StopEnvironmentCommand $down_command
 	) {
 		$this->e2e_environment = $e2e_environment;
 		$this->cache           = $cache;

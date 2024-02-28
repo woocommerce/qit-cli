@@ -10,11 +10,11 @@ use QIT_CLI\Commands\Backend\AddBackend;
 use QIT_CLI\Commands\Backend\CurrentBackend;
 use QIT_CLI\Commands\Backend\RemoveBackend;
 use QIT_CLI\Commands\Backend\SwitchBackend;
-use QIT_CLI\Commands\Environment\DownEnvironmentCommand;
+use QIT_CLI\Commands\Environment\StopEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
 use QIT_CLI\Commands\Environment\ListEnvironmentCommand;
 use QIT_CLI\Commands\Environment\RestartEnvironmentCommand;
-use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
+use QIT_CLI\Commands\Environment\StartEnvironmentCommand;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\ListCommand;
 use QIT_CLI\Commands\OnboardingCommand;
@@ -232,8 +232,8 @@ if ( $is_connected_to_backend ) {
 
 	// Environment commands.
 	try {
-		$application->add( $container->make( UpEnvironmentCommand::class ) );
-		$application->add( $container->make( DownEnvironmentCommand::class ) );
+		$application->add( $container->make( StartEnvironmentCommand::class ) );
+		$application->add( $container->make( StopEnvironmentCommand::class ) );
 		$application->add( $container->make( RestartEnvironmentCommand::class ) );
 		$application->add( $container->make( ListEnvironmentCommand::class ) );
 		$application->add( $container->make( EnterEnvironmentCommand::class ) );

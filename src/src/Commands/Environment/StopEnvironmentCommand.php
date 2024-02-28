@@ -12,14 +12,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use function QIT_CLI\format_elapsed_time;
 
-class DownEnvironmentCommand extends Command {
+class StopEnvironmentCommand extends Command {
 	/** @var E2EEnvironment */
 	protected $e2e_environment;
 
 	/** @var EnvironmentMonitor */
 	protected $environment_monitor;
 
-	protected static $defaultName = 'env:down'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected static $defaultName = 'env:stop'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	public function __construct( E2EEnvironment $e2e_environment, EnvironmentMonitor $environment_monitor ) {
 		$this->e2e_environment     = $e2e_environment;
@@ -28,7 +28,9 @@ class DownEnvironmentCommand extends Command {
 	}
 
 	protected function configure() {
-		$this->setDescription( 'Stops a local test environment.' );
+		$this
+			->setDescription( 'Stops a local test environment.' )
+			->setAliases( [ 'env:down' ] );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -49,7 +51,7 @@ class DownEnvironmentCommand extends Command {
 		$environment_choices = array_map( function ( EnvInfo $environment ) {
 			return sprintf( 'Created: %s, Status: %s',
 				format_elapsed_time( time() - $environment->created_at ),
-			$environment->status );
+				$environment->status );
 		}, $running_environments );
 
 		$environment_choices['all'] = 'Stop all environments';
