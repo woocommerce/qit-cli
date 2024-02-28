@@ -30,7 +30,12 @@ class UpEnvironmentCommand extends DynamicCommand {
 			throw new \RuntimeException( 'E2E schema not set or incomplete.' );
 		}
 
-		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'], [ 'compatibility' ] );
+		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'], [
+			'compatibility',
+			'optional_features',
+			'additional_woo_plugins',
+			'additional_wordpress_plugins',
+		] );
 
 		$this->setDescription( 'Starts a local test environment.' )
 		     ->setAliases( [ 'env:start' ] );
