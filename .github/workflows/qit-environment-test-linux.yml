@@ -46,6 +46,7 @@ jobs:
         run: sudo sh -c 'echo "127.0.0.1 qit.test" >> /etc/hosts'
 
       - name: Start environment and get URL
+        if: matrix.os == 'macos-latest' || matrix.os == 'ubuntu-20.04'
         run: |
           ENV_OUTPUT=$(./qit env:up --json)
           if [ $? -ne 0 ]; then
@@ -60,6 +61,24 @@ jobs:
             exit 1
           fi
           echo "NGINX_PORT=$NGINX_PORT" >> $GITHUB_ENV
+
+      - name: Start environment and get URL (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          $ENV_OUTPUT = ./qit env:up --json
+          if ($LastExitCode -ne 0) {
+            Write-Host "Failed to start environment"
+            Write-Host "$ENV_OUTPUT"
+            exit 1
+          }
+          Write-Host "Raw environment output: $ENV_OUTPUT"
+          $NGINX_PORT = ($ENV_OUTPUT | ConvertFrom-Json).nginx_port
+          if (-z $NGINX_PORT -or $NGINX_PORT -eq "null") {
+            Write-Host "nginx_port not found in environment output"
+            exit 1
+          }
+          echo "NGINX_PORT=$NGINX_PORT" | Out-File -FilePath $Env:GITHUB_ENV -Append
+
 
       - name: Print nginx_port
         run: |
