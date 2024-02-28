@@ -60,11 +60,20 @@ jobs:
           fi
           echo "SITE_URL=$siteUrl" >> $GITHUB_ENV
 
-      - name: Start environment and get URL (Windows)
+      - name: Run command and save output (Windows)
         if: runner.os == 'Windows'
         run: |
-          $envOutput = ./qit env:up
-          $siteUrl = $envOutput -split "\r?\n" | Select-Object -Last 1
+          ./qit env:up > output.txt
+
+      - name: Print output for debugging
+        if: runner.os == 'Windows'
+        run: |
+          Get-Content output.txt
+
+      - name: Get last line for site URL (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          $siteUrl = Get-Content output.txt | Select-Object -Last 1
           echo "SITE_URL=$siteUrl" | Out-File -Append -FilePath $Env:GITHUB_ENV
 
       - name: Print site URL
