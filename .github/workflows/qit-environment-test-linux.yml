@@ -37,5 +37,15 @@ jobs:
       - name: Connect to Staging QIT
         run: ./qit backend:add --environment="staging" --qit_secret="${{ secrets.QIT_STAGING_SECRET }}" --manager_url="https://stagingcompatibilitydashboard.wpcomstaging.com"
 
+      - name: Add "qit.test" to /etc/hosts
+        run: sudo echo "127.0.0.1 qit.test" | sudo tee -a /etc/hosts
+
       - name: Start environment
-        run: ./qit env:up
+        # Get the "url" property of the JSON and store it in an env var
+        run: ./qit env:up --json | jq -r '.url' | tee env_url.txt
+
+      - name: Test Site Up
+        run: curl -s -o /dev/null -w "%{http_code}" $(cat env_url.txt) | grep 200
+
+      - name: Query WP JSON
+        run: curl -s "$(cat env_url.txt)/wp-json"
