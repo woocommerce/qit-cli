@@ -54,11 +54,13 @@ jobs:
         if: runner.os != 'Windows'
         run: |
           set -e
-          siteUrl=$(./qit env:up | tail -n 1)
+          echo "Starting environment and retrieving site URL..."
+          siteUrl=$(./qit env:up | tee /dev/tty | tail -n 1)
           if [ -z "$siteUrl" ]; then
             echo "Failed to get site URL"
             exit 1
           fi
+          echo "Retrieved site URL: $siteUrl"
           echo "SITE_URL=$siteUrl" >> $GITHUB_ENV
 
       - name: Run command and check output
