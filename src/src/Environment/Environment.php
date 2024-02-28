@@ -8,6 +8,7 @@ use QIT_CLI\SafeRemove;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
+use function QIT_CLI\is_ci;
 
 abstract class Environment {
 	/** @var EnvironmentDownloader */
@@ -153,7 +154,7 @@ abstract class Environment {
 		$this->add_container_names( $env_info );
 
 		$up_process = new Process( array_merge( $this->docker->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'up', '-d' ] ) );
-		$up_process->setTty( true );
+		$up_process->setTty( ! is_ci() );
 
 		$up_process->run( function ( $type, $buffer ) {
 			$this->output->write( $buffer );
@@ -171,7 +172,7 @@ abstract class Environment {
 
 	public function down( EnvInfo $env_info ): void {
 		$down_process = new Process( array_merge( $this->docker->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'down' ] ) );
-		$down_process->setTty( true );
+		$down_process->setTty( ! is_ci() );
 
 		$down_process->run( function ( $type, $buffer ) {
 			$this->output->write( $buffer );
@@ -189,7 +190,7 @@ abstract class Environment {
 
 	protected function add_container_names( EnvInfo $env_info ): void {
 		$containers = [];
-		
+
 		$file = new \SplFileObject( $env_info->temporary_env . '/docker-compose.yml' );
 		while ( ! $file->eof() ) {
 			$line = $file->fgets();

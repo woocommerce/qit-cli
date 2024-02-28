@@ -133,6 +133,10 @@ function generate_uuid4() {
 	);
 }
 
+function is_ci(): bool {
+	return (bool) getenv( 'CI' );
+}
+
 /**
  * @param int $seconds The number of seconds to format.
  *
