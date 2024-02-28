@@ -20,7 +20,6 @@ class EnvironmentDownloader {
 			throw new \RuntimeException( 'E2E environment not set or incomplete.' );
 		}
 
-
 		if ( $this->cache->get( 'e2e_environment_hash' ) !== $backend_hashes[ $env_name ]['checksum'] ) {
 			if ( ! file_exists( Config::get_qit_dir() . '/environments' ) ) {
 				mkdir( Config::get_qit_dir() . '/environments' );
