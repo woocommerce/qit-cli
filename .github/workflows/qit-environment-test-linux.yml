@@ -60,10 +60,10 @@ jobs:
           fi
           echo "SITE_URL=$siteUrl" >> $GITHUB_ENV
 
-      - name: Run command and save output (Windows)
+      - name: Run command and check output
         if: runner.os == 'Windows'
         run: |
-          ./qit env:up > output.txt
+          ./qit env:up
 
       - name: Print output for debugging
         if: runner.os == 'Windows'
