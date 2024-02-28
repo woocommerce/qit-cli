@@ -12,7 +12,7 @@ jobs:
   environment_tests:
     strategy:
       matrix:
-        os: [ubuntu-20.04, windows-latest, macos-latest]
+        os: [ubuntu-20.04, windows-latest, macos-13]
         #php: ['7.2', '7.4', '8.0'] # Example PHP versions, adjust as necessary
       fail-fast: false
     runs-on: ${{ matrix.os }}
@@ -35,7 +35,7 @@ jobs:
         run: ./qit backend:add --environment="staging" --qit_secret="${{ secrets.QIT_STAGING_SECRET }}" --manager_url="https://stagingcompatibilitydashboard.wpcomstaging.com"
 
       - name: Add "qit.test" to hosts file (Linux)
-        if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-latest'
+        if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
         run: sudo echo "127.0.0.1 qit.test" | sudo tee -a /etc/hosts
 
       - name: Add "qit.test" to hosts file (Windows)
@@ -43,12 +43,12 @@ jobs:
         run: echo "127.0.0.1 qit.test" | Out-File -Append -Encoding ASCII -FilePath C:\Windows\System32\drivers\etc\hosts
 
       - name: Add "qit.test" to hosts file (macOS)
-        if: matrix.os == 'macos-latest'
+        if: matrix.os == 'macos-13'
         run: sudo sh -c 'echo "127.0.0.1 qit.test" >> /etc/hosts'
 
-      - name: Set up Docker
-        if: matrix.os == 'macos-latest'
-        uses: crazy-max/ghaction-setup-docker@v3.0.0
+      - name: Setup Docker on macOS
+        if: matrix.os == 'macos-13'
+        uses: douglascamata/setup-docker-macos-action@v1-alpha
 
       - name: Start environment and get URL (Unix)
         if: runner.os != 'Windows'
