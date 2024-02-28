@@ -64,7 +64,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           $envOutput = ./qit env:up
-          $siteUrl = $envOutput -split "`r`n" | Select-Object -Last 1
+          $siteUrl = $envOutput -split "\r?\n" | Select-Object -Last 1
           echo "SITE_URL=$siteUrl" | Out-File -Append -FilePath $Env:GITHUB_ENV
 
       - name: Print site URL
