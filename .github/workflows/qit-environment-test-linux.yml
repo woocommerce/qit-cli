@@ -68,18 +68,7 @@ jobs:
       - name: Start environment and get URL (Unix)
         if: runner.os != 'Windows'
         working-directory: src
-        run: |
-          set -e
-          echo "Starting environment and retrieving site URL..."
-          output=$(php qit-cli.php env:up)
-          echo "$output"
-          siteUrl=$(echo "$output" | tail -n 1)
-          if [ -z "$siteUrl" ]; then
-            echo "Failed to get site URL"
-            exit 1
-          fi
-          echo "Retrieved site URL: $siteUrl"
-          echo "SITE_URL=$siteUrl" >> $GITHUB_ENV
+        run: php qit-cli.php env:up
 
       - name: Run command and check output
         if: runner.os == 'Windows'
