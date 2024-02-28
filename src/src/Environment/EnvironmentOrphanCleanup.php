@@ -2,8 +2,6 @@
 
 namespace QIT_CLI\Environment;
 
-use QIT_CLI\App;
-use QIT_CLI\IO\Input;
 use QIT_CLI\SafeRemove;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;

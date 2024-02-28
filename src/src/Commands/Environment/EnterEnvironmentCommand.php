@@ -11,6 +11,7 @@ use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
+use function QIT_CLI\format_elapsed_time;
 
 class EnterEnvironmentCommand extends Command {
 	/** @var E2EEnvironment */
@@ -57,7 +58,7 @@ class EnterEnvironmentCommand extends Command {
 		$environment_choices = array_map( function ( EnvInfo $environment ) {
 			return sprintf( 'ID: %s, Created: %s, Status: %s',
 				$environment->env_id,
-				date( 'Y-m-d H:i', $environment->created_at ), // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+				format_elapsed_time( $environment->created_at ),
 			$environment->status );
 		}, $running_environments );
 

@@ -2,7 +2,6 @@
 
 namespace QIT_CLI\Commands\Environment;
 
-use QIT_CLI\Environment\EnvInfo;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableSeparator;
@@ -42,7 +41,6 @@ class ListEnvironmentCommand extends Command {
 		$definitions = [];
 
 		foreach ( $running as $environment ) {
-			/** @var EnvInfo $environment */
 			$elapsed = format_elapsed_time( time() - $environment->created_at );
 
 			/**
@@ -51,7 +49,7 @@ class ListEnvironmentCommand extends Command {
 			 * @see https://github.com/phpstan/phpstan/issues/1060
 			 * @phpstan-ignore-next-line
 			 */
-			foreach ( $environment as $k => $v ) {
+			foreach ( $environment as $k => $v ) { // @phan-suppress-current-line PhanTypeSuspiciousNonTraversableForeach
 				if ( $k === 'created_at' ) {
 					$v = $elapsed;
 				}

@@ -48,7 +48,7 @@ class DownEnvironmentCommand extends Command {
 
 		$environment_choices = array_map( function ( EnvInfo $environment ) {
 			return sprintf( 'Created: %s, Status: %s',
-				date( 'Y-m-d H:i', $environment->created_at ), // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+				format_elapsed_time( $environment->created_at ),
 			$environment->status );
 		}, $running_environments );
 

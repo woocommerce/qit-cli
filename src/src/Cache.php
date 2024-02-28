@@ -2,7 +2,6 @@
 
 namespace QIT_CLI;
 
-use QIT_CLI\Environment\EnvInfo;
 use QIT_CLI\IO\Output;
 
 class Cache {
