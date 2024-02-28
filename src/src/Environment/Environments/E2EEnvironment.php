@@ -27,6 +27,8 @@ class E2EEnvironment extends Environment {
 	}
 
 	protected function post_up( EnvInfo $env_info ): void {
+		$env_info->nginx_port = $this->get_nginx_port( $env_info );
+
 		$php_extensions = [];
 
 		if ( ! empty( $php_extensions ) ) {
@@ -39,7 +41,11 @@ class E2EEnvironment extends Environment {
 			'WORDPRESS_VERSION'   => 'latest',
 			'WOOCOMMERCE_VERSION' => '8.6.0',
 			'SUT_SLUG'            => 'automatewoo',
-			'SITE_URL'            => 'http://qit.test:' . $this->get_nginx_port( $env_info ),
+			'SITE_URL'            => 'http://qit.test:' . $env_info->nginx_port,
 		] );
+	}
+
+	protected function additional_output( EnvInfo $env_info ): void {
+		$this->output->writeln( sprintf( 'Environment URL: <info>http://qit.test:%d</info>', $env_info->nginx_port ) );
 	}
 }

@@ -67,6 +67,8 @@ abstract class Environment {
 
 	abstract protected function post_up( EnvInfo $env_info ): void;
 
+	abstract protected function additional_output( EnvInfo $env_info ): void;
+
 	public function up(): void {
 		// Start the benchmark.
 		$start = microtime( true );
@@ -79,11 +81,11 @@ abstract class Environment {
 		$this->generate_docker_compose();
 		$this->post_generate_docker_compose( $env_info );
 		$this->up_docker_compose( $env_info );
+		$this->post_up( $env_info );
 
-		$server_started = microtime( true );
-		echo "Server started at " . round( microtime( true ) - $start, 2 ) . " seconds\n";
-
-		echo "Temporary environment: $this->temporary_environment_path\n";
+		$this->output->writeln( "Server started at " . round( microtime( true ) - $start, 2 ) . " seconds" );
+		$this->output->writeln( "Temporary environment: $this->temporary_environment_path\n" );
+		$this->additional_output( $env_info );
 	}
 
 	// Copies the source environment to the temporary environment.
@@ -152,8 +154,6 @@ abstract class Environment {
 		$env_info->status = 'started';
 
 		$this->environment_monitor->environment_added_or_updated( $env_info );
-
-		$this->post_up( $env_info );
 	}
 
 	public function down( EnvInfo $env_info ): void {
