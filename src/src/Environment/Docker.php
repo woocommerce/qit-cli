@@ -57,7 +57,11 @@ class Docker {
 	 */
 	public function run_inside_docker( EnvInfo $env_info, array $command, array $env_vars = [], string $user = '', string $image = 'php' ): void {
 		$docker_image   = $env_info->get_docker_container( $image );
-		$docker_command = [ $this->find_docker(), 'exec', '-it' ];
+		$docker_command = [ $this->find_docker(), 'exec' ];
+
+		if ( ! is_ci() ) {
+			$docker_image = array_merge( $docker_image, [ '-it' ] );
+		}
 
 		if ( empty( $user ) ) {
 			if ( function_exists( 'posix_getuid' ) && function_exists( 'posix_getuid' ) ) {
