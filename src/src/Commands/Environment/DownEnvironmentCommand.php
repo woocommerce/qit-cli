@@ -76,7 +76,7 @@ class DownEnvironmentCommand extends Command {
 		return Command::SUCCESS;
 	}
 
-	private function stop_environment( EnvInfo $environment, OutputInterface $output ) {
+	private function stop_environment( EnvInfo $environment, OutputInterface $output ): void {
 		$this->e2e_environment->down( $environment );
 		$environment_id = $environment->env_id;
 		$output->writeln( "<info>Environment '$environment_id' stopped.</info>" );

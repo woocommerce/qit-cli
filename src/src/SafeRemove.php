@@ -33,7 +33,9 @@ class SafeRemove {
 		}
 
 		// Check the depth of the path.
-		$depth = count( array_filter( explode( DIRECTORY_SEPARATOR, $normalized_path ), 'strlen' ) );
+		$depth = count( array_filter( explode( DIRECTORY_SEPARATOR, $normalized_path ), static function ( string $str ): bool {
+			return strlen( $str ) > 0;
+		} ) );
 
 		if ( $depth < $min_depth ) {
 			throw new \Exception( 'The depth of the path is not sufficient.' );

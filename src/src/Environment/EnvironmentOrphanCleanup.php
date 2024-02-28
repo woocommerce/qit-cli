@@ -89,7 +89,7 @@ class EnvironmentOrphanCleanup {
 		}
 	}
 
-	protected function delete_orphaned_docker_containers() {
+	protected function delete_orphaned_docker_containers(): void {
 		$running_environment_docker_images = array_map( function ( EnvInfo $env_info ) {
 			return $env_info->docker_images;
 		}, $this->environment_monitor->get() );
@@ -122,14 +122,15 @@ class EnvironmentOrphanCleanup {
 		}
 	}
 
-	protected function delete_orphaned_environments_from_fileystem() {
+	protected function delete_orphaned_environments_from_fileystem(): void {
 		$running_environment_paths = array_map( function ( EnvInfo $env_info ) {
 			return $env_info->temporary_env;
 		}, $this->environment_monitor->get() );
 
-		/** @var \SplFileInfo $fileInfo */
+		/** @var \SplFileInfo $file_info */
 		foreach ( new \DirectoryIterator( Environment::get_temp_envs_dir() ) as $file_info ) {
-			if ( $file_info->isDot() || $file_info->isLink() || ! $file_info->isDir() ) {
+			$is_dot = in_array( $file_info->getFilename(), [ '.', '..' ], true );
+			if ( $is_dot || $file_info->isLink() || ! $file_info->isDir() ) {
 				continue;
 			}
 

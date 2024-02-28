@@ -45,6 +45,12 @@ class ListEnvironmentCommand extends Command {
 			/** @var EnvInfo $environment */
 			$elapsed = format_elapsed_time( time() - $environment->created_at );
 
+			/**
+			 * EnvInfo is iterable (public properties) but PHPStan flags it anyway.
+			 *
+			 * @see https://github.com/phpstan/phpstan/issues/1060
+			 * @phpstan-ignore-next-line
+			 */
 			foreach ( $environment as $k => $v ) {
 				if ( $k === 'created_at' ) {
 					$v = $elapsed;

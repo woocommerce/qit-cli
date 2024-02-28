@@ -13,7 +13,7 @@ class Docker {
 		$this->output = $output;
 	}
 
-	public function find_docker() {
+	public function find_docker(): string {
 		$docker = 'docker';
 
 		$docker_version = trim( shell_exec( $docker . ' --version' ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
@@ -45,6 +45,15 @@ class Docker {
 		}
 	}
 
+	/**
+	 * @param EnvInfo              $env_info
+	 * @param array<scalar>        $command The Command to run, in a Symfony Process format.
+	 * @param array<string,scalar> $env_vars Any additional env vars to set in the process.
+	 * @param string               $user The user to run the command as.
+	 * @param string               $image The docker image to run the command in.
+	 *
+	 * @return void
+	 */
 	public function run_inside_docker( EnvInfo $env_info, array $command, array $env_vars = [], string $user = '', string $image = 'php' ): void {
 		$docker_image   = $env_info->get_docker_container( $image );
 		$docker_command = [ $this->find_docker(), 'exec', '-it' ];
@@ -88,6 +97,9 @@ class Docker {
 		}
 	}
 
+	/**
+	 * @return array<string> The docker-compose command to use, in a Symfony Process format.
+	 */
 	public function find_docker_compose(): array {
 		// Find out if it's docker-compose (v1) or docker compose (v2).
 		$docker_compose_v2 = 'docker compose';

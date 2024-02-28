@@ -25,7 +25,7 @@ class E2EEnvironment extends Environment {
 		return 'e2e';
 	}
 
-	public function set_wordpress_version( string $wordpress_version ) {
+	public function set_wordpress_version( string $wordpress_version ): void {
 		if ( in_array( $wordpress_version, [ 'stable', 'rc' ], true ) ) {
 			$this->wordpress_version = $this->cache->get_manager_sync_data( 'versions' )['wordpress'][ $wordpress_version ];
 		} else {
@@ -33,7 +33,7 @@ class E2EEnvironment extends Environment {
 		}
 	}
 
-	public function set_woocommerce_version( string $woocommerce_version ) {
+	public function set_woocommerce_version( string $woocommerce_version ): void {
 		if ( in_array( $woocommerce_version, [ 'stable', 'rc' ], true ) ) {
 			$this->woocommerce_version = $this->cache->get_manager_sync_data( 'versions' )['woocommerce'][ $woocommerce_version ];
 		} else {
@@ -41,7 +41,7 @@ class E2EEnvironment extends Environment {
 		}
 	}
 
-	public function set_php_version( string $php_version ) {
+	public function set_php_version( string $php_version ): void {
 		$this->php_version = $php_version;
 	}
 
@@ -64,6 +64,10 @@ class E2EEnvironment extends Environment {
 
 		$php_extensions = [];
 
+		/**
+		 * @todo Add support for PHP extensions in the temp environments.
+		 * @phpstan-ignore-next-line
+		 */
 		if ( ! empty( $php_extensions ) ) {
 			$this->docker->run_inside_docker( $env_info, [ '/bin/bash', '/qit/bin/php-extensions.sh' ], [
 				'PHP_EXTENSIONS' => '', // Space-separated list of PHP extensions.
@@ -89,6 +93,9 @@ class E2EEnvironment extends Environment {
 		$io->writeln( sprintf( 'Path: %s', $env_info->temporary_env ) );
 	}
 
+	/**
+	 * @return array<string,string>
+	 */
 	protected function get_generate_docker_compose_envs( EnvInfo $env_info ): array {
 		return [
 			'PHP_VERSION' => $this->php_version,

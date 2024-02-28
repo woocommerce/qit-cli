@@ -12,8 +12,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 class RestartEnvironmentCommand extends Command {
 	/** @var E2EEnvironment */
 	protected $e2e_environment;
+
+	/** @var Cache */
 	protected $cache;
+
+	/** @var UpEnvironmentCommand */
 	protected $up_command;
+
+	/** @var DownEnvironmentCommand */
 	protected $down_command;
 
 	protected static $defaultName = 'env:restart'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase

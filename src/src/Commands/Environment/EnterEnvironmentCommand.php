@@ -19,6 +19,9 @@ class EnterEnvironmentCommand extends Command {
 	/** @var EnvironmentMonitor */
 	protected $environment_monitor;
 
+	/** @var Docker */
+	protected $docker;
+
 	protected static $defaultName = 'env:enter'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	public function __construct(
@@ -46,7 +49,7 @@ class EnterEnvironmentCommand extends Command {
 		}
 
 		if ( count( $running_environments ) === 1 ) {
-			$this->enter_environment( array_shift( $running_environments ), $output );
+			$this->docker->enter_environment( array_shift( $running_environments ) );
 
 			return Command::SUCCESS;
 		}
@@ -67,20 +70,17 @@ class EnterEnvironmentCommand extends Command {
 		$question->setErrorMessage( 'Environment %s is invalid.' );
 
 		$selected_environment = $helper->ask( $input, $output, $question );
-		$environment          = $this->environment_monitor->get_env_info_by_id( $selected_environment );
 
-		if ( ! $environment ) {
+		try {
+			$environment = $this->environment_monitor->get_env_info_by_id( $selected_environment );
+		} catch ( \Exception $e ) {
 			$output->writeln( '<error>Selected environment not found.</error>' );
 
 			return Command::FAILURE;
 		}
 
-		$this->enter_environment( $environment, $output );
+		$this->docker->enter_environment( $environment );
 
 		return Command::SUCCESS;
-	}
-
-	private function enter_environment( EnvInfo $environment, OutputInterface $output ) {
-		$this->docker->enter_environment( $environment );
 	}
 }

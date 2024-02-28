@@ -47,6 +47,9 @@ class EnvInfo implements \JsonSerializable {
 		return array_shift( $docker_image );
 	}
 
+	/**
+	 * @param array<string,scalar> $decoded_json
+	 */
 	public static function from_array( array $decoded_json ): EnvInfo {
 		$instance = new self();
 

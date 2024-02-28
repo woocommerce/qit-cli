@@ -63,6 +63,9 @@ abstract class Environment {
 
 	abstract public function get_name(): string;
 
+	/**
+	 * @return array<string,string>
+	 */
 	abstract protected function get_generate_docker_compose_envs( EnvInfo $env_info ): array;
 
 	abstract protected function post_generate_docker_compose( EnvInfo $env_info ): void;
@@ -146,7 +149,7 @@ abstract class Environment {
 		}
 	}
 
-	protected function up_docker_compose( EnvInfo $env_info ) {
+	protected function up_docker_compose( EnvInfo $env_info ): void {
 		$this->add_container_names( $env_info );
 
 		$up_process = new Process( array_merge( $this->docker->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'up', '-d' ] ) );

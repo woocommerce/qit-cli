@@ -14,6 +14,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class UpEnvironmentCommand extends DynamicCommand {
 	/** @var E2EEnvironment */
 	protected $e2e_environment;
+
+	/** @var Cache */
 	protected $cache;
 
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase

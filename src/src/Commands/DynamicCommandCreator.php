@@ -12,8 +12,9 @@ abstract class DynamicCommandCreator {
 	abstract public function register_commands( Application $application ): void;
 
 	/**
-	 * @param DynamicCommand $command
-	 * @param array<mixed>   $schema
+	 * @param DynamicCommand $command The command to add the schema to.
+	 * @param array<mixed>   $schema The schema to add to the command.
+	 * @param array<string>  $exceptions What to ignore when adding options.
 	 *
 	 * @return void
 	 */
