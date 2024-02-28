@@ -10,6 +10,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use function QIT_CLI\is_windows;
 
 class StartEnvironmentCommand extends DynamicCommand {
 	/** @var E2EEnvironment */
@@ -47,6 +48,11 @@ class StartEnvironmentCommand extends DynamicCommand {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
+		if ( is_windows() ) {
+			// Show a warning but let them try.
+			$output->writeln( '<error>Windows is not supported. Please use WSL2.</error>' );
+		}
+
 		try {
 			$options = $this->parse_options( $input );
 		} catch ( \Exception $e ) {

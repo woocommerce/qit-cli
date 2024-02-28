@@ -154,6 +154,8 @@ abstract class Environment {
 		$this->add_container_names( $env_info );
 
 		$up_process = new Process( array_merge( $this->docker->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'up', '-d' ] ) );
+		$up_process->setTimeout( 300 );
+		$up_process->setIdleTimeout( 300 );
 		$up_process->setTty( ! is_ci() );
 
 		$up_process->run( function ( $type, $buffer ) {
