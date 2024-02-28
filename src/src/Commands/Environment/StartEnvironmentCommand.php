@@ -41,8 +41,9 @@ class StartEnvironmentCommand extends DynamicCommand {
 		] );
 
 		$this->setDescription( 'Starts a local test environment.' )
-			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
-			->setAliases( [ 'env:up' ] );
+		     ->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
+		     ->addOption( 'site_url', 's', InputOption::VALUE_NEGATABLE, 'Prints just the site URL when the environment is up.', false )
+		     ->setAliases( [ 'env:up' ] );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -80,6 +81,9 @@ class StartEnvironmentCommand extends DynamicCommand {
 		if ( $input->getOption( 'json' ) ) {
 			$output->write( json_encode( $env_info ) );
 		}
+
+		// Print the site URL as the last information for easy programmatic integrations.
+		$output->writeln( $env_info->site_url );
 
 		return Command::SUCCESS;
 	}
