@@ -48,7 +48,7 @@ class DownEnvironmentCommand extends Command {
 
 		$environment_choices = array_map( function ( EnvInfo $environment ) {
 			return sprintf( 'Created: %s, Status: %s',
-				format_elapsed_time( $environment->created_at ),
+				format_elapsed_time( time() - $environment->created_at ),
 			$environment->status );
 		}, $running_environments );
 

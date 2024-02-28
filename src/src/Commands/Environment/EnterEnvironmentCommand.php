@@ -58,7 +58,7 @@ class EnterEnvironmentCommand extends Command {
 		$environment_choices = array_map( function ( EnvInfo $environment ) {
 			return sprintf( 'ID: %s, Created: %s, Status: %s',
 				$environment->env_id,
-				format_elapsed_time( $environment->created_at ),
+				format_elapsed_time( time() - $environment->created_at ),
 			$environment->status );
 		}, $running_environments );
 
