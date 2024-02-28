@@ -45,21 +45,17 @@ jobs:
         if: matrix.os == 'macos-latest'
         run: sudo sh -c 'echo "127.0.0.1 qit.test" >> /etc/hosts'
 
-      - name: Start environment and get URL
+      - name: Start environment and get URL (Unix)
+        if: runner.os != 'Windows'
         run: |
-          php -r "$envOutput = shell_exec('./qit env:up --json');
-          if ($envOutput === null) {
-              echo 'Failed to start environment';
-              exit(1);
-          }
-          echo 'Raw environment output: ' . $envOutput;
-          $data = json_decode($envOutput, true);
-          $siteUrl = $data['site_url'] ?? '';
-          if (empty($siteUrl)) {
-              echo 'site_url not found in environment output';
-              exit(1);
-          }
-          file_put_contents(getenv('GITHUB_ENV'), 'SITE_URL=' . $siteUrl . PHP_EOL, FILE_APPEND);"
+          siteUrl=$(./qit env:up | tail -n 1)
+          echo "SITE_URL=$siteUrl" >> $GITHUB_ENV
+
+      - name: Start environment and get URL (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          $siteUrl = ./qit env:up | Select-Object -Last 1
+          echo "SITE_URL=$siteUrl" | Out-File -Append -FilePath $Env:GITHUB_ENV
 
       - name: Print site URL
         run: |
