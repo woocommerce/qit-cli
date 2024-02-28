@@ -46,54 +46,42 @@ jobs:
         run: sudo sh -c 'echo "127.0.0.1 qit.test" >> /etc/hosts'
 
       - name: Start environment and get URL
-        if: matrix.os == 'macos-latest' || matrix.os == 'ubuntu-20.04'
         run: |
-          ENV_OUTPUT=$(./qit env:up --json)
-          if [ $? -ne 0 ]; then
-            echo "Failed to start environment"
-            echo "$ENV_OUTPUT"
-            exit 1
-          fi
-          echo "Raw environment output: $ENV_OUTPUT"
-          NGINX_PORT=$(echo "$ENV_OUTPUT" | jq -r '.nginx_port')
-          if [ -z "$NGINX_PORT" ] || [ "$NGINX_PORT" = "null" ]; then
-            echo "nginx_port not found in environment output"
-            exit 1
-          fi
-          echo "NGINX_PORT=$NGINX_PORT" >> $GITHUB_ENV
-
-      - name: Start environment and get URL (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          $ENV_OUTPUT = ./qit env:up --json
-          if ($LastExitCode -ne 0) {
-            Write-Host "Failed to start environment"
-            Write-Host "$ENV_OUTPUT"
-            exit 1
+          php -r "$envOutput = shell_exec('./qit env:up --json');
+          if ($envOutput === null) {
+              echo 'Failed to start environment';
+              exit(1);
           }
-          Write-Host "Raw environment output: $ENV_OUTPUT"
-          $NGINX_PORT = ($ENV_OUTPUT | ConvertFrom-Json).nginx_port
-          if (-z $NGINX_PORT -or $NGINX_PORT -eq "null") {
-            Write-Host "nginx_port not found in environment output"
-            exit 1
+          echo 'Raw environment output: ' . $envOutput;
+          $data = json_decode($envOutput, true);
+          $siteUrl = $data['site_url'] ?? '';
+          if (empty($siteUrl)) {
+              echo 'site_url not found in environment output';
+              exit(1);
           }
-          echo "NGINX_PORT=$NGINX_PORT" | Out-File -FilePath $Env:GITHUB_ENV -Append
+          file_put_contents(getenv('GITHUB_ENV'), 'SITE_URL=' . $siteUrl . PHP_EOL, FILE_APPEND);"
 
-
-      - name: Print nginx_port
+      - name: Print site URL
         run: |
-          echo "Nginx port: $NGINX_PORT"
+          php -r "echo 'Site URL: ' . getenv('SITE_URL');"
 
       - name: Test Site Up
         run: |
-          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://qit.test:$NGINX_PORT/)
-          if [ "$STATUS_CODE" -eq 200 ]; then
-            echo "Site is up"
-          else
-            echo "Site is not up, status code: $STATUS_CODE"
-            exit 1
-          fi
+          php -r "$siteUrl = getenv('SITE_URL');
+          $ch = curl_init($siteUrl);
+          curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+          curl_exec($ch);
+          $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+          if ($statusCode === 200) {
+              echo 'Site is up';
+          } else {
+              echo 'Site is not up, status code: ' . $statusCode;
+              exit(1);
+          }"
 
       - name: Query WP JSON
         run: |
-          curl -s "http://qit.test:$NGINX_PORT/wp-json"
+          php -r "$siteUrl = getenv('SITE_URL');
+          $response = file_get_contents($siteUrl . '/wp-json');
+          echo $response;"
+

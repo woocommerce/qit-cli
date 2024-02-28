@@ -59,7 +59,7 @@ class E2EEnvironment extends Environment {
 	}
 
 	protected function post_up( EnvInfo $env_info ): void {
-		$env_info->nginx_port = $this->get_nginx_port( $env_info );
+		$env_info->site_url = 'http://qit.test:' . $this->get_nginx_port( $env_info );
 		$this->environment_monitor->environment_added_or_updated( $env_info );
 
 		$php_extensions = [];
@@ -78,7 +78,7 @@ class E2EEnvironment extends Environment {
 			'WORDPRESS_VERSION'   => $this->wordpress_version,
 			'WOOCOMMERCE_VERSION' => $this->woocommerce_version,
 			'SUT_SLUG'            => 'automatewoo',
-			'SITE_URL'            => 'http://qit.test:' . $env_info->nginx_port,
+			'SITE_URL'            => $env_info->site_url,
 		] );
 	}
 
@@ -86,8 +86,8 @@ class E2EEnvironment extends Environment {
 		$io = new SymfonyStyle( App::make( InputInterface::class ), $this->output );
 		$io->section( 'Disposable Test Environment Created - ' . $env_info->env_id );
 
-		$io->writeln( sprintf( 'URL: %s', 'http://qit.test:' . $env_info->nginx_port ) );
-		$io->writeln( sprintf( 'Admin: %s/wp-admin', 'http://qit.test:' . $env_info->nginx_port ) );
+		$io->writeln( sprintf( 'URL: %s', $env_info->site_url ) );
+		$io->writeln( sprintf( 'Admin: %s/wp-admin', $env_info->site_url ) );
 		$io->writeln( 'Admin Credentials: admin/password' );
 		$io->writeln( 'Customer Credentials: customer/password' );
 		$io->writeln( sprintf( 'Path: %s', $env_info->temporary_env ) );

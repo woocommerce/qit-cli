@@ -18,8 +18,8 @@ class EnvInfo implements \JsonSerializable {
 	/** @var string */
 	public $env_id;
 
-	/** @var ?int The port Nginx exposes to the host, if any. */
-	public $nginx_port = null;
+	/** @var string The site URL, if any. */
+	public $site_url;
 
 	/**
 	 * @var array<string> Array of docker images associated with this environment.
