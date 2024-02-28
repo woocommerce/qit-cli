@@ -61,6 +61,10 @@ jobs:
           echo "Checking Docker Compose (standalone) version..."
           docker-compose --version || echo "Docker Compose (standalone) is not installed"
 
+      - name: Composer install
+        working-directory: src
+        run: composer install
+
       - name: Start environment and get URL (Unix)
         if: runner.os != 'Windows'
         working-directory: src
