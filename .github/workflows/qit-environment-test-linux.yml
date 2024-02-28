@@ -49,6 +49,10 @@ jobs:
           fi
           echo "ENV_URL=$URL" >> $GITHUB_ENV
 
+      - name: Print environment URL
+        run: |
+          echo "Environment URL: $ENV_URL"
+
       - name: Test Site Up
         run: |
           STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" $ENV_URL)
@@ -62,3 +66,4 @@ jobs:
       - name: Query WP JSON
         run: |
           curl -s "$ENV_URL/wp-json"
+      
