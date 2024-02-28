@@ -60,7 +60,7 @@ class Docker {
 		$docker_command = [ $this->find_docker(), 'exec' ];
 
 		if ( ! is_ci() ) {
-			$docker_image = array_merge( $docker_image, [ '-it' ] );
+			$docker_command = array_merge( $docker_command, [ '-it' ] );
 		}
 
 		if ( empty( $user ) ) {
