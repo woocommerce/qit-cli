@@ -46,16 +46,20 @@ jobs:
         if: matrix.os == 'macos-13'
         run: sudo sh -c 'echo "127.0.0.1 qit.test" >> /etc/hosts'
 
-      - name: Setup docker (missing on MacOS)
-        if: runner.os == 'macos'
+      - name: Setup Docker on macOS
+        if: matrix.os == 'macos-13'
+        uses: douglascamata/setup-docker-macos-action@v1-alpha
+
+      - name: Debug Docker and Docker Compose
         run: |
-          brew install docker
-          brew install colima
-          colima start
-          
-          # For testcontainers to find the Colima socket
-          # https://github.com/abiosoft/colima/blob/main/docs/FAQ.md#cannot-connect-to-the-docker-daemon-at-unixvarrundockersock-is-the-docker-daemon-running
-          sudo ln -sf $HOME/.colima/default/docker.sock /var/run/docker.sock
+          echo "Checking Docker version..."
+          docker --version || echo "Docker is not installed"
+
+          echo "Checking Docker Compose (plugin) version..."
+          docker compose version || echo "Docker Compose (plugin) is not installed"
+
+          echo "Checking Docker Compose (standalone) version..."
+          docker-compose --version || echo "Docker Compose (standalone) is not installed"
 
       - name: Start environment and get URL (Unix)
         if: runner.os != 'Windows'
