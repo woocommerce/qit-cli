@@ -188,34 +188,18 @@ abstract class Environment {
 	}
 
 	protected function add_container_names( EnvInfo $env_info ): void {
-		/*
-		 * Get the docker containers names, eg:
-		 * [+] Running 4/0
-		 *  ✔ DRY-RUN MODE -  Container qit_env_cache_65dcc53c66545  Running                                                                                                                                                                                                                                              0.0s
-		 *  ✔ DRY-RUN MODE -  Container qit_env_db_65dcc53c66545     Running                                                                                                                                                                                                                                              0.0s
-		 *  ✔ DRY-RUN MODE -  Container qit_env_php_65dcc53c66545    Running                                                                                                                                                                                                                                              0.0s
-		 *  ✔ DRY-RUN MODE -  Container qit_env_nginx_65dcc53c66545  Created                                                                                                                                                                                                                                              0.0s
-		 * end of 'compose up' output, interactive run is not supported in dry-run mode
-		 */
-		$up_dry_run_process = new Process( array_merge( $this->docker->find_docker_compose(), [ '-f', $this->temporary_environment_path . '/docker-compose.yml', 'up', '--dry-run' ] ) );
-		$up_dry_run_process->run();
-
 		$containers = [];
-
-		foreach ( explode( "\n", $up_dry_run_process->getOutput() . "\n" . $up_dry_run_process->getErrorOutput() ) as $line ) {
-			if ( preg_match( '/(qit_env_[\w\d]+)/', $line, $matches ) ) {
+		
+		$file = new \SplFileObject( $env_info->temporary_env . '/docker-compose.yml' );
+		while ( ! $file->eof() ) {
+			$line = $file->fgets();
+			if ( preg_match( '/^\s+container_name:\s*(\w+)/', $line, $matches ) ) {
 				$containers[] = $matches[1];
 			}
 		}
-
 		$containers = array_unique( $containers );
 
 		if ( empty( $containers ) ) {
-			// Add Debug information
-			$this->output->writeln( $up_dry_run_process->getOutput() );
-			$this->output->writeln( $up_dry_run_process->getErrorOutput() );
-			$this->output->writeln( $up_dry_run_process->getCommandLine() );
-			$this->output->writeln( $up_dry_run_process->getExitCode() );
 			throw new \RuntimeException( 'Failed to start the environment. No containers found.' );
 		}
 
