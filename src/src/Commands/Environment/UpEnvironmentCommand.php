@@ -21,7 +21,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 	public function __construct( E2EEnvironment $e2e_environment, Cache $cache ) {
 		$this->e2e_environment = $e2e_environment;
 		$this->cache           = $cache;
-		parent::__construct( static::$defaultName );
+		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
 	protected function configure() {
@@ -40,7 +40,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 
 		$this->setDescription( 'Starts a local test environment.' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
-		     ->setAliases( [ 'env:start' ] );
+			->setAliases( [ 'env:start' ] );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -73,7 +73,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 
 		$env_info = $this->e2e_environment->up();
 
-		$output->writeln( "<info>Environment up.</info>" );
+		$output->writeln( '<info>Environment up.</info>' );
 
 		if ( $input->getOption( 'json' ) ) {
 			$output->write( json_encode( $env_info ) );

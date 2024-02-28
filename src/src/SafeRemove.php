@@ -10,7 +10,7 @@ class SafeRemove {
 	 *
 	 * @param string $path The directory to delete.
 	 * @param string $assert_inside_dir A directory that the path must be inside of.
-	 * @param int $min_depth The minimum depth of the path.
+	 * @param int    $min_depth The minimum depth of the path.
 	 *
 	 * @return void
 	 * @throws \Exception If the safety checks fail.
@@ -18,28 +18,28 @@ class SafeRemove {
 	public static function delete_dir( string $path, string $assert_inside_dir = '', int $min_depth = 2 ) {
 		$filesystem = new Filesystem();
 
-		// Ensure the path is not empty and is a directory
+		// Ensure the path is not empty and is a directory.
 		if ( empty( $path ) || ! is_dir( $path ) ) {
-			throw new \Exception( "Invalid or empty directory path." );
+			throw new \Exception( 'Invalid or empty directory path.' );
 		}
 
-		// Normalize the paths to remove trailing slashes
-		$normalizedPath      = rtrim( $path, DIRECTORY_SEPARATOR );
-		$normalizedAssertDir = rtrim( $assert_inside_dir, DIRECTORY_SEPARATOR );
+		// Normalize the paths to remove trailing slashes.
+		$normalized_path       = rtrim( $path, DIRECTORY_SEPARATOR );
+		$normalized_assert_dir = rtrim( $assert_inside_dir, DIRECTORY_SEPARATOR );
 
-		// Check if the path is inside the assert directory
-		if ( $normalizedAssertDir && strpos( $normalizedPath, $normalizedAssertDir ) !== 0 ) {
-			throw new \Exception( "The path must be inside the specified assert directory." );
+		// Check if the path is inside the assert directory.
+		if ( $normalized_assert_dir && strpos( $normalized_path, $normalized_assert_dir ) !== 0 ) {
+			throw new \Exception( 'The path must be inside the specified assert directory.' );
 		}
 
-		// Check the depth of the path
-		$depth = count( array_filter( explode( DIRECTORY_SEPARATOR, $normalizedPath ), 'strlen' ) );
+		// Check the depth of the path.
+		$depth = count( array_filter( explode( DIRECTORY_SEPARATOR, $normalized_path ), 'strlen' ) );
 
 		if ( $depth < $min_depth ) {
-			throw new \Exception( "The depth of the path is not sufficient." );
+			throw new \Exception( 'The depth of the path is not sufficient.' );
 		}
 
-		// Delete the directory
-		$filesystem->remove( $normalizedPath );
+		// Delete the directory.
+		$filesystem->remove( $normalized_path );
 	}
 }

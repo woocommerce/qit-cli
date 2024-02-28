@@ -16,7 +16,7 @@ class Docker {
 	public function find_docker() {
 		$docker = 'docker';
 
-		$docker_version = trim( shell_exec( $docker . ' --version' ) );
+		$docker_version = trim( shell_exec( $docker . ' --version' ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
 
 		if ( $docker_version ) {
 			return $docker;
@@ -89,12 +89,12 @@ class Docker {
 	}
 
 	public function find_docker_compose(): array {
-		// Find out if it's docker-compose (v1) or docker compose (v2)
+		// Find out if it's docker-compose (v1) or docker compose (v2).
 		$docker_compose_v2 = 'docker compose';
 		$docker_compose_v1 = 'docker-compose';
 
-		$v1_version = trim( shell_exec( $docker_compose_v2 . ' --version' ) );
-		$v2_version = trim( shell_exec( $docker_compose_v1 . ' --version' ) );
+		$v1_version = trim( shell_exec( $docker_compose_v2 . ' --version' ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
+		$v2_version = trim( shell_exec( $docker_compose_v1 . ' --version' ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
 
 		if ( $v1_version ) {
 			return [ 'docker-compose' ];

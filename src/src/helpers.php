@@ -139,15 +139,16 @@ function generate_uuid4() {
  * @return string A human-readable string representing the elapsed time.
  */
 function format_elapsed_time( int $seconds ): string {
-	$periods = [ 'second', 'minute', 'hour', 'day', 'week', 'month', 'year' ];
-	$lengths = [ 60, 60, 24, 7, 4.35, 12 ];
+	$periods       = [ 'second', 'minute', 'hour', 'day', 'week', 'month', 'year' ];
+	$lengths       = [ 60, 60, 24, 7, 4.35, 12 ];
+	$count_lengths = count( $lengths );
 
-	for ( $i = 0; $seconds >= $lengths[ $i ] && $i < count( $lengths ) - 1; $i ++ ) {
+	for ( $i = 0; $seconds >= $lengths[ $i ] && $i < $count_lengths - 1; $i ++ ) {
 		$seconds /= $lengths[ $i ];
 	}
 
 	$seconds = round( $seconds );
-	if ( $seconds != 1 ) {
+	if ( $seconds != 1 ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 		$periods[ $i ] .= 's';
 	}
 

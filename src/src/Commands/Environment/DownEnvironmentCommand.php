@@ -24,7 +24,7 @@ class DownEnvironmentCommand extends Command {
 	public function __construct( E2EEnvironment $e2e_environment, EnvironmentMonitor $environment_monitor ) {
 		$this->e2e_environment     = $e2e_environment;
 		$this->environment_monitor = $environment_monitor;
-		parent::__construct( static::$defaultName );
+		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
 	protected function configure() {
@@ -35,27 +35,26 @@ class DownEnvironmentCommand extends Command {
 		$running_environments = $this->environment_monitor->get();
 
 		if ( empty( $running_environments ) ) {
-			$output->writeln( "<info>No environments running.</info>" );
+			$output->writeln( '<info>No environments running.</info>' );
 
 			return Command::SUCCESS;
 		}
 
 		if ( count( $running_environments ) === 1 ) {
-			// Stop the single running environment
 			$this->stop_environment( array_shift( $running_environments ), $output );
 
 			return Command::SUCCESS;
 		}
 
 		$environment_choices = array_map( function ( EnvInfo $environment ) {
-			return sprintf( "Created: %s, Status: %s",
-				date( 'Y-m-d H:i', $environment->created_at ),
-				$environment->status );
+			return sprintf( 'Created: %s, Status: %s',
+				date( 'Y-m-d H:i', $environment->created_at ), // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+			$environment->status );
 		}, $running_environments );
 
 		$environment_choices['all'] = 'Stop all environments';
 
-		// More than one environment running, let user choose which one to stop
+		// More than one environment running, let user choose which one to stop.
 		$helper   = new QuestionHelper();
 		$question = new ChoiceQuestion(
 			'Please select the environment to stop (or choose to stop all):',
@@ -64,13 +63,14 @@ class DownEnvironmentCommand extends Command {
 		);
 		$question->setErrorMessage( 'Environment %s is invalid.' );
 
-		$selectedEnvironment = $helper->ask( $input, $output, $question );
-		if ( $selectedEnvironment === 'all' ) {
+		$selected_environment = $helper->ask( $input, $output, $question );
+
+		if ( $selected_environment === 'all' ) {
 			foreach ( $running_environments as $environment ) {
 				$this->stop_environment( $environment, $output );
 			}
 		} else {
-			$this->stop_environment( $this->environment_monitor->get_env_info_by_id( $selectedEnvironment ), $output );
+			$this->stop_environment( $this->environment_monitor->get_env_info_by_id( $selected_environment ), $output );
 		}
 
 		return Command::SUCCESS;

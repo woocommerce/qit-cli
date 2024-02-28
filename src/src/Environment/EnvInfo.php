@@ -34,7 +34,7 @@ class EnvInfo implements \JsonSerializable {
 	public function get_docker_container( string $docker_container ): string {
 		$docker_images = $this->docker_images;
 
-		// Find docker image string that matches the $image
+		// Find docker image string that matches the $image.
 		$docker_image = array_filter( $docker_images, function ( $docker_image ) use ( $docker_container ) {
 			return strpos( $docker_image, $docker_container ) !== false;
 		} );

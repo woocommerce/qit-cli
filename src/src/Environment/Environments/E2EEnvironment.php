@@ -52,7 +52,7 @@ class E2EEnvironment extends Environment {
 			throw new \RuntimeException( 'Could not find qit.conf' );
 		}
 
-		// Replace "##QIT_PHP_CONTAINER_PLACEHOLDER##" with the PHP Container
+		// Replace "##QIT_PHP_CONTAINER_PLACEHOLDER##" with the PHP Container.
 		$qit_conf_contents = file_get_contents( $qit_conf );
 		$qit_conf_contents = str_replace( '##QIT_PHP_CONTAINER_PLACEHOLDER##', sprintf( 'qit_env_php_%s', $env_info->env_id ), $qit_conf_contents );
 		file_put_contents( $qit_conf, $qit_conf_contents );

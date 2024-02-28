@@ -19,7 +19,7 @@ class ListEnvironmentCommand extends Command {
 
 	public function __construct( EnvironmentMonitor $environment_monitor ) {
 		$this->environment_monitor = $environment_monitor;
-		parent::__construct( static::$defaultName );
+		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
 	protected function configure() {
@@ -30,14 +30,14 @@ class ListEnvironmentCommand extends Command {
 		$running = $this->environment_monitor->get();
 
 		if ( empty( $running ) ) {
-			$output->writeln( "<info>No environments running.</info>" );
+			$output->writeln( '<info>No environments running.</info>' );
 
 			return Command::SUCCESS;
 		}
 
 		$io = new SymfonyStyle( $input, $output );
 
-		$output->writeln( "<info>Running environments:</info>" );
+		$output->writeln( '<info>Running environments:</info>' );
 
 		$definitions = [];
 
@@ -55,11 +55,11 @@ class ListEnvironmentCommand extends Command {
 				$definitions[] = [ ucwords( $k ) => $v ];
 			}
 
-			// Add a separator between environments
+			// Add a separator between environments.
 			$definitions[] = new TableSeparator();
 		}
 
-		// Remove the last separator
+		// Remove the last separator.
 		array_pop( $definitions );
 
 		$io->definitionList( ...$definitions );

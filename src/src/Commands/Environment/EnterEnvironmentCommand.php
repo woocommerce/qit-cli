@@ -29,7 +29,7 @@ class EnterEnvironmentCommand extends Command {
 		$this->e2e_environment     = $e2e_environment;
 		$this->environment_monitor = $environment_monitor;
 		$this->docker              = $docker;
-		parent::__construct( static::$defaultName );
+		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
 	protected function configure() {
@@ -40,26 +40,25 @@ class EnterEnvironmentCommand extends Command {
 		$running_environments = $this->environment_monitor->get();
 
 		if ( empty( $running_environments ) ) {
-			$output->writeln( "<info>No environments running.</info>" );
+			$output->writeln( '<info>No environments running.</info>' );
 
 			return Command::SUCCESS;
 		}
 
 		if ( count( $running_environments ) === 1 ) {
-			// If only one environment is running, enter it directly
 			$this->enter_environment( array_shift( $running_environments ), $output );
 
 			return Command::SUCCESS;
 		}
 
 		$environment_choices = array_map( function ( EnvInfo $environment ) {
-			return sprintf( "ID: %s, Created: %s, Status: %s",
+			return sprintf( 'ID: %s, Created: %s, Status: %s',
 				$environment->env_id,
-				date( 'Y-m-d H:i', $environment->created_at ),
-				$environment->status );
+				date( 'Y-m-d H:i', $environment->created_at ), // phpcs:ignore WordPress.DateTime.RestrictedFunctions.date_date
+			$environment->status );
 		}, $running_environments );
 
-		// Let user choose which environment to enter
+		// Let user choose which environment to enter.
 		$helper   = new QuestionHelper();
 		$question = new ChoiceQuestion(
 			'Please select the environment to enter:',
@@ -67,11 +66,11 @@ class EnterEnvironmentCommand extends Command {
 		);
 		$question->setErrorMessage( 'Environment %s is invalid.' );
 
-		$selectedEnvironment = $helper->ask( $input, $output, $question );
-		$environment         = $this->environment_monitor->get_env_info_by_id( $selectedEnvironment );
+		$selected_environment = $helper->ask( $input, $output, $question );
+		$environment          = $this->environment_monitor->get_env_info_by_id( $selected_environment );
 
 		if ( ! $environment ) {
-			$output->writeln( "<error>Selected environment not found.</error>" );
+			$output->writeln( '<error>Selected environment not found.</error>' );
 
 			return Command::FAILURE;
 		}

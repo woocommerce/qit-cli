@@ -28,7 +28,7 @@ class RestartEnvironmentCommand extends Command {
 		$this->cache           = $cache;
 		$this->up_command      = $up_command;
 		$this->down_command    = $down_command;
-		parent::__construct( static::$defaultName );
+		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
 	protected function configure() {

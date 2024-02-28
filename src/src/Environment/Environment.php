@@ -41,14 +41,14 @@ abstract class Environment {
 	protected $output;
 
 	public function __construct(
-		EnvironmentDownloader $environment_Downloader,
+		EnvironmentDownloader $environment_downloader,
 		Cache $cache,
 		EnvironmentMonitor $environment_monitor,
 		Filesystem $filesystem,
 		Docker $docker,
 		OutputInterface $output
 	) {
-		$this->environment_downloader = $environment_Downloader;
+		$this->environment_downloader = $environment_downloader;
 		$this->cache                  = $cache;
 		$this->environment_monitor    = $environment_monitor;
 		$this->filesystem             = $filesystem;
@@ -85,23 +85,27 @@ abstract class Environment {
 		$this->up_docker_compose( $env_info );
 		$this->post_up( $env_info );
 
-		$this->output->writeln( "Server started at " . round( microtime( true ) - $start, 2 ) . " seconds" );
+		$this->output->writeln( 'Server started at ' . round( microtime( true ) - $start, 2 ) . ' seconds' );
 		$this->output->writeln( "Temporary environment: $this->temporary_environment_path\n" );
 		$this->additional_output( $env_info );
 
 		return $env_info;
 	}
 
-	// Copies the source environment to the temporary environment.
+	/**
+	 * Copies the source environment to the temporary environment.
+	 */
 	protected function copy_environment(): void {
 		$this->filesystem->mirror( $this->source_environment_path, $this->temporary_environment_path );
 
 		if ( ! file_exists( $this->temporary_environment_path . '/docker-compose-generator.php' ) ) {
-			throw new \RuntimeException( "Failed to copy the environment." );
+			throw new \RuntimeException( 'Failed to copy the environment.' );
 		}
 	}
 
-	// Creates the cache directory if it doesn't exist.
+	/**
+	 * Creates the cache directory if it doesn't exist.
+	 */
 	protected function maybe_create_cache_dir(): void {
 		if ( ! file_exists( $this->cache_dir ) ) {
 			if ( mkdir( $this->cache_dir, 0755 ) === false ) {
@@ -110,7 +114,9 @@ abstract class Environment {
 		}
 	}
 
-	// Initialize the default env info for the temporary environment.
+	/**
+	 * Initialize the default env info for the temporary environment.
+	 */
 	protected function init_env_info(): EnvInfo {
 		$env_info                = new EnvInfo();
 		$env_info->type          = $this->get_name();
@@ -136,7 +142,7 @@ abstract class Environment {
 				$this->output->writeln( $process->getOutput() );
 			}
 		} catch ( \Exception $e ) {
-			throw new \RuntimeException( "Failed to generate docker-compose.yml" );
+			throw new \RuntimeException( 'Failed to generate docker-compose.yml' );
 		}
 	}
 
@@ -152,7 +158,7 @@ abstract class Environment {
 
 		if ( ! $up_process->isSuccessful() ) {
 			$this->down( $env_info );
-			throw new \RuntimeException( "Failed to start the environment." );
+			throw new \RuntimeException( 'Failed to start the environment.' );
 		}
 
 		$env_info->status = 'started';
@@ -169,10 +175,10 @@ abstract class Environment {
 		} );
 
 		if ( $down_process->isSuccessful() ) {
-			$this->output->writeln( "Removing temporary environment: " . $env_info->temporary_env );
+			$this->output->writeln( 'Removing temporary environment: ' . $env_info->temporary_env );
 			SafeRemove::delete_dir( $env_info->temporary_env, static::get_temp_envs_dir() );
 		} else {
-			$this->output->writeln( "Failed to remove temporary environment: " . $env_info->temporary_env );
+			$this->output->writeln( 'Failed to remove temporary environment: ' . $env_info->temporary_env );
 		}
 
 		$this->environment_monitor->environment_stopped( $env_info );
@@ -202,7 +208,7 @@ abstract class Environment {
 		$containers = array_unique( $containers );
 
 		if ( empty( $containers ) ) {
-			throw new \RuntimeException( "Failed to start the environment. No containers found." );
+			throw new \RuntimeException( 'Failed to start the environment. No containers found.' );
 		}
 
 		$env_info->docker_images = $containers;
@@ -211,7 +217,7 @@ abstract class Environment {
 	protected function get_nginx_port( EnvInfo $env_info ): int {
 		$nginx_container = $env_info->get_docker_container( 'nginx' );
 		if ( ! $nginx_container ) {
-			throw new \Exception( "Nginx container not found in docker containers." );
+			throw new \Exception( 'Nginx container not found in docker containers.' );
 		}
 
 		$docker                 = $this->docker->find_docker();
@@ -223,25 +229,25 @@ abstract class Environment {
 		}
 
 		$output = $get_nginx_port_process->getOutput();
-		// The expected output format might be "0.0.0.0:PORT" or just "PORT"
+		// The expected output format might be "0.0.0.0:PORT" or just "PORT".
 		$output = trim( $output );
 		if ( empty( $output ) ) {
-			throw new \Exception( "No output received from docker port command." );
+			throw new \Exception( 'No output received from docker port command.' );
 		}
 
-		// Extract port from the output
+		// Extract port from the output.
 		if ( strpos( $output, ':' ) !== false ) {
-			// If the output contains ":", split and get the port
+			// If the output contains ":", split and get the port.
 			$parts = explode( ':', $output );
-			$port  = end( $parts ); // Get the last part which should be the port
+			$port  = end( $parts ); // Get the last part which should be the port.
 		} else {
-			// If there's no ":", assume the entire output is the port
+			// If there's no ":", assume the entire output is the port.
 			$port = $output;
 		}
 
-		// Validate that the port is an integer
-		if ( ! is_numeric( $port ) || intval( $port ) != $port ) {
-			throw new \Exception( "Invalid port number extracted: " . $port );
+		// Validate that the port is an integer.
+		if ( ! is_numeric( $port ) || intval( $port ) != $port ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+			throw new \Exception( 'Invalid port number extracted: ' . $port );
 		}
 
 		return (int) $port;
@@ -251,7 +257,7 @@ abstract class Environment {
 		$dir = rtrim( Config::get_qit_dir(), DIRECTORY_SEPARATOR ) . '/temporary-envs/';
 
 		if ( ! file_exists( $dir ) && ! mkdir( $dir, 0755 ) ) {
-			throw new \RuntimeException( "Failed to create temporary environments directory." );
+			throw new \RuntimeException( 'Failed to create temporary environments directory.' );
 		}
 
 		return $dir;
