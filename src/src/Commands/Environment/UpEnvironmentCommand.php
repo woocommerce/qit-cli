@@ -8,6 +8,7 @@ use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Environment\Environments\E2EEnvironment;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class UpEnvironmentCommand extends DynamicCommand {
@@ -38,6 +39,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 		] );
 
 		$this->setDescription( 'Starts a local test environment.' )
+			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
 		     ->setAliases( [ 'env:start' ] );
 	}
 
@@ -69,9 +71,13 @@ class UpEnvironmentCommand extends DynamicCommand {
 			$this->e2e_environment->set_php_version( $options['php_version'] );
 		}
 
-		$this->e2e_environment->up();
+		$env_info = $this->e2e_environment->up();
 
 		$output->writeln( "<info>Environment up.</info>" );
+
+		if ( $input->getOption( 'json' ) ) {
+			$output->write( json_encode( $env_info ) );
+		}
 
 		return Command::SUCCESS;
 	}

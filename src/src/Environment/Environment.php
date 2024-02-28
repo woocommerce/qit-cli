@@ -71,7 +71,7 @@ abstract class Environment {
 
 	abstract protected function additional_output( EnvInfo $env_info ): void;
 
-	public function up(): void {
+	public function up(): EnvInfo {
 		// Start the benchmark.
 		$start = microtime( true );
 
@@ -88,6 +88,8 @@ abstract class Environment {
 		$this->output->writeln( "Server started at " . round( microtime( true ) - $start, 2 ) . " seconds" );
 		$this->output->writeln( "Temporary environment: $this->temporary_environment_path\n" );
 		$this->additional_output( $env_info );
+
+		return $env_info;
 	}
 
 	// Copies the source environment to the temporary environment.
