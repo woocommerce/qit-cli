@@ -43,7 +43,7 @@ jobs:
 
       - name: Add "qit.test" to hosts file (macOS)
         if: matrix.os == 'macos-latest'
-        run: sudo echo "127.0.0.1 qit.test" >> /etc/hosts
+        run: sudo sh -c 'echo "127.0.0.1 qit.test" >> /etc/hosts'
 
       - name: Start environment and get URL
         run: |
