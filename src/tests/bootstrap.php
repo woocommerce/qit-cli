@@ -28,8 +28,15 @@ if ( ! file_exists( '/tmp/.woo-qit-tests' ) ) {
 	if ( ! mkdir( '/tmp/.woo-qit-tests' ) ) {
 		throw new RuntimeException( 'Could not create config dir for tests..' );
 	}
+	if ( ! mkdir( '/tmp/.woo-qit-tests/environments' ) ) {
+		throw new RuntimeException( 'Could not create environments dir for tests..' );
+	}
 } else {
 	qit_tests_clean_config_dir();
+}
+
+if ( ! copy( __DIR__ . '/data/environments/e2e.zip', '/tmp/.woo-qit-tests/environments/e2e.zip' ) ) {
+	throw new RuntimeException( 'Could not copy e2e environment for tests.' );
 }
 
 putenv( 'QIT_HOME=/tmp/.woo-qit-tests' );

@@ -1,16 +1,11 @@
 {
-    "944daf0ddaaa9d7d9270b6ecacc8f83e": {
-        "type": "e2e",
-        "temporary_env": "\/path\/to\/temporary-envs\/foo",
-        "created_at": 1708728299,
-        "status": "pending",
-        "docker_images": null
-    },
-    "d7714310314d312ed7809de78d6fea27": {
+    "1234567890": {
         "type": "e2e",
         "temporary_env": "\/path\/to\/temporary-envs\/bar",
         "created_at": 1708728299,
         "status": "pending",
+        "env_id": 1234567890,
+        "nginx_port": null,
         "docker_images": null
     }
 }

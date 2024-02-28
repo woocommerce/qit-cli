@@ -34,7 +34,7 @@
           "description": "The WordPress version to use in the test.",
           "type": "string",
           "enum": [
-            "6.5-beta2",
+            "6.5-beta3",
             "6.1.5",
             "6.2.4",
             "6.3.3",
@@ -48,7 +48,7 @@
           "description": "The WooCommerce version to use in the test.",
           "type": "string",
           "enum": [
-            "8.6.0-rc.1",
+            "8.7.0-beta.1",
             "8.5.1",
             "8.5.2",
             "8.6.0",
@@ -103,7 +103,7 @@
           "description": "The WordPress version to use in the test.",
           "type": "string",
           "enum": [
-            "6.5-beta2",
+            "6.5-beta3",
             "6.1.5",
             "6.2.4",
             "6.3.3",
@@ -117,7 +117,7 @@
           "description": "The WooCommerce version to use in the test.",
           "type": "string",
           "enum": [
-            "8.6.0-rc.1",
+            "8.7.0-beta.1",
             "8.5.1",
             "8.5.2",
             "8.6.0",
@@ -201,7 +201,7 @@
           "description": "The WordPress version to use in the test.",
           "type": "string",
           "enum": [
-            "6.5-beta2",
+            "6.5-beta3",
             "6.1.5",
             "6.2.4",
             "6.3.3",
@@ -215,7 +215,7 @@
           "description": "The WooCommerce version to use in the test.",
           "type": "string",
           "enum": [
-            "8.6.0-rc.1",
+            "8.7.0-beta.1",
             "8.5.1",
             "8.5.2",
             "8.6.0",
@@ -457,7 +457,7 @@
           "description": "The WordPress version to use in the test.",
           "type": "string",
           "enum": [
-            "6.5-beta2",
+            "6.5-beta3",
             "6.1.5",
             "6.2.4",
             "6.3.3",
@@ -573,7 +573,7 @@
           "description": "The WordPress version to use in the test.",
           "type": "string",
           "enum": [
-            "6.5-beta2",
+            "6.5-beta3",
             "6.1.5",
             "6.2.4",
             "6.3.3",
@@ -688,7 +688,7 @@
           "description": "The WordPress version to use in the test.",
           "type": "string",
           "enum": [
-            "6.5-beta2",
+            "6.5-beta3",
             "6.1.5",
             "6.2.4",
             "6.3.3",
@@ -814,7 +814,7 @@
           "description": "The WordPress version to use in the test.",
           "type": "string",
           "enum": [
-            "6.5-beta2",
+            "6.5-beta3",
             "6.1.5",
             "6.2.4",
             "6.3.3",
@@ -948,7 +948,7 @@
           "default": "stable",
           "type": "string",
           "enum": [
-            "8.6.0-rc.1",
+            "8.7.0-beta.1",
             "8.5.1",
             "8.5.2",
             "8.6.0",
@@ -962,7 +962,7 @@
           "default": "stable",
           "type": "string",
           "enum": [
-            "6.5-beta2",
+            "6.5-beta3",
             "6.1.5",
             "6.2.4",
             "6.3.3",
@@ -1106,7 +1106,20 @@
     }
   ],
   "environments": {
-    "e2e": "37fa32aea1dd90c4bbc87fa0c78d03cf"
+    "e2e": {
+      "url": "http://qit.test:8081/wp-content/uploads/environments/8652cdd0d3e37728784a84446b2a4b0d.zip",
+      "checksum": "8652cdd0d3e37728784a84446b2a4b0d"
+    }
+  },
+  "versions": {
+    "woocommerce": {
+      "stable": "8.6.1",
+      "rc": "8.7.0-beta.1"
+    },
+    "wordpress": {
+      "stable": "6.4.3",
+      "rc": "6.5-beta3"
+    }
   },
   "hide_e2e": false
 }

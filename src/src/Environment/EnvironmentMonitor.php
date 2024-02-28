@@ -22,8 +22,11 @@ class EnvironmentMonitor {
 	}
 
 	public function get_env_info_by_id( string $env_info_id ): EnvInfo {
+		if ( empty( $env_info_id ) ) {
+			throw new \Exception( 'Environment not found.' );
+		}
 		foreach ( $this->get() as $env_info ) {
-			if ( $env_info->env_id === $env_info_id ) {
+			if ( $env_info->env_id == $env_info_id ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 				return $env_info;
 			}
 		}
