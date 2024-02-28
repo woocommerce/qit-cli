@@ -55,7 +55,7 @@ class Docker {
 	 *
 	 * @return void
 	 */
-	public function run_inside_docker( EnvInfo $env_info, array $command, array $env_vars = [], string $user = '', string $image = 'php' ): void {
+	public function run_inside_docker( EnvInfo $env_info, array $command, array $env_vars = [], ?string $user = null, int $timeout = 300, string $image = 'php' ): void {
 		$docker_image   = $env_info->get_docker_container( $image );
 		$docker_command = [ $this->find_docker(), 'exec' ];
 
@@ -63,10 +63,12 @@ class Docker {
 			$docker_command = array_merge( $docker_command, [ '-it' ] );
 		}
 
-		if ( empty( $user ) ) {
+		if ( is_null( $user ) ) {
 			if ( function_exists( 'posix_getuid' ) && function_exists( 'posix_getuid' ) ) {
 				$docker_command[] = '--user';
 				$docker_command[] = posix_getuid() . ':' . posix_getgid();
+			} else {
+				$this->output->writeln( '<info>To run the environment with the correct permissions, please install the posix extension on PHP.</info>' );
 			}
 		} else {
 			$docker_command[] = '--user';
@@ -87,6 +89,8 @@ class Docker {
 
 		$process = new Process( $docker_command );
 		$process->setTty( ! is_ci() );
+		$process->setTimeout( $timeout );
+		$process->setIdleTimeout( $timeout );
 
 		if ( $this->output->isVerbose() ) {
 			// Print the command that will run.
