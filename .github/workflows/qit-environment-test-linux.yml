@@ -63,10 +63,11 @@ jobs:
 
       - name: Start environment and get URL (Unix)
         if: runner.os != 'Windows'
+        working-directory: src
         run: |
           set -e
           echo "Starting environment and retrieving site URL..."
-          output=$(./qit env:up)
+          output=$(php qit-cli.php env:up)
           echo "$output"
           siteUrl=$(echo "$output" | tail -n 1)
           if [ -z "$siteUrl" ]; then
