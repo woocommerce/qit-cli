@@ -40,11 +40,18 @@ jobs:
       - name: Add "qit.test" to /etc/hosts
         run: sudo echo "127.0.0.1 qit.test" | sudo tee -a /etc/hosts
 
-      - name: Start environment
+      - name: Start environment and get URL
         run: |
-          URL=$(./qit env:up --json | jq -r '.url')
+          ENV_OUTPUT=$(./qit env:up --json)
           if [ $? -ne 0 ]; then
             echo "Failed to start environment"
+            echo "$ENV_OUTPUT"
+            exit 1
+          fi
+          echo "Raw environment output: $ENV_OUTPUT"
+          URL=$(echo "$ENV_OUTPUT" | jq -r '.url')
+          if [ -z "$URL" ] || [ "$URL" = "null" ]; then
+            echo "URL not found in environment output"
             exit 1
           fi
           echo "ENV_URL=$URL" >> $GITHUB_ENV
