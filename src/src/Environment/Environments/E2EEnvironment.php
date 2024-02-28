@@ -5,7 +5,6 @@ namespace QIT_CLI\Environment\Environments;
 use QIT_CLI\App;
 use QIT_CLI\Environment\EnvInfo;
 use QIT_CLI\Environment\Environment;
-use Symfony\Component\Console\Input\Input;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -13,8 +12,37 @@ class E2EEnvironment extends Environment {
 	/** @var string */
 	protected $description = 'E2E Environment';
 
+	/** @var string */
+	protected $wordpress_version;
+
+	/** @var string */
+	protected $woocommerce_version;
+
+	/** @var string */
+	protected $php_version;
+
 	public function get_name(): string {
 		return 'e2e';
+	}
+
+	public function set_wordpress_version( string $wordpress_version ) {
+		if ( in_array( $wordpress_version, [ 'stable', 'rc' ], true ) ) {
+			$this->wordpress_version = $this->cache->get_manager_sync_data( 'versions' )['wordpress'][ $wordpress_version ];
+		} else {
+			$this->wordpress_version = $wordpress_version;
+		}
+	}
+
+	public function set_woocommerce_version( string $woocommerce_version ) {
+		if ( in_array( $woocommerce_version, [ 'stable', 'rc' ], true ) ) {
+			$this->woocommerce_version = $this->cache->get_manager_sync_data( 'versions' )['woocommerce'][ $woocommerce_version ];
+		} else {
+			$this->woocommerce_version = $woocommerce_version;
+		}
+	}
+
+	public function set_php_version( string $php_version ) {
+		$this->php_version = $php_version;
 	}
 
 	protected function post_generate_docker_compose( EnvInfo $env_info ): void {
@@ -43,8 +71,8 @@ class E2EEnvironment extends Environment {
 		}
 
 		$this->docker->run_inside_docker( $env_info, [ '/bin/bash', '/qit/bin/wordpress-setup.sh' ], [
-			'WORDPRESS_VERSION'   => 'latest',
-			'WOOCOMMERCE_VERSION' => '8.6.0',
+			'WORDPRESS_VERSION'   => $this->wordpress_version,
+			'WOOCOMMERCE_VERSION' => $this->woocommerce_version,
 			'SUT_SLUG'            => 'automatewoo',
 			'SITE_URL'            => 'http://qit.test:' . $env_info->nginx_port,
 		] );
@@ -59,5 +87,11 @@ class E2EEnvironment extends Environment {
 		$io->writeln( 'Admin Credentials: admin/password' );
 		$io->writeln( 'Customer Credentials: customer/password' );
 		$io->writeln( sprintf( 'Path: %s', $env_info->temporary_env ) );
+	}
+
+	protected function get_generate_docker_compose_envs( EnvInfo $env_info ): array {
+		return [
+			'PHP_VERSION' => $this->php_version,
+		];
 	}
 }

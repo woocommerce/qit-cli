@@ -52,6 +52,18 @@ class UpEnvironmentCommand extends DynamicCommand {
 
 		$this->cache->set( 'environment_up_options', $options, DAY_IN_SECONDS );
 
+		if ( $this->getDefinition()->hasOption( 'wordpress_version' ) ) {
+			$this->e2e_environment->set_wordpress_version( $options['wordpress_version'] );
+		}
+
+		if ( $this->getDefinition()->hasOption( 'woocommerce_version' ) ) {
+			$this->e2e_environment->set_woocommerce_version( $options['woocommerce_version'] );
+		}
+
+		if ( $this->getDefinition()->hasOption( 'php_version' ) ) {
+			$this->e2e_environment->set_php_version( $options['php_version'] );
+		}
+
 		$this->e2e_environment->up();
 
 		$output->writeln( "<info>Environment up.</info>" );

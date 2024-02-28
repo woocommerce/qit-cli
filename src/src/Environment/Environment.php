@@ -63,6 +63,8 @@ abstract class Environment {
 
 	abstract public function get_name(): string;
 
+	abstract protected function get_generate_docker_compose_envs( EnvInfo $env_info ): array;
+
 	abstract protected function post_generate_docker_compose( EnvInfo $env_info ): void;
 
 	abstract protected function post_up( EnvInfo $env_info ): void;
@@ -78,7 +80,7 @@ abstract class Environment {
 		$this->copy_environment();
 		$env_info = $this->init_env_info();
 		$this->environment_monitor->environment_added_or_updated( $env_info );
-		$this->generate_docker_compose();
+		$this->generate_docker_compose( $env_info );
 		$this->post_generate_docker_compose( $env_info );
 		$this->up_docker_compose( $env_info );
 		$this->post_up( $env_info );
@@ -118,9 +120,9 @@ abstract class Environment {
 		return $env_info;
 	}
 
-	protected function generate_docker_compose(): void {
+	protected function generate_docker_compose( EnvInfo $env_info ): void {
 		$process = new Process( [ PHP_BINARY, $this->temporary_environment_path . '/docker-compose-generator.php' ] );
-		$process->setEnv( array_merge( $process->getEnv(), [
+		$process->setEnv( array_merge( $process->getEnv(), $this->get_generate_docker_compose_envs( $env_info ), [
 			'CACHE_DIR'  => $this->cache_dir,
 			'QIT_ENV_ID' => $this->temporary_environment_id,
 		] ) );
