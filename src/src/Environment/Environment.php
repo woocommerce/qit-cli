@@ -153,16 +153,19 @@ abstract class Environment {
 	protected function up_docker_compose( EnvInfo $env_info ): void {
 		$this->add_container_names( $env_info );
 
-		$args = array_merge( $this->docker->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'up', '-d' ] );
+		$up_process = new Process( array_merge( $this->docker->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'up', '-d' ] ) );
 
 		try {
 			$u = Docker::get_user_and_group();
-			$args = array_merge( $args, [ '-e', 'FIXUID=' . $u['user'], '-e', 'FIXGID=' . $u['group'] ] );
+			$up_process->setEnv( array_merge( $up_process->getEnv(), [
+				'FIXUID' => $u['user'],
+				'FIXGID' => $u['group'],
+			] ) );
 		} catch ( \RuntimeException $e ) {
 			$this->output->writeln( '<info>To run the environment with the correct permissions, please install the posix extension on PHP, or set QIT_DOCKER_USER/QIT_DOCKER_GROUP env vars.</info>' );
 		}
 
-		$up_process = new Process( $args );
+
 		$up_process->setTimeout( 300 );
 		$up_process->setIdleTimeout( 300 );
 		$up_process->setTty( ! is_ci() );
