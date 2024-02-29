@@ -68,6 +68,9 @@ jobs:
       - name: Start environment and get URL (Unix)
         if: runner.os != 'Windows'
         working-directory: src
+        env:
+          QIT_DOCKER_USER: 0
+          QIT_DOCKER_GROUP: 0
         run: |
           set -e
           echo "Starting environment and retrieving site URL..."

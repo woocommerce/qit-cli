@@ -63,14 +63,24 @@ class Docker {
 			$docker_command = array_merge( $docker_command, [ '-it' ] );
 		}
 
+		// Check if user is not set and try to set it from ENV vars or posix functions.
 		if ( is_null( $user ) ) {
-			if ( function_exists( 'posix_getuid' ) && function_exists( 'posix_getuid' ) ) {
-				$docker_command[] = '--user';
-				$docker_command[] = posix_getuid() . ':' . posix_getgid();
+			$envUser  = getenv( 'QIT_DOCKER_USER' );
+			$envGroup = getenv( 'QIT_DOCKER_GROUP' );
+
+			if ( $envUser && $envGroup ) {
+				// Use user and group from environment variables.
+				$user = $envUser . ':' . $envGroup;
+			} elseif ( function_exists( 'posix_getuid' ) && function_exists( 'posix_getgid' ) ) {
+				// Use user and group from posix functions.
+				$user = posix_getuid() . ':' . posix_getgid();
 			} else {
-				$this->output->writeln( '<info>To run the environment with the correct permissions, please install the posix extension on PHP.</info>' );
+				// Output warning if neither method is available.
+				$this->output->writeln( '<info>To run the environment with the correct permissions, please install the posix extension on PHP, or set QIT_DOCKER_USER/QIT_DOCKER_GROUP env vars.</info>' );
 			}
-		} else {
+		}
+
+		if ( ! is_null( $user ) ) {
 			$docker_command[] = '--user';
 			$docker_command[] = $user;
 		}
@@ -97,11 +107,7 @@ class Docker {
 			$this->output->writeln( $process->getCommandLine() );
 		}
 
-		echo $process->getCommandLine();
-
-		echo "Running...\n";
 		$process->run( function ( $type, $buffer ) {
-			echo $buffer;
 			$this->output->write( $buffer );
 		} );
 
