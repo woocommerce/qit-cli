@@ -50,6 +50,17 @@ jobs:
         if: matrix.os == 'macos-13'
         uses: douglascamata/setup-docker-macos-action@v1-alpha
 
+      - name: Start Colima
+        if: matrix.os == 'macos-13'
+        run: |
+          colima stop
+          CPU_COUNT=$(sysctl -n hw.ncpu)
+          MEMORY=$(sysctl hw.memsize | awk '{print $2/1024/1024/1024}')
+          COLIMA_ARGS="--cpu $CPU_COUNT --memory $MEMORY --dns=1.1.1.1"
+          echo "::group::Starting Colima with args: $COLIMA_ARGS"
+          colima start $COLIMA_ARGS
+          echo "::endgroup::"
+
       - name: Debug Docker and Docker Compose
         run: |
           echo "Checking Docker version..."
