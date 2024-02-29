@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Environment;
 
+use QIT_CLI\App;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use function QIT_CLI\is_ci;
@@ -46,6 +47,19 @@ class Docker {
 		}
 	}
 
+	public static function get_user_and_group(): array {
+		$env_user  = getenv( 'QIT_DOCKER_USER' );
+		$env_group = getenv( 'QIT_DOCKER_GROUP' );
+
+		if ( $env_user !== false && $env_group !== false ) {
+			return ['user' => $env_user, 'group' => $env_group];
+		} elseif ( function_exists( 'posix_getuid' ) && function_exists( 'posix_getgid' ) ) {
+			return [ 'user ' => posix_getuid(), 'group' => posix_getgid() ];
+		} else {
+			throw new \RuntimeException( 'Could not find user and group' );
+		}
+	}
+
 	/**
 	 * @param EnvInfo              $env_info
 	 * @param array<scalar>        $command The Command to run, in a Symfony Process format.
@@ -65,17 +79,10 @@ class Docker {
 
 		// Check if user is not set and try to set it from ENV vars or posix functions.
 		if ( is_null( $user ) ) {
-			$env_user  = getenv( 'QIT_DOCKER_USER' );
-			$env_group = getenv( 'QIT_DOCKER_GROUP' );
-
-			if ( $env_user !== false && $env_group !== false ) {
-				// Use user and group from environment variables.
-				$user = $env_user . ':' . $env_group;
-			} elseif ( function_exists( 'posix_getuid' ) && function_exists( 'posix_getgid' ) ) {
-				// Use user and group from posix functions.
-				$user = posix_getuid() . ':' . posix_getgid();
-			} else {
-				// Output warning if neither method is available.
+			try {
+				$u = static::get_user_and_group();
+				$user = $u['user'] . ':' . $u['group'];
+			} catch ( \RuntimeException $e ) {
 				$this->output->writeln( '<info>To run the environment with the correct permissions, please install the posix extension on PHP, or set QIT_DOCKER_USER/QIT_DOCKER_GROUP env vars.</info>' );
 			}
 		}
