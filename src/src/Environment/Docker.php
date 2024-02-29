@@ -47,14 +47,24 @@ class Docker {
 		}
 	}
 
+	/**
+	 * Retrieves the current user and group.
+	 *
+	 * This function attempts to get the user and group information from environment variables.
+	 * If environment variables are not set, it falls back to using the posix_getuid and posix_getgid functions.
+	 * Throws a RuntimeException if neither method can provide the user and group information.
+	 *
+	 * @return array{user: string|int, group: string|int} Array containing 'user' and 'group' keys.
+	 * @throws \RuntimeException If the user and group cannot be determined.
+	 */
 	public static function get_user_and_group(): array {
 		$env_user  = getenv( 'QIT_DOCKER_USER' );
 		$env_group = getenv( 'QIT_DOCKER_GROUP' );
 
 		if ( $env_user !== false && $env_group !== false ) {
-			return ['user' => $env_user, 'group' => $env_group];
+			return [ 'user' => $env_user, 'group' => $env_group ];
 		} elseif ( function_exists( 'posix_getuid' ) && function_exists( 'posix_getgid' ) ) {
-			return [ 'user ' => posix_getuid(), 'group' => posix_getgid() ];
+			return [ 'user' => posix_getuid(), 'group' => posix_getgid() ];
 		} else {
 			throw new \RuntimeException( 'Could not find user and group' );
 		}
