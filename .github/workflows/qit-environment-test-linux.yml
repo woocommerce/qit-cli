@@ -48,15 +48,13 @@ jobs:
 
       - name: Setup Docker on macOS
         if: matrix.os == 'macos-13'
-        with:
-          upgrade-qemu: true
         uses: douglascamata/setup-docker-macos-action@v1-alpha
 
       - name: Start Colima
         if: matrix.os == 'macos-13'
         run: |
           colima stop
-          COLIMA_ARGS="--cpu 2 --memory 8 --dns=1.1.1.1"
+          COLIMA_ARGS="--cpu 2 --vm-type=vz --memory 8 --dns=1.1.1.1"
           echo "::group::Starting Colima with args: $COLIMA_ARGS"
           colima start $COLIMA_ARGS
           echo "::endgroup::"
