@@ -3,6 +3,11 @@
 namespace QIT_CLI;
 
 function is_windows(): bool {
+	if ( defined( 'UNIT_TESTS' ) && UNIT_TESTS ) {
+		if ( App::getVar( 'MIMICK_WINDOWS' ) ) {
+			return true;
+		}
+	}
 	return defined( 'PHP_WINDOWS_VERSION_BUILD' );
 }
 
