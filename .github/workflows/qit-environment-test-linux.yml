@@ -74,6 +74,10 @@ jobs:
           echo "Checking Docker Compose (standalone) version..."
           docker-compose --version || echo "Docker Compose (standalone) is not installed"
 
+      - name: Benchmark Docker
+        working-directory: scripts
+        run: docker run -v $(pwd):/scripts -w /scripts alpine sh -c "apk add --no-cache bash wget tar; chmod +x benchmark.sh; ./benchmark.sh"
+
       - name: Composer install
         working-directory: src
         run: composer install
