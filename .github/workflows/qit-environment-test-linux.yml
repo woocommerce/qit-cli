@@ -10,12 +10,17 @@ on:
 
 jobs:
   environment_tests:
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04, windows-latest, macos-13]
-        #php: ['7.2', '7.4', '8.0'] # Example PHP versions, adjust as necessary
+        os: [ ubuntu-20.04, windows-latest, macos-13 ]
+        php: [ '7.4' ]
+        wordpress: [ 'rc' ]
+        woocommerce: [ 'rc' ]
+        include:
+          - os: ubuntu-20.04
+            php: '8.3'
       fail-fast: false
-    runs-on: ${{ matrix.os }}
     env:
       NO_COLOR: 1
       QIT_DISABLE_ONBOARDING: yes
@@ -42,22 +47,9 @@ jobs:
         if: matrix.os == 'windows-latest'
         run: echo "127.0.0.1 qit.test" | Out-File -Append -Encoding ASCII -FilePath C:\Windows\System32\drivers\etc\hosts
 
-      - name: Add "qit.test" to hosts file (macOS)
-        if: matrix.os == 'macos-13'
-        run: sudo sh -c 'echo "127.0.0.1 qit.test" >> /etc/hosts'
-
       - name: Setup Docker on macOS
         if: matrix.os == 'macos-13'
         uses: douglascamata/setup-docker-macos-action@v1-alpha
-
-      - name: Start Colima
-        if: matrix.os == 'macos-13'
-        run: |
-          colima stop
-          COLIMA_ARGS="--cpu 2 --memory 8"
-          echo "::group::Starting Colima with args: $COLIMA_ARGS"
-          colima start $COLIMA_ARGS
-          echo "::endgroup::"
 
       - name: Check Colima Status
         if: matrix.os == 'macos-13'
@@ -76,74 +68,42 @@ jobs:
 
       - name: Benchmark Docker
         working-directory: scripts
-        run: docker run -v $(pwd):/scripts -w /scripts alpine sh -c "apk add --no-cache bash wget tar; chmod +x benchmark.sh; ./benchmark.sh"
+        run: docker run -v $GITHUB_WORKSPACE/scripts:/scripts -w /scripts alpine sh -c "apk add --no-cache bash wget tar; chmod +x benchmark.sh; ./benchmark.sh"
 
       - name: Composer install
         working-directory: src
         run: composer install
 
-      - name: Start environment (Unix)
-        if: runner.os != 'Windows'
+      - name: Start environment (Cross-platform)
         working-directory: src
         env:
-          QIT_DOCKER_RUN_TIMEOUT: 1200
-        run: php qit-cli.php env:up
+          QIT_DOCKER_RUN_TIMEOUT: ${{ (matrix.os == 'ubuntu-20.04') && '300' || '1200' }}
+        run: php qit-cli.php env:up --wordpress_version ${{ matrix.wordpress }} --woocommerce_version ${{ matrix.woocommerce }} --php_version ${{ matrix.php }}
 
-      - name: Get URL (Unix)
-        if: runner.os != 'Windows'
+
+      - name: Get URL (Cross-platform)
         working-directory: src
         run: |
-          siteUrl=$(php qit-cli.php env:list --field=site_url)
+          siteUrl=$(php -r "echo exec(PHP_BINARY . ' qit-cli.php env:list --field=site_url');");
           echo "SITE_URL=$siteUrl" >> $GITHUB_ENV
-
-      - name: Run command and check output
-        if: runner.os == 'Windows'
-        run: |
-          ./qit env:up
-
-      - name: Print output for debugging
-        if: runner.os == 'Windows'
-        run: |
-          Get-Content output.txt
-
-      - name: Get last line for site URL (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          $siteUrl = Get-Content output.txt | Select-Object -Last 1
-          echo "SITE_URL=$siteUrl" | Out-File -Append -FilePath $Env:GITHUB_ENV
 
       - name: Print site URL
         run: |
           php -r "echo 'Site URL: ' . getenv('SITE_URL');"
 
-      - name: Test Site Up (Unix)
-        if: runner.os != 'Windows'
+      - name: Test Site Up (Cross-platform)
         run: |
-          statusCode=$(curl -o /dev/null -s -w "%{http_code}" ${{ env.SITE_URL }})
-          if [ "$statusCode" -eq 200 ]; then
-            echo "Site is up"
-          else
-            echo "Site is not up, status code: $statusCode"
-            exit 1
-          fi
-
-      - name: Test Site Up (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          $statusCode = (Invoke-WebRequest -Uri $env:SITE_URL -UseBasicParsing).StatusCode
-          if ($statusCode -eq 200) {
-            echo "Site is up"
+          php -r "
+          \$url = '${{ env.SITE_URL }}';
+          \$context = stream_context_create(['http' => ['method' => 'GET']]);
+          \$headers = @get_headers(\$url, 1, \$context);
+          \$statusCode = \$headers ? substr(\$headers[0], 9, 3) : 500;
+          if (\$statusCode == 200) {
+            echo 'Site is up';
           } else {
-            echo "Site is not up, status code: $statusCode"
-            exit 1
-          }
+            echo 'Site is not up, status code: ' . \$statusCode;
+            exit(1);
+          }"
 
-      - name: Query WP JSON (Unix)
-        if: runner.os != 'Windows'
-        run: |
-          curl -s "${{ env.SITE_URL }}/wp-json"
-
-      - name: Query WP JSON (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          Invoke-RestMethod -Uri "$env:SITE_URL/wp-json" -UseBasicParsing
+      - name: Query WP JSON (Cross-platform)
+        run: php -r "echo file_get_contents('${{ env.SITE_URL }}/wp-json');"
