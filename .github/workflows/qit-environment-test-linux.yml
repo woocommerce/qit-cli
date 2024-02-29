@@ -1,4 +1,4 @@
-name: QIT Environment Test - Linux
+name: QIT Environment Test - Linux and Mac
 
 on:
   # Every day at 11am and 11pm UTC (6am and 6pm ET)
@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-20.04, windows-latest, macos-13 ]
+        os: [ ubuntu-20.04, macos-13 ]
         php: [ '7.4' ]
         wordpress: [ 'rc' ]
         woocommerce: [ 'rc' ]
@@ -45,10 +45,6 @@ jobs:
         if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
         run: sudo echo "127.0.0.1 qit.test" | sudo tee -a /etc/hosts
 
-      - name: Add "qit.test" to hosts file (Windows)
-        if: matrix.os == 'windows-latest'
-        run: echo "127.0.0.1 qit.test" | Out-File -Append -Encoding ASCII -FilePath C:\Windows\System32\drivers\etc\hosts
-
       - name: Setup Docker on macOS (Mac)
         if: matrix.os == 'macos-13'
         uses: douglascamata/setup-docker-macos-action@v1-alpha
@@ -56,13 +52,6 @@ jobs:
       - name: Check Colima Status (Mac)
         if: matrix.os == 'macos-13'
         run: colima status
-
-      - name: Setup WSL (Windows)
-        if: matrix.os == 'windows-latest'
-        uses: Vampire/setup-wsl@v3
-        with:
-          distribution: 'Ubuntu-20.04'
-          version: '2'
 
       - name: Debug Docker and Docker Compose (Unix)
         if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
@@ -76,55 +65,21 @@ jobs:
           echo "Checking Docker Compose (standalone) version..."
           docker-compose --version || echo "Docker Compose (standalone) is not installed"
 
-      - name: Debug Docker and Docker Compose (Windows)
-        if: matrix.os == 'windows-latest'
-        run: |
-          echo "Checking Docker version..."
-          docker --version || echo "Docker is not installed"
-          
-          echo "Checking Docker Compose (plugin) version..."
-          docker compose version || echo "Docker Compose (plugin) is not installed"
-          
-          echo "Checking Docker Compose (standalone) version..."
-          docker-compose --version || echo "Docker Compose (standalone) is not installed"
-        shell: wsl-bash {0}
-
       - name: Benchmark Docker (Unix)
         if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
         working-directory: scripts
         run: docker run -v $GITHUB_WORKSPACE/scripts:/scripts -w /scripts alpine sh -c "apk add --no-cache bash wget tar; chmod +x benchmark.sh; ./benchmark.sh"
-
-      - name: Benchmark Docker (Windows)
-        if: matrix.os == 'windows-latest'
-        working-directory: scripts
-        run: docker run -v ${GITHUB_WORKSPACE}/scripts:/scripts -w /scripts alpine sh -c "apk add --no-cache bash wget tar; chmod +x benchmark.sh; ./benchmark.sh"
-        env:
-          GITHUB_WORKSPACE: ${{ github.workspace }}
-        shell: wsl-bash {0}
 
       - name: Composer install (Unix)
         if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
         working-directory: src
         run: composer install
 
-      - name: Composer install (Windows)
-        if: matrix.os == 'windows-latest'
-        working-directory: src
-        run: composer install
-        shell: wsl-bash {0}
-
       - name: Start environment (Unix)
         if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
         working-directory: src
         env:
           QIT_DOCKER_RUN_TIMEOUT: ${{ (matrix.os == 'ubuntu-20.04') && '300' || '1200' }}
-        run: php qit-cli.php env:up --wordpress_version ${{ matrix.wordpress }} --woocommerce_version ${{ matrix.woocommerce }} --php_version ${{ matrix.php }}
-
-      - name: Start environment (Windows)
-        if: matrix.os == 'windows-latest'
-        working-directory: src
-        env:
-          QIT_DOCKER_RUN_TIMEOUT: 1200
         run: php qit-cli.php env:up --wordpress_version ${{ matrix.wordpress }} --woocommerce_version ${{ matrix.woocommerce }} --php_version ${{ matrix.php }}
 
       - name: Get URL (Cross-platform)
@@ -159,19 +114,7 @@ jobs:
         working-directory: src
         run: php qit-cli.php env:exec "php -v"
 
-      - name: Verify PHP Version (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: wsl-bash {0}
-        working-directory: src
-        run: php qit-cli.php env:exec "php -v"
-
       - name: Verify WordPress Version (Unix)
         if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
-        working-directory: src
-        run: php qit-cli.php env:exec "wp core version"
-
-      - name: Verify WordPress Version (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: wsl-bash {0}
         working-directory: src
         run: php qit-cli.php env:exec "wp core version"
