@@ -103,6 +103,10 @@ class Docker {
 		$docker_command[] = $docker_image;
 		$docker_command   = array_merge( $docker_command, $command );
 
+		if ( getenv( 'QIT_DOCKER_RUN_TIMEOUT' ) !== false && is_numeric( getenv( 'QIT_DOCKER_RUN_TIMEOUT' ) ) ) {
+			$timeout = getenv( 'QIT_DOCKER_RUN_TIMEOUT' );
+		}
+
 		$process = new Process( $docker_command );
 		$process->setTty( ! is_ci() );
 		$process->setTimeout( $timeout );

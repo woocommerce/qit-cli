@@ -54,7 +54,7 @@ jobs:
         if: matrix.os == 'macos-13'
         run: |
           colima stop
-          COLIMA_ARGS="--cpu 2 --vm-type=vz --memory 8 --dns=1.1.1.1"
+          COLIMA_ARGS="--cpu 2 --memory 8"
           echo "::group::Starting Colima with args: $COLIMA_ARGS"
           colima start $COLIMA_ARGS
           echo "::endgroup::"
@@ -82,16 +82,12 @@ jobs:
         if: runner.os != 'Windows'
         working-directory: src
         env:
-          QIT_DOCKER_USER: 0
-          QIT_DOCKER_GROUP: 0
+          QIT_DOCKER_RUN_TIMEOUT: 600
         run: php qit-cli.php env:up
 
       - name: Get URL (Unix)
         if: runner.os != 'Windows'
         working-directory: src
-        env:
-          QIT_DOCKER_USER: 0
-          QIT_DOCKER_GROUP: 0
         run: |
           siteUrl=$(php qit-cli.php env:list --field=site_url)
           echo "SITE_URL=$siteUrl" >> $GITHUB_ENV
