@@ -109,3 +109,11 @@ jobs:
 
       - name: Query WP JSON (Cross-platform)
         run: php -r "echo file_get_contents('${{ env.SITE_URL }}/wp-json');"
+
+      - name: Verify PHP Version
+        working-directory: src
+        run: php qit-cli.php env:exec "php -v"
+
+      - name: Verify WordPress Version
+        working-directory: src
+        run: php qit-cli.php env:exec "wp core version"
