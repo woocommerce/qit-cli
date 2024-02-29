@@ -1,9 +1,8 @@
 name: QIT Environment Test - Linux and Mac
 
 on:
-  # Every day at 11am and 11pm UTC (6am and 6pm ET)
+  # Every day at 11pm UTC (6pm ET)
   schedule:
-    - cron: '0 11 * * *'
     - cron: '0 23 * * *'
   # Manually
   workflow_dispatch:
