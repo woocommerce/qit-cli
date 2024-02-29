@@ -18,7 +18,7 @@ class ConfigTest extends TestCase {
 			];
 		}
 
-		// Reset environment variables to a default state for testing
+		// Reset environment variables to a default state for testing.
 		putenv( 'QIT_HOME=' );
 		putenv( 'APPDATA=' );
 		putenv( 'HOME=' );
@@ -28,7 +28,7 @@ class ConfigTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		// Restore original environment variables
+		// Restore original environment variables.
 		foreach ( static::$originalEnvVars as $var => $value ) {
 			if ( $value === false ) {
 				putenv( $var );
@@ -107,7 +107,4 @@ class ConfigTest extends TestCase {
 		$this->expectException( \RuntimeException::class );
 		Config::get_qit_dir();
 	}
-
-
-	// Additional tests can be added for edge cases, directory creation failure, etc.
 }
