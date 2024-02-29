@@ -83,6 +83,12 @@ class Docker {
 		if ( ! is_null( $user ) ) {
 			$docker_command[] = '--user';
 			$docker_command[] = $user;
+
+			if ( $user === '0:0' ) {
+				$env_vars = array_merge( $env_vars, [
+					'WP_CLI_ALLOW_ROOT' => true,
+				] );
+			}
 		}
 
 		$env_vars = array_merge( $env_vars, [
