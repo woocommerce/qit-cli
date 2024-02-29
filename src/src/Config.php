@@ -164,28 +164,29 @@ class Config {
 			return rtrim( str_replace( '\\', '/', $path ), '/' ) . '/';
 		};
 
-		// Allow override.
 		if ( ! empty( getenv( 'QIT_HOME' ) ) ) {
-			$parent_config_dir = getenv( 'QIT_HOME' );
-		} elseif ( is_windows() ) {
-			if ( empty( getenv( 'APPDATA' ) ) ) {
-				throw new \RuntimeException( 'The APPDATA or QIT_HOME environment variables must be defined in Windows.' );
-			}
-			$parent_config_dir = getenv( 'APPDATA' );
-		} elseif ( ! empty( getenv( 'HOME' ) ) ) {
-			$home = $normalize_path( getenv( 'HOME' ) );
-			if ( static::use_xdg() ) {
-				$xdg_config        = getenv( 'XDG_CONFIG_HOME' ) ?: $home . '.config';
-				$parent_config_dir = $xdg_config;
-			} else {
-				$parent_config_dir = $home;
-			}
+			$qit_dir = $normalize_path( getenv( 'QIT_HOME' ) );
 		} else {
-			throw new \RuntimeException( 'The HOME, APPDATA, or QIT_HOME environment variables must be defined.' );
-		}
+			if ( is_windows() ) {
+				if ( empty( getenv( 'APPDATA' ) ) ) {
+					throw new \RuntimeException( 'The APPDATA or QIT_HOME environment variables must be defined in Windows.' );
+				}
+				$parent_config_dir = getenv( 'APPDATA' );
+			} elseif ( ! empty( getenv( 'HOME' ) ) ) {
+				$home = $normalize_path( getenv( 'HOME' ) );
+				if ( static::use_xdg() ) {
+					$xdg_config        = getenv( 'XDG_CONFIG_HOME' ) ?: $home . '.config';
+					$parent_config_dir = $xdg_config;
+				} else {
+					$parent_config_dir = $home;
+				}
+			} else {
+				throw new \RuntimeException( 'The HOME, APPDATA, or QIT_HOME environment variables must be defined.' );
+			}
 
-		// Normalize and append 'woo-qit-cli/' to the parent directory.
-		$qit_dir = $normalize_path( $parent_config_dir ) . 'woo-qit-cli/';
+			// Normalize and append 'woo-qit-cli/' to the parent directory.
+			$qit_dir = $normalize_path( $parent_config_dir ) . 'woo-qit-cli/';
+		}
 
 		// Create the directory if it does not exist.
 		if ( ! is_dir( $qit_dir ) && ! mkdir( $qit_dir, 0700, true ) ) {

@@ -41,8 +41,6 @@ class ConfigTest extends TestCase {
 	}
 
 	public function test_get_qit_dir_with_qit_home_override(): void {
-		$expectedDir = $this->testDir . 'woo-qit-cli/';
-
 		foreach ( [ 'windows', 'unix' ] as $os ) {
 			if ( $os === 'windows' ) {
 				App::setVar( 'MIMICK_WINDOWS', true );
@@ -52,27 +50,27 @@ class ConfigTest extends TestCase {
 
 			// Regular.
 			putenv( 'QIT_HOME=' . $this->testDir );
-			$this->assertEquals( $expectedDir, Config::get_qit_dir() );
+			$this->assertEquals( $this->testDir, Config::get_qit_dir() );
 
 			// Missing trailing slash.
 			putenv( 'QIT_HOME=' . rtrim( $this->testDir, '/' ) );
-			$this->assertEquals( $expectedDir, Config::get_qit_dir() );
+			$this->assertEquals( $this->testDir, Config::get_qit_dir() );
 
 			// Windows directory separator - Non windows.
 			putenv( 'QIT_HOME=' . str_replace( '/', '\\', $this->testDir ) );
-			$this->assertEquals( $expectedDir, Config::get_qit_dir() );
+			$this->assertEquals( $this->testDir, Config::get_qit_dir() );
 
 			// Windows directory separator missing trailing slash - Non windows.
 			putenv( 'QIT_HOME=' . rtrim( str_replace( '/', '\\', $this->testDir ), '\\' ) );
-			$this->assertEquals( $expectedDir, Config::get_qit_dir() );
+			$this->assertEquals( $this->testDir, Config::get_qit_dir() );
 		}
 	}
 
 	public function test_get_qit_dir_on_windows(): void {
 		App::setVar( 'MIMICK_WINDOWS', true );
+		$expectedDir = $this->testDir . 'woo-qit-cli/';
 
 		putenv( 'APPDATA=' . $this->testDir );
-		$expectedDir = $this->testDir . 'woo-qit-cli/';
 		$this->assertEquals( $expectedDir, Config::get_qit_dir() );
 
 		// Simulate Windows environment
@@ -81,8 +79,9 @@ class ConfigTest extends TestCase {
 	}
 
 	public function test_get_qit_dir_with_home(): void {
-		putenv( 'HOME=' . $this->testDir );
 		$expectedDir = $this->testDir . 'woo-qit-cli/';
+
+		putenv( 'HOME=' . $this->testDir );
 		$this->assertEquals( $expectedDir, Config::get_qit_dir() );
 
 		// Simulate Windows separator.
@@ -95,6 +94,7 @@ class ConfigTest extends TestCase {
 		putenv( 'XDG_CONFIG_HOME=' . $this->testDir . '.config' );
 		App::setVar( 'MIMICK_XDG', true );
 		$expectedDir = $this->testDir . '.config/woo-qit-cli/';
+
 		$this->assertEquals( $expectedDir, Config::get_qit_dir() );
 	}
 
