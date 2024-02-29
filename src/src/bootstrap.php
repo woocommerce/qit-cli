@@ -10,6 +10,7 @@ use QIT_CLI\Commands\Backend\AddBackend;
 use QIT_CLI\Commands\Backend\CurrentBackend;
 use QIT_CLI\Commands\Backend\RemoveBackend;
 use QIT_CLI\Commands\Backend\SwitchBackend;
+use QIT_CLI\Commands\Environment\ExecEnvironmentCommand;
 use QIT_CLI\Commands\Environment\StopEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
 use QIT_CLI\Commands\Environment\ListEnvironmentCommand;
@@ -237,6 +238,7 @@ if ( $is_connected_to_backend ) {
 		$application->add( $container->make( RestartEnvironmentCommand::class ) );
 		$application->add( $container->make( ListEnvironmentCommand::class ) );
 		$application->add( $container->make( EnterEnvironmentCommand::class ) );
+		$application->add( $container->make( ExecEnvironmentCommand::class ) );
 	} catch ( \Exception $e ) {
 		App::make( Output::class )->writeln( $e->getMessage() );
 	}
