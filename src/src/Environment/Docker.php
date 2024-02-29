@@ -65,12 +65,12 @@ class Docker {
 
 		// Check if user is not set and try to set it from ENV vars or posix functions.
 		if ( is_null( $user ) ) {
-			$envUser  = getenv( 'QIT_DOCKER_USER' );
-			$envGroup = getenv( 'QIT_DOCKER_GROUP' );
+			$env_user  = getenv( 'QIT_DOCKER_USER' );
+			$env_group = getenv( 'QIT_DOCKER_GROUP' );
 
-			if ( $envUser && $envGroup ) {
+			if ( $env_user !== false && $env_group !== false ) {
 				// Use user and group from environment variables.
-				$user = $envUser . ':' . $envGroup;
+				$user = $env_user . ':' . $env_group;
 			} elseif ( function_exists( 'posix_getuid' ) && function_exists( 'posix_getgid' ) ) {
 				// Use user and group from posix functions.
 				$user = posix_getuid() . ':' . posix_getgid();
