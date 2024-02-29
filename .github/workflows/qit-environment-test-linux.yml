@@ -86,7 +86,7 @@ jobs:
         if: runner.os != 'Windows'
         working-directory: src
         env:
-          QIT_DOCKER_RUN_TIMEOUT: 600
+          QIT_DOCKER_RUN_TIMEOUT: 1200
         run: php qit-cli.php env:up
 
       - name: Get URL (Unix)
