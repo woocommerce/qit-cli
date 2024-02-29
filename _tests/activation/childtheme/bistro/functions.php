@@ -1,5 +1,10 @@
 <?php
 
+// Dont't flag requests with $_GET['nonce'] as they can't be snapshotted, as they always change.
+if ( isset( $_GET['nonce'] ) ) {
+	return;
+}
+
 add_action( 'wp', static function () {
 	if ( is_cart() ) {
 		call_to_undefined_function();
