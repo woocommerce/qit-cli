@@ -6,6 +6,7 @@ use QIT_CLI\Environment\EnvironmentMonitor;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use function QIT_CLI\format_elapsed_time;
@@ -22,7 +23,9 @@ class ListEnvironmentCommand extends Command {
 	}
 
 	protected function configure() {
-		$this->setDescription( 'List running environments.' );
+		$this
+			->setDescription( 'List running environments.' )
+			->addOption( 'field', 'f', InputOption::VALUE_OPTIONAL, 'Show just a specific field.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -30,6 +33,20 @@ class ListEnvironmentCommand extends Command {
 
 		if ( empty( $running ) ) {
 			$output->writeln( '<info>No environments running.</info>' );
+
+			return Command::SUCCESS;
+		}
+
+		// If "field" option is being used and there is only one running environment, just print it.
+		if ( $input->getOption( 'field' ) && count( $running ) === 1 ) {
+			$env   = array_shift( $running );
+			$field = $input->getOption( 'field' );
+			if ( ! property_exists( $env, $field ) ) {
+				$output->writeln( sprintf( '<error>Field "%s" does not exist.</error>', $field ) );
+
+				return Command::FAILURE;
+			}
+			$output->writeln( $env->$field );
 
 			return Command::SUCCESS;
 		}
@@ -55,6 +72,10 @@ class ListEnvironmentCommand extends Command {
 				}
 				if ( is_array( $v ) ) {
 					$v = implode( ', ', $v );
+				}
+				// Check if "field" option is set, and only add if matches.
+				if ( $input->getOption( 'field' ) && $input->getOption( 'field' ) !== $k ) {
+					continue;
 				}
 				$definitions[] = [ ucwords( $k ) => $v ];
 			}
