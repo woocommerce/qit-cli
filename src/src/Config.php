@@ -182,7 +182,7 @@ class Config {
 				throw new \RuntimeException( 'The APPDATA or QIT_HOME environment variables must be defined.' );
 			}
 
-			return $normalize_path( getenv( 'APPDATA' ) ) . 'woo-qit-cli';
+			return $normalize_path( getenv( 'APPDATA' ) ) . 'woo-qit-cli/';
 		}
 
 		if ( empty( getenv( 'HOME' ) ) ) {

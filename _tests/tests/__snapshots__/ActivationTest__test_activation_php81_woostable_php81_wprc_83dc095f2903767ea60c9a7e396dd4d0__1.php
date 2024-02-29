@@ -90,7 +90,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 680,
+                            "line": 679,
                             "function": "do_action"
                         },
                         {
@@ -203,7 +203,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 680,
+                            "line": 679,
                             "function": "do_action"
                         },
                         {
@@ -316,7 +316,7 @@
                         },
                         {
                             "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 680,
+                            "line": 679,
                             "function": "do_action"
                         },
                         {
