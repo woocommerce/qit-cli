@@ -61,6 +61,10 @@ jobs:
           colima start $COLIMA_ARGS
           echo "::endgroup::"
 
+      - name: Check Colima Status
+        if: matrix.os == 'macos-13'
+        run: colima status
+
       - name: Debug Docker and Docker Compose
         run: |
           echo "Checking Docker version..."
