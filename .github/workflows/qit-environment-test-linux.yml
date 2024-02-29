@@ -65,23 +65,22 @@ jobs:
         working-directory: src
         run: composer install
 
-      - name: Start environment and get URL (Unix)
+      - name: Start environment (Unix)
+        if: runner.os != 'Windows'
+        working-directory: src
+        env:
+          QIT_DOCKER_USER: 0
+          QIT_DOCKER_GROUP: 0
+        run: php qit-cli.php env:up
+
+      - name: Get URL (Unix)
         if: runner.os != 'Windows'
         working-directory: src
         env:
           QIT_DOCKER_USER: 0
           QIT_DOCKER_GROUP: 0
         run: |
-          set -e
-          echo "Starting environment and retrieving site URL..."
-          output=$(php qit-cli.php env:up)
-          echo "$output"
-          siteUrl=$(echo "$output" | tail -n 1)
-          if [ -z "$siteUrl" ]; then
-            echo "Failed to get site URL"
-            exit 1
-          fi
-          echo "Retrieved site URL: $siteUrl"
+          siteUrl=$(php qit-cli.php env:list --field=site_url)
           echo "SITE_URL=$siteUrl" >> $GITHUB_ENV
 
       - name: Run command and check output
