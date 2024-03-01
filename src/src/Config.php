@@ -162,13 +162,8 @@ class Config {
 	 * @return string The path to the QIT CLI directory.
 	 */
 	public static function get_qit_dir(): string {
-		$normalize_path = static function ( string $path ): string {
-			// Converts Windows-style directory separator to Unix-style. Makes sure it ends with a trailing slash.
-			return rtrim( str_replace( '\\', '/', $path ), '/' ) . '/';
-		};
-
 		if ( ! empty( getenv( 'QIT_HOME' ) ) ) {
-			$qit_dir = $normalize_path( getenv( 'QIT_HOME' ) );
+			$qit_dir = normalize_path( getenv( 'QIT_HOME' ) );
 		} else {
 			if ( is_windows() ) {
 				if ( empty( getenv( 'APPDATA' ) ) ) {
@@ -176,7 +171,7 @@ class Config {
 				}
 				$parent_config_dir = getenv( 'APPDATA' );
 			} elseif ( ! empty( getenv( 'HOME' ) ) ) {
-				$home = $normalize_path( getenv( 'HOME' ) );
+				$home = normalize_path( getenv( 'HOME' ) );
 				if ( static::use_xdg() ) {
 					$xdg_config        = getenv( 'XDG_CONFIG_HOME' ) ?: $home . '.config';
 					$parent_config_dir = $xdg_config;
@@ -188,7 +183,7 @@ class Config {
 			}
 
 			// Normalize and append 'woo-qit-cli/' to the parent directory.
-			$qit_dir = $normalize_path( $parent_config_dir ) . 'woo-qit-cli/';
+			$qit_dir = normalize_path( $parent_config_dir ) . 'woo-qit-cli/';
 		}
 
 		// Create the directory if it does not exist.

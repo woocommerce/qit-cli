@@ -76,7 +76,7 @@ abstract class Environment {
 
 	abstract protected function additional_output( EnvInfo $env_info ): void;
 
-	public function up(): EnvInfo {
+	public function up( bool $attached = false ): EnvInfo {
 		// Start the benchmark.
 		$start = microtime( true );
 
@@ -87,7 +87,7 @@ abstract class Environment {
 		$this->environment_monitor->environment_added_or_updated( $env_info );
 		$this->generate_docker_compose( $env_info );
 		$this->post_generate_docker_compose( $env_info );
-		$this->up_docker_compose( $env_info );
+		$this->up_docker_compose( $env_info, $attached );
 		$this->post_up( $env_info );
 
 		$this->output->writeln( 'Server started at ' . round( microtime( true ) - $start, 2 ) . ' seconds' );
@@ -136,8 +136,9 @@ abstract class Environment {
 	protected function generate_docker_compose( EnvInfo $env_info ): void {
 		$process = new Process( [ PHP_BINARY, $this->temporary_environment_path . '/docker-compose-generator.php' ] );
 		$process->setEnv( array_merge( $process->getEnv(), $this->get_generate_docker_compose_envs( $env_info ), [
-			'CACHE_DIR'  => $this->cache_dir,
-			'QIT_ENV_ID' => $this->temporary_environment_id,
+			'CACHE_DIR'          => $this->cache_dir,
+			'QIT_ENV_ID'         => $this->temporary_environment_id,
+			'QIT_DB_HEALTHCHECK' => '',
 		] ) );
 
 		try {
@@ -151,10 +152,16 @@ abstract class Environment {
 		}
 	}
 
-	protected function up_docker_compose( EnvInfo $env_info ): void {
+	protected function up_docker_compose( EnvInfo $env_info, bool $attached ): void {
 		$this->add_container_names( $env_info );
 
-		$up_process = new Process( array_merge( $this->docker->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'up', '-d' ] ) );
+		$args = array_merge( $this->docker->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'up' ] );
+
+		if ( ! $attached ) {
+			$args[] = '-d';
+		}
+
+		$up_process = new Process( $args );
 
 		try {
 			$u = Docker::get_user_and_group();
@@ -261,7 +268,7 @@ abstract class Environment {
 	}
 
 	public static function get_temp_envs_dir(): string {
-		$dir = rtrim( Config::get_qit_dir(), DIRECTORY_SEPARATOR ) . '/temporary-envs/';
+		$dir = rtrim( Config::get_qit_dir(), '/' ) . '/temporary-envs/';
 
 		if ( ! file_exists( $dir ) && ! mkdir( $dir, 0755 ) ) {
 			throw new \RuntimeException( 'Failed to create temporary environments directory.' );

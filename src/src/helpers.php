@@ -11,6 +11,25 @@ function is_windows(): bool {
 	return defined( 'PHP_WINDOWS_VERSION_BUILD' );
 }
 
+/**
+ * @param string $path
+ *
+ * @return string Converts Windows-style directory separator to Unix-style. Makes sure it ends with a trailing slash.
+ */
+function normalize_path( string $path, $trailingslashit = true ): string {
+	$path = str_replace( '\\', '/', $path );
+
+	if ( $trailingslashit ) {
+		$path = rtrim( $path, '/' ) . '/';
+	}
+
+	return $path;
+}
+
+function use_tty(): bool {
+	return ! is_ci() && ! is_windows();
+}
+
 function validate_authentication( string $username, string $qit_token ): void {
 	$is_ci = getenv( 'CI' );
 

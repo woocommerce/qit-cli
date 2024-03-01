@@ -43,6 +43,7 @@ class StartEnvironmentCommand extends DynamicCommand {
 
 		$this->setDescription( 'Starts a local test environment.' )
 		     ->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
+		     ->addOption( 'attached', 'a', InputOption::VALUE_NONE, 'Whether to attach to the environment after starting it.' )
 		     ->setAliases( [ 'env:up' ] );
 	}
 
@@ -79,7 +80,7 @@ class StartEnvironmentCommand extends DynamicCommand {
 			$this->e2e_environment->set_php_version( $options['php_version'] );
 		}
 
-		$env_info = $this->e2e_environment->up();
+		$env_info = $this->e2e_environment->up( $input->getOption( 'attached' ) );
 
 		$output->writeln( '<info>Environment up.</info>' );
 
