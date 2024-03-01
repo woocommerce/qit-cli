@@ -114,17 +114,17 @@ jobs:
         run: |
           expected_major_minor="${{ matrix.php }}"
 
-          # Get the PHP Docker image name dynamically
-          docker_image=$(php qit-cli.php env:list --field=docker_images | grep php)
+          # Get the name of the running PHP Docker container dynamically
+          container_name=$(php qit-cli.php env:list --field=docker_images | grep php)
 
-          # Check if the Docker image name was found
-          if [ -z "$docker_image" ]; then
-            echo "No PHP Docker image found"
+          # Check if the Docker container name was found
+          if [ -z "$container_name" ]; then
+            echo "No PHP Docker container found"
             exit 1
           fi
 
-          # Execute PHP version check using the Docker image
-          actual_major_minor=$(docker run --rm "$docker_image" php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')
+          # Execute PHP version check inside the running Docker container
+          actual_major_minor=$(docker exec "$container_name" php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')
 
           if [[ "$actual_major_minor" == "$expected_major_minor" ]]; then
             echo "PHP Major.Minor version is as expected: $actual_major_minor"
