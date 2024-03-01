@@ -41,11 +41,13 @@ class StartEnvironmentCommand extends DynamicCommand {
 			'additional_wordpress_plugins',
 		] );
 
-		$this->setDescription( 'Starts a local test environment.' )
-		     ->addOption( 'with-object-cache', 'c', InputOption::VALUE_NONE, 'Whether to enable Object Cache (Redis) in the environment.' )
-		     ->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
-		     ->addOption( 'attached', 'a', InputOption::VALUE_NONE, 'Whether to attach to the environment after starting it.' )
-		     ->setAliases( [ 'env:up' ] );
+		$this
+			->setDescription( 'Starts a local test environment.' )
+			->addOption( 'with-object-cache', 'c', InputOption::VALUE_NONE, 'Whether to enable Object Cache (Redis) in the environment.' )
+			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
+			->addOption( 'attached', 'a', InputOption::VALUE_NONE, 'Whether to attach to the environment after starting it.' )
+			->setAliases( [ 'env:up' ]
+			);
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {

@@ -2,10 +2,8 @@
 
 namespace QIT_CLI\Environment;
 
-use QIT_CLI\App;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
-use function QIT_CLI\is_ci;
 use function QIT_CLI\is_windows;
 use function QIT_CLI\use_tty;
 
@@ -64,9 +62,15 @@ class Docker {
 		$env_group = getenv( 'QIT_DOCKER_GROUP' );
 
 		if ( $env_user !== false && $env_group !== false ) {
-			return [ 'user' => $env_user, 'group' => $env_group ];
+			return [
+				'user'  => $env_user,
+				'group' => $env_group,
+			];
 		} elseif ( function_exists( 'posix_getuid' ) && function_exists( 'posix_getgid' ) ) {
-			return [ 'user' => posix_getuid(), 'group' => posix_getgid() ];
+			return [
+				'user'  => posix_getuid(),
+				'group' => posix_getgid(),
+			];
 		} else {
 			throw new \RuntimeException( 'Could not find user and group' );
 		}
@@ -76,7 +80,8 @@ class Docker {
 	 * @param EnvInfo              $env_info
 	 * @param array<scalar>        $command The Command to run, in a Symfony Process format.
 	 * @param array<string,scalar> $env_vars Any additional env vars to set in the process.
-	 * @param string               $user The user to run the command as.
+	 * @param string|null          $user The user to run the command as.
+	 * @param int                  $timeout
 	 * @param string               $image The docker image to run the command in.
 	 *
 	 * @return void
@@ -92,7 +97,7 @@ class Docker {
 		// Check if user is not set and try to set it from ENV vars or posix functions.
 		if ( is_null( $user ) ) {
 			try {
-				$u = static::get_user_and_group();
+				$u    = static::get_user_and_group();
 				$user = $u['user'] . ':' . $u['group'];
 			} catch ( \RuntimeException $e ) {
 				if ( ! is_windows() ) {

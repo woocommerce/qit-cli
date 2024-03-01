@@ -12,11 +12,9 @@ function is_windows(): bool {
 }
 
 /**
- * @param string $path
- *
  * @return string Converts Windows-style directory separator to Unix-style. Makes sure it ends with a trailing slash.
  */
-function normalize_path( string $path, $trailingslashit = true ): string {
+function normalize_path( string $path, bool $trailingslashit = true ): string {
 	$path = str_replace( '\\', '/', $path );
 
 	if ( $trailingslashit ) {

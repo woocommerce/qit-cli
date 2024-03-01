@@ -21,7 +21,7 @@ class ExecEnvironmentCommand extends Command {
 	/** @var Docker */
 	protected $docker;
 
-	protected static $defaultName = 'env:exec';
+	protected static $defaultName = 'env:exec'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	public function __construct(
 		EnvironmentMonitor $environment_monitor,
@@ -63,7 +63,7 @@ class ExecEnvironmentCommand extends Command {
 				return sprintf( 'ID: %s, Created: %s, Status: %s',
 					$environment->env_id,
 					format_elapsed_time( time() - $environment->created_at ),
-					$environment->status );
+				$environment->status );
 			}, $running_environments );
 
 			$helper   = new QuestionHelper();
@@ -77,6 +77,7 @@ class ExecEnvironmentCommand extends Command {
 			$environment             = $this->environment_monitor->get_env_info_by_id( $selected_environment_id );
 		}
 
+		// @phpstan-ignore-next-line
 		if ( ! $environment ) {
 			$output->writeln( '<error>Selected environment not found.</error>' );
 
@@ -84,7 +85,7 @@ class ExecEnvironmentCommand extends Command {
 		}
 
 		$command_to_run = $input->getArgument( 'command_to_run' );
-		$env_vars       = $this->parseEnvVars( $input->getOption( 'env_var' ) );
+		$env_vars       = $this->parse_env_vars( $input->getOption( 'env_var' ) );
 		$user           = $input->getOption( 'user' );
 		$timeout        = $input->getOption( 'timeout' ) !== null ? (int) $input->getOption( 'timeout' ) : 300;
 		$image          = $input->getOption( 'image' ) ?: 'php';
@@ -94,10 +95,15 @@ class ExecEnvironmentCommand extends Command {
 		return Command::SUCCESS;
 	}
 
-	private function parseEnvVars( array $envVarOptions ): array {
+	/**
+	 * @param array<string,scalar> $env_var_options
+	 *
+	 * @return array<string,string>
+	 */
+	private function parse_env_vars( array $env_var_options ): array {
 		$env_vars = [];
-		foreach ( $envVarOptions as $envVarOption ) {
-			$parts = explode( '=', $envVarOption, 2 );
+		foreach ( $env_var_options as $e ) {
+			$parts = explode( '=', $e, 2 );
 			if ( count( $parts ) === 2 ) {
 				$env_vars[ $parts[0] ] = $parts[1];
 			}

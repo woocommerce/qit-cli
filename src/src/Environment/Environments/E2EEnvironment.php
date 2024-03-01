@@ -100,13 +100,12 @@ class E2EEnvironment extends Environment {
 		$io->writeln( 'Customer Credentials: customer/password' );
 		$io->writeln( sprintf( 'Path: %s', $env_info->temporary_env ) );
 
-		// Try to connect to the website:
+		// Try to connect to the website.
 		if ( ! $this->check_site( $env_info->site_url ) ) {
 			$site_url_domain = parse_url( $env_info->site_url, PHP_URL_HOST );
 			$io->section( 'Test connection failed' );
 			$io->writeln( 'We couldn\'t access the website. To fix this, please check if the following line is present in your hosts file:' );
 			$io->writeln( sprintf( "\n<info>127.0.0.1 %s</info>\n", $site_url_domain ) );
-			// Let the user know that we couldn't access the website, ask them to check if they have the host rules;
 			if ( is_windows() ) {
 				$io->writeln( 'If it\'s not, you can add it using this PowerShell command with Administration privileges:' );
 				$io->writeln( sprintf( 'Add-Content -Path $env:windir\System32\drivers\etc\hosts -Value "`n127.0.0.1`t%s" -Force', $site_url_domain ) );

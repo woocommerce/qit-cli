@@ -8,7 +8,6 @@ use QIT_CLI\SafeRemove;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
-use function QIT_CLI\is_ci;
 use function QIT_CLI\is_windows;
 use function QIT_CLI\normalize_path;
 use function QIT_CLI\use_tty;
@@ -148,7 +147,7 @@ abstract class Environment {
 		foreach ( new \DirectoryIterator( $this->temporary_environment_path . '/mu-plugins' ) as $mu_plugin ) {
 			/** @var \SplFileInfo $mu_plugin */
 			if ( $mu_plugin->isFile() && $mu_plugin->getExtension() === 'php' ) {
-				$volumes["{$this->temporary_environment_path}/mu-plugins/{$mu_plugin->getFilename()}"] = '/var/www/html/wp-content/mu-plugins/' . $mu_plugin->getFilename();
+				$volumes[ "{$this->temporary_environment_path}/mu-plugins/{$mu_plugin->getFilename()}" ] = '/var/www/html/wp-content/mu-plugins/' . $mu_plugin->getFilename();
 			}
 		}
 
