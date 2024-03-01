@@ -4,6 +4,6 @@
     "created_at": 1708728299,
     "status": "pending",
     "env_id": 1234567890,
-    "nginx_port": null,
+    "site_url": null,
     "docker_images": null
 }
