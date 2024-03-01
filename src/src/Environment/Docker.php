@@ -140,6 +140,7 @@ class Docker {
 		} );
 
 		if ( ! $process->isSuccessful() ) {
+			$this->output->writeln( $process->getCommandLine() );
 			throw new \RuntimeException( 'Failed to run command inside docker' );
 		}
 	}
