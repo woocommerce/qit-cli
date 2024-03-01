@@ -11,6 +11,10 @@ function is_windows(): bool {
 	return defined( 'PHP_WINDOWS_VERSION_BUILD' );
 }
 
+function is_wsl(): bool {
+	return getenv( 'WSL_DISTRO_NAME' ) !== false;
+}
+
 /**
  * @return string Converts Windows-style directory separator to Unix-style. Makes sure it ends with a trailing slash.
  */

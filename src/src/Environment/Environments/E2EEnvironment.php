@@ -8,6 +8,7 @@ use QIT_CLI\Environment\Environment;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use function QIT_CLI\is_windows;
+use function QIT_CLI\is_wsl;
 
 class E2EEnvironment extends Environment {
 	/** @var string */
@@ -106,7 +107,12 @@ class E2EEnvironment extends Environment {
 			$io->section( 'Test connection failed' );
 			$io->writeln( 'We couldn\'t access the website. To fix this, please check if the following line is present in your hosts file:' );
 			$io->writeln( sprintf( "\n<info>127.0.0.1 %s</info>\n", $site_url_domain ) );
-			if ( is_windows() ) {
+			if ( is_wsl() ) {
+				// Inside Windows WSL.
+				$io->writeln( 'It appears you are using Windows Subsystem for Linux (WSL). To update the hosts file automatically, you can run the following command in PowerShell with administrative privileges, outside of WSL:' );
+				$io->writeln( sprintf( 'Add-Content -Path $env:windir\System32\drivers\etc\hosts -Value "`n127.0.0.1`t%s" -Force', $site_url_domain ) );
+			} elseif ( is_windows() ) {
+				// In native Windows.
 				$io->writeln( 'If it\'s not, you can add it using this PowerShell command with Administration privileges:' );
 				$io->writeln( sprintf( 'Add-Content -Path $env:windir\System32\drivers\etc\hosts -Value "`n127.0.0.1`t%s" -Force', $site_url_domain ) );
 			} else {
@@ -118,6 +124,10 @@ class E2EEnvironment extends Environment {
 	}
 
 	protected function check_site( string $site_url ): bool {
+		if ( $this->output->isVerbose() ) {
+			$this->output->writeln( sprintf( 'Checking if %s is accessible...', $site_url ) );
+		}
+
 		$ch = curl_init( $site_url );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
@@ -130,6 +140,10 @@ class E2EEnvironment extends Environment {
 		curl_exec( $ch );
 		$http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
 		curl_close( $ch );
+
+		if ( $this->output->isVerbose() ) {
+			$this->output->writeln( sprintf( 'HTTP Code: %d', $http_code ) );
+		}
 
 		return $http_code === 200;
 	}
