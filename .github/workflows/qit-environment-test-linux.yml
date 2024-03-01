@@ -112,26 +112,8 @@ jobs:
         if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
         working-directory: src
         run: |
-          expected_major_minor="${{ matrix.php }}"
-
-          # Get the name of the running PHP Docker container dynamically
-          container_name=$(php qit-cli.php env:list --field=docker_images | grep php)
-
-          # Check if the Docker container name was found
-          if [ -z "$container_name" ]; then
-            echo "No PHP Docker container found"
-            exit 1
-          fi
-
-          # Execute PHP version check inside the running Docker container
-          actual_major_minor=$(docker exec "$container_name" php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')
-
-          if [[ "$actual_major_minor" == "$expected_major_minor" ]]; then
-            echo "PHP Major.Minor version is as expected: $actual_major_minor"
-          else
-            echo "PHP Major.Minor version mismatch. Expected: $expected_major_minor, Actual: $actual_major_minor"
-            exit 1
-          fi
+          actual_major_minor=$(docker exec $(php qit-cli.php env:list --field=docker_images | grep php) php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')
+          [[ "$actual_major_minor" == "${{ matrix.php }}" ]] || { echo "PHP Major.Minor version mismatch. Expected: ${{ matrix.php }}, Actual: $actual_major_minor"; exit 1; }
 
       - name: Print WordPress Version (Unix)
         if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
