@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use function QIT_CLI\is_ci;
+use function QIT_CLI\is_windows;
 use function QIT_CLI\normalize_path;
 use function QIT_CLI\use_tty;
 
@@ -213,7 +214,9 @@ abstract class Environment {
 				'FIXGID' => $u['group'],
 			] ) );
 		} catch ( \RuntimeException $e ) {
-			$this->output->writeln( '<info>To run the environment with the correct permissions, please install the posix extension on PHP, or set QIT_DOCKER_USER/QIT_DOCKER_GROUP env vars.</info>' );
+			if ( ! is_windows() ) {
+				$this->output->writeln( '<info>To run the environment with the correct permissions, please install the posix extension on PHP, or set QIT_DOCKER_USER/QIT_DOCKER_GROUP env vars.</info>' );
+			}
 		}
 
 		$up_process->setTimeout( 300 );
