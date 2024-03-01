@@ -1380,16 +1380,7 @@
             }
         },
         {
-            "debug_log": [
-                {
-                    "count": "2",
-                    "message": "PHP Notice: Undefined index: id in \\/var\\/www\\/html\\/wp-includes\\/class-wp-list-util.php on line 170"
-                },
-                {
-                    "count": "1",
-                    "message": "PHP Notice: Undefined index: id in \\/var\\/www\\/html\\/wp-includes\\/class-wp-list-util.php on line 170\\n"
-                }
-            ]
+            "debug_log": []
         }
     ]
 ]';
