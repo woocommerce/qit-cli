@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use function QIT_CLI\is_ci;
+use function QIT_CLI\normalize_path;
 use function QIT_CLI\use_tty;
 
 abstract class Environment {
@@ -56,10 +57,10 @@ abstract class Environment {
 		$this->filesystem             = $filesystem;
 		$this->docker                 = $docker;
 
-		$this->cache_dir                  = Config::get_qit_dir() . '/cache';
-		$this->source_environment_path    = Config::get_qit_dir() . '/environments/' . $this->get_name();
+		$this->cache_dir                  = normalize_path( Config::get_qit_dir() . 'cache' );
+		$this->source_environment_path    = normalize_path( Config::get_qit_dir() . 'environments/' . $this->get_name() );
 		$this->temporary_environment_id   = uniqid();
-		$this->temporary_environment_path = static::get_temp_envs_dir() . $this->get_name() . '-' . $this->temporary_environment_id;
+		$this->temporary_environment_path = normalize_path( static::get_temp_envs_dir() . $this->get_name() . '-' . $this->temporary_environment_id );
 		$this->output                     = $output;
 	}
 
@@ -137,17 +138,15 @@ abstract class Environment {
 		$process = new Process( [ PHP_BINARY, $this->temporary_environment_path . '/docker-compose-generator.php' ] );
 		$process->setEnv( array_merge( $process->getEnv(), $this->get_generate_docker_compose_envs( $env_info ), [
 			'CACHE_DIR'          => $this->cache_dir,
+			'NORMALIZED_ENV_DIR' => $this->temporary_environment_path,
 			'QIT_ENV_ID'         => $this->temporary_environment_id,
-			'QIT_DB_HEALTHCHECK' => '',
 		] ) );
 
-		try {
-			$process->mustRun();
+		$process->run( function ( $type, $buffer ) {
+			$this->output->write( $buffer );
+		} );
 
-			if ( $this->output->isVerbose() ) {
-				$this->output->writeln( $process->getOutput() );
-			}
-		} catch ( \Exception $e ) {
+		if ( ! $process->isSuccessful() ) {
 			throw new \RuntimeException( 'Failed to generate docker-compose.yml' );
 		}
 	}

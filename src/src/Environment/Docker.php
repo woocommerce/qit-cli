@@ -84,7 +84,7 @@ class Docker {
 		$docker_image   = $env_info->get_docker_container( $image );
 		$docker_command = [ $this->find_docker(), 'exec' ];
 
-		if ( ! is_ci() ) {
+		if ( use_tty() ) {
 			$docker_command = array_merge( $docker_command, [ '-it' ] );
 		}
 

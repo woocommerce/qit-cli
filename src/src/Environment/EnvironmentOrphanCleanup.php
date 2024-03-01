@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
+use function QIT_CLI\normalize_path;
 
 class EnvironmentOrphanCleanup {
 	/** @var array|mixed */
@@ -122,7 +123,7 @@ class EnvironmentOrphanCleanup {
 
 	protected function delete_orphaned_environments_from_fileystem(): void {
 		$running_environment_paths = array_map( function ( EnvInfo $env_info ) {
-			return $env_info->temporary_env;
+			return normalize_path( $env_info->temporary_env );
 		}, $this->environment_monitor->get() );
 
 		/** @var \SplFileInfo $file_info */
@@ -132,7 +133,7 @@ class EnvironmentOrphanCleanup {
 				continue;
 			}
 
-			if ( ! in_array( $file_info->getPathname(), $running_environment_paths, true ) ) {
+			if ( ! in_array( normalize_path( $file_info->getPathname() ), $running_environment_paths, true ) ) {
 				$this->directories_to_delete[] = $file_info->getPathname();
 			}
 		}
