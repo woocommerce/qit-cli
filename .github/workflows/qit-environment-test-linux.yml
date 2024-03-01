@@ -116,6 +116,9 @@ jobs:
 
           # Create the PHP script within the Docker environment
           php qit-cli.php env:exec "echo '<?php echo PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION; ?>' > temp_version_check.php"
+          
+          # Print the PHP script
+          php qit-cli.php env:exec "cat temp_version_check.php"
 
           # Execute the PHP script
           actual_major_minor=$(php qit-cli.php env:exec "php temp_version_check.php")
