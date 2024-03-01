@@ -78,7 +78,7 @@ jobs:
         if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
         working-directory: src
         env:
-          QIT_DOCKER_RUN_TIMEOUT: ${{ (matrix.os == 'ubuntu-20.04') && '300' || '1200' }}
+          QIT_DOCKER_RUN_TIMEOUT: ${{ (matrix.os == 'ubuntu-20.04') && '300' || '1800' }}
         run: php qit-cli.php env:up --wordpress_version ${{ matrix.wordpress }} --woocommerce_version ${{ matrix.woocommerce }} --php_version ${{ matrix.php }}
 
       - name: Get URL (Cross-platform)
