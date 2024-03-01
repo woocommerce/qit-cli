@@ -115,7 +115,7 @@ jobs:
           expected_major_minor="${{ matrix.php }}"
 
           # Get the PHP Docker image name dynamically
-          docker_image=$(php qit env:list --field=docker_images | grep php)
+          docker_image=$(php qit-cli.php env:list --field=docker_images | grep php)
 
           # Check if the Docker image name was found
           if [ -z "$docker_image" ]; then
