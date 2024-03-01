@@ -7,6 +7,7 @@ use QIT_CLI\Environment\EnvInfo;
 use QIT_CLI\Environment\Environment;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use function QIT_CLI\is_windows;
 
 class E2EEnvironment extends Environment {
 	/** @var string */
@@ -98,6 +99,40 @@ class E2EEnvironment extends Environment {
 		$io->writeln( 'Admin Credentials: admin/password' );
 		$io->writeln( 'Customer Credentials: customer/password' );
 		$io->writeln( sprintf( 'Path: %s', $env_info->temporary_env ) );
+
+		// Try to connect to the website:
+		if ( ! $this->check_site( $env_info->site_url ) ) {
+			$site_url_domain = parse_url( $env_info->site_url, PHP_URL_HOST );
+			$io->section( 'Test connection failed' );
+			$io->writeln( 'We couldn\'t access the website. To fix this, please check if the following line is present in your hosts file:' );
+			$io->writeln( sprintf( "\n<info>127.0.0.1 %s</info>\n", $site_url_domain ) );
+			// Let the user know that we couldn't access the website, ask them to check if they have the host rules;
+			if ( is_windows() ) {
+				$io->writeln( 'If it\'s not, you can add it using this PowerShell command with Administration privileges:' );
+				$io->writeln( sprintf( 'Add-Content -Path $env:windir\System32\drivers\etc\hosts -Value "`n127.0.0.1`t%s" -Force', $site_url_domain ) );
+			} else {
+				$io->writeln( 'If it\'s not, you can add it using this command:' );
+				$io->writeln( sprintf( "\n<info>echo \"127.0.0.1 %s\" | sudo tee -a /etc/hosts</info>", $site_url_domain ) );
+			}
+		}
+		$io->writeln( '' );
+	}
+
+	protected function check_site( string $site_url ): bool {
+		$ch = curl_init( $site_url );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+		curl_setopt( $ch, CURLOPT_MAXREDIRS, 10 );
+		curl_setopt( $ch, CURLOPT_TIMEOUT, 10 );
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 10 );
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, false );
+		curl_setopt( $ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3' );
+		curl_exec( $ch );
+		$http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+		curl_close( $ch );
+
+		return $http_code === 200;
 	}
 
 	/**

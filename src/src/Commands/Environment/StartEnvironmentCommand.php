@@ -50,8 +50,7 @@ class StartEnvironmentCommand extends DynamicCommand {
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		if ( is_windows() ) {
-			// Show a warning but let them try.
-			$output->writeln( '<error>Windows is not supported. Please use WSL2.</error>' );
+			$output->writeln( '<comment>Warning: It is highly recommended to run this script from Windows Subsystem for Linux (WSL) when using Windows.</comment>' );
 		}
 
 		try {
