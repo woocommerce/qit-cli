@@ -6,6 +6,7 @@ use QIT_CLI\App;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use function QIT_CLI\is_ci;
+use function QIT_CLI\use_tty;
 
 class Docker {
 	/** @var OutputInterface */
@@ -31,7 +32,7 @@ class Docker {
 		$docker_image = $env_info->get_docker_container( $docker_image );
 
 		$process = new Process( [ $this->find_docker(), 'exec', '-it', $docker_image, $terminal ] );
-		$process->setTty( ! is_ci() );
+		$process->setTty( use_tty() );
 
 		if ( $this->output->isVerbose() ) {
 			// Print the command that will run.
@@ -125,7 +126,7 @@ class Docker {
 		}
 
 		$process = new Process( $docker_command );
-		$process->setTty( ! is_ci() );
+		$process->setTty( use_tty() );
 		$process->setTimeout( $timeout );
 		$process->setIdleTimeout( $timeout );
 

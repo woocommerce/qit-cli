@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use function QIT_CLI\is_ci;
+use function QIT_CLI\use_tty;
 
 abstract class Environment {
 	/** @var EnvironmentDownloader */
@@ -165,10 +166,9 @@ abstract class Environment {
 			$this->output->writeln( '<info>To run the environment with the correct permissions, please install the posix extension on PHP, or set QIT_DOCKER_USER/QIT_DOCKER_GROUP env vars.</info>' );
 		}
 
-
 		$up_process->setTimeout( 300 );
 		$up_process->setIdleTimeout( 300 );
-		$up_process->setTty( ! is_ci() );
+		$up_process->setTty( use_tty() );
 
 		$up_process->run( function ( $type, $buffer ) {
 			$this->output->write( $buffer );
@@ -186,7 +186,7 @@ abstract class Environment {
 
 	public function down( EnvInfo $env_info ): void {
 		$down_process = new Process( array_merge( $this->docker->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'down' ] ) );
-		$down_process->setTty( ! is_ci() );
+		$down_process->setTty( use_tty() );
 
 		$down_process->run( function ( $type, $buffer ) {
 			$this->output->write( $buffer );
