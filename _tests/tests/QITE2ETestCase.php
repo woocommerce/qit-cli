@@ -113,7 +113,7 @@ class QITE2ETestCase extends TestCase {
 						return $value;
 					}
 
-					if ( stripos( $file_path, 'woo-e2e/delete_products' ) !== false ) {
+					if ( stripos( $file_path, 'woo-e2e/delete_products' ) !== false || stripos( $file_path, 'woo-api/delete_products' ) !== false ) {
 						return [
 							[
 								'count'   => '0',
@@ -140,20 +140,6 @@ class QITE2ETestCase extends TestCase {
 						$debug_log['message'] = str_replace( 'staging-compatibility', 'compatibility', $debug_log['message'] );
 
 						$debug_log['message'] = str_replace( 'compatibility-dashboard', 'qit-runner', $debug_log['message'] );
-
-						if ( stripos( $file_path, 'woo-api/delete_products' ) !== false ) {
-							$pos = stripos( $debug_log['message'], 'Stack Trace:' );
-
-							if ( $pos !== false ) {
-								// Remove stack trace from debug log.
-								$debug_log['message'] = substr( $debug_log['message'], 0, $pos );
-
-								// If the resulting entry is empty, skip it.
-								if ( empty( trim( $debug_log['message'] ) ) ) {
-									continue;
-								}
-							}
-						}
 
 						// Sometimes the test site might fail to contact WP.org, this is beyond our control.
 						if ( stripos( $debug_log['message'], 'Something may be wrong with WordPress.org' ) !== false ) {
