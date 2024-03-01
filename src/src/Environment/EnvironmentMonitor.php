@@ -16,9 +16,16 @@ class EnvironmentMonitor {
 	 * @return array<EnvInfo>
 	 */
 	public function get(): array {
+		$env_info_json = $this->cache->get( 'environment_monitor' );
+
+		if ( $env_info_json === null ) {
+			return [];
+		}
+
+		// Decode JSON and use array_map to transform the data
 		return array_map( function ( $env_info_json ) {
 			return EnvInfo::from_array( $env_info_json );
-		}, json_decode( $this->cache->get( 'environment_monitor' ), true ) ?? [] );
+		}, json_decode( $env_info_json, true ) );
 	}
 
 	public function get_env_info_by_id( string $env_info_id ): EnvInfo {
