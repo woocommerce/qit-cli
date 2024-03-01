@@ -1384,6 +1384,10 @@
                 {
                     "count": "550",
                     "message": "PHP Notice: $order is Automattic\\\\WooCommerce\\\\Admin\\\\Overrides\\\\Order as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 41"
+                },
+                {
+                    "count": "1",
+                    "message": "PHP Warning: dir(\\/var\\/www\\/html\\/wp-content\\/upgrade\\/wordpress-latest-GrgZgz\\/wordpress\\/wp-content\\/themes\\/twentytwentyone\\/assets\\/sass\\/05-blocks\\/gallery\\/): Failed to open directory: No such file or directory in \\/var\\/www\\/html\\/wp-admin\\/includes\\/class-wp-filesystem-direct.php on line 636"
                 }
             ]
         }

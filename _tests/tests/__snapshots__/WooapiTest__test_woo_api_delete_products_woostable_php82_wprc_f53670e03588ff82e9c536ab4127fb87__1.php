@@ -1382,6 +1382,10 @@
         {
             "debug_log": [
                 {
+                    "count": "1",
+                    "message": "PHP Notice: Function get_block_patterns was called incorrectly. Could not register file \\"\\/var\\/www\\/html\\/wp-content\\/themes\\/twentytwentyfour\\/patterns\\/posts-images-only-offset-4-col.php\\" as a block pattern (\\"Slug\\" field missing) Please see Debugging in WordPress for more information. (This message was added in version 6.0.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6078"
+                },
+                {
                     "count": "2",
                     "message": "PHP Warning: Undefined array key \\"id\\" in \\/var\\/www\\/html\\/wp-includes\\/class-wp-list-util.php on line 170"
                 },
