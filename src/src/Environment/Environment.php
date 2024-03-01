@@ -156,15 +156,19 @@ abstract class Environment {
 		 * the container with the correct permissions, unless they are a file name,
 		 * at which point create the parent dir.
 		 */
-		foreach ( $volumes as $v ) {
-			if ( stripos( $v, '.' ) === false ) {
-				if ( ! file_exists( $v ) ) {
-					mkdir( $v, 0755, true );
+		foreach ( $volumes as $local => $in_container ) {
+			if ( stripos( $local, '.' ) === false ) {
+				if ( ! file_exists( $local ) ) {
+					if ( ! mkdir( $local, 0755, true ) ) {
+						throw new \RuntimeException( "Failed to create volume directory: $local" );
+					}
 				}
 			} else {
-				$dir = dirname( $v );
+				$dir = dirname( $local );
 				if ( ! file_exists( $dir ) ) {
-					mkdir( $dir, 0755, true );
+					if ( ! mkdir( $dir, 0755, true ) ) {
+						throw new \RuntimeException( "Failed to create volume directory: $dir" );
+					}
 				}
 			}
 		}
@@ -174,8 +178,8 @@ abstract class Environment {
 			'VOLUMES'            => json_encode( $volumes ),
 			'PHP_VERSION'        => '7.4',
 			'NORMALIZED_ENV_DIR' => $env_info->temporary_env,
-			'QIT_DOCKER_NGINX'   => true,
-			'QIT_DOCKER_REDIS'   => false,
+			'QIT_DOCKER_NGINX'   => 'yes',
+			'QIT_DOCKER_REDIS'   => 'no',
 		] ) );
 
 		$process->run( function ( $type, $buffer ) {
