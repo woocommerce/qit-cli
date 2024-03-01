@@ -173,14 +173,18 @@ abstract class Environment {
 			}
 		}
 
-		$process->setEnv( array_merge( $process->getEnv(), $this->get_generate_docker_compose_envs( $env_info ), [
+		$process->setEnv( array_merge( $process->getEnv(), [
 			'QIT_ENV_ID'         => $env_info->env_id,
 			'VOLUMES'            => json_encode( $volumes ),
-			'PHP_VERSION'        => '7.4',
 			'NORMALIZED_ENV_DIR' => $env_info->temporary_env,
-			'QIT_DOCKER_NGINX'   => 'yes',
-			'QIT_DOCKER_REDIS'   => 'no',
-		] ) );
+			'QIT_DOCKER_NGINX'   => 'yes', // Default. Might be overridden by the concrete environment.
+			'QIT_DOCKER_REDIS'   => 'no', // Default. Might be overridden by the concrete environment.
+		], $this->get_generate_docker_compose_envs( $env_info ) ) );
+
+		if ( $this->output->isVerbose() ) {
+			$this->output->writeln( $process->getCommandLine() );
+			$this->output->writeln( json_encode( $process->getEnv(), JSON_PRETTY_PRINT ) );
+		}
 
 		$process->run( function ( $type, $buffer ) {
 			$this->output->write( $buffer );

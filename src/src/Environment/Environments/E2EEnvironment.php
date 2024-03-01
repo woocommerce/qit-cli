@@ -21,6 +21,9 @@ class E2EEnvironment extends Environment {
 	/** @var string */
 	protected $php_version;
 
+	/** @var bool */
+	protected $enable_object_cache = false;
+
 	public function get_name(): string {
 		return 'e2e';
 	}
@@ -43,6 +46,10 @@ class E2EEnvironment extends Environment {
 
 	public function set_php_version( string $php_version ): void {
 		$this->php_version = $php_version;
+	}
+
+	public function set_enable_object_cache( bool $enable_object_cache ): void {
+		$this->enable_object_cache = $enable_object_cache;
 	}
 
 	protected function post_generate_docker_compose( EnvInfo $env_info ): void {
@@ -97,6 +104,9 @@ class E2EEnvironment extends Environment {
 	 * @return array<string,string>
 	 */
 	protected function get_generate_docker_compose_envs( EnvInfo $env_info ): array {
-		return [];
+		return [
+			'PHP_VERSION'      => $this->php_version,
+			'QIT_DOCKER_REDIS' => $this->enable_object_cache ? 'yes' : 'no',
+		];
 	}
 }
