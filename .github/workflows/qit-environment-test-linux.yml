@@ -113,9 +113,7 @@ jobs:
         working-directory: src
         run: |
           expected_major_minor="7.4"
-          # Properly escape the PHP command
-          php_command="php -r 'echo PHP_MAJOR_VERSION . \".\" . PHP_MINOR_VERSION;'"
-          actual_major_minor=$(php qit-cli.php env:exec "$php_command")
+          actual_major_minor=$(php qit-cli.php env:exec "php -r \"echo PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;\"")
 
           if [[ "$actual_major_minor" == "$expected_major_minor" ]]; then
             echo "PHP Major.Minor version is as expected: $actual_major_minor"
