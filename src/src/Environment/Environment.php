@@ -136,10 +136,46 @@ abstract class Environment {
 
 	protected function generate_docker_compose( EnvInfo $env_info ): void {
 		$process = new Process( [ PHP_BINARY, $this->temporary_environment_path . '/docker-compose-generator.php' ] );
+
+		$volumes = [
+			"$this->temporary_environment_path/html" => '/var/www/html',
+			"$this->temporary_environment_path/bin"  => '/qit/bin',
+			$this->cache_dir                         => '/qit/cache',
+		];
+
+		// Map mu-plugins individually instead of the whole container to avoid bringing mu-plugins in container back to host.
+		foreach ( new \DirectoryIterator( $this->temporary_environment_path . '/mu-plugins' ) as $mu_plugin ) {
+			/** @var \SplFileInfo $mu_plugin */
+			if ( $mu_plugin->isFile() && $mu_plugin->getExtension() === 'php' ) {
+				$volumes["{$this->temporary_environment_path}/mu-plugins/{$mu_plugin->getFilename()}"] = '/var/www/html/wp-content/mu-plugins/' . $mu_plugin->getFilename();
+			}
+		}
+
+		/*
+		 * Create directories if needed so that they are mapped to inside
+		 * the container with the correct permissions, unless they are a file name,
+		 * at which point create the parent dir.
+		 */
+		foreach ( $volumes as $v ) {
+			if ( stripos( $v, '.' ) === false ) {
+				if ( ! file_exists( $v ) ) {
+					mkdir( $v, 0755, true );
+				}
+			} else {
+				$dir = dirname( $v );
+				if ( ! file_exists( $dir ) ) {
+					mkdir( $dir, 0755, true );
+				}
+			}
+		}
+
 		$process->setEnv( array_merge( $process->getEnv(), $this->get_generate_docker_compose_envs( $env_info ), [
-			'CACHE_DIR'          => $this->cache_dir,
-			'NORMALIZED_ENV_DIR' => $this->temporary_environment_path,
-			'QIT_ENV_ID'         => $this->temporary_environment_id,
+			'QIT_ENV_ID'         => $env_info->env_id,
+			'VOLUMES'            => json_encode( $volumes ),
+			'PHP_VERSION'        => '7.4',
+			'NORMALIZED_ENV_DIR' => $env_info->temporary_env,
+			'QIT_DOCKER_NGINX'   => true,
+			'QIT_DOCKER_REDIS'   => false,
 		] ) );
 
 		$process->run( function ( $type, $buffer ) {

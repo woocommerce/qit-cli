@@ -97,8 +97,6 @@ class E2EEnvironment extends Environment {
 	 * @return array<string,string>
 	 */
 	protected function get_generate_docker_compose_envs( EnvInfo $env_info ): array {
-		return [
-			'PHP_VERSION' => $this->php_version,
-		];
+		return [];
 	}
 }
