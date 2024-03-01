@@ -165,6 +165,14 @@ class QITE2ETestCase extends TestCase {
 							}
 						}
 
+						// There seems to be a bug on WP 6.5 RC releases around PHP statcache.
+						// @see https://wordpress.slack.com/archives/C02RQBWTW/p1709330758080609
+						if ( stripos( $debug_log['message'], 'No such file or directory in /var/www/html/wp-admin/includes/class-wp-filesystem-direct.php on line 636' ) !== false ) {
+							echo "Removing '{$debug_log['message']}' from debug_log.message\n";
+							unset( $value[ $k ] );
+							continue;
+						}
+
 						/*
 						 * Normalize PHP debug logs captured during test runs.
 						 *
