@@ -112,8 +112,10 @@ jobs:
         if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
         working-directory: src
         run: |
-          expected_major_minor="${{ matrix.php }}"
-          actual_major_minor=$(php qit-cli.php env:exec "php -r 'echo PHP_MAJOR_VERSION . \".\" . PHP_MINOR_VERSION;'")
+          expected_major_minor="7.4"
+          # Properly escape the PHP command
+          php_command="php -r 'echo PHP_MAJOR_VERSION . \".\" . PHP_MINOR_VERSION;'"
+          actual_major_minor=$(php qit-cli.php env:exec "$php_command")
 
           if [[ "$actual_major_minor" == "$expected_major_minor" ]]; then
             echo "PHP Major.Minor version is as expected: $actual_major_minor"
