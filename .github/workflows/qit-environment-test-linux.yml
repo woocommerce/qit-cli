@@ -111,9 +111,18 @@ jobs:
       - name: Verify PHP Version (Unix)
         if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
         working-directory: src
-        run: php qit-cli.php env:exec "php -v"
+        run: |
+          expected_major_minor="${{ matrix.php }}"
+          actual_major_minor=$(php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')
 
-      - name: Verify WordPress Version (Unix)
+          if [[ "$actual_major_minor" == "$expected_major_minor" ]]; then
+            echo "PHP Major.Minor version is as expected: $actual_major_minor"
+          else
+            echo "PHP Major.Minor version mismatch. Expected: $expected_major_minor, Actual: $actual_major_minor"
+            exit 1
+          fi
+
+      - name: Print WordPress Version (Unix)
         if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
         working-directory: src
         run: php qit-cli.php env:exec "wp core version"
