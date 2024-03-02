@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 4 failed, 77 passed, 81 total | Tests: 251 skipped, 7 failed, 63 passed, 321 total.",
+            "test_summary": "Test Suites: 0 skipped, 3 failed, 78 passed, 81 total | Tests: 254 skipped, 4 failed, 63 passed, 321 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,13 +41,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 4,
-                "numPassedTestSuites": 77,
+                "numFailedTestSuites": 3,
+                "numPassedTestSuites": 78,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 81,
-                "numFailedTests": 7,
+                "numFailedTests": 4,
                 "numPassedTests": 63,
-                "numPendingTests": 251,
+                "numPendingTests": 254,
                 "numTotalTests": 321,
                 "testResults": [
                     {
@@ -489,7 +489,7 @@
                     {
                         "file": "merchant\\/create-shipping-zones.spec.js",
                         "status": "failed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
@@ -520,24 +520,24 @@
                                 },
                                 {
                                     "title": "allows customer to benefit from a free Free shipping if in BC",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to pay for a Flat rate shipping method",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/customer-payment-page.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "WooCommerce Merchant Flow: Orders > Customer Payment Page": [
                                 {
                                     "title": "should show the customer payment page link on a pending order",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should load the customer payment page",
@@ -2098,7 +2098,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 4 failed, 77 passed, 81 total | Tests: 251 skipped, 7 failed, 63 passed, 321 total."
+                "summary": "Test Suites: 0 skipped, 3 failed, 78 passed, 81 total | Tests: 254 skipped, 4 failed, 63 passed, 321 total."
             }
         },
         {
