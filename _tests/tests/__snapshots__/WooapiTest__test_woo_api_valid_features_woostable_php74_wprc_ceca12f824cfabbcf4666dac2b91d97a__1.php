@@ -1382,10 +1382,6 @@
         {
             "debug_log": [
                 {
-                    "count": "1",
-                    "message": "PHP Notice: Function WP_Block_Patterns_Registry::register was called incorrectly. Pattern content must be a string. Please see Debugging in WordPress for more information. (This message was added in version 5.5.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6078"
-                },
-                {
                     "count": "550",
                     "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                 }
