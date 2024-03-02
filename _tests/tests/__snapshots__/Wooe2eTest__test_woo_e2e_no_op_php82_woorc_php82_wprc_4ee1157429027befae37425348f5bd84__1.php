@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 3 failed, 78 passed, 81 total | Tests: 14 skipped, 4 failed, 303 passed, 321 total.",
+            "test_summary": "Test Suites: 0 skipped, 1 failed, 80 passed, 81 total | Tests: 17 skipped, 1 failed, 303 passed, 321 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,13 +41,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 3,
-                "numPassedTestSuites": 78,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 80,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 81,
-                "numFailedTests": 4,
+                "numFailedTests": 1,
                 "numPassedTests": 303,
-                "numPendingTests": 14,
+                "numPendingTests": 17,
                 "numTotalTests": 321,
                 "testResults": [
                     {
@@ -670,13 +670,13 @@
                     },
                     {
                         "file": "merchant\\/order-refund.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
                                     "title": "can issue a refund by quantity",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete an issued refund",
@@ -686,7 +686,7 @@
                             "WooCommerce Orders > Refund and restock an order item": [
                                 {
                                     "title": "can update order after refunding item without automatic stock adjustment",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -1409,8 +1409,8 @@
                     },
                     {
                         "file": "shopper\\/cart-checkout-block-calculate-tax.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Shopper Cart & Checkout Block Tax Display": [
                                 {
@@ -1453,7 +1453,7 @@
                             "Shipping Cart & Checkout Block Tax": [
                                 {
                                     "title": "that tax is applied in Cart Block to shipping as well as order",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2036,12 +2036,12 @@
                     {
                         "file": "shopper\\/shop-search-browse-sort.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Search, browse by categories and sort items in the shop": [
                                 {
                                     "title": "should let user search the store",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should let user browse products by categories",
@@ -2098,7 +2098,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 3 failed, 78 passed, 81 total | Tests: 14 skipped, 4 failed, 303 passed, 321 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 80 passed, 81 total | Tests: 17 skipped, 1 failed, 303 passed, 321 total."
             }
         },
         {

@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 2 failed, 79 passed, 81 total | Tests: 13 skipped, 2 failed, 306 passed, 321 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 81 passed, 81 total | Tests: 17 skipped, 0 failed, 304 passed, 321 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,13 +41,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 2,
-                "numPassedTestSuites": 79,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 81,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 81,
-                "numFailedTests": 2,
-                "numPassedTests": 306,
-                "numPendingTests": 13,
+                "numFailedTests": 0,
+                "numPassedTests": 304,
+                "numPendingTests": 17,
                 "numTotalTests": 321,
                 "testResults": [
                     {
@@ -671,16 +671,16 @@
                     {
                         "file": "merchant\\/order-refund.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
                                     "title": "can issue a refund by quantity",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete an issued refund",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
@@ -1409,8 +1409,8 @@
                     },
                     {
                         "file": "shopper\\/cart-checkout-block-calculate-tax.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Shopper Cart & Checkout Block Tax Display": [
                                 {
@@ -1453,7 +1453,7 @@
                             "Shipping Cart & Checkout Block Tax": [
                                 {
                                     "title": "that tax is applied in Cart Block to shipping as well as order",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1677,7 +1677,7 @@
                     },
                     {
                         "file": "shopper\\/checkout-block.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Checkout Block page": [
@@ -1715,7 +1715,7 @@
                                 },
                                 {
                                     "title": "allows existing customer to place an order",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create an account during checkout",
@@ -2036,12 +2036,12 @@
                     {
                         "file": "shopper\\/shop-search-browse-sort.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Search, browse by categories and sort items in the shop": [
                                 {
                                     "title": "should let user search the store",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should let user browse products by categories",
@@ -2098,7 +2098,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 2 failed, 79 passed, 81 total | Tests: 13 skipped, 2 failed, 306 passed, 321 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 81 passed, 81 total | Tests: 17 skipped, 0 failed, 304 passed, 321 total."
             }
         },
         {

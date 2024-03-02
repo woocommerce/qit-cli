@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 1 failed, 72 passed, 73 total | Tests: 16 skipped, 2 failed, 264 passed, 282 total.",
+            "test_summary": "Test Suites: 0 skipped, 1 failed, 72 passed, 73 total | Tests: 15 skipped, 1 failed, 266 passed, 282 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,9 +45,9 @@
                 "numPassedTestSuites": 72,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 73,
-                "numFailedTests": 2,
-                "numPassedTests": 264,
-                "numPendingTests": 16,
+                "numFailedTests": 1,
+                "numPassedTests": 266,
+                "numPendingTests": 15,
                 "numTotalTests": 282,
                 "testResults": [
                     {
@@ -567,23 +567,23 @@
                     },
                     {
                         "file": "merchant\\/order-refund.spec.js",
-                        "status": "failed",
-                        "has_pending": true,
+                        "status": "passed",
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
                                     "title": "can issue a refund by quantity",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can delete an issued refund",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
                                 {
                                     "title": "can update order after refunding item without automatic stock adjustment",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -1764,13 +1764,13 @@
                     },
                     {
                         "file": "shopper\\/shop-search-browse-sort.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Search, browse by categories and sort items in the shop": [
                                 {
                                     "title": "should let user search the store",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "should let user browse products by categories",
@@ -1875,7 +1875,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 72 passed, 73 total | Tests: 16 skipped, 2 failed, 264 passed, 282 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 72 passed, 73 total | Tests: 15 skipped, 1 failed, 266 passed, 282 total."
             }
         },
         {
