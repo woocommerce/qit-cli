@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 81 passed, 81 total | Tests: 17 skipped, 0 failed, 304 passed, 321 total.",
+            "test_summary": "Test Suites: 0 skipped, 1 failed, 80 passed, 81 total | Tests: 17 skipped, 1 failed, 303 passed, 321 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,12 +41,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 81,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 80,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 81,
-                "numFailedTests": 0,
-                "numPassedTests": 304,
+                "numFailedTests": 1,
+                "numPassedTests": 303,
                 "numPendingTests": 17,
                 "numTotalTests": 321,
                 "testResults": [
@@ -1677,7 +1677,7 @@
                     },
                     {
                         "file": "shopper\\/checkout-block.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "Checkout Block page": [
@@ -1715,7 +1715,7 @@
                                 },
                                 {
                                     "title": "allows existing customer to place an order",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can create an account during checkout",
@@ -2098,7 +2098,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 81 passed, 81 total | Tests: 17 skipped, 0 failed, 304 passed, 321 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 80 passed, 81 total | Tests: 17 skipped, 1 failed, 303 passed, 321 total."
             }
         },
         {
