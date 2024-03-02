@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 1 failed, 72 passed, 73 total | Tests: 15 skipped, 1 failed, 266 passed, 282 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 73 passed, 73 total | Tests: 15 skipped, 0 failed, 267 passed, 282 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,12 +41,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 72,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 73,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 73,
-                "numFailedTests": 1,
-                "numPassedTests": 266,
+                "numFailedTests": 0,
+                "numPassedTests": 267,
                 "numPendingTests": 15,
                 "numTotalTests": 282,
                 "testResults": [
@@ -1764,13 +1764,13 @@
                     },
                     {
                         "file": "shopper\\/shop-search-browse-sort.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Search, browse by categories and sort items in the shop": [
                                 {
                                     "title": "should let user search the store",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should let user browse products by categories",
@@ -1875,7 +1875,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 72 passed, 73 total | Tests: 15 skipped, 1 failed, 266 passed, 282 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 73 passed, 73 total | Tests: 15 skipped, 0 failed, 267 passed, 282 total."
             }
         },
         {

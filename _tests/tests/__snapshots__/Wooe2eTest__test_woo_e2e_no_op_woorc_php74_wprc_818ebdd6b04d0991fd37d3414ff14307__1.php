@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 4 failed, 77 passed, 81 total | Tests: 58 skipped, 6 failed, 257 passed, 321 total.",
+            "test_summary": "Test Suites: 0 skipped, 3 failed, 78 passed, 81 total | Tests: 61 skipped, 5 failed, 255 passed, 321 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,13 +41,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 4,
-                "numPassedTestSuites": 77,
+                "numFailedTestSuites": 3,
+                "numPassedTestSuites": 78,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 81,
-                "numFailedTests": 6,
-                "numPassedTests": 257,
-                "numPendingTests": 58,
+                "numFailedTests": 5,
+                "numPassedTests": 255,
+                "numPendingTests": 61,
                 "numTotalTests": 321,
                 "testResults": [
                     {
@@ -641,8 +641,8 @@
                     },
                     {
                         "file": "merchant\\/order-emails.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Merchant > Order Action emails received": [
                                 {
@@ -651,7 +651,7 @@
                                 },
                                 {
                                     "title": "can receive completed email",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can receive cancelled order email",
@@ -670,23 +670,23 @@
                     },
                     {
                         "file": "merchant\\/order-refund.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
+                        "status": "failed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
                                     "title": "can issue a refund by quantity",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can delete an issued refund",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
                                 {
                                     "title": "can update order after refunding item without automatic stock adjustment",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -1282,23 +1282,23 @@
                     },
                     {
                         "file": "shopper\\/account-email-receiving.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Shopper Account Email Receiving": [
                                 {
                                     "title": "should receive an email when creating an account",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should receive an email when password reset initiated from admin",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "Shopper Password Reset Email Receiving": [
                                 {
                                     "title": "should receive an email when initiating a password reset",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1707,19 +1707,19 @@
                                 },
                                 {
                                     "title": "can choose different shipping types in the checkout",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "allows existing customer to place an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create an account during checkout",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2098,7 +2098,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 4 failed, 77 passed, 81 total | Tests: 58 skipped, 6 failed, 257 passed, 321 total."
+                "summary": "Test Suites: 0 skipped, 3 failed, 78 passed, 81 total | Tests: 61 skipped, 5 failed, 255 passed, 321 total."
             }
         },
         {
