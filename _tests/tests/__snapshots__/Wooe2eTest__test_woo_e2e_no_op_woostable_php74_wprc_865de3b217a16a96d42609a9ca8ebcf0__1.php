@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 1 failed, 72 passed, 73 total | Tests: 18 skipped, 1 failed, 263 passed, 282 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 73 passed, 73 total | Tests: 19 skipped, 0 failed, 263 passed, 282 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,13 +41,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 72,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 73,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 73,
-                "numFailedTests": 1,
+                "numFailedTests": 0,
                 "numPassedTests": 263,
-                "numPendingTests": 18,
+                "numPendingTests": 19,
                 "numTotalTests": 282,
                 "testResults": [
                     {
@@ -567,7 +567,7 @@
                     },
                     {
                         "file": "merchant\\/order-refund.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
@@ -583,7 +583,7 @@
                             "WooCommerce Orders > Refund and restock an order item": [
                                 {
                                     "title": "can update order after refunding item without automatic stock adjustment",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1875,7 +1875,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 72 passed, 73 total | Tests: 18 skipped, 1 failed, 263 passed, 282 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 73 passed, 73 total | Tests: 19 skipped, 0 failed, 263 passed, 282 total."
             }
         },
         {

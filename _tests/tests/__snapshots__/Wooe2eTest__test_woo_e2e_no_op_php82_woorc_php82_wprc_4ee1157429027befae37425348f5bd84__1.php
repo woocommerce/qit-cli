@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 2 failed, 79 passed, 81 total | Tests: 17 skipped, 2 failed, 302 passed, 321 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 81 passed, 81 total | Tests: 19 skipped, 0 failed, 302 passed, 321 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,13 +41,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 2,
-                "numPassedTestSuites": 79,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 81,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 81,
-                "numFailedTests": 2,
+                "numFailedTests": 0,
                 "numPassedTests": 302,
-                "numPendingTests": 17,
+                "numPendingTests": 19,
                 "numTotalTests": 321,
                 "testResults": [
                     {
@@ -670,7 +670,7 @@
                     },
                     {
                         "file": "merchant\\/order-refund.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
@@ -686,7 +686,7 @@
                             "WooCommerce Orders > Refund and restock an order item": [
                                 {
                                     "title": "can update order after refunding item without automatic stock adjustment",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1677,7 +1677,7 @@
                     },
                     {
                         "file": "shopper\\/checkout-block.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Checkout Block page": [
@@ -1715,7 +1715,7 @@
                                 },
                                 {
                                     "title": "allows existing customer to place an order",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can create an account during checkout",
@@ -2098,7 +2098,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 2 failed, 79 passed, 81 total | Tests: 17 skipped, 2 failed, 302 passed, 321 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 81 passed, 81 total | Tests: 19 skipped, 0 failed, 302 passed, 321 total."
             }
         },
         {

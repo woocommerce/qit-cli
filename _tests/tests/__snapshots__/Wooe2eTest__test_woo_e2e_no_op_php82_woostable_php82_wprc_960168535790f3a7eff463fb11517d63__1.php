@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 73 passed, 73 total | Tests: 18 skipped, 0 failed, 264 passed, 282 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 73 passed, 73 total | Tests: 19 skipped, 0 failed, 263 passed, 282 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -46,8 +46,8 @@
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 73,
                 "numFailedTests": 0,
-                "numPassedTests": 264,
-                "numPendingTests": 18,
+                "numPassedTests": 263,
+                "numPendingTests": 19,
                 "numTotalTests": 282,
                 "testResults": [
                     {
@@ -583,7 +583,7 @@
                             "WooCommerce Orders > Refund and restock an order item": [
                                 {
                                     "title": "can update order after refunding item without automatic stock adjustment",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1875,7 +1875,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 73 passed, 73 total | Tests: 18 skipped, 0 failed, 264 passed, 282 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 73 passed, 73 total | Tests: 19 skipped, 0 failed, 263 passed, 282 total."
             }
         },
         {
