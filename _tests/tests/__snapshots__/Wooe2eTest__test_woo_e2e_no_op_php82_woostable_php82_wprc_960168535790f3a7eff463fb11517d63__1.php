@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 1 failed, 72 passed, 73 total | Tests: 16 skipped, 2 failed, 264 passed, 282 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 73 passed, 73 total | Tests: 15 skipped, 0 failed, 267 passed, 282 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,13 +41,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 72,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 73,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 73,
-                "numFailedTests": 2,
-                "numPassedTests": 264,
-                "numPendingTests": 16,
+                "numFailedTests": 0,
+                "numPassedTests": 267,
+                "numPendingTests": 15,
                 "numTotalTests": 282,
                 "testResults": [
                     {
@@ -567,23 +567,23 @@
                     },
                     {
                         "file": "merchant\\/order-refund.spec.js",
-                        "status": "failed",
-                        "has_pending": true,
+                        "status": "passed",
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
                                     "title": "can issue a refund by quantity",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can delete an issued refund",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
                                 {
                                     "title": "can update order after refunding item without automatic stock adjustment",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -1875,11 +1875,16 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 72 passed, 73 total | Tests: 16 skipped, 2 failed, 264 passed, 282 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 73 passed, 73 total | Tests: 15 skipped, 0 failed, 267 passed, 282 total."
             }
         },
         {
-            "debug_log": []
+            "debug_log": [
+                {
+                    "count": "1",
+                    "message": "PHP Notice: Function WP_Block_Patterns_Registry::register was called incorrectly. Pattern content must be a string. Please see Debugging in WordPress for more information. (This message was added in version 5.5.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6078"
+                }
+            ]
         }
     ]
 ]';
