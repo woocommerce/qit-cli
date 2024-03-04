@@ -159,6 +159,13 @@ class QITE2ETestCase extends TestCase {
 							continue;
 						}
 
+						// Ignore errors containing "WP_Block_Patterns_Registry::register was called incorrectly.", this can show up erratically on WP 6.5+.
+						if ( stripos( $debug_log['message'], 'WP_Block_Patterns_Registry::register was called incorrectly.' ) !== false ) {
+							echo "Removing 'WP_Block_Patterns_Registry::register was called incorrectly.' from debug_log.message\n";
+							unset( $value[ $k ] );
+							continue;
+						}
+
 						/*
 						 * Normalize PHP debug logs captured during test runs.
 						 *
