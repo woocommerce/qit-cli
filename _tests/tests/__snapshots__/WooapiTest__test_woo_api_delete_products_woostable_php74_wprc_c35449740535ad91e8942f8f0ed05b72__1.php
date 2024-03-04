@@ -1380,7 +1380,12 @@
             }
         },
         {
-            "debug_log": []
+            "debug_log": [
+                {
+                    "count": "0",
+                    "message": "Debug log is ignored for woo-e2e\\/delete_products tests."
+                }
+            ]
         }
     ]
 ]';

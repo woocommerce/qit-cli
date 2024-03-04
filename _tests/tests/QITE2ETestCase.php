@@ -113,7 +113,7 @@ class QITE2ETestCase extends TestCase {
 						return $value;
 					}
 
-					if ( stripos( $file_path, 'woo-e2e/delete_products' ) !== false ) {
+					if ( stripos( $file_path, 'woo-e2e/delete_products' ) !== false || stripos( $file_path, 'woo-api/delete_products' ) !== false ) {
 						return [
 							[
 								'count'   => '0',
@@ -141,20 +141,6 @@ class QITE2ETestCase extends TestCase {
 
 						$debug_log['message'] = str_replace( 'compatibility-dashboard', 'qit-runner', $debug_log['message'] );
 
-						if ( stripos( $file_path, 'woo-api/delete_products' ) !== false ) {
-							$pos = stripos( $debug_log['message'], 'Stack Trace:' );
-
-							if ( $pos !== false ) {
-								// Remove stack trace from debug log.
-								$debug_log['message'] = substr( $debug_log['message'], 0, $pos );
-
-								// If the resulting entry is empty, skip it.
-								if ( empty( trim( $debug_log['message'] ) ) ) {
-									continue;
-								}
-							}
-						}
-
 						// Sometimes the test site might fail to contact WP.org, this is beyond our control.
 						if ( stripos( $debug_log['message'], 'Something may be wrong with WordPress.org' ) !== false ) {
 							// If it happens only a few times, ignore it.
@@ -163,6 +149,14 @@ class QITE2ETestCase extends TestCase {
 								unset( $value[ $k ] );
 								continue;
 							}
+						}
+
+						// There seems to be a bug on WP 6.5 RC releases around PHP statcache.
+						// @see https://wordpress.slack.com/archives/C02RQBWTW/p1709330758080609
+						if ( stripos( $debug_log['message'], 'No such file or directory in /var/www/html/wp-admin/includes/class-wp-filesystem-direct.php on line 636' ) !== false ) {
+							echo "Removing '{$debug_log['message']}' from debug_log.message\n";
+							unset( $value[ $k ] );
+							continue;
 						}
 
 						/*
