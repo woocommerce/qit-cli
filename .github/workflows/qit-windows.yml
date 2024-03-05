@@ -59,16 +59,19 @@ jobs:
         run: |
           CONTAINERS=$(php qit-cli.php env:list --field=docker_images)
           for container in $CONTAINERS; do
+            echo "Checking container: $container"
             if [ "$(docker inspect -f '{{.State.Running}}' $container)" != "true" ]; then
               echo "Container $container is not running."
               exit 1
             fi
           done
+          echo "All containers are running successfully."
 
-      - name: Assert that Doocker Network was Created
+      - name: Assert that Docker Network was Created
         run: |
           ENV_ID=$(php src/qit-cli.php env:list --field=env_id)
           if [ -z "$(docker network ls | grep $ENV_ID)" ]; then
               echo "Docker network was not created."
               exit 1
           fi
+          echo "Docker network $ENV_ID was created successfully."
