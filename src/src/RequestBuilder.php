@@ -340,6 +340,8 @@ class RequestBuilder {
 				$output->writeln( 'Skipping certificate authority file download.' );
 			}
 
+			var_dump( getenv( 'QIT_WINDOWS_DOWNLOAD_CA' ) );
+
 			return;
 		}
 
