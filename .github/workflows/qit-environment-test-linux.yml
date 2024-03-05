@@ -46,7 +46,21 @@ jobs:
               exit 1
             }
 
-        - name: Run SSL connection with CA file fallback Test
+        - name: Run SSL connection with CA file fallback Test (Cache miss)
+          working-directory: src
+          env:
+            QIT_WINDOWS_DOWNLOAD_CA: yes
+            OPENSSL_CONF: ''
+          run: |
+            php -d openssl.cafile='' -d curl.cainfo='' qit-cli.php sync -vvv
+            if ($LASTEXITCODE -eq 0) {
+              Write-Host "Test passed: SSL connection succeeded"
+            } else {
+              Write-Host "Test failed: SSL connection did not succeed"
+              exit 1
+            }
+
+        - name: Run SSL connection with CA file fallback Test (Cache hit)
           working-directory: src
           env:
             QIT_WINDOWS_DOWNLOAD_CA: yes
