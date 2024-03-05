@@ -24,6 +24,10 @@ jobs:
             extensions: curl
             coverage: none
 
+        - name: Composer install
+          working-directory: src
+          run: composer install
+
         - name: Run SSL connection without CA file fallback Test
           working-directory: src
           env:
