@@ -197,9 +197,7 @@ class Config {
 
 	protected static function use_xdg(): bool {
 		if ( defined( 'UNIT_TESTS' ) && UNIT_TESTS ) {
-			if ( App::getVar( 'MIMICK_XDG' ) ) {
-				return true;
-			}
+			return App::getVar( 'MIMICK_XDG', false );
 		}
 		foreach ( array_keys( $_SERVER ) as $key ) {
 			if ( strpos( $key, 'XDG_' ) === 0 ) {

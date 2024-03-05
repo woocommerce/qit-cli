@@ -10,11 +10,15 @@ use function QIT_CLI\get_manager_url;
 
 define( 'UNIT_TESTS', true );
 
+function qit_tests_clean_config_dir() {
+	exec( 'rm -rf /tmp/.woo-qit-tests' );
+}
+
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/helpers.php';
 
-exec( 'rm -rf /tmp/.woo-qit-tests' );
+qit_tests_clean_config_dir();
 
 if ( ! mkdir( '/tmp/.woo-qit-tests' ) ) {
 	throw new RuntimeException( 'Could not create config dir for tests..' );
