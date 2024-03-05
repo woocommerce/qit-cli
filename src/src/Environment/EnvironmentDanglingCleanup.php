@@ -220,9 +220,6 @@ class EnvironmentDanglingCleanup {
 	protected function detect_dangling_networks(): void {
 		$running_environments = $this->environment_monitor->get();
 
-		// eg: e2e-65e64a38a2e19_qit_network_65e64a38a2e19
-		// Where "e2e-65e64a38a2e19" is the parent dir, "_", "qit_network_", and the env ID.
-
 		// List the networks.
 		$list_process = new Process( [ 'docker', 'network', 'ls', '--format=json', '--filter=name=_qit_network_' ] );
 		$list_process->run();

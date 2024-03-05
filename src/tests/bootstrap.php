@@ -10,31 +10,30 @@ use function QIT_CLI\get_manager_url;
 
 define( 'UNIT_TESTS', true );
 
-function qit_tests_clean_config_dir() {
+function qit_tests_reset_config_dir() {
 	exec( 'rm -rf /tmp/.woo-qit-tests' );
-}
 
+	if ( ! mkdir( '/tmp/.woo-qit-tests' ) ) {
+		throw new RuntimeException( 'Could not create config dir for tests..' );
+	}
+
+	if ( ! mkdir( '/tmp/.woo-qit-tests/environments' ) ) {
+		throw new RuntimeException( 'Could not create environments dir for tests.' );
+	}
+
+	if ( ! file_exists( __DIR__ . '/data/environments/e2e.zip' ) ) {
+		throw new RuntimeException( 'Could not find e2e environment for tests.' );
+	}
+
+	if ( ! copy( __DIR__ . '/data/environments/e2e.zip', '/tmp/.woo-qit-tests/environments/e2e.zip' ) ) {
+		throw new RuntimeException( 'Could not copy e2e environment for tests.' );
+	}
+}
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/helpers.php';
 
-qit_tests_clean_config_dir();
-
-if ( ! mkdir( '/tmp/.woo-qit-tests' ) ) {
-	throw new RuntimeException( 'Could not create config dir for tests..' );
-}
-
-if ( ! mkdir( '/tmp/.woo-qit-tests/environments' ) ) {
-	throw new RuntimeException( 'Could not create environments dir for tests.' );
-}
-
-if ( ! file_exists( __DIR__ . '/data/environments/e2e.zip' ) ) {
-	throw new RuntimeException( 'Could not find e2e environment for tests.' );
-}
-
-if ( ! copy( __DIR__ . '/data/environments/e2e.zip', '/tmp/.woo-qit-tests/environments/e2e.zip' ) ) {
-	throw new RuntimeException( 'Could not copy e2e environment for tests.' );
-}
+qit_tests_reset_config_dir();
 
 putenv( 'QIT_HOME=/tmp/.woo-qit-tests' );
 
@@ -97,7 +96,6 @@ foreach ( $it as $file ) {
 		}
 
 		if ( ! $GLOBALS['qit_application']->has( $fqdn::getDefaultName() ) ) {
-			echo "Adding command: " . $fqdn::getDefaultName() . PHP_EOL;
 			$GLOBALS['qit_application']->add( App::make( $fqdn ) );
 		}
 	}

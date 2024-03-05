@@ -27,7 +27,7 @@ class EnvironmentDownloader {
 
 			if ( defined( 'UNIT_TESTS' ) ) {
 				if ( ! file_exists( sprintf( Config::get_qit_dir() . '/environments/%s.zip', $env_name ) ) ) {
-					throw new \RuntimeException( $env_name . ' environment not found for tests.' );
+					throw new \RuntimeException( $env_name . ' environment not found for tests. Tried: ' . sprintf( Config::get_qit_dir() . '/environments/%s.zip', $env_name ) );
 				}
 			} else {
 				// Download the environment.
