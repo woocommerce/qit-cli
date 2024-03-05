@@ -31,6 +31,9 @@ class RequestBuilder {
 	/** @var int */
 	protected $timeout_in_seconds = 15;
 
+	/** @var int How many times we retried due to 429 (Exponential back-off) */
+	protected $retries_429 = 0;
+
 	public function __construct( string $url = '' ) {
 		$this->url = $url;
 	}
@@ -162,6 +165,7 @@ class RequestBuilder {
 			CURLOPT_POSTREDIR      => CURL_REDIR_POST_ALL,
 			CURLOPT_CONNECTTIMEOUT => $this->timeout_in_seconds,
 			CURLOPT_TIMEOUT        => $this->timeout_in_seconds,
+			CURLOPT_HEADER         => 1,
 		];
 
 		if ( App::make( Output::class )->isVeryVerbose() ) {
@@ -231,14 +235,20 @@ class RequestBuilder {
 			App::make( Output::class )->writeln( sprintf( '[QIT DEBUG] Running external request: %s', json_encode( $request_in_logs, JSON_PRETTY_PRINT ) ) );
 		}
 
-		$result               = curl_exec( $curl );
-		$curl_error           = curl_error( $curl );
+		$result     = curl_exec( $curl );
+		$curl_error = curl_error( $curl );
+
+		// Extract header size and separate headers from body
+		$header_size = curl_getinfo( $curl, CURLINFO_HEADER_SIZE );
+		$headers     = substr( $result, 0, $header_size );
+		$body        = substr( $result, $header_size );
+
 		$response_status_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
 		curl_close( $curl );
 
 		if ( ! in_array( $response_status_code, $this->expected_status_codes, true ) ) {
-			if ( $proxied && $result === false ) {
-				$result = sprintf( 'Is the Automattic Proxy running and accessible through %s?', Config::get_proxy_url() );
+			if ( $proxied && $body === false ) {
+				$body = sprintf( 'Is the Automattic Proxy running and accessible through %s?', Config::get_proxy_url() );
 			}
 
 			if ( ! empty( $curl_error ) ) {
@@ -246,7 +256,7 @@ class RequestBuilder {
 				$error_message = $curl_error;
 			} else {
 				// Application error, such as invalid parameters, etc.
-				$error_message = $result;
+				$error_message = $body;
 				$json_response = json_decode( $error_message, true );
 
 				if ( is_array( $json_response ) && array_key_exists( 'message', $json_response ) ) {
@@ -257,7 +267,16 @@ class RequestBuilder {
 			if ( $this->retry > 0 ) {
 				$this->retry --;
 				App::make( Output::class )->writeln( '<comment>Request failed... Retrying.</comment>' );
-				usleep( rand( intval( 5 * 1e5 ), intval( 5 * 1e6 ) ) ); // Sleep between 0.5s and 5s.
+
+				// 429 Too Many Requests.
+				if ( $response_status_code === 429 ) {
+					$wait_seconds = $this->wait_after_429( $headers );
+				} else {
+					// Between 1 and 5s.
+					$wait_seconds = rand( 1, 5 );
+				}
+
+				sleep( $wait_seconds );
 				goto retry_request; // phpcs:ignore Generic.PHP.DiscourageGoto.Found
 			}
 
@@ -272,7 +291,69 @@ class RequestBuilder {
 			);
 		}
 
-		return $result;
+		return $body;
+	}
+
+	protected function wait_after_429( string $headers, int $max_wait = 60 ): int {
+		$retry_after = null;
+
+		// HTTP dates are always expressed in GMT, never in local time. (RFC 9110 5.6.7)
+		$gmt_timezone = new \DateTimeZone( 'GMT' );
+
+		// HTTP headers are case-insensitive according to RFC 7230.
+		$headers = strtolower( $headers );
+
+		foreach ( explode( "\r\n", $headers ) as $header ) {
+			/**
+			 * Retry-After header is specified by RFC 9110 10.2.3
+			 *
+			 * It can be formatted as http-date, or int (seconds).
+			 *
+			 * Retry-After: Fri, 31 Dec 1999 23:59:59 GMT
+			 * Retry-After: 120
+			 *
+			 * @link https://datatracker.ietf.org/doc/html/rfc9110#section-10.2.3
+			 */
+			if ( strpos( $header, 'retry-after:' ) !== false ) {
+				$retry_after_header = trim( substr( $header, strpos( $header, ':' ) + 1 ) );
+
+				// seconds.
+				if ( is_numeric( $retry_after_header ) ) {
+					$retry_after = intval( $retry_after_header );
+				} else {
+					// Parse as HTTP-date in GMT timezone.
+					try {
+						$retry_after = ( new \DateTime( $retry_after_header, $gmt_timezone ) )->getTimestamp() - ( new \DateTime( 'now', $gmt_timezone ) )->getTimestamp();
+					} catch ( \Exception $e ) {
+						$retry_after = null;
+					}
+					// http-date.
+					$retryAfterTime = strtotime( $retry_after_header );
+					$currentTime    = time();
+					if ( $retryAfterTime !== false ) {
+						$retry_after = $retryAfterTime - $currentTime;
+					}
+				}
+
+				if ( ! defined( 'UNIT_TESTS' ) ) {
+					App::make( Output::class )->writeln( sprintf( 'Got 429. Retrying after %d seconds...', $retry_after ) );
+				}
+			}
+		}
+
+		// If no retry-after is specified, do a back-off.
+		if ( is_null( $retry_after ) ) {
+			$retry_after = 5 * pow( 2, $this->retries_429 );
+			$this->retries_429 ++;
+		}
+
+		// Ensure we wait at least 1 second.
+		$retry_after = max( 1, $retry_after );
+
+		// And no longer than 60 seconds.
+		$retry_after = min( $max_wait, $retry_after );
+
+		return $retry_after;
 	}
 
 	/**
