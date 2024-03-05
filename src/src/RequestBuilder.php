@@ -4,8 +4,10 @@ namespace QIT_CLI;
 
 use QIT_CLI\Exceptions\DoingAutocompleteException;
 use QIT_CLI\Exceptions\NetworkErrorException;
-use QIT_CLI\IO\Input;
 use QIT_CLI\IO\Output;
+use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class RequestBuilder {
@@ -294,7 +296,7 @@ class RequestBuilder {
 	}
 
 	/**
-	 * @param array $curl_parameters
+	 * @param array<int,scalar> $curl_parameters
 	 *
 	 * @return void
 	 */
@@ -314,12 +316,13 @@ class RequestBuilder {
 		}
 
 		// Ask the user if he wants us to solve it for them.
-		$output = App::make( Output::class );
-		$input  = App::make( Input::class );
+		$output = App::make( OutputInterface::class );
+		$input  = App::make( InputInterface::class );
 
+		$helper   = App::make( QuestionHelper::class );
 		$question = new ConfirmationQuestion( '', false );
 
-		if ( getenv( 'QIT_WINDOWS_DOWNLOAD_CA' ) != 'yes' && ! $input->isInteractive() || ! $output->askQuestion( $question ) ) {
+		if ( getenv( 'QIT_WINDOWS_DOWNLOAD_CA' ) !== 'yes' && ! $input->isInteractive() || ! $helper->ask( $input, $output, $question ) ) {
 			return;
 		}
 
