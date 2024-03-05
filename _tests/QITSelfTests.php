@@ -291,7 +291,7 @@ function run_test_runs( array $test_runs ) {
 	$qit_run_processes = [];
 
 	// If running a lot of tests, wait between any remote request to prevent 429.
-	$should_wait = count( $test_runs ) > 3;
+	$should_wait = array_sum( array_map( 'count', $test_runs ) ) > 3;
 
 	// Dispatch all tests in parallel using the qit binary.
 	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
