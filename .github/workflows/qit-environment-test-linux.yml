@@ -28,12 +28,16 @@ jobs:
           working-directory: src
           run: composer install
 
+        - name: Enable dev mode
+          working-directory: src
+          run: php qit-cli.php dev
+
         - name: Run SSL connection without CA file fallback Test
           working-directory: src
           env:
             OPENSSL_CONF: ''
           run: |
-            php -d openssl.cafile='' -d curl.cainfo='' qit-cli.php sync
+            php -d openssl.cafile='' -d curl.cainfo='' qit-cli.php sync -vvv
             if ($LASTEXITCODE -ne 0) {
                 Write-Host "Test passed: SSL connection failed as expected"
             } else {
@@ -47,7 +51,7 @@ jobs:
             QIT_WINDOWS_DOWNLOAD_CA: yes
             OPENSSL_CONF: ''
           run: |
-            php -d openssl.cafile='' -d curl.cainfo='' qit-cli.php sync
+            php -d openssl.cafile='' -d curl.cainfo='' qit-cli.php sync -vvv
             if ($LASTEXITCODE -ne 0) {
                 Write-Host "Test passed: SSL connection succeeded"
             } else {
