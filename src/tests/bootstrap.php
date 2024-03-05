@@ -10,29 +10,22 @@ use function QIT_CLI\get_manager_url;
 
 define( 'UNIT_TESTS', true );
 
-function qit_tests_clean_config_dir() {
-	/** @var SplFileInfo $item */
-	foreach ( new DirectoryIterator( '/tmp/.woo-qit-tests' ) as $item ) {
-		if ( $item->isFile() && $item->getBasename() !== '.' && $item->getBasename() !== '..' ) {
-			if ( ! unlink( $item->getPathname() ) ) {
-				throw new RuntimeException( 'Could not cleanup config dir.' );
-			}
-		}
-	}
-}
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/helpers.php';
 
-if ( ! file_exists( '/tmp/.woo-qit-tests' ) ) {
-	if ( ! mkdir( '/tmp/.woo-qit-tests' ) ) {
-		throw new RuntimeException( 'Could not create config dir for tests..' );
-	}
-	if ( ! mkdir( '/tmp/.woo-qit-tests/environments' ) ) {
-		throw new RuntimeException( 'Could not create environments dir for tests..' );
-	}
-} else {
-	qit_tests_clean_config_dir();
+exec( 'rm -rf /tmp/.woo-qit-tests' );
+
+if ( ! mkdir( '/tmp/.woo-qit-tests' ) ) {
+	throw new RuntimeException( 'Could not create config dir for tests..' );
+}
+
+if ( ! mkdir( '/tmp/.woo-qit-tests/environments' ) ) {
+	throw new RuntimeException( 'Could not create environments dir for tests.' );
+}
+
+if ( ! file_exists( __DIR__ . '/data/environments/e2e.zip' ) ) {
+	throw new RuntimeException( 'Could not find e2e environment for tests.' );
 }
 
 if ( ! copy( __DIR__ . '/data/environments/e2e.zip', '/tmp/.woo-qit-tests/environments/e2e.zip' ) ) {
@@ -69,22 +62,39 @@ $GLOBALS['qit_application']->setAutoExit( false );
  */
 $it = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( __DIR__ . '/../src/Commands', FilesystemIterator::SKIP_DOTS ) );
 foreach ( $it as $file ) {
-	if ( $file->isFile() && $file->getExtension() === 'php' ) {
+	if ( $file->isFile() && $file->getExtension() === 'php' && ! $file->isLink() ) {
+		$content = file_get_contents( $file->getPathname() );
 
-		$command = substr( $file->getSubPathname(), 0, -4 );
-		$command = sprintf( 'QIT_CLI\\Commands\\%s', str_replace( '/', '\\', $command ) );
-		if ( ! class_exists( $command ) ) {
+		$namespace = $class = null;
+
+		// Match namespace and class from the file content
+		if ( preg_match( '/namespace\s+([^;]+);/', $content, $matches ) ) {
+			$namespace = $matches[1];
+		}
+		if ( preg_match( '/class\s+(\w+)/', $content, $matches ) ) {
+			$class = $matches[1];
+		}
+
+		if ( is_null( $namespace ) || is_null( $class ) ) {
 			continue;
 		}
-		if ( ! ( new ReflectionClass( $command ) )->isSubclassOf( Command::class ) ) {
+
+		$fqdn = sprintf( '%s\\%s', $namespace, $class );
+
+		if ( ! class_exists( $fqdn ) ) {
 			continue;
 		}
-		if ( is_null( $command::getDefaultName() ) ) {
+
+		if ( ! ( new ReflectionClass( $fqdn ) )->isSubclassOf( Command::class ) ) {
 			continue;
 		}
-		/** @var Command $command */
-		if ( ! $GLOBALS['qit_application']->has( $command::getDefaultName() ) ) {
-			$GLOBALS['qit_application']->add( App::make( $command ) );
+		if ( is_null( $fqdn::getDefaultName() ) ) {
+			continue;
+		}
+
+		if ( ! $GLOBALS['qit_application']->has( $fqdn::getDefaultName() ) ) {
+			echo "Adding command: " . $fqdn::getDefaultName() . PHP_EOL;
+			$GLOBALS['qit_application']->add( App::make( $fqdn ) );
 		}
 	}
 }
