@@ -278,7 +278,7 @@ class RequestBuilder {
 				// Is it an SSL error?
 				foreach ( [ 'ssl', 'certificate', 'issuer' ] as $keyword ) {
 					if ( stripos( $error_message, $keyword ) !== false ) {
-						$downloaded = $this->maybe_download_certificate_authority_file( $curl_parameters );
+						$downloaded = $this->maybe_download_certificate_authority_file();
 						if ( $downloaded ) {
 							goto retry_request; // phpcs:ignore Generic.PHP.DiscourageGoto.Found
 						}
@@ -309,6 +309,11 @@ class RequestBuilder {
 		return $body;
 	}
 
+	/**
+	 * @param array<int,scalar> $curl_parameters
+	 *
+	 * @return void
+	 */
 	protected function maybe_set_certificate_authority_file( array &$curl_parameters ) {
 		// Early bail: We only do this for Windows.
 		if ( ! is_windows() ) {
@@ -324,11 +329,9 @@ class RequestBuilder {
 	}
 
 	/**
-	 * @param array<int,scalar> $curl_parameters
-	 *
 	 * @return bool Whether it downloaded the CA file or not.
 	 */
-	protected function maybe_download_certificate_authority_file() {
+	protected function maybe_download_certificate_authority_file(): bool {
 		$output = App::make( Output::class );
 		// Early bail: We only do this for Windows.
 		if ( ! is_windows() ) {
