@@ -1,4 +1,4 @@
-name: QIT Environment Test - Linux
+name: QIT Windows
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  environment_tests:
+  qit_windows:
     runs-on: windows-latest
     strategy:
       matrix:
