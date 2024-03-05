@@ -22,7 +22,7 @@ class EnvironmentMonitor {
 			return [];
 		}
 
-		// Decode JSON and use array_map to transform the data
+		// Decode JSON and use array_map to transform the data.
 		return array_map( function ( $env_info_json ) {
 			return EnvInfo::from_array( $env_info_json );
 		}, json_decode( $env_info_json, true ) );

@@ -70,7 +70,8 @@ $GLOBALS['qit_application']->setAutoExit( false );
 $it = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( __DIR__ . '/../src/Commands', FilesystemIterator::SKIP_DOTS ) );
 foreach ( $it as $file ) {
 	if ( $file->isFile() && $file->getExtension() === 'php' ) {
-		$command = rtrim( $it->getSubPathname(), '.php' );
+
+		$command = substr( $file->getSubPathname(), 0, -4 );
 		$command = sprintf( 'QIT_CLI\\Commands\\%s', str_replace( '/', '\\', $command ) );
 		if ( ! class_exists( $command ) ) {
 			continue;
