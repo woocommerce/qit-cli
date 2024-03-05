@@ -300,29 +300,51 @@ class RequestBuilder {
 	 * @return void
 	 */
 	protected function maybe_set_certificate_authority_file( array &$curl_parameters ) {
+		$output = App::make( Output::class );
 		// Early bail: We only do this for Windows.
 		if ( ! is_windows() ) {
+			if ( $output->isVerbose() ) {
+				$output->writeln( 'Skipping certificate authority file check. Not running on Windows.' );
+			}
+
 			return;
+		}
+		if ( $output->isVerbose() ) {
+			$output->writeln( 'Checking if we need to download the certificate authority file...' );
 		}
 
 		$cached_ca_filepath = App::make( Cache::class )->get( 'ca_filepath' );
 
 		// Cache hit.
 		if ( $cached_ca_filepath !== null ) {
+			if ( $output->isVerbose() ) {
+				$output->writeln( 'Using cached certificate authority file.' );
+			}
 			$curl_parameters[ CURLOPT_CAINFO ] = $cached_ca_filepath;
 
 			return;
 		}
 
+		if ( $output->isVerbose() ) {
+			$output->writeln( 'No cached certificate authority file found.' );
+		}
+
 		// Ask the user if he wants us to solve it for them.
-		$output = App::make( Output::class );
-		$input  = App::make( Input::class );
+		$input = App::make( Input::class );
 
 		$helper   = App::make( QuestionHelper::class );
 		$question = new ConfirmationQuestion( '', false );
 
 		if ( getenv( 'QIT_WINDOWS_DOWNLOAD_CA' ) !== 'yes' && ! $input->isInteractive() || ! $helper->ask( $input, $output, $question ) ) {
+			if ( $output->isVerbose() ) {
+				$output->writeln( 'Skipping certificate authority file download.' );
+			}
+
 			return;
+		}
+
+		if ( $output->isVerbose() ) {
+			$output->writeln( 'Downloading certificate authority file...' );
 		}
 
 		// Download it to QIT Config Dir and save it in the cache.
@@ -342,6 +364,10 @@ class RequestBuilder {
 
 				return;
 			}
+		}
+
+		if ( $output->isVerbose() ) {
+			$output->writeln( 'Certificate authority file downloaded and saved.' );
 		}
 
 		$year_in_seconds = 60 * 60 * 24 * 365;
