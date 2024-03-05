@@ -38,11 +38,6 @@ class RequestBuilder {
 	protected $timeout_in_seconds = 15;
 
 	/**
-	 * @var string|null
-	 */
-	protected $ca_file_override = null;
-
-	/**
 	 * @var bool Whether we asked about CA file on this request.
 	 */
 	protected static $asked_ca_file_override = false;
@@ -173,9 +168,7 @@ class RequestBuilder {
 			CURLOPT_HEADER         => 1,
 		];
 
-		if ( ! is_null( $this->ca_file_override ) ) {
-			$curl_parameters[ CURLOPT_CAINFO ] = $this->ca_file_override;
-		}
+		$this->maybe_set_certificate_authority_file( $curl_parameters );
 
 		if ( App::make( Output::class )->isVeryVerbose() ) {
 			$curl_parameters[ CURLOPT_VERBOSE ] = true;
@@ -282,11 +275,19 @@ class RequestBuilder {
 					goto retry_request; // phpcs:ignore Generic.PHP.DiscourageGoto.Found
 				}
 			} else {
+				// Is it an SSL error?
+				foreach ( [ 'ssl', 'certificate', 'issuer' ] as $keyword ) {
+					if ( stripos( $error_message, $keyword ) !== false ) {
+						$downloaded = $this->maybe_download_certificate_authority_file( $curl_parameters );
+						if ( $downloaded ) {
+							goto retry_request; // phpcs:ignore Generic.PHP.DiscourageGoto.Found
+						}
+						break;
+					}
+				}
 				if ( $this->retry > 0 ) {
 					$this->retry --;
 					App::make( Output::class )->writeln( sprintf( '<comment>Request failed... Retrying (HTTP Status Code %s)</comment>', $response_status_code ) );
-
-					$this->maybe_set_certificate_authority_file( $curl_parameters );
 
 					// Between 1 and 5s.
 					sleep( rand( 1, 5 ) );
@@ -308,12 +309,26 @@ class RequestBuilder {
 		return $body;
 	}
 
+	protected function maybe_set_certificate_authority_file( array &$curl_parameters ) {
+		// Early bail: We only do this for Windows.
+		if ( ! is_windows() ) {
+			return;
+		}
+
+		$cached_ca_filepath = App::make( Cache::class )->get( 'ca_filepath' );
+
+		// Cache hit.
+		if ( $cached_ca_filepath !== null && file_exists( $cached_ca_filepath ) ) {
+			$curl_parameters[ CURLOPT_CAINFO ] = $cached_ca_filepath;
+		}
+	}
+
 	/**
 	 * @param array<int,scalar> $curl_parameters
 	 *
-	 * @return void
+	 * @return bool Whether it downloaded the CA file or not.
 	 */
-	protected function maybe_set_certificate_authority_file( array &$curl_parameters ) {
+	protected function maybe_download_certificate_authority_file() {
 		$output = App::make( Output::class );
 		// Early bail: We only do this for Windows.
 		if ( ! is_windows() ) {
@@ -321,18 +336,8 @@ class RequestBuilder {
 				$output->writeln( 'Skipping certificate authority file check. Not running on Windows.' );
 			}
 
-			return;
+			return false;
 		}
-
-		if ( self::$asked_ca_file_override ) {
-			if ( $output->isVerbose() ) {
-				$output->writeln( 'Skipping certificate authority file check. Already asked.' );
-			}
-
-			return;
-		}
-
-		self::$asked_ca_file_override = true;
 
 		if ( $output->isVerbose() ) {
 			$output->writeln( 'Checking if we need to download the certificate authority file...' );
@@ -341,31 +346,36 @@ class RequestBuilder {
 		$cached_ca_filepath = App::make( Cache::class )->get( 'ca_filepath' );
 
 		// Cache hit.
-		if ( $cached_ca_filepath !== null ) {
-			if ( $output->isVerbose() ) {
-				$output->writeln( 'Using cached certificate authority file.' );
-			}
-			$this->ca_file_override = $cached_ca_filepath;
-
-			return;
+		if ( $cached_ca_filepath !== null && file_exists( $cached_ca_filepath ) ) {
+			return false;
 		}
 
 		if ( $output->isVerbose() ) {
 			$output->writeln( 'No cached certificate authority file found.' );
 		}
 
+		if ( self::$asked_ca_file_override ) {
+			if ( $output->isVerbose() ) {
+				$output->writeln( 'Skipping certificate authority file check. Already asked.' );
+			}
+
+			return false;
+		}
+
+		self::$asked_ca_file_override = true;
+
 		// Ask the user if he wants us to solve it for them.
 		$input = App::make( Input::class );
 
 		$helper   = App::make( QuestionHelper::class );
-		$question = new ConfirmationQuestion( "A QIT network request failed due to an SSL certificate issue on Windows. Would you like to download a CA file, used exclusively for QIT requests, to potentially fix this? (y/n)\n", false );
+		$question = new ConfirmationQuestion( "A QIT network request failed due to an SSL certificate issue on Windows. Would you like to download a CA file, used exclusively for QIT requests, to potentially fix this?\n Please answer [y/n]: ", false );
 
 		if ( getenv( 'QIT_WINDOWS_DOWNLOAD_CA' ) !== 'yes' && ( ! $input->isInteractive() || ! $helper->ask( $input, $output, $question ) ) ) {
 			if ( $output->isVerbose() ) {
 				$output->writeln( 'Skipping certificate authority file download.' );
 			}
 
-			return;
+			return false;
 		}
 
 		if ( $output->isVerbose() ) {
@@ -381,14 +391,15 @@ class RequestBuilder {
 			if ( empty( $remote_ca_file_contents ) ) {
 				$output->writeln( "<error>Could not download the certificate authority file. Please download it manually from http://curl.se/ca/cacert.pem and place it in $local_ca_file</error>" );
 
-				return;
+				return false;
 			}
 
 			if ( ! file_put_contents( $local_ca_file, $remote_ca_file_contents ) ) {
 				$output->writeln( "<error>Could not write the certificate authority file. Please download it manually from http://curl.se/ca/cacert.pem and place it in $local_ca_file<error>" );
 
-				return;
+				return false;
 			}
+			clearstatcache( true, $local_ca_file );
 		}
 
 		if ( $output->isVerbose() ) {
@@ -399,7 +410,7 @@ class RequestBuilder {
 
 		App::make( Cache::class )->set( 'ca_filepath', $local_ca_file, $year_in_seconds );
 
-		$this->ca_file_override = $local_ca_file;
+		return true;
 	}
 
 	protected function wait_after_429( string $headers, int $max_wait = 60 ): int {
