@@ -42,6 +42,7 @@ jobs:
         run: php qit-cli.php env:up
 
       - name: Test Site Up
+        working-directory: src
         run: |
           # Fetch the site URL
           SITE_URL=$(php qit-cli.php env:list --field=site_url)
