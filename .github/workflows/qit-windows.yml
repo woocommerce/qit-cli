@@ -1,13 +1,14 @@
-name: QIT Windows
+name: QIT Environment Test - Linux
 
 on:
   push:
     branches:
-      - main
+      - trunk
+  # Manually
   workflow_dispatch:
 
 jobs:
-  qit_windows:
+  environment_tests:
     runs-on: windows-latest
     strategy:
       matrix:
@@ -23,33 +24,55 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: curl
+          extensions: curl, zip
           coverage: none
+
+      - name: Composer install
+        working-directory: src
+        run: composer install
+
+      - name: Enable dev mode
+        working-directory: src
+        run: php qit-cli.php dev
 
       - name: Run SSL connection without CA file fallback Test
         working-directory: src
         env:
           OPENSSL_CONF: ''
         run: |
-          php -d openssl.cafile='' -d curl.cainfo='' qit-cli.php sync
-          if [ $? -ne 0 ]; then
-            echo "Test passed: SSL connection failed as expected"
-          else
-            echo "Test failed: SSL connection did not fail as expected"
+          php -d openssl.cafile='' -d curl.cainfo='' qit-cli.php sync -vvv
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "Test passed: SSL connection failed as expected"
+            $LASTEXITCODE = 0
+          } else {
+            Write-Host "Test failed: SSL connection did not fail as expected"
             exit 1
-          fi
+          }
 
-      - name: Run SSL connection with CA file fallback Test
+      - name: Run SSL connection with CA file fallback Test (Cache miss)
         working-directory: src
         env:
           QIT_WINDOWS_DOWNLOAD_CA: yes
           OPENSSL_CONF: ''
         run: |
-          php -d openssl.cafile='' -d curl.cainfo='' qit-cli.php sync
-          if [ $? -eq 0 ]; then
-            echo "Test passed: SSL connection succeeded"
-          else
-            echo "Test failed: SSL connection did not succeed"
+          php -d openssl.cafile='' -d curl.cainfo='' qit-cli.php sync -vvv
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Test passed: SSL connection succeeded"
+          } else {
+            Write-Host "Test failed: SSL connection did not succeed"
             exit 1
-          fi
+          }
 
+      - name: Run SSL connection with CA file fallback Test (Cache hit)
+        working-directory: src
+        env:
+          QIT_WINDOWS_DOWNLOAD_CA: yes
+          OPENSSL_CONF: ''
+        run: |
+          php -d openssl.cafile='' -d curl.cainfo='' qit-cli.php sync -vvv
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Test passed: SSL connection succeeded"
+          } else {
+            Write-Host "Test failed: SSL connection did not succeed"
+            exit 1
+          }
