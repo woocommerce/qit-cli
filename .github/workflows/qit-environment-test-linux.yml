@@ -30,12 +30,12 @@ jobs:
             OPENSSL_CONF: ''
           run: |
             php -d openssl.cafile='' -d curl.cainfo='' qit-cli.php sync
-            if [ $? -ne 0 ]; then
-              echo "Test passed: SSL connection failed as expected"
-            else
-              echo "Test failed: SSL connection did not fail as expected"
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host "Test passed: SSL connection failed as expected"
+            } else {
+            Write-Host "Test failed: SSL connection did not fail as expected"
               exit 1
-            fi
+            }
 
         - name: Run SSL connection with CA file fallback Test
           working-directory: src
@@ -44,10 +44,10 @@ jobs:
             OPENSSL_CONF: ''
           run: |
             php -d openssl.cafile='' -d curl.cainfo='' qit-cli.php sync
-            if [ $? -eq 0 ]; then
-              echo "Test passed: SSL connection succeeded"
-            else
-              echo "Test failed: SSL connection did not succeed"
+            if ($LASTEXITCODE -ne 0) {
+                Write-Host "Test passed: SSL connection succeeded"
+            } else {
+            Write-Host "Test failed: SSL connection did not succeed"
               exit 1
-            fi
+            }
 
