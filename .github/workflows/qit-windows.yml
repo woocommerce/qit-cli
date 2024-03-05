@@ -44,23 +44,31 @@ jobs:
       - name: Test Site Up
         working-directory: src
         run: |
-          # Fetch the site URL
           SITE_URL=$(php qit-cli.php env:list --field=site_url)
-          echo "Site URL: $SITE_URL"
-
-          # Assert home page is 200
-          HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" $SITE_URL)
-          if [ "$HTTP_STATUS" -ne 200 ]; then
-            echo "Home page is not up. HTTP status: $HTTP_STATUS"
+          if [ "$(curl -o /dev/null -s -w '%{http_code}\n' $SITE_URL)" -ne 200 ]; then
+            echo "Home page is not up."
             exit 1
           fi
-          echo "Home page is up. HTTP status: $HTTP_STATUS"
-
-          # Assert the name property in the JSON response
-          JSON_RESPONSE=$(curl -s $SITE_URL/wp-json)
-          NAME_PROPERTY=$(echo $JSON_RESPONSE | jq -r '.name')
-          if [ "$NAME_PROPERTY" != "WooCommerce Core E2E Test Suite" ]; then
-            echo "Name property does not match. Found: $NAME_PROPERTY"
+          if [ "$(curl -s $SITE_URL/wp-json | jq -r '.name')" != "WooCommerce Core E2E Test Suite" ]; then
+            echo "Name property does not match."
             exit 1
           fi
-          echo "Name property matches: $NAME_PROPERTY"
+
+      - name: Assert that Docker Containers are All Running
+        working-directory: src
+        run: |
+          CONTAINERS=$(php qit-cli.php env:list --field=docker_images)
+          for container in $CONTAINERS; do
+            if [ "$(docker inspect -f '{{.State.Running}}' $container)" != "true" ]; then
+              echo "Container $container is not running."
+              exit 1
+            fi
+          done
+
+      - name: Assert that Doocker Network was Created
+        run: |
+          ENV_ID=$(php src/qit-cli.php env:list --field=env_id)
+          if [ -z "$(docker network ls | grep $ENV_ID)" ]; then
+              echo "Docker network was not created."
+              exit 1
+          fi
