@@ -74,7 +74,7 @@ class EnvironmentDanglingCleanup {
 
 		$this->output->writeln( '<info>Dangling Temporary Environments found.</info>' );
 
-		foreach ($this->dangling_networks as $network_name) {
+		foreach ( $this->dangling_networks as $network_name ) {
 			$this->output->writeln( "Removing dangling Docker network: {$network_name}" );
 			$remove_process = new Process( [ 'docker', 'network', 'rm', $network_name ] );
 			$remove_process->run();
