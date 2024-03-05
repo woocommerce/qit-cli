@@ -12,6 +12,8 @@ class RequestBuilderTest extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		$this->sut = new class extends RequestBuilder {
+			public $retry_429 = 5;
+
 			public function wait_after_429( string $headers, int $max_wait = 60 ): int {
 				return parent::wait_after_429( $headers, $max_wait );
 			}
@@ -51,10 +53,16 @@ class RequestBuilderTest extends TestCase {
 		$headers = "Retry-After: invalid\r\nOther-Header: value";
 
 		$this->assertEquals( 5, $this->sut->wait_after_429( $headers ) );
+		// Mimick integration-level test.
+		$this->sut->retry_429 --;
 		$this->assertEquals( 10, $this->sut->wait_after_429( $headers ) );
+		$this->sut->retry_429 --;
 		$this->assertEquals( 20, $this->sut->wait_after_429( $headers ) );
+		$this->sut->retry_429 --;
 		$this->assertEquals( 40, $this->sut->wait_after_429( $headers ) );
+		$this->sut->retry_429 --;
 		$this->assertEquals( 80, $this->sut->wait_after_429( $headers, 300 ) );
+		$this->sut->retry_429 --;
 		$this->assertEquals( 160, $this->sut->wait_after_429( $headers, 300 ) );
 	}
 }

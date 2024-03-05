@@ -29,10 +29,10 @@ class RequestBuilder {
 	protected $retry = 0;
 
 	/** @var int */
-	protected $timeout_in_seconds = 15;
+	protected $retry_429 = 5;
 
-	/** @var int How many times we retried due to 429 (Exponential back-off) */
-	protected $retries_429 = 0;
+	/** @var int */
+	protected $timeout_in_seconds = 15;
 
 	public function __construct( string $url = '' ) {
 		$this->url = $url;
@@ -148,14 +148,6 @@ class RequestBuilder {
 			throw new DoingAutocompleteException();
 		}
 
-		// Allow to wait from the outside to avoid 429 on parallel tests.
-		if ( getenv( 'QIT_WAIT_BEFORE_REQUEST' ) === 'yes' ) {
-			// Wait between 1 and 60 seconds.
-			$to_wait = rand( intval( 1 * 1e6 ), intval( 60 * 1e6 ) );
-			usleep( $to_wait );
-			App::make( Output::class )->writeln( sprintf( 'Waiting %d seconds before request...', number_format( $to_wait / 1e6, 2 ) ) );
-		}
-
 		$curl = curl_init();
 
 		$curl_parameters = [
@@ -264,20 +256,23 @@ class RequestBuilder {
 				}
 			}
 
-			if ( $this->retry > 0 ) {
-				$this->retry --;
-				App::make( Output::class )->writeln( '<comment>Request failed... Retrying.</comment>' );
+			if ( $response_status_code === 429 ) {
+				if ( $this->retry_429 > 0 ) {
+					$this->retry_429 --;
+					App::make( Output::class )->writeln( '<comment>Request failed... Retrying (429 Too many Requests)</comment>' );
 
-				// 429 Too Many Requests.
-				if ( $response_status_code === 429 ) {
-					$wait_seconds = $this->wait_after_429( $headers );
-				} else {
-					// Between 1 and 5s.
-					$wait_seconds = rand( 1, 5 );
+					sleep( $this->wait_after_429( $headers ) );
+					goto retry_request; // phpcs:ignore Generic.PHP.DiscourageGoto.Found
 				}
+			} else {
+				if ( $this->retry > 0 ) {
+					$this->retry --;
+					App::make( Output::class )->writeln( sprintf( '<comment>Request failed... Retrying (HTTP Status Code %s)</comment>', $response_status_code ) );
 
-				sleep( $wait_seconds );
-				goto retry_request; // phpcs:ignore Generic.PHP.DiscourageGoto.Found
+					// Between 1 and 5s.
+					sleep( rand( 1, 5 ) );
+					goto retry_request; // phpcs:ignore Generic.PHP.DiscourageGoto.Found
+				}
 			}
 
 			throw new NetworkErrorException(
@@ -343,8 +338,7 @@ class RequestBuilder {
 
 		// If no retry-after is specified, do a back-off.
 		if ( is_null( $retry_after ) ) {
-			$retry_after = 5 * pow( 2, $this->retries_429 );
-			$this->retries_429 ++;
+			$retry_after = 5 * pow( 2, abs( $this->retry_429 - 5 ) );
 		}
 
 		// Ensure we wait at least 1 second.
