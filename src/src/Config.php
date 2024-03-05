@@ -167,58 +167,45 @@ class Config {
 			return rtrim( str_replace( '\\', '/', $path ), '/' ) . '/';
 		};
 
-		// Allow override.
 		if ( ! empty( getenv( 'QIT_HOME' ) ) ) {
-			if ( ! file_exists( getenv( 'QIT_HOME' ) ) ) {
-				throw new \RuntimeException( sprintf( 'The QIT_HOME environment variable is defined, but points to a non-existing directory: %s', getenv( 'QIT_CLI_CONFIG_DIR' ) ) );
+			$qit_dir = $normalize_path( getenv( 'QIT_HOME' ) );
+		} else {
+			if ( is_windows() ) {
+				if ( empty( getenv( 'APPDATA' ) ) ) {
+					throw new \RuntimeException( 'The APPDATA or QIT_HOME environment variables must be defined in Windows.' );
+				}
+				$parent_config_dir = getenv( 'APPDATA' );
+			} elseif ( ! empty( getenv( 'HOME' ) ) ) {
+				$home = $normalize_path( getenv( 'HOME' ) );
+				if ( static::use_xdg() ) {
+					$xdg_config        = getenv( 'XDG_CONFIG_HOME' ) ?: $home . '.config';
+					$parent_config_dir = $xdg_config;
+				} else {
+					$parent_config_dir = $home;
+				}
+			} else {
+				throw new \RuntimeException( 'The HOME, APPDATA, or QIT_HOME environment variables must be defined.' );
 			}
 
-			return $normalize_path( getenv( 'QIT_HOME' ) );
+			// Normalize and append 'woo-qit-cli/' to the parent directory.
+			$qit_dir = $normalize_path( $parent_config_dir ) . 'woo-qit-cli/';
 		}
 
-		// Windows.
-		if ( is_windows() ) {
-			if ( empty( getenv( 'APPDATA' ) ) ) {
-				throw new \RuntimeException( 'The APPDATA or QIT_HOME environment variables must be defined.' );
-			}
-
-			return $normalize_path( getenv( 'APPDATA' ) ) . 'woo-qit-cli';
+		// Create the directory if it does not exist.
+		if ( ! is_dir( $qit_dir ) && ! mkdir( $qit_dir, 0700, true ) ) {
+			throw new \RuntimeException( "Unable to create the QIT CLI directory: $qit_dir" );
 		}
 
-		if ( empty( getenv( 'HOME' ) ) ) {
-			throw new \RuntimeException( 'The HOME or QIT_HOME environment variables must be defined.' );
-		}
-
-		$home = $normalize_path( getenv( 'HOME' ) );
-		$dirs = [];
-
-		if ( static::use_xdg() ) {
-			$xdg_config = getenv( 'XDG_CONFIG_HOME' );
-			if ( ! $xdg_config ) {
-				$xdg_config = $home . '.config';
-			}
-
-			$dirs[] = $xdg_config . '/woo-qit-cli/';
-		}
-
-		$dirs[] = $home . 'woo-qit-cli/';
-
-		foreach ( $dirs as $dir ) {
-			if ( is_dir( $dir ) ) {
-				return $dir;
-			}
-
-			$dir_created = mkdir( $dir, 0700, true );
-
-			if ( $dir_created ) {
-				return $dir;
-			}
-		}
-
-		throw new \RuntimeException( "You need to set an environment variable 'QIT_HOME' pointing to a writable directory where the QIT CLI can write it's config file. Do NOT use a directory inside your plugin, as the config file will hold sensitive information that should not be included in your plugin." );
+		return $qit_dir;
 	}
 
+
 	protected static function use_xdg(): bool {
+		if ( defined( 'UNIT_TESTS' ) && UNIT_TESTS ) {
+			if ( App::getVar( 'MIMICK_XDG' ) ) {
+				return true;
+			}
+		}
 		foreach ( array_keys( $_SERVER ) as $key ) {
 			if ( strpos( $key, 'XDG_' ) === 0 ) {
 				return true;

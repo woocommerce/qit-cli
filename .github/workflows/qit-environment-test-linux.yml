@@ -1,0 +1,15 @@
+name: QIT Environment Test - Linux
+
+on:
+  # Manually
+  workflow_dispatch:
+
+jobs:
+  environment_tests:
+    runs-on: ubuntu-20.04
+    env:
+      NO_COLOR: 1
+      QIT_DISABLE_ONBOARDING: yes
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4

@@ -4,7 +4,10 @@ namespace QIT_CLI;
 
 use QIT_CLI\Exceptions\DoingAutocompleteException;
 use QIT_CLI\Exceptions\NetworkErrorException;
+use QIT_CLI\IO\Input;
 use QIT_CLI\IO\Output;
+use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class RequestBuilder {
 	/** @var string $url */
@@ -29,7 +32,15 @@ class RequestBuilder {
 	protected $retry = 0;
 
 	/** @var int */
+	protected $retry_429 = 5;
+
+	/** @var int */
 	protected $timeout_in_seconds = 15;
+
+	/**
+	 * @var bool Whether we asked about CA file on this request.
+	 */
+	protected static $asked_ca_file_override = false;
 
 	public function __construct( string $url = '' ) {
 		$this->url = $url;
@@ -145,14 +156,6 @@ class RequestBuilder {
 			throw new DoingAutocompleteException();
 		}
 
-		// Allow to wait from the outside to avoid 429 on parallel tests.
-		if ( getenv( 'QIT_WAIT_BEFORE_REQUEST' ) === 'yes' ) {
-			// Wait between 1 and 60 seconds.
-			$to_wait = rand( intval( 1 * 1e6 ), intval( 60 * 1e6 ) );
-			usleep( $to_wait );
-			App::make( Output::class )->writeln( sprintf( 'Waiting %d seconds before request...', number_format( $to_wait / 1e6, 2 ) ) );
-		}
-
 		$curl = curl_init();
 
 		$curl_parameters = [
@@ -162,7 +165,10 @@ class RequestBuilder {
 			CURLOPT_POSTREDIR      => CURL_REDIR_POST_ALL,
 			CURLOPT_CONNECTTIMEOUT => $this->timeout_in_seconds,
 			CURLOPT_TIMEOUT        => $this->timeout_in_seconds,
+			CURLOPT_HEADER         => 1,
 		];
+
+		$this->maybe_set_certificate_authority_file( $curl_parameters );
 
 		if ( App::make( Output::class )->isVeryVerbose() ) {
 			$curl_parameters[ CURLOPT_VERBOSE ] = true;
@@ -231,14 +237,20 @@ class RequestBuilder {
 			App::make( Output::class )->writeln( sprintf( '[QIT DEBUG] Running external request: %s', json_encode( $request_in_logs, JSON_PRETTY_PRINT ) ) );
 		}
 
-		$result               = curl_exec( $curl );
-		$curl_error           = curl_error( $curl );
+		$result     = curl_exec( $curl );
+		$curl_error = curl_error( $curl );
+
+		// Extract header size and separate headers from body.
+		$header_size = curl_getinfo( $curl, CURLINFO_HEADER_SIZE );
+		$headers     = substr( $result, 0, $header_size );
+		$body        = substr( $result, $header_size );
+
 		$response_status_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
 		curl_close( $curl );
 
 		if ( ! in_array( $response_status_code, $this->expected_status_codes, true ) ) {
-			if ( $proxied && $result === false ) {
-				$result = sprintf( 'Is the Automattic Proxy running and accessible through %s?', Config::get_proxy_url() );
+			if ( $proxied && $body === false ) {
+				$body = sprintf( 'Is the Automattic Proxy running and accessible through %s?', Config::get_proxy_url() );
 			}
 
 			if ( ! empty( $curl_error ) ) {
@@ -246,7 +258,7 @@ class RequestBuilder {
 				$error_message = $curl_error;
 			} else {
 				// Application error, such as invalid parameters, etc.
-				$error_message = $result;
+				$error_message = $body;
 				$json_response = json_decode( $error_message, true );
 
 				if ( is_array( $json_response ) && array_key_exists( 'message', $json_response ) ) {
@@ -254,11 +266,33 @@ class RequestBuilder {
 				}
 			}
 
-			if ( $this->retry > 0 ) {
-				$this->retry --;
-				App::make( Output::class )->writeln( '<comment>Request failed... Retrying.</comment>' );
-				usleep( rand( intval( 5 * 1e5 ), intval( 5 * 1e6 ) ) ); // Sleep between 0.5s and 5s.
-				goto retry_request; // phpcs:ignore Generic.PHP.DiscourageGoto.Found
+			if ( $response_status_code === 429 ) {
+				if ( $this->retry_429 > 0 ) {
+					$this->retry_429 --;
+					App::make( Output::class )->writeln( '<comment>Request failed... Retrying (429 Too many Requests)</comment>' );
+
+					sleep( $this->wait_after_429( $headers ) );
+					goto retry_request; // phpcs:ignore Generic.PHP.DiscourageGoto.Found
+				}
+			} else {
+				// Is it an SSL error?
+				foreach ( [ 'ssl', 'certificate', 'issuer' ] as $keyword ) {
+					if ( stripos( $error_message, $keyword ) !== false ) {
+						$downloaded = $this->maybe_download_certificate_authority_file();
+						if ( $downloaded ) {
+							goto retry_request; // phpcs:ignore Generic.PHP.DiscourageGoto.Found
+						}
+						break;
+					}
+				}
+				if ( $this->retry > 0 ) {
+					$this->retry --;
+					App::make( Output::class )->writeln( sprintf( '<comment>Request failed... Retrying (HTTP Status Code %s)</comment>', $response_status_code ) );
+
+					// Between 1 and 5s.
+					sleep( rand( 1, 5 ) );
+					goto retry_request; // phpcs:ignore Generic.PHP.DiscourageGoto.Found
+				}
 			}
 
 			throw new NetworkErrorException(
@@ -272,7 +306,174 @@ class RequestBuilder {
 			);
 		}
 
-		return $result;
+		return $body;
+	}
+
+	/**
+	 * @param array<int,scalar> $curl_parameters
+	 *
+	 * @return void
+	 */
+	protected function maybe_set_certificate_authority_file( array &$curl_parameters ) {
+		// Early bail: We only do this for Windows.
+		if ( ! is_windows() ) {
+			return;
+		}
+
+		$cached_ca_filepath = App::make( Environment::class )->get_cache()->get( 'ca_filepath' );
+
+		// Cache hit.
+		if ( $cached_ca_filepath !== null && file_exists( $cached_ca_filepath ) ) {
+			$curl_parameters[ CURLOPT_CAINFO ] = $cached_ca_filepath;
+		}
+	}
+
+	/**
+	 * @return bool Whether it downloaded the CA file or not.
+	 */
+	protected function maybe_download_certificate_authority_file(): bool {
+		$output = App::make( Output::class );
+		// Early bail: We only do this for Windows.
+		if ( ! is_windows() ) {
+			if ( $output->isVerbose() ) {
+				$output->writeln( 'Skipping certificate authority file check. Not running on Windows.' );
+			}
+
+			return false;
+		}
+
+		if ( $output->isVerbose() ) {
+			$output->writeln( 'Checking if we need to download the certificate authority file...' );
+		}
+
+		$cached_ca_filepath = App::make( Environment::class )->get_cache()->get( 'ca_filepath' );
+
+		// Cache hit.
+		if ( $cached_ca_filepath !== null && file_exists( $cached_ca_filepath ) ) {
+			return false;
+		}
+
+		if ( $output->isVerbose() ) {
+			$output->writeln( 'No cached certificate authority file found.' );
+		}
+
+		if ( self::$asked_ca_file_override ) {
+			if ( $output->isVerbose() ) {
+				$output->writeln( 'Skipping certificate authority file check. Already asked.' );
+			}
+
+			return false;
+		}
+
+		self::$asked_ca_file_override = true;
+
+		// Ask the user if he wants us to solve it for them.
+		$input = App::make( Input::class );
+
+		$helper   = App::make( QuestionHelper::class );
+		$question = new ConfirmationQuestion( "A QIT network request failed due to an SSL certificate issue on Windows. Would you like to download a CA file, used exclusively for QIT requests, to potentially fix this?\n Please answer [y/n]: ", false );
+
+		if ( getenv( 'QIT_WINDOWS_DOWNLOAD_CA' ) !== 'yes' && ( ! $input->isInteractive() || ! $helper->ask( $input, $output, $question ) ) ) {
+			if ( $output->isVerbose() ) {
+				$output->writeln( 'Skipping certificate authority file download.' );
+			}
+
+			return false;
+		}
+
+		if ( $output->isVerbose() ) {
+			$output->writeln( 'Downloading certificate authority file...' );
+		}
+
+		// Download it to QIT Config Dir and save it in the cache.
+		$local_ca_file = Config::get_qit_dir() . 'cacert.pem';
+
+		if ( ! file_exists( $local_ca_file ) ) {
+			$remote_ca_file_contents = @file_get_contents( 'http://curl.se/ca/cacert.pem' );
+
+			if ( empty( $remote_ca_file_contents ) ) {
+				$output->writeln( "<error>Could not download the certificate authority file. Please download it manually from http://curl.se/ca/cacert.pem and place it in $local_ca_file</error>" );
+
+				return false;
+			}
+
+			if ( ! file_put_contents( $local_ca_file, $remote_ca_file_contents ) ) {
+				$output->writeln( "<error>Could not write the certificate authority file. Please download it manually from http://curl.se/ca/cacert.pem and place it in $local_ca_file<error>" );
+
+				return false;
+			}
+			clearstatcache( true, $local_ca_file );
+		}
+
+		if ( $output->isVerbose() ) {
+			$output->writeln( 'Certificate authority file downloaded and saved.' );
+		}
+
+		$year_in_seconds = 60 * 60 * 24 * 365;
+
+		App::make( Environment::class )->get_cache()->set( 'ca_filepath', $local_ca_file, $year_in_seconds );
+
+		return true;
+	}
+
+	protected function wait_after_429( string $headers, int $max_wait = 60 ): int {
+		$retry_after = null;
+
+		// HTTP dates are always expressed in GMT, never in local time. (RFC 9110 5.6.7).
+		$gmt_timezone = new \DateTimeZone( 'GMT' );
+
+		// HTTP headers are case-insensitive according to RFC 7230.
+		$headers = strtolower( $headers );
+
+		foreach ( explode( "\r\n", $headers ) as $header ) {
+			/**
+			 * Retry-After header is specified by RFC 9110 10.2.3
+			 *
+			 * It can be formatted as http-date, or int (seconds).
+			 *
+			 * Retry-After: Fri, 31 Dec 1999 23:59:59 GMT
+			 * Retry-After: 120
+			 *
+			 * @link https://datatracker.ietf.org/doc/html/rfc9110#section-10.2.3
+			 */
+			if ( strpos( $header, 'retry-after:' ) !== false ) {
+				$retry_after_header = trim( substr( $header, strpos( $header, ':' ) + 1 ) );
+
+				// seconds.
+				if ( is_numeric( $retry_after_header ) ) {
+					$retry_after = intval( $retry_after_header );
+				} else {
+					// Parse as HTTP-date in GMT timezone.
+					try {
+						$retry_after = ( new \DateTime( $retry_after_header, $gmt_timezone ) )->getTimestamp() - ( new \DateTime( 'now', $gmt_timezone ) )->getTimestamp();
+					} catch ( \Exception $e ) {
+						$retry_after = null;
+					}
+					// http-date.
+					$retry_after_time = strtotime( $retry_after_header );
+					if ( $retry_after_time !== false ) {
+						$retry_after = $retry_after_time - time();
+					}
+				}
+
+				if ( ! defined( 'UNIT_TESTS' ) ) {
+					App::make( Output::class )->writeln( sprintf( 'Got 429. Retrying after %d seconds...', $retry_after ) );
+				}
+			}
+		}
+
+		// If no retry-after is specified, do a back-off.
+		if ( is_null( $retry_after ) ) {
+			$retry_after = 5 * pow( 2, abs( $this->retry_429 - 5 ) );
+		}
+
+		// Ensure we wait at least 1 second.
+		$retry_after = max( 1, $retry_after );
+
+		// And no longer than 60 seconds.
+		$retry_after = min( $max_wait, $retry_after );
+
+		return $retry_after;
 	}
 
 	/**

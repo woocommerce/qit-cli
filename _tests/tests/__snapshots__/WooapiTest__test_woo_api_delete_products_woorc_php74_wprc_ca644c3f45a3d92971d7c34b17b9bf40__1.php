@@ -1382,12 +1382,8 @@
         {
             "debug_log": [
                 {
-                    "count": "2",
-                    "message": "PHP Notice: Undefined index: id in \\/var\\/www\\/html\\/wp-includes\\/class-wp-list-util.php on line 170"
-                },
-                {
-                    "count": "1",
-                    "message": "PHP Notice: Undefined index: id in \\/var\\/www\\/html\\/wp-includes\\/class-wp-list-util.php on line 170\\n"
+                    "count": "0",
+                    "message": "Debug log is ignored for woo-e2e\\/delete_products tests."
                 }
             ]
         }
