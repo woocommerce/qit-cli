@@ -320,7 +320,7 @@ class RequestBuilder {
 			return;
 		}
 
-		$cached_ca_filepath = App::make( Environment::class )->get_cache()->get( 'ca_filepath' );
+		$cached_ca_filepath = App::make( Cache::class )->get( 'ca_filepath' );
 
 		// Cache hit.
 		if ( $cached_ca_filepath !== null && file_exists( $cached_ca_filepath ) ) {
@@ -346,7 +346,7 @@ class RequestBuilder {
 			$output->writeln( 'Checking if we need to download the certificate authority file...' );
 		}
 
-		$cached_ca_filepath = App::make( Environment::class )->get_cache()->get( 'ca_filepath' );
+		$cached_ca_filepath = App::make( Cache::class )->get( 'ca_filepath' );
 
 		// Cache hit.
 		if ( $cached_ca_filepath !== null && file_exists( $cached_ca_filepath ) ) {
@@ -411,7 +411,7 @@ class RequestBuilder {
 
 		$year_in_seconds = 60 * 60 * 24 * 365;
 
-		App::make( Environment::class )->get_cache()->set( 'ca_filepath', $local_ca_file, $year_in_seconds );
+		App::make( Cache::class )->set( 'ca_filepath', $local_ca_file, $year_in_seconds );
 
 		return true;
 	}
