@@ -42,6 +42,11 @@ class RequestBuilder {
 	 */
 	protected $ca_file_override = null;
 
+	/**
+	 * @var bool Whether we asked about CA file on this request.
+	 */
+	protected static $asked_ca_file_override = false;
+
 	public function __construct( string $url = '' ) {
 		$this->url = $url;
 	}
@@ -318,6 +323,17 @@ class RequestBuilder {
 
 			return;
 		}
+
+		if ( self::$asked_ca_file_override ) {
+			if ( $output->isVerbose() ) {
+				$output->writeln( 'Skipping certificate authority file check. Already asked.' );
+			}
+
+			return;
+		}
+
+		self::$asked_ca_file_override = true;
+
 		if ( $output->isVerbose() ) {
 			$output->writeln( 'Checking if we need to download the certificate authority file...' );
 		}
@@ -342,7 +358,7 @@ class RequestBuilder {
 		$input = App::make( Input::class );
 
 		$helper   = App::make( QuestionHelper::class );
-		$question = new ConfirmationQuestion( '', false );
+		$question = new ConfirmationQuestion( "A QIT network request failed due to an SSL certificate issue on Windows. Would you like to download a CA file, used exclusively for QIT requests, to potentially fix this? (y/n)\n", false );
 
 		if ( getenv( 'QIT_WINDOWS_DOWNLOAD_CA' ) !== 'yes' && ( ! $input->isInteractive() || ! $helper->ask( $input, $output, $question ) ) ) {
 			if ( $output->isVerbose() ) {
