@@ -37,6 +37,11 @@ class RequestBuilder {
 	/** @var int */
 	protected $timeout_in_seconds = 15;
 
+	/**
+	 * @var string|null
+	 */
+	protected $ca_file_override = null;
+
 	public function __construct( string $url = '' ) {
 		$this->url = $url;
 	}
@@ -162,6 +167,10 @@ class RequestBuilder {
 			CURLOPT_TIMEOUT        => $this->timeout_in_seconds,
 			CURLOPT_HEADER         => 1,
 		];
+
+		if ( ! is_null( $this->ca_file_override ) ) {
+			$curl_parameters[ CURLOPT_CAINFO ] = $this->ca_file_override;
+		}
 
 		if ( App::make( Output::class )->isVeryVerbose() ) {
 			$curl_parameters[ CURLOPT_VERBOSE ] = true;
@@ -320,7 +329,7 @@ class RequestBuilder {
 			if ( $output->isVerbose() ) {
 				$output->writeln( 'Using cached certificate authority file.' );
 			}
-			$curl_parameters[ CURLOPT_CAINFO ] = $cached_ca_filepath;
+			$this->ca_file_override = $cached_ca_filepath;
 
 			return;
 		}
@@ -374,7 +383,7 @@ class RequestBuilder {
 
 		App::make( Cache::class )->set( 'ca_filepath', $local_ca_file, $year_in_seconds );
 
-		$curl_parameters[ CURLOPT_CAINFO ] = $local_ca_file;
+		$this->ca_file_override = $local_ca_file;
 	}
 
 	protected function wait_after_429( string $headers, int $max_wait = 60 ): int {
