@@ -230,7 +230,7 @@ class RequestBuilder {
 		$result     = curl_exec( $curl );
 		$curl_error = curl_error( $curl );
 
-		// Extract header size and separate headers from body
+		// Extract header size and separate headers from body.
 		$header_size = curl_getinfo( $curl, CURLINFO_HEADER_SIZE );
 		$headers     = substr( $result, 0, $header_size );
 		$body        = substr( $result, $header_size );
@@ -292,7 +292,7 @@ class RequestBuilder {
 	protected function wait_after_429( string $headers, int $max_wait = 60 ): int {
 		$retry_after = null;
 
-		// HTTP dates are always expressed in GMT, never in local time. (RFC 9110 5.6.7)
+		// HTTP dates are always expressed in GMT, never in local time. (RFC 9110 5.6.7).
 		$gmt_timezone = new \DateTimeZone( 'GMT' );
 
 		// HTTP headers are case-insensitive according to RFC 7230.
@@ -323,10 +323,9 @@ class RequestBuilder {
 						$retry_after = null;
 					}
 					// http-date.
-					$retryAfterTime = strtotime( $retry_after_header );
-					$currentTime    = time();
-					if ( $retryAfterTime !== false ) {
-						$retry_after = $retryAfterTime - $currentTime;
+					$retry_after_time = strtotime( $retry_after_header );
+					if ( $retry_after_time !== false ) {
+						$retry_after = $retry_after_time - time();
 					}
 				}
 

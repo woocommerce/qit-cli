@@ -99,6 +99,7 @@ if ( in_array( '--json', $GLOBALS['argv'], true ) ) {
 	if ( ! stream_filter_register( 'qit_json', QIT_JSON_Filter::class ) ) {
 		exit( 151 );
 	}
+	/* @phan-suppress-next-line PhanUndeclaredMethod */
 	if ( ! stream_filter_append( App::make( Output::class )->getStream(), 'qit_json' ) ) {
 		exit( 152 );
 	}
