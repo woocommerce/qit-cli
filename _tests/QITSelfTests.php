@@ -290,9 +290,6 @@ function run_test_runs( array $test_runs ) {
 
 	$qit_run_processes = [];
 
-	// If running a lot of tests, wait between any remote request to prevent 429.
-	$should_wait = array_sum( array_map( 'count', $test_runs ) ) > 3;
-
 	// Dispatch all tests in parallel using the qit binary.
 	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
 		foreach ( $test_type_test_runs as &$t ) {
@@ -375,10 +372,6 @@ function run_test_runs( array $test_runs ) {
 				'QIT_REMOVE_FROM_SNAPSHOT' => $t['remove_from_snapshot'],
 				'QIT_NON_JSON_OUTPUT'      => $t['non_json_output_file'],
 			];
-
-			if ( $should_wait ) {
-				$env['QIT_WAIT_BEFORE_REQUEST'] = 'yes';
-			}
 
 			$qit_process->setEnv( $env );
 
