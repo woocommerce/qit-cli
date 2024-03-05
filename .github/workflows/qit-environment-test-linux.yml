@@ -39,9 +39,10 @@ jobs:
           run: |
             php -d openssl.cafile='' -d curl.cainfo='' qit-cli.php sync -vvv
             if ($LASTEXITCODE -ne 0) {
-                Write-Host "Test passed: SSL connection failed as expected"
+              Write-Host "Test passed: SSL connection failed as expected"
+              $LASTEXITCODE = 0
             } else {
-            Write-Host "Test failed: SSL connection did not fail as expected"
+              Write-Host "Test failed: SSL connection did not fail as expected"
               exit 1
             }
 
@@ -52,10 +53,10 @@ jobs:
             OPENSSL_CONF: ''
           run: |
             php -d openssl.cafile='' -d curl.cainfo='' qit-cli.php sync -vvv
-            if ($LASTEXITCODE -ne 0) {
-                Write-Host "Test passed: SSL connection succeeded"
+            if ($LASTEXITCODE -eq 0) {
+              Write-Host "Test passed: SSL connection succeeded"
             } else {
-            Write-Host "Test failed: SSL connection did not succeed"
+              Write-Host "Test failed: SSL connection did not succeed"
               exit 1
             }
 
