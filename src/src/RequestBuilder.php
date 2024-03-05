@@ -335,12 +335,10 @@ class RequestBuilder {
 		$helper   = App::make( QuestionHelper::class );
 		$question = new ConfirmationQuestion( '', false );
 
-		if ( getenv( 'QIT_WINDOWS_DOWNLOAD_CA' ) !== 'yes' && ! $input->isInteractive() || ! $helper->ask( $input, $output, $question ) ) {
+		if ( getenv( 'QIT_WINDOWS_DOWNLOAD_CA' ) !== 'yes' && ( ! $input->isInteractive() || ! $helper->ask( $input, $output, $question ) ) ) {
 			if ( $output->isVerbose() ) {
 				$output->writeln( 'Skipping certificate authority file download.' );
 			}
-
-			var_dump( getenv( 'QIT_WINDOWS_DOWNLOAD_CA' ) );
 
 			return;
 		}
