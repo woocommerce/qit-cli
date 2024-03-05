@@ -4,7 +4,9 @@ namespace QIT_CLI;
 
 use QIT_CLI\Exceptions\DoingAutocompleteException;
 use QIT_CLI\Exceptions\NetworkErrorException;
+use QIT_CLI\IO\Input;
 use QIT_CLI\IO\Output;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class RequestBuilder {
 	/** @var string $url */
@@ -269,6 +271,8 @@ class RequestBuilder {
 					$this->retry --;
 					App::make( Output::class )->writeln( sprintf( '<comment>Request failed... Retrying (HTTP Status Code %s)</comment>', $response_status_code ) );
 
+					$this->maybe_set_certificate_authority_file( $curl_parameters );
+
 					// Between 1 and 5s.
 					sleep( rand( 1, 5 ) );
 					goto retry_request; // phpcs:ignore Generic.PHP.DiscourageGoto.Found
@@ -287,6 +291,62 @@ class RequestBuilder {
 		}
 
 		return $body;
+	}
+
+	/**
+	 * @param array $curl_parameters
+	 *
+	 * @return void
+	 */
+	protected function maybe_set_certificate_authority_file( array &$curl_parameters ) {
+		// Early bail: We only do this for Windows.
+		if ( ! is_windows() ) {
+			return;
+		}
+
+		$cached_ca_filepath = App::make( Cache::class )->get( 'ca_filepath' );
+
+		// Cache hit.
+		if ( $cached_ca_filepath !== null ) {
+			$curl_parameters[ CURLOPT_CAINFO ] = $cached_ca_filepath;
+
+			return;
+		}
+
+		// Ask the user if he wants us to solve it for them.
+		$output = App::make( Output::class );
+		$input  = App::make( Input::class );
+
+		$question = new ConfirmationQuestion( '', false );
+
+		if ( getenv( 'QIT_WINDOWS_DOWNLOAD_CA' ) != 'yes' && ! $input->isInteractive() || ! $output->askQuestion( $question ) ) {
+			return;
+		}
+
+		// Download it to QIT Config Dir and save it in the cache.
+		$local_ca_file = Config::get_qit_dir() . 'cacert.pem';
+
+		if ( ! file_exists( $local_ca_file ) ) {
+			$remote_ca_file_contents = @file_get_contents( 'http://curl.se/ca/cacert.pem' );
+
+			if ( empty( $remote_ca_file_contents ) ) {
+				$output->writeln( "<error>Could not download the certificate authority file. Please download it manually from http://curl.se/ca/cacert.pem and place it in $local_ca_file</error>" );
+
+				return;
+			}
+
+			if ( ! file_put_contents( $local_ca_file, $remote_ca_file_contents ) ) {
+				$output->writeln( "<error>Could not write the certificate authority file. Please download it manually from http://curl.se/ca/cacert.pem and place it in $local_ca_file<error>" );
+
+				return;
+			}
+		}
+
+		$year_in_seconds = 60 * 60 * 24 * 365;
+
+		App::make( Cache::class )->set( 'ca_filepath', $local_ca_file, $year_in_seconds );
+
+		$curl_parameters[ CURLOPT_CAINFO ] = $local_ca_file;
 	}
 
 	protected function wait_after_429( string $headers, int $max_wait = 60 ): int {
