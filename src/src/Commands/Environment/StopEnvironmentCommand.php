@@ -3,6 +3,7 @@
 namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\Environment\EnvInfo;
+use QIT_CLI\Environment\Environment;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\Environments\E2EEnvironment;
 use Symfony\Component\Console\Command\Command;
@@ -79,7 +80,7 @@ class StopEnvironmentCommand extends Command {
 	}
 
 	private function stop_environment( EnvInfo $environment, OutputInterface $output ): void {
-		$this->e2e_environment->down( $environment );
+		Environment::down( $environment );
 		$environment_id = $environment->env_id;
 		$output->writeln( "<info>Environment '$environment_id' stopped.</info>" );
 	}

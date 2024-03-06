@@ -18,9 +18,6 @@ class EnvironmentDanglingCleanup {
 	/** @var EnvironmentMonitor */
 	protected $environment_monitor;
 
-	/** @var Environment */
-	protected $environment;
-
 	/** @var Filesystem */
 	protected $filesystem;
 
@@ -47,14 +44,12 @@ class EnvironmentDanglingCleanup {
 
 	public function __construct(
 		EnvironmentMonitor $environment_monitor,
-		Environment $environment,
 		Filesystem $filesystem,
 		OutputInterface $output,
 		InputInterface $input,
 		Cache $cache
 	) {
 		$this->environment_monitor = $environment_monitor;
-		$this->environment         = $environment;
 		$this->filesystem          = $filesystem;
 		$this->output              = $output;
 		$this->input               = $input;
@@ -314,7 +309,7 @@ class EnvironmentDanglingCleanup {
 					$this->output->writeln( 'Expected containers: ' . implode( ', ', $env_info->docker_images ) );
 					$this->output->writeln( 'Missing containers: ' . implode( ', ', $containers_not_running ) );
 				}
-				$this->environment->down( $env_info );
+				Environment::down( $env_info );
 			}
 		}
 	}

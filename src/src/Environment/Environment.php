@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Environment;
 
+use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Config;
 use QIT_CLI\SafeRemove;
@@ -227,7 +228,7 @@ abstract class Environment {
 		} );
 
 		if ( ! $up_process->isSuccessful() ) {
-			$this->down( $env_info );
+			static::down( $env_info );
 			throw new \RuntimeException( 'Failed to start the environment.' );
 		}
 
@@ -236,33 +237,36 @@ abstract class Environment {
 		$this->environment_monitor->environment_added_or_updated( $env_info );
 	}
 
-	public function down( EnvInfo $env_info ): void {
+	public static function down( EnvInfo $env_info ): void {
+		$output              = App::make( OutputInterface::class );
+		$environment_monitor = App::make( EnvironmentMonitor::class );
+
 		if ( ! file_exists( $env_info->temporary_env ) ) {
-			if ( $this->output->isVerbose() ) {
-				$this->output->writeln( sprintf( 'Tried to stop environment %s, but it does not exist.', $env_info->temporary_env ) );
+			if ( $output->isVerbose() ) {
+				$output->writeln( sprintf( 'Tried to stop environment %s, but it does not exist.', $env_info->temporary_env ) );
 			}
 
 			// It's fine to just remove it, as any dangling leftovers will be cleaned up later.
-			$this->environment_monitor->environment_stopped( $env_info );
+			$environment_monitor->environment_stopped( $env_info );
 
 			return;
 		}
 
-		$down_process = new Process( array_merge( $this->docker->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'down' ] ) );
+		$down_process = new Process( array_merge( App::make( Docker::class )->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'down' ] ) );
 		$down_process->setTty( use_tty() );
 
-		$down_process->run( function ( $type, $buffer ) {
-			$this->output->write( $buffer );
+		$down_process->run( static function ( $type, $buffer ) use ( $output ) {
+			$output->write( $buffer );
 		} );
 
 		if ( $down_process->isSuccessful() ) {
-			$this->output->writeln( 'Removing temporary environment: ' . $env_info->temporary_env );
+			$output->writeln( 'Removing temporary environment: ' . $env_info->temporary_env );
 			SafeRemove::delete_dir( $env_info->temporary_env, static::get_temp_envs_dir() );
 		} else {
-			$this->output->writeln( 'Failed to remove temporary environment: ' . $env_info->temporary_env );
+			$output->writeln( 'Failed to remove temporary environment: ' . $env_info->temporary_env );
 		}
 
-		$this->environment_monitor->environment_stopped( $env_info );
+		$environment_monitor->environment_stopped( $env_info );
 	}
 
 	protected function add_container_names( EnvInfo $env_info ): void {
