@@ -96,7 +96,7 @@ jobs:
         working-directory: src
         run: |
           # Assert no environments are listed
-          if [ -n "$(php qit-cli.php env:list)" ]; then
+          if [ "$(php qit-cli.php env:list)" != "No environments running." ]; then
             echo "Environments are still listed. Cleanup not successful."
             exit 1
           fi
