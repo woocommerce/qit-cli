@@ -6,6 +6,7 @@ on:
     - cron: '0 23 * * *'
   # Manually
   workflow_dispatch:
+  push:
 
 jobs:
   test_stop_random_container:
@@ -70,8 +71,14 @@ jobs:
         id: env_setup
         run: bash .github/workflows/tests/environments/start-and-assert.sh
 
-      - name: Delete all hidden JSON files in the directory
-        run: php src/qit-cli.php qit:dir | tr -d '\n' | xargs -I {} find {} -type f -name ".*.json" -exec rm -f {} \;
+      - name: Find and delete all hidden JSON files in the directory
+        run: |
+          DIR_PATH=$(php src/qit-cli.php qit:dir | tr -d '\n')
+          FILES_TO_DELETE=$(find "$DIR_PATH" -type f -name ".*.json")
+          for file in $FILES_TO_DELETE; do
+            echo "Removing $file"
+            rm -f "$file"
+          done
 
       - name: Run a env:list to trigger the Dangling Environment Cleanup
         working-directory: src
