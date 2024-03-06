@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 81 passed, 81 total | Tests: 19 skipped, 0 failed, 302 passed, 321 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 73 passed, 73 total | Tests: 15 skipped, 0 failed, 267 passed, 282 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -42,13 +42,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 81,
+                "numPassedTestSuites": 73,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 81,
+                "numTotalTestSuites": 73,
                 "numFailedTests": 0,
-                "numPassedTests": 302,
-                "numPendingTests": 19,
-                "numTotalTests": 321,
+                "numPassedTests": 267,
+                "numPendingTests": 15,
+                "numTotalTests": 282,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -298,80 +298,13 @@
                         }
                     },
                     {
-                        "file": "js-file-monitor\\/monitor-js-file-number.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Keeps track of the number of JS files included on key shopper pages": [
-                                {
-                                    "title": "Check that Shop page has 50 JS files",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Check that Cart has 54 JS files",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Check that Checkout has 54 JS files",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Keeps track of the number of JS files on key admin pages": [
-                                {
-                                    "title": "Check that WC Dashboard has 50 JS files",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Check that Reports has 150 JS files",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Check that Orders page has 150 JS files",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Check that Products page has 150 JS files",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Check that Add new product has 150 JS files",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Check that Analytics page has 120 JS files",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Check that Marketing Overview has 120 JS files",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "merchant\\/create-coupon.spec.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
-                            "Coupon management": [
+                            "Add New Coupon Page": [
                                 {
-                                    "title": "can create new fixedCart coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new fixedProduct coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new percentage coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new expiryDate coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new freeShipping coupon",
+                                    "title": "can create new coupon",
                                     "status": "passed"
                                 }
                             ]
@@ -415,59 +348,6 @@
                             "Can create a new post": [
                                 {
                                     "title": "can create new post",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "merchant\\/create-restricted-coupons.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Restricted coupon management": [
-                                {
-                                    "title": "can create new minimumSpend coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new maximumSpend coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new individualUse coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new excludeSaleItems coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new productCategories coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new excludeProductCategories coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new products coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new excludeProducts coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new allowedEmails coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new usageLimitPerCoupon coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new usageLimitPerUser coupon",
                                     "status": "passed"
                                 }
                             ]
@@ -524,6 +404,31 @@
                                 },
                                 {
                                     "title": "allows customer to pay for a Flat rate shipping method",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/create-simple-product.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Add New Simple Product Page": [
+                                {
+                                    "title": "can create simple virtual product",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can have a shopper add the simple virtual product to the cart",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create simple non-virtual product",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can have a shopper add the simple non-virtual product to the cart",
                                     "status": "passed"
                                 }
                             ]
@@ -642,19 +547,11 @@
                     {
                         "file": "merchant\\/order-emails.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Merchant > Order Action emails received": [
                                 {
                                     "title": "can receive new order email",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can receive completed email",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can receive cancelled order email",
                                     "status": "passed"
                                 },
                                 {
@@ -671,22 +568,22 @@
                     {
                         "file": "merchant\\/order-refund.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
                                     "title": "can issue a refund by quantity",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can delete an issued refund",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
                                 {
                                     "title": "can update order after refunding item without automatic stock adjustment",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -879,30 +776,9 @@
                         }
                     },
                     {
-                        "file": "merchant\\/product-create-simple.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Products > Add Simple Product": [
-                                {
-                                    "title": "can create a simple virtual product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create a simple non virtual product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create a simple downloadable product",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "merchant\\/product-delete.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Products > Delete Product": [
                                 {
@@ -911,7 +787,7 @@
                                 },
                                 {
                                     "title": "can quick delete a product from product list",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can permanently delete a product from trash list",
@@ -928,10 +804,6 @@
                             "Products > Edit Product": [
                                 {
                                     "title": "can edit a product and save the changes",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can bulk edit products",
                                     "status": "passed"
                                 }
                             ]
@@ -982,60 +854,6 @@
                                 },
                                 {
                                     "title": "can override the existing products via CSV import",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "merchant\\/product-linked-producs.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Products > Related products": [
-                                {
-                                    "title": "add up-sells",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "remove up-sells",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "add cross-sells",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "remove cross-sells",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "merchant\\/product-reviews.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Product Reviews > Edit Product Review": [
-                                {
-                                    "title": "can view products reviews list",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can filter the reviews by product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can quick edit a product review",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can edit a product review",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can delete a product review",
                                     "status": "passed"
                                 }
                             ]
@@ -1219,24 +1037,6 @@
                         }
                     },
                     {
-                        "file": "merchant\\/products\\/block-editor\\/product-edit-block-editor.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": []
-                    },
-                    {
-                        "file": "merchant\\/products\\/block-editor\\/product-images-block-editor.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": []
-                    },
-                    {
-                        "file": "merchant\\/products\\/block-editor\\/product-inventory-block-editor.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": []
-                    },
-                    {
                         "file": "merchant\\/settings-general.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1276,29 +1076,6 @@
                                 {
                                     "title": "can remove tax classes",
                                     "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "shopper\\/account-email-receiving.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Shopper Account Email Receiving": [
-                                {
-                                    "title": "should receive an email when creating an account",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "should receive an email when password reset initiated from admin",
-                                    "status": "pending"
-                                }
-                            ],
-                            "Shopper Password Reset Email Receiving": [
-                                {
-                                    "title": "should receive an email when initiating a password reset",
-                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1459,54 +1236,6 @@
                         }
                     },
                     {
-                        "file": "shopper\\/cart-checkout-calculate-tax.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Tax rates in the cart and checkout": [],
-                            "Tax rates in the cart and checkout > Shopper Tax Display Tests": [
-                                {
-                                    "title": "checks that taxes are calculated properly on totals, inclusive tax displayed properly",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "checks that taxes are calculated and displayed correctly exclusive on shop, cart and checkout",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "checks that display suffix is shown",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Tax rates in the cart and checkout > Shopper Tax Rounding": [
-                                {
-                                    "title": "checks rounding at subtotal level",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "checks rounding off at subtotal level",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Tax rates in the cart and checkout > Shopper Tax Levels": [
-                                {
-                                    "title": "checks applying taxes of 4 different levels",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "checks applying taxes of 2 different levels (2 excluded)",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Tax rates in the cart and checkout > Shipping Tax": [
-                                {
-                                    "title": "checks that tax is applied to shipping as well as order",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "shopper\\/cart-checkout-coupons.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1542,7 +1271,7 @@
                     {
                         "file": "shopper\\/cart-checkout-restricted-coupons.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Cart & Checkout Restricted Coupons": [
                                 {
@@ -1579,11 +1308,11 @@
                                 },
                                 {
                                     "title": "coupon cannot be used by any customer (email restricted)",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "coupon can be used by the right customer (email restricted) but only once",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1715,7 +1444,7 @@
                                 },
                                 {
                                     "title": "allows existing customer to place an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create an account during checkout",
@@ -1753,7 +1482,7 @@
                     {
                         "file": "shopper\\/checkout.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Checkout page": [
                                 {
@@ -1778,7 +1507,7 @@
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows existing customer to place order",
@@ -2036,12 +1765,12 @@
                     {
                         "file": "shopper\\/shop-search-browse-sort.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Search, browse by categories and sort items in the shop": [
                                 {
                                     "title": "should let user search the store",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should let user browse products by categories",
@@ -2050,6 +1779,54 @@
                                 {
                                     "title": "should let user sort the products in the shop",
                                     "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "shopper\\/tax\\/checkout-calculate-tax.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Tax rates in the cart and checkout": [],
+                            "Tax rates in the cart and checkout > Shopper Tax Display Tests": [
+                                {
+                                    "title": "checks that taxes are calculated properly on totals, inclusive tax displayed properly",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "checks that taxes are calculated and displayed correctly exclusive on shop, cart and checkout",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "checks that display suffix is shown",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Tax rates in the cart and checkout > Shopper Tax Rounding": [
+                                {
+                                    "title": "checks rounding at subtotal level",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "checks rounding off at subtotal level",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Tax rates in the cart and checkout > Shopper Tax Levels": [
+                                {
+                                    "title": "checks applying taxes of 4 different levels",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "checks applying taxes of 2 different levels (2 excluded)",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Tax rates in the cart and checkout > Shipping Tax": [
+                                {
+                                    "title": "checks that tax is applied to shipping as well as order",
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2098,7 +1875,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 81 passed, 81 total | Tests: 19 skipped, 0 failed, 302 passed, 321 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 73 passed, 73 total | Tests: 15 skipped, 0 failed, 267 passed, 282 total."
             }
         },
         {
