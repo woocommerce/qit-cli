@@ -272,12 +272,12 @@ class EnvironmentDanglingCleanup {
 				}
 			}
 			if ( ! empty( $containers_not_running ) ) {
-				$this->output->writeln( "Removing dangling environment: {$env_info['env']->env_id}" );
+				$this->output->writeln( "Removing dangling environment: {$env_info->env_id}" );
 				if ( $this->output->isVerbose() ) {
-					$this->output->writeln( 'Expected containers: ' . implode( ', ', $env_info['env']->docker_images ) );
+					$this->output->writeln( 'Expected containers: ' . implode( ', ', $env_info->docker_images ) );
 					$this->output->writeln( 'Missing containers: ' . implode( ', ', $containers_not_running ) );
 				}
-				$this->environment_monitor->environment_stopped( $env_info['env'] );
+				$this->environment_monitor->environment_stopped( $env_info );
 			}
 		}
 	}
