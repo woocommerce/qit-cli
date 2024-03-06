@@ -33,6 +33,7 @@ class SwitchBackend extends Command {
 		if ( ! empty( $input->getArgument( 'backend' ) ) ) {
 			$this->manager_backend->switch_to_manager_backend( strtolower( $input->getArgument( 'backend' ) ) );
 			$output->writeln( sprintf( '<info>Backend switched to "%s".</info>', $input->getArgument( 'backend' ) ) );
+			$output->writeln( "<info>Sync complete.</info>" );
 
 			return Command::SUCCESS;
 		}
@@ -60,7 +61,8 @@ class SwitchBackend extends Command {
 				return Command::SUCCESS;
 			default:
 				$this->manager_backend->switch_to_manager_backend( $new_backend );
-				$output->writeln( "<info>Manager backend switched to $new_backend.</info>" );
+				$output->writeln( "<info>Backend switched to $new_backend.</info>" );
+				$output->writeln( "<info>Sync complete.</info>" );
 
 				return Command::SUCCESS;
 		}
