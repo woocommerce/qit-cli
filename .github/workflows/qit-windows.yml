@@ -119,4 +119,3 @@ jobs:
             exit 1
           fi
           echo "No Docker containers with 'qit_env_' in the name. Container cleanup successful."
-      

@@ -39,14 +39,6 @@ class EnvironmentDanglingCleanup {
 	/** @var array<string> */
 	protected $dangling_networks = [];
 
-	/**
-	 * @var array<array{
-	 *     env: EnvInfo,
-	 *     containers_not_running: array<string>
-	 * }>
-	 */
-	protected $dangling_environments = [];
-
 	public function __construct(
 		EnvironmentMonitor $environment_monitor,
 		Filesystem $filesystem,
@@ -62,13 +54,13 @@ class EnvironmentDanglingCleanup {
 	}
 
 	public function cleanup_dangling(): void {
-		$this->detect_dangling_environments();
+		$this->remove_dangling_environments();
 		$this->detect_dangling_containers_exited();
 		$this->detect_dangling_networks();
 		$this->detect_dangling_directories();
 
 		// Check if there are actions to perform.
-		if ( empty( $this->dangling_directories ) && empty( $this->dangling_containers ) && empty( $this->dangling_environments ) && empty( $this->dangling_networks ) ) {
+		if ( empty( $this->dangling_directories ) && empty( $this->dangling_containers ) && empty( $this->dangling_networks ) ) {
 			return;
 		}
 
@@ -89,15 +81,6 @@ class EnvironmentDanglingCleanup {
 			$stop_process->run();
 			$remove_process = new Process( [ 'docker', 'rm', $container_name ] );
 			$remove_process->run();
-		}
-
-		foreach ( $this->dangling_environments as $environment_to_remove ) {
-			$this->output->writeln( "Removing dangling environment: {$environment_to_remove['env']->temporary_env}" );
-			if ( $this->output->isVerbose() ) {
-				$this->output->writeln( 'Expected containers: ' . implode( ', ', $environment_to_remove['env']->docker_images ) );
-				$this->output->writeln( 'Missing containers: ' . implode( ', ', $environment_to_remove['containers_not_running'] ) );
-			}
-			$this->environment_monitor->environment_stopped( $environment_to_remove['env'] );
 		}
 
 		if ( empty( $this->dangling_directories ) ) {
@@ -138,7 +121,7 @@ class EnvironmentDanglingCleanup {
 		}
 
 		foreach ( $this->dangling_directories as $directory ) {
-			$this->output->writeln( "Removing dangling environment: {$directory}" );
+			$this->output->writeln( "Removing dangling directory: {$directory}" );
 			SafeRemove::delete_dir( $directory, Environment::get_temp_envs_dir() );
 		}
 	}
@@ -254,7 +237,7 @@ class EnvironmentDanglingCleanup {
 	 * - Checks that all docker containers in all environments are running.
 	 * - Mark the environment as orphaned if any of its containers are not running.
 	 */
-	protected function detect_dangling_environments(): void {
+	protected function remove_dangling_environments(): void {
 		$running_environments = $this->environment_monitor->get();
 
 		// List the running containers.
@@ -289,10 +272,12 @@ class EnvironmentDanglingCleanup {
 				}
 			}
 			if ( ! empty( $containers_not_running ) ) {
-				$this->dangling_environments[] = [
-					'env'                    => $env_info,
-					'containers_not_running' => $containers_not_running,
-				];
+				$this->output->writeln( "Removing dangling environment: {$env_info['env']->env_id}" );
+				if ( $this->output->isVerbose() ) {
+					$this->output->writeln( 'Expected containers: ' . implode( ', ', $env_info['env']->docker_images ) );
+					$this->output->writeln( 'Missing containers: ' . implode( ', ', $containers_not_running ) );
+				}
+				$this->environment_monitor->environment_stopped( $env_info['env'] );
 			}
 		}
 	}
