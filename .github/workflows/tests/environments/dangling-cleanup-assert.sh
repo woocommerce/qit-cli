@@ -5,7 +5,7 @@ set -e
 
 # Get and print the output of the env:list command
 echo "Getting environment list..."
-ENV_LIST_OUTPUT=$(php qit-cli.php env:list)
+ENV_LIST_OUTPUT=$(php src/qit-cli.php env:list)
 echo "Output of env:list command: '$ENV_LIST_OUTPUT'"
 
 # Assert no environments are listed
