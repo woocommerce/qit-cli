@@ -80,6 +80,9 @@ jobs:
             rm -f "$file"
           done
 
+      - name: Run setup again to re-create it
+        run: bash .github/workflows/tests/environments/setup.sh ${{ secrets.QIT_STAGING_SECRET }} https://stagingcompatibilitydashboard.wpcomstaging.com
+
       - name: Run a env:list to trigger the Dangling Environment Cleanup
         working-directory: src
         run: php qit-cli.php env:list
