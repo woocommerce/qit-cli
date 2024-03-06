@@ -23,6 +23,9 @@ class E2EEnvironment extends Environment {
 	/** @var string */
 	protected $php_version;
 
+	/** @var array<string> */
+	protected $php_extensions;
+
 	/** @var bool */
 	protected $enable_object_cache = false;
 
@@ -54,6 +57,15 @@ class E2EEnvironment extends Environment {
 		$this->enable_object_cache = $enable_object_cache;
 	}
 
+	/**
+	 * @param array<string> $php_extensions
+	 *
+	 * @return void
+	 */
+	public function set_php_extensions( array $php_extensions ): void {
+		$this->php_extensions = $php_extensions;
+	}
+
 	protected function post_generate_docker_compose( EnvInfo $env_info ): void {
 		$qit_conf = $env_info->temporary_env . '/docker/nginx/conf.d/qit.conf';
 
@@ -71,15 +83,12 @@ class E2EEnvironment extends Environment {
 		$env_info->site_url = 'http://qit.test:' . $this->get_nginx_port( $env_info );
 		$this->environment_monitor->environment_added_or_updated( $env_info );
 
-		$php_extensions = [];
-
 		/**
-		 * @todo Add support for PHP extensions in the temp environments.
 		 * @phpstan-ignore-next-line
 		 */
-		if ( ! empty( $php_extensions ) ) {
+		if ( ! empty( $this->php_extensions ) ) {
 			$this->docker->run_inside_docker( $env_info, [ '/bin/bash', '/qit/bin/php-extensions.sh' ], [
-				'PHP_EXTENSIONS' => '', // Space-separated list of PHP extensions.
+				'PHP_EXTENSIONS' => implode( ' ', $this->php_extensions ), // Space-separated list of PHP extensions.
 			], '0:0' );
 		}
 
