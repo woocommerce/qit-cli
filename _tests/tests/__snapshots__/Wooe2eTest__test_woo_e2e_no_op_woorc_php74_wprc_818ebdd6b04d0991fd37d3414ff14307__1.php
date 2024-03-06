@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 1 failed, 80 passed, 81 total | Tests: 19 skipped, 1 failed, 301 passed, 321 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 81 passed, 81 total | Tests: 19 skipped, 0 failed, 302 passed, 321 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,12 +41,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 80,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 81,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 81,
-                "numFailedTests": 1,
-                "numPassedTests": 301,
+                "numFailedTests": 0,
+                "numPassedTests": 302,
                 "numPendingTests": 19,
                 "numTotalTests": 321,
                 "testResults": [
@@ -901,7 +901,7 @@
                     },
                     {
                         "file": "merchant\\/product-delete.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Products > Delete Product": [
@@ -911,7 +911,7 @@
                                 },
                                 {
                                     "title": "can quick delete a product from product list",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can permanently delete a product from trash list",
@@ -2098,7 +2098,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 80 passed, 81 total | Tests: 19 skipped, 1 failed, 301 passed, 321 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 81 passed, 81 total | Tests: 19 skipped, 0 failed, 302 passed, 321 total."
             }
         },
         {
