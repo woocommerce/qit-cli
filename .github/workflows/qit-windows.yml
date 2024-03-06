@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  environment_dangling_tests:
+  setup:
     runs-on: ubuntu-latest
     env:
       NO_COLOR: 1
@@ -37,44 +37,16 @@ jobs:
       - name: Add "qit.test" to hosts file (Linux)
         run: sudo echo "127.0.0.1 qit.test" | sudo tee -a /etc/hosts
 
-      - name: Start environment
-        working-directory: src
-        run: php qit-cli.php env:up
-
-      - name: Test Site Up
-        working-directory: src
-        run: |
-          SITE_URL=$(php qit-cli.php env:list --field=site_url)
-          if [ "$(curl -o /dev/null -s -w '%{http_code}\n' $SITE_URL)" -ne 200 ]; then
-            echo "Home page is not up."
-            exit 1
-          fi
-          if [ "$(curl -s $SITE_URL/wp-json | jq -r '.name')" != "WooCommerce Core E2E Test Suite" ]; then
-            echo "Name property does not match."
-            exit 1
-          fi
-
-      - name: Assert that Docker Containers are All Running
-        working-directory: src
-        run: |
-          CONTAINERS=$(php qit-cli.php env:list --field=docker_images)
-          for container in $CONTAINERS; do
-            echo "Checking container: $container"
-            if [ "$(docker inspect -f '{{.State.Running}}' $container)" != "true" ]; then
-              echo "Container $container is not running."
-              exit 1
-            fi
-          done
-          echo "All containers are running successfully."
-
-      - name: Assert that Docker Network was Created
-        run: |
-          ENV_ID=$(php src/qit-cli.php env:list --field=env_id)
-          if [ -z "$(docker network ls | grep $ENV_ID)" ]; then
-              echo "Docker network was not created."
-              exit 1
-          fi
-          echo "Docker network $ENV_ID was created successfully."
+  test_stop_random_container:
+    runs-on: ubuntu-latest
+    needs: setup
+    env:
+      NO_COLOR: 1
+      QIT_DISABLE_ONBOARDING: yes
+    steps:
+      - name: Environment Setup and Checks
+        id: env_setup
+        run: bash .github/workflows/tests/environments/start-and-assert.sh
 
       - name: Store the environment path in a ENV var
         working-directory: src
@@ -92,30 +64,29 @@ jobs:
         working-directory: src
         run: php qit-cli.php env:list
 
-      - name: Assert that the environment was cleaned up
+      - name: Environment Cleanup Checks
+        id: env_cleanup
+        run: bash .github/workflows/tests/environments/dangling-cleanup-assert.sh
+
+  test_delete_environment_entry:
+    runs-on: ubuntu-latest
+    needs: setup
+    env:
+      NO_COLOR: 1
+      QIT_DISABLE_ONBOARDING: yes
+    steps:
+      - name: Environment Setup and Checks
+        id: env_setup
+        run: bash .github/workflows/tests/environments/start-and-assert.sh
+
+      - name: Delete the config files
         working-directory: src
-        run: |
-          # Get and print the output of the env:list command
-          ENV_LIST_OUTPUT=$(php qit-cli.php env:list)
-          echo "Output of env:list command: '$ENV_LIST_OUTPUT'"
+        run: rm -f $(php qit-cli.php qit:dir)/*.json
 
-          # Assert no environments are listed
-          if [ "$ENV_LIST_OUTPUT" != "No environments running." ]; then
-            echo "Environments are still listed. Cleanup not successful."
-            exit 1
-          fi
-          echo "No environments listed. Environment cleanup successful."
+      - name: Run a env:list to trigger the Dangling Environment Cleanup
+        working-directory: src
+        run: php qit-cli.php env:list
 
-          # Assert no Docker networks with "_qit_network_" in the name
-          if [ -n "$(docker network ls | grep _qit_network_)" ]; then
-            echo "Docker networks with '_qit_network_' in the name still exist. Cleanup not successful."
-            exit 1
-          fi
-          echo "No Docker networks with '_qit_network_' in the name. Network cleanup successful."
-
-          # Assert no Docker containers with "qit_env_" in the name
-          if [ -n "$(docker ps -a | grep qit_env_)" ]; then
-            echo "Docker containers with 'qit_env_' in the name still exist. Cleanup not successful."
-            exit 1
-          fi
-          echo "No Docker containers with 'qit_env_' in the name. Container cleanup successful."
+      - name: Environment Cleanup Checks
+        id: env_cleanup
+        run: bash .github/workflows/tests/environments/dangling-cleanup-assert.sh
