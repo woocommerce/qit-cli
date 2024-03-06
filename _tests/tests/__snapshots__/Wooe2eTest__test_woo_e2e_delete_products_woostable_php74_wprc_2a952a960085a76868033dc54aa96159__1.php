@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 4 failed, 69 passed, 73 total | Tests: 235 skipped, 7 failed, 40 passed, 282 total.",
+            "test_summary": "Test Suites: 0 skipped, 2 failed, 71 passed, 73 total | Tests: 238 skipped, 4 failed, 40 passed, 282 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,13 +41,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 4,
-                "numPassedTestSuites": 69,
+                "numFailedTestSuites": 2,
+                "numPassedTestSuites": 71,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 73,
-                "numFailedTests": 7,
+                "numFailedTests": 4,
                 "numPassedTests": 40,
-                "numPendingTests": 235,
+                "numPendingTests": 238,
                 "numTotalTests": 282,
                 "testResults": [
                     {
@@ -411,13 +411,13 @@
                     },
                     {
                         "file": "merchant\\/create-simple-product.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Add New Simple Product Page": [
                                 {
                                     "title": "can create simple virtual product",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can have a shopper add the simple virtual product to the cart",
@@ -436,17 +436,17 @@
                     },
                     {
                         "file": "merchant\\/customer-payment-page.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "WooCommerce Merchant Flow: Orders > Customer Payment Page": [
                                 {
                                     "title": "should show the customer payment page link on a pending order",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should load the customer payment page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can pay for the order through the customer payment page",
@@ -1875,7 +1875,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 4 failed, 69 passed, 73 total | Tests: 235 skipped, 7 failed, 40 passed, 282 total."
+                "summary": "Test Suites: 0 skipped, 2 failed, 71 passed, 73 total | Tests: 238 skipped, 4 failed, 40 passed, 282 total."
             }
         },
         {
