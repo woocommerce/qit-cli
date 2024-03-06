@@ -72,17 +72,6 @@ class EnvironmentDanglingCleanup {
 			$this->header_printed = true;
 		}
 
-		foreach ( $this->dangling_networks as $network_name ) {
-			$this->output->writeln( "Removing dangling Docker network: {$network_name}" );
-
-			$remove_process = new Process( [ 'docker', 'network', 'rm', $network_name ] );
-			try {
-				$remove_process->mustRun();
-			} catch ( \Exception $e ) {
-				$this->output->writeln( "Failed to remove network: {$network_name} - " . $remove_process->getOutput() . $remove_process->getErrorOutput() );
-			}
-		}
-
 		foreach ( $this->dangling_containers as $container_name ) {
 			if ( substr( $container_name, 0, strlen( 'qit_env_' ) ) !== 'qit_env_' ) {
 				continue;
@@ -101,6 +90,17 @@ class EnvironmentDanglingCleanup {
 				$remove_process->mustRun();
 			} catch ( \Exception $e ) {
 				$this->output->writeln( "Failed to remove container: {$container_name} - " . $remove_process->getOutput() . $remove_process->getErrorOutput() );
+			}
+		}
+
+		foreach ( $this->dangling_networks as $network_name ) {
+			$this->output->writeln( "Removing dangling Docker network: {$network_name}" );
+
+			$remove_process = new Process( [ 'docker', 'network', 'rm', $network_name ] );
+			try {
+				$remove_process->mustRun();
+			} catch ( \Exception $e ) {
+				$this->output->writeln( "Failed to remove network: {$network_name} - " . $remove_process->getOutput() . $remove_process->getErrorOutput() );
 			}
 		}
 
