@@ -73,11 +73,6 @@ class EnvironmentDanglingCleanup {
 			$this->header_printed = true;
 		}
 
-		// List docker containers.
-		( new Process( [ 'docker', 'ps', '-a' ] ) )->run( function ( $type, $out ) {
-			$this->output->writeln( $out );
-		} );
-
 		foreach ( $this->dangling_containers as $container_name ) {
 			if ( substr( $container_name, 0, strlen( 'qit_env_' ) ) !== 'qit_env_' ) {
 				$this->output->writeln( "Skipping non-qit container: {$container_name}" );
