@@ -70,9 +70,8 @@ jobs:
         id: env_setup
         run: bash .github/workflows/tests/environments/start-and-assert.sh
 
-      - name: Delete the config files
-        working-directory: src
-        run: rm -f $(php qit-cli.php qit:dir)/*.json
+      - name: Delete all hidden JSON files in the directory
+        run: php src/qit-cli.php qit:dir | xargs -I {} find {} -name ".*.json" -type f -exec rm -f {} \;
 
       - name: Run a env:list to trigger the Dangling Environment Cleanup
         working-directory: src
