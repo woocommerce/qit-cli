@@ -65,7 +65,7 @@ jobs:
 
       - name: Run setup script
         run: bash .github/workflows/tests/environments/setup.sh ${{ secrets.QIT_STAGING_SECRET }} https://stagingcompatibilitydashboard.wpcomstaging.com
-        
+
       - name: Environment Setup and Checks
         id: env_setup
         run: bash .github/workflows/tests/environments/start-and-assert.sh

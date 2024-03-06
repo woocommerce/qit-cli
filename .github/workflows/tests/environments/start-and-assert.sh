@@ -5,10 +5,10 @@ set -e
 
 # Start environment
 echo "Starting environment..."
-php qit-cli.php env:up
+php src/qit-cli.php env:up
 
 # Check if the site is up
-SITE_URL=$(php qit-cli.php env:list --field=site_url)
+SITE_URL=$(php src/qit-cli.php env:list --field=site_url)
 echo "Checking if the site is up at $SITE_URL..."
 if [ "$(curl -o /dev/null -s -w '%{http_code}\n' $SITE_URL)" -ne 200 ]; then
     echo "Home page is not up."
@@ -22,7 +22,7 @@ echo "Site is up and running."
 
 # Assert that Docker Containers are all running
 echo "Checking if all Docker containers are running..."
-CONTAINERS=$(php qit-cli.php env:list --field=docker_images)
+CONTAINERS=$(php src/qit-cli.php env:list --field=docker_images)
 for container in $CONTAINERS; do
     echo "Checking container: $container"
     if [ "$(docker inspect -f '{{.State.Running}}' $container)" != "true" ]; then
