@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  setup:
+  test_stop_random_container:
     runs-on: ubuntu-latest
     env:
       NO_COLOR: 1
@@ -22,28 +22,9 @@ jobs:
         with:
           php-version: '8.3'
 
-      - name: Composer install (Unix)
-        working-directory: src
-        run: composer install
+      - name: Run setup script
+        run: bash .github/workflows/tests/environments/setup.sh ${{ secrets.QIT_STAGING_SECRET }} https://stagingcompatibilitydashboard.wpcomstaging.com
 
-      - name: Enable dev mode
-        working-directory: src
-        run: php qit-cli.php dev
-
-      - name: Connect to Staging QIT
-        working-directory: src
-        run: php qit-cli.php backend:add --environment="staging" --qit_secret="${{ secrets.QIT_STAGING_SECRET }}" --manager_url="https://stagingcompatibilitydashboard.wpcomstaging.com"
-
-      - name: Add "qit.test" to hosts file (Linux)
-        run: sudo echo "127.0.0.1 qit.test" | sudo tee -a /etc/hosts
-
-  test_stop_random_container:
-    runs-on: ubuntu-latest
-    needs: setup
-    env:
-      NO_COLOR: 1
-      QIT_DISABLE_ONBOARDING: yes
-    steps:
       - name: Environment Setup and Checks
         id: env_setup
         run: bash .github/workflows/tests/environments/start-and-assert.sh
@@ -70,11 +51,21 @@ jobs:
 
   test_delete_environment_entry:
     runs-on: ubuntu-latest
-    needs: setup
     env:
       NO_COLOR: 1
       QIT_DISABLE_ONBOARDING: yes
     steps:
+      - name: Checkout code (Cross-platform)
+        uses: actions/checkout@v4
+
+      - name: Setup PHP (Cross-platform)
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Run setup script
+        run: bash .github/workflows/tests/environments/setup.sh ${{ secrets.QIT_STAGING_SECRET }} https://stagingcompatibilitydashboard.wpcomstaging.com
+        
       - name: Environment Setup and Checks
         id: env_setup
         run: bash .github/workflows/tests/environments/start-and-assert.sh
