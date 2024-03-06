@@ -237,6 +237,17 @@ abstract class Environment {
 	}
 
 	public function down( EnvInfo $env_info ): void {
+		if ( ! file_exists( $env_info->temporary_env ) ) {
+			if ( $this->output->isVerbose() ) {
+				$this->output->writeln( sprintf( 'Tried to stop environment %s, but it does not exist.', $env_info->temporary_env ) );
+			}
+
+			// It's fine to just remove it, as any dangling leftovers will be cleaned up later.
+			$this->environment_monitor->environment_stopped( $env_info );
+
+			return;
+		}
+
 		$down_process = new Process( array_merge( $this->docker->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'down' ] ) );
 		$down_process->setTty( use_tty() );
 

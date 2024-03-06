@@ -15,8 +15,11 @@ use function QIT_CLI\is_ci;
 use function QIT_CLI\normalize_path;
 
 class EnvironmentDanglingCleanup {
-	/** @var array|mixed */
+	/** @var EnvironmentMonitor */
 	protected $environment_monitor;
+
+	/** @var Environment */
+	protected $environment;
 
 	/** @var Filesystem */
 	protected $filesystem;
@@ -44,12 +47,14 @@ class EnvironmentDanglingCleanup {
 
 	public function __construct(
 		EnvironmentMonitor $environment_monitor,
+		Environment $environment,
 		Filesystem $filesystem,
 		OutputInterface $output,
 		InputInterface $input,
 		Cache $cache
 	) {
 		$this->environment_monitor = $environment_monitor;
+		$this->environment         = $environment;
 		$this->filesystem          = $filesystem;
 		$this->output              = $output;
 		$this->input               = $input;
@@ -71,7 +76,6 @@ class EnvironmentDanglingCleanup {
 			$this->output->writeln( '<info>Dangling Temporary Environments found.</info>' );
 			$this->header_printed = true;
 		}
-
 
 		// List docker containers.
 		( new Process( [ 'docker', 'ps', '-a' ] ) )->run( function ( $type, $out ) {
@@ -310,7 +314,7 @@ class EnvironmentDanglingCleanup {
 					$this->output->writeln( 'Expected containers: ' . implode( ', ', $env_info->docker_images ) );
 					$this->output->writeln( 'Missing containers: ' . implode( ', ', $containers_not_running ) );
 				}
-				$this->environment_monitor->environment_stopped( $env_info );
+				$this->environment->down( $env_info );
 			}
 		}
 	}
