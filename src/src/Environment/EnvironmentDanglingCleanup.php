@@ -59,6 +59,7 @@ class EnvironmentDanglingCleanup {
 	public function cleanup_dangling(): void {
 		$this->remove_dangling_environments();
 		$this->detect_dangling_containers_exited();
+		$this->detect_dangling_containers_running();
 		$this->detect_dangling_networks();
 		$this->detect_dangling_directories();
 
@@ -203,6 +204,47 @@ class EnvironmentDanglingCleanup {
 			if ( substr( $container_name, 0, strlen( 'qit_env_' ) ) === 'qit_env_' ) {
 				$this->dangling_containers[] = $container_name;
 			}
+		}
+	}
+
+	/**
+	 * - Detect running containers that have no environments associated.
+	 */
+	protected function detect_dangling_containers_running(): void {
+		$running_environments = $this->environment_monitor->get();
+
+		// List the running containers.
+		$list_process = new Process( [ 'docker', 'container', 'ls', '--format=json', '--filter=status=running', '--filter=name=qit_env_' ] );
+		$list_process->run();
+		$containers_output = $list_process->getOutput();
+
+		$lines = explode( "\n", $containers_output );
+
+		$running_containers = [];
+
+		foreach ( $lines as $line ) {
+			$c = json_decode( $line, true );
+			if ( $c === null ) {
+				continue;
+			}
+			if ( empty( $c['Names'] ) ) {
+				continue;
+			}
+			$container_name = $c['Names'];
+
+			if ( substr( $container_name, 0, strlen( 'qit_env_' ) ) === 'qit_env_' ) {
+				$running_containers[] = $container_name;
+			}
+		}
+
+		foreach ( $running_containers as $container_name ) {
+			foreach ( $running_environments as $env_info ) {
+				if ( strpos( $container_name, $env_info->env_id ) !== false ) {
+					continue 2;
+				}
+			}
+
+			$this->dangling_containers[] = 'qit_env_' . $container_name;
 		}
 	}
 
