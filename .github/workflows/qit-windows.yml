@@ -78,9 +78,7 @@ jobs:
 
       - name: Store the environment path in a ENV var
         working-directory: src
-        run: |
-          TEMPORARY_ENV=$(php qit-cli.php env:list --field=Temporary_env)
-          echo "TEMPORARY_ENV=$TEMPORARY_ENV" >> $GITHUB_ENV
+        run: echo "TEMPORARY_ENV=$(php qit-cli.php env:list --field=temporary_env)" >> $GITHUB_ENV
 
       - name: Stop a random container from that environment.
         working-directory: src
