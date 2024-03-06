@@ -244,7 +244,7 @@ class EnvironmentDanglingCleanup {
 				}
 			}
 
-			$this->dangling_containers[] = 'qit_env_' . $container_name;
+			$this->dangling_containers[] = $container_name;
 		}
 	}
 
