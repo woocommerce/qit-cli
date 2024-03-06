@@ -6,7 +6,6 @@ on:
     - cron: '0 23 * * *'
   # Manually
   workflow_dispatch:
-  push:
 
 jobs:
   test_stop_random_container:
