@@ -12,14 +12,14 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\is_windows;
 
-class StartEnvironmentCommand extends DynamicCommand {
+class UpEnvironmentCommand extends DynamicCommand {
 	/** @var E2EEnvironment */
 	protected $e2e_environment;
 
 	/** @var Cache */
 	protected $cache;
 
-	protected static $defaultName = 'env:start'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	public function __construct( E2EEnvironment $e2e_environment, Cache $cache ) {
 		$this->e2e_environment = $e2e_environment;
@@ -47,7 +47,7 @@ class StartEnvironmentCommand extends DynamicCommand {
 			->addOption( 'with-object-cache', 'c', InputOption::VALUE_NONE, 'Whether to enable Object Cache (Redis) in the environment.' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
 			->addOption( 'attached', 'a', InputOption::VALUE_NONE, 'Whether to attach to the environment after starting it.' )
-			->setAliases( [ 'env:up' ]
+			->setAliases( [ 'env:start' ]
 			);
 	}
 
