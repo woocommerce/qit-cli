@@ -74,7 +74,7 @@ class EnvironmentDanglingCleanup {
 
 		foreach ( $this->dangling_networks as $network_name ) {
 			$this->output->writeln( "Removing dangling Docker network: {$network_name}" );
-			
+
 			$remove_process = new Process( [ 'docker', 'network', 'rm', $network_name ] );
 			try {
 				$remove_process->mustRun();
@@ -93,7 +93,7 @@ class EnvironmentDanglingCleanup {
 			try {
 				$stop_process->mustRun();
 			} catch ( \Exception $e ) {
-				$this->output->writeln( "Failed to stop container: {$container_name} - " . $stop_process->getOutput() . $stop_process->getErrorOutput();
+				$this->output->writeln( "Failed to stop container: {$container_name} - " . $stop_process->getOutput() . $stop_process->getErrorOutput() );
 			}
 
 			$remove_process = new Process( [ 'docker', 'rm', $container_name ] );
