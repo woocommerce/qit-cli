@@ -95,8 +95,12 @@ jobs:
       - name: Assert that the environment was cleaned up
         working-directory: src
         run: |
+          # Get and print the output of the env:list command
+          ENV_LIST_OUTPUT=$(php qit-cli.php env:list)
+          echo "Output of env:list command: '$ENV_LIST_OUTPUT'"
+
           # Assert no environments are listed
-          if [ "$(php qit-cli.php env:list)" != "No environments running." ]; then
+          if [ "$ENV_LIST_OUTPUT" != "No environments running." ]; then
             echo "Environments are still listed. Cleanup not successful."
             exit 1
           fi
@@ -115,3 +119,4 @@ jobs:
             exit 1
           fi
           echo "No Docker containers with 'qit_env_' in the name. Container cleanup successful."
+      
