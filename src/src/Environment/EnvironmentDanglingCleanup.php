@@ -30,6 +30,9 @@ class EnvironmentDanglingCleanup {
 	/** @var Cache */
 	protected $cache;
 
+	/** @var bool */
+	protected $header_printed = false;
+
 	/** @var array<string> */
 	protected $dangling_directories = [];
 
@@ -64,12 +67,20 @@ class EnvironmentDanglingCleanup {
 			return;
 		}
 
-		$this->output->writeln( '<info>Dangling Temporary Environments found.</info>' );
+		if ( ! $this->header_printed ) {
+			$this->output->writeln( '<info>Dangling Temporary Environments found.</info>' );
+			$this->header_printed = true;
+		}
 
 		foreach ( $this->dangling_networks as $network_name ) {
 			$this->output->writeln( "Removing dangling Docker network: {$network_name}" );
+			
 			$remove_process = new Process( [ 'docker', 'network', 'rm', $network_name ] );
-			$remove_process->run();
+			try {
+				$remove_process->mustRun();
+			} catch ( \Exception $e ) {
+				$this->output->writeln( "Failed to remove network: {$network_name} - " . $remove_process->getOutput() . $remove_process->getErrorOutput() );
+			}
 		}
 
 		foreach ( $this->dangling_containers as $container_name ) {
@@ -77,10 +88,20 @@ class EnvironmentDanglingCleanup {
 				continue;
 			}
 			$this->output->writeln( "Removing dangling Docker containers: {$container_name}" );
+
 			$stop_process = new Process( [ 'docker', 'stop', $container_name ] );
-			$stop_process->run();
+			try {
+				$stop_process->mustRun();
+			} catch ( \Exception $e ) {
+				$this->output->writeln( "Failed to stop container: {$container_name} - " . $stop_process->getOutput() . $stop_process->getErrorOutput();
+			}
+
 			$remove_process = new Process( [ 'docker', 'rm', $container_name ] );
-			$remove_process->run();
+			try {
+				$remove_process->mustRun();
+			} catch ( \Exception $e ) {
+				$this->output->writeln( "Failed to remove container: {$container_name} - " . $remove_process->getOutput() . $remove_process->getErrorOutput() );
+			}
 		}
 
 		if ( empty( $this->dangling_directories ) ) {
@@ -272,6 +293,11 @@ class EnvironmentDanglingCleanup {
 				}
 			}
 			if ( ! empty( $containers_not_running ) ) {
+				if ( ! $this->header_printed ) {
+					$this->output->writeln( '<info>Dangling Temporary Environments found.</info>' );
+					$this->header_printed = true;
+				}
+
 				$this->output->writeln( "Removing dangling environment: {$env_info->env_id}" );
 				if ( $this->output->isVerbose() ) {
 					$this->output->writeln( 'Expected containers: ' . implode( ', ', $env_info->docker_images ) );
