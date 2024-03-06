@@ -72,16 +72,8 @@ jobs:
         run: bash .github/workflows/tests/environments/start-and-assert.sh
 
       - name: Find and delete all hidden JSON files in the directory
-        run: |
-          DIR_PATH=$(php src/qit-cli.php qit:dir | tr -d '\n')
-          FILES_TO_DELETE=$(find "$DIR_PATH" -type f -name ".*.json")
-          for file in $FILES_TO_DELETE; do
-            echo "Removing $file"
-            rm -f "$file"
-          done
-
-      - name: Run setup again to re-create it
-        run: bash .github/workflows/tests/environments/setup.sh ${{ secrets.QIT_STAGING_SECRET }} https://stagingcompatibilitydashboard.wpcomstaging.com
+        working-directory: src
+        run: php qit-cli.php cache delete environment_monitor
 
       - name: Run a env:list to trigger the Dangling Environment Cleanup
         working-directory: src

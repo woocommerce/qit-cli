@@ -2,6 +2,7 @@
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\Commands\CacheCommand;
 use QIT_CLI\Commands\ConfigDirCommand;
 use QIT_CLI\Commands\CreateMassTestCommands;
 use QIT_CLI\Commands\CreateRunCommands;
@@ -197,6 +198,7 @@ if ( Config::is_development_mode() ) {
 	$application->add( $container->make( AddBackend::class ) );
 	$application->add( $container->make( SetProxyCommand::class ) );
 	$application->add( $container->make( SyncCommand::class ) );
+	$application->add( $container->make( CacheCommand::class ) );
 
 	// Only show options to remove and see the current environment if there's at least one environment added.
 	if ( count( ManagerBackend::get_configured_manager_backends( false ) ) > 0 ) {
