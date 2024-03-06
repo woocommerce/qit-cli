@@ -19,7 +19,7 @@ use QIT_CLI\Commands\Environment\RestartEnvironmentCommand;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\ListCommand;
-use QIT_CLI\Commands\OnboardingCommand;
+use QIT_CLI\Commands\ConnectCommand;
 use QIT_CLI\Commands\OpenCommand;
 use QIT_CLI\Commands\Partner\AddPartner;
 use QIT_CLI\Commands\Partner\RemovePartner;
@@ -157,27 +157,24 @@ try {
 	return $application;
 }
 
-if ( Config::needs_onboarding() ) {
-	try {
-		$application->add( $container->make( AddPartner::class ) );
-		$application->add( $container->make( AddBackend::class ) );
-
-		$onboarding = $container->make( OnboardingCommand::class );
-		$onboarding->setApplication( $application );
-		exit( $onboarding->run( $container->make( Input::class ), $container->make( Output::class ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	} catch ( \Exception $e ) {
-		App::make( Output::class )->writeln( $e->getMessage() );
-		exit( 1 );
-	}
-}
-
 $is_connected_to_backend = false;
 
 // Global commands.
 $application->add( $container->make( DevModeCommand::class ) );
 $application->add( $container->make( ConfigDirCommand::class ) );
-$application->add( $container->make( OnboardingCommand::class ) );
+$application->add( $container->make( ConnectCommand::class ) );
 
+// Environment commands.
+try {
+	$application->add( $container->make( UpEnvironmentCommand::class ) );
+	$application->add( $container->make( DownEnvironmentCommand::class ) );
+	$application->add( $container->make( RestartEnvironmentCommand::class ) );
+	$application->add( $container->make( ListEnvironmentCommand::class ) );
+	$application->add( $container->make( EnterEnvironmentCommand::class ) );
+	$application->add( $container->make( ExecEnvironmentCommand::class ) );
+} catch ( \Exception $e ) {
+	App::make( Output::class )->writeln( $e->getMessage() );
+}
 
 // Partner commands.
 $application->add( $container->make( AddPartner::class ) );
@@ -233,18 +230,11 @@ if ( $is_connected_to_backend ) {
 		// Dynamically crete Mass Test run command.
 		$container->make( CreateMassTestCommands::class )->register_commands( $application );
 	}
-
-	// Environment commands.
-	try {
-		$application->add( $container->make( UpEnvironmentCommand::class ) );
-		$application->add( $container->make( DownEnvironmentCommand::class ) );
-		$application->add( $container->make( RestartEnvironmentCommand::class ) );
-		$application->add( $container->make( ListEnvironmentCommand::class ) );
-		$application->add( $container->make( EnterEnvironmentCommand::class ) );
-		$application->add( $container->make( ExecEnvironmentCommand::class ) );
-	} catch ( \Exception $e ) {
-		App::make( Output::class )->writeln( $e->getMessage() );
-	}
+} else {
+	$io = new Symfony\Component\Console\Style\SymfonyStyle( $container->make( Input::class ), $container->make( Output::class ) );
+	$io->section( 'Limited commands available' );
+	$io->writeln( sprintf( '<fg=black;bg=yellow>[Please run "%s %s" to connect to QIT.]</>', $argv[0], ConnectCommand::getDefaultName() ) );
+	$io->writeln( '' );
 }
 
 if ( $container->make( Output::class )->isVerbose() ) {

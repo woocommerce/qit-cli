@@ -12,12 +12,12 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use function QIT_CLI\get_manager_url;
 
-class OnboardingCommand extends Command {
-	protected static $defaultName = 'onboarding'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+class ConnectCommand extends Command {
+	protected static $defaultName = 'connect'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	protected function configure() {
 		$this
-			->setDescription( 'Runs the QIT CLI onboarding.' );
+			->setDescription( 'Connect to manage your extensions and test runs.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {

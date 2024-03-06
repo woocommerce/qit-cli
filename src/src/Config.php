@@ -2,7 +2,7 @@
 
 namespace QIT_CLI;
 
-use QIT_CLI\Commands\OnboardingCommand;
+use QIT_CLI\Commands\ConnectCommand;
 use QIT_CLI\Exceptions\IOException;
 use QIT_CLI\IO\Input;
 
@@ -75,7 +75,7 @@ class Config {
 		return (int) App::make( self::class )->get( 'last_diagnosis' ) ?: 0;
 	}
 
-	public static function needs_onboarding(): bool {
+	public static function needs_connection(): bool {
 		if ( defined( 'UNIT_TESTS' ) && UNIT_TESTS ) {
 			return false;
 		}
@@ -90,7 +90,7 @@ class Config {
 		}
 
 		// Consistent behavior if we are running the onboarding command directly.
-		if ( App::make( Input::class )->getFirstArgument() === OnboardingCommand::getDefaultName() ) {
+		if ( App::make( Input::class )->getFirstArgument() === ConnectCommand::getDefaultName() ) {
 			return true;
 		}
 
