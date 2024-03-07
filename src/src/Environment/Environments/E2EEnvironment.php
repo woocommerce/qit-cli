@@ -76,12 +76,12 @@ class E2EEnvironment extends Environment {
 		// Replace "##QIT_PHP_CONTAINER_PLACEHOLDER##" with the PHP Container.
 		$qit_conf_contents = file_get_contents( $qit_conf );
 		$qit_conf_contents = str_replace( '##QIT_PHP_CONTAINER_PLACEHOLDER##', sprintf( 'qit_env_php_%s', $env_info->env_id ), $qit_conf_contents );
-		$qit_conf_contents = str_replace( '##QIT_DOMAIN##', $env_info->domain, $qit_conf_contents );
+		$qit_conf_contents = str_replace( '##QIT_DOMAIN_PLACEHOLDER##', $env_info->domain, $qit_conf_contents );
 		file_put_contents( $qit_conf, $qit_conf_contents );
 	}
 
 	protected function post_up( EnvInfo $env_info ): void {
-		$env_info->site_url = 'http://qit.test:' . $this->get_nginx_port( $env_info );
+		$env_info->site_url = sprintf( 'http://%s:%s', $env_info->domain, $this->get_nginx_port( $env_info ) );
 		$this->environment_monitor->environment_added_or_updated( $env_info );
 
 		/**
