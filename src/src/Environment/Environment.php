@@ -44,6 +44,9 @@ abstract class Environment {
 	/** @var OutputInterface */
 	protected $output;
 
+	/** @var array<array{local: string, in_container: string}> */
+	protected $volumes;
+
 	public function __construct(
 		EnvironmentDownloader $environment_downloader,
 		Cache $cache,
@@ -77,6 +80,10 @@ abstract class Environment {
 	abstract protected function post_up( EnvInfo $env_info ): void;
 
 	abstract protected function additional_output( EnvInfo $env_info ): void;
+
+	public function set_volumes( array $volumes ): void {
+		$this->volumes = $volumes;
+	}
 
 	public function up( bool $attached = false ): EnvInfo {
 		// Start the benchmark.
@@ -139,16 +146,27 @@ abstract class Environment {
 		$process = new Process( [ PHP_BINARY, $this->temporary_environment_path . '/docker-compose-generator.php' ] );
 
 		$volumes = [
-			"$this->temporary_environment_path/html" => '/var/www/html',
-			"$this->temporary_environment_path/bin"  => '/qit/bin',
-			$this->cache_dir                         => '/qit/cache',
+			'/var/www/html' => "$this->temporary_environment_path/html",
+			'/qit/bin'      => "$this->temporary_environment_path/bin",
+			'/qit/cache'    => $this->cache_dir,
 		];
+
+		// Map volumes from the command line.
+		if ( ! empty( $this->volumes ) ) {
+			foreach ( $this->volumes as $v ) {
+				if ( array_key_exists( $v['in_container'], $volumes ) ) {
+					throw new \RuntimeException( "Volume {$v['in_container']} already exists." );
+				}
+
+				$volumes[ $v['in_container'] ] = $v['local'];
+			}
+		}
 
 		// Map mu-plugins individually instead of the whole container to avoid bringing mu-plugins in container back to host.
 		foreach ( new \DirectoryIterator( $this->temporary_environment_path . '/mu-plugins' ) as $mu_plugin ) {
 			/** @var \SplFileInfo $mu_plugin */
 			if ( $mu_plugin->isFile() && $mu_plugin->getExtension() === 'php' ) {
-				$volumes[ "{$this->temporary_environment_path}/mu-plugins/{$mu_plugin->getFilename()}" ] = '/var/www/html/wp-content/mu-plugins/' . $mu_plugin->getFilename();
+				$volumes[ '/var/www/html/wp-content/mu-plugins/' . $mu_plugin->getFilename() ] = "{$this->temporary_environment_path}/mu-plugins/{$mu_plugin->getFilename()}";
 			}
 		}
 
@@ -157,7 +175,7 @@ abstract class Environment {
 		 * the container with the correct permissions, unless they are a file name,
 		 * at which point create the parent dir.
 		 */
-		foreach ( $volumes as $local => $in_container ) {
+		foreach ( $volumes as $in_container => $local ) {
 			if ( stripos( $local, '.' ) === false ) {
 				if ( ! file_exists( $local ) ) {
 					if ( ! mkdir( $local, 0755, true ) ) {

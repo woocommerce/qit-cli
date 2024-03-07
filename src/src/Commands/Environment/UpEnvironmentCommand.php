@@ -43,10 +43,11 @@ class UpEnvironmentCommand extends DynamicCommand {
 
 		$this
 			->setDescription( 'Starts a local test environment.' )
+			->addOption( 'volume', 'm', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
 			->addOption( 'php-ext', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extension to install in the environment.', [] )
-			->addOption( 'with-object-cache', 'c', InputOption::VALUE_NONE, 'Whether to enable Object Cache (Redis) in the environment.' )
+			->addOption( 'with-object-cache', 'o', InputOption::VALUE_NONE, 'Whether to enable Object Cache (Redis) in the environment.' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
-			->addOption( 'attached', 'a', InputOption::VALUE_NONE, 'Whether to attach to the environment after starting it.' )
+			// ->addOption( 'attached', 'a', InputOption::VALUE_NONE, 'Whether to attach to the environment after starting it.' )
 			->setAliases( [ 'env:start' ]
 			);
 	}
@@ -88,10 +89,58 @@ class UpEnvironmentCommand extends DynamicCommand {
 		}
 
 		if ( $input->getOption( 'php-ext' ) ) {
-			$this->e2e_environment->set_php_extensions( $input->getOption( 'php-ext' ) );
+			$php_extensions = array_map( 'trim', $input->getOption( 'php-ext' ) );
+			foreach ( $php_extensions as $ext ) {
+				if ( ! preg_match( '/^[a-z0-9_-]+$/i', $ext ) ) {
+					throw new \RuntimeException( 'Invalid PHP extension name: ' . $ext );
+				}
+				if ( strlen( $ext ) > 50 ) {
+					throw new \RuntimeException( 'PHP extension name too long: ' . $ext );
+				}
+			}
+			$this->e2e_environment->set_php_extensions( $php_extensions );
 		}
 
-		$env_info = $this->e2e_environment->up( $input->getOption( 'attached' ) );
+		if ( $input->getOption( 'volume' ) ) {
+			$parsed_volumes = [];
+			$volumes        = array_map( 'trim', $input->getOption( 'volume' ) );
+			foreach ( $volumes as $volume ) {
+				$v = explode( ':', $volume );
+				if ( count( $v ) !== 2 ) {
+					throw new \RuntimeException(
+						'Invalid volume mapping format in "' . $volume . '". ' .
+						'Expected format is "/source/path:/destination/path".'
+					);
+				}
+				if ( ! file_exists( $v[0] ) ) {
+					throw new \RuntimeException(
+						'The source path for the volume does not exist: "' . $v[0] . '". ' .
+						'Please ensure the path is correct and accessible.'
+					);
+				}
+				if ( substr( $v[1], 0, 1 ) !== '/' ) {
+					throw new \RuntimeException(
+						'The destination path must be an absolute Unix path, starting with "/". ' .
+						'Found invalid destination path: "' . $v[1] . '".'
+					);
+				}
+
+				if ( in_array( $v[1], $parsed_volumes ) ) {
+					throw new \RuntimeException(
+						'The destination path inside the container must be unique. ' .
+						'Found duplicate destination path: "' . $v[1] . '".'
+					);
+				}
+
+				$parsed_volumes[] = [
+					'local'        => $v[0],
+					'in_container' => $v[1],
+				];
+			}
+			$this->e2e_environment->set_volumes( $parsed_volumes );
+		}
+
+		$env_info = $this->e2e_environment->up();
 
 		$output->writeln( '<info>Environment up.</info>' );
 
