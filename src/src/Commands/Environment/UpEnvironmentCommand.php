@@ -2,10 +2,12 @@
 
 namespace QIT_CLI\Commands\Environment;
 
+use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Environment\Environments\E2EEnvironment;
+use QIT_CLI\Environment\WorkingDirectoryAwareness;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -19,11 +21,15 @@ class UpEnvironmentCommand extends DynamicCommand {
 	/** @var Cache */
 	protected $cache;
 
+	/** @var OutputInterface */
+	protected $output;
+
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	public function __construct( E2EEnvironment $e2e_environment, Cache $cache ) {
+	public function __construct( E2EEnvironment $e2e_environment, Cache $cache, OutputInterface $output ) {
 		$this->e2e_environment = $e2e_environment;
 		$this->cache           = $cache;
+		$this->output          = $output;
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
@@ -42,7 +48,23 @@ class UpEnvironmentCommand extends DynamicCommand {
 		] );
 
 		$this
-			->setDescription( 'Starts a local test environment.' )
+			->setDescription( 'Starts a ephemeral local test environment.' )
+			->setHelp( <<<'HELP'
+Creates a ephemeral local test environment. No data is persisted in it, when you stop the environment and start again, you get a brand new environment.
+
+You can configure various aspects of the environment, such as the WordPress and WooCommerce versions, PHP version, PHP extensions, and more.
+
+Once started, you can install your plugin, or better yet, map your plugin to the environment using the --volume option, and then run your tests, for instance:
+
+If your plugin is in /home/mycomputer/my-plugin, you can map it to the environment using the --volume option:
+
+<info>qit env:up --volume /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin</info>
+
+If you run this command from a plugin directory, it will map it automatically for you.
+
+By default, it uses "localhost", but you can use a custom domain with the QIT_DOMAIN environment variable.
+HELP
+			)
 			->addOption( 'volume', 'm', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
 			->addOption( 'php-ext', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extension to install in the environment.', [] )
 			->addOption( 'with-object-cache', 'o', InputOption::VALUE_NONE, 'Whether to enable Object Cache (Redis) in the environment.' )
@@ -101,7 +123,30 @@ class UpEnvironmentCommand extends DynamicCommand {
 			$this->e2e_environment->set_php_extensions( $php_extensions );
 		}
 
-		if ( $input->getOption( 'volume' ) ) {
+		try {
+			$working_dir_type = App::make( WorkingDirectoryAwareness::class )->get_working_dir_type();
+		} catch ( \Exception $e ) {
+			App::make( OutputInterface::class )->writeln( '<comment>Failed to detect working directory type: ' . $e->getMessage() . '</comment>' );
+			$working_dir_type = null;
+		}
+
+		$volumes = $input->getOption( 'volume' );
+
+		if ( $working_dir_type === 'plugin' ) {
+			$this->output->writeln( sprintf( '<info>Detected working directory as plugin "%s" and added a volume automatically.</info>', basename( getcwd() ) ) );
+			$volumes = [
+				'local'        => getcwd(),
+				'in_container' => '/var/www/html/wp-content/plugins/' . basename( getcwd() ),
+			];
+		} elseif ( $working_dir_type === 'theme' ) {
+			$this->output->writeln( sprintf( '<info>Detected working directory as theme "%s" and added a volume automatically.</info>', basename( getcwd() ) ) );
+			$volumes = [
+				'local'        => getcwd(),
+				'in_container' => '/var/www/html/wp-content/themes/' . basename( getcwd() ),
+			];
+		}
+
+		if ( ! empty( $volumes ) ) {
 			$parsed_volumes = [];
 			$volumes        = array_map( 'trim', $input->getOption( 'volume' ) );
 			foreach ( $volumes as $volume ) {
@@ -125,14 +170,12 @@ class UpEnvironmentCommand extends DynamicCommand {
 					);
 				}
 
-				if ( in_array( $v[1], $parsed_volumes, true ) ) {
-					throw new \RuntimeException(
-						'The destination path inside the container must be unique. ' .
-						'Found duplicate destination path: "' . $v[1] . '".'
-					);
+				if ( array_key_exists( $v[1], $parsed_volumes ) ) {
+					$this->output->writeln( sprintf( '<comment>Warning: Volume "%s" already exists, skipping.</comment>', $v[1] ) );
+					continue;
 				}
 
-				$parsed_volumes[] = [
+				$parsed_volumes[ $v[1] ] = [
 					'local'        => $v[0],
 					'in_container' => $v[1],
 				];
