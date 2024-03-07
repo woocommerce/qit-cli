@@ -283,7 +283,7 @@ class RequestBuilder {
 			} else {
 				if ( $this->retry > 0 ) {
 					$this->retry --;
-					App::make( Output::class )->writeln( sprintf( '<comment>Request failed... Retrying (HTTP Status Code %s)</comment>', $response_status_code ) );
+					App::make( Output::class )->writeln( sprintf( '<comment>Request failed... Retrying (HTTP Status Code %s) %s</comment>', $response_status_code, $error_message ) );
 
 					// Between 1 and 5s.
 					sleep( rand( 1, 5 ) );
