@@ -30,6 +30,7 @@ class EnvInfo implements \JsonSerializable {
 	 */
 	public $docker_images;
 
+	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
 		return $this;
 	}
