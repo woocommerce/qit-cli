@@ -124,7 +124,7 @@ HELP
 		}
 
 		try {
-			$working_dir_type = App::make( WorkingDirectoryAwareness::class )->get_working_dir_type();
+			$working_dir_type = App::make( WorkingDirectoryAwareness::class )->detect_working_directory_type();
 		} catch ( \Exception $e ) {
 			App::make( OutputInterface::class )->writeln( '<comment>Failed to detect working directory type: ' . $e->getMessage() . '</comment>' );
 			$working_dir_type = null;
@@ -134,21 +134,15 @@ HELP
 
 		if ( $working_dir_type === 'plugin' ) {
 			$this->output->writeln( sprintf( '<info>Detected working directory as plugin "%s" and added a volume automatically.</info>', basename( getcwd() ) ) );
-			$volumes = [
-				'local'        => getcwd(),
-				'in_container' => '/var/www/html/wp-content/plugins/' . basename( getcwd() ),
-			];
+			$volumes[] = sprintf( '%s:/var/www/html/wp-content/plugins/%s', getcwd(), basename( getcwd() ) );
 		} elseif ( $working_dir_type === 'theme' ) {
 			$this->output->writeln( sprintf( '<info>Detected working directory as theme "%s" and added a volume automatically.</info>', basename( getcwd() ) ) );
-			$volumes = [
-				'local'        => getcwd(),
-				'in_container' => '/var/www/html/wp-content/themes/' . basename( getcwd() ),
-			];
+			$volumes[] = sprintf( '%s:/var/www/html/wp-content/themes/%s', getcwd(), basename( getcwd() ) );
 		}
 
 		if ( ! empty( $volumes ) ) {
 			$parsed_volumes = [];
-			$volumes        = array_map( 'trim', $input->getOption( 'volume' ) );
+			$volumes        = array_map( 'trim', $volumes );
 			foreach ( $volumes as $volume ) {
 				$v = explode( ':', $volume );
 				if ( count( $v ) !== 2 ) {
