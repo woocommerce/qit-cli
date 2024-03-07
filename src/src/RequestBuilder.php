@@ -362,6 +362,8 @@ class RequestBuilder {
 		// And no longer than 60 seconds.
 		$retry_after = min( $max_wait, $retry_after );
 
+		$retry_after += rand( 0, 5 ); // Add a random number of seconds to avoid all clients retrying at the same time.
+
 		return $retry_after;
 	}
 
