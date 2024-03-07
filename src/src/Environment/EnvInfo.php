@@ -21,6 +21,9 @@ class EnvInfo implements \JsonSerializable {
 	/** @var string The site URL, if any. */
 	public $site_url;
 
+	/** @var string The domain being used. */
+	public $domain;
+
 	/**
 	 * @var array<string> Array of docker images associated with this environment.
 	 * @example [ 'qit_php_123456', 'qit_db_123456', 'qit_nginx_123456' ]
