@@ -253,6 +253,8 @@ abstract class Environment {
 		}
 
 		$down_process = new Process( array_merge( App::make( Docker::class )->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'down' ] ) );
+		$down_process->setTimeout( 300 );
+		$down_process->setIdleTimeout( 300 );
 		$down_process->setTty( use_tty() );
 
 		$down_process->run( static function ( $type, $buffer ) use ( $output ) {

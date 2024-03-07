@@ -31,6 +31,8 @@ class Docker {
 		$docker_image = $env_info->get_docker_container( $docker_image );
 
 		$process = new Process( [ $this->find_docker(), 'exec', '-it', $docker_image, $terminal ] );
+		$process->setTimeout( null );
+		$process->setIdleTimeout( null );
 		$process->setTty( use_tty() );
 
 		if ( $this->output->isVerbose() ) {
