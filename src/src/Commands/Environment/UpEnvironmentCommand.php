@@ -125,7 +125,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 					);
 				}
 
-				if ( in_array( $v[1], $parsed_volumes ) ) {
+				if ( in_array( $v[1], $parsed_volumes, true ) ) {
 					throw new \RuntimeException(
 						'The destination path inside the container must be unique. ' .
 						'Found duplicate destination path: "' . $v[1] . '".'

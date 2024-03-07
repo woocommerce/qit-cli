@@ -81,6 +81,7 @@ abstract class Environment {
 
 	abstract protected function additional_output( EnvInfo $env_info ): void;
 
+	/** @param array<array{local: string, in_container: string}> $volumes */
 	public function set_volumes( array $volumes ): void {
 		$this->volumes = $volumes;
 	}
