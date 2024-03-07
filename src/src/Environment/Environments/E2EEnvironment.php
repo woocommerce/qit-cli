@@ -107,9 +107,14 @@ class E2EEnvironment extends Environment {
 
 		$io->writeln( sprintf( 'URL: %s', $env_info->site_url ) );
 		$io->writeln( sprintf( 'Admin: %s/wp-admin', $env_info->site_url ) );
-		$io->writeln( 'Admin Credentials: admin/password' );
-		$io->writeln( 'Customer Credentials: customer/password' );
 		$io->writeln( sprintf( 'Path: %s', $env_info->temporary_env ) );
+
+		$user_file = '/tmp/' . uniqid();
+		$this->docker->run_inside_docker_capture_output( $env_info, "\"wp user list --field=user_login\" > $user_file" );
+		$users = $this->docker->run_inside_docker_capture_output( $env_info, "cat $user_file" );
+
+
+		var_dump( $users );
 
 		// Try to connect to the website.
 		if ( ! $this->check_site( $env_info->site_url ) ) {
