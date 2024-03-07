@@ -274,9 +274,10 @@ class RequestBuilder {
 			if ( $response_status_code === 429 ) {
 				if ( $this->retry_429 > 0 ) {
 					$this->retry_429 --;
-					App::make( Output::class )->writeln( '<comment>Request failed... Retrying (429 Too many Requests)</comment>' );
+					$sleep_seconds = $this->wait_after_429( $headers );
+					App::make( Output::class )->writeln( sprintf( '<comment>Request failed... Waiting %d seconds and retrying (429 Too many Requests)</comment>', $sleep_seconds ) );
 
-					sleep( $this->wait_after_429( $headers ) );
+					sleep( $sleep_seconds );
 					goto retry_request; // phpcs:ignore Generic.PHP.DiscourageGoto.Found
 				}
 			} else {
