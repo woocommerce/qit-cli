@@ -44,7 +44,7 @@ abstract class Environment {
 	/** @var OutputInterface */
 	protected $output;
 
-	/** @var array<array{local: string, in_container: string}> */
+	/** @var array<string,array{local: string, in_container: string}> */
 	protected $volumes;
 
 	public function __construct(
@@ -81,7 +81,7 @@ abstract class Environment {
 
 	abstract protected function additional_output( EnvInfo $env_info ): void;
 
-	/** @param array<array{local: string, in_container: string}> $volumes */
+	/** @param array<string,array{local: string, in_container: string}> $volumes */
 	public function set_volumes( array $volumes ): void {
 		$this->volumes = $volumes;
 	}
@@ -139,6 +139,7 @@ abstract class Environment {
 		$env_info->env_id        = $this->temporary_environment_id;
 		$env_info->created_at    = time();
 		$env_info->status        = 'pending';
+		$env_info->domain        = getenv( 'QIT_DOMAIN' ) ?: 'localhost';
 
 		return $env_info;
 	}
@@ -197,6 +198,7 @@ abstract class Environment {
 			'QIT_ENV_ID'         => $env_info->env_id,
 			'VOLUMES'            => json_encode( $volumes ),
 			'NORMALIZED_ENV_DIR' => $env_info->temporary_env,
+			'DOMAIN'             => $env_info->domain,
 			'QIT_DOCKER_NGINX'   => 'yes', // Default. Might be overridden by the concrete environment.
 			'QIT_DOCKER_REDIS'   => 'no', // Default. Might be overridden by the concrete environment.
 		], $this->get_generate_docker_compose_envs( $env_info ) ) );

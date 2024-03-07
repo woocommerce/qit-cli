@@ -76,6 +76,7 @@ class E2EEnvironment extends Environment {
 		// Replace "##QIT_PHP_CONTAINER_PLACEHOLDER##" with the PHP Container.
 		$qit_conf_contents = file_get_contents( $qit_conf );
 		$qit_conf_contents = str_replace( '##QIT_PHP_CONTAINER_PLACEHOLDER##', sprintf( 'qit_env_php_%s', $env_info->env_id ), $qit_conf_contents );
+		$qit_conf_contents = str_replace( '##QIT_DOMAIN##', $env_info->domain, $qit_conf_contents );
 		file_put_contents( $qit_conf, $qit_conf_contents );
 	}
 
@@ -114,19 +115,22 @@ class E2EEnvironment extends Environment {
 		if ( ! $this->check_site( $env_info->site_url ) ) {
 			$site_url_domain = parse_url( $env_info->site_url, PHP_URL_HOST );
 			$io->section( 'Test connection failed' );
-			$io->writeln( 'We couldn\'t access the website. To fix this, please check if the following line is present in your hosts file:' );
-			$io->writeln( sprintf( "\n<info>127.0.0.1 %s</info>\n", $site_url_domain ) );
-			if ( is_wsl() ) {
-				// Inside Windows WSL.
-				$io->writeln( 'It appears you are using Windows Subsystem for Linux (WSL). To update the hosts file automatically, you can run the following command in PowerShell with administrative privileges, outside of WSL:' );
-				$io->writeln( sprintf( 'Add-Content -Path $env:windir\System32\drivers\etc\hosts -Value "`n127.0.0.1`t%s" -Force', $site_url_domain ) );
-			} elseif ( is_windows() ) {
-				// In native Windows.
-				$io->writeln( 'If it\'s not, you can add it using this PowerShell command with Administration privileges:' );
-				$io->writeln( sprintf( 'Add-Content -Path $env:windir\System32\drivers\etc\hosts -Value "`n127.0.0.1`t%s" -Force', $site_url_domain ) );
-			} else {
-				$io->writeln( 'If it\'s not, you can add it using this command:' );
-				$io->writeln( sprintf( "\n<info>echo \"127.0.0.1 %s\" | sudo tee -a /etc/hosts</info>", $site_url_domain ) );
+
+			if ( $env_info->domain !== 'localhost' ) {
+				$io->writeln( 'We couldn\'t access the website. To fix this, please check if the following line is present in your hosts file:' );
+				$io->writeln( sprintf( "\n<info>127.0.0.1 %s</info>\n", $site_url_domain ) );
+				if ( is_wsl() ) {
+					// Inside Windows WSL.
+					$io->writeln( 'It appears you are using Windows Subsystem for Linux (WSL). To update the hosts file automatically, you can run the following command in PowerShell with administrative privileges, outside of WSL:' );
+					$io->writeln( sprintf( 'Add-Content -Path $env:windir\System32\drivers\etc\hosts -Value "`n127.0.0.1`t%s" -Force', $site_url_domain ) );
+				} elseif ( is_windows() ) {
+					// In native Windows.
+					$io->writeln( 'If it\'s not, you can add it using this PowerShell command with Administration privileges:' );
+					$io->writeln( sprintf( 'Add-Content -Path $env:windir\System32\drivers\etc\hosts -Value "`n127.0.0.1`t%s" -Force', $site_url_domain ) );
+				} else {
+					$io->writeln( 'If it\'s not, you can add it using this command:' );
+					$io->writeln( sprintf( "\n<info>echo \"127.0.0.1 %s\" | sudo tee -a /etc/hosts</info>", $site_url_domain ) );
+				}
 			}
 		}
 		$io->writeln( '' );
