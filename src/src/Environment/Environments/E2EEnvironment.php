@@ -98,6 +98,7 @@ class E2EEnvironment extends Environment {
 			'WOOCOMMERCE_VERSION' => $this->woocommerce_version,
 			'SUT_SLUG'            => 'automatewoo',
 			'SITE_URL'            => $env_info->site_url,
+			'QIT_DOCKER_REDIS'    => $this->enable_object_cache ? 'yes' : 'no',
 		] );
 	}
 
