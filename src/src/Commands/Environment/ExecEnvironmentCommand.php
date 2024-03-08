@@ -63,7 +63,8 @@ class ExecEnvironmentCommand extends Command {
 				return sprintf( 'ID: %s, Created: %s, Status: %s',
 					$environment->env_id,
 					format_elapsed_time( time() - $environment->created_at ),
-				$environment->status );
+					$environment->status
+				);
 			}, $running_environments );
 
 			$helper   = new QuestionHelper();
@@ -85,7 +86,8 @@ class ExecEnvironmentCommand extends Command {
 		}
 
 		$command_to_run = $input->getArgument( 'command_to_run' );
-		$env_vars       = $this->parse_env_vars( $input->getOption( 'env_var' ) );
+		// Use "PAGER=more" because we run Alpine images that have a minimalist version of "less".
+		$env_vars       = array_merge( [ 'PAGER' => 'more' ], $this->parse_env_vars( $input->getOption( 'env_var' ) ) );
 		$user           = $input->getOption( 'user' );
 		$timeout        = $input->getOption( 'timeout' ) !== null ? (int) $input->getOption( 'timeout' ) : 300;
 		$image          = $input->getOption( 'image' ) ?: 'php';

@@ -30,7 +30,17 @@ class Docker {
 	public function enter_environment( EnvInfo $env_info, string $docker_image = 'php', string $terminal = '/bin/bash' ): void {
 		$docker_image = $env_info->get_docker_container( $docker_image );
 
-		$process = new Process( [ $this->find_docker(), 'exec', '-it', $docker_image, $terminal ] );
+		// Use 'PAGER=more' because we use Alpine images that have a minimalist version of "less".
+		$command = [ $this->find_docker(), 'exec', '-i', '-e', 'PAGER=more' ];
+
+		if ( use_tty() ) {
+			$command = array_merge( $command, [ '-t' ] );
+		}
+
+		$command[] = $docker_image;
+		$command[] = $terminal;
+
+		$process = new Process( $command );
 		$process->setTimeout( null );
 		$process->setIdleTimeout( null );
 		$process->setTty( use_tty() );
@@ -40,13 +50,7 @@ class Docker {
 			$this->output->writeln( $process->getCommandLine() );
 		}
 
-		$process->run( function ( $type, $buffer ) {
-			$this->output->write( $buffer );
-		} );
-
-		if ( ! $process->isSuccessful() ) {
-			throw new \RuntimeException( 'Failed to enter environment' );
-		}
+		$process->run();
 	}
 
 	/**
@@ -152,83 +156,6 @@ class Docker {
 		if ( ! $process->isSuccessful() ) {
 			throw new \RuntimeException( 'Failed to run command inside docker: ' . $process->getCommandLine() );
 		}
-	}
-
-	/**
-	 * @param EnvInfo $env_info
-	 * @param array<scalar> $command The Command to run, in a Symfony Process format.
-	 * @param array<string,scalar> $env_vars Any additional env vars to set in the process.
-	 * @param string|null $user The user to run the command as.
-	 * @param int $timeout
-	 * @param string $image The docker image to run the command in.
-	 *
-	 * @return string
-	 */
-	public function run_inside_docker_capture_output( EnvInfo $env_info, string $command, array $env_vars = [], ?string $user = null, int $timeout = 300, string $image = 'php' ): string {
-		$docker_image   = $env_info->get_docker_container( $image );
-		$docker_command = '';
-		$docker_command .= $this->find_docker() . ' exec';
-
-		if ( use_tty() ) {
-			$docker_command .= ' -it';
-		}
-
-		// Check if user is not set and try to set it from ENV vars or posix functions.
-		if ( is_null( $user ) ) {
-			try {
-				$u    = static::get_user_and_group();
-				$user = $u['user'] . ':' . $u['group'];
-			} catch ( \RuntimeException $e ) {
-				if ( ! is_windows() ) {
-					$this->output->writeln( '<info>To run the environment with the correct permissions, please install the posix extension on PHP, or set QIT_DOCKER_USER/QIT_DOCKER_GROUP env vars.</info>' );
-				}
-			}
-		}
-
-		if ( ! is_null( $user ) ) {
-			$docker_command .= ' --user';
-			$docker_command .= ' ' . $user;
-
-			if ( $user === '0:0' ) {
-				$env_vars = array_merge( $env_vars, [
-					'WP_CLI_ALLOW_ROOT' => true,
-				] );
-			}
-		}
-
-		$env_vars = array_merge( $env_vars, [
-			'QIT_ENV_ID' => $env_info->env_id,
-		] );
-
-		foreach ( $env_vars as $key => $value ) {
-			$docker_command .= ' -e';
-			$docker_command .= " $key=$value";
-		}
-
-		$docker_command .= ' ' . $docker_image;
-		$docker_command .= ' ' . $command;
-
-		if ( getenv( 'QIT_DOCKER_RUN_TIMEOUT' ) !== false && is_numeric( getenv( 'QIT_DOCKER_RUN_TIMEOUT' ) ) ) {
-			$timeout = getenv( 'QIT_DOCKER_RUN_TIMEOUT' );
-		}
-
-		$process = Process::fromShellCommandline( $docker_command );
-		$process->setTty( use_tty() );
-		$process->setTimeout( $timeout );
-		$process->setIdleTimeout( $timeout );
-
-		if ( $this->output->isVerbose() ) {
-			// Print the command that will run.
-			$this->output->writeln( $process->getCommandLine() );
-		}
-
-		$process->run();
-
-		if ( ! $process->isSuccessful() ) {
-			throw new \RuntimeException( 'Failed to run command inside docker: ' . $process->getCommandLine() );
-		}
-
-		return $process->getOutput();
 	}
 
 	/**
