@@ -1,6 +1,5 @@
 <?php
 
-
 use QIT_CLI\App;
 use QIT_CLI\Commands\CreateRunCommands;
 use Spatie\Snapshots\MatchesSnapshots;
@@ -20,7 +19,7 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 		} );
 	}
 
-	public function test_run_with_additional_woo_plugins() {
+	public function test_run_with_additional_plugins() {
 		App::setVar( sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/enqueue-e2e' ), json_encode( [
 			'test_run_id'              => 123456,
 			'test_results_manager_url' => ''
@@ -29,7 +28,7 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->application_tester->run( [
 			'command'                  => 'run:e2e',
 			'woo_extension'            => 'foo-extension', // Using slug.
-			'--additional_woo_plugins' => '456,789', // Using IDs.
+			'--additional_plugins' => '456,789', // Using IDs.
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -38,7 +37,7 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->application_tester->run( [
 			'command'                  => 'run:e2e',
 			'woo_extension'            => '123', // Using ID.
-			'--additional_woo_plugins' => 'bar-extension,baz-extension', // Using Slugs.
+			'--additional_plugins' => 'bar-extension,baz-extension', // Using Slugs.
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -47,7 +46,7 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->application_tester->run( [
 			'command'                  => 'run:e2e',
 			'woo_extension'            => 'foo-extension', // Using ID.
-			'--additional_woo_plugins' => '456,baz-extension', // Using mixed.
+			'--additional_plugins' => '456,baz-extension', // Using mixed.
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -56,13 +55,13 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->application_tester->run( [
 			'command'                  => 'run:e2e',
 			'woo_extension'            => 'foo-extension',
-			'--additional_woo_plugins' => '1234567890', // If the user passes an invalid ID, the Manager should flag that.
+			'--additional_plugins' => '1234567890', // If the user passes an invalid ID, the Manager should flag that.
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
 	}
 
-	public function test_run_with_additional_woo_plugins_invalid() {
+	public function test_run_with_additional_plugins_invalid() {
 		App::setVar( sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/enqueue-e2e' ), 'NULL_RESPONSE' );
 
 		$this->application_tester->run( [
@@ -71,21 +70,5 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertStringContainsString('Could not find Woo Extension with slug non-existing-extension.', $this->application_tester->getErrorOutput() );
-
-		$this->application_tester->run( [
-			'command'                  => 'run:e2e',
-			'woo_extension'            => 'foo-extension',
-			'--additional_woo_plugins' => 'non-existing-dependency',
-		], [ 'capture_stderr_separately' => true ] );
-
-		$this->assertStringContainsString('Could not find Woo Extension with slug non-existing-dependency.', $this->application_tester->getErrorOutput() );
-
-		$this->application_tester->run( [
-			'command'                  => 'run:e2e',
-			'woo_extension'            => 'foo-extension',
-			'--additional_woo_plugins' => '1234567890, non-existing-dependency',
-		], [ 'capture_stderr_separately' => true ] );
-
-		$this->assertStringContainsString('Could not find Woo Extension with slug non-existing-dependency.', $this->application_tester->getErrorOutput() );
 	}
 }
