@@ -132,11 +132,11 @@ HELP
 
 		if ( $working_dir_type === 'plugin' ) {
 			$this->output->writeln( sprintf( '<info>Detected working directory as plugin "%s" and added a volume automatically.</info>', basename( getcwd() ) ) );
-			$volumes[] = sprintf( '%s:/var/www/html/wp-content/plugins/%s', getcwd(), basename( getcwd() ) );
+			$volumes[]            = sprintf( '%s:/var/www/html/wp-content/plugins/%s', getcwd(), basename( getcwd() ) );
 			$mapped_automatically = 'plugin';
 		} elseif ( $working_dir_type === 'theme' ) {
 			$this->output->writeln( sprintf( '<info>Detected working directory as theme "%s" and added a volume automatically.</info>', basename( getcwd() ) ) );
-			$volumes[] = sprintf( '%s:/var/www/html/wp-content/themes/%s', getcwd(), basename( getcwd() ) );
+			$volumes[]            = sprintf( '%s:/var/www/html/wp-content/themes/%s', getcwd(), basename( getcwd() ) );
 			$mapped_automatically = 'theme';
 		}
 
