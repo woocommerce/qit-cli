@@ -48,21 +48,17 @@ class UpEnvironmentCommand extends DynamicCommand {
 		] );
 
 		$this
-			->setDescription( 'Starts a ephemeral local test environment.' )
+			->setDescription( 'Creates a temporary local test environment that is completely ephemeral — no data is persisted. Every time you stop and restart the environment, it\'s like starting fresh.' )
 			->setHelp( <<<'HELP'
-Creates a ephemeral local test environment. No data is persisted in it, when you stop the environment and start again, you get a brand new environment.
-
-You can configure various aspects of the environment, such as the WordPress and WooCommerce versions, PHP version, PHP extensions, and more.
-
-Once started, you can install your plugin, or better yet, map your plugin to the environment using the --volume option, and then run your tests, for instance:
-
-If your plugin is in /home/mycomputer/my-plugin, you can map it to the environment using the --volume option:
-
+Configure aspects like WordPress and WooCommerce versions, PHP version, and PHP extensions. If run from a plugin/theme directory, the environment automatically maps your plugin/theme. Alternatively, use the --volume flag for manual mapping, e.g.:
 <info>qit env:up --volume /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin</info>
+Default access is via 'localhost', customizable with the QIT_DOMAIN environment variable."
 
-If you run this command from a plugin directory, it will map it automatically for you.
+Example:
 
-By default, it uses "localhost", but you can use a custom domain with the QIT_DOMAIN environment variable.
+<info>qit env:up --wordpress-version=rc --woocommerce-version=rc --php-version=8.3 --php-ext=gd --with-object-cache</info>
+
+This will create a disposable test environment with the latest release candidate versions of WordPress and WooCommerce, PHP 8.3, the GD extension, and Object Cache enabled.
 HELP
 			)
 			->addOption( 'volume', 'm', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
