@@ -24,6 +24,15 @@ class EnvInfo implements \JsonSerializable {
 	/** @var string The domain being used. */
 	public $domain;
 
+	/** @var string */
+	public $php_version;
+
+	/** @var string */
+	public $wordpress_version = '';
+
+	/** @var bool */
+	public $redis = false;
+
 	/**
 	 * @var array<string> Array of docker images associated with this environment.
 	 * @example [ 'qit_php_123456', 'qit_db_123456', 'qit_nginx_123456' ]

@@ -175,8 +175,6 @@ HELP
 
 		$env_info = $this->e2e_environment->up();
 
-		$output->writeln( '<info>Environment up.</info>' );
-
 		if ( $input->getOption( 'json' ) ) {
 			$output->write( json_encode( $env_info ) );
 		}

@@ -3,8 +3,10 @@
 namespace QIT_CLI\Environment\Environments;
 
 use QIT_CLI\App;
+use QIT_CLI\Commands\Environment\ExecEnvironmentCommand;
 use QIT_CLI\Environment\EnvInfo;
 use QIT_CLI\Environment\Environment;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use function QIT_CLI\is_windows;
@@ -100,22 +102,53 @@ class E2EEnvironment extends Environment {
 			'SITE_URL'            => $env_info->site_url,
 			'QIT_DOCKER_REDIS'    => $this->enable_object_cache ? 'yes' : 'no',
 		] );
+
+		$env_info->php_version       = $this->php_version;
+		$env_info->wordpress_version = $this->wordpress_version;
+		$env_info->redis             = $this->enable_object_cache;
 	}
 
 	protected function additional_output( EnvInfo $env_info ): void {
+		global $argv;
 		$io = new SymfonyStyle( App::make( InputInterface::class ), $this->output );
-		$io->section( 'Disposable Test Environment Created - ' . $env_info->env_id );
+		$io->success( 'Temporary test environment created. (' . $env_info->env_id . ')' );
 
-		$io->writeln( sprintf( 'URL: %s', $env_info->site_url ) );
-		$io->writeln( sprintf( 'Admin: %s/wp-admin', $env_info->site_url ) );
-		$io->writeln( sprintf( 'Path: %s', $env_info->temporary_env ) );
+		$listing = [
+			sprintf( 'URL: %s', $env_info->site_url ),
+			sprintf( 'Admin URL: %s/wp-admin', $env_info->site_url ),
+			'Admin Credentials: admin/password',
+			sprintf( 'PHP Version: %s', $env_info->php_version ),
+			sprintf( 'WordPress Version: %s', $env_info->wordpress_version ),
+			sprintf( 'Redis Object Cache? %s', $env_info->redis ? 'Yes' : 'No' ),
+			sprintf( 'Path: %s', $env_info->temporary_env ),
+		];
 
-		$user_file = '/tmp/' . uniqid();
-		$this->docker->run_inside_docker_capture_output( $env_info, "\"wp user list --field=user_login\" > $user_file" );
-		$users = $this->docker->run_inside_docker_capture_output( $env_info, "cat $user_file" );
+		$io->listing( $listing );
 
+		if ( $this->output->isVerbose() ) {
+			// Output a table of volume mappings.
+			$io->section( 'Additional Volume Mappings' );
 
-		var_dump( $users );
+			if ( empty( $this->volumes ) ) {
+				$this->output->writeln( 'No additional volume mappings.' );
+			} else {
+				$volumes = [];
+
+				foreach ( $this->volumes as $k => $v ) {
+					$volumes[] = [ $v['local'], $v['in_container'] ];
+				}
+
+				$table = new Table( $this->output );
+				$table
+					->setHeaders( [ 'Host Path', 'Container Path' ] )
+					->setRows( $volumes )
+					->setStyle( 'box' )
+					->render();
+			}
+
+		} else {
+			$io->writeln( sprintf( 'To see additional info, run with the "--verbose" flag.' ) );
+		}
 
 		// Try to connect to the website.
 		if ( ! $this->check_site( $env_info->site_url ) ) {
@@ -144,7 +177,7 @@ class E2EEnvironment extends Environment {
 
 	protected function check_site( string $site_url ): bool {
 		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( sprintf( 'Checking if %s is accessible...', $site_url ) );
+			$this->output->write( sprintf( 'Checking if %s is accessible...', $site_url ) );
 		}
 
 		$ch = curl_init( $site_url );
@@ -161,7 +194,7 @@ class E2EEnvironment extends Environment {
 		curl_close( $ch );
 
 		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( sprintf( 'HTTP Code: %d', $http_code ) );
+			$this->output->write( sprintf( " HTTP Code: %d\n", $http_code ) );
 		}
 
 		return $http_code === 200;
