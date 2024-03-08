@@ -83,12 +83,12 @@ class Docker {
 	}
 
 	/**
-	 * @param EnvInfo $env_info
-	 * @param array<scalar> $command The Command to run, in a Symfony Process format.
+	 * @param EnvInfo              $env_info
+	 * @param array<scalar>        $command The Command to run, in a Symfony Process format.
 	 * @param array<string,scalar> $env_vars Any additional env vars to set in the process.
-	 * @param string|null $user The user to run the command as.
-	 * @param int $timeout
-	 * @param string $image The docker image to run the command in.
+	 * @param string|null          $user The user to run the command as.
+	 * @param int                  $timeout
+	 * @param string               $image The docker image to run the command in.
 	 *
 	 * @return void
 	 */

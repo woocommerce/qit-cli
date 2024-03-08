@@ -6,6 +6,10 @@
         "status": "running",
         "env_id": 1234567890,
         "site_url": null,
+        "domain": null,
+        "php_version": null,
+        "wordpress_version": "",
+        "redis": false,
         "docker_images": null
     }
 }

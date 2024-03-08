@@ -3,7 +3,6 @@
 namespace QIT_CLI\Environment\Environments;
 
 use QIT_CLI\App;
-use QIT_CLI\Commands\Environment\ExecEnvironmentCommand;
 use QIT_CLI\Environment\EnvInfo;
 use QIT_CLI\Environment\Environment;
 use Symfony\Component\Console\Helper\Table;
@@ -145,7 +144,6 @@ class E2EEnvironment extends Environment {
 					->setStyle( 'box' )
 					->render();
 			}
-
 		} else {
 			$io->writeln( sprintf( 'To see additional info, run with the "--verbose" flag.' ) );
 		}
