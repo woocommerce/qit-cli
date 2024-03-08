@@ -128,12 +128,16 @@ HELP
 
 		$volumes = $input->getOption( 'volume' );
 
+		$mapped_automatically = null;
+
 		if ( $working_dir_type === 'plugin' ) {
 			$this->output->writeln( sprintf( '<info>Detected working directory as plugin "%s" and added a volume automatically.</info>', basename( getcwd() ) ) );
 			$volumes[] = sprintf( '%s:/var/www/html/wp-content/plugins/%s', getcwd(), basename( getcwd() ) );
+			$mapped_automatically = 'plugin';
 		} elseif ( $working_dir_type === 'theme' ) {
 			$this->output->writeln( sprintf( '<info>Detected working directory as theme "%s" and added a volume automatically.</info>', basename( getcwd() ) ) );
 			$volumes[] = sprintf( '%s:/var/www/html/wp-content/themes/%s', getcwd(), basename( getcwd() ) );
+			$mapped_automatically = 'theme';
 		}
 
 		if ( ! empty( $volumes ) ) {
@@ -161,7 +165,13 @@ HELP
 				}
 
 				if ( array_key_exists( $v[1], $parsed_volumes ) ) {
-					$this->output->writeln( sprintf( '<comment>Warning: Volume "%s" already exists, skipping.</comment>', $v[1] ) );
+					if ( $mapped_automatically === 'plugin' ) {
+						$this->output->writeln( sprintf( '<comment>Plugin directory "%s" detected and volume mapped automatically. No manual volume specification needed.</comment>', basename( getcwd() ) ) );
+					} elseif ( $mapped_automatically === 'theme' ) {
+						$this->output->writeln( sprintf( '<comment>Theme directory "%s" detected and volume mapped automatically. No manual volume specification needed.</comment>', basename( getcwd() ) ) );
+					} else {
+						$this->output->writeln( sprintf( '<comment>Warning: Volume "%s" already exists, skipping.</comment>', $v[1] ) );
+					}
 					continue;
 				}
 
