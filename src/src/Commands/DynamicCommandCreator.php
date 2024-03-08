@@ -24,6 +24,12 @@ abstract class DynamicCommandCreator {
 			foreach ( $schema['properties'] as $property_name => $property_schema ) {
 				$ignore = [ 'client', 'event', 'woo_id', 'is_product_update', 'upload_id' ];
 
+				// Keep these on CI to avoid breaking workflows, but remove from Desktop.
+				if ( ! getenv( 'CI' ) ) {
+					$ignore[] = 'additional_woo_plugins';
+					$ignore[] = 'additional_wordpress_plugins';
+				}
+
 				if ( in_array( $property_name, $ignore, true ) ) {
 					continue;
 				}
