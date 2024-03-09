@@ -2,8 +2,10 @@
 
 namespace QIT_CLI\Environment;
 
+use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Config;
+use QIT_CLI\ManagerSync;
 
 class EnvironmentDownloader {
 	/** @var Cache */
@@ -20,7 +22,7 @@ class EnvironmentDownloader {
 			throw new \RuntimeException( 'E2E environment not set or incomplete.' );
 		}
 
-		if ( $this->cache->get( 'e2e_environment_hash' ) !== $backend_hashes[ $env_name ]['checksum'] ) {
+		if ( $this->cache->get( "{$env_name}_environment_hash" ) !== $backend_hashes[ $env_name ]['checksum'] ) {
 			if ( ! file_exists( Config::get_qit_dir() . '/environments' ) ) {
 				mkdir( Config::get_qit_dir() . '/environments' );
 			}
@@ -31,7 +33,21 @@ class EnvironmentDownloader {
 				}
 			} else {
 				// Download the environment.
-				file_put_contents( sprintf( Config::get_qit_dir() . '/environments/%s.zip', $env_name ), file_get_contents( $backend_hashes[ $env_name ]['url'] ) );
+				$env_contents = @file_get_contents( $backend_hashes[ $env_name ]['url'] );
+
+				// If it fails, do a sync and try again, as we might have an outdated checksum locally that no longer exists in remote.
+				// This can happen if the environment checksum was updated in the remote, and we still have a reference to the old one locally.
+				if ( ! $env_contents ) {
+					App::make( ManagerSync::class )->maybe_sync( true );
+					$backend_hashes = $this->cache->get_manager_sync_data( 'environments' );
+					$env_contents   = file_get_contents( $backend_hashes[ $env_name ]['url'] );
+
+					if ( ! $env_contents ) {
+						throw new \RuntimeException( 'Could not download environment.' );
+					}
+				}
+
+				file_put_contents( sprintf( Config::get_qit_dir() . '/environments/%s.zip', $env_name ), $env_contents );
 			}
 
 			// Extract the environment.
@@ -40,7 +56,7 @@ class EnvironmentDownloader {
 			$zip->extractTo( Config::get_qit_dir() . '/environments/' . $env_name );
 			$zip->close();
 
-			$this->cache->set( 'e2e_environment_hash', $backend_hashes[ $env_name ], MONTH_IN_SECONDS );
+			$this->cache->set( "{$env_name}_environment_hash", $backend_hashes[ $env_name ], MONTH_IN_SECONDS );
 		}
 	}
 }
