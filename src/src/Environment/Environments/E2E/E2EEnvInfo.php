@@ -15,8 +15,14 @@ class E2EEnvInfo extends EnvInfo {
 	public $wordpress_version = '';
 
 	/** @var bool */
-	public $redis = false;
+	public $object_cache = false;
 
 	/** @var string */
 	public $php_version;
+
+	/** @var string The domain being used. */
+	public $domain;
+
+	/** @var string */
+	public $woocommerce_version;
 }

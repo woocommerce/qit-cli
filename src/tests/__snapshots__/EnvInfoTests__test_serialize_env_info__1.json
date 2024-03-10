@@ -2,15 +2,18 @@
     "environment": "e2e",
     "site_url": null,
     "wordpress_version": "",
-    "redis": false,
+    "object_cache": false,
+    "php_version": null,
+    "domain": "localhost",
+    "woocommerce_version": null,
     "temporary_env": "\/tmp\/test",
     "created_at": 123,
     "status": "running",
     "env_id": "Normalized",
-    "php_version": null,
-    "domain": "localhost",
+    "volumes": [],
     "docker_images": [
         "test1",
         "test2"
-    ]
+    ],
+    "php_extensions": []
 }

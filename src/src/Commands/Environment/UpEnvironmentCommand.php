@@ -8,7 +8,6 @@ use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Environment\EnvConfigLoader;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
-use QIT_CLI\Environment\WorkingDirectoryAwareness;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -64,10 +63,10 @@ HELP
 			)
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Theme install, if multiple provided activates the last. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
-			->addOption( 'volume', 'm', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
-			->addOption( 'php-ext', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extension to install in the environment.', [] )
+			->addOption( 'volumes', 'm', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
+			->addOption( 'php_extensions', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions to install in the environment.', [] )
+			->addOption( 'object-cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
 			->addOption( 'skip-activating-plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
-			->addOption( 'with-object-cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
 			// ->addOption( 'attached', 'a', InputOption::VALUE_NONE, 'Whether to attach to the environment after starting it.' )
 			->setAliases( [ 'env:start' ]
@@ -92,104 +91,38 @@ HELP
 			$output->writeln( sprintf( 'Starting environment with options: %s', json_encode( $options ) ) );
 		}
 
-		if ( $this->getDefinition()->hasOption( 'wordpress_version' ) ) {
-			$this->e2e_environment->set_wordpress_version( $options['wordpress_version'] );
-		}
-
-		if ( $this->getDefinition()->hasOption( 'woocommerce_version' ) ) {
-			$this->e2e_environment->set_woocommerce_version( $options['woocommerce_version'] );
-		}
-
-		if ( $this->getDefinition()->hasOption( 'php_version' ) ) {
-			$this->e2e_environment->set_php_version( $options['php_version'] );
-		}
-
-		if ( $input->getOption( 'with-object-cache' ) ) {
-			$this->e2e_environment->set_enable_object_cache( true );
-		}
-
 		if ( $input->getOption( 'skip-activating-plugins' ) ) {
 			$this->e2e_environment->set_skip_activating_plugins( true );
 		}
 
-		if ( $input->getOption( 'php-ext' ) ) {
-			$php_extensions = array_map( 'trim', $input->getOption( 'php-ext' ) );
-			foreach ( $php_extensions as $ext ) {
-				if ( ! preg_match( '/^[a-z0-9_-]+$/i', $ext ) ) {
-					throw new \RuntimeException( 'Invalid PHP extension name: ' . $ext );
-				}
-				if ( strlen( $ext ) > 50 ) {
-					throw new \RuntimeException( 'PHP extension name too long: ' . $ext );
-				}
+		// Only send to EnvInfo the options that the user specified (non-default values).
+		$options_with_non_default_values = [];
+		foreach ( $this->getDefinition()->getOptions() as $option ) {
+			$name        = $option->getName();
+			$input_value = $input->getOption( $name );
+
+			if ( $input_value !== $option->getDefault() ) {
+				$options_with_non_default_values[ $name ] = $input_value;
 			}
-			$this->e2e_environment->set_php_extensions( $php_extensions );
 		}
 
-		try {
-			$working_dir_type = App::make( WorkingDirectoryAwareness::class )->detect_working_directory_type();
-		} catch ( \Exception $e ) {
-			App::make( OutputInterface::class )->writeln( '<comment>Failed to detect working directory type: ' . $e->getMessage() . '</comment>' );
-			$working_dir_type = null;
-		}
+		// Remove options that we don't want to send to EnvInfo.
+		$options_to_remove = [
+			'skip-activating-plugins',
+			'json',
+			'help',
+			'quiet',
+			'verbose',
+			'version',
+			'ansi',
+			'no-interaction',
+		];
 
-		$volumes = $input->getOption( 'volume' );
+		$options_with_non_default_values = array_diff_key( $options_with_non_default_values, array_flip( $options_to_remove ) );
 
-		$mapped_automatically = null;
+		$env_info = App::make( EnvConfigLoader::class )->init_env_info( $options_with_non_default_values );
 
-		if ( $working_dir_type === 'plugin' ) {
-			$this->output->writeln( sprintf( '<info>Detected working directory as plugin "%s" and added a volume automatically.</info>', basename( getcwd() ) ) );
-			$volumes[]            = sprintf( '%s:/var/www/html/wp-content/plugins/%s', getcwd(), basename( getcwd() ) );
-			$mapped_automatically = 'plugin';
-		} elseif ( $working_dir_type === 'theme' ) {
-			$this->output->writeln( sprintf( '<info>Detected working directory as theme "%s" and added a volume automatically.</info>', basename( getcwd() ) ) );
-			$volumes[]            = sprintf( '%s:/var/www/html/wp-content/themes/%s', getcwd(), basename( getcwd() ) );
-			$mapped_automatically = 'theme';
-		}
-
-		if ( ! empty( $volumes ) ) {
-			$parsed_volumes = [];
-			$volumes        = array_map( 'trim', $volumes );
-			foreach ( $volumes as $volume ) {
-				$v = explode( ':', $volume );
-				if ( count( $v ) !== 2 ) {
-					throw new \RuntimeException(
-						'Invalid volume mapping format in "' . $volume . '". ' .
-						'Expected format is "/source/path:/destination/path".'
-					);
-				}
-				if ( ! file_exists( $v[0] ) ) {
-					throw new \RuntimeException(
-						'The source path for the volume does not exist: "' . $v[0] . '". ' .
-						'Please ensure the path is correct and accessible.'
-					);
-				}
-				if ( substr( $v[1], 0, 1 ) !== '/' ) {
-					throw new \RuntimeException(
-						'The destination path must be an absolute Unix path, starting with "/". ' .
-						'Found invalid destination path: "' . $v[1] . '".'
-					);
-				}
-
-				if ( array_key_exists( $v[1], $parsed_volumes ) ) {
-					if ( $mapped_automatically === 'plugin' ) {
-						$this->output->writeln( sprintf( '<comment>Plugin directory "%s" detected and volume mapped automatically. No manual volume specification needed.</comment>', basename( getcwd() ) ) );
-					} elseif ( $mapped_automatically === 'theme' ) {
-						$this->output->writeln( sprintf( '<comment>Theme directory "%s" detected and volume mapped automatically. No manual volume specification needed.</comment>', basename( getcwd() ) ) );
-					} else {
-						$this->output->writeln( sprintf( '<comment>Warning: Volume "%s" already exists, skipping.</comment>', $v[1] ) );
-					}
-					continue;
-				}
-
-				$parsed_volumes[ $v[1] ] = [
-					'local'        => $v[0],
-					'in_container' => $v[1],
-				];
-			}
-			$this->e2e_environment->set_volumes( $parsed_volumes );
-		}
-
-		$env_info = App::make( EnvConfigLoader::class )->init_env_info_from_config();
+		$this->output->writeln( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 
 		$this->e2e_environment->init( $env_info );
 		$this->e2e_environment->up();

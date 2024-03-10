@@ -81,6 +81,13 @@ abstract class Environment {
 
 	abstract protected function post_up(): void;
 
+	/**
+	 * @param array<string,string> $default_volumes
+	 *
+	 * @return array<string,string>
+	 */
+	abstract protected function additional_default_volumes( array $default_volumes ): array;
+
 	abstract protected function additional_output(): void;
 
 	/** @param array<string,array{local: string, in_container: string}> $volumes */
@@ -131,12 +138,16 @@ abstract class Environment {
 	protected function generate_docker_compose(): void {
 		$process = new Process( [ PHP_BINARY, $this->env_info->temporary_env . '/docker-compose-generator.php' ] );
 
-		$volumes = [
-			'/var/www/html' => "{$this->env_info->temporary_env}/html",
-			'/qit/bin'      => "{$this->env_info->temporary_env}/bin",
-			'/qit/cache'    => $this->cache_dir,
+		$default_volumes = [
+			'/qit/bin'   => "{$this->env_info->temporary_env}/bin",
+			'/qit/cache' => $this->cache_dir,
 		];
 
+		$default_volumes = $this->additional_default_volumes( $default_volumes );
+
+		$volumes = array_merge( $default_volumes, $this->env_info->volumes );
+
+		/*
 		// Map volumes from the command line.
 		if ( ! empty( $this->volumes ) ) {
 			foreach ( $this->volumes as $v ) {
@@ -147,6 +158,7 @@ abstract class Environment {
 				$volumes[ $v['in_container'] ] = $v['local'];
 			}
 		}
+		*/
 
 		// Map mu-plugins individually instead of the whole container to avoid bringing mu-plugins in container back to host.
 		foreach ( new \DirectoryIterator( $this->env_info->temporary_env . '/mu-plugins' ) as $mu_plugin ) {
@@ -178,11 +190,12 @@ abstract class Environment {
 			}
 		}
 
+		$this->env_info->volumes = $volumes;
+
 		$process->setEnv( array_merge( $process->getEnv(), [
 			'QIT_ENV_ID'         => $this->env_info->env_id,
 			'VOLUMES'            => json_encode( $volumes ),
 			'NORMALIZED_ENV_DIR' => $this->env_info->temporary_env,
-			'DOMAIN'             => $this->env_info->domain,
 			'QIT_DOCKER_NGINX'   => 'yes', // Default. Might be overridden by the concrete environment.
 			'QIT_DOCKER_REDIS'   => 'no', // Default. Might be overridden by the concrete environment.
 		], $this->get_generate_docker_compose_envs() ) );

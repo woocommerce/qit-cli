@@ -3,6 +3,7 @@
 namespace QIT_CLI\Environment;
 
 use QIT_CLI\App;
+use QIT_CLI\Cache;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use Symfony\Component\Serializer\Serializer;
 
@@ -10,16 +11,68 @@ class EnvConfigLoader {
 	/** @var Serializer */
 	protected $serializer;
 
-	public function __construct( Serializer $serializer ) {
+	/** @var Cache */
+	protected $cache;
+
+	public function __construct( Serializer $serializer, Cache $cache ) {
 		$this->serializer = $serializer;
+		$this->cache      = $cache;
 	}
 
-	public function init_env_info_from_config(): EnvInfo {
+	/**
+	 * @param array<scalar> $options
+	 *
+	 * @return EnvInfo
+	 */
+	public function init_env_info( array $options = [] ): EnvInfo {
+		// Load the environment config file..
 		$env_config = $this->load_config();
 
+		// Check that config file doesn't contain disallowed keys.
 		foreach ( EnvInfo::$not_user_configurable as $d ) {
 			if ( array_key_exists( $d, $env_config ) ) {
 				throw new \RuntimeException( "Disallowed key '$d' found in environment config" );
+			}
+		}
+
+		// Load the environment config from user input.
+		foreach ( $options as $key => $value ) {
+			// Check that options don't contain disallowed keys.
+			foreach ( EnvInfo::$not_user_configurable as $d ) {
+				if ( $d === $key ) {
+					throw new \RuntimeException( "Disallowed key '$d' found in options" );
+				}
+			}
+			$env_config[ $key ] = $value;
+		}
+
+		// Volumes can be mapped automatically depending on the working directory.
+		$env_config['volumes'] = App::make( EnvVolumeParser::class )->parse_volumes( $env_config['volumes'] ?? [] );
+
+		// Parse and Validate.
+		foreach ( $env_config as $key => &$value ) {
+			switch ( $key ) {
+				case 'php_extensions':
+					$value = array_map( 'trim', $value );
+					foreach ( $value as $ext ) {
+						if ( ! preg_match( '/^[a-z0-9_-]+$/i', $ext ) ) {
+							throw new \RuntimeException( 'Invalid PHP extension name: ' . $ext );
+						}
+						if ( strlen( $ext ) > 50 ) {
+							throw new \RuntimeException( 'PHP extension name too long: ' . $ext );
+						}
+					}
+					break;
+				case 'wordpress_version':
+					if ( in_array( $value, [ 'stable', 'rc' ], true ) ) {
+						$value = $this->cache->get_manager_sync_data( 'versions' )['wordpress'][ $value ];
+					}
+					break;
+				case 'woocommerce_version':
+					if ( in_array( $value, [ 'stable', 'rc' ], true ) ) {
+						$value = $this->cache->get_manager_sync_data( 'versions' )['woocommerce'][ $value ];
+					}
+					break;
 			}
 		}
 

@@ -2,10 +2,15 @@
 
 namespace QIT_CLI\Environment\Environments;
 
+use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\IO\Output;
 use function QIT_CLI\normalize_path;
 
 abstract class EnvInfo implements \JsonSerializable {
+	/**
+	 * @var array<string>
+	 */
 	public static $not_user_configurable = [
 		'docker_images',
 		'temporary_env',
@@ -32,14 +37,25 @@ abstract class EnvInfo implements \JsonSerializable {
 	/** @var string */
 	public $env_id;
 
-	/** @var string The domain being used. */
-	public $domain;
+	/**
+	 * Holds an array of volume mappings, where each key is a container path and its value is the corresponding local path.
+	 *
+	 * @var array<string, string> $volumes Each element of the array is:
+	 *                                    - Key: Container path (string)
+	 *                                    - Value: Local path (string)
+	 */
+	public $volumes = [];
 
 	/**
 	 * @var array<string> Array of docker images associated with this environment.
 	 * @example [ 'qit_php_123456', 'qit_db_123456', 'qit_nginx_123456' ]
 	 */
 	public $docker_images;
+
+	/**
+	 * @var array<string> Array of PHP extensions to be installed in the environment.
+	 */
+	public $php_extensions = [];
 
 	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
@@ -63,10 +79,10 @@ abstract class EnvInfo implements \JsonSerializable {
 	}
 
 	/**
-	 * @param array<string,scalar> $decoded_json
+	 * @param array<string,scalar|array<scalar>> $env_info_array
 	 */
-	public static function from_array( array $decoded_json ): EnvInfo {
-		switch ( $decoded_json['environment'] ?? 'e2e' ) {
+	public static function from_array( array $env_info_array ): EnvInfo {
+		switch ( $env_info_array['environment'] ?? 'e2e' ) {
 			case 'e2e':
 				$env_info = new E2EEnvInfo();
 				break;
@@ -74,16 +90,18 @@ abstract class EnvInfo implements \JsonSerializable {
 				throw new \RuntimeException( 'Invalid environment type.' );
 		}
 
-		$env_info->environment   = $decoded_json['environment'] ?? 'e2e';
+		$env_info->environment   = $env_info_array['environment'] ?? 'e2e';
 		$env_info->env_id        = uniqid();
 		$env_info->temporary_env = normalize_path( Environment::get_temp_envs_dir() . $env_info->environment . '-' . $env_info->env_id );
 		$env_info->created_at    = time();
 		$env_info->status        = 'pending';
 		$env_info->domain        = getenv( 'QIT_DOMAIN' ) ?: 'localhost';
 
-		foreach ( $decoded_json as $key => $value ) {
+		foreach ( $env_info_array as $key => $value ) {
 			if ( property_exists( $env_info, $key ) ) {
 				$env_info->$key = $value;
+			} else {
+				App::make( Output::class )->writeln( sprintf( '<comment>Warning: Key "%s" not found in environment info.</comment>', $key ) );
 			}
 		}
 
