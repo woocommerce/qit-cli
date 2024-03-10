@@ -79,10 +79,10 @@ HELP
 		}
 
 		$this->add_option_to_send( 'plugins' );
-		$this->add_option_to_send('themes');
-		$this->add_option_to_send('volumes');
-		$this->add_option_to_send('php_extensions');
-		$this->add_option_to_send('object_cache');
+		$this->add_option_to_send( 'themes' );
+		$this->add_option_to_send( 'volumes' );
+		$this->add_option_to_send( 'php_extensions' );
+		$this->add_option_to_send( 'object_cache' );
 
 		try {
 			$options = $this->parse_options( $input );

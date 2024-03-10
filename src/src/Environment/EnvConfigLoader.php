@@ -25,14 +25,14 @@ class EnvConfigLoader {
 	}
 
 	/**
-	 * @param array{
-	 *     defaults:<array<string>>,
-	 *     overrides:<array<string>>,
-	 * } $options
+	 * @param array{ defaults: array<string, mixed>, overrides: array<string, mixed> } $options Description of the parameter.
 	 *
-	 * @return EnvInfo
+	 * @return EnvInfo Returns an EnvInfo object.
 	 */
-	public function init_env_info( array $options = [] ): EnvInfo {
+	public function init_env_info( array $options = [
+		'defaults'  => [],
+		'overrides' => [],
+	] ): EnvInfo {
 		// Load the environment config file..
 		$env_config = $this->load_config();
 
@@ -62,20 +62,18 @@ class EnvConfigLoader {
 		}
 
 		// Plugins.
-		foreach ( $options['plugins'] ?? [] as $plugin ) {
+		foreach ( $env_config['plugins'] ?? [] as &$plugin ) {
 			if ( file_exists( $plugin ) ) {
 				$env_config['volumes'][] = $plugin . ':/var/www/html/wp-content/plugins/' . basename( $plugin );
-			} else {
-				$env_config['plugins'][] = $plugin;
+				unset( $plugin );
 			}
 		}
 
 		// Themes.
-		foreach ( $options['themes'] ?? [] as $theme ) {
+		foreach ( $env_config['themes'] ?? [] as &$theme ) {
 			if ( file_exists( $theme ) ) {
 				$env_config['volumes'][] = $theme . ':/var/www/html/wp-content/themes/' . basename( $theme );
-			} else {
-				$env_config['themes'][] = $theme;
+				unset( $theme );
 			}
 		}
 

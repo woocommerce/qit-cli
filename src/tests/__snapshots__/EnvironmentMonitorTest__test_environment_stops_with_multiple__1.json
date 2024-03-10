@@ -13,6 +13,8 @@
         "env_id": 1234567890,
         "volumes": [],
         "docker_images": null,
-        "php_extensions": []
+        "php_extensions": [],
+        "plugins": [],
+        "themes": []
     }
 }

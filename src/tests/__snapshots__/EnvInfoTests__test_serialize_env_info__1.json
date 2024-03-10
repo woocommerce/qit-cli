@@ -15,5 +15,7 @@
         "test1",
         "test2"
     ],
-    "php_extensions": []
+    "php_extensions": [],
+    "plugins": [],
+    "themes": []
 }
