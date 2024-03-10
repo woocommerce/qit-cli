@@ -34,7 +34,7 @@ class Docker {
 		$command = [ $this->find_docker(), 'exec', '-i' ];
 
 		if ( $dev_mode ) {
-			$this->run_inside_docker( $env_info, [ '/bin/sh', '-c', 'apk update && apk add bash less' ], [], '0:0', 600, $docker_image );
+			$this->run_inside_docker( $env_info, [ '/bin/sh', '-c', 'mkdir -p /qit/cache/apk && apk update --cache-dir /qit/cache/apk && apk add --cache-dir /qit/cache/apk --progress --verbose bash less vim' ], [], '0:0', 600, $docker_image );
 			$command[] = '-e';
 			$command[] = 'PAGER=less';
 			$command[] = '-e';

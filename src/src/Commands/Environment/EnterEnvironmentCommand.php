@@ -39,7 +39,7 @@ class EnterEnvironmentCommand extends Command {
 
 	protected function configure() {
 		$this
-			->addOption( 'user', 'u', InputOption::VALUE_OPTIONAL, 'The user to enter the environment as.' )
+			->addOption( 'user', 'u', InputOption::VALUE_OPTIONAL, 'The user to enter the environment as.', '' )
 			->addOption( 'dev', 'd', InputOption::VALUE_NEGATABLE, 'Enter the environment as a developer. This installs some quality-of-life tooling inside the Alpine container, such as bash and less.', true )
 			->setDescription( 'Enter the PHP container of a running test environment.' );
 	}
