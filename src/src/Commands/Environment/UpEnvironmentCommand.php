@@ -61,12 +61,12 @@ Example:
 This will create a disposable test environment with the latest release candidate versions of WordPress and WooCommerce, PHP 8.3, the GD extension, and Object Cache enabled.
 HELP
 			)
-			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
-			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Theme install, if multiple provided activates the last. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
+			->addOption( 'plugins', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
+			->addOption( 'themes', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Theme install, if multiple provided activates the last. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
 			->addOption( 'volumes', 'm', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
 			->addOption( 'php_extensions', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions to install in the environment.', [] )
-			->addOption( 'object-cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
-			->addOption( 'skip-activating-plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
+			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
+			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
 			// ->addOption( 'attached', 'a', InputOption::VALUE_NONE, 'Whether to attach to the environment after starting it.' )
 			->setAliases( [ 'env:start' ]
@@ -77,6 +77,12 @@ HELP
 		if ( is_windows() ) {
 			$output->writeln( '<comment>Warning: It is highly recommended to run this script from Windows Subsystem for Linux (WSL) when using Windows.</comment>' );
 		}
+
+		$this->add_option_to_send( 'plugins' );
+		$this->add_option_to_send('themes');
+		$this->add_option_to_send('volumes');
+		$this->add_option_to_send('php_extensions');
+		$this->add_option_to_send('object_cache');
 
 		try {
 			$options = $this->parse_options( $input );
@@ -91,36 +97,35 @@ HELP
 			$output->writeln( sprintf( 'Starting environment with options: %s', json_encode( $options ) ) );
 		}
 
-		if ( $input->getOption( 'skip-activating-plugins' ) ) {
+		if ( $input->getOption( 'skip_activating_plugins' ) ) {
 			$this->e2e_environment->set_skip_activating_plugins( true );
 		}
 
-		// Only send to EnvInfo the options that the user specified (non-default values).
-		$options_with_non_default_values = [];
-		foreach ( $this->getDefinition()->getOptions() as $option ) {
-			$name        = $option->getName();
-			$input_value = $input->getOption( $name );
-
-			if ( $input_value !== $option->getDefault() ) {
-				$options_with_non_default_values[ $name ] = $input_value;
-			}
-		}
-
-		// Remove options that we don't want to send to EnvInfo.
-		$options_to_remove = [
-			'skip-activating-plugins',
-			'json',
-			'help',
-			'quiet',
-			'verbose',
-			'version',
-			'ansi',
-			'no-interaction',
+		$options_to_env_info = [
+			'defaults'  => [],
+			'overrides' => [],
 		];
 
-		$options_with_non_default_values = array_diff_key( $options_with_non_default_values, array_flip( $options_to_remove ) );
+		/*
+		 * Options can be explicitly set by the user or be a default value.
+		 *
+		 * This affects the order of precedence that each option gets.
+		 *
+		 * 1: Option set at runtime
+		 * 2: Option in config file
+		 * 3. Default value
+		 */
+		foreach ( $options as $k => &$v ) {
+			foreach ( $GLOBALS['argv'] as $a ) {
+				if ( $a === "--$k=$v" ) {
+					$options_to_env_info['overrides'][ $k ] = $v;
+					continue 2;
+				}
+			}
+			$options_to_env_info['defaults'][ $k ] = $v;
+		}
 
-		$env_info = App::make( EnvConfigLoader::class )->init_env_info( $options_with_non_default_values );
+		$env_info = App::make( EnvConfigLoader::class )->init_env_info( $options_to_env_info );
 
 		$this->output->writeln( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 

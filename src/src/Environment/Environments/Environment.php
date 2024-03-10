@@ -147,19 +147,6 @@ abstract class Environment {
 
 		$volumes = array_merge( $default_volumes, $this->env_info->volumes );
 
-		/*
-		// Map volumes from the command line.
-		if ( ! empty( $this->volumes ) ) {
-			foreach ( $this->volumes as $v ) {
-				if ( array_key_exists( $v['in_container'], $volumes ) ) {
-					throw new \RuntimeException( "Volume {$v['in_container']} already exists." );
-				}
-
-				$volumes[ $v['in_container'] ] = $v['local'];
-			}
-		}
-		*/
-
 		// Map mu-plugins individually instead of the whole container to avoid bringing mu-plugins in container back to host.
 		foreach ( new \DirectoryIterator( $this->env_info->temporary_env . '/mu-plugins' ) as $mu_plugin ) {
 			/** @var \SplFileInfo $mu_plugin */

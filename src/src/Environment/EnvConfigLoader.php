@@ -5,6 +5,7 @@ namespace QIT_CLI\Environment;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Environment\Environments\EnvInfo;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Serializer\Serializer;
 
 class EnvConfigLoader {
@@ -14,13 +15,20 @@ class EnvConfigLoader {
 	/** @var Cache */
 	protected $cache;
 
-	public function __construct( Serializer $serializer, Cache $cache ) {
+	/** @var OutputInterface */
+	protected $output;
+
+	public function __construct( Serializer $serializer, Cache $cache, OutputInterface $output ) {
 		$this->serializer = $serializer;
 		$this->cache      = $cache;
+		$this->output     = $output;
 	}
 
 	/**
-	 * @param array<scalar> $options
+	 * @param array{
+	 *     defaults:<array<string>>,
+	 *     overrides:<array<string>>,
+	 * } $options
 	 *
 	 * @return EnvInfo
 	 */
@@ -36,7 +44,7 @@ class EnvConfigLoader {
 		}
 
 		// Load the environment config from user input.
-		foreach ( $options as $key => $value ) {
+		foreach ( $options['overrides'] as $key => $value ) {
 			// Check that options don't contain disallowed keys.
 			foreach ( EnvInfo::$not_user_configurable as $d ) {
 				if ( $d === $key ) {
@@ -44,6 +52,31 @@ class EnvConfigLoader {
 				}
 			}
 			$env_config[ $key ] = $value;
+		}
+
+		// Set the defaults.
+		foreach ( $options['defaults'] as $key => $value ) {
+			if ( ! array_key_exists( $key, $env_config ) ) {
+				$env_config[ $key ] = $value;
+			}
+		}
+
+		// Plugins.
+		foreach ( $options['plugins'] ?? [] as $plugin ) {
+			if ( file_exists( $plugin ) ) {
+				$env_config['volumes'][] = $plugin . ':/var/www/html/wp-content/plugins/' . basename( $plugin );
+			} else {
+				$env_config['plugins'][] = $plugin;
+			}
+		}
+
+		// Themes.
+		foreach ( $options['themes'] ?? [] as $theme ) {
+			if ( file_exists( $theme ) ) {
+				$env_config['volumes'][] = $theme . ':/var/www/html/wp-content/themes/' . basename( $theme );
+			} else {
+				$env_config['themes'][] = $theme;
+			}
 		}
 
 		// Volumes can be mapped automatically depending on the working directory.
@@ -115,6 +148,13 @@ class EnvConfigLoader {
 			'.qit-env.override.yml'  => file_exists( $working_directory . '/.qit-env.override.yml' ),
 		];
 
+		if ( $this->output->isVeryVerbose() ) {
+			$this->output->writeln( 'Working directory: ' . $working_directory );
+			foreach ( array_merge( $env_files, $env_override_files ) as $file => $exists ) {
+				$this->output->writeln( $file . ': ' . ( $exists ? 'Exists' : 'Does not exist' ) );
+			}
+		}
+
 		// If more than one env file exists, throw.
 		if ( count( array_filter( $env_files ) ) > 1 ) {
 			throw new \RuntimeException( 'More than one "qit-env" file exists. Please remove one.' );
@@ -131,6 +171,8 @@ class EnvConfigLoader {
 			return [];
 		}
 
+		$this->output->writeln( 'Loading environment config from ' . $env_file . '...' );
+
 		try {
 			$env_config = $this->serializer->decode( file_get_contents( $working_directory . '/' . $env_file ), pathinfo( $env_file, PATHINFO_EXTENSION ) );
 
@@ -144,6 +186,7 @@ class EnvConfigLoader {
 		$env_override_file = array_search( true, $env_override_files, true );
 
 		if ( $env_override_file ) {
+			$this->output->writeln( 'Loading environment override config from ' . $env_override_file . '...' );
 			try {
 				$env_override_config = $this->serializer->decode( file_get_contents( $working_directory . '/' . $env_override_file ), pathinfo( $env_override_file, PATHINFO_EXTENSION ) );
 				if ( ! is_array( $env_override_config ) ) {
