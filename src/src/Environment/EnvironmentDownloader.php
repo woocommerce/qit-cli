@@ -31,13 +31,13 @@ class EnvironmentDownloader {
 			return;
 		}
 
-		$environmentsDir = Config::get_qit_dir() . '/environments';
-		if ( ! file_exists( $environmentsDir ) ) {
-			mkdir( $environmentsDir );
+		$environments_dir = Config::get_qit_dir() . '/environments';
+		if ( ! file_exists( $environments_dir ) ) {
+			mkdir( $environments_dir );
 		}
 
-		$temp_zip_path  = $environmentsDir . '/temp_' . $env_name . '.zip';
-		$final_zip_path = $environmentsDir . '/' . $env_name . '.zip';
+		$temp_zip_path  = $environments_dir . '/temp_' . $env_name . '.zip';
+		$final_zip_path = $environments_dir . '/' . $env_name . '.zip';
 
 		if ( file_exists( $final_zip_path ) ) {
 			unlink( $final_zip_path );
@@ -82,9 +82,9 @@ class EnvironmentDownloader {
 
 			// Delete old environment extracted files.
 			$safe_remove = App::make( SafeRemove::class );
-			$safe_remove->delete_dir( $environmentsDir . '/' . $env_name, Config::get_qit_dir() );
+			$safe_remove->delete_dir( $environments_dir . '/' . $env_name, Config::get_qit_dir() );
 
-			if ( ! $zip->extractTo( $environmentsDir . '/' . $env_name ) ) {
+			if ( ! $zip->extractTo( $environments_dir . '/' . $env_name ) ) {
 				throw new \RuntimeException( 'Could not extract environment zip.' );
 			}
 			$zip->close();
@@ -95,10 +95,10 @@ class EnvironmentDownloader {
 				case ZipArchive::ER_NOZIP:
 					$error = 'Not a zip archive.';
 					break;
-				case ZipArchive::ER_INCONS :
+				case ZipArchive::ER_INCONS:
 					$error = 'Consistency check failed.';
 					break;
-				case ZipArchive::ER_CRC :
+				case ZipArchive::ER_CRC:
 					$error = 'Checksum failed.';
 					break;
 				default:
