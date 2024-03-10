@@ -30,6 +30,9 @@ class E2EEnvironment extends Environment {
 	/** @var bool */
 	protected $enable_object_cache = false;
 
+	/** @var bool */
+	protected $skip_activating_plugins = false;
+
 	public function get_name(): string {
 		return 'e2e';
 	}
@@ -56,6 +59,10 @@ class E2EEnvironment extends Environment {
 
 	public function set_enable_object_cache( bool $enable_object_cache ): void {
 		$this->enable_object_cache = $enable_object_cache;
+	}
+
+	public function set_skip_activating_plugins( bool $skip_activating_plugins ): void {
+		$this->skip_activating_plugins = $skip_activating_plugins;
 	}
 
 	/**
@@ -107,9 +114,11 @@ class E2EEnvironment extends Environment {
 		] );
 
 		// Activate plugins.
-		$this->output->writeln( '<info>Activating plugins...</info>' );
-		$this->docker->run_inside_docker( $env_info, [ 'php', '/qit/bin/plugins-activate.php' ] );
-		$this->parse_php_activation_report( $env_info );
+		if ( ! $this->skip_activating_plugins ) {
+			$this->output->writeln( '<info>Activating plugins...</info>' );
+			$this->docker->run_inside_docker( $env_info, [ 'php', '/qit/bin/plugins-activate.php' ] );
+			$this->parse_php_activation_report( $env_info );
+		}
 
 		$env_info->php_version       = $this->php_version;
 		$env_info->wordpress_version = $this->wordpress_version;
