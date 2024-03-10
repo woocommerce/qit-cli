@@ -16,4 +16,7 @@ class E2EEnvInfo extends EnvInfo {
 
 	/** @var bool */
 	public $redis = false;
+
+	/** @var string */
+	public $php_version;
 }

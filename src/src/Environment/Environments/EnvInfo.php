@@ -21,9 +21,6 @@ abstract class EnvInfo implements \JsonSerializable {
 	/** @var string */
 	public $env_id;
 
-	/** @var string */
-	public $php_version;
-
 	/** @var string The domain being used. */
 	public $domain;
 
