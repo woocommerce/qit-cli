@@ -92,8 +92,6 @@ HELP
 			$output->writeln( sprintf( 'Starting environment with options: %s', json_encode( $options ) ) );
 		}
 
-		$this->cache->set( 'environment_up_options', $options, DAY_IN_SECONDS );
-
 		if ( $this->getDefinition()->hasOption( 'wordpress_version' ) ) {
 			$this->e2e_environment->set_wordpress_version( $options['wordpress_version'] );
 		}

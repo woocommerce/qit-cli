@@ -15,7 +15,6 @@ use QIT_CLI\Commands\Environment\ExecEnvironmentCommand;
 use QIT_CLI\Commands\Environment\DownEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
 use QIT_CLI\Commands\Environment\ListEnvironmentCommand;
-use QIT_CLI\Commands\Environment\RestartEnvironmentCommand;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\ListCommand;
@@ -175,7 +174,6 @@ $application->add( $container->make( ConnectCommand::class ) );
 try {
 	$application->add( $container->make( UpEnvironmentCommand::class ) );
 	$application->add( $container->make( DownEnvironmentCommand::class ) );
-	$application->add( $container->make( RestartEnvironmentCommand::class ) );
 	$application->add( $container->make( ListEnvironmentCommand::class ) );
 	$application->add( $container->make( EnterEnvironmentCommand::class ) );
 	$application->add( $container->make( ExecEnvironmentCommand::class ) );
