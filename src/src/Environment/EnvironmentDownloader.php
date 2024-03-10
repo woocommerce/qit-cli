@@ -6,6 +6,8 @@ use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Config;
 use QIT_CLI\ManagerSync;
+use QIT_CLI\SafeRemove;
+use ZipArchive;
 
 class EnvironmentDownloader {
 	/** @var Cache */
@@ -16,47 +18,94 @@ class EnvironmentDownloader {
 	}
 
 	public function maybe_download( string $env_name ): void {
-		$backend_hashes = $this->cache->get_manager_sync_data( 'environments' );
+		$manager_hashes = $this->cache->get_manager_sync_data( 'environments' );
 
-		if ( ! isset( $backend_hashes[ $env_name ]['checksum'] ) || ! isset( $backend_hashes[ $env_name ]['url'] ) ) {
+		if ( ! isset( $manager_hashes[ $env_name ]['checksum'] ) || ! isset( $manager_hashes[ $env_name ]['url'] ) ) {
 			throw new \RuntimeException( 'E2E environment not set or incomplete.' );
 		}
 
-		if ( $this->cache->get( "{$env_name}_environment_hash" ) !== $backend_hashes[ $env_name ]['checksum'] ) {
-			if ( ! file_exists( Config::get_qit_dir() . '/environments' ) ) {
-				mkdir( Config::get_qit_dir() . '/environments' );
+		$local_hash = $this->cache->get( "{$env_name}_environment_hash" );
+
+		// Early bail: The local environment matches the last-known checksum that the Manager informed us, so no need to query it.
+		if ( $local_hash === $manager_hashes[ $env_name ]['checksum'] ) {
+			return;
+		}
+
+		$environmentsDir = Config::get_qit_dir() . '/environments';
+		if ( ! file_exists( $environmentsDir ) ) {
+			mkdir( $environmentsDir );
+		}
+
+		$temp_zip_path  = $environmentsDir . '/temp_' . $env_name . '.zip';
+		$final_zip_path = $environmentsDir . '/' . $env_name . '.zip';
+
+		if ( file_exists( $final_zip_path ) ) {
+			unlink( $final_zip_path );
+		}
+
+		if ( file_exists( $temp_zip_path ) ) {
+			unlink( $temp_zip_path );
+		}
+
+		if ( defined( 'UNIT_TESTS' ) ) {
+			if ( ! file_exists( $final_zip_path ) ) {
+				throw new \RuntimeException( $env_name . ' environment not found for tests. Tried: ' . $final_zip_path );
 			}
 
-			if ( defined( 'UNIT_TESTS' ) ) {
-				if ( ! file_exists( sprintf( Config::get_qit_dir() . '/environments/%s.zip', $env_name ) ) ) {
-					throw new \RuntimeException( $env_name . ' environment not found for tests. Tried: ' . sprintf( Config::get_qit_dir() . '/environments/%s.zip', $env_name ) );
-				}
-			} else {
-				// Download the environment.
-				$env_contents = @file_get_contents( $backend_hashes[ $env_name ]['url'] );
+			return;
+		}
 
-				// If it fails, do a sync and try again, as we might have an outdated checksum locally that no longer exists in remote.
-				// This can happen if the environment checksum was updated in the remote, and we still have a reference to the old one locally.
-				if ( ! $env_contents ) {
-					App::make( ManagerSync::class )->maybe_sync( true );
-					$backend_hashes = $this->cache->get_manager_sync_data( 'environments' );
-					$env_contents   = file_get_contents( $backend_hashes[ $env_name ]['url'] );
+		$env_contents = @file_get_contents( $manager_hashes[ $env_name ]['url'] );
 
-					if ( ! $env_contents ) {
-						throw new \RuntimeException( 'Could not download environment.' );
-					}
-				}
+		// If the download fails, we might have an outdated checksum in the cache. Try to sync and download again.
+		// This can happen in a brief time window if the environment is re-generated upstream and this client hasn't synced yet.
+		if ( ! $env_contents ) {
+			App::make( ManagerSync::class )->maybe_sync( true );
+			$manager_hashes = $this->cache->get_manager_sync_data( 'environments' );
+			$env_contents   = file_get_contents( $manager_hashes[ $env_name ]['url'] );
 
-				file_put_contents( sprintf( Config::get_qit_dir() . '/environments/%s.zip', $env_name ), $env_contents );
+			if ( ! $env_contents ) {
+				throw new \RuntimeException( 'Could not download environment.' );
+			}
+		}
+
+		// Save to temp zip.
+		file_put_contents( $temp_zip_path, $env_contents );
+
+		// Validate zip integrity.
+		$zip = new \ZipArchive();
+		$res = $zip->open( $temp_zip_path, ZipArchive::CHECKCONS );
+		if ( $res === true ) {
+			if ( ! rename( $temp_zip_path, $final_zip_path ) ) {
+				throw new \RuntimeException( 'Could not rename temp zip to final zip.' );
 			}
 
-			// Extract the environment.
-			$zip = new \ZipArchive();
-			$zip->open( sprintf( Config::get_qit_dir() . '/environments/%s.zip', $env_name ) );
-			$zip->extractTo( Config::get_qit_dir() . '/environments/' . $env_name );
+			// Delete old environment extracted files.
+			$safe_remove = App::make( SafeRemove::class );
+			$safe_remove->delete_dir( $environmentsDir . '/' . $env_name, Config::get_qit_dir() );
+
+			if ( ! $zip->extractTo( $environmentsDir . '/' . $env_name ) ) {
+				throw new \RuntimeException( 'Could not extract environment zip.' );
+			}
 			$zip->close();
+			$this->cache->set( "{$env_name}_environment_hash", $manager_hashes[ $env_name ]['checksum'], MONTH_IN_SECONDS );
+		} else {
+			unlink( $temp_zip_path );
+			switch ( $res ) {
+				case ZipArchive::ER_NOZIP:
+					$error = 'Not a zip archive.';
+					break;
+				case ZipArchive::ER_INCONS :
+					$error = 'Consistency check failed.';
+					break;
+				case ZipArchive::ER_CRC :
+					$error = 'Checksum failed.';
+					break;
+				default:
+					$error = '';
+			}
 
-			$this->cache->set( "{$env_name}_environment_hash", $backend_hashes[ $env_name ], MONTH_IN_SECONDS );
+			throw new \RuntimeException( "Downloaded ZIP file is invalid or corrupted. $error" );
 		}
 	}
 }
