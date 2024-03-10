@@ -9,6 +9,7 @@ use QIT_CLI\Environment\Environments\E2EEnvironment;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use function QIT_CLI\format_elapsed_time;
@@ -37,7 +38,10 @@ class EnterEnvironmentCommand extends Command {
 	}
 
 	protected function configure() {
-		$this->setDescription( 'Enter the PHP container of a running test environment.' );
+		$this
+			->addOption( 'user', 'u', InputOption::VALUE_OPTIONAL, 'The user to enter the environment as.' )
+			->addOption( 'dev', 'd', InputOption::VALUE_NEGATABLE, 'Enter the environment as a developer. This installs some quality-of-life tooling inside the Alpine container, such as bash and less.', true )
+			->setDescription( 'Enter the PHP container of a running test environment.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -49,38 +53,40 @@ class EnterEnvironmentCommand extends Command {
 			return Command::SUCCESS;
 		}
 
+		$environment = null;
+
 		if ( count( $running_environments ) === 1 ) {
-			$this->docker->enter_environment( array_shift( $running_environments ) );
-
-			return Command::SUCCESS;
+			$environment = array_shift( $running_environments );
 		}
 
-		$environment_choices = array_map( function ( EnvInfo $environment ) {
-			return sprintf( 'ID: %s, Created: %s, Status: %s',
-				$environment->env_id,
-				format_elapsed_time( time() - $environment->created_at ),
-			$environment->status );
-		}, $running_environments );
+		if ( is_null( $environment ) ) {
+			$environment_choices = array_map( function ( EnvInfo $environment ) {
+				return sprintf( 'ID: %s, Created: %s, Status: %s',
+					$environment->env_id,
+					format_elapsed_time( time() - $environment->created_at ),
+				$environment->status );
+			}, $running_environments );
 
-		// Let user choose which environment to enter.
-		$helper   = new QuestionHelper();
-		$question = new ChoiceQuestion(
-			'Please select the environment to enter:',
-			$environment_choices
-		);
-		$question->setErrorMessage( 'Environment %s is invalid.' );
+			// Let user choose which environment to enter.
+			$helper   = new QuestionHelper();
+			$question = new ChoiceQuestion(
+				'Please select the environment to enter:',
+				$environment_choices
+			);
+			$question->setErrorMessage( 'Environment %s is invalid.' );
 
-		$selected_environment = $helper->ask( $input, $output, $question );
+			$selected_environment = $helper->ask( $input, $output, $question );
 
-		try {
-			$environment = $this->environment_monitor->get_env_info_by_id( $selected_environment );
-		} catch ( \Exception $e ) {
-			$output->writeln( '<error>Selected environment not found.</error>' );
+			try {
+				$environment = $this->environment_monitor->get_env_info_by_id( $selected_environment );
+			} catch ( \Exception $e ) {
+				$output->writeln( '<error>Selected environment not found.</error>' );
 
-			return Command::FAILURE;
+				return Command::FAILURE;
+			}
 		}
 
-		$this->docker->enter_environment( $environment );
+		$this->docker->enter_environment( $environment, 'php', '/bin/bash', $input->getOption( 'user' ), $input->getOption( 'dev' ) );
 
 		return Command::SUCCESS;
 	}

@@ -27,11 +27,27 @@ class Docker {
 		}
 	}
 
-	public function enter_environment( EnvInfo $env_info, string $docker_image = 'php', string $terminal = '/bin/bash' ): void {
+	public function enter_environment( EnvInfo $env_info, string $docker_image = 'php', string $terminal = '/bin/bash', string $user = '', bool $dev_mode = false ): void {
 		$docker_image = $env_info->get_docker_container( $docker_image );
 
-		// Use 'PAGER=more' because we use Alpine images that have a minimalist version of "less".
-		$command = [ $this->find_docker(), 'exec', '-i', '-e', 'PAGER=more' ];
+		$command = [ $this->find_docker(), 'exec', '-i' ];
+
+		if ( $dev_mode ) {
+			$this->run_inside_docker( $env_info, [ '/bin/sh', '-c', 'apk update && apk add bash less' ], [], '0:0', 600, $docker_image );
+			$command[] = '-e';
+			$command[] = 'PAGER=less';
+			$command[] = '-e';
+			$command[] = 'LESS=-R';
+		} else {
+			// Use 'PAGER=more' because we use Alpine images that have a minimalist version of "less".
+			$command[] = '-e';
+			$command[] = 'PAGER=more';
+		}
+
+		if ( ! empty( $user ) ) {
+			$command[] = '--user';
+			$command[] = $user;
+		}
 
 		if ( use_tty() ) {
 			$command = array_merge( $command, [ '-t' ] );
