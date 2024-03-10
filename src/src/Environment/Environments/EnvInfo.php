@@ -6,6 +6,17 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use function QIT_CLI\normalize_path;
 
 abstract class EnvInfo implements \JsonSerializable {
+	public static $not_user_configurable = [
+		'docker_images',
+		'temporary_env',
+		'env_id',
+		'created_at',
+		'status',
+		'env_id',
+		'domain',
+		'environment',
+	];
+
 	/** @var string */
 	public $environment;
 

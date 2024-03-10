@@ -17,14 +17,13 @@ class EnvConfigLoader {
 	public function init_env_info_from_config(): EnvInfo {
 		$env_config = $this->load_config();
 
-		$env_info = EnvInfo::from_array( $env_config );
-
-		foreach ( $env_config as $key => $value ) {
-			$disallowed = [ 'docker_images', 'temporary_env', 'env_id', 'created_at', 'status', 'env_id' ];
-			if ( property_exists( $env_info, $key ) && ! in_array( $key, $disallowed, true ) && ! isset( $env_info->$key ) ) {
-				$env_info->$key = $value;
+		foreach ( EnvInfo::$not_user_configurable as $d ) {
+			if ( array_key_exists( $d, $env_config ) ) {
+				throw new \RuntimeException( "Disallowed key '$d' found in environment config" );
 			}
 		}
+
+		$env_info = EnvInfo::from_array( $env_config );
 
 		return $env_info;
 
