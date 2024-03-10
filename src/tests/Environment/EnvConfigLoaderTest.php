@@ -19,7 +19,7 @@ class EnvConfigLoaderTest extends TestCase {
 			throw new \RuntimeException( 'This test is not running in a docker container. It should not be run outside of a docker container for safety reasons.' );
 		}
 
-		foreach ( glob( $this->configDir . 'qit-env*' ) as $file ) {
+		foreach ( glob( $this->configDir . '{.qit-env*,qit-env*}', GLOB_BRACE ) as $file ) {
 			unlink( $file );
 		}
 		parent::tearDown();
@@ -35,7 +35,7 @@ class EnvConfigLoaderTest extends TestCase {
 	public function test_env_config_loader_no_file() {
 		$env_config_loader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
-		$this->assertNull( $env_config_loader->load_config() );
+		$this->assertEquals( [], $env_config_loader->load_config() );
 
 	}
 
@@ -75,7 +75,17 @@ class EnvConfigLoaderTest extends TestCase {
 		$env_config_loader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( 'Both "qit-env.json" and "qit-env.yml" exists. Please remove one.' );
+		$this->expectExceptionMessage( 'More than one "qit-env" file exists. Please remove one.' );
+		$env_config_loader->load_config();
+	}
+
+	public function test_env_config_exception_both_json_and_dot_json_exists() {
+		$this->create_config_file( 'qit-env.json', json_encode( [ 'foo' => 'bar' ] ) );
+		$this->create_config_file( '.qit-env.json', json_encode( [ 'foo' => 'bar' ] ) );
+		$env_config_loader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
+
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( 'More than one "qit-env" file exists. Please remove one.' );
 		$env_config_loader->load_config();
 	}
 
@@ -86,7 +96,7 @@ class EnvConfigLoaderTest extends TestCase {
 		$env_config_loader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( 'Both "qit-env.override.json" and "qit-env.override.yml" exists. Please remove one.' );
+		$this->expectExceptionMessage( 'More than one "qit-env.override" file exists. Please remove one.' );
 		$env_config_loader->load_config();
 	}
 

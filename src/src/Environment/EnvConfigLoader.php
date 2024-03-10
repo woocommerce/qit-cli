@@ -31,7 +31,7 @@ class EnvConfigLoader {
 	}
 
 	/**
-	 * @return array<scalar|array<scalar>>|null
+	 * @return array<mixed> Multidimensional array of scalars.
 	 */
 	public function load_config(): array {
 		/*
@@ -51,40 +51,32 @@ class EnvConfigLoader {
 		}
 
 		$env_files          = [
-			'qit-env.json' => file_exists( $working_directory . '/qit-env.json' ),
-			'qit-env.yml'  => file_exists( $working_directory . '/qit-env.yml' ),
+			'qit-env.json'  => file_exists( $working_directory . '/qit-env.json' ),
+			'qit-env.yml'   => file_exists( $working_directory . '/qit-env.yml' ),
+			'.qit-env.json' => file_exists( $working_directory . '/.qit-env.json' ),
+			'.qit-env.yml'  => file_exists( $working_directory . '/.qit-env.yml' ),
 		];
 		$env_override_files = [
-			'qit-env.override.json' => file_exists( $working_directory . '/qit-env.override.json' ),
-			'qit-env.override.yml'  => file_exists( $working_directory . '/qit-env.override.yml' ),
+			'qit-env.override.json'  => file_exists( $working_directory . '/qit-env.override.json' ),
+			'qit-env.override.yml'   => file_exists( $working_directory . '/qit-env.override.yml' ),
+			'.qit-env.override.json' => file_exists( $working_directory . '/.qit-env.override.json' ),
+			'.qit-env.override.yml'  => file_exists( $working_directory . '/.qit-env.override.yml' ),
 		];
 
-		// If both "qit-env.json" and "qit-env.yml" exists, throw.
-		if ( $env_files['qit-env.json'] && $env_files['qit-env.yml'] ) {
-			throw new \RuntimeException( 'Both "qit-env.json" and "qit-env.yml" exists. Please remove one.' );
+		// If more than one env file exists, throw.
+		if ( count( array_filter( $env_files ) ) > 1 ) {
+			throw new \RuntimeException( 'More than one "qit-env" file exists. Please remove one.' );
 		}
 
-		// If both "qit-env.override.json" and "qit-env.override.yml" exists, throw.
-		if ( $env_override_files['qit-env.override.json'] && $env_override_files['qit-env.override.yml'] ) {
-			throw new \RuntimeException( 'Both "qit-env.override.json" and "qit-env.override.yml" exists. Please remove one.' );
+		// If more than one override file exists, throw.
+		if ( count( array_filter( $env_override_files ) ) > 1 ) {
+			throw new \RuntimeException( 'More than one "qit-env.override" file exists. Please remove one.' );
 		}
 
-		$env_file = null;
-		if ( $env_files['qit-env.json'] ) {
-			$env_file = 'qit-env.json';
-		} elseif ( $env_files['qit-env.yml'] ) {
-			$env_file = 'qit-env.yml';
-		}
+		$env_file = array_search( true, $env_files, true );
 
 		if ( ! $env_file ) {
 			return [];
-		}
-
-		$env_override_file = null;
-		if ( $env_override_files['qit-env.override.json'] ) {
-			$env_override_file = 'qit-env.override.json';
-		} elseif ( $env_override_files['qit-env.override.yml'] ) {
-			$env_override_file = 'qit-env.override.yml';
 		}
 
 		try {
@@ -96,6 +88,8 @@ class EnvConfigLoader {
 		} catch ( \Exception $e ) {
 			throw new \RuntimeException( 'Failed to load environment config: ' . $e->getMessage() );
 		}
+
+		$env_override_file = array_search( true, $env_override_files, true );
 
 		if ( $env_override_file ) {
 			try {
