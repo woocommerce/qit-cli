@@ -9,8 +9,7 @@ class EnvironmentMonitorTest extends QITTestCase {
 	use \Spatie\Snapshots\MatchesSnapshots;
 
 	protected function make_env_info( string $identifier = 'foo', int $env_id = 1234567890 ): EnvInfo {
-		$env_info                = new EnvInfo();
-		$env_info->type          = 'e2e';
+		$env_info                = EnvInfo::from_array( [ 'environment' => 'e2e' ] );
 		$env_info->temporary_env = "/path/to/temporary-envs/$identifier";
 		$env_info->env_id        = $env_id;
 		$env_info->created_at    = 1708728299;

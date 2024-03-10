@@ -1,8 +1,14 @@
 {
-    "type": "test",
+    "environment": "e2e",
+    "site_url": null,
+    "wordpress_version": "",
+    "redis": false,
     "temporary_env": "\/tmp\/test",
     "created_at": 123,
     "status": "running",
+    "env_id": "Normalized",
+    "php_version": null,
+    "domain": "localhost",
     "docker_images": [
         "test1",
         "test2"

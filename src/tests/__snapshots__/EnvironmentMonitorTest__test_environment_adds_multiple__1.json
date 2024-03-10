@@ -1,15 +1,15 @@
 {
     "1234567890": {
-        "type": "e2e",
+        "environment": "e2e",
+        "site_url": null,
+        "wordpress_version": "",
+        "redis": false,
         "temporary_env": "\/path\/to\/temporary-envs\/bar",
         "created_at": 1708728299,
         "status": "pending",
         "env_id": 1234567890,
-        "site_url": null,
-        "domain": null,
         "php_version": null,
-        "wordpress_version": "",
-        "redis": false,
+        "domain": "localhost",
         "docker_images": null
     }
 }
