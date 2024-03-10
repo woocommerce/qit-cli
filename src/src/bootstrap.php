@@ -1,6 +1,5 @@
 <?php
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\CacheCommand;

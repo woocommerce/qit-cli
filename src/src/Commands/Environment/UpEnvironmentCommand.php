@@ -6,6 +6,7 @@ use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
+use QIT_CLI\Environment\EnvConfigLoader;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\WorkingDirectoryAwareness;
 use Symfony\Component\Console\Command\Command;
@@ -190,7 +191,10 @@ HELP
 			$this->e2e_environment->set_volumes( $parsed_volumes );
 		}
 
-		$env_info = $this->e2e_environment->up();
+		$env_info = App::make( EnvConfigLoader::class )->init_env_info_from_config();
+
+		$this->e2e_environment->init( $env_info );
+		$this->e2e_environment->up();
 
 		if ( $input->getOption( 'json' ) ) {
 			$output->write( json_encode( $env_info ) );

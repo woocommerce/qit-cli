@@ -3,18 +3,21 @@
 namespace QIT_CLI\Environment\Environments\E2E;
 
 use QIT_CLI\App;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use function QIT_CLI\Environment\Environments\gettype;
 use function QIT_CLI\is_windows;
 use function QIT_CLI\is_wsl;
 
 class E2EEnvironment extends Environment {
 	/** @var string */
 	protected $description = 'E2E Environment';
+
+	/**
+	 * @var E2EEnvInfo
+	 */
+	protected $env_info;
 
 	/** @var string */
 	protected $wordpress_version;
@@ -34,7 +37,7 @@ class E2EEnvironment extends Environment {
 	/** @var bool */
 	protected $skip_activating_plugins = false;
 
-	public function up( EnvInfo $env_info ): void {
+	public function up(): void {
 		// TODO: Implement up() method.
 	}
 
@@ -79,8 +82,8 @@ class E2EEnvironment extends Environment {
 		$this->php_extensions = $php_extensions;
 	}
 
-	protected function post_generate_docker_compose( EnvInfo $env_info ): void {
-		$qit_conf = $env_info->temporary_env . '/docker/nginx/conf.d/qit.conf';
+	protected function post_generate_docker_compose(): void {
+		$qit_conf = $this->env_info->temporary_env . '/docker/nginx/conf.d/qit.conf';
 
 		if ( ! file_exists( $qit_conf ) ) {
 			throw new \RuntimeException( 'Could not find qit.conf' );
@@ -88,14 +91,14 @@ class E2EEnvironment extends Environment {
 
 		// Replace "##QIT_PHP_CONTAINER_PLACEHOLDER##" with the PHP Container.
 		$qit_conf_contents = file_get_contents( $qit_conf );
-		$qit_conf_contents = str_replace( '##QIT_PHP_CONTAINER_PLACEHOLDER##', sprintf( 'qit_env_php_%s', $env_info->env_id ), $qit_conf_contents );
-		$qit_conf_contents = str_replace( '##QIT_DOMAIN_PLACEHOLDER##', $env_info->domain, $qit_conf_contents );
+		$qit_conf_contents = str_replace( '##QIT_PHP_CONTAINER_PLACEHOLDER##', sprintf( 'qit_env_php_%s', $this->env_info->env_id ), $qit_conf_contents );
+		$qit_conf_contents = str_replace( '##QIT_DOMAIN_PLACEHOLDER##', $this->env_info->domain, $qit_conf_contents );
 		file_put_contents( $qit_conf, $qit_conf_contents );
 	}
 
-	protected function post_up( EnvInfo $env_info ): void {
-		$env_info->site_url = sprintf( 'http://%s:%s', $env_info->domain, $this->get_nginx_port( $env_info ) );
-		$this->environment_monitor->environment_added_or_updated( $env_info );
+	protected function post_up(): void {
+		$this->env_info->site_url = sprintf( 'http://%s:%s', $this->env_info->domain, $this->get_nginx_port() );
+		$this->environment_monitor->environment_added_or_updated( $this->env_info );
 
 		/**
 		 * @phpstan-ignore-next-line
@@ -103,35 +106,35 @@ class E2EEnvironment extends Environment {
 		if ( ! empty( $this->php_extensions ) ) {
 			$this->output->writeln( '<info>Installing PHP extensions...</info>' );
 			// Install PHP extensions, if needed.
-			$this->docker->run_inside_docker( $env_info, [ '/bin/bash', '/qit/bin/php-extensions.sh' ], [
+			$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '/qit/bin/php-extensions.sh' ], [
 				'PHP_EXTENSIONS' => implode( ' ', $this->php_extensions ), // Space-separated list of PHP extensions.
 			], '0:0' );
 		}
 
 		// Setup WordPress.
 		$this->output->writeln( '<info>Setting up WordPress...</info>' );
-		$this->docker->run_inside_docker( $env_info, [ '/bin/bash', '/qit/bin/wordpress-setup.sh' ], [
+		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '/qit/bin/wordpress-setup.sh' ], [
 			'WORDPRESS_VERSION'   => $this->wordpress_version,
 			'WOOCOMMERCE_VERSION' => $this->woocommerce_version,
 			'SUT_SLUG'            => 'automatewoo',
-			'SITE_URL'            => $env_info->site_url,
+			'SITE_URL'            => $this->env_info->site_url,
 			'QIT_DOCKER_REDIS'    => $this->enable_object_cache ? 'yes' : 'no',
 		] );
 
 		// Activate plugins.
 		if ( ! $this->skip_activating_plugins ) {
 			$this->output->writeln( '<info>Activating plugins...</info>' );
-			$this->docker->run_inside_docker( $env_info, [ 'php', '/qit/bin/plugins-activate.php' ] );
-			$this->parse_php_activation_report( $env_info );
+			$this->docker->run_inside_docker( $this->env_info, [ 'php', '/qit/bin/plugins-activate.php' ] );
+			$this->parse_php_activation_report();
 		}
 
-		$env_info->php_version       = $this->php_version;
-		$env_info->wordpress_version = $this->wordpress_version;
-		$env_info->redis             = $this->enable_object_cache;
+		$this->env_info->php_version       = $this->php_version;
+		$this->env_info->wordpress_version = $this->wordpress_version;
+		$this->env_info->redis             = $this->enable_object_cache;
 	}
 
-	protected function parse_php_activation_report( EnvInfo $env_info ): void {
-		$activation_report_file = $env_info->temporary_env . 'bin/plugin-activation-report.json';
+	protected function parse_php_activation_report(): void {
+		$activation_report_file = $this->env_info->temporary_env . 'bin/plugin-activation-report.json';
 
 		if ( ! file_exists( $activation_report_file ) ) {
 			// Probably no plugins to activate?
@@ -200,7 +203,7 @@ class E2EEnvironment extends Environment {
 		}
 	}
 
-	protected function additional_output( EnvInfo $env_info ): void {
+	protected function additional_output(): void {
 		global $argv;
 		$io = new SymfonyStyle( App::make( InputInterface::class ), $this->output );
 
@@ -228,20 +231,20 @@ class E2EEnvironment extends Environment {
 			$io->newLine();
 
 			$io->section( 'Plugins and Themes' );
-			$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', 'wp plugin list --skip-plugins --skip-themes' ] );
-			$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', 'wp theme list --skip-plugins --skip-themes' ] );
+			$this->docker->run_inside_docker( $this->env_info, [ 'bash', '-c', 'wp plugin list --skip-plugins --skip-themes' ] );
+			$this->docker->run_inside_docker( $this->env_info, [ 'bash', '-c', 'wp theme list --skip-plugins --skip-themes' ] );
 		}
 
-		$io->success( 'Temporary test environment created. (' . $env_info->env_id . ')' );
+		$io->success( 'Temporary test environment created. (' . $this->env_info->env_id . ')' );
 
 		$listing = [
-			sprintf( 'URL: %s', $env_info->site_url ),
-			sprintf( 'Admin URL: %s/wp-admin', $env_info->site_url ),
+			sprintf( 'URL: %s', $this->env_info->site_url ),
+			sprintf( 'Admin URL: %s/wp-admin', $this->env_info->site_url ),
 			'Admin Credentials: admin/password',
-			sprintf( 'PHP Version: %s', $env_info->php_version ),
-			sprintf( 'WordPress Version: %s', $env_info->wordpress_version ),
-			sprintf( 'Redis Object Cache? %s', $env_info->redis ? 'Yes' : 'No' ),
-			sprintf( 'Path: %s', $env_info->temporary_env ),
+			sprintf( 'PHP Version: %s', $this->env_info->php_version ),
+			sprintf( 'WordPress Version: %s', $this->env_info->wordpress_version ),
+			sprintf( 'Redis Object Cache? %s', $this->env_info->redis ? 'Yes' : 'No' ),
+			sprintf( 'Path: %s', $this->env_info->temporary_env ),
 		];
 
 		$io->listing( $listing );
@@ -251,11 +254,11 @@ class E2EEnvironment extends Environment {
 		}
 
 		// Try to connect to the website.
-		if ( ! $this->check_site( $env_info->site_url ) ) {
-			$site_url_domain = parse_url( $env_info->site_url, PHP_URL_HOST );
+		if ( ! $this->check_site( $this->env_info->site_url ) ) {
+			$site_url_domain = parse_url( $this->env_info->site_url, PHP_URL_HOST );
 			$io->section( 'Test connection failed' );
 
-			if ( $env_info->domain !== 'localhost' ) {
+			if ( $this->env_info->domain !== 'localhost' ) {
 				$io->writeln( 'We couldn\'t access the website. To fix this, please check if the following line is present in your hosts file:' );
 				$io->writeln( sprintf( "\n<info>127.0.0.1 %s</info>\n", $site_url_domain ) );
 				if ( is_wsl() ) {
@@ -303,7 +306,7 @@ class E2EEnvironment extends Environment {
 	/**
 	 * @return array<string,string>
 	 */
-	protected function get_generate_docker_compose_envs( EnvInfo $env_info ): array {
+	protected function get_generate_docker_compose_envs(): array {
 		return [
 			'PHP_VERSION'      => $this->php_version,
 			'QIT_DOCKER_REDIS' => $this->enable_object_cache ? 'yes' : 'no',

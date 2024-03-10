@@ -6,7 +6,7 @@ use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use Spatie\Snapshots\MatchesSnapshots;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Serializer;
 
 class EnvInfoTest extends QITTestCase {
 	use MatchesSnapshots;
@@ -19,7 +19,7 @@ class EnvInfoTest extends QITTestCase {
 		$env_info->status        = 'running';
 		$env_info->docker_images = [ 'test1', 'test2' ];
 
-		$serializer = App::make( SerializerInterface::class );
+		$serializer = App::make( Serializer::class );
 
 		$this->assertMatchesJsonSnapshot( $serializer->serialize( $env_info, 'json' ) );
 	}
@@ -27,7 +27,7 @@ class EnvInfoTest extends QITTestCase {
 	public function test_unserialize_env_info() {
 		$json = '{"type":"e2e","temporary_env":"\/tmp\/test","created_at":123,"status":"running","docker_images":["test1","test2"]}';
 
-		$serializer = App::make( SerializerInterface::class );
+		$serializer = App::make( Serializer::class );
 
 		/** @var E2EEnvInfo $env_info */
 		$env_info = $serializer->deserialize( $json, EnvInfo::class, 'json' );
@@ -50,7 +50,7 @@ docker_images:
   - test2
 YML;
 
-		$serializer = App::make( SerializerInterface::class );
+		$serializer = App::make( Serializer::class );
 
 		/** @var E2EEnvInfo $env_info */
 		$env_info = $serializer->deserialize( $yml, EnvInfo::class, 'yml' );

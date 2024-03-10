@@ -2,9 +2,12 @@
 
 namespace QIT_CLI\Environment\Environments;
 
-abstract class EnvInfo {
+use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use function QIT_CLI\normalize_path;
+
+abstract class EnvInfo implements \JsonSerializable {
 	/** @var string */
-	public $type;
+	public $environment;
 
 	/** @var string */
 	public $temporary_env;
@@ -21,17 +24,20 @@ abstract class EnvInfo {
 	/** @var string */
 	public $php_version;
 
+	/** @var string The domain being used. */
+	public $domain;
+
 	/**
 	 * @var array<string> Array of docker images associated with this environment.
 	 * @example [ 'qit_php_123456', 'qit_db_123456', 'qit_nginx_123456' ]
 	 */
 	public $docker_images;
 
-	/**
-	 *  This "DiscriminatorMap" is part of "Symfony Serializer" package, which we use to serialize/deserialize this
-	 *  to/from JSON/YML. This property is so that when deserializing a JSON string, it can know which class to
-	 *  instantiate based on the "type" property.
-	 */
+	#[\ReturnTypeWillChange]
+	public function jsonSerialize() {
+		return $this;
+	}
+
 	public function get_docker_container( string $docker_container ): string {
 		$docker_images = $this->docker_images;
 
@@ -46,5 +52,33 @@ abstract class EnvInfo {
 		}
 
 		return array_shift( $docker_image );
+	}
+
+	/**
+	 * @param array<string,scalar> $decoded_json
+	 */
+	public static function from_array( array $decoded_json ): EnvInfo {
+		switch ( $decoded_json['environment'] ?? 'e2e' ) {
+			case 'e2e':
+				$env_info = new E2EEnvInfo();
+				break;
+			default:
+				throw new \RuntimeException( 'Invalid environment type.' );
+		}
+
+		$env_info->environment   = $decoded_json['environment'];
+		$env_info->env_id        = uniqid();
+		$env_info->temporary_env = normalize_path( Environment::get_temp_envs_dir() . $env_info->environment . '-' . $env_info->env_id );
+		$env_info->created_at    = time();
+		$env_info->status        = 'pending';
+		$env_info->domain        = getenv( 'QIT_DOMAIN' ) ?: 'localhost';
+
+		foreach ( $decoded_json as $key => $value ) {
+			if ( property_exists( $env_info, $key ) ) {
+				$env_info->$key = $value;
+			}
+		}
+
+		return $env_info;
 	}
 }

@@ -4,18 +4,13 @@ namespace QIT_CLI\Environment;
 
 use QIT_CLI\Cache;
 use QIT_CLI\Environment\Environments\EnvInfo;
-use Symfony\Component\Serializer\Serializer;
 
 class EnvironmentMonitor {
 	/** @var Cache $cache */
 	protected $cache;
 
-	/** @var Serializer $serializer */
-	protected $serializer;
-
-	public function __construct( Cache $cache, Serializer $serializer ) {
+	public function __construct( Cache $cache ) {
 		$this->cache = $cache;
-		$this->serializer = $serializer;
 	}
 
 	/**
@@ -27,8 +22,6 @@ class EnvironmentMonitor {
 		if ( $env_info_json === null ) {
 			return [];
 		}
-
-		$env_info = $this->serializer->deserialize( $env_info_json, EnvInfo::class . '[]', 'json' );
 
 		// Decode JSON and use array_map to transform the data.
 		return array_map( function ( $env_info_json ) {

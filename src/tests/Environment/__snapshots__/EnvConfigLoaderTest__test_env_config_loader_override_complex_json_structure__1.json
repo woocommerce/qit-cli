@@ -1,0 +1,14 @@
+{
+    "database": {
+        "host": "localhost",
+        "port": 3306,
+        "credentials": {
+            "username": "user",
+            "password": "newpass"
+        }
+    },
+    "features": [
+        "feature5",
+        "feature4"
+    ]
+}
