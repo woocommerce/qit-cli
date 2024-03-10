@@ -66,7 +66,7 @@ abstract class EnvInfo implements \JsonSerializable {
 				throw new \RuntimeException( 'Invalid environment type.' );
 		}
 
-		$env_info->environment   = $decoded_json['environment'];
+		$env_info->environment   = $decoded_json['environment'] ?? 'e2e';
 		$env_info->env_id        = uniqid();
 		$env_info->temporary_env = normalize_path( Environment::get_temp_envs_dir() . $env_info->environment . '-' . $env_info->env_id );
 		$env_info->created_at    = time();

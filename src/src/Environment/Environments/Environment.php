@@ -73,13 +73,6 @@ abstract class Environment {
 	}
 
 	/**
-	 * The concrete classes that implement this method must call "$this->do_up()".
-	 *
-	 * @return void
-	 */
-	abstract public function up(): void;
-
-	/**
 	 * @return array<string,string>
 	 */
 	abstract protected function get_generate_docker_compose_envs(): array;
@@ -95,7 +88,7 @@ abstract class Environment {
 		$this->volumes = $volumes;
 	}
 
-	protected function do_up( bool $attached = false ): void {
+	public function up( bool $attached = false ): void {
 		// Start the benchmark.
 		$start = microtime( true );
 

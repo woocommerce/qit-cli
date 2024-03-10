@@ -37,10 +37,6 @@ class E2EEnvironment extends Environment {
 	/** @var bool */
 	protected $skip_activating_plugins = false;
 
-	public function up(): void {
-		// TODO: Implement up() method.
-	}
-
 	public function get_name(): string {
 		return 'e2e';
 	}
@@ -139,6 +135,7 @@ class E2EEnvironment extends Environment {
 		if ( ! file_exists( $activation_report_file ) ) {
 			// Probably no plugins to activate?
 			$this->output->writeln( '<info>No plugins to activate.</info>' );
+
 			return;
 		}
 

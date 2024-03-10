@@ -33,7 +33,7 @@ class EnvConfigLoader {
 	/**
 	 * @return array<scalar|array<scalar>>|null
 	 */
-	public function load_config(): ?array {
+	public function load_config(): array {
 		/*
 		 * Rules:
 		 * - Directory is working-directory gwtcwd();
@@ -77,7 +77,7 @@ class EnvConfigLoader {
 		}
 
 		if ( ! $env_file ) {
-			return null;
+			return [];
 		}
 
 		$env_override_file = null;
