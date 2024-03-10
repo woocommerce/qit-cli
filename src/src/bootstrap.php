@@ -45,12 +45,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\YamlEncoder;
-use Symfony\Component\Serializer\Mapping\ClassDiscriminatorFromClassMetadata;
-use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
-use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\SerializerInterface;
 
 if ( ! isset( $container ) ) {
 	throw new LogicException( 'This file must be called from the context where a $container is defined.' );
@@ -96,19 +91,6 @@ $container->singleton( Output::class, function () {
 $container->singleton( Serializer::class, function () {
 	return new Serializer( [], [ new JsonEncoder(), new YamlEncoder() ] );
 } );
-
-/*
-$container->singleton( SerializerInterface::class, function () {
-	// Symfony Serializer can go pretty crazy when unserializing an abstract class.
-	$class_metadata_factory = new ClassMetadataFactory( new AnnotationLoader( new AnnotationReader() ) );
-	$class_discriminator    = new ClassDiscriminatorFromClassMetadata( $class_metadata_factory );
-
-	return new Serializer(
-		[ new ObjectNormalizer( $class_metadata_factory, null, null, null, $class_discriminator ) ],
-		[ new JsonEncoder(), new YamlEncoder() ]
-	);
-} );
-*/
 
 $container->bind( OutputInterface::class, $container->make( Output::class ) );
 $container->bind( InputInterface::class, $container->make( Input::class ) );

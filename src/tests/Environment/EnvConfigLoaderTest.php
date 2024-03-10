@@ -18,12 +18,19 @@ class EnvConfigLoaderTest extends TestCase {
 		parent::tearDown();
 	}
 
-	public function test_env_config_loader() {
+	public function test_env_config_loader_from_json() {
 		App::setVar( 'QIT_CONFIG_LOADER_DIR', __DIR__ . '/../data/env-config/' );
-		file_put_contents( App::getVar( 'QIT_CONFIG_LOADER_DIR' ) . 'qit-env.json', json_encode( [
-			'type' => 'e2e',
-			'foo'  => 'bar',
-		] ) );
+		file_put_contents( App::getVar( 'QIT_CONFIG_LOADER_DIR' ) . 'qit-env.json', json_encode( [ 'foo' => 'bar' ] ) );
+		$this->to_delete[] = App::getVar( 'QIT_CONFIG_LOADER_DIR' ) . 'qit-env.json';
+		$env_config_loader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
+
+		$this->assertMatchesJsonSnapshot( $env_config_loader->load_config() );
+	}
+
+	public function test_env_config_loader_from_yml() {
+		App::setVar( 'QIT_CONFIG_LOADER_DIR', __DIR__ . '/../data/env-config/' );
+		file_put_contents( App::getVar( 'QIT_CONFIG_LOADER_DIR' ) . 'qit-env.yml', "foo: bar" );
+		$this->to_delete[] = App::getVar( 'QIT_CONFIG_LOADER_DIR' ) . 'qit-env.yml';
 		$env_config_loader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
 		$this->assertMatchesJsonSnapshot( $env_config_loader->load_config() );

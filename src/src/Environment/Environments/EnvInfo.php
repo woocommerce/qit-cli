@@ -2,15 +2,6 @@
 
 namespace QIT_CLI\Environment\Environments;
 
-use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
-use Symfony\Component\Serializer\Annotation\DiscriminatorMap;
-
-/**
- * @DiscriminatorMap(typeProperty="type", mapping={
- *    "e2e"="\QIT_CLI\Environment\Environments\E2E\E2EEnvInfo",
- * })
- */
-/*#[\Symfony\Component\Serializer\Annotation\DiscriminatorMap( typeProperty: 'type', mapping: [ 'e2e' => E2EEnvInfo::class ] )]*/
 abstract class EnvInfo {
 	/** @var string */
 	public $type;
