@@ -111,13 +111,14 @@ HELP
 		 *
 		 * This affects the order of precedence that each option gets.
 		 *
-		 * 1: Option set at runtime
-		 * 2: Option in config file
+		 * 1: Option set at runtime (will be in $GLOBALS['argv'])
+		 * 2: Option in config file (will be in .?qit-env.(json|yml))
 		 * 3. Default value
 		 */
 		foreach ( $options as $k => &$v ) {
+			// Todo: Add support for shortcuts as well.
 			foreach ( $GLOBALS['argv'] as $a ) {
-				if ( $a === "--$k=$v" ) {
+				if ( $a === "--$k" ) {
 					$options_to_env_info['overrides'][ $k ] = $v;
 					continue 2;
 				}
