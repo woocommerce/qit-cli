@@ -89,11 +89,15 @@ class E2EEnvironment extends Environment {
 		 * @phpstan-ignore-next-line
 		 */
 		if ( ! empty( $this->php_extensions ) ) {
+			$this->output->writeln( '<info>Installing PHP extensions...</info>' );
+			// Install PHP extensions, if needed.
 			$this->docker->run_inside_docker( $env_info, [ '/bin/bash', '/qit/bin/php-extensions.sh' ], [
 				'PHP_EXTENSIONS' => implode( ' ', $this->php_extensions ), // Space-separated list of PHP extensions.
 			], '0:0' );
 		}
 
+		// Setup WordPress.
+		$this->output->writeln( '<info>Setting up WordPress...</info>' );
 		$this->docker->run_inside_docker( $env_info, [ '/bin/bash', '/qit/bin/wordpress-setup.sh' ], [
 			'WORDPRESS_VERSION'   => $this->wordpress_version,
 			'WOOCOMMERCE_VERSION' => $this->woocommerce_version,
@@ -102,27 +106,89 @@ class E2EEnvironment extends Environment {
 			'QIT_DOCKER_REDIS'    => $this->enable_object_cache ? 'yes' : 'no',
 		] );
 
+		// Activate plugins.
+		$this->output->writeln( '<info>Activating plugins...</info>' );
+		$this->docker->run_inside_docker( $env_info, [ 'php', '/qit/bin/plugins-activate.php' ] );
+		$this->parse_php_activation_report( $env_info );
+
 		$env_info->php_version       = $this->php_version;
 		$env_info->wordpress_version = $this->wordpress_version;
 		$env_info->redis             = $this->enable_object_cache;
 	}
 
+	protected function parse_php_activation_report( EnvInfo $env_info ): void {
+		$activation_report_file = $env_info->temporary_env . 'bin/plugin-activation-report.json';
+
+		if ( ! file_exists( $activation_report_file ) ) {
+			// Probably no plugins to activate?
+			$this->output->writeln( '<info>No plugins to activate.</info>' );
+			return;
+		}
+
+		$activation_report = json_decode( file_get_contents( $activation_report_file ), true );
+
+		if ( ! is_array( $activation_report ) ) {
+			$this->output->writeln( '<error>Invalid plugin activation report generated.</error>' );
+
+			return;
+		}
+
+		$has_big_debug_log = false;
+
+		foreach ( $activation_report as $r ) {
+			/**
+			 * @var array{
+			 *     plugin: string,
+			 *     activated: bool,
+			 *     debug_log: array<string>,
+			 * } $r
+			 */
+			$expected_schema = [
+				'plugin'    => 'string',
+				'activated' => 'boolean',
+				'debug_log' => 'array',
+			];
+
+			foreach ( $expected_schema as $key => $type ) {
+				if ( ! array_key_exists( $key, $r ) || gettype( $r[ $key ] ) !== $type ) {
+					$this->output->writeln( '<error>Invalid plugin activation report generated.</error>' );
+
+					return;
+				}
+			}
+
+			if ( ! $r['activated'] ) {
+				$this->output->writeln( sprintf( '<error>Plugin %s failed to activate.</error>', $r['plugin'] ) );
+			}
+
+			if ( ! empty( $r['debug_log'] ) ) {
+				$this->output->writeln(
+					sprintf(
+						'<error>New debug log entries were generated while activating plugin "%s"%s:</error>',
+						$r['plugin'], // @phan-suppress-current-line PhanTypeMismatchArgumentInternal
+						count( $r['debug_log'] ) > 10 ? sprintf( ' (%d lines total, showing last 10)', count( $r['debug_log'] ) ) : ''
+					)
+				);
+				if ( count( $r['debug_log'] ) > 10 ) {
+					$has_big_debug_log = true;
+					$r['debug_log']    = array_slice( $r['debug_log'], - 10 );
+				}
+				$table = new Table( $this->output );
+				foreach ( $r['debug_log'] as $line ) {
+					$table->addRow( [ $line ] );
+				}
+				$table->render();
+			}
+		}
+
+		if ( $has_big_debug_log ) {
+			$this->output->writeln( sprintf( '<info>Some debug logs were too big to show. Full logs: %s</info>', $activation_report_file ) );
+		}
+	}
+
 	protected function additional_output( EnvInfo $env_info ): void {
 		global $argv;
 		$io = new SymfonyStyle( App::make( InputInterface::class ), $this->output );
-		$io->success( 'Temporary test environment created. (' . $env_info->env_id . ')' );
-
-		$listing = [
-			sprintf( 'URL: %s', $env_info->site_url ),
-			sprintf( 'Admin URL: %s/wp-admin', $env_info->site_url ),
-			'Admin Credentials: admin/password',
-			sprintf( 'PHP Version: %s', $env_info->php_version ),
-			sprintf( 'WordPress Version: %s', $env_info->wordpress_version ),
-			sprintf( 'Redis Object Cache? %s', $env_info->redis ? 'Yes' : 'No' ),
-			sprintf( 'Path: %s', $env_info->temporary_env ),
-		];
-
-		$io->listing( $listing );
 
 		if ( $this->output->isVerbose() ) {
 			// Output a table of volume mappings.
@@ -144,7 +210,29 @@ class E2EEnvironment extends Environment {
 					->setStyle( 'box' )
 					->render();
 			}
-		} else {
+
+			$io->newLine();
+
+			$io->section( 'Plugins and Themes' );
+			$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', 'wp plugin list --skip-plugins --skip-themes' ] );
+			$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', 'wp theme list --skip-plugins --skip-themes' ] );
+		}
+
+		$io->success( 'Temporary test environment created. (' . $env_info->env_id . ')' );
+
+		$listing = [
+			sprintf( 'URL: %s', $env_info->site_url ),
+			sprintf( 'Admin URL: %s/wp-admin', $env_info->site_url ),
+			'Admin Credentials: admin/password',
+			sprintf( 'PHP Version: %s', $env_info->php_version ),
+			sprintf( 'WordPress Version: %s', $env_info->wordpress_version ),
+			sprintf( 'Redis Object Cache? %s', $env_info->redis ? 'Yes' : 'No' ),
+			sprintf( 'Path: %s', $env_info->temporary_env ),
+		];
+
+		$io->listing( $listing );
+
+		if ( ! $this->output->isVerbose() ) {
 			$io->writeln( sprintf( 'To see additional info, run with the "--verbose" flag.' ) );
 		}
 

@@ -160,7 +160,7 @@ class Docker {
 		$process->setTimeout( $timeout );
 		$process->setIdleTimeout( $timeout );
 
-		if ( $this->output->isVerbose() ) {
+		if ( $this->output->isVeryVerbose() ) {
 			// Print the command that will run.
 			$this->output->writeln( $process->getCommandLine() );
 		}
