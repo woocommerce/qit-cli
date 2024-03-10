@@ -3,9 +3,9 @@
 namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\Environment\Docker;
-use QIT_CLI\Environment\EnvInfo;
 use QIT_CLI\Environment\EnvironmentMonitor;
-use QIT_CLI\Environment\Environments\E2EEnvironment;
+use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;

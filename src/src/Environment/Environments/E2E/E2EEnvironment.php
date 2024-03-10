@@ -1,13 +1,14 @@
 <?php
 
-namespace QIT_CLI\Environment\Environments;
+namespace QIT_CLI\Environment\Environments\E2E;
 
 use QIT_CLI\App;
-use QIT_CLI\Environment\EnvInfo;
-use QIT_CLI\Environment\Environment;
+use QIT_CLI\Environment\Environments\EnvInfo;
+use QIT_CLI\Environment\Environments\Environment;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use function QIT_CLI\Environment\Environments\gettype;
 use function QIT_CLI\is_windows;
 use function QIT_CLI\is_wsl;
 
@@ -32,6 +33,10 @@ class E2EEnvironment extends Environment {
 
 	/** @var bool */
 	protected $skip_activating_plugins = false;
+
+	public function up( EnvInfo $env_info ): void {
+		// TODO: Implement up() method.
+	}
 
 	public function get_name(): string {
 		return 'e2e';

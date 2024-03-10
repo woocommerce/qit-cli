@@ -3,7 +3,7 @@
 namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\Cache;
-use QIT_CLI\Environment\Environments\E2EEnvironment;
+use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;

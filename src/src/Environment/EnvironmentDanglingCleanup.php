@@ -3,6 +3,8 @@
 namespace QIT_CLI\Environment;
 
 use QIT_CLI\Cache;
+use QIT_CLI\Environment\Environments\EnvInfo;
+use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\SafeRemove;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;

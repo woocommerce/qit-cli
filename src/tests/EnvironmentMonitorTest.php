@@ -1,9 +1,9 @@
 <?php
 
 use QIT_CLI\App;
-use QIT_CLI\Environment\EnvInfo;
-use QIT_CLI_Tests\QITTestCase;
 use QIT_CLI\Environment\EnvironmentMonitor;
+use QIT_CLI\Environment\Environments\EnvInfo;
+use QIT_CLI_Tests\QITTestCase;
 
 class EnvironmentMonitorTest extends QITTestCase {
 	use \Spatie\Snapshots\MatchesSnapshots;

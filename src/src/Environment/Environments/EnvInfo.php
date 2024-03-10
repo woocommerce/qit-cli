@@ -1,8 +1,17 @@
 <?php
 
-namespace QIT_CLI\Environment;
+namespace QIT_CLI\Environment\Environments;
 
-class EnvInfo implements \JsonSerializable {
+use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use Symfony\Component\Serializer\Annotation\DiscriminatorMap;
+
+/**
+ * @DiscriminatorMap(typeProperty="type", mapping={
+ *    "e2e"="\QIT_CLI\Environment\Environments\E2E\E2EEnvInfo",
+ * })
+ */
+/*#[\Symfony\Component\Serializer\Annotation\DiscriminatorMap( typeProperty: 'type', mapping: [ 'e2e' => E2EEnvInfo::class ] )]*/
+abstract class EnvInfo {
 	/** @var string */
 	public $type;
 
@@ -18,20 +27,8 @@ class EnvInfo implements \JsonSerializable {
 	/** @var string */
 	public $env_id;
 
-	/** @var string The site URL, if any. */
-	public $site_url;
-
-	/** @var string The domain being used. */
-	public $domain;
-
 	/** @var string */
 	public $php_version;
-
-	/** @var string */
-	public $wordpress_version = '';
-
-	/** @var bool */
-	public $redis = false;
 
 	/**
 	 * @var array<string> Array of docker images associated with this environment.
@@ -39,11 +36,11 @@ class EnvInfo implements \JsonSerializable {
 	 */
 	public $docker_images;
 
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize() {
-		return $this;
-	}
-
+	/**
+	 *  This "DiscriminatorMap" is part of "Symfony Serializer" package, which we use to serialize/deserialize this
+	 *  to/from JSON/YML. This property is so that when deserializing a JSON string, it can know which class to
+	 *  instantiate based on the "type" property.
+	 */
 	public function get_docker_container( string $docker_container ): string {
 		$docker_images = $this->docker_images;
 
@@ -58,20 +55,5 @@ class EnvInfo implements \JsonSerializable {
 		}
 
 		return array_shift( $docker_image );
-	}
-
-	/**
-	 * @param array<string,scalar> $decoded_json
-	 */
-	public static function from_array( array $decoded_json ): EnvInfo {
-		$instance = new self();
-
-		foreach ( $decoded_json as $key => $value ) {
-			if ( property_exists( $instance, $key ) ) {
-				$instance->$key = $value;
-			}
-		}
-
-		return $instance;
 	}
 }

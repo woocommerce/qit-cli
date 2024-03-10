@@ -1,5 +1,6 @@
 <?php
 
+use Doctrine\Common\Annotations\AnnotationReader;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\CacheCommand;
@@ -42,12 +43,18 @@ use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\YamlEncoder;
+use Symfony\Component\Serializer\Mapping\ClassDiscriminatorFromClassMetadata;
+use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
+use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 if ( ! isset( $container ) ) {
 	throw new LogicException( 'This file must be called from the context where a $container is defined.' );
 }
-
-App::setVar( 'CLI_VERSION', '@QIT_CLI_VERSION@' );
 
 define( 'MINUTE_IN_SECONDS', 60 );
 define( 'HOUR_IN_SECONDS', 60 * MINUTE_IN_SECONDS );
@@ -55,6 +62,8 @@ define( 'DAY_IN_SECONDS', 24 * HOUR_IN_SECONDS );
 define( 'WEEK_IN_SECONDS', 7 * DAY_IN_SECONDS );
 define( 'MONTH_IN_SECONDS', 30 * DAY_IN_SECONDS );
 define( 'YEAR_IN_SECONDS', 365 * DAY_IN_SECONDS );
+
+App::setVar( 'CLI_VERSION', '@QIT_CLI_VERSION@' );
 
 // Initialize Console.
 $application = new class( 'Quality Insights Toolkit CLI', App::getVar( 'CLI_VERSION' ) ) extends Application {
@@ -83,6 +92,23 @@ $container->singleton( Input::class, function () {
 $container->singleton( Output::class, function () {
 	return new ConsoleOutput();
 } );
+
+$container->singleton( Serializer::class, function () {
+	return new Serializer( [], [ new JsonEncoder(), new YamlEncoder() ] );
+} );
+
+/*
+$container->singleton( SerializerInterface::class, function () {
+	// Symfony Serializer can go pretty crazy when unserializing an abstract class.
+	$class_metadata_factory = new ClassMetadataFactory( new AnnotationLoader( new AnnotationReader() ) );
+	$class_discriminator    = new ClassDiscriminatorFromClassMetadata( $class_metadata_factory );
+
+	return new Serializer(
+		[ new ObjectNormalizer( $class_metadata_factory, null, null, null, $class_discriminator ) ],
+		[ new JsonEncoder(), new YamlEncoder() ]
+	);
+} );
+*/
 
 $container->bind( OutputInterface::class, $container->make( Output::class ) );
 $container->bind( InputInterface::class, $container->make( Input::class ) );

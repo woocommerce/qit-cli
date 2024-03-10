@@ -1,10 +1,14 @@
 <?php
 
-namespace QIT_CLI\Environment;
+namespace QIT_CLI\Environment\Environments;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Config;
+use QIT_CLI\Environment\Docker;
+use QIT_CLI\Environment\EnvironmentDownloader;
+use QIT_CLI\Environment\EnvironmentMonitor;
+use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\SafeRemove;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -70,6 +74,16 @@ abstract class Environment {
 
 	abstract public function get_name(): string;
 
+
+	/**
+	 * The concrete classes that implement this method must call "$this->do_up()".
+	 *
+	 * @param EnvInfo $env_info The environment config.
+	 *
+	 * @return void
+	 */
+	abstract public function up( EnvInfo $env_info ): void;
+
 	/**
 	 * @return array<string,string>
 	 */
@@ -86,7 +100,7 @@ abstract class Environment {
 		$this->volumes = $volumes;
 	}
 
-	public function up( bool $attached = false ): EnvInfo {
+	protected function do_up( bool $attached = false ): EnvInfo {
 		// Start the benchmark.
 		$start = microtime( true );
 
@@ -133,7 +147,7 @@ abstract class Environment {
 	 * Initialize the default env info for the temporary environment.
 	 */
 	protected function init_env_info(): EnvInfo {
-		$env_info                = new EnvInfo();
+		$env_info                = new E2EEnvInfo();
 		$env_info->type          = $this->get_name();
 		$env_info->temporary_env = $this->temporary_environment_path;
 		$env_info->env_id        = $this->temporary_environment_id;
