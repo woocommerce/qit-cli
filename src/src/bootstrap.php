@@ -238,7 +238,7 @@ if ( $is_connected_to_backend ) {
 } else {
 	$io = new Symfony\Component\Console\Style\SymfonyStyle( $container->make( Input::class ), $container->make( Output::class ) );
 	$io->section( 'Limited commands available' );
-	$io->writeln( sprintf( '<fg=black;bg=yellow>[Please run "%s %s" to connect to QIT.]</>', $argv[0], ConnectCommand::getDefaultName() ) );
+	$io->writeln( sprintf( '<fg=black;bg=yellow>[Please run "%s %s" to connect to QIT.]</>', $argv[0] ?? 'qit', ConnectCommand::getDefaultName() ) );
 	$io->writeln( '' );
 }
 

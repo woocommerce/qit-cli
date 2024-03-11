@@ -8,6 +8,7 @@ use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\EnvironmentDownloader;
 use QIT_CLI\Environment\EnvironmentMonitor;
+use QIT_CLI\Environment\ExtensionDownloader;
 use QIT_CLI\SafeRemove;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -19,6 +20,9 @@ use function QIT_CLI\use_tty;
 abstract class Environment {
 	/** @var EnvironmentDownloader */
 	protected $environment_downloader;
+
+	/** @var ExtensionDownloader */
+	protected $extension_downloader;
 
 	/** @var Cache */
 	protected $cache;
@@ -53,7 +57,8 @@ abstract class Environment {
 		EnvironmentMonitor $environment_monitor,
 		Filesystem $filesystem,
 		Docker $docker,
-		OutputInterface $output
+		OutputInterface $output,
+		ExtensionDownloader $extension_downloader
 	) {
 		$this->environment_downloader = $environment_downloader;
 		$this->cache                  = $cache;
@@ -64,6 +69,7 @@ abstract class Environment {
 		$this->cache_dir               = normalize_path( Config::get_qit_dir() . 'cache' );
 		$this->source_environment_path = normalize_path( Config::get_qit_dir() . 'environments/' . $this->get_name() );
 		$this->output                  = $output;
+		$this->extension_downloader    = $extension_downloader;
 	}
 
 	abstract public function get_name(): string;
@@ -103,6 +109,7 @@ abstract class Environment {
 		$this->maybe_create_cache_dir();
 		$this->copy_environment();
 		$this->environment_monitor->environment_added_or_updated( $this->env_info );
+		$this->extension_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );
 		$this->generate_docker_compose();
 		$this->post_generate_docker_compose();
 		$this->up_docker_compose( $attached );
