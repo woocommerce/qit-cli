@@ -40,27 +40,14 @@ class UpEnvironmentCommand extends DynamicCommand {
 			throw new \RuntimeException( 'E2E schema not set or incomplete.' );
 		}
 
-		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'], [
-			'compatibility',
-			'optional_features',
-			'additional_woo_plugins',
-			'additional_wordpress_plugins',
+		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'], [], [
+			'wordpress_version',
+			'woocommerce_version',
+			'php_version',
 		] );
 
 		$this
 			->setDescription( 'Creates a temporary local test environment that is completely ephemeral — no data is persisted. Every time you stop and restart the environment, it\'s like starting fresh.' )
-			->setHelp( <<<'HELP'
-Configure aspects like WordPress and WooCommerce versions, PHP version, and PHP extensions. If run from a plugin/theme directory, the environment automatically maps your plugin/theme. Alternatively, use the --volume flag for manual mapping, e.g.:
-<info>qit env:up --volume /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin</info>
-Default access is via 'localhost', customizable with the QIT_DOMAIN environment variable."
-
-Example:
-
-<info>qit env:up --wordpress-version=rc --woocommerce-version=rc --php-version=8.3 --php-ext=gd --with-object-cache</info>
-
-This will create a disposable test environment with the latest release candidate versions of WordPress and WooCommerce, PHP 8.3, the GD extension, and Object Cache enabled.
-HELP
-			)
 			->addOption( 'plugins', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
 			->addOption( 'themes', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Theme install, if multiple provided activates the last. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
 			->addOption( 'volumes', 'm', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
@@ -71,18 +58,138 @@ HELP
 			// ->addOption( 'attached', 'a', InputOption::VALUE_NONE, 'Whether to attach to the environment after starting it.' )
 			->setAliases( [ 'env:start' ]
 			);
-	}
-
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
-		if ( is_windows() ) {
-			$output->writeln( '<comment>Warning: It is highly recommended to run this script from Windows Subsystem for Linux (WSL) when using Windows.</comment>' );
-		}
 
 		$this->add_option_to_send( 'plugins' );
 		$this->add_option_to_send( 'themes' );
 		$this->add_option_to_send( 'volumes' );
 		$this->add_option_to_send( 'php_extensions' );
 		$this->add_option_to_send( 'object_cache' );
+
+		$options_example = [];
+
+		foreach ( $this->options_to_send as $option => $value ) {
+			$opt = $this->getDefinition()->getOption( $option );
+
+			switch ( $opt->getName() ) {
+				case 'plugins':
+					$options_example[ $opt->getName() ] = [
+						'woocommerce',
+						'wordpress-importer',
+						'automatewoo',
+					];
+					break;
+				case 'themes':
+					$options_example[ $opt->getName() ] = [
+						'storefront',
+					];
+					break;
+				case 'volumes':
+					$options_example[ $opt->getName() ] = [
+						'/home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin',
+					];
+					break;
+				case 'php_extensions':
+					$options_example[ $opt->getName() ] = [
+						'gd',
+						'imagick',
+					];
+					break;
+				case 'wordpress_version':
+				case 'woocommerce_version':
+					$options_example[ $opt->getName() ] = 'rc';
+					break;
+				default:
+					$options_example[ $opt->getName() ] = $opt->getDefault();
+					break;
+			}
+		}
+
+		$possible_options = implode( "\n- ", array_keys( $options_example ) );
+		$json_example     = json_encode( $options_example, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
+		$yml_example      = App::make( \Symfony\Component\Yaml\Yaml::class )->dump( $options_example, 2, 2 );
+
+		$this
+			->setHelp( <<<HELP
+Creates a configurable, temporary, disposable test environment.
+
+<comment>Usage</comment>
+<info>qit env:up</info>
+
+<comment>Config File:</comment>
+Create a config file (JSON or YML) to set default environment options.
+Valid names include qit-env.json, qit-env.yml, .qit-env.json, and .qit-env.yml.
+Override defaults with qit-env.override.json, qit-env.override.yml, etc., typically ignored in version control.
+
+The possible options are:
+
+- $possible_options
+
+<comment>Example JSON file</comment>
+$json_example
+
+<comment>Example YML file</comment>
+$yml_example
+
+<comment>Where to Place Config:</comment>
+The command searches for a config file in the current directory from which it's executed. For example:
+A config file located at /home/mycomputer/my-plugin/qit-env.json is detected when you run <info>cd /home/mycomputer/my-plugin && qit env:up</info>.
+If the config file is placed in the root directory of your plugin, the command automatically includes that plugin in the environment.
+
+<comment>Parameters:</comment>
+Parameters specified at runtime override config file settings.
+Example: <info>qit env:up --php-version=8.3</info> forces PHP version 8.3 regardless of config files.
+
+<comment>PHP Version</comment>
+To set the PHP version, use the --php-version flag, e.g.:
+<info>qit env:up --php-version=8.3</info>
+
+<comment>WordPress Version</comment>
+To set the WordPress version, use the --wordpress-version flag, e.g.:
+<info>qit env:up --wordpress-version=rc</info>
+
+<comment>WooCommerce Version</comment>
+To set the WooCommerce version, use the --woocommerce-version flag, e.g.:
+<info>qit env:up --woocommerce-version=rc</info>
+
+<comment>Object Cache</comment>
+To enable Object Cache (Redis) in the environment, use the --object_cache flag, e.g.:
+<info>qit env:up --object_cache</info>
+
+<comment>Installing Multiple Plugins</comment>
+To install multiple plugins, use the --plugins flag multiple times, e.g.:
+<info>qit env:up --plugins=woocommerce --plugins=wordpress-importer --plugins=automatewoo</info>
+To install premium plugins from the Woo.com Marketplace, you need to be authenticated in QIT with a user that has access to these plugins. 
+Plugins are activated automatically in the test environment.
+
+<comment>Installing Themes</comment>
+To install a theme, use the --themes flag, e.g.:
+<info>qit env:up --themes=storefront</info>
+Themes are not activated automatically in the test environment, as contrary to plugins, there can only be one theme active.
+
+<comment>Volumes</comment>
+To map a local directory to the test environment, use the --volumes flag, e.g.:
+<info>qit env:up --volumes=/home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin</info>
+This will map the local directory /home/mycomputer/my-plugin to the test environment at /var/www/html/wp-content/plugins/my-plugin.
+
+<comment>PHP Extensions</comment>
+To install PHP extensions in the test environment, use the --php_extensions flag, e.g.:
+<info>qit env:up --php_extensions=gd --php_extensions=imagick</info>
+
+<comment>Accessing the Test Website:</comment>
+- URL provided at command completion. Default: "http://localhost:<RANDOM_PORT>"
+
+<comment>Example:</comment>
+<info>qit env:up --wordpress-version=rc --woocommerce-version=rc --php-version=8.3 --php_extensions=gd --object_cache --plugins gutenberg --plugins automatewoo --themes storefront</info>
+
+This will create a disposable test environment with the latest release candidate versions of WordPress and WooCommerce, PHP 8.3, the GD extension, Object Cache enabled, Gutenberg from WordPress.org Plugin Repository and AutomateWoo from the Woo.com Marketplace installed and active, and Storefront installed.
+HELP
+			);
+	}
+
+	protected function execute( InputInterface $input, OutputInterface $output ): int {
+		if ( is_windows() ) {
+			$output->writeln( '<comment>Warning: It is highly recommended to run this script from Windows Subsystem for Linux (WSL) when using Windows.</comment>' );
+		}
 
 		try {
 			$options = $this->parse_options( $input );

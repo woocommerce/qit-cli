@@ -15,10 +15,11 @@ abstract class DynamicCommandCreator {
 	 * @param DynamicCommand $command The command to add the schema to.
 	 * @param array<mixed>   $schema The schema to add to the command.
 	 * @param array<string>  $exceptions What to ignore when adding options.
+	 * @param array<string>  $whitelist If set, only these options will be added.
 	 *
 	 * @return void
 	 */
-	public static function add_schema_to_command( Command $command, array $schema, array $exceptions = [] ): void {
+	public static function add_schema_to_command( Command $command, array $schema, array $exceptions = [], array $whitelist = [] ): void {
 		if ( ! empty( $schema['description'] ) ) {
 			$command->setDescription( $schema['description'] );
 		}
@@ -28,6 +29,10 @@ abstract class DynamicCommandCreator {
 				$ignore = [ 'client', 'event', 'woo_id', 'is_product_update', 'upload_id' ];
 
 				if ( in_array( $property_name, array_merge( $exceptions, $ignore ), true ) ) {
+					continue;
+				}
+
+				if ( ! empty( $whitelist ) && ! in_array( $property_name, $whitelist, true ) ) {
 					continue;
 				}
 
