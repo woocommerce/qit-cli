@@ -137,19 +137,19 @@ If the config file is placed in the root directory of your plugin, the command a
 
 <comment>Parameters:</comment>
 Parameters specified at runtime override config file settings.
-Example: <info>qit env:up --php-version=8.3</info> forces PHP version 8.3 regardless of config files.
+Example: <info>qit env:up --php_version=8.3</info> forces PHP version 8.3 regardless of config files.
 
 <comment>PHP Version</comment>
-To set the PHP version, use the --php-version flag, e.g.:
-<info>qit env:up --php-version=8.3</info>
+To set the PHP version, use the --php_version flag, e.g.:
+<info>qit env:up --php_version=8.3</info>
 
 <comment>WordPress Version</comment>
-To set the WordPress version, use the --wordpress-version flag, e.g.:
-<info>qit env:up --wordpress-version=rc</info>
+To set the WordPress version, use the --wordpress_version flag, e.g.:
+<info>qit env:up --wordpress_version=rc</info>
 
 <comment>WooCommerce Version</comment>
-To set the WooCommerce version, use the --woocommerce-version flag, e.g.:
-<info>qit env:up --woocommerce-version=rc</info>
+To set the WooCommerce version, use the --woocommerce_version flag, e.g.:
+<info>qit env:up --woocommerce_version=rc</info>
 
 <comment>Object Cache</comment>
 To enable Object Cache (Redis) in the environment, use the --object_cache flag, e.g.:
@@ -179,7 +179,7 @@ To install PHP extensions in the test environment, use the --php_extensions flag
 - URL provided at command completion. Default: "http://localhost:<RANDOM_PORT>"
 
 <comment>Example:</comment>
-<info>qit env:up --wordpress-version=rc --woocommerce-version=rc --php-version=8.3 --php_extensions=gd --object_cache --plugins gutenberg --plugins automatewoo --themes storefront</info>
+<info>qit env:up --wordpress_version=rc --woocommerce_version=rc --php_version=8.3 --php_extensions=gd --object_cache --plugins gutenberg --plugins automatewoo --themes storefront</info>
 
 This will create a disposable test environment with the latest release candidate versions of WordPress and WooCommerce, PHP 8.3, the GD extension, Object Cache enabled, Gutenberg from WordPress.org Plugin Repository and AutomateWoo from the Woo.com Marketplace installed and active, and Storefront installed.
 HELP
