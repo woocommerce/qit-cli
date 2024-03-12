@@ -14,7 +14,7 @@
     "manager_sync_v@QIT_CLI_VERSION@": {
         "expire": 1234567890,
         "value": {
-            "latest_cli_version": "0.4.0",
+            "latest_cli_version": "0.4.2",
             "minimum_cli_version": "0.3.2",
             "enforce_latest": true,
             "test_types": {
@@ -31,96 +31,6 @@
             },
             "wccom_url": "https:\/\/woocommerce.com",
             "schemas": {
-<<<<<<< HEAD
-=======
-                "e2e": {
-                    "title": "e2eTest",
-                    "description": "Enqueue E2E Tests.",
-                    "context": [
-                        "view"
-                    ],
-                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
-                    "type": "object",
-                    "properties": {
-                        "woo_id": {
-                            "description": "A WooCommerce Extension ID",
-                            "type": "integer"
-                        },
-                        "wordpress_version": {
-                            "description": "The WordPress version to use in the test.",
-                            "type": "string"
-                        },
-                        "woocommerce_version": {
-                            "description": "The WooCommerce version to use in the test.",
-                            "type": "string"
-                        },
-                        "optional_features": {
-                            "description": "WooCommerce features to enable in the testing environment.",
-                            "type": "object",
-                            "additionalProperties": false,
-                            "properties": {
-                                "hpos": {
-                                    "description": "Whether or not to enable High Performance Order Storage in the testing environment.",
-                                    "type": "boolean"
-                                },
-                                "cc_blocks": {
-                                    "description": "Whether or not to enable Cart and Checkout Blocks in the testing environment.",
-                                    "type": "boolean"
-                                }
-                            }
-                        },
-                        "upload_id": {
-                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
-                            "type": "uuid"
-                        },
-                        "client": {
-                            "default": "other",
-                            "description": "What client originated this request.",
-                            "type": "string",
-                            "enum": {
-                                "qit_cli": "qit_cli",
-                                "cd_client": "cd_client",
-                                "qit_viewer": "qit_viewer",
-                                "ci_runner": "ci_runner",
-                                "mass_test": "mass_test",
-                                "other": "other"
-                            }
-                        },
-                        "event": {
-                            "default": "",
-                            "description": "What event originated this request.",
-                            "type": "string"
-                        },
-                        "additional_plugins": {
-                            "description": "A comma-separated list of additional plugin to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
-                            "type": "array",
-                            "uniqueItems": true,
-                            "items": {
-                                "type": "integer",
-                                "minimum": 1
-                            }
-                        },
-                        "additional_woo_plugins": {
-                            "description": "[Deprecated] A comma-separated list of Additional WooCommerce Extension IDs.",
-                            "type": "array",
-                            "uniqueItems": true,
-                            "items": {
-                                "type": "integer",
-                                "minimum": 1
-                            }
-                        },
-                        "additional_wordpress_plugins": {
-                            "description": "[Deprecated] A comma-separated list of Additional WordPress plugin slugs.",
-                            "type": "array",
-                            "uniqueItems": true,
-                            "items": {
-                                "type": "string",
-                                "minimum": 1
-                            }
-                        }
-                    }
-                },
->>>>>>> trunk
                 "phpstan": {
                     "title": "phpstanTest",
                     "description": "Enqueue PHPStan tests.",
@@ -139,7 +49,7 @@
                             "description": "The WordPress version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "6.5-beta3",
+                                "6.5-RC1",
                                 "6.1.5",
                                 "6.2.4",
                                 "6.3.3",
@@ -153,9 +63,7 @@
                             "description": "The WooCommerce version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "8.7.0-beta.1",
-                                "8.5.1",
-                                "8.5.2",
+                                "8.7.0-rc.1",
                                 "8.6.0",
                                 "8.6.1",
                                 "stable",
@@ -208,7 +116,7 @@
                             "description": "The WordPress version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "6.5-beta3",
+                                "6.5-RC1",
                                 "6.1.5",
                                 "6.2.4",
                                 "6.3.3",
@@ -222,9 +130,7 @@
                             "description": "The WooCommerce version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "8.7.0-beta.1",
-                                "8.5.1",
-                                "8.5.2",
+                                "8.7.0-rc.1",
                                 "8.6.0",
                                 "8.6.1",
                                 "stable",
@@ -306,7 +212,7 @@
                             "description": "The WordPress version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "6.5-beta3",
+                                "6.5-RC1",
                                 "6.1.5",
                                 "6.2.4",
                                 "6.3.3",
@@ -320,9 +226,7 @@
                             "description": "The WooCommerce version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "8.7.0-beta.1",
-                                "8.5.1",
-                                "8.5.2",
+                                "8.7.0-rc.1",
                                 "8.6.0",
                                 "8.6.1",
                                 "stable",
@@ -562,7 +466,7 @@
                             "description": "The WordPress version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "6.5-beta3",
+                                "6.5-RC1",
                                 "6.1.5",
                                 "6.2.4",
                                 "6.3.3",
@@ -576,9 +480,7 @@
                             "description": "The WooCommerce version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "8.6.0-rc.1",
-                                "8.5.1",
-                                "8.5.2",
+                                "8.7.0-rc.1",
                                 "8.6.0",
                                 "8.6.1",
                                 "stable",
@@ -640,8 +542,17 @@
                             "description": "Whether this is a product update test run.",
                             "type": "boolean"
                         },
+                        "additional_plugins": {
+                            "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
                         "additional_woo_plugins": {
-                            "description": "A comma-separated list of Additional WooCommerce Extension IDs.",
+                            "description": "[Deprecated] A comma-separated list of Additional WooCommerce Extension IDs.",
                             "type": "array",
                             "uniqueItems": true,
                             "items": {
@@ -650,7 +561,7 @@
                             }
                         },
                         "additional_wordpress_plugins": {
-                            "description": "A comma-separated list of Additional WordPress plugin slugs.",
+                            "description": "[Deprecated] A comma-separated list of Additional WordPress plugin slugs.",
                             "type": "array",
                             "uniqueItems": true,
                             "items": {
@@ -678,7 +589,7 @@
                             "description": "The WordPress version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "6.5-beta3",
+                                "6.5-RC1",
                                 "6.1.5",
                                 "6.2.4",
                                 "6.3.3",
@@ -692,9 +603,7 @@
                             "description": "The WooCommerce version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "8.6.0-rc.1",
-                                "8.5.1",
-                                "8.5.2",
+                                "8.7.0-rc.1",
                                 "8.6.0",
                                 "8.6.1",
                                 "stable",
@@ -755,8 +664,17 @@
                             "description": "Whether this is a product update test run.",
                             "type": "boolean"
                         },
+                        "additional_plugins": {
+                            "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
                         "additional_woo_plugins": {
-                            "description": "A comma-separated list of Additional WooCommerce Extension IDs.",
+                            "description": "[Deprecated] A comma-separated list of Additional WooCommerce Extension IDs.",
                             "type": "array",
                             "uniqueItems": true,
                             "items": {
@@ -765,7 +683,7 @@
                             }
                         },
                         "additional_wordpress_plugins": {
-                            "description": "A comma-separated list of Additional WordPress plugin slugs.",
+                            "description": "[Deprecated] A comma-separated list of Additional WordPress plugin slugs.",
                             "type": "array",
                             "uniqueItems": true,
                             "items": {
@@ -793,7 +711,7 @@
                             "description": "The WordPress version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "6.5-beta3",
+                                "6.5-RC1",
                                 "6.1.5",
                                 "6.2.4",
                                 "6.3.3",
@@ -807,9 +725,7 @@
                             "description": "The WooCommerce version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "8.6.0-rc.1",
-                                "8.5.1",
-                                "8.5.2",
+                                "8.7.0-rc.1",
                                 "8.6.0",
                                 "8.6.1",
                                 "stable",
@@ -871,8 +787,17 @@
                             "description": "Whether this is a product update test run.",
                             "type": "boolean"
                         },
+                        "additional_plugins": {
+                            "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
                         "additional_woo_plugins": {
-                            "description": "A comma-separated list of Additional WooCommerce Extension IDs.",
+                            "description": "[Deprecated] A comma-separated list of Additional WooCommerce Extension IDs.",
                             "type": "array",
                             "uniqueItems": true,
                             "items": {
@@ -881,7 +806,7 @@
                             }
                         },
                         "additional_wordpress_plugins": {
-                            "description": "A comma-separated list of Additional WordPress plugin slugs.",
+                            "description": "[Deprecated] A comma-separated list of Additional WordPress plugin slugs.",
                             "type": "array",
                             "uniqueItems": true,
                             "items": {
@@ -919,7 +844,7 @@
                             "description": "The WordPress version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "6.5-beta3",
+                                "6.5-RC1",
                                 "6.1.5",
                                 "6.2.4",
                                 "6.3.3",
@@ -933,9 +858,7 @@
                             "description": "The WooCommerce version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "8.6.0-rc.1",
-                                "8.5.1",
-                                "8.5.2",
+                                "8.7.0-rc.1",
                                 "8.6.0",
                                 "8.6.1",
                                 "stable",
@@ -997,8 +920,17 @@
                             "description": "Whether this is a product update test run.",
                             "type": "boolean"
                         },
+                        "additional_plugins": {
+                            "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
                         "additional_woo_plugins": {
-                            "description": "A comma-separated list of Additional WooCommerce Extension IDs.",
+                            "description": "[Deprecated] A comma-separated list of Additional WooCommerce Extension IDs.",
                             "type": "array",
                             "uniqueItems": true,
                             "items": {
@@ -1007,7 +939,7 @@
                             }
                         },
                         "additional_wordpress_plugins": {
-                            "description": "A comma-separated list of Additional WordPress plugin slugs.",
+                            "description": "[Deprecated] A comma-separated list of Additional WordPress plugin slugs.",
                             "type": "array",
                             "uniqueItems": true,
                             "items": {
@@ -1053,9 +985,7 @@
                             "default": "stable",
                             "type": "string",
                             "enum": [
-                                "8.7.0-beta.1",
-                                "8.5.1",
-                                "8.5.2",
+                                "8.7.0-rc.1",
                                 "8.6.0",
                                 "8.6.1",
                                 "stable",
@@ -1067,7 +997,7 @@
                             "default": "stable",
                             "type": "string",
                             "enum": [
-                                "6.5-beta3",
+                                "6.5-RC1",
                                 "6.1.5",
                                 "6.2.4",
                                 "6.3.3",
@@ -1138,6 +1068,15 @@
                                         ]
                                     }
                                 ]
+                            }
+                        },
+                        "additional_plugins": {
+                            "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
                             }
                         },
                         "additional_woo_plugins": {
@@ -1212,18 +1151,18 @@
             ],
             "environments": {
                 "e2e": {
-                    "url": "http:\/\/qit.test:8081\/wp-content\/uploads\/environments\/8652cdd0d3e37728784a84446b2a4b0d.zip",
-                    "checksum": "8652cdd0d3e37728784a84446b2a4b0d"
+                    "url": "http:\/\/qit.test:8081\/wp-content\/uploads\/environments\/72ca30b988998cd65f18330a06e06db4.zip",
+                    "checksum": "72ca30b988998cd65f18330a06e06db4"
                 }
             },
             "versions": {
                 "woocommerce": {
                     "stable": "8.6.1",
-                    "rc": "8.7.0-beta.1"
+                    "rc": "8.7.0-rc.1"
                 },
                 "wordpress": {
                     "stable": "6.4.3",
-                    "rc": "6.5-beta3"
+                    "rc": "6.5-RC1"
                 }
             },
             "hide_e2e": false

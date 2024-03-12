@@ -16,8 +16,8 @@ class ExtensionDownloader {
 	}
 
 	/**
-	 * @param EnvInfo $env_info
-	 * @param string $cache_dir
+	 * @param EnvInfo           $env_info
+	 * @param string            $cache_dir
 	 * @param array<string|int> $plugins Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
 	 * @param array<string|int> $themes Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
 	 *
@@ -31,7 +31,7 @@ class ExtensionDownloader {
 	protected function group_by_downloadable( array $extensions ): array {
 		$grouped = $this->group_by_type( $extensions );
 
-		// Keep only 'slug' and 'id' types as they are considered downloadable
+		// Keep only 'slug' and 'id' types as they are considered downloadable.
 		return [
 			'slug' => $grouped['slug'] ?? [],
 			'id'   => $grouped['id'] ?? [],

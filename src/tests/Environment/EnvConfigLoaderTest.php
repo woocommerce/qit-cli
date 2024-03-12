@@ -2,16 +2,28 @@
 
 use PHPUnit\Framework\TestCase;
 use QIT_CLI\App;
+use QIT_CLI\Environment\EnvConfigLoader;
+use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class EnvConfigLoaderTest extends TestCase {
 	use \Spatie\Snapshots\MatchesSnapshots;
 
 	private $configDir;
 
+	/** @var EnvConfigLoader */
+	private $sut;
+
 	public function setUp(): void {
+		parent::setUp();
 		$this->configDir = __DIR__ . '/../data/env-config/';
 		App::setVar( 'QIT_CONFIG_LOADER_DIR', $this->configDir );
-		parent::setUp();
+
+		App::container()->when( EnvConfigLoader::class )
+		   ->needs( OutputInterface::class )
+		   ->give( NullOutput::class );
+
+		$this->sut = App::make( EnvConfigLoader::class );
 	}
 
 	public function tearDown(): void {
@@ -33,87 +45,76 @@ class EnvConfigLoaderTest extends TestCase {
 	}
 
 	public function test_env_config_loader_no_file() {
-		$env_config_loader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
-
-		$this->assertEquals( [], $env_config_loader->load_config() );
+		$this->assertEquals( [], $this->sut->load_config() );
 
 	}
 
 	public function test_env_config_loader_from_json() {
 		$this->create_config_file( 'qit-env.json', json_encode( [ 'foo' => 'bar' ] ) );
-		$env_config_loader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
-		$this->assertMatchesJsonSnapshot( $env_config_loader->load_config() );
+		$this->assertMatchesJsonSnapshot( $this->sut->load_config() );
 	}
 
 	public function test_env_config_loader_from_yml() {
 		$this->create_config_file( 'qit-env.yml', "foo: bar" );
-		$env_config_loader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
-		$this->assertMatchesJsonSnapshot( $env_config_loader->load_config() );
+		$this->assertMatchesJsonSnapshot( $this->sut->load_config() );
 	}
 
 	public function test_env_config_loader_from_override_json() {
 		$this->create_config_file( 'qit-env.json', json_encode( [ 'foo' => 'bar' ] ) );
 		$this->create_config_file( 'qit-env.override.json', json_encode( [ 'foo' => 'baz' ] ) );
-		$env_config_loader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
-		$this->assertMatchesJsonSnapshot( $env_config_loader->load_config() );
+		$this->assertMatchesJsonSnapshot( $this->sut->load_config() );
 	}
 
 	public function test_env_config_loader_from_override_yml() {
 		$this->create_config_file( 'qit-env.yml', "foo: bar" );
 		$this->create_config_file( 'qit-env.override.yml', "foo: baz" );
-		$env_config_loader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
-		$this->assertMatchesJsonSnapshot( $env_config_loader->load_config() );
+		$this->assertMatchesJsonSnapshot( $this->sut->load_config() );
 	}
 
 	public function test_env_config_exception_both_json_and_yml_exist() {
 		$this->create_config_file( 'qit-env.json', json_encode( [ 'foo' => 'bar' ] ) );
 		$this->create_config_file( 'qit-env.yml', "foo: baz" );
-		$env_config_loader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( 'More than one "qit-env" file exists. Please remove one.' );
-		$env_config_loader->load_config();
+		$this->sut->load_config();
 	}
 
 	public function test_env_config_exception_both_json_and_dot_json_exists() {
 		$this->create_config_file( 'qit-env.json', json_encode( [ 'foo' => 'bar' ] ) );
 		$this->create_config_file( '.qit-env.json', json_encode( [ 'foo' => 'bar' ] ) );
-		$env_config_loader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( 'More than one "qit-env" file exists. Please remove one.' );
-		$env_config_loader->load_config();
+		$this->sut->load_config();
 	}
 
 	public function test_env_config_exception_both_json_and_yml_overrides_exist() {
 		$this->create_config_file( 'qit-env.json', json_encode( [ 'foo' => 'bar' ] ) );
 		$this->create_config_file( 'qit-env.override.json', json_encode( [ 'foo' => 'bar' ] ) );
 		$this->create_config_file( 'qit-env.override.yml', "foo: baz" );
-		$env_config_loader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( 'More than one "qit-env.override" file exists. Please remove one.' );
-		$env_config_loader->load_config();
+		$this->sut->load_config();
 	}
 
 	public function test_env_config_allows_json_config_and_yml_override() {
 		$this->create_config_file( 'qit-env.json', json_encode( [ 'foo' => 'bar' ] ) );
 		$this->create_config_file( 'qit-env.override.yml', "foo: baz" );
-		$env_config_loader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
-		$this->assertMatchesJsonSnapshot( $env_config_loader->load_config() );
+		$this->assertMatchesJsonSnapshot( $this->sut->load_config() );
 	}
 
 	public function test_env_config_allows_yml_config_and_json_override() {
 		$this->create_config_file( 'qit-env.yml', "foo: bar" );
 		$this->create_config_file( 'qit-env.override.json', json_encode( [ 'foo' => 'baz' ] ) );
-		$env_config_loader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
-		$this->assertMatchesJsonSnapshot( $env_config_loader->load_config() );
+		$this->assertMatchesJsonSnapshot( $this->sut->load_config() );
 	}
 
 	public function test_env_config_loader_complex_json_structure() {
@@ -129,9 +130,8 @@ class EnvConfigLoaderTest extends TestCase {
 			'features' => [ 'feature1', 'feature2', 'feature3' ],
 		];
 		$this->create_config_file( 'qit-env.json', json_encode( $complexStructure ) );
-		$envConfigLoader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
-		$this->assertMatchesJsonSnapshot( $envConfigLoader->load_config() );
+		$this->assertMatchesJsonSnapshot( $this->sut->load_config() );
 	}
 
 	public function test_env_config_loader_override_complex_json_structure() {
@@ -156,9 +156,8 @@ class EnvConfigLoaderTest extends TestCase {
 		];
 		$this->create_config_file( 'qit-env.json', json_encode( $baseStructure ) );
 		$this->create_config_file( 'qit-env.override.json', json_encode( $overrideStructure ) );
-		$envConfigLoader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
-		$this->assertMatchesJsonSnapshot( $envConfigLoader->load_config() );
+		$this->assertMatchesJsonSnapshot( $this->sut->load_config() );
 	}
 
 	public function test_env_config_loader_override_with_different_data_types_should_throw() {
@@ -172,10 +171,9 @@ class EnvConfigLoaderTest extends TestCase {
 
 		$this->create_config_file( 'qit-env.json', json_encode( $baseStructure ) );
 		$this->create_config_file( 'qit-env.override.json', json_encode( $overrideStructure ) );
-		$envConfigLoader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
 		$this->expectException( \InvalidArgumentException::class );
-		$envConfigLoader->load_config();
+		$this->sut->load_config();
 	}
 
 	public function test_env_config_loader_override_with_different_data_types_should_throw__2() {
@@ -189,20 +187,18 @@ class EnvConfigLoaderTest extends TestCase {
 
 		$this->create_config_file( 'qit-env.json', json_encode( $baseStructure ) );
 		$this->create_config_file( 'qit-env.override.json', json_encode( $overrideStructure ) );
-		$envConfigLoader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
 		$this->expectException( \InvalidArgumentException::class );
-		$envConfigLoader->load_config();
+		$this->sut->load_config();
 	}
 
 	public function test_env_config_loader_invalid_json_should_throw() {
 		$baseStructure = 'this is not a valid JSON';
 
 		$this->create_config_file( 'qit-env.json', json_encode( $baseStructure ) );
-		$envConfigLoader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
 		$this->expectException( \RuntimeException::class );
-		$envConfigLoader->load_config();
+		$this->sut->load_config();
 	}
 
 	public function test_env_config_loader_override_with_invalid_json_should_throw() {
@@ -214,9 +210,8 @@ class EnvConfigLoaderTest extends TestCase {
 
 		$this->create_config_file( 'qit-env.json', json_encode( $baseStructure ) );
 		$this->create_config_file( 'qit-env.override.json', $invalidOverride );
-		$envConfigLoader = App::make( \QIT_CLI\Environment\EnvConfigLoader::class );
 
 		$this->expectException( \RuntimeException::class );
-		$envConfigLoader->load_config();
+		$this->sut->load_config();
 	}
 }
