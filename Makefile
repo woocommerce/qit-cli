@@ -13,15 +13,16 @@ else
 DOCKER_USER ?= "$(shell id -u):$(shell id -g)"
 endif
 
-## Run a command inside an alpine PHP 7 CLI image.
+## Run a command inside an alpine PHP 8 CLI image.
 ## 1. Command to execute, eg: "./vendor/bin/phpcs" 2. Working dir (optional)
 define execPhpAlpine
-    @docker images -q | grep qit-cli-php-xdebug || docker build --build-arg CI=${CI} -t qit-cli-php-xdebug ./_build/docker/php74
+    @docker image inspect qit-cli-php-xdebug > /dev/null 2>&1 || docker build --build-arg CI=${CI} -t qit-cli-php-xdebug ./_build/docker/php83
     docker run --rm \
         --user $(DOCKER_USER) \
         -v "${PWD}:/app" \
-        -v "${PWD}/_build/docker/php74/ini:/usr/local/etc/php/conf.d/" \
+        -v "${PWD}/_build/docker/php83/ini:/usr/local/etc/php/conf.d/" \
         --env QIT_HOME=/tmp \
+        --env PHP_IDE_CONFIG=serverName=qit_cli \
         --workdir "$(2:=/)" \
         --add-host host.docker.internal:host-gateway \
         qit-cli-php-xdebug \
