@@ -4,6 +4,7 @@
 # ROOT       Set this to 1 to run the command as root.
 ##
 ROOT ?= 0
+DEBUG ?= 0
 ARGS ?=
 
 ifeq (1, $(ROOT))
@@ -12,17 +13,20 @@ else
 DOCKER_USER ?= "$(shell id -u):$(shell id -g)"
 endif
 
-## Run a command inside an alpine PHP 7 CLI image.
+## Run a command inside an alpine PHP 8 CLI image.
 ## 1. Command to execute, eg: "./vendor/bin/phpcs" 2. Working dir (optional)
 define execPhpAlpine
-	@docker images -q | grep qit-cli-php || docker build -t qit-cli-php ./_build/docker/php74
-	docker run --rm \
-		--user $(DOCKER_USER) \
-		-v "${PWD}:/app" \
-		--env QIT_HOME=/tmp \
-		--workdir "$(2:=/)" \
-		qit-cli-php \
-		bash -c "php -d memory_limit=1G $(1)"
+    @docker image inspect qit-cli-php-xdebug > /dev/null 2>&1 || docker build --build-arg CI=${CI} -t qit-cli-php-xdebug ./_build/docker/php83
+    docker run --rm \
+        --user $(DOCKER_USER) \
+        -v "${PWD}:/app" \
+        -v "${PWD}/_build/docker/php83/ini:/usr/local/etc/php/conf.d/" \
+        --env QIT_HOME=/tmp \
+        --env PHP_IDE_CONFIG=serverName=qit_cli \
+        --workdir "$(2:=/)" \
+        --add-host host.docker.internal:host-gateway \
+        qit-cli-php-xdebug \
+        bash -c "php -d xdebug.start_with_request=$(if $(filter 1,$(DEBUG)),yes,no) -d memory_limit=1G $(1)"
 endef
 
 watch:
