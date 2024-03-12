@@ -25,3 +25,4 @@ _tests/**/*.txt
 dev/
 _build/docker/php83/xdebug/*
 !_build/docker/php83/xdebug/.gitkeep
+!_build/docker/php83/xdebug/README.md
