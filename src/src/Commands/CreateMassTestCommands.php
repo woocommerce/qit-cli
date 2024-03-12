@@ -42,13 +42,19 @@ class CreateMassTestCommands extends DynamicCommandCreator {
 						->with_method( 'POST' )
 						->with_post_body( $options )
 						->request();
+
+					$json = json_decode( $json, true );
+					if ( is_array( $json ) && isset( $json['data'] ) ) {
+						$output->writeln( sprintf( '<info>Mass test enqueued on QIT Servers!</info>' ) );
+						$output->writeln( $json['data'] );
+					} else {
+						$output->writeln( sprintf( '<error>Could not enqueue mass test on QIT Servers.</error>' ) );
+					}
 				} catch ( \Exception $e ) {
 					$output->writeln( "<error>{$e->getMessage()}</error>" );
 
 					return Command::FAILURE;
 				}
-
-				$output->writeln( sprintf( '<info>Mass test enqueued on QIT Servers!</info>' ) );
 
 				return Command::SUCCESS;
 			}

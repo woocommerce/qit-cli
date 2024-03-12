@@ -2,12 +2,16 @@
     "url": "https:\/\/qit.woo.com\/wp-json\/cd\/v1\/enqueue-e2e",
     "method": "POST",
     "post_body": {
+<<<<<<< HEAD:src/tests/__snapshots__/RunTestsTest__test_run_with_additional_woo_plugins__3.json
         "wordpress_version": "6.4.3",
         "woocommerce_version": "8.6.1",
         "php_version": "7.4",
         "additional_woo_plugins": "456,789",
         "compatibility": "sut",
-        "woo_id": "123",
+=======
+        "additional_plugins": "456,baz-extension",
+>>>>>>> trunk:src/tests/__snapshots__/RunTestsTest__test_run_with_additional_plugins__3.json
+        "woo_id": 123,
         "event": "cli_published_extension_test"
     },
     "curl_opts": [],
