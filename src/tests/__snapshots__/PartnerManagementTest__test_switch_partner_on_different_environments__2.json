@@ -83,8 +83,17 @@
                             "description": "What event originated this request.",
                             "type": "string"
                         },
+                        "additional_plugins": {
+                            "description": "A comma-separated list of additional plugin to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "integer",
+                                "minimum": 1
+                            }
+                        },
                         "additional_woo_plugins": {
-                            "description": "A comma-separated list of Additional WooCommerce Extension IDs.",
+                            "description": "[Deprecated] A comma-separated list of Additional WooCommerce Extension IDs.",
                             "type": "array",
                             "uniqueItems": true,
                             "items": {
@@ -93,7 +102,7 @@
                             }
                         },
                         "additional_wordpress_plugins": {
-                            "description": "A comma-separated list of Additional WordPress plugin slugs.",
+                            "description": "[Deprecated] A comma-separated list of Additional WordPress plugin slugs.",
                             "type": "array",
                             "uniqueItems": true,
                             "items": {
