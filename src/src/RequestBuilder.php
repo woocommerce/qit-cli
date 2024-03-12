@@ -305,6 +305,51 @@ class RequestBuilder {
 		return $body;
 	}
 
+
+	/**
+	 * Downloads a file from the specified URL and writes it to the specified path.
+	 *
+	 * @param string $file_path The path of the file to write to.
+	 * @param string $url The URL to download the file from.
+	 *
+	 * @throws \RuntimeException If an error occurs during downloading or file handling.
+	 */
+	public static function download_file( string $file_path, string $url ): void {
+		$output = App::make( Output::class );
+
+		if ( $output->isVeryVerbose() ) {
+			$output->writeln( "Downloading $url into $file_path..." );
+		}
+
+		// Open file for writing
+		$fp = fopen( $file_path, 'w' );
+		if ( $fp === false ) {
+			throw new \RuntimeException( 'Could not open file for writing: ' . $file_path );
+		}
+
+		$curl = curl_init();
+
+		$curl_parameters = [
+			CURLOPT_URL            => $url,
+			CURLOPT_RETURNTRANSFER => false, // Directly write the output.
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_FILE           => $fp,   // Write the output to the file.
+		];
+
+		curl_setopt_array( $curl, $curl_parameters );
+
+		curl_exec( $curl );
+		$curl_error = curl_error( $curl );
+		curl_close( $curl );
+		fclose( $fp );
+
+		if ( $curl_error ) {
+			// Delete the potentially partially written file.
+			unlink( $file_path );
+			throw new \RuntimeException( 'Curl error: ' . $curl_error );
+		}
+	}
+
 	protected function wait_after_429( string $headers, int $max_wait = 60 ): int {
 		$retry_after = null;
 

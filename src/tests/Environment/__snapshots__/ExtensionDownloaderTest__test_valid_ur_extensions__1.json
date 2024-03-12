@@ -1,0 +1,14 @@
+{
+    "http:\/\/example.com\/plugin.zip": {
+        "extension": "http:\/\/example.com\/plugin.zip",
+        "type": "plugin",
+        "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\URLHandler",
+        "path": ""
+    },
+    "https:\/\/example.com\/plugin2.zip": {
+        "extension": "https:\/\/example.com\/plugin2.zip",
+        "type": "plugin",
+        "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\URLHandler",
+        "path": ""
+    }
+}

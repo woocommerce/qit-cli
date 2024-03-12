@@ -1,0 +1,26 @@
+{
+    "plugin1": {
+        "extension": "plugin1",
+        "type": "plugin",
+        "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
+        "path": ""
+    },
+    "plugin2": {
+        "extension": "plugin2",
+        "type": "plugin",
+        "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
+        "path": ""
+    },
+    "theme1": {
+        "extension": "theme1",
+        "type": "theme",
+        "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
+        "path": ""
+    },
+    "theme2": {
+        "extension": "theme2",
+        "type": "theme",
+        "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
+        "path": ""
+    }
+}

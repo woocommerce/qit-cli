@@ -8,7 +8,7 @@ use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\EnvironmentDownloader;
 use QIT_CLI\Environment\EnvironmentMonitor;
-use QIT_CLI\Environment\ExtensionDownloader;
+use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
 use QIT_CLI\SafeRemove;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;

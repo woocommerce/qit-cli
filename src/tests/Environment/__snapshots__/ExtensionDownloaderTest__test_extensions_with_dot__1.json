@@ -1,0 +1,20 @@
+{
+    "plugin-v1.2.3": {
+        "extension": "plugin-v1.2.3",
+        "type": "plugin",
+        "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
+        "path": ""
+    },
+    "plugin-v4.5.6": {
+        "extension": "plugin-v4.5.6",
+        "type": "plugin",
+        "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
+        "path": ""
+    },
+    "theme-v7.8.9": {
+        "extension": "theme-v7.8.9",
+        "type": "theme",
+        "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
+        "path": ""
+    }
+}

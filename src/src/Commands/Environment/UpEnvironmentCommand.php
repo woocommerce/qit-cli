@@ -54,6 +54,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->addOption( 'php_extensions', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions to install in the environment.', [] )
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
+			->addOption( 'require', 'r', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load PHP file before running the command (may be used more than once).' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
 			// ->addOption( 'attached', 'a', InputOption::VALUE_NONE, 'Whether to attach to the environment after starting it.' )
 			->setAliases( [ 'env:start' ]
@@ -189,6 +190,22 @@ HELP
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		if ( is_windows() ) {
 			$output->writeln( '<comment>Warning: It is highly recommended to run this script from Windows Subsystem for Linux (WSL) when using Windows.</comment>' );
+		}
+
+		// Load custom PHP scripts, if any.
+		if ( ! empty( $input->getOption( 'require' ) ) ) {
+			foreach ( $input->getOption( 'require' ) as $file ) {
+				if ( file_exists( $file ) ) {
+					if ( $output->isVerbose() ) {
+						$output->writeln( sprintf( 'Loading file %s', $file ) );
+					}
+					require $file;
+				} else {
+					$output->writeln( sprintf( '<error>File %s does not exist.</error>', $file ) );
+
+					return Command::FAILURE;
+				}
+			}
 		}
 
 		try {
