@@ -295,7 +295,6 @@ class EnvironmentDanglingCleanup {
 				$this->dangling_networks[] = $network_name;
 			}
 		}
-
 	}
 
 	/**

@@ -52,13 +52,13 @@ class ExtensionZip {
 				$zip->close();
 
 				if ( $this->output->isVerbose() ) {
-					$this->output->writeln( sprintf( "ZipArchive extraction of %s successful (%f seconds).", basename( $zip_file ), microtime( true ) - $start ) );
+					$this->output->writeln( sprintf( 'ZipArchive extraction of %s successful (%f seconds).', basename( $zip_file ), microtime( true ) - $start ) );
 				}
 
 				return;
 			} else {
 				if ( $this->output->isVerbose() ) {
-					$this->output->writeln( sprintf( "ZipArchive extraction of %s failed, falling back to Docker (%f seconds).", basename( $zip_file ), microtime( true ) - $start ) );
+					$this->output->writeln( sprintf( 'ZipArchive extraction of %s failed, falling back to Docker (%f seconds).', basename( $zip_file ), microtime( true ) - $start ) );
 				}
 			}
 		}
@@ -86,7 +86,7 @@ class ExtensionZip {
 			}
 		} );
 		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( sprintf( "Docker ZIP extraction of %s successful (%f seconds).", basename( $zip_file ), microtime( true ) - $start ) );
+			$this->output->writeln( sprintf( 'Docker ZIP extraction of %s successful (%f seconds).', basename( $zip_file ), microtime( true ) - $start ) );
 		}
 	}
 
@@ -104,13 +104,13 @@ class ExtensionZip {
 				$zip->close();
 
 				if ( $this->output->isVerbose() ) {
-					$this->output->writeln( sprintf( "ZipArchive validation of %s successful (%f seconds).", basename( $zip_file ), microtime( true ) - $start ) );
+					$this->output->writeln( sprintf( 'ZipArchive validation of %s successful (%f seconds).', basename( $zip_file ), microtime( true ) - $start ) );
 				}
 
 				return;
 			} else {
 				if ( $this->output->isVerbose() ) {
-					$this->output->writeln( sprintf( "ZipArchive validation of %s failed, falling back to Docker (%f seconds).", basename( $zip_file ), microtime( true ) - $start ) );
+					$this->output->writeln( sprintf( 'ZipArchive validation of %s failed, falling back to Docker (%f seconds).', basename( $zip_file ), microtime( true ) - $start ) );
 				}
 			}
 		}
@@ -140,7 +140,7 @@ class ExtensionZip {
 		} );
 
 		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( sprintf( "Docker ZIP validation of %s successful (%f seconds).", basename( $zip_file ), microtime( true ) - $start ) );
+			$this->output->writeln( sprintf( 'Docker ZIP validation of %s successful (%f seconds).', basename( $zip_file ), microtime( true ) - $start ) );
 		}
 	}
 }

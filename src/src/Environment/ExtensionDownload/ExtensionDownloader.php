@@ -41,8 +41,8 @@ class ExtensionDownloader {
 	}
 
 	/**
-	 * @param EnvInfo $env_info
-	 * @param string $cache_dir
+	 * @param EnvInfo           $env_info
+	 * @param string            $cache_dir
 	 * @param array<string|int> $plugins Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
 	 * @param array<string|int> $themes Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
 	 *
@@ -82,15 +82,14 @@ class ExtensionDownloader {
 					$this->output->writeln( "Notice: Mapping '{$e->type}s/{$e->extension_identifier}' as read-only to protect your local copy." );
 
 					// Set it as read-only
-					$env_info->volumes["/app/wp-content/{$e->type}s/{$e->extension_identifier}:ro"] = $e->path;
+					$env_info->volumes[ "/app/wp-content/{$e->type}s/{$e->extension_identifier}:ro" ] = $e->path;
 				} else {
-					$env_info->volumes["/app/wp-content/{$e->type}s/{$e->extension_identifier}"] = $e->path;
+					$env_info->volumes[ "/app/wp-content/{$e->type}s/{$e->extension_identifier}" ] = $e->path;
 				}
 			} else {
 				throw new \RuntimeException( 'Download failed.' );
 			}
 		}
-
 	}
 
 	/**
@@ -105,7 +104,10 @@ class ExtensionDownloader {
 		 */
 		$extensions = [];
 
-		foreach ( [ 'plugin' => $plugins, 'theme' => $themes ] as $type => $extension_ids ) {
+		foreach ( [
+			'plugin' => $plugins,
+			'theme'  => $themes,
+		] as $type => $extension_ids ) {
 			foreach ( $extension_ids as $extension_id ) {
 				$ext                       = new Extension();
 				$ext->extension_identifier = $extension_id;

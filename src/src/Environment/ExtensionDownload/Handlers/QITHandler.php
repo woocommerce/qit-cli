@@ -10,7 +10,7 @@ use function QIT_CLI\get_manager_url;
 
 class QITHandler extends Handler {
 	public function populate_extension_versions( array $extensions ): void {
-		$output = App::make( Output::class );
+		$output                 = App::make( Output::class );
 		$extensions_to_download = array_filter( $extensions, function ( Extension $v ) {
 			return ! file_exists( $v->path );
 		} );
@@ -23,7 +23,7 @@ class QITHandler extends Handler {
 			return;
 		}
 
-		$start = microtime( true );
+		$start    = microtime( true );
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/download-urls' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
@@ -77,7 +77,7 @@ class QITHandler extends Handler {
 
 	/**
 	 * @param array<Extension> $extensions
-	 * @param string $cache_dir
+	 * @param string           $cache_dir
 	 *
 	 * @throws \QIT_CLI\Exceptions\DoingAutocompleteException
 	 * @throws \QIT_CLI\Exceptions\NetworkErrorException

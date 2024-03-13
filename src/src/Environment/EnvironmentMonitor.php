@@ -70,5 +70,4 @@ class EnvironmentMonitor {
 
 		return true;
 	}
-
 }

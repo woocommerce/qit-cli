@@ -110,7 +110,6 @@ class EnvConfigLoader {
 		$env_info = EnvInfo::from_array( $env_config );
 
 		return $env_info;
-
 	}
 
 	/**
