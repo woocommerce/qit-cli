@@ -31,13 +31,14 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "6 Errors Detected. (0 Fatal, 0 Warnings, 6 Notices)",
+            "test_summary": "7 Errors Detected. (0 Fatal, 0 Warnings, 7 Notices)",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
-            "test_result_json_extracted": "{EXTRACTED}"
+            "test_result_json_extracted": "{EXTRACTED}",
+            "syntax_errors_json_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
@@ -47,17 +48,18 @@
                         "": {
                             "\\/": 2,
                             "\\/cart\\/": 2,
-                            "\\/my-account\\/": 2
+                            "\\/my-account\\/": 2,
+                            "WP-CLI Plugin Activation": 1
                         }
                     },
                     "error_totals": {
                         "fatal": 0,
-                        "notice": 6,
+                        "notice": 7,
                         "warning": 0,
-                        "E_DEPRECATED": 6
+                        "E_DEPRECATED": 7
                     },
-                    "summary": "6 Errors Detected. (0 Fatal, 0 Warnings, 6 Notices)",
-                    "error_count": 6,
+                    "summary": "7 Errors Detected. (0 Fatal, 0 Warnings, 7 Notices)",
+                    "error_count": 7,
                     "count_extensions_with_errors": 1
                 },
                 "0": {
@@ -398,8 +400,71 @@
                         }
                     ],
                     "db_error": ""
+                },
+                "6": {
+                    "activated_alongside": "",
+                    "context": "WP-CLI Plugin Activation",
+                    "is_fatal": "No",
+                    "error_type": "E_DEPRECATED",
+                    "error_message": "SUT\\\\BarUser implements the Serializable interface, which is deprecated. Implement __serialize() and __unserialize() instead (or in addition, if support for old PHP versions is necessary)",
+                    "error_file": "woocommerce-product-feeds\\/woocommerce-product-feeds.php",
+                    "error_line": 19,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
+                            "line": 324,
+                            "function": "SUT\\\\{closure}",
+                            "class": "WP_CLI\\\\Runner",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
+                            "line": 348,
+                            "function": "apply_filters",
+                            "class": "WP_Hook",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
+                            "line": 517,
+                            "function": "do_action",
+                            "class": "WP_Hook",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-settings.php",
+                            "line": 695,
+                            "function": "do_action"
+                        },
+                        {
+                            "file": "phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/WP_CLI\\/Runner.php",
+                            "line": 1363,
+                            "args": [
+                                "\\/var\\/www\\/html\\/wp-settings.php"
+                            ],
+                            "function": "require"
+                        },
+                        {
+                            "file": "phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/WP_CLI\\/Runner.php",
+                            "line": 1282,
+                            "function": "load_wordpress",
+                            "class": "WP_CLI\\\\Runner",
+                            "type": "->"
+                        },
+                        {
+                            "file": "phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/WP_CLI\\/Bootstrap\\/LaunchRunner.php",
+                            "line": 28,
+                            "function": "start",
+                            "class": "WP_CLI\\\\Runner",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
                 }
             }
+        },
+        {
+            "syntax_errors_json": []
         }
     ]
 ]';

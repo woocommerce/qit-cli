@@ -37,7 +37,8 @@
             "update_complete": true,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
-            "test_result_json_extracted": "{EXTRACTED}"
+            "test_result_json_extracted": "{EXTRACTED}",
+            "syntax_errors_json_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
@@ -167,6 +168,9 @@
                     }
                 }
             }
+        },
+        {
+            "syntax_errors_json": []
         }
     ]
 ]';
