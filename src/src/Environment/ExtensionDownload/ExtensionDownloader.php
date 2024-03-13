@@ -75,10 +75,11 @@ class ExtensionDownloader {
 			if ( is_file( $e->path ) ) {
 				$this->extension_zip->extract_zip( $e->path, "$env_info->temporary_env/html/wp-content/{$e->type}s" );
 			} elseif ( is_dir( $e->path ) ) {
-				$env_info->volumes["/app/wp-content/{$e->type}s/{$e->extension_identifier}"] = $e->path;
 				if ( ! getenv( 'QIT_ALLOW_WRITE' ) ) {
-					// Set it as read-only to prevent dev messing up their local copy inadvertly (default behavior).
-					$env_info->volume_flags["/app/wp-content/{$e->type}s/{$e->extension_identifier}"] = 'ro';
+					// Set it as read-only to prevent dev messing up their local copy inadvertently (default behavior).
+					$env_info->volumes["/app/wp-content/{$e->type}s/{$e->extension_identifier}:ro"] = $e->path;
+				} else {
+					$env_info->volumes["/app/wp-content/{$e->type}s/{$e->extension_identifier}"] = $e->path;
 				}
 			} else {
 				throw new \RuntimeException( 'Download failed.' );

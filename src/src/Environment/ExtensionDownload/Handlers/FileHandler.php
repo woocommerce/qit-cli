@@ -56,13 +56,13 @@ class FileHandler extends Handler {
 			// Search for 'Plugin Name:' in '.php' files
 			if ( $file->getExtension() === 'php' ) {
 				$contents = file_get_contents( $file->getPathname() );
-				if ( strpos( $contents, 'Plugin Name:' ) !== false ) {
+				if ( stripos( $contents, 'Plugin Name:' ) !== false ) {
 					$extension->type = 'plugin';
 					break;
 				}
 			} elseif ( $file->getExtension() === 'css' ) {
 				$contents = file_get_contents( $file->getPathname() );
-				if ( strpos( $contents, 'Theme Name:' ) !== false ) {
+				if ( stripos( $contents, 'Theme Name:' ) !== false ) {
 					$extension->type = 'theme';
 					break;
 				}

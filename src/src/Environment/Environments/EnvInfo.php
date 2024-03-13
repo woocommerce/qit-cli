@@ -42,11 +42,9 @@ abstract class EnvInfo implements \JsonSerializable {
 	 *
 	 * @var array<string, string> $volumes Each element of the array is:
 	 *                                    - Key: Container path (string)
-	 *                                    - Value: Local path (string)
+	 *                                    - Value: Local path (string) (Optional ":<FLAGS>", such as ":ro" for read-only)
 	 */
 	public $volumes = [];
-
-	public $volume_flags = [];
 
 	/**
 	 * @var array<string> Array of docker images associated with this environment.
