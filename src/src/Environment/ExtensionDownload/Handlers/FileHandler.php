@@ -53,7 +53,7 @@ class FileHandler extends Handler {
 				continue;
 			}
 
-			// Search for 'Plugin Name:' in '.php' files
+			// Search for 'Plugin Name:' in '.php' files.
 			if ( $file->getExtension() === 'php' ) {
 				$contents = file_get_contents( $file->getPathname() );
 				if ( stripos( $contents, 'Plugin Name:' ) !== false ) {

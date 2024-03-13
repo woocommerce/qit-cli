@@ -34,7 +34,7 @@ class EnvironmentMonitor {
 			throw new \Exception( 'Environment not found.' );
 		}
 		foreach ( $this->get() as $env_info ) {
-			if ( $env_info->env_id == $env_info_id ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+			if ( $env_info->env_id == $env_info_id ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison,Universal.Operators.StrictComparisons.LooseEqual
 				return $env_info;
 			}
 		}

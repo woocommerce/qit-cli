@@ -8,6 +8,9 @@ use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
 
 class URLHandler extends Handler {
+	/**
+	 * @inheritDoc
+	 */
 	public function populate_extension_versions( array $extensions ): void {
 		// No-op.
 	}
@@ -22,11 +25,17 @@ class URLHandler extends Handler {
 		$extension->extension_identifier = md5( $extesion_input );
 	}
 
+	/**
+	 * @param array<Extension> $extensions
+	 * @param string           $cache_dir
+	 *
+	 * @throws \RuntimeException If an error occurs during downloading or file handling.
+	 */
 	public function maybe_download_extensions( array $extensions, string $cache_dir ): void {
 		$output = App::make( Output::class );
 
 		foreach ( $extensions as $e ) {
-			// As version is "undefined", cache burst is shorter: Hour of the day (0-24)
+			// As version is "undefined", cache burst is shorter: Hour of the day (0-24).
 			$cache_burst = gmdate( 'G' );
 
 			$cache_file = $this->make_cache_path( $cache_dir, $e->type, $e->extension_identifier, $e->version, $cache_burst );

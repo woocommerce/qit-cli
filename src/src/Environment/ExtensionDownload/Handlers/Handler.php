@@ -11,9 +11,9 @@ use function QIT_CLI\normalize_path;
 
 abstract class Handler {
 	/**
-	 * Populates the "version" property of the given extensions.
+	 * This function should set the $version property of the given extensions.
 	 *
-	 * This is used for cache bursting.
+	 * This is used for creating the cache file name
 	 *
 	 * @param array<Extension> $extensions The extensions to get versions for.
 	 *
@@ -21,6 +21,16 @@ abstract class Handler {
 	 */
 	abstract public function populate_extension_versions( array $extensions ): void;
 
+	/**
+	 * This function should set the $path property of the given extensions.
+	 *
+	 * Downloads the given extensions if needed, or set from cache.
+	 *
+	 * @param array<Extension> $extensions
+	 * @param string           $cache_dir
+	 *
+	 * @return void
+	 */
 	abstract public function maybe_download_extensions( array $extensions, string $cache_dir ): void;
 
 	/**
@@ -38,8 +48,7 @@ abstract class Handler {
 	 * @param string $cache_burst A cache burst string, defaults to the week of the year.
 	 * @param string $file_format The file format.
 	 *
-	 * @return string
-	 * @throws \lucatume\DI52\ContainerException
+	 * @return string The cache path.
 	 */
 	protected function make_cache_path( string $cache_dir, string $type, string $extension_identifier, string $extension_version, string $cache_burst = '', string $file_format = 'zip' ): string {
 		if ( empty( $cache_burst ) ) {
@@ -48,7 +57,7 @@ abstract class Handler {
 		}
 
 		// Make sure $type is as expected.
-		if ( ! in_array( $type, [ 'plugin', 'theme' ] ) ) {
+		if ( ! in_array( $type, [ 'plugin', 'theme' ], true ) ) {
 			throw new \InvalidArgumentException( sprintf( 'Invalid type "%s", should be "plugin" or "theme".', $type ) );
 		}
 

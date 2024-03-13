@@ -309,8 +309,8 @@ class RequestBuilder {
 	/**
 	 * Downloads a file from the specified URL and writes it to the specified path.
 	 *
-	 * @param string $file_path The path of the file to write to.
 	 * @param string $url The URL to download the file from.
+	 * @param string $file_path The path of the file to write to.
 	 *
 	 * @throws \RuntimeException If an error occurs during downloading or file handling.
 	 */

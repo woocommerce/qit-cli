@@ -334,7 +334,7 @@ abstract class Environment {
 		}
 
 		// Validate that the port is an integer.
-		if ( ! is_numeric( $port ) || intval( $port ) != $port ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+		if ( ! is_numeric( $port ) || intval( $port ) != $port ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison,Universal.Operators.StrictComparisons.LooseNotEqual
 			throw new \Exception( 'Invalid port number extracted: ' . $port );
 		}
 

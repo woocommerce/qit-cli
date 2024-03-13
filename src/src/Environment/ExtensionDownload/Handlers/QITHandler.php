@@ -79,8 +79,7 @@ class QITHandler extends Handler {
 	 * @param array<Extension> $extensions
 	 * @param string           $cache_dir
 	 *
-	 * @throws \QIT_CLI\Exceptions\DoingAutocompleteException
-	 * @throws \QIT_CLI\Exceptions\NetworkErrorException
+	 * @throws \RuntimeException If an error occurs during downloading or file handling.
 	 */
 	public function maybe_download_extensions( array $extensions, string $cache_dir ): void {
 		$output = App::make( Output::class );

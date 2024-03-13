@@ -235,12 +235,12 @@ class EnvConfigLoader {
 	}
 
 	/**
-	 * @param array<mixed> $array Multidimensional array of scalars.
+	 * @param array<mixed> $array_to_validate Multidimensional array of scalars.
 	 *
 	 * @return bool
 	 */
-	protected function validate_all_values_are_scalars( array $array ) {
-		foreach ( $array as $value ) {
+	protected function validate_all_values_are_scalars( array $array_to_validate ) {
+		foreach ( $array_to_validate as $value ) {
 			if ( is_array( $value ) ) {
 				// If the value is an array, recurse into it.
 				if ( ! $this->validate_all_values_are_scalars( $value ) ) {

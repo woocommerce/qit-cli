@@ -178,7 +178,7 @@ function format_elapsed_time( int $seconds ): string {
 	}
 
 	$seconds = round( $seconds );
-	if ( $seconds != 1 ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+	if ( $seconds != 1 ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison,Universal.Operators.StrictComparisons.LooseNotEqual
 		$periods[ $i ] .= 's';
 	}
 

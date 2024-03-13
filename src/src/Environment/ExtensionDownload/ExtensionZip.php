@@ -91,7 +91,7 @@ class ExtensionZip {
 	}
 
 	public function validate_zip( string $zip_file ): void {
-		// Normalize and hash the zip file path
+		// Normalize and hash the zip file path.
 		$normalized_path                             = normalize_path( $zip_file );
 		$this->already_validated[ $normalized_path ] = md5_file( $zip_file );
 
