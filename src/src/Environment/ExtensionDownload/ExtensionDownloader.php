@@ -51,18 +51,18 @@ class ExtensionDownloader {
 	public function download( EnvInfo $env_info, string $cache_dir, array $plugins = [], array $themes = [] ): void {
 		$extensions = $this->categorize_extensions( $plugins, $themes );
 
-		$handler_to_use = [];
+		$handlers_to_use = [];
 
 		foreach ( $extensions as $e ) {
-			$handler = App::make( $e->handler );
-			if ( ! in_array( $handler, $handler_to_use, false ) ) {
-				$handler_to_use[] = $handler;
+			if ( ! array_key_exists( $e->handler, $handlers_to_use ) ) {
+				$handlers_to_use[ $e->handler ] = [];
 			}
+			$handlers_to_use[ $e->handler ][] = $e;
 		}
 
-		foreach ( $handler_to_use as $handler ) {
-			$handler->populate_extension_versions( $extensions );
-			$handler->maybe_download_extensions( $extensions, $cache_dir );
+		foreach ( $handlers_to_use as $handler_type => $e ) {
+			App::make( $handler_type )->populate_extension_versions( $e );
+			App::make( $handler_type )->maybe_download_extensions( $e, $cache_dir );
 		}
 
 		foreach ( $extensions as $e ) {
