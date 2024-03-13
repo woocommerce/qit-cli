@@ -29,7 +29,7 @@ class FileHandler extends Handler {
 				$this->find_type_in_dir( $e );
 			} elseif ( is_file( $e->extension_identifier ) ) {
 				// Must be a ".zip" file.
-				if ( ! substr( $e->extension_identifier, - 4 ) === '.zip' ) {
+				if ( substr( $e->extension_identifier, - 4 ) !== '.zip' ) {
 					throw new \RuntimeException( sprintf( 'When passing a local path, it must be either a directory or a zip file. Found: %s', $e->extension_identifier ) );
 				}
 				$this->find_type_in_zip( $e );
@@ -38,7 +38,7 @@ class FileHandler extends Handler {
 			}
 
 			// Basic validation, but should never happen.
-			if ( empty( $e->type ) ) {
+			if ( empty( $e->type ) ) { // @phpstan-ignore-line
 				throw new \RuntimeException( 'Could not determine the type of the extension.' );
 			}
 

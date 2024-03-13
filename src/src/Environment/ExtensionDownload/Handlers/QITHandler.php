@@ -101,7 +101,7 @@ class QITHandler extends Handler {
 				}
 			}
 
-			if ( ! isset( $e->download_url ) ) {
+			if ( empty( $e->download_url ) ) {
 				throw new \RuntimeException( 'No download URL found for ' . $e->extension_identifier );
 			}
 

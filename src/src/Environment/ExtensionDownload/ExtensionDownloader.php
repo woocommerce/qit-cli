@@ -132,7 +132,7 @@ class ExtensionDownloader {
 					}
 				}
 
-				if ( ! isset( $ext->handler ) ) {
+				if ( empty( $ext->handler ) ) {
 					if ( is_numeric( $extension_id ) ) {
 						// Woo.com product ID.
 						$ext->handler = QITHandler::class;

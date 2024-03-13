@@ -15,6 +15,7 @@ class ExtensionZip {
 	/** @var Docker */
 	private $docker;
 
+	/** @var array<string, string> Keys are paths, values are checksum hashes. We use this to make sure we don't validate the same file on this request. */
 	private $already_validated = [];
 
 	public function __construct( OutputInterface $output, Docker $docker ) {
