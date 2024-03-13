@@ -24,6 +24,13 @@ abstract class Handler {
 	abstract public function maybe_download_extensions( array $extensions, string $cache_dir ): void;
 
 	/**
+	 * When assigning a handler to a given extension, we call this callback to be used if needed.
+	 */
+	public function assign_handler_to_extension( string $extension_input, Extension $extension ): void {
+		// No-op by default.
+	}
+
+	/**
 	 * @param string $cache_dir The cache directory.
 	 * @param string $type The type of the extension to make a path for.
 	 * @param string $extension_identifier The extension identifier.

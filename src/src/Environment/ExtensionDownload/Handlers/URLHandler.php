@@ -3,12 +3,23 @@
 namespace QIT_CLI\Environment\ExtensionDownload\Handlers;
 
 use QIT_CLI\App;
+use QIT_CLI\Environment\ExtensionDownload\Extension;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
 
 class URLHandler extends Handler {
 	public function populate_extension_versions( array $extensions ): void {
 		// No-op.
+	}
+
+	public function assign_handler_to_extension( string $extesion_input, Extension $extension ): void {
+		// URLs that ends with ".zip".
+		if ( substr( $extesion_input, - 4 ) !== '.zip' ) {
+			throw new \InvalidArgumentException( 'We currently only support .zip URLs' );
+		}
+
+		$extension->download_url         = $extesion_input;
+		$extension->extension_identifier = md5( $extesion_input );
 	}
 
 	public function maybe_download_extensions( array $extensions, string $cache_dir ): void {
@@ -27,14 +38,14 @@ class URLHandler extends Handler {
 				}
 				$e->path = $cache_file;
 
-				return;
+				continue;
 			} else {
 				if ( $output->isVeryVerbose() ) {
 					$output->writeln( "Cache miss on {$e->type} {$e->extension_identifier}." );
 				}
 			}
 
-			RequestBuilder::download_file( $e->extension_identifier, $cache_file );
+			RequestBuilder::download_file( $e->download_url, $cache_file );
 			$e->path = $cache_file;
 		}
 	}

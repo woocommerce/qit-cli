@@ -58,7 +58,7 @@ class ExtensionZip {
 			'unzip /app/file.zip -d /app/extracted',
 		] );
 
-		$zip_process->mustRun( function ( $out, $type ) {
+		$zip_process->mustRun( function ( $type, $out ) {
 			if ( $this->output->isVerbose() ) {
 				'ZIP Extraction: ' . $this->output->write( $out );
 			}
@@ -83,7 +83,7 @@ class ExtensionZip {
 			'zip -T /app/file.zip',
 		] );
 
-		$zip_process->mustRun( function ( $out, $type ) {
+		$zip_process->mustRun( function ( $type, $out ) {
 			if ( $this->output->isVerbose() ) {
 				'ZIP Validation: ' . $this->output->write( $out );
 			}

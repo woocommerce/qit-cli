@@ -51,11 +51,19 @@ class ExtensionDownloader {
 	public function download( EnvInfo $env_info, string $cache_dir, array $plugins = [], array $themes = [] ): void {
 		$extensions = $this->categorize_extensions( $plugins, $themes );
 
+		$handler_to_use = [];
+
 		foreach ( $extensions as $e ) {
-			App::make( $e->handler )->maybe_download( $e, $cache_dir, $env_info );
+			$handler = App::make( $e->handler );
+			if ( ! in_array( $handler, $handler_to_use, false ) ) {
+				$handler_to_use[] = $handler;
+			}
 		}
 
-		$this->qit_handler->download_extensions( $extensions, $cache_dir );
+		foreach ( $handler_to_use as $handler ) {
+			$handler->populate_extension_versions( $extensions );
+			$handler->maybe_download_extensions( $extensions, $cache_dir );
+		}
 
 		foreach ( $extensions as $e ) {
 			if ( ! file_exists( $e->path ) ) {
@@ -102,45 +110,47 @@ class ExtensionDownloader {
 					throw new \InvalidArgumentException( 'Duplicate extension found.' );
 				}
 
-				// If there is any custom handler, allow it to handle the extension.
+				/*
+				 * If there is any custom handler, allow it to handle the extension.
+				 * This allows devs to implement custom handlers to fetch extensions
+				 * from premium marketplaces that QIT doesn't support.
+				 */
 				foreach ( get_declared_classes() as $class ) {
 					if ( is_subclass_of( $class, CustomHandler::class ) ) {
 						$handler = new $class();
 						if ( $handler->should_handle( $ext ) ) {
-							$ext->handler                = $class;
-							$extensions[ $extension_id ] = $ext;
-							continue 2;
+							$ext->handler = $class;
 						}
 					}
 				}
 
-				if ( is_numeric( $extension_id ) ) {
-					// Woo.com product ID.
-					$ext->handler = QITHandler::class;
-				} elseif ( preg_match( '#^https?://#i', $extension_id ) ) {
-					// URLs that ends with ".zip".
-					if ( substr( $extension_id, - 4 ) !== '.zip' ) {
-						throw new \InvalidArgumentException( 'We currently only support .zip URLs' );
-					}
-					$ext->handler = URLHandler::class;
-				} elseif ( preg_match( '#^[\w-]+/[\w-]+(?:\#[\w-]+)?$#', $extension_id ) ) {
-					// GitHub Repo, similar to wp-env.
-					throw new \InvalidArgumentException( 'Installing from GitHub repositories is not supported yet.' );
-				} elseif ( preg_match( '#^ssh://#i', $extension_id ) ) {
-					// SSH URLs, similar to wp-env.
-					throw new \InvalidArgumentException( 'SSH URLs are currently not supported.' );
-				} elseif ( file_exists( $extension_id ) ) {
-					// Local path.
-					$ext->handler = FileHandler::class;
-					$ext->path    = $extension_id;
-				} else {
-					// If it's none of the above, it's a slug.
-					if ( static::is_valid_plugin_slug( $extension_id ) ) {
+				if ( ! isset( $ext->handler ) ) {
+					if ( is_numeric( $extension_id ) ) {
+						// Woo.com product ID.
 						$ext->handler = QITHandler::class;
+					} elseif ( preg_match( '#^https?://#i', $extension_id ) ) {
+						$ext->handler = URLHandler::class;
+					} elseif ( preg_match( '#^[\w-]+/[\w-]+(?:\#[\w-]+)?$#', $extension_id ) ) {
+						// GitHub Repo, similar to wp-env.
+						throw new \InvalidArgumentException( 'Installing from GitHub repositories is not supported yet.' );
+					} elseif ( preg_match( '#^ssh://#i', $extension_id ) ) {
+						// SSH URLs, similar to wp-env.
+						throw new \InvalidArgumentException( 'SSH URLs are currently not supported.' );
+					} elseif ( file_exists( $extension_id ) ) {
+						// Local path.
+						$ext->handler = FileHandler::class;
 					} else {
-						throw new \InvalidArgumentException( 'The provided string could not be parsed as any of the valid formats: WP.org/Woo.com Slugs, Woo.com product ID, Local path, or Zip URLs.' );
+						// If it's none of the above, it's a slug.
+						if ( static::is_valid_plugin_slug( $extension_id ) ) {
+							$ext->handler = QITHandler::class;
+						} else {
+							throw new \InvalidArgumentException( 'The provided string could not be parsed as any of the valid formats: WP.org/Woo.com Slugs, Woo.com product ID, Local path, or Zip URLs.' );
+						}
 					}
 				}
+
+				// Call this callback so that handlers can set up some extension properties early on if needed.
+				App::make( $ext->handler )->assign_handler_to_extension( $extension_id, $ext );
 
 				$extensions[ $extension_id ] = $ext;
 			}
@@ -163,33 +173,5 @@ class ExtensionDownloader {
 	 */
 	public static function is_valid_plugin_slug( string $slug ): bool {
 		return preg_match( '/^[a-z0-9_]+([-\.][a-z0-9_]+)*$/', $slug );
-	}
-
-	/**
-	 * @param string $string A string to convert ot slug.
-	 *
-	 * @return string A slug.
-	 */
-	public static function slugify( string $string ): string {
-		// Lowercase the string
-		$slug = strtolower($string);
-
-		// Replace spaces and periods with hyphens
-		$slug = str_replace([' ', '.'], '-', $slug);
-
-		// Remove characters that are not in the whitelist
-		$slug = preg_replace('/[^a-z0-9-_\.]/', '', $slug);
-
-		// Remove leading and trailing hyphens and dots
-		$slug = trim($slug, '-.');
-
-		// Replace multiple consecutive hyphens or dots with a single one
-		$slug = preg_replace('/([-\.])\1+/', '$1', $slug);
-
-		if ( empty( $slug ) || ! static::is_valid_plugin_slug( $slug ) ) {
-			throw new \InvalidArgumentException( 'The provided string could not be slugified to a valid slug.' );
-		}
-
-		return $slug;
 	}
 }

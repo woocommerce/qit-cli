@@ -12,6 +12,10 @@ class FileHandler extends Handler {
 		// No-op.
 	}
 
+	public function assign_handler_to_extension( string $extension_input, Extension $extension ): void {
+		$extension->path = $extension_input;
+	}
+
 	public function maybe_download_extensions( array $extensions, string $cache_dir ): void {
 		foreach ( $extensions as $e ) {
 			if ( ! file_exists( $e->extension_identifier ) ) {

@@ -34,6 +34,7 @@ class QITHandler extends Handler {
 		 *     array {
 		 *         url: string,
 		 *         version: string,
+		 *         slug: string,
 		 *     }
 		 * }
 		 */
@@ -58,11 +59,16 @@ class QITHandler extends Handler {
 			if ( empty( $download_urls[ $e->extension_identifier ]['version'] ) ) {
 				throw new \RuntimeException( 'No version found for ' . $e->extension_identifier );
 			}
+
+			if ( empty( $download_urls[ $e->extension_identifier ]['slug'] ) ) {
+				throw new \RuntimeException( 'No slug found for ' . $e->extension_identifier );
+			}
 		}
 
 		foreach ( $extensions as $e ) {
-			$e->version      = $download_urls[ $e->extension_identifier ]['version'];
-			$e->download_url = $download_urls[ $e->extension_identifier ]['url'];
+			$e->extension_identifier = $download_urls[ $e->extension_identifier ]['slug'];
+			$e->version              = $download_urls[ $e->extension_identifier ]['version'];
+			$e->download_url         = $download_urls[ $e->extension_identifier ]['url'];
 		}
 	}
 
@@ -86,7 +92,7 @@ class QITHandler extends Handler {
 				}
 				$e->path = $cache_file;
 
-				return;
+				continue;
 			} else {
 				if ( $output->isVeryVerbose() ) {
 					$output->writeln( "Cache miss on {$e->type} {$e->extension_identifier}." );
