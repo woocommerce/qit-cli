@@ -10,6 +10,7 @@ use function QIT_CLI\get_manager_url;
 
 class QITHandler extends Handler {
 	public function populate_extension_versions( array $extensions ): void {
+		$output = App::make( Output::class );
 		$extensions_to_download = array_filter( $extensions, function ( Extension $v ) {
 			return ! file_exists( $v->path );
 		} );
@@ -22,12 +23,14 @@ class QITHandler extends Handler {
 			return;
 		}
 
+		$start = microtime( true );
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/download-urls' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
 				'extensions' => $extensions_to_download,
 			] )
 			->request();
+		$output->writeln( sprintf( 'Fetched versions for %d extensions from QIT in %f seconds.', count( $extensions ), microtime( true ) - $start ) );
 
 		/**
 		 * @param $download_urls array{
