@@ -3,7 +3,6 @@
 namespace QIT_CLI\Environment\ExtensionDownload\Handlers;
 
 use QIT_CLI\App;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\ExtensionDownload\Extension;
 use QIT_CLI\Environment\ExtensionDownload\ExtensionZip;
 

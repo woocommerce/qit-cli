@@ -2,8 +2,6 @@
 
 namespace QIT_CLI\Environment\ExtensionDownload;
 
-use QIT_CLI\Environment\ExtensionDownload\Handlers\Handler;
-
 class Extension {
 	/** @var string */
 	public $extension_identifier;
@@ -13,7 +11,7 @@ class Extension {
 
 	/**
 	 * @var string A FQDN for an instance of Handler.
-	 * @see Handler
+	 * @see \QIT_CLI\Environment\ExtensionDownload\Handlers\Handler
 	 */
 	public $handler;
 
