@@ -74,13 +74,13 @@ class FileHandler extends Handler {
 		$tmp_dir = sys_get_temp_dir() . '/' . uniqid( 'qit-cli-' );
 
 		// Make tmp dir.
-		if ( ! mkdir( $tmp_dir, 0777, true ) ) {
+		if ( ! mkdir( $tmp_dir, 0755, true ) ) {
 			throw new \RuntimeException( 'Could not create temporary directory: ' . $tmp_dir );
 		}
 
 		App::make( ExtensionZip::class )->extract_zip( $extension->path, $tmp_dir );
-		$ext_copy       = clone $extension;
-		$ext_copy->path = $tmp_dir;
+		$ext_copy                       = clone $extension;
+		$ext_copy->extension_identifier = $tmp_dir;
 		$this->find_type_in_dir( $ext_copy );
 	}
 }
