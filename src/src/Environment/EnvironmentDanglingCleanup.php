@@ -57,6 +57,12 @@ class EnvironmentDanglingCleanup {
 		$this->cache               = $cache;
 	}
 
+	protected function debug_output( string $message ): void {
+		if ( $this->output->isVerbose() ) {
+			$this->output->writeln( $message );
+		}
+	}
+
 	public function cleanup_dangling(): void {
 		$this->remove_dangling_environments();
 		$this->detect_dangling_containers_exited();
@@ -70,40 +76,40 @@ class EnvironmentDanglingCleanup {
 		}
 
 		if ( ! $this->header_printed ) {
-			$this->output->writeln( '<info>Dangling Temporary Environments found.</info>' );
+			$this->output->writeln( '<info>Cleaning up dangling temp environments...</info>' );
 			$this->header_printed = true;
 		}
 
 		foreach ( $this->dangling_containers as $container_name ) {
 			if ( substr( $container_name, 0, strlen( 'qit_env_' ) ) !== 'qit_env_' ) {
-				$this->output->writeln( "Skipping non-qit container: {$container_name}" );
+				$this->debug_output( "Skipping non-qit container: {$container_name}" );
 				continue;
 			}
-			$this->output->writeln( "Removing dangling Docker containers: {$container_name}" );
+			$this->debug_output( "Removing dangling Docker containers: {$container_name}" );
 
 			$stop_process = new Process( [ 'docker', 'stop', $container_name ] );
 			try {
 				$stop_process->mustRun();
 			} catch ( \Exception $e ) {
-				$this->output->writeln( "Failed to stop container: {$container_name} - " . $stop_process->getOutput() . $stop_process->getErrorOutput() );
+				$this->debug_output( "Failed to stop container: {$container_name} - " . $stop_process->getOutput() . $stop_process->getErrorOutput() );
 			}
 
 			$remove_process = new Process( [ 'docker', 'rm', $container_name ] );
 			try {
 				$remove_process->mustRun();
 			} catch ( \Exception $e ) {
-				$this->output->writeln( "Failed to remove container: {$container_name} - " . $remove_process->getOutput() . $remove_process->getErrorOutput() );
+				$this->debug_output( "Failed to remove container: {$container_name} - " . $remove_process->getOutput() . $remove_process->getErrorOutput() );
 			}
 		}
 
 		foreach ( $this->dangling_networks as $network_name ) {
-			$this->output->writeln( "Removing dangling Docker network: {$network_name}" );
+			$this->debug_output( "Removing dangling Docker network: {$network_name}" );
 
 			$remove_process = new Process( [ 'docker', 'network', 'rm', $network_name ] );
 			try {
 				$remove_process->mustRun();
 			} catch ( \Exception $e ) {
-				$this->output->writeln( "Failed to remove network: {$network_name} - " . $remove_process->getOutput() . $remove_process->getErrorOutput() );
+				$this->debug_output( "Failed to remove network: {$network_name} - " . $remove_process->getOutput() . $remove_process->getErrorOutput() );
 			}
 		}
 
@@ -111,25 +117,21 @@ class EnvironmentDanglingCleanup {
 			return;
 		}
 
-		// Skip asking the user permission to delete in this directory if he answers with an "A".
+		// Skip asking the user permission to delete in this directory if they answer with an "A".
 		$always_delete_from_this_directory = $this->cache->get( 'always_delete_from_this_directory' );
-
 		$parent_dir = $this->get_parent_dir_to_delete();
 
 		if ( $always_delete_from_this_directory !== $parent_dir && ! is_ci() ) {
-			// List the actions to be taken.
-			$this->output->writeln( '<info>The following actions will be taken:</info>' );
-
-			foreach ( $this->dangling_directories as $directory ) {
-				$this->output->writeln( "- Remove directory $directory" );
-			}
+			$this->output->writeln( "<info>Found dangling temporary environments in directory: $parent_dir</info>" );
 
 			$question = new Question(
-				"Would you like to perform these actions? [Y/n/A]\nA: Always delete dangling environments in this directory: (Recommended)\n",
+				"Do you want to clean up these environments? [Y/n/A]\nA: Yes, and always clean up in this directory in the future. (Recommended)\n",
 				'n' // Default to 'n'.
 			);
 
-			switch ( strtolower( ( new QuestionHelper() )->ask( $this->input, $this->output, $question ) ) ) {
+			$answer = strtolower( ( new QuestionHelper() )->ask( $this->input, $this->output, $question ) );
+
+			switch ( $answer ) {
 				case 'y':
 					// no-op. Proceed with the action.
 					break;
@@ -164,7 +166,7 @@ class EnvironmentDanglingCleanup {
 		$parent_dirs = array_unique( $parent_dirs );
 
 		if ( count( $parent_dirs ) !== 1 ) {
-			$this->output->writeln( '<error>Directories to delete are not in the same parent directory.</error>' );
+			$this->output->writeln( '<error>Directories to delete are not in the same parent directory, please delete them manually.</error>' );
 			$this->output->writeln( sprintf( 'Parent directories found: %s', implode( ', ', $parent_dirs ) ) );
 			// Print the directories to be deleted manually by the user.
 			foreach ( $this->dangling_directories as $directory ) {
