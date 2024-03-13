@@ -77,6 +77,11 @@ class ExtensionDownloader {
 			} elseif ( is_dir( $e->path ) ) {
 				if ( ! getenv( 'QIT_ALLOW_WRITE' ) ) {
 					// Set it as read-only to prevent dev messing up their local copy inadvertently (default behavior).
+
+					// Inform the user about the read-only mapping
+					$this->output->writeln( "Notice: Mapping '{$e->type}s/{$e->extension_identifier}' as read-only to protect your local copy." );
+
+					// Set it as read-only
 					$env_info->volumes["/app/wp-content/{$e->type}s/{$e->extension_identifier}:ro"] = $e->path;
 				} else {
 					$env_info->volumes["/app/wp-content/{$e->type}s/{$e->extension_identifier}"] = $e->path;
