@@ -254,7 +254,7 @@ class RequestBuilder {
 		curl_close( $curl );
 
 		if ( ! in_array( $response_status_code, $this->expected_status_codes, true ) ) {
-			if ( $proxied && $body === false ) {
+			if ( $proxied && $result === false ) {
 				$body = sprintf( 'Is the Automattic Proxy running and accessible through %s?', Config::get_proxy_url() );
 			}
 
@@ -273,7 +273,7 @@ class RequestBuilder {
 
 			if ( $response_status_code === 429 ) {
 				if ( $this->retry_429 > 0 ) {
-					$this->retry_429 --;
+					--$this->retry_429;
 					$sleep_seconds = $this->wait_after_429( $headers );
 					App::make( Output::class )->writeln( sprintf( '<comment>Request failed... Waiting %d seconds and retrying (429 Too many Requests)</comment>', $sleep_seconds ) );
 
@@ -282,7 +282,7 @@ class RequestBuilder {
 				}
 			} else {
 				if ( $this->retry > 0 ) {
-					$this->retry --;
+					--$this->retry;
 					App::make( Output::class )->writeln( sprintf( '<comment>Request failed... Retrying (HTTP Status Code %s) %s</comment>', $response_status_code, $error_message ) );
 
 					// Between 1 and 5s.

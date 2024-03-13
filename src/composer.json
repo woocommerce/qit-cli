@@ -8,6 +8,8 @@
       "dealerdirect/phpcodesniffer-composer-installer": true
     }
   },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "autoload": {
     "psr-4": {
       "QIT_CLI\\": "src/"
@@ -31,7 +33,7 @@
     "phpunit/phpunit": "^8",
     "phpstan/phpstan": "^1",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
-    "wp-coding-standards/wpcs": "^2.3",
+    "wp-coding-standards/wpcs": "dev-develop",
     "phpcompatibility/php-compatibility": "^9",
     "spatie/phpunit-snapshot-assertions": "^3.0"
   }
