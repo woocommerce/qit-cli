@@ -6,7 +6,6 @@
         "status": "running",
         "env_id": 1234567890,
         "volumes": [],
-        "volume_flags": [],
         "docker_images": [],
         "php_extensions": [],
         "plugins": [],

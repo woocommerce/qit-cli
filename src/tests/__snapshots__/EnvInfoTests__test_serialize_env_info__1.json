@@ -5,7 +5,6 @@
     "status": "running",
     "env_id": "Normalized",
     "volumes": [],
-    "volume_flags": [],
     "docker_images": [
         "test1",
         "test2"
