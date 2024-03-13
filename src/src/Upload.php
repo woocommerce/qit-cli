@@ -51,7 +51,7 @@ class Upload {
 		$progress_bar->start();
 
 		while ( ! feof( $file ) ) {
-			$current_chunk ++;
+			++$current_chunk;
 
 			$r = $this->request_builder
 					->with_url( get_manager_url() . '/wp-json/cd/v1/upload-build' )

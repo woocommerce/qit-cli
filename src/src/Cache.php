@@ -61,7 +61,7 @@ class Cache {
 			}
 
 			if ( $ignore_expiration === false && time() > $c['expire'] ) {
-				$deleted ++;
+				++$deleted;
 				unset( $this->cache[ $k ] );
 			}
 		}
