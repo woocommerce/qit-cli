@@ -31,13 +31,14 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "6 Errors Detected. (1 Fatal, 2 Warnings, 3 Notices)",
+            "test_summary": "7 Errors Detected. (1 Fatal, 2 Warnings, 4 Notices)",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
-            "test_result_json_extracted": "{EXTRACTED}"
+            "test_result_json_extracted": "{EXTRACTED}",
+            "syntax_errors_json_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
@@ -47,19 +48,20 @@
                         "": {
                             "\\/": 2,
                             "\\/cart\\/": 2,
-                            "\\/my-account\\/": 2
+                            "\\/my-account\\/": 2,
+                            "WP-CLI Plugin Activation": 1
                         }
                     },
                     "error_totals": {
                         "fatal": 1,
-                        "notice": 3,
+                        "notice": 4,
                         "warning": 2,
-                        "E_USER_NOTICE": 3,
+                        "E_USER_NOTICE": 4,
                         "E_USER_WARNING": 2,
                         "E_ERROR": 1
                     },
-                    "summary": "6 Errors Detected. (1 Fatal, 2 Warnings, 3 Notices)",
-                    "error_count": 6,
+                    "summary": "7 Errors Detected. (1 Fatal, 2 Warnings, 4 Notices)",
+                    "error_count": 7,
                     "count_extensions_with_errors": 1
                 },
                 "0": {
@@ -353,8 +355,69 @@
                         }
                     ],
                     "db_error": ""
+                },
+                "6": {
+                    "activated_alongside": "",
+                    "context": "WP-CLI Plugin Activation",
+                    "is_fatal": "No",
+                    "error_type": "E_USER_NOTICE",
+                    "error_message": "Notice on all requests",
+                    "error_file": "woocommerce-product-feeds\\/woocommerce-product-feeds.php",
+                    "error_line": 16,
+                    "backtrace": [
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php",
+                            "line": 16,
+                            "function": "trigger_error"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
+                            "line": 324,
+                            "function": "{closure}",
+                            "class": "WP_CLI\\\\Runner",
+                            "type": "::"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
+                            "line": 348,
+                            "function": "apply_filters",
+                            "class": "WP_Hook",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
+                            "line": 517,
+                            "function": "do_action",
+                            "class": "WP_Hook",
+                            "type": "->"
+                        },
+                        {
+                            "file": "\\/var\\/www\\/html\\/wp-settings.php",
+                            "line": 695,
+                            "function": "do_action"
+                        },
+                        {
+                            "file": "phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/WP_CLI\\/Runner.php",
+                            "line": 1363,
+                            "args": [
+                                "\\/var\\/www\\/html\\/wp-settings.php"
+                            ],
+                            "function": "require"
+                        },
+                        {
+                            "file": "phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/WP_CLI\\/Runner.php",
+                            "line": 1282,
+                            "function": "load_wordpress",
+                            "class": "WP_CLI\\\\Runner",
+                            "type": "->"
+                        }
+                    ],
+                    "db_error": ""
                 }
             }
+        },
+        {
+            "syntax_errors_json": []
         }
     ]
 ]';

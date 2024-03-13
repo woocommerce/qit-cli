@@ -3,7 +3,7 @@
         {
             "test_run_id": 123456,
             "run_id": 123456,
-            "test_type": "phpstan",
+            "test_type": "activation",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "7.4",
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 0, File Errors: 2",
+            "test_summary": "Syntax errors detected.",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -41,33 +41,15 @@
             "syntax_errors_json_extracted": "{EXTRACTED}"
         },
         {
-            "test_result_json": {
-                "totals": {
-                    "errors": 0,
-                    "file_errors": 2
-                },
-                "files": {
-                    "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                        "errors": 2,
-                        "messages": [
-                            {
-                                "message": "Instantiated class Bar not found.",
-                                "line": 21,
-                                "ignorable": true
-                            },
-                            {
-                                "message": "Result of function example_return_void (void) is used.",
-                                "line": 22,
-                                "ignorable": true
-                            }
-                        ]
-                    }
-                },
-                "errors": []
-            }
+            "test_result_json": []
         },
         {
-            "syntax_errors_json": []
+            "syntax_errors_json": [
+                {
+                    "file": "\\/home\\/runner\\/work\\/staging-compatibility-dashboard\\/staging-compatibility-dashboard\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php",
+                    "message": "[13-Mar-2024 13:34:19 UTC] PHP Parse error:  syntax error, unexpected end of file in \\/home\\/runner\\/work\\/staging-compatibility-dashboard\\/staging-compatibility-dashboard\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 7"
+                }
+            ]
         }
     ]
 ]';
