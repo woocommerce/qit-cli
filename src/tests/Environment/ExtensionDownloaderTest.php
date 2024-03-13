@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class FooCustomHandler extends \QIT_CLI\Environment\ExtensionDownload\Handlers\CustomHandler {
 	public function should_handle( Extension $extension ): bool {
-		return strpos( $extension->extension, 'foo-custom' ) !== false;
+		return strpos( $extension->extension_identifier, 'foo-custom' ) !== false;
 	}
 
 	public function maybe_download( Extension $e, string $cache_dir, EnvInfo $env_info ) {

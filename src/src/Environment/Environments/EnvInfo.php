@@ -46,6 +46,8 @@ abstract class EnvInfo implements \JsonSerializable {
 	 */
 	public $volumes = [];
 
+	public $volume_flags = [];
+
 	/**
 	 * @var array<string> Array of docker images associated with this environment.
 	 * @example [ 'qit_php_123456', 'qit_db_123456', 'qit_nginx_123456' ]

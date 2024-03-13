@@ -2,14 +2,12 @@
 
 namespace QIT_CLI\Environment\ExtensionDownload;
 
-use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\ExtensionDownload\Handlers\CustomHandler;
 use QIT_CLI\Environment\ExtensionDownload\Handlers\FileHandler;
 use QIT_CLI\Environment\ExtensionDownload\Handlers\QITHandler;
 use QIT_CLI\Environment\ExtensionDownload\Handlers\URLHandler;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Process;
 
 class ExtensionDownloader {
 	/** @var OutputInterface $output */
@@ -66,7 +64,15 @@ class ExtensionDownloader {
 			clearstatcache( true, $e->path );
 
 			if ( is_file( $e->path ) ) {
-				$this->extension_zip->validate_extension_zip( $e->path );
+				$this->extension_zip->extract_zip( $e->path, "$env_info->temporary_env/wp-content/{$e->type}s/{$e->extension_identifier}" );
+			} elseif ( is_dir( $e->path ) ) {
+				$env_info->volumes["/app/wp-content/{$e->type}s/{$e->extension_identifier}"] = $e->path;
+				if ( ! getenv( 'QIT_ALLOW_WRITE' ) ) {
+					// Set it as read-only to prevent dev messing up their local copy inadvertly (default behavior).
+					$env_info->volume_flags["/app/wp-content/{$e->type}s/{$e->extension_identifier}"] = 'ro';
+				}
+			} else {
+				throw new \RuntimeException( 'Download failed.' );
 			}
 		}
 
@@ -87,9 +93,9 @@ class ExtensionDownloader {
 
 		foreach ( [ 'plugin' => $plugins, 'theme' => $themes ] as $type => $extension_ids ) {
 			foreach ( $extension_ids as $extension_id ) {
-				$ext            = new Extension();
-				$ext->extension = $extension_id;
-				$ext->type      = $type;
+				$ext                       = new Extension();
+				$ext->extension_identifier = $extension_id;
+				$ext->type                 = $type;
 				$ext->path      = '';
 
 				if ( array_key_exists( $extension_id, $extensions ) ) {
@@ -165,9 +171,5 @@ class ExtensionDownloader {
 		}
 
 		return $extensions;
-	}
-
-	protected function map_from_path( string $path, string $type, EnvInfo $env_info ): void {
-
 	}
 }
