@@ -51,11 +51,11 @@ class E2EEnvironment extends Environment {
 		/**
 		 * @phpstan-ignore-next-line
 		 */
-		if ( ! empty( $this->php_extensions ) ) {
+		if ( ! empty( $this->env_info->php_extensions ) ) {
 			$this->output->writeln( '<info>Installing PHP extensions...</info>' );
 			// Install PHP extensions, if needed.
 			$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '/qit/bin/php-extensions.sh' ], [
-				'PHP_EXTENSIONS' => implode( ' ', $this->php_extensions ), // Space-separated list of PHP extensions.
+				'PHP_EXTENSIONS' => implode( ' ', $this->env_info->php_extensions ), // Space-separated list of PHP extensions.
 			], '0:0' );
 		}
 
