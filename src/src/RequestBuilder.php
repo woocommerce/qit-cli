@@ -254,7 +254,7 @@ class RequestBuilder {
 		curl_close( $curl );
 
 		if ( ! in_array( $response_status_code, $this->expected_status_codes, true ) ) {
-			if ( $proxied && $body === false ) {
+			if ( $proxied && $result === false ) {
 				$body = sprintf( 'Is the Automattic Proxy running and accessible through %s?', Config::get_proxy_url() );
 			}
 
