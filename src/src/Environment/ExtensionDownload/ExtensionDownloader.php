@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Environment\ExtensionDownload;
 
+use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\ExtensionDownload\Handlers\CustomHandler;
 use QIT_CLI\Environment\ExtensionDownload\Handlers\FileHandler;
@@ -48,10 +49,10 @@ class ExtensionDownloader {
 	 * @return void
 	 */
 	public function download( EnvInfo $env_info, string $cache_dir, array $plugins = [], array $themes = [] ): void {
-		$extensions = $this->categorize_extensions( $plugins, $themes, $cache_dir );
+		$extensions = $this->categorize_extensions( $plugins, $themes );
 
 		foreach ( $extensions as $e ) {
-			$e->handler->maybe_download( $e, $cache_dir, $env_info );
+			App::make( $e->handler )->maybe_download( $e, $cache_dir, $env_info );
 		}
 
 		$this->qit_handler->download_extensions( $extensions, $cache_dir );
@@ -64,7 +65,7 @@ class ExtensionDownloader {
 			clearstatcache( true, $e->path );
 
 			if ( is_file( $e->path ) ) {
-				$this->extension_zip->extract_zip( $e->path, "$env_info->temporary_env/wp-content/{$e->type}s/{$e->extension_identifier}" );
+				$this->extension_zip->extract_zip( $e->path, "$env_info->temporary_env/html/wp-content/{$e->type}s" );
 			} elseif ( is_dir( $e->path ) ) {
 				$env_info->volumes["/app/wp-content/{$e->type}s/{$e->extension_identifier}"] = $e->path;
 				if ( ! getenv( 'QIT_ALLOW_WRITE' ) ) {
@@ -81,11 +82,10 @@ class ExtensionDownloader {
 	/**
 	 * @param array<string|int> $plugins
 	 * @param array<string|int> $themes
-	 * @param string $cache_dir
 	 *
 	 * @return array<Extension>
 	 */
-	public function categorize_extensions( array $plugins, array $themes, string $cache_dir ): array {
+	public function categorize_extensions( array $plugins, array $themes ): array {
 		/**
 		 * @param array<int, Extension> $extensions
 		 */
@@ -96,14 +96,11 @@ class ExtensionDownloader {
 				$ext                       = new Extension();
 				$ext->extension_identifier = $extension_id;
 				$ext->type                 = $type;
-				$ext->path      = '';
+				$ext->path                 = '';
 
 				if ( array_key_exists( $extension_id, $extensions ) ) {
 					throw new \InvalidArgumentException( 'Duplicate extension found.' );
 				}
-
-				// Todo: Do we need to handle .tar.gz?
-				$maybe_cached = "$cache_dir/$type/$extension_id.zip";
 
 				// If there is any custom handler, allow it to handle the extension.
 				foreach ( get_declared_classes() as $class ) {
@@ -119,8 +116,6 @@ class ExtensionDownloader {
 
 				if ( is_numeric( $extension_id ) ) {
 					// Woo.com product ID.
-					// Todo: Figure out how to name the cache file if using an ID.
-					$this->output->writeln( "Skip using cache because extension is ID." );
 					$ext->handler = QITHandler::class;
 				} elseif ( preg_match( '#^https?://#i', $extension_id ) ) {
 					// URLs that ends with ".zip".
@@ -139,28 +134,9 @@ class ExtensionDownloader {
 					$ext->handler = FileHandler::class;
 					$ext->path    = $extension_id;
 				} else {
-					/*
-					 * If it's none of the above, it's a slug.
-					 *
-					 * Validate the slug format.
-					 *
-					 * This regular expression '/^[a-z0-9]+([-\.][a-z0-9]+)*$/' breaks down as follows:
-					 *
-					 * ^: Asserts the start of the string.
-					 * [a-z0-9]+: Matches one or more lowercase letters or numbers (the beginning of the slug).
-					 * ([-\.][a-z0-9]+)*: Matches zero or more groups of a hyphen or dot followed by one or more lowercase letters or numbers. This allows for hyphens and dots within the slug but not at the start or end, nor consecutively.
-					 * $: Asserts the end of the string.
-					 *
-					 * This pattern ensures that the slug adheres to a typical format, including the possible inclusion of dots, which are often used in version numbers or file names.
-					 */
-					if ( preg_match( '/^[a-z0-9]+([-\.][a-z0-9]+)*$/', $extension_id ) ) {
-						// Does it exist in cache?
-						if ( file_exists( $maybe_cached ) ) {
-							$ext->handler = FileHandler::class;
-							$ext->path    = $maybe_cached;
-						} else {
-							$ext->handler = QITHandler::class;
-						}
+					// If it's none of the above, it's a slug.
+					if ( static::is_valid_plugin_slug( $extension_id ) ) {
+						$ext->handler = QITHandler::class;
 					} else {
 						throw new \InvalidArgumentException( 'The provided string could not be parsed as any of the valid formats: WP.org/Woo.com Slugs, Woo.com product ID, Local path, or Zip URLs.' );
 					}
@@ -171,5 +147,49 @@ class ExtensionDownloader {
 		}
 
 		return $extensions;
+	}
+
+	/**
+	 * Validate if the given string is a valid slug.
+	 *
+	 * This regular expression '/^[a-z0-9]+([-\.][a-z0-9]+)*$/' breaks down as follows:
+	 *
+	 * ^: Asserts the start of the string.
+	 * [a-z0-9]+: Matches one or more lowercase letters or numbers (the beginning of the slug).
+	 * ([-\.][a-z0-9]+)*: Matches zero or more groups of a hyphen or dot followed by one or more lowercase letters or numbers. This allows for hyphens and dots within the slug but not at the start or end, nor consecutively.
+	 * $: Asserts the end of the string.
+	 *
+	 * This pattern ensures that the slug adheres to a typical format, including the possible inclusion of dots, which are often used in version numbers or file names.
+	 */
+	public static function is_valid_plugin_slug( string $slug ): bool {
+		return preg_match( '/^[a-z0-9_]+([-\.][a-z0-9_]+)*$/', $slug );
+	}
+
+	/**
+	 * @param string $string A string to convert ot slug.
+	 *
+	 * @return string A slug.
+	 */
+	public static function slugify( string $string ): string {
+		// Lowercase the string
+		$slug = strtolower($string);
+
+		// Replace spaces and periods with hyphens
+		$slug = str_replace([' ', '.'], '-', $slug);
+
+		// Remove characters that are not in the whitelist
+		$slug = preg_replace('/[^a-z0-9-_\.]/', '', $slug);
+
+		// Remove leading and trailing hyphens and dots
+		$slug = trim($slug, '-.');
+
+		// Replace multiple consecutive hyphens or dots with a single one
+		$slug = preg_replace('/([-\.])\1+/', '$1', $slug);
+
+		if ( empty( $slug ) || ! static::is_valid_plugin_slug( $slug ) ) {
+			throw new \InvalidArgumentException( 'The provided string could not be slugified to a valid slug.' );
+		}
+
+		return $slug;
 	}
 }

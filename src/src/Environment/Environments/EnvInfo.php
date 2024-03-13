@@ -52,7 +52,7 @@ abstract class EnvInfo implements \JsonSerializable {
 	 * @var array<string> Array of docker images associated with this environment.
 	 * @example [ 'qit_php_123456', 'qit_db_123456', 'qit_nginx_123456' ]
 	 */
-	public $docker_images;
+	public $docker_images = [];
 
 	/**
 	 * @var array<string> Array of PHP extensions to be installed in the environment.

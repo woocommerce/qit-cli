@@ -1,14 +1,18 @@
 {
     "this-is-a-very-long-plugin-name-that-might-exceed-typical-limits": {
-        "extension": "this-is-a-very-long-plugin-name-that-might-exceed-typical-limits",
+        "extension_identifier": "this-is-a-very-long-plugin-name-that-might-exceed-typical-limits",
         "type": "plugin",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
-        "path": ""
+        "path": "",
+        "version": "undefined",
+        "download_url": null
     },
     "this-is-a-very-long-theme-name-that-might-exceed-typical-limits": {
-        "extension": "this-is-a-very-long-theme-name-that-might-exceed-typical-limits",
+        "extension_identifier": "this-is-a-very-long-theme-name-that-might-exceed-typical-limits",
         "type": "theme",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
-        "path": ""
+        "path": "",
+        "version": "undefined",
+        "download_url": null
     }
 }

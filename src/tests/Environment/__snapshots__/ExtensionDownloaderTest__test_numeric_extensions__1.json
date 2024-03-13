@@ -1,20 +1,26 @@
 {
     "123": {
-        "extension": "123",
+        "extension_identifier": "123",
         "type": "plugin",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
-        "path": ""
+        "path": "",
+        "version": "undefined",
+        "download_url": null
     },
     "456": {
-        "extension": "456",
+        "extension_identifier": "456",
         "type": "plugin",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
-        "path": ""
+        "path": "",
+        "version": "undefined",
+        "download_url": null
     },
     "789": {
-        "extension": "789",
+        "extension_identifier": "789",
         "type": "theme",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
-        "path": ""
+        "path": "",
+        "version": "undefined",
+        "download_url": null
     }
 }

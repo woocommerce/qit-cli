@@ -314,14 +314,14 @@ class RequestBuilder {
 	 *
 	 * @throws \RuntimeException If an error occurs during downloading or file handling.
 	 */
-	public static function download_file( string $file_path, string $url ): void {
+	public static function download_file( string $url, string $file_path ): void {
 		$output = App::make( Output::class );
 
 		if ( $output->isVeryVerbose() ) {
 			$output->writeln( "Downloading $url into $file_path..." );
 		}
 
-		// Open file for writing
+		// Open file for writing, create it if it doesn't exist.
 		$fp = fopen( $file_path, 'w' );
 		if ( $fp === false ) {
 			throw new \RuntimeException( 'Could not open file for writing: ' . $file_path );

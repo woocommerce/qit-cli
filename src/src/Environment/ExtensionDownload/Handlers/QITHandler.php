@@ -3,39 +3,13 @@
 namespace QIT_CLI\Environment\ExtensionDownload\Handlers;
 
 use QIT_CLI\App;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\ExtensionDownload\Extension;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
 use function QIT_CLI\get_manager_url;
 
 class QITHandler extends Handler {
-	public function maybe_download( Extension $extension, string $cache_dir, EnvInfo $env_info ): void {
-		$output = App::make( Output::class );
-
-		// Cache hit?
-		if ( file_exists( "$cache_dir/{$extension->type}/{$extension->extension_identifier}.zip" ) ) {
-			if ( $output->isVeryVerbose() ) {
-				$output->writeln( "Using cached {$extension->type} {$extension->extension_identifier}." );
-			}
-			$extension->path = "$cache_dir/{$extension->type}/{$extension->extension_identifier}.zip";
-
-			return;
-		} else {
-			if ( $output->isVeryVerbose() ) {
-				$output->writeln( "Cache miss on {$extension->type} {$extension->extension_identifier}." );
-			}
-		}
-	}
-
-	/**
-	 * @param array<Extension> $extensions
-	 * @param string $cache_dir
-	 *
-	 * @throws \QIT_CLI\Exceptions\DoingAutocompleteException
-	 * @throws \QIT_CLI\Exceptions\NetworkErrorException
-	 */
-	public function download_extensions( array $extensions, string $cache_dir ): void {
+	public function populate_extension_versions( array $extensions ): void {
 		$extensions_to_download = array_filter( $extensions, function ( Extension $v ) {
 			return ! file_exists( $v->path );
 		} );
@@ -65,9 +39,11 @@ class QITHandler extends Handler {
 		 */
 		$download_urls = json_decode( $response, true );
 
-		if ( empty( $download_urls ) || ! is_array( $download_urls ) ) {
+		if ( ! is_array( $download_urls ) || empty( $download_urls['urls'] ) || ! is_array( $download_urls['urls'] ) ) {
 			throw new \RuntimeException( 'No download URLs received.' );
 		}
+
+		$download_urls = $download_urls['urls'];
 
 		// Validate that all extensions we asked are here and are in the format we expect.
 		foreach ( $extensions as $e ) {
@@ -85,7 +61,44 @@ class QITHandler extends Handler {
 		}
 
 		foreach ( $extensions as $e ) {
-			RequestBuilder::download_file( $download_urls[ $e->extension_identifier ]['url'], "$cache_dir/{$e->type}/{$e->extension_identifier}.zip" );
+			$e->version      = $download_urls[ $e->extension_identifier ]['version'];
+			$e->download_url = $download_urls[ $e->extension_identifier ]['url'];
+		}
+	}
+
+	/**
+	 * @param array<Extension> $extensions
+	 * @param string $cache_dir
+	 *
+	 * @throws \QIT_CLI\Exceptions\DoingAutocompleteException
+	 * @throws \QIT_CLI\Exceptions\NetworkErrorException
+	 */
+	public function maybe_download_extensions( array $extensions, string $cache_dir ): void {
+		$output = App::make( Output::class );
+
+		foreach ( $extensions as $e ) {
+			$cache_file = $this->make_cache_path( $cache_dir, $e->type, $e->extension_identifier, $e->version );
+
+			// Cache hit?
+			if ( file_exists( $cache_file ) ) {
+				if ( $output->isVeryVerbose() ) {
+					$output->writeln( "Using cached {$e->type} {$e->extension_identifier}." );
+				}
+				$e->path = $cache_file;
+
+				return;
+			} else {
+				if ( $output->isVeryVerbose() ) {
+					$output->writeln( "Cache miss on {$e->type} {$e->extension_identifier}." );
+				}
+			}
+
+			if ( ! isset( $e->download_url ) ) {
+				throw new \RuntimeException( 'No download URL found for ' . $e->extension_identifier );
+			}
+
+			RequestBuilder::download_file( $e->download_url, $cache_file );
+			$e->path = $cache_file;
 		}
 	}
 }

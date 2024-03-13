@@ -8,32 +8,38 @@ use QIT_CLI\Environment\ExtensionDownload\Extension;
 use QIT_CLI\Environment\ExtensionDownload\ExtensionZip;
 
 class FileHandler extends Handler {
-	public function maybe_download( Extension $extension, string $cache_dir, EnvInfo $env_info ): void {
-		if ( ! file_exists( $extension->extension_identifier ) ) {
-			throw new \RuntimeException( 'File not found: ' . $extension->path );
-		}
+	public function populate_extension_versions( array $extensions ): void {
+		// No-op.
+	}
 
-		clearstatcache( true, $extension->extension_identifier );
-
-		// Detect whether it's a WordPress Plugin or Theme.
-		if ( is_dir( $extension->extension_identifier ) ) {
-			$this->find_type_in_dir( $extension );
-		} elseif ( is_file( $extension->extension_identifier ) ) {
-			// Must be a ".zip" file.
-			if ( ! substr( $extension->extension_identifier, - 4 ) === '.zip' ) {
-				throw new \RuntimeException( sprintf( 'When passing a local path, it must be either a directory or a zip file. Found: %s', $extension->extension_identifier ) );
+	public function maybe_download_extensions( array $extensions, string $cache_dir ): void {
+		foreach ( $extensions as $e ) {
+			if ( ! file_exists( $e->extension_identifier ) ) {
+				throw new \RuntimeException( 'File not found: ' . $e->path );
 			}
-			$this->find_type_in_zip( $extension );
-		} else {
-			throw new \RuntimeException( 'Path is not a dir nor a file: ' . $extension->extension_identifier );
-		}
 
-		// Basic validation, but should never happen.
-		if ( empty( $extension->type ) ) {
-			throw new \RuntimeException( 'Could not determine the type of the extension.' );
-		}
+			clearstatcache( true, $e->extension_identifier );
 
-		$extension->path = $extension->extension_identifier;
+			// Detect whether it's a WordPress Plugin or Theme.
+			if ( is_dir( $e->extension_identifier ) ) {
+				$this->find_type_in_dir( $e );
+			} elseif ( is_file( $e->extension_identifier ) ) {
+				// Must be a ".zip" file.
+				if ( ! substr( $e->extension_identifier, - 4 ) === '.zip' ) {
+					throw new \RuntimeException( sprintf( 'When passing a local path, it must be either a directory or a zip file. Found: %s', $e->extension_identifier ) );
+				}
+				$this->find_type_in_zip( $e );
+			} else {
+				throw new \RuntimeException( 'Path is not a dir nor a file: ' . $e->extension_identifier );
+			}
+
+			// Basic validation, but should never happen.
+			if ( empty( $e->type ) ) {
+				throw new \RuntimeException( 'Could not determine the type of the extension.' );
+			}
+
+			$e->path = $e->extension_identifier;
+		}
 	}
 
 	protected function find_type_in_dir( Extension $extension ): void {

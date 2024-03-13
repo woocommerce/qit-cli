@@ -11,9 +11,18 @@ class Extension {
 	/** @var 'plugin'|'theme' */
 	public $type;
 
-	/** @var Handler */
+	/**
+	 * @var string A FQDN for an instance of Handler.
+	 * @see Handler
+	 */
 	public $handler;
 
 	/** @var string */
 	public $path;
+
+	/** @var string */
+	public $version = 'undefined';
+
+	/** @var string */
+	public $download_url;
 }
