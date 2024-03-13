@@ -9,6 +9,7 @@ use QIT_CLI\Environment\Environments\Environment;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use function QIT_CLI\format_elapsed_time;
@@ -43,44 +44,58 @@ class DownEnvironmentCommand extends Command {
 			return Command::SUCCESS;
 		}
 
-		if ( count( $running_environments ) === 1 ) {
-			$this->stop_environment( array_shift( $running_environments ), $output );
+		$selected_environment = null;
 
-			return Command::SUCCESS;
+		if ( count( $running_environments ) === 1 ) {
+			$selected_environment = array_shift( $running_environments );
 		}
 
-		$environment_choices = array_map( function ( EnvInfo $environment ) {
-			return sprintf( 'Created: %s, Status: %s',
-				format_elapsed_time( time() - $environment->created_at ),
-			$environment->status );
-		}, $running_environments );
+		if ( is_null( $selected_environment ) ) {
+			$environment_choices = array_map( function ( EnvInfo $environment ) {
+				return sprintf( 'Created: %s, Status: %s',
+					format_elapsed_time( time() - $environment->created_at ),
+				$environment->status );
+			}, $running_environments );
 
-		$environment_choices['all'] = 'Stop all environments';
+			$environment_choices['all'] = 'Stop all environments';
 
-		// More than one environment running, let user choose which one to stop.
-		$helper   = new QuestionHelper();
-		$question = new ChoiceQuestion(
-			'Please select the environment to stop (or choose to stop all):',
-			$environment_choices,
-			'all'
-		);
-		$question->setErrorMessage( 'Environment %s is invalid.' );
+			// More than one environment running, let user choose which one to stop.
+			$helper   = new QuestionHelper();
+			$question = new ChoiceQuestion(
+				'Please select the environment to stop (or choose to stop all):',
+				$environment_choices,
+				'all'
+			);
+			$question->setErrorMessage( 'Environment %s is invalid.' );
 
-		$selected_environment = $helper->ask( $input, $output, $question );
+			$selected_environment = $helper->ask( $input, $output, $question );
+		}
 
 		if ( $selected_environment === 'all' ) {
+			$total_environments = count( $running_environments );
+			$counter            = 1;
+
 			foreach ( $running_environments as $environment ) {
-				$this->stop_environment( $environment, $output );
+				$output->write( "\r<info>Stopping all environments... [{$counter}/{$total_environments}]</info>" );
+				$this->stop_environment( $environment, $output->isVerbose() ? $output : new NullOutput() );
+				++$counter;
 			}
 		} else {
-			$this->stop_environment( $this->environment_monitor->get_env_info_by_id( $selected_environment ), $output );
+			$total_environments = 1;
+			if ( ! $selected_environment instanceof EnvInfo ) {
+				$selected_environment = $this->environment_monitor->get_env_info_by_id( $selected_environment );
+			}
+			$output->write( "\r<info>Stopping all environments... [1/1]</info>" );
+			$this->stop_environment( $selected_environment, $output->isVerbose() ? $output : new NullOutput() );
 		}
+
+		$output->write( "\r<info>Stopped all environments [{$total_environments}/{$total_environments}].</info>" );
 
 		return Command::SUCCESS;
 	}
 
 	private function stop_environment( EnvInfo $environment, OutputInterface $output ): void {
-		Environment::down( $environment );
+		Environment::down( $environment, $output );
 		$environment_id = $environment->env_id;
 		$output->writeln( "<info>Environment '$environment_id' stopped.</info>" );
 	}

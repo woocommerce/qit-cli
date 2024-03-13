@@ -87,6 +87,15 @@ class EnvironmentDownloader {
 			if ( ! $zip->extractTo( $environments_dir . '/' . $env_name ) ) {
 				throw new \RuntimeException( 'Could not extract environment zip.' );
 			}
+
+			// Ensure .sh files in the extracted directory are executable, just in case.
+			$iterator = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $environments_dir . '/' . $env_name ) );
+			foreach ( $iterator as $file ) {
+				if ( $file->isFile() && $file->getExtension() === 'sh' ) {
+					chmod( $file->getPathname(), 0755 );
+				}
+			}
+
 			$zip->close();
 			$this->cache->set( "{$env_name}_environment_hash", $manager_hashes[ $env_name ]['checksum'], MONTH_IN_SECONDS );
 		} else {

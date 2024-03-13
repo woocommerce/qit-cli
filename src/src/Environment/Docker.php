@@ -113,7 +113,7 @@ class Docker {
 		$docker_image   = $env_info->get_docker_container( $image );
 		$docker_command = [ $this->find_docker(), 'exec' ];
 
-		if ( use_tty() ) {
+		if ( $this->output->isVerbose() && use_tty() ) {
 			$docker_command = array_merge( $docker_command, [ '-it' ] );
 		}
 
@@ -157,7 +157,7 @@ class Docker {
 		}
 
 		$process = new Process( $docker_command );
-		$process->setTty( use_tty() );
+		$process->setTty( $this->output->isVerbose() && use_tty() );
 		$process->setTimeout( $timeout );
 		$process->setIdleTimeout( $timeout );
 
@@ -167,7 +167,9 @@ class Docker {
 		}
 
 		$process->run( function ( $type, $buffer ) {
-			$this->output->write( $buffer );
+			if ( $this->output->isVerbose() ) {
+				$this->output->write( $buffer );
+			}
 		} );
 
 		if ( ! $process->isSuccessful() ) {

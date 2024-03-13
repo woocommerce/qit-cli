@@ -76,7 +76,7 @@ class EnvironmentDanglingCleanup {
 		}
 
 		if ( ! $this->header_printed ) {
-			$this->output->writeln( '<info>Cleaning up dangling temp environments...</info>' );
+			$this->output->writeln( '<info>Cleaning up dangling temporary environments...</info>' );
 			$this->header_printed = true;
 		}
 
@@ -119,7 +119,7 @@ class EnvironmentDanglingCleanup {
 
 		// Skip asking the user permission to delete in this directory if they answer with an "A".
 		$always_delete_from_this_directory = $this->cache->get( 'always_delete_from_this_directory' );
-		$parent_dir = $this->get_parent_dir_to_delete();
+		$parent_dir                        = $this->get_parent_dir_to_delete();
 
 		if ( $always_delete_from_this_directory !== $parent_dir && ! is_ci() ) {
 			$this->output->writeln( "<info>Found dangling temporary environments in directory: $parent_dir</info>" );
@@ -140,7 +140,7 @@ class EnvironmentDanglingCleanup {
 					break;
 				case 'n':
 				default:
-					$this->output->writeln( 'Action cancelled by user.' );
+					$this->output->writeln( 'Please delete the dangling environments in that directory manually.' );
 
 					return;
 			}
@@ -339,12 +339,12 @@ class EnvironmentDanglingCleanup {
 			}
 			if ( ! empty( $containers_not_running ) ) {
 				if ( ! $this->header_printed ) {
-					$this->output->writeln( '<info>Dangling Temporary Environments found.</info>' );
+					$this->output->writeln( '<info>Cleaning up dangling temporary environments...</info>' );
 					$this->header_printed = true;
 				}
 
-				$this->output->writeln( "Removing dangling environment: {$env_info->env_id}" );
-				if ( $this->output->isVerbose() ) {
+				$this->debug_output( "Removing dangling environment: {$env_info->env_id}" );
+				if ( $this->output->isVeryVerbose() ) {
 					$this->output->writeln( 'Expected containers: ' . implode( ', ', $env_info->docker_images ) );
 					$this->output->writeln( 'Missing containers: ' . implode( ', ', $containers_not_running ) );
 				}

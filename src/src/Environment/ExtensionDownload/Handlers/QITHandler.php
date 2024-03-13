@@ -30,7 +30,9 @@ class QITHandler extends Handler {
 				'extensions' => $extensions_to_download,
 			] )
 			->request();
-		$output->writeln( sprintf( 'Fetched versions for %d extensions from QIT in %f seconds.', count( $extensions ), microtime( true ) - $start ) );
+		if ( $output->isVerbose() ) {
+			$output->writeln( sprintf( 'Fetched versions for %d extensions from QIT in %f seconds.', count( $extensions ), microtime( true ) - $start ) );
+		}
 
 		/**
 		 * @param $download_urls array{

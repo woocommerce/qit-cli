@@ -252,7 +252,9 @@ HELP
 
 		$env_info = App::make( EnvConfigLoader::class )->init_env_info( $options_to_env_info );
 
-		$this->output->writeln( json_encode( $env_info, JSON_PRETTY_PRINT ) );
+		if ( $output->isVeryVerbose() ) {
+			$this->output->writeln( 'Environment info: ' . json_encode( $env_info, JSON_PRETTY_PRINT ) );
+		}
 
 		$this->e2e_environment->init( $env_info );
 		$this->e2e_environment->up();

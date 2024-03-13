@@ -175,7 +175,7 @@ class RequestBuilder {
 			}
 		}
 
-		if ( App::make( Output::class )->isVeryVerbose() ) {
+		if ( getenv( 'QIT_DEBUG_REQUESTS' ) ) {
 			$curl_parameters[ CURLOPT_VERBOSE ] = true;
 		}
 

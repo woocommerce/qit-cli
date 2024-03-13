@@ -109,14 +109,20 @@ abstract class Environment {
 		$this->maybe_create_cache_dir();
 		$this->copy_environment();
 		$this->environment_monitor->environment_added_or_updated( $this->env_info );
+		if ( ! empty( $this->env_info->plugins ) || ! empty( $this->env_info->themes ) ) {
+			$this->output->writeln( '<info>Downloading plugins and themes...</info>' );
+		}
 		$this->extension_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );
+		$this->output->writeln( '<info>Setting up Docker...</info>' );
 		$this->generate_docker_compose();
 		$this->post_generate_docker_compose();
 		$this->up_docker_compose( $attached );
 		$this->post_up();
 
-		$this->output->writeln( 'Server started at ' . round( microtime( true ) - $start, 2 ) . ' seconds' );
-		$this->output->writeln( "Temporary environment: {$this->env_info->temporary_env}\n" );
+		if ( $this->output->isVerbose() ) {
+			$this->output->writeln( 'Server started in ' . round( microtime( true ) - $start, 2 ) . ' seconds' );
+		}
+
 		$this->additional_output();
 	}
 
@@ -194,13 +200,14 @@ abstract class Environment {
 			'QIT_DOCKER_REDIS'   => 'no', // Default. Might be overridden by the concrete environment.
 		], $this->get_generate_docker_compose_envs() ) );
 
-		if ( $this->output->isVerbose() ) {
+		if ( $this->output->isVeryVerbose() ) {
 			$this->output->writeln( $process->getCommandLine() );
-			$this->output->writeln( json_encode( $process->getEnv(), JSON_PRETTY_PRINT ) );
 		}
 
 		$process->run( function ( $type, $buffer ) {
-			$this->output->write( $buffer );
+			if ( $this->output->isVerbose() || $type === Process::ERR ) {
+				$this->output->write( $buffer );
+			}
 		} );
 
 		if ( ! $process->isSuccessful() ) {
@@ -233,10 +240,12 @@ abstract class Environment {
 
 		$up_process->setTimeout( 300 );
 		$up_process->setIdleTimeout( 300 );
-		$up_process->setTty( use_tty() );
+		$up_process->setPty( use_tty() );
 
 		$up_process->run( function ( $type, $buffer ) {
-			$this->output->write( $buffer );
+			if ( $this->output->isVerbose() ) {
+				$this->output->write( $buffer );
+			}
 		} );
 
 		if ( ! $up_process->isSuccessful() ) {
@@ -249,8 +258,8 @@ abstract class Environment {
 		$this->environment_monitor->environment_added_or_updated( $this->env_info );
 	}
 
-	public static function down( EnvInfo $env_info ): void {
-		$output              = App::make( OutputInterface::class );
+	public static function down( EnvInfo $env_info, ?OutputInterface $output = null ): void {
+		$output              = $output ?? App::make( OutputInterface::class );
 		$environment_monitor = App::make( EnvironmentMonitor::class );
 
 		if ( ! file_exists( $env_info->temporary_env ) ) {
@@ -267,7 +276,7 @@ abstract class Environment {
 		$down_process = new Process( array_merge( App::make( Docker::class )->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'down' ] ) );
 		$down_process->setTimeout( 300 );
 		$down_process->setIdleTimeout( 300 );
-		$down_process->setTty( use_tty() );
+		$down_process->setPty( use_tty() );
 
 		$down_process->run( static function ( $type, $buffer ) use ( $output ) {
 			$output->write( $buffer );
