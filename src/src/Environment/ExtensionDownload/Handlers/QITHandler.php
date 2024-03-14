@@ -35,13 +35,16 @@ class QITHandler extends Handler {
 		}
 
 		/**
-		 * @param $download_urls array{
-		 *     array {
-		 *         url: string,
-		 *         version: string,
-		 *         slug: string,
-		 *     }
-		 * }
+		 * @param array<string, array{
+		 *     slug: string,
+		 *     url: string,
+		 *     version: string
+		 * }> $download_urls Array where the key is the 'Requested slug' and each value is an
+		 *                  array with 'slug' (that matches the actual slug), 'url', and 'version'.
+		 *
+		 * Eg, difference between requested slug and actual slug:
+		 * Requested slug: --plugins product-bundles
+		 * Actual slug: woocommerce-product-bundles
 		 */
 		$download_urls = json_decode( $response, true );
 
@@ -70,10 +73,16 @@ class QITHandler extends Handler {
 			}
 		}
 
+		// Eg: "product-bundles".
+		$requested_slug = $e->extension_identifier;
+
+		// Eg: "woocommerce-product-bundles".
+		$actual_slug    = $download_urls[ $e->extension_identifier ]['slug'];
+
 		foreach ( $extensions as $e ) {
-			$e->extension_identifier = $download_urls[ $e->extension_identifier ]['slug'];
-			$e->version              = $download_urls[ $e->extension_identifier ]['version'];
-			$e->download_url         = $download_urls[ $e->extension_identifier ]['url'];
+			$e->extension_identifier = $actual_slug;
+			$e->version              = $download_urls[ $requested_slug ]['version'];
+			$e->download_url         = $download_urls[ $requested_slug ]['url'];
 		}
 	}
 
