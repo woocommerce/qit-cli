@@ -1,9 +1,10 @@
 <?php
 
-namespace QIT_CLI\Commands\Environment;
+namespace QIT_CLI\Commands\Backend;
 
 use QIT_CLI\Auth;
-use QIT_CLI\Environment;
+use QIT_CLI\Cache;
+use QIT_CLI\ManagerBackend;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,8 +14,8 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class AddEnvironment extends Command {
-	protected static $defaultName = 'env:add'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+class AddBackend extends Command {
+	protected static $defaultName = 'backend:add'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/** @var Auth $auth */
 	protected $auth;
@@ -22,13 +23,17 @@ class AddEnvironment extends Command {
 	/** @var WooExtensionsList $woo_extensions_list */
 	protected $woo_extensions_list;
 
-	/** @var Environment $environment */
-	protected $environment;
+	/** @var ManagerBackend $manager_backend */
+	protected $manager_backend;
 
-	public function __construct( Environment $environment, Auth $auth, WooExtensionsList $woo_extensions_list ) {
-		$this->environment         = $environment;
+	/** @var Cache $cache */
+	protected $cache;
+
+	public function __construct( ManagerBackend $manager_backend, Cache $cache, Auth $auth, WooExtensionsList $woo_extensions_list ) {
+		$this->manager_backend     = $manager_backend;
 		$this->auth                = $auth;
 		$this->woo_extensions_list = $woo_extensions_list;
+		$this->cache               = $cache;
 		parent::__construct();
 	}
 
@@ -41,11 +46,11 @@ class AddEnvironment extends Command {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
-		$qit_secret  = $input->getOption( 'qit_secret' );
-		$manager_url = $input->getOption( 'manager_url' );
-		$environment = $input->getOption( 'environment' );
+		$qit_secret      = $input->getOption( 'qit_secret' );
+		$manager_url     = $input->getOption( 'manager_url' );
+		$manager_backend = $input->getOption( 'environment' );
 
-		if ( empty( $environment ) && ( ! empty( $manager_url ) || ! empty( $qit_secret ) ) ) {
+		if ( empty( $manager_backend ) && ( ! empty( $manager_url ) || ! empty( $qit_secret ) ) ) {
 			throw new \UnexpectedValueException( 'When passing Manager URL/QIT Secret as a parameter, you need to also provide a --environment.' );
 		}
 
@@ -66,12 +71,12 @@ class AddEnvironment extends Command {
 				case 'Production (Default)':
 					$manager_url     = 'https://qit.woo.com';
 					$secret_store_id = '(Secret ID: 10523)';
-					$environment     = Environment::$allowed_environments['production'];
+					$manager_backend = ManagerBackend::$allowed_manager_backends['production'];
 					break;
 				case 'Staging (Only for QIT development)':
 					$manager_url     = 'https://stagingcompatibilitydashboard.wpcomstaging.com';
 					$secret_store_id = '(Secret ID: 10522)';
-					$environment     = Environment::$allowed_environments['staging'];
+					$manager_backend = ManagerBackend::$allowed_manager_backends['staging'];
 					break;
 				case 'Local':
 					$question = new Question( "<question>What's the URL of the Manager you'd like to use? (Default: http://qit.test:8081)</question> ", 'http://qit.test:8081' );
@@ -84,14 +89,14 @@ class AddEnvironment extends Command {
 						return $manager_url;
 					} );
 
-					$manager_url = $this->getHelper( 'question' )->ask( $input, $output, $question );
-					$environment = Environment::$allowed_environments['local'];
+					$manager_url     = $this->getHelper( 'question' )->ask( $input, $output, $question );
+					$manager_backend = ManagerBackend::$allowed_manager_backends['local'];
 					break;
 			}
 		}
 
-		if ( $this->environment->environment_exists( $environment ) ) {
-			if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "<question>Environment '$environment' is already configured. Continue? (y/n) </question>", false ) ) ) {
+		if ( $this->manager_backend->manager_backend_exists( $manager_backend ) ) {
+			if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "<question>ManagerBackend '$manager_backend' is already configured. Continue? (y/n) </question>", false ) ) ) {
 				return Command::SUCCESS;
 			}
 		}
@@ -106,7 +111,7 @@ class AddEnvironment extends Command {
 		}
 
 		try {
-			$this->environment->create_environment( $environment );
+			$this->manager_backend->add_manager_backend( $manager_backend );
 		} catch ( \Exception $e ) {
 			$output->writeln( "<error>{$e->getMessage()}</error>" );
 
@@ -114,7 +119,7 @@ class AddEnvironment extends Command {
 		}
 
 		$this->auth->set_manager_secret( $qit_secret );
-		$this->environment->get_cache()->set( 'manager_url', $manager_url, - 1 );
+		$this->cache->set( 'manager_url', $manager_url, - 1 );
 
 		$output->writeln( "Validating your Manager Secret against $manager_url..." );
 		try {
@@ -124,7 +129,7 @@ class AddEnvironment extends Command {
 			}
 		} catch ( \Exception $e ) {
 			$this->auth->delete_manager_secret();
-			$this->environment->get_cache()->delete( 'manager_url' );
+			$this->cache->delete( 'manager_url' );
 			$output->writeln( sprintf( '<error>We could not authenticate to %s using the provided Manager Secret.</error>', escapeshellarg( $manager_url ) ) );
 
 			return Command::FAILURE;
@@ -142,7 +147,7 @@ class AddEnvironment extends Command {
 TEXT;
 
 		$output->writeln( $easter_egg );
-		$output->writeln( "<comment>New environment '$environment' has been successfully setup. The CLI has switched to it.</comment>" );
+		$output->writeln( "<comment>New environment '$manager_backend' has been successfully setup. The CLI has switched to it.</comment>" );
 
 		return Command::SUCCESS;
 	}

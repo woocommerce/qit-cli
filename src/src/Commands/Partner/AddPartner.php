@@ -3,7 +3,8 @@
 namespace QIT_CLI\Commands\Partner;
 
 use QIT_CLI\Auth;
-use QIT_CLI\Environment;
+use QIT_CLI\Cache;
+use QIT_CLI\ManagerBackend;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,13 +25,17 @@ class AddPartner extends Command {
 	/** @var WooExtensionsList $woo_extensions_list */
 	protected $woo_extensions_list;
 
-	/** @var Environment $environment */
-	protected $environment;
+	/** @var ManagerBackend $manager_backend */
+	protected $manager_backend;
 
-	public function __construct( Environment $environment, Auth $auth, WooExtensionsList $woo_extensions_list ) {
-		$this->environment         = $environment;
+	/** @var Cache $cache */
+	protected $cache;
+
+	public function __construct( ManagerBackend $manager_backend, Cache $cache, Auth $auth, WooExtensionsList $woo_extensions_list ) {
+		$this->manager_backend     = $manager_backend;
 		$this->auth                = $auth;
 		$this->woo_extensions_list = $woo_extensions_list;
+		$this->cache               = $cache;
 		parent::__construct();
 	}
 
@@ -135,17 +140,17 @@ TEXT;
 
 		$output->writeln( $easter_egg );
 
-		if ( $this->environment->partner_exists( $user_environment ) ) {
-			$this->environment->remove_partner( $user_environment );
+		if ( $this->manager_backend->partner_exists( $user_environment ) ) {
+			$this->manager_backend->remove_partner( $user_environment );
 		}
 
-		$this->environment->create_partner( $user_environment );
+		$this->manager_backend->add_partner( $user_environment );
 
 		$this->auth->set_partner_auth( $user, $qit_token );
-		$this->environment->get_cache()->set( 'manager_url', $manager_url, - 1 );
+		$this->cache->set( 'manager_url', $manager_url, - 1 );
 		$this->woo_extensions_list->fetch_woo_extensions_available();
 
-		$output->writeln( sprintf( "Cache file written to: %s. Keep this file safe, as it contains your QIT Token.\n", $this->environment->get_cache()->get_cache_file_path() ) );
+		$output->writeln( sprintf( "Cache file written to: %s. Keep this file safe, as it contains your QIT Token.\n", $this->cache->get_cache_file_path() ) );
 		$output->writeln( "Treat this file as you would treat your SSH keys. For more tips on hardening security, check the README of the QIT CLI.\n" );
 		$output->writeln( '<fg=green>Initialization complete! You can now start using the QIT CLI!</>' );
 

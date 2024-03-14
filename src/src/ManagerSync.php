@@ -12,8 +12,8 @@ class ManagerSync {
 	/** @var Auth $auth */
 	protected $auth;
 
-	/** @var Environment $environment */
-	protected $environment;
+	/** @var Cache $cache */
+	protected $cache;
 
 	/** @var OutputInterface $output */
 	protected $output;
@@ -21,19 +21,19 @@ class ManagerSync {
 	/** @var string $sync_cache_key */
 	public $sync_cache_key;
 
-	public function __construct( Environment $environment, Auth $auth ) {
+	public function __construct( Cache $cache, Auth $auth ) {
 		$this->auth           = $auth;
-		$this->environment    = $environment;
+		$this->cache          = $cache;
 		$this->output         = App::make( Output::class );
 		$this->sync_cache_key = sprintf( 'manager_sync_v%s', App::getVar( 'CLI_VERSION' ) );
 	}
 
 	public function maybe_sync( bool $force_resync = false ): void {
 		if ( $force_resync ) {
-			$this->environment->get_cache()->delete( $this->sync_cache_key );
+			$this->cache->delete( $this->sync_cache_key );
 		}
 
-		$manager_sync = $this->environment->get_cache()->get( $this->sync_cache_key );
+		$manager_sync = $this->cache->get( $this->sync_cache_key );
 
 		if ( ! is_null( $manager_sync ) ) {
 			return;
@@ -81,7 +81,7 @@ class ManagerSync {
 		// 1 hour if we can connect to the Manager.
 		$expiration = App::getVar( 'offline_mode' ) ? 0 : 3600;
 
-		$this->environment->get_cache()->set( $this->sync_cache_key, $manager_sync, $expiration );
+		$this->cache->set( $this->sync_cache_key, $manager_sync, $expiration );
 	}
 
 	public function enforce_latest_version(): void {
@@ -92,8 +92,8 @@ class ManagerSync {
 			return;
 		}
 
-		$latest_version      = $this->environment->get_cache()->get_manager_sync_data( 'latest_cli_version' );
-		$minimum_cli_version = $this->environment->get_cache()->get_manager_sync_data( 'minimum_cli_version' );
+		$latest_version      = $this->cache->get_manager_sync_data( 'latest_cli_version' );
+		$minimum_cli_version = $this->cache->get_manager_sync_data( 'minimum_cli_version' );
 
 		if ( version_compare( $current_version, $latest_version, '<' ) ) {
 			$header = 'There\'s a new version of the QIT CLI available!';

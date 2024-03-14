@@ -8,17 +8,10 @@ class Cache {
 	/** @var array<scalar|array<scalar>> $cache */
 	protected $cache = [];
 
-	/** @var Environment $environment */
-	protected $environment;
-
-	/** @var bool */
-	protected $did_init = false;
-
 	/** @var string */
 	protected $cache_file_path;
 
 	public function __construct() {
-		$this->cache_file_path = $this->make_cache_path_for_environment( Config::get_current_environment() );
 		$this->init_cache();
 	}
 
@@ -26,8 +19,8 @@ class Cache {
 		return $this->cache_file_path;
 	}
 
-	public function make_cache_path_for_environment( string $environment ): string {
-		return Config::get_qit_dir() . ".env-$environment.json";
+	public function make_cache_path( string $manager_backend ): string {
+		return Config::get_qit_dir() . ".env-$manager_backend.json";
 	}
 
 	/**
@@ -38,10 +31,6 @@ class Cache {
 	 * @return void
 	 */
 	public function set( string $key, $value, int $expire ): void {
-		if ( ! $this->did_init ) {
-			throw new \LogicException( 'Cache not initialized.' );
-		}
-
 		if ( $expire !== - 1 ) {
 			$expire = time() + $expire;
 		}
@@ -107,8 +96,8 @@ class Cache {
 	 *
 	 * @throws \RuntimeException When could not read the cache file.
 	 */
-	protected function init_cache(): void {
-		$this->did_init = true;
+	public function init_cache(): void {
+		$this->cache_file_path = static::make_cache_path( Config::get_current_manager_backend() );
 
 		if ( ! file_exists( $this->cache_file_path ) ) {
 			return;
@@ -123,7 +112,7 @@ class Cache {
 		$cache = json_decode( $data, true );
 
 		if ( ! is_array( $cache ) ) {
-			throw new \RuntimeException( 'Could not parse cache file. Resetting environment, please remove the current Partner/Environment and add it again.' );
+			throw new \RuntimeException( 'Could not parse cache file. Resetting environment, please remove the current Partner/Manager backend and add it again.' );
 		}
 
 		$this->cache = $cache;

@@ -3,11 +3,12 @@
 namespace QIT_CLI_Tests;
 
 use QIT_CLI\App;
-use QIT_CLI\Commands\Environment\AddEnvironment;
-use QIT_CLI\Commands\Environment\SwitchEnvironment;
+use QIT_CLI\Cache;
+use QIT_CLI\Commands\Backend\AddBackend;
+use QIT_CLI\Commands\Backend\SwitchBackend;
 use QIT_CLI\Commands\Partner\AddPartner;
 use QIT_CLI\Commands\Partner\SwitchPartner;
-use QIT_CLI\Environment;
+use QIT_CLI\ManagerBackend;
 use Spatie\Snapshots\MatchesSnapshots;
 use function QIT_CLI\get_manager_url;
 
@@ -39,7 +40,7 @@ class PartnerManagementTest extends QITTestCase {
 	}
 
 	protected function get_snapshot_friendly_cache(): string {
-		$json = file_get_contents( App::make( Environment::class )->get_cache()->get_cache_file_path() );
+		$json = file_get_contents( App::make( Cache::class )->get_cache_file_path() );
 
 		/*
 		 * To ensure consistent snapshot testing results, replace the time-dependent "expire" property in the JSON
@@ -93,7 +94,7 @@ class PartnerManagementTest extends QITTestCase {
 		App::setVar( sprintf( 'mock_%s', 'http://cd_manager.loc:8081/wp-json/cd/v1/cli/sync' ), file_get_contents( __DIR__ . '/data/sync.json' ) );
 
 		$this->application_tester->run( [
-			'command' => AddEnvironment::getDefaultName(),
+			'command' => AddBackend::getDefaultName(),
 			'-e'      => 'local',
 			'-s'      => 'foo-secret',
 			'-u'      => 'http://cd_manager.loc:8081',
@@ -106,7 +107,7 @@ class PartnerManagementTest extends QITTestCase {
 		App::setVar( sprintf( 'mock_%s', 'https://stagingcompatibilitydashboard.wpstaging.com/wp-json/cd/v1/cli/sync' ), file_get_contents( __DIR__ . '/data/sync.json' ) );
 
 		$this->application_tester->run( [
-			'command' => AddEnvironment::getDefaultName(),
+			'command' => AddBackend::getDefaultName(),
 			'-e'      => 'staging',
 			'-s'      => 'foo-secret',
 			'-u'      => 'https://stagingcompatibilitydashboard.wpstaging.com',
@@ -126,12 +127,12 @@ class PartnerManagementTest extends QITTestCase {
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertEquals( 1, $this->application_tester->getStatusCode() );
-		$this->assertStringContainsString( 'Cannot switch to environment', $this->application_tester->getErrorOutput() );
+		$this->assertStringContainsString( 'Cannot switch to backend', $this->application_tester->getErrorOutput() );
 
 		// Switch to "local" environment.
 		$this->application_tester->run( [
-			'command' => SwitchEnvironment::getDefaultName(),
-			'environment'    => 'local',
+			'command' => SwitchBackend::getDefaultName(),
+			'backend'    => 'local',
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );

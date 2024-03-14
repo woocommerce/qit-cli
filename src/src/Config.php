@@ -45,11 +45,14 @@ class Config {
 		return (bool) App::make( self::class )->get( 'development_mode' );
 	}
 
-	public static function set_current_environment( string $environment ): void {
-		App::make( self::class )->set( 'current_environment', $environment );
+	public static function set_current_manager_environment( string $manager_backend ): void {
+		App::make( self::class )->set( 'current_environment', $manager_backend );
+
+		// Update the existing Cache singleton with the new environment.
+		App::make( Cache::class )->init_cache();
 	}
 
-	public static function get_current_environment(): string {
+	public static function get_current_manager_backend(): string {
 		return (string) App::make( self::class )->get( 'current_environment' ) ?: 'default';
 	}
 

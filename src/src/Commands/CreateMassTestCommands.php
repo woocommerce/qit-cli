@@ -4,7 +4,7 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Auth;
-use QIT_CLI\Environment;
+use QIT_CLI\Cache;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Application;
@@ -15,8 +15,8 @@ use function QIT_CLI\get_manager_url;
 
 class CreateMassTestCommands extends DynamicCommandCreator {
 
-	/** @var Environment $environment */
-	protected $environment;
+	/** @var Cache $cache */
+	protected $cache;
 
 	/** @var Auth $auth */
 	protected $auth;
@@ -24,10 +24,10 @@ class CreateMassTestCommands extends DynamicCommandCreator {
 	/** @var OutputInterface $output */
 	protected $output;
 
-	public function __construct( Environment $environment, Auth $auth ) {
-		$this->environment = $environment;
-		$this->auth        = $auth;
-		$this->output      = App::make( Output::class );
+	public function __construct( Cache $cache, Auth $auth ) {
+		$this->cache  = $cache;
+		$this->auth   = $auth;
+		$this->output = App::make( Output::class );
 	}
 
 	public function register_commands( Application $application ): void {
@@ -64,7 +64,7 @@ class CreateMassTestCommands extends DynamicCommandCreator {
 			->setName( 'mass-test' );
 
 		try {
-			$schema = $this->environment->get_cache()->get_manager_sync_data( 'schemas' )['mass'] ?? null;
+			$schema = $this->cache->get_manager_sync_data( 'schemas' )['mass'] ?? null;
 
 			if ( ! is_array( $schema ) ) {
 				throw new \Exception();
