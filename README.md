@@ -61,7 +61,7 @@ The QIT Local Test Environment offers a powerful, flexible testing platform for 
 
 - **Ephemeral Test Environments**: Each environment is temporary and completely isolated. When you stop and restart, it's like beginning with a clean slate.
 - **Configurable Versions**: Choose specific versions of WordPress, WooCommerce, and PHP for targeted testing.
-- **Plugin and Theme Testing**: Easily test your plugins and themes in different configurations. Supports various source options for plugins and themes, including direct paths, Woo.com slugs/product IDs, WordPress.org slugs, ZIP URLs, and even other private sources and marketplaces, with some configuration.
+- **Plugin and Theme Testing**: Easily test your plugins and themes in different configurations. Supports various source options for plugins and themes, including direct paths, Woo.com slugs/product IDs, WordPress.org slugs, ZIP URLs, and even from other sources, such as private GitHub repos and other marketplaces, with some configuration.
 - **Volume Mapping**: Map local directories to the test environment, allowing you to test plugins and themes directly from your development workspace.
 - **PHP Extensions**: Customize the PHP environment with required extensions.
 - **Object Cache**: Option to enable Redis Object Cache for more advanced testing scenarios.
