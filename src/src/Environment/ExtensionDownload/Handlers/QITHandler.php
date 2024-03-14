@@ -73,13 +73,13 @@ class QITHandler extends Handler {
 			}
 		}
 
-		// Eg: "product-bundles".
-		$requested_slug = $e->extension_identifier;
-
-		// Eg: "woocommerce-product-bundles".
-		$actual_slug    = $download_urls[ $e->extension_identifier ]['slug'];
-
 		foreach ( $extensions as $e ) {
+			// Eg: "product-bundles".
+			$requested_slug = $e->extension_identifier;
+
+			// Eg: "woocommerce-product-bundles".
+			$actual_slug = $download_urls[ $e->extension_identifier ]['slug'];
+
 			$e->extension_identifier = $actual_slug;
 			$e->version              = $download_urls[ $requested_slug ]['version'];
 			$e->download_url         = $download_urls[ $requested_slug ]['url'];
