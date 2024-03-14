@@ -92,7 +92,13 @@ class ExecEnvironmentCommand extends Command {
 		$timeout  = $input->getOption( 'timeout' ) !== null ? (int) $input->getOption( 'timeout' ) : 300;
 		$image    = $input->getOption( 'image' ) ?: 'php';
 
-		$this->docker->run_inside_docker( $environment, explode( ' ', $command_to_run ), $env_vars, $user, $timeout, $image );
+		try {
+			$this->docker->run_inside_docker( $environment, [ '/bin/bash', '-c', $command_to_run ], $env_vars, $user, $timeout, $image, true );
+		} catch ( \Exception $e ) {
+			$output->writeln( '<error>' . $e->getMessage() . '</error>' );
+
+			return Command::FAILURE;
+		}
 
 		return Command::SUCCESS;
 	}

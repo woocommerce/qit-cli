@@ -109,7 +109,7 @@ class Docker {
 	 *
 	 * @return void
 	 */
-	public function run_inside_docker( EnvInfo $env_info, array $command, array $env_vars = [], ?string $user = null, int $timeout = 300, string $image = 'php' ): void {
+	public function run_inside_docker( EnvInfo $env_info, array $command, array $env_vars = [], ?string $user = null, int $timeout = 300, string $image = 'php', bool $force_output = false ): void {
 		$docker_image   = $env_info->get_docker_container( $image );
 		$docker_command = [ $this->find_docker(), 'exec' ];
 
@@ -166,14 +166,34 @@ class Docker {
 			$this->output->writeln( $process->getCommandLine() );
 		}
 
-		$process->run( function ( $type, $buffer ) {
-			if ( $this->output->isVerbose() ) {
+		$process->run( function ( $type, $buffer ) use ( $force_output ) {
+			if ( $this->output->isVerbose() || $force_output ) {
 				$this->output->write( $buffer );
 			}
 		} );
 
 		if ( ! $process->isSuccessful() ) {
-			throw new \RuntimeException( 'Failed to run command inside docker: ' . $process->getCommandLine() );
+			$output       = $process->getOutput();
+			$error_output = $process->getErrorOutput();
+
+			$message = 'Command not successul.';
+
+			// If $force_output is true, we already printed this.
+			if ( ! $force_output ) {
+				if ( ! empty( $output ) ) {
+					$message .= "\n" . $output;
+				}
+
+				if ( ! empty( $error_output ) ) {
+					$message .= "\n" . $error_output;
+				}
+			}
+
+			if ( $this->output->isVerbose() ) {
+				$message .= "\n" . 'Command that was executed: ' . $process->getCommandLine();
+			}
+
+			throw new \RuntimeException( $message );
 		}
 	}
 
