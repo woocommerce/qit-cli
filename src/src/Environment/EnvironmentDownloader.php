@@ -81,8 +81,10 @@ class EnvironmentDownloader {
 			}
 
 			// Delete old environment extracted files.
-			$safe_remove = App::make( SafeRemove::class );
-			$safe_remove->delete_dir( $environments_dir . '/' . $env_name, Config::get_qit_dir() );
+			if ( file_exists( $environments_dir . '/' . $env_name ) ) {
+				$safe_remove = App::make( SafeRemove::class );
+				$safe_remove->delete_dir( $environments_dir . '/' . $env_name, Config::get_qit_dir() );
+			}
 
 			if ( ! $zip->extractTo( $environments_dir . '/' . $env_name ) ) {
 				throw new \RuntimeException( 'Could not extract environment zip.' );
