@@ -37,6 +37,7 @@
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
             "test_result_json_extracted": "{EXTRACTED}",
+            "syntax_errors_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
         {
@@ -1378,6 +1379,9 @@
                 ],
                 "summary": "Test Suites: 0 skipped, 7 failed, 13 passed, 20 total | Tests: 77 skipped, 22 failed, 158 passed, 257 total."
             }
+        },
+        {
+            "syntax_errors_json": []
         },
         {
             "debug_log": [

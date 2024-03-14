@@ -32,12 +32,12 @@
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
             "test_summary": "6 Errors Detected. (0 Fatal, 0 Warnings, 6 Notices)",
-            "debug_log": "",
+            "debuggi_log": "",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
-            "test_result_json_extracted": "{EXTRACTED}"
+clea            "test_result_json_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {

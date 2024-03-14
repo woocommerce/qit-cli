@@ -3,7 +3,7 @@
         {
             "test_run_id": 123456,
             "run_id": 123456,
-            "test_type": "phpstan",
+            "test_type": "woo-api",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "7.4",
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 0, File Errors: 2",
+            "test_summary": "Syntax errors detected.",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -42,32 +42,25 @@
         },
         {
             "test_result_json": {
-                "totals": {
-                    "errors": 0,
-                    "file_errors": 2
-                },
-                "files": {
-                    "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                        "errors": 2,
-                        "messages": [
-                            {
-                                "message": "Instantiated class Bar not found.",
-                                "line": 21,
-                                "ignorable": true
-                            },
-                            {
-                                "message": "Result of function example_return_void (void) is used.",
-                                "line": 22,
-                                "ignorable": true
-                            }
-                        ]
-                    }
-                },
-                "errors": []
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 0,
+                "numPendingTestSuites": 0,
+                "numTotalTestSuites": 0,
+                "numFailedTests": 0,
+                "numPassedTests": 0,
+                "numPendingTests": 0,
+                "numTotalTests": 0,
+                "testResults": [],
+                "summary": "Test failed before it was executed."
             }
         },
         {
-            "syntax_errors_json": []
+            "syntax_errors_json": [
+                {
+                    "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php",
+                    "message": "[13-Mar-2024 13:32:49 UTC] PHP Parse error:  syntax error, unexpected end of file in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 7"
+                }
+            ]
         }
     ]
 ]';
