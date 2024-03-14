@@ -297,7 +297,7 @@ class RequestBuilder {
 					sprintf( 'Error: %s (Status code: %s, Expected: %s)',
 						$error_message,
 						$response_status_code,
-						implode( ', ', $this->expected_status_codes ) ),
+					implode( ', ', $this->expected_status_codes ) ),
 					$response_status_code
 				);
 			} else {
