@@ -45,34 +45,14 @@
                     "phpcs": {
                         "totals": {
                             "errors": 304,
-                            "warnings": 164,
+                            "warnings": 40,
                             "fixable": 0
                         },
                         "files": {
                             "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
                                 "errors": 304,
-                                "warnings": 164,
+                                "warnings": 40,
                                 "messages": [
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . $_GET[\'title\'] . \\"\';\\" ); \\/\\/ Bad.\\n",
-                                        "line": 9,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . $_GET[\'title\'] . \\"\';\\" ); \\/\\/ Bad.\\n",
-                                        "line": 9,
-                                        "column": 1
-                                    },
                                     {
                                         "message": "Use placeholders and $wpdb->prepare(); found $_GET",
                                         "source": "WordPress.DB.PreparedSQL.NotPrepared",
@@ -94,26 +74,6 @@
                                         "column": 70
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'{$_GET[\'title\']}\';\\" ); \\/\\/ Bad.\\n",
-                                        "line": 10,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'{$_GET[\'title\']}\';\\" ); \\/\\/ Bad.\\n",
-                                        "line": 10,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable {$_GET[\'title\']} at \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'{$_GET[\'title\']}\';\\"",
                                         "source": "WordPress.DB.PreparedSQL.InterpolatedNotPrepared",
                                         "severity": 5,
@@ -122,26 +82,6 @@
                                         "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'{$_GET[\'title\']}\';\\" ); \\/\\/ Bad.\\n",
                                         "line": 10,
                                         "column": 15
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'$var\';\\" ); \\/\\/ Bad.\\n",
-                                        "line": 11,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'$var\';\\" ); \\/\\/ Bad.\\n",
-                                        "line": 11,
-                                        "column": 1
                                     },
                                     {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable $var at \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'$var\';\\"",
@@ -154,46 +94,6 @@
                                         "column": 15
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'Hello World!\';\\" ); \\/\\/ Ok.\\n",
-                                        "line": 12,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'Hello World!\';\\" ); \\/\\/ Ok.\\n",
-                                        "line": 12,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'{$_GET[\'title\']}\';\\" ) ); \\/\\/ Bad.\\n",
-                                        "line": 13,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'{$_GET[\'title\']}\';\\" ) ); \\/\\/ Bad.\\n",
-                                        "line": 13,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable {$_GET[\'title\']} at \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'{$_GET[\'title\']}\';\\"",
                                         "source": "WordPress.DB.PreparedSQL.InterpolatedNotPrepared",
                                         "severity": 5,
@@ -204,26 +104,6 @@
                                         "column": 31
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'$var\';\\" ) ); \\/\\/ Bad.\\n",
-                                        "line": 14,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'$var\';\\" ) ); \\/\\/ Bad.\\n",
-                                        "line": 14,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable $var at \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'$var\';\\"",
                                         "source": "WordPress.DB.PreparedSQL.InterpolatedNotPrepared",
                                         "severity": 5,
@@ -232,26 +112,6 @@
                                         "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'$var\';\\" ) ); \\/\\/ Bad.\\n",
                                         "line": 14,
                                         "column": 31
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE %s;\\", $_GET[\'title\'] ) ); \\/\\/ Ok.\\n",
-                                        "line": 15,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE %s;\\", $_GET[\'title\'] ) ); \\/\\/ Ok.\\n",
-                                        "line": 15,
-                                        "column": 1
                                     },
                                     {
                                         "message": "Detected usage of a non-sanitized input variable: $_GET[\'title\']",
@@ -264,26 +124,6 @@
                                         "column": 87
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . $escaped_var . \\"\';\\" ); \\/\\/ Bad: old-style ignore comment. WPCS: unprepared SQL OK.\\n",
-                                        "line": 17,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . $escaped_var . \\"\';\\" ); \\/\\/ Bad: old-style ignore comment. WPCS: unprepared SQL OK.\\n",
-                                        "line": 17,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found $escaped_var",
                                         "source": "WordPress.DB.PreparedSQL.NotPrepared",
                                         "severity": 5,
@@ -292,26 +132,6 @@
                                         "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . $escaped_var . \\"\';\\" ); \\/\\/ Bad: old-style ignore comment. WPCS: unprepared SQL OK.\\n",
                                         "line": 17,
                                         "column": 70
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'{$escaped_var}\';\\" ); \\/\\/  Bad: old-style ignore comment. WPCS: unprepared SQL OK.\\n",
-                                        "line": 18,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'{$escaped_var}\';\\" ); \\/\\/  Bad: old-style ignore comment. WPCS: unprepared SQL OK.\\n",
-                                        "line": 18,
-                                        "column": 1
                                     },
                                     {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable {$escaped_var} at \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'{$escaped_var}\';\\"",
@@ -324,66 +144,6 @@
                                         "column": 15
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT SUBSTRING( post_name, %d + 1 ) REGEXP \'^[0-9]+$\'\\", array( 123 ) ) ); \\/\\/ Ok.\\n",
-                                        "line": 20,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT SUBSTRING( post_name, %d + 1 ) REGEXP \'^[0-9]+$\'\\", array( 123 ) ) ); \\/\\/ Ok.\\n",
-                                        "line": 20,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title = \'The \\\\$_GET var can be evil.\' AND ID = %s\\", array( 123 ) ) ); \\/\\/ Ok.\\n",
-                                        "line": 21,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title = \'The \\\\$_GET var can be evil.\' AND ID = %s\\", array( 123 ) ) ); \\/\\/ Ok.\\n",
-                                        "line": 21,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title = \'The $_GET[foo] var is evil.\' AND ID = %s\\", array( 123 ) ) ); \\/\\/ Bad.\\n",
-                                        "line": 22,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title = \'The $_GET[foo] var is evil.\' AND ID = %s\\", array( 123 ) ) ); \\/\\/ Bad.\\n",
-                                        "line": 22,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable $_GET[foo] at \\"SELECT * FROM $wpdb->posts WHERE post_title = \'The $_GET[foo] var is evil.\' AND ID = %s\\"",
                                         "source": "WordPress.DB.PreparedSQL.InterpolatedNotPrepared",
                                         "severity": 5,
@@ -392,26 +152,6 @@
                                         "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title = \'The $_GET[foo] var is evil.\' AND ID = %s\\", array( 123 ) ) ); \\/\\/ Bad.\\n",
                                         "line": 22,
                                         "column": 31
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title = \'The \\\\\\\\$_GET[foo]\\/\\/ var is evil again.\' AND ID = %s\\", array( 123 ) ) ); \\/\\/ Bad.\\n",
-                                        "line": 23,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title = \'The \\\\\\\\$_GET[foo]\\/\\/ var is evil again.\' AND ID = %s\\", array( 123 ) ) ); \\/\\/ Bad.\\n",
-                                        "line": 23,
-                                        "column": 1
                                     },
                                     {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable $_GET[foo] at \\"SELECT * FROM $wpdb->posts WHERE post_title = \'The \\\\\\\\$_GET[foo]\\/\\/ var is evil again.\' AND ID = %s\\"",
@@ -424,26 +164,6 @@
                                         "column": 31
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title = \'The \\\\$_GET var can be evil, but $_GET[foo] var is evil.\' AND ID = %s\\", array( 123 ) ) ); \\/\\/ Bad.\\n",
-                                        "line": 24,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title = \'The \\\\$_GET var can be evil, but $_GET[foo] var is evil.\' AND ID = %s\\", array( 123 ) ) ); \\/\\/ Bad.\\n",
-                                        "line": 24,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable $_GET[foo] at \\"SELECT * FROM $wpdb->posts WHERE post_title = \'The \\\\$_GET var can be evil, but $_GET[foo] var is evil.\' AND ID = %s\\"",
                                         "source": "WordPress.DB.PreparedSQL.InterpolatedNotPrepared",
                                         "severity": 5,
@@ -454,26 +174,6 @@
                                         "column": 31
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . foo() . \\"\';\\" ); \\/\\/ Bad.\\n",
-                                        "line": 26,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . foo() . \\"\';\\" ); \\/\\/ Bad.\\n",
-                                        "line": 26,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found foo",
                                         "source": "WordPress.DB.PreparedSQL.NotPrepared",
                                         "severity": 5,
@@ -482,26 +182,6 @@
                                         "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . foo() . \\"\';\\" ); \\/\\/ Bad.\\n",
                                         "line": 26,
                                         "column": 70
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . foo() . \\"\';\\" ) ); \\/\\/ Bad.\\n",
-                                        "line": 27,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . foo() . \\"\';\\" ) ); \\/\\/ Bad.\\n",
-                                        "line": 27,
-                                        "column": 1
                                     },
                                     {
                                         "message": "Use placeholders and $wpdb->prepare(); found foo",
@@ -524,146 +204,6 @@
                                         "column": 99
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM \\" . $wpdb->posts . \\" WHERE post_title LIKE \'foo\';\\" ); \\/\\/ Ok.\\n",
-                                        "line": 29,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM \\" . $wpdb->posts . \\" WHERE post_title LIKE \'foo\';\\" ); \\/\\/ Ok.\\n",
-                                        "line": 29,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$all_post_meta = $wpdb->get_results( $wpdb->prepare( sprintf(\\n",
-                                        "line": 32,
-                                        "column": 18
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$all_post_meta = $wpdb->get_results( $wpdb->prepare( sprintf(\\n",
-                                        "line": 32,
-                                        "column": 18
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . esc_sql( $foo ) . \\"\';\\" ); \\/\\/ Ok.\\n",
-                                        "line": 39,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . esc_sql( $foo ) . \\"\';\\" ); \\/\\/ Ok.\\n",
-                                        "line": 39,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE ID = \\" . absint( $foo ) . \\";\\" ); \\/\\/ Ok.\\n",
-                                        "line": 40,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE ID = \\" . absint( $foo ) . \\";\\" ); \\/\\/ Ok.\\n",
-                                        "line": 40,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$all_post_meta = $wpdb->get_results( $wpdb->prepare( sprintf(\\n",
-                                        "line": 43,
-                                        "column": 18
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$all_post_meta = $wpdb->get_results( $wpdb->prepare( sprintf(\\n",
-                                        "line": 43,
-                                        "column": 18
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"\\n",
-                                        "line": 53,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"\\n",
-                                        "line": 53,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"\\n",
-                                        "line": 59,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"\\n",
-                                        "line": 59,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable $_GET[foo] at \\\\tWHERE post_title = \'The \\\\\\\\$_GET[foo]\\/\\/ var is evil again.\'\\\\n",
                                         "source": "WordPress.DB.PreparedSQL.InterpolatedNotPrepared",
                                         "severity": 5,
@@ -671,26 +211,6 @@
                                         "type": "ERROR",
                                         "codeFragment": "\\tWHERE post_title = \'The \\\\\\\\$_GET[foo]\\/\\/ var is evil again.\'\\n",
                                         "line": 62,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( <<<EOT\\n",
-                                        "line": 69,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( <<<EOT\\n",
-                                        "line": 69,
                                         "column": 1
                                     },
                                     {
@@ -704,26 +224,6 @@
                                         "column": 1
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( <<<\\"HD\\"\\n",
-                                        "line": 76,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( <<<\\"HD\\"\\n",
-                                        "line": 76,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable {$var} at \\\\tWHERE post_title LIKE \'{$var}\';\\\\n",
                                         "source": "WordPress.DB.PreparedSQL.InterpolatedNotPrepared",
                                         "severity": 5,
@@ -732,26 +232,6 @@
                                         "codeFragment": "\\tWHERE post_title LIKE \'{$var}\';\\n",
                                         "line": 79,
                                         "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$all_post_meta = $wpdb->get_results( $wpdb->prepare( sprintf( <<<\'ND\'\\n",
-                                        "line": 83,
-                                        "column": 18
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$all_post_meta = $wpdb->get_results( $wpdb->prepare( sprintf( <<<\'ND\'\\n",
-                                        "line": 83,
-                                        "column": 18
                                     },
                                     {
                                         "message": "Use placeholders and $wpdb->prepare(); found foo",
@@ -774,26 +254,6 @@
                                         "column": 85
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\/\\/ Some arbitrary comment.\\n",
-                                        "line": 97,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\/\\/ Some arbitrary comment.\\n",
-                                        "line": 97,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found $escaped_var",
                                         "source": "WordPress.DB.PreparedSQL.NotPrepared",
                                         "severity": 5,
@@ -802,86 +262,6 @@
                                         "codeFragment": "\\t\\tWHERE post_title LIKE \'\\" . $escaped_var . \\"\';\\"\\n",
                                         "line": 100,
                                         "column": 30
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE ID = \\" . (int) $foo . \\";\\" ); \\/\\/ Ok.\\n",
-                                        "line": 103,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE ID = \\" . (int) $foo . \\";\\" ); \\/\\/ Ok.\\n",
-                                        "line": 103,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . (float) $foo . \\";\\" ); \\/\\/ Ok.\\n",
-                                        "line": 105,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . (float) $foo . \\";\\" ); \\/\\/ Ok.\\n",
-                                        "line": 105,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query(\\n",
-                                        "line": 107,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query(\\n",
-                                        "line": 107,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM {$wpdb->bar()} WHERE post_title LIKE \'{$title->sub()}\';\\" ); \\/\\/ Bad x 1.\\n",
-                                        "line": 116,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM {$wpdb->bar()} WHERE post_title LIKE \'{$title->sub()}\';\\" ); \\/\\/ Bad x 1.\\n",
-                                        "line": 116,
-                                        "column": 1
                                     },
                                     {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable {$title->sub()} at \\"SELECT * FROM {$wpdb->bar()} WHERE post_title LIKE \'{$title->sub()}\';\\"",
@@ -894,26 +274,6 @@
                                         "column": 15
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM ${wpdb->bar} WHERE post_title LIKE \'${title->sub}\';\\" ); \\/\\/ Bad x 1.\\n",
-                                        "line": 117,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM ${wpdb->bar} WHERE post_title LIKE \'${title->sub}\';\\" ); \\/\\/ Bad x 1.\\n",
-                                        "line": 117,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable ${title->sub} at \\"SELECT * FROM ${wpdb->bar} WHERE post_title LIKE \'${title->sub}\';\\"",
                                         "source": "WordPress.DB.PreparedSQL.InterpolatedNotPrepared",
                                         "severity": 5,
@@ -922,26 +282,6 @@
                                         "codeFragment": "$wpdb->query( \\"SELECT * FROM ${wpdb->bar} WHERE post_title LIKE \'${title->sub}\';\\" ); \\/\\/ Bad x 1.\\n",
                                         "line": 117,
                                         "column": 15
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM ${wpdb->{$baz}} WHERE post_title LIKE \'${title->{$sub}}\';\\" ); \\/\\/ Bad x 1.\\n",
-                                        "line": 118,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM ${wpdb->{$baz}} WHERE post_title LIKE \'${title->{$sub}}\';\\" ); \\/\\/ Bad x 1.\\n",
-                                        "line": 118,
-                                        "column": 1
                                     },
                                     {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable ${title->{$sub}} at \\"SELECT * FROM ${wpdb->{$baz}} WHERE post_title LIKE \'${title->{$sub}}\';\\"",
@@ -954,26 +294,6 @@
                                         "column": 15
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM ${wpdb->{${\'a\'}}} WHERE post_title LIKE \'${title->{${\'sub\'}}}\';\\" ); \\/\\/ Bad x 1.\\n",
-                                        "line": 119,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM ${wpdb->{${\'a\'}}} WHERE post_title LIKE \'${title->{${\'sub\'}}}\';\\" ); \\/\\/ Bad x 1.\\n",
-                                        "line": 119,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable ${title->{${\'sub\'}}} at \\"SELECT * FROM ${wpdb->{${\'a\'}}} WHERE post_title LIKE \'${title->{${\'sub\'}}}\';\\"",
                                         "source": "WordPress.DB.PreparedSQL.InterpolatedNotPrepared",
                                         "severity": 5,
@@ -984,26 +304,6 @@
                                         "column": 15
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb\\" ); \\/\\/ Bad x 1, $wpdb on its own is not valid.\\n",
-                                        "line": 122,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb\\" ); \\/\\/ Bad x 1, $wpdb on its own is not valid.\\n",
-                                        "line": 122,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable $wpdb at \\"SELECT * FROM $wpdb\\"",
                                         "source": "WordPress.DB.PreparedSQL.InterpolatedNotPrepared",
                                         "severity": 5,
@@ -1012,26 +312,6 @@
                                         "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb\\" ); \\/\\/ Bad x 1, $wpdb on its own is not valid.\\n",
                                         "line": 122,
                                         "column": 15
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb\\n",
-                                        "line": 124,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb\\n",
-                                        "line": 124,
-                                        "column": 1
                                     },
                                     {
                                         "message": "Use placeholders and $wpdb->prepare(); found $_GET",
@@ -1052,46 +332,6 @@
                                         "codeFragment": "\\t-> \\/*comment*\\/ query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . $_GET[\'title\'] . \\"\';\\" ); \\/\\/ Bad.\\n",
                                         "line": 125,
                                         "column": 79
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb?->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . (int) $foo . \\"\';\\" ); \\/\\/ OK.\\n",
-                                        "line": 127,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb?->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . (int) $foo . \\"\';\\" ); \\/\\/ OK.\\n",
-                                        "line": 127,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb?->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . foo() . \\"\';\\" ); \\/\\/ Bad.\\n",
-                                        "line": 128,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb?->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . foo() . \\"\';\\" ); \\/\\/ Bad.\\n",
-                                        "line": 128,
-                                        "column": 1
                                     },
                                     {
                                         "message": "Use placeholders and $wpdb->prepare(); found foo",
@@ -1124,26 +364,6 @@
                                         "column": 84
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->Query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . foo() . \\"\';\\" ); \\/\\/ Bad.\\n",
-                                        "line": 131,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->Query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . foo() . \\"\';\\" ); \\/\\/ Bad.\\n",
-                                        "line": 131,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found foo",
                                         "source": "WordPress.DB.PreparedSQL.NotPrepared",
                                         "severity": 5,
@@ -1152,26 +372,6 @@
                                         "codeFragment": "$wpdb->Query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . foo() . \\"\';\\" ); \\/\\/ Bad.\\n",
                                         "line": 131,
                                         "column": 70
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . {$foo} . \\";\\" ); \\/\\/ Bad - on $foo, not on the {}.\\n",
-                                        "line": 133,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . {$foo} . \\";\\" ); \\/\\/ Bad - on $foo, not on the {}.\\n",
-                                        "line": 133,
-                                        "column": 1
                                     },
                                     {
                                         "message": "Use placeholders and $wpdb->prepare(); found $foo",
@@ -1184,26 +384,6 @@
                                         "column": 62
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . (array) $foo . \\";\\" ); \\/\\/ Bad - on $foo, not on the (array).\\n",
-                                        "line": 134,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . (array) $foo . \\";\\" ); \\/\\/ Bad - on $foo, not on the (array).\\n",
-                                        "line": 134,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found $foo",
                                         "source": "WordPress.DB.PreparedSQL.NotPrepared",
                                         "severity": 5,
@@ -1212,86 +392,6 @@
                                         "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . (array) $foo . \\";\\" ); \\/\\/ Bad - on $foo, not on the (array).\\n",
                                         "line": 134,
                                         "column": 69
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . - 10 . \\";\\" ); \\/\\/ OK.\\n",
-                                        "line": 135,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . - 10 . \\";\\" ); \\/\\/ OK.\\n",
-                                        "line": 135,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . + 1.0 . \\";\\" ); \\/\\/ OK.\\n",
-                                        "line": 136,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . + 1.0 . \\";\\" ); \\/\\/ OK.\\n",
-                                        "line": 136,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . 10 \\/ 2.5 . \\";\\" ); \\/\\/ OK.\\n",
-                                        "line": 137,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . 10 \\/ 2.5 . \\";\\" ); \\/\\/ OK.\\n",
-                                        "line": 137,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . ++ $foo . \\";\\" ); \\/\\/ Bad - on $foo, not on the ++.\\n",
-                                        "line": 138,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . ++ $foo . \\";\\" ); \\/\\/ Bad - on $foo, not on the ++.\\n",
-                                        "line": 138,
-                                        "column": 1
                                     },
                                     {
                                         "message": "Use placeholders and $wpdb->prepare(); found $foo",
@@ -1304,26 +404,6 @@
                                         "column": 64
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \'SELECT * FROM \' . $wpdb::TABLE_NAME . \\" WHERE post_title LIKE \'%s\';\\", \'%something\' ) ); \\/\\/ OK.\\n",
-                                        "line": 141,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \'SELECT * FROM \' . $wpdb::TABLE_NAME . \\" WHERE post_title LIKE \'%s\';\\", \'%something\' ) ); \\/\\/ OK.\\n",
-                                        "line": 141,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Simple placeholders should not be quoted in the query string in $wpdb->prepare(). Found: \'%s\'.",
                                         "source": "WordPress.DB.PreparedSQLPlaceholders.QuotedSimplePlaceholder",
                                         "severity": 5,
@@ -1332,26 +412,6 @@
                                         "codeFragment": "$wpdb->query( $wpdb->prepare( \'SELECT * FROM \' . $wpdb::TABLE_NAME . \\" WHERE post_title LIKE \'%s\';\\", \'%something\' ) ); \\/\\/ OK.\\n",
                                         "line": 141,
                                         "column": 70
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \'SELECT * FROM \' . $notwpdb?->posts . \\" WHERE post_title LIKE \'%s\';\\", \'%something\' ) ); \\/\\/ Bad.\\n",
-                                        "line": 142,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \'SELECT * FROM \' . $notwpdb?->posts . \\" WHERE post_title LIKE \'%s\';\\", \'%something\' ) ); \\/\\/ Bad.\\n",
-                                        "line": 142,
-                                        "column": 1
                                     },
                                     {
                                         "message": "Use placeholders and $wpdb->prepare(); found $notwpdb",
@@ -1382,46 +442,6 @@
                                         "codeFragment": "$wpdb->query( $wpdb->prepare( \'SELECT * FROM \' . $notwpdb?->posts . \\" WHERE post_title LIKE \'%s\';\\", \'%something\' ) ); \\/\\/ Bad.\\n",
                                         "line": 142,
                                         "column": 69
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . 10_000 . \\";\\" ); \\/\\/ OK.\\n",
-                                        "line": 145,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . 10_000 . \\";\\" ); \\/\\/ OK.\\n",
-                                        "line": 145,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . 0o34 . \\";\\" ); \\/\\/ OK.\\n",
-                                        "line": 146,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE value = \\" . 0o34 . \\";\\" ); \\/\\/ OK.\\n",
-                                        "line": 146,
-                                        "column": 1
                                     },
                                     {
                                         "message": "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'$wpdb\'.",
@@ -2744,26 +1764,6 @@
                                         "column": 88
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$results = $wpdb->get_results(\\n",
-                                        "line": 276,
-                                        "column": 12
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$results = $wpdb->get_results(\\n",
-                                        "line": 276,
-                                        "column": 12
-                                    },
-                                    {
                                         "message": "Incorrect number of replacements passed to $wpdb->prepare(). Found 2 replacement parameters, expected 1.",
                                         "source": "WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber",
                                         "severity": 5,
@@ -2894,46 +1894,6 @@
                                         "column": 24
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$comment_id = $wpdb->get_var( $wpdb->prepare( \'SELECT comment_ID FROM \' . $wpdb->comments . \' WHERE comment_post_ID = %d AND comment_agent LIKE %s\', intval( $post->ID ), \'Disqus\\/1.0:\' . $comment_id ) ); \\/\\/ OK.\\n",
-                                        "line": 331,
-                                        "column": 15
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$comment_id = $wpdb->get_var( $wpdb->prepare( \'SELECT comment_ID FROM \' . $wpdb->comments . \' WHERE comment_post_ID = %d AND comment_agent LIKE %s\', intval( $post->ID ), \'Disqus\\/1.0:\' . $comment_id ) ); \\/\\/ OK.\\n",
-                                        "line": 331,
-                                        "column": 15
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \'UPDATE \' . $wpdb->prefix . \'posts SET post_content = REPLACE(post_content, %s, %s) WHERE post_type = \\"page\\" AND post_content LIKE %s\', $meta_before, $meta_after, \'%\' . $wpdb->esc_like( $meta_before ) . \'%\' ) ); \\/\\/ OK.\\n",
-                                        "line": 335,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \'UPDATE \' . $wpdb->prefix . \'posts SET post_content = REPLACE(post_content, %s, %s) WHERE post_type = \\"page\\" AND post_content LIKE %s\', $meta_before, $meta_after, \'%\' . $wpdb->esc_like( $meta_before ) . \'%\' ) ); \\/\\/ OK.\\n",
-                                        "line": 335,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Unless you are using SQL wildcards, using LIKE is inefficient. Use a straight compare instead. Found:  LIKE \'product\'.",
                                         "source": "WordPress.DB.PreparedSQLPlaceholders.LikeWithoutWildcards",
                                         "severity": 5,
@@ -2964,26 +1924,6 @@
                                         "column": 170
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$attachment = $wpdb->get_col( $wpdb->prepare( \\"SELECT ID FROM $wpdb->posts WHERE guid LIKE \'%%%s%%\' LIMIT 1;\\", $img_url ) ); \\/\\/ Bad.\\n",
-                                        "line": 342,
-                                        "column": 15
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$attachment = $wpdb->get_col( $wpdb->prepare( \\"SELECT ID FROM $wpdb->posts WHERE guid LIKE \'%%%s%%\' LIMIT 1;\\", $img_url ) ); \\/\\/ Bad.\\n",
-                                        "line": 342,
-                                        "column": 15
-                                    },
-                                    {
                                         "message": "SQL wildcards for a LIKE query should be passed in through a replacement parameter and the variable part of the replacement should be escaped using \\"esc_like()\\". Found:  LIKE \'%%%s%%\'.",
                                         "source": "WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQueryWithPlaceholder",
                                         "severity": 5,
@@ -2994,26 +1934,6 @@
                                         "column": 47
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$result = $wpdb->get_col( $wpdb->prepare( \\"SELECT guid FROM $wpdb->posts WHERE guid LIKE \'%%%s\' and post_parent=%d;\\", $atts[\'model\'], $post->ID ) ); \\/\\/ Bad.\\n",
-                                        "line": 344,
-                                        "column": 11
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$result = $wpdb->get_col( $wpdb->prepare( \\"SELECT guid FROM $wpdb->posts WHERE guid LIKE \'%%%s\' and post_parent=%d;\\", $atts[\'model\'], $post->ID ) ); \\/\\/ Bad.\\n",
-                                        "line": 344,
-                                        "column": 11
-                                    },
-                                    {
                                         "message": "SQL wildcards for a LIKE query should be passed in through a replacement parameter and the variable part of the replacement should be escaped using \\"esc_like()\\". Found:  LIKE \'%%%s\'.",
                                         "source": "WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQueryWithPlaceholder",
                                         "severity": 5,
@@ -3022,26 +1942,6 @@
                                         "codeFragment": "$result = $wpdb->get_col( $wpdb->prepare( \\"SELECT guid FROM $wpdb->posts WHERE guid LIKE \'%%%s\' and post_parent=%d;\\", $atts[\'model\'], $post->ID ) ); \\/\\/ Bad.\\n",
                                         "line": 344,
                                         "column": 43
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$comments = $wpdb->get_results( $wpdb->prepare( \\"SELECT * FROM $wpdb->comments WHERE comment_post_ID = %d AND comment_agent NOT LIKE \'Disqus\\/%%\'\\", $post->ID ) ); \\/\\/ Bad.\\n",
-                                        "line": 346,
-                                        "column": 13
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$comments = $wpdb->get_results( $wpdb->prepare( \\"SELECT * FROM $wpdb->comments WHERE comment_post_ID = %d AND comment_agent NOT LIKE \'Disqus\\/%%\'\\", $post->ID ) ); \\/\\/ Bad.\\n",
-                                        "line": 346,
-                                        "column": 13
                                     },
                                     {
                                         "message": "SQL wildcards for a LIKE query should be passed in through a replacement parameter. Found:  LIKE \'Disqus\\/%%\'.",
@@ -3154,26 +2054,6 @@
                                         "column": 67
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$res = $wpdb->query( $wpdb->prepare( \'UPDATE \' . $wpdb->posts . \' SET post_name=\\"feed\\" WHERE post_name LIKE \\"feed-%\\" AND LENGTH(post_name)=6 AND post_type=%s\', BAWAS_POST_TYPE ) ); \\/\\/ Bad.\\n",
-                                        "line": 356,
-                                        "column": 8
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$res = $wpdb->query( $wpdb->prepare( \'UPDATE \' . $wpdb->posts . \' SET post_name=\\"feed\\" WHERE post_name LIKE \\"feed-%\\" AND LENGTH(post_name)=6 AND post_type=%s\', BAWAS_POST_TYPE ) ); \\/\\/ Bad.\\n",
-                                        "line": 356,
-                                        "column": 8
-                                    },
-                                    {
                                         "message": "SQL wildcards for a LIKE query should be passed in through a replacement parameter. Found:  LIKE \\"feed-%\\".",
                                         "source": "WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery",
                                         "severity": 5,
@@ -3192,26 +2072,6 @@
                                         "codeFragment": "$sql = $wpdb->prepare( \\"SELECT ID FROM $wpdb->users AS us INNER JOIN $wpdb->usermeta AS mt ON ( us.ID = mt.user_id ) WHERE ( mt.meta_key = \'bbp_last_login\' AND mt.meta_value < %s ) AND user_id IN ( SELECT user_id FROM $wpdb->usermeta AS mt WHERE (mt.meta_key = \'{$wpdb->prefix}capabilities\' AND mt.meta_value LIKE \'%%bbp_user%%\' ))\\", $beforegmdate ); \\/\\/ Bad.\\n",
                                         "line": 358,
                                         "column": 24
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$paged_events = $wpdb->get_results( $wpdb->prepare( \\"SELECT id as event_id FROM {$bp->events->table_name} WHERE ( name LIKE \'{$filter}%%\' OR description LIKE \'{$filter}%%\' ) AND id IN ({$gids}) \\" . $oldevents . \\" {$pag_sql}\\" ) ); \\/\\/ Bad x 2, the PreparedSQL sniff will also kick in and throw six errors.\\n",
-                                        "line": 360,
-                                        "column": 17
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$paged_events = $wpdb->get_results( $wpdb->prepare( \\"SELECT id as event_id FROM {$bp->events->table_name} WHERE ( name LIKE \'{$filter}%%\' OR description LIKE \'{$filter}%%\' ) AND id IN ({$gids}) \\" . $oldevents . \\" {$pag_sql}\\" ) ); \\/\\/ Bad x 2, the PreparedSQL sniff will also kick in and throw six errors.\\n",
-                                        "line": 360,
-                                        "column": 17
                                     },
                                     {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable {$bp->events->table_name} at \\"SELECT id as event_id FROM {$bp->events->table_name} WHERE ( name LIKE \'{$filter}%%\' OR description LIKE \'{$filter}%%\' ) AND id IN ({$gids}) \\"",
@@ -3304,26 +2164,6 @@
                                         "column": 26
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$postID = $wpdb->get_var( $wpdb->prepare( \\"SELECT `postID` FROM `\\" . EPDataBase::$table_name . \\"` WHERE `path` like \'\\" . $filePath . \\"\';\\" ) ); \\/\\/ OK, the PreparedSQL sniff will kick in and throw four errors.\\n",
-                                        "line": 364,
-                                        "column": 11
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$postID = $wpdb->get_var( $wpdb->prepare( \\"SELECT `postID` FROM `\\" . EPDataBase::$table_name . \\"` WHERE `path` like \'\\" . $filePath . \\"\';\\" ) ); \\/\\/ OK, the PreparedSQL sniff will kick in and throw four errors.\\n",
-                                        "line": 364,
-                                        "column": 11
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found EPDataBase",
                                         "source": "WordPress.DB.PreparedSQL.NotPrepared",
                                         "severity": 5,
@@ -3354,26 +2194,6 @@
                                         "column": 122
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"show tables like \'$this->table_name\'\\" ) ) > 0; \\/\\/ OK, the PreparedSQL sniff will kick in.\\n",
-                                        "line": 366,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"show tables like \'$this->table_name\'\\" ) ) > 0; \\/\\/ OK, the PreparedSQL sniff will kick in.\\n",
-                                        "line": 366,
-                                        "column": 1
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable $this->table_name at \\"show tables like \'$this->table_name\'\\"",
                                         "source": "WordPress.DB.PreparedSQL.InterpolatedNotPrepared",
                                         "severity": 5,
@@ -3382,26 +2202,6 @@
                                         "codeFragment": "$wpdb->query( $wpdb->prepare( \\"show tables like \'$this->table_name\'\\" ) ) > 0; \\/\\/ OK, the PreparedSQL sniff will kick in.\\n",
                                         "line": 366,
                                         "column": 31
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"DELETE FROM $wpdb->wp_options WHERE option_name LIKE \'%widget_gigya%\'\\" ) ); \\/\\/ Bad.\\n",
-                                        "line": 368,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"DELETE FROM $wpdb->wp_options WHERE option_name LIKE \'%widget_gigya%\'\\" ) ); \\/\\/ Bad.\\n",
-                                        "line": 368,
-                                        "column": 1
                                     },
                                     {
                                         "message": "SQL wildcards for a LIKE query should be passed in through a replacement parameter. Found:  LIKE \'%widget_gigya%\'.",
@@ -3432,26 +2232,6 @@
                                         "codeFragment": "$where .= $wpdb->prepare( \\" AND `name` LIKE \'%%%%\\" . \'%s\' . \\"%%%%\' \\", $args[\'name\'] ); \\/\\/ Bad x 2.\\n",
                                         "line": 370,
                                         "column": 61
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"delete from wp_postmeta where post_id = $target_postId AND meta_key like \'google_snippets\'\\" ) ); \\/\\/ Bad, the PreparedSQL sniff will also kick in and throw an error about `$target_postId`.\\n",
-                                        "line": 372,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->query( $wpdb->prepare( \\"delete from wp_postmeta where post_id = $target_postId AND meta_key like \'google_snippets\'\\" ) ); \\/\\/ Bad, the PreparedSQL sniff will also kick in and throw an error about `$target_postId`.\\n",
-                                        "line": 372,
-                                        "column": 1
                                     },
                                     {
                                         "message": "Use placeholders and $wpdb->prepare(); found interpolated variable $target_postId at \\"delete from wp_postmeta where post_id = $target_postId AND meta_key like \'google_snippets\'\\"",
@@ -3972,26 +2752,6 @@
                                         "codeFragment": "\\t\\"{$wpdb->posts}.post_type IN (\\\\\\"\\"\\n",
                                         "line": 487,
                                         "column": 2
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->get_col(\\n",
-                                        "line": 494,
-                                        "column": 1
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$wpdb->get_col(\\n",
-                                        "line": 494,
-                                        "column": 1
                                     },
                                     {
                                         "message": "The %i placeholder cannot be used within SQL `IN()` clauses.",
