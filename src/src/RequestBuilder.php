@@ -6,6 +6,7 @@ use Composer\CaBundle\CaBundle;
 use QIT_CLI\Exceptions\DoingAutocompleteException;
 use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\IO\Output;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class RequestBuilder {
 	/** @var string $url */
@@ -291,15 +292,20 @@ class RequestBuilder {
 				}
 			}
 
-			throw new NetworkErrorException(
-				sprintf(
-					'Expected return status code(s): %s. Got return status code: %s. Error message: %s',
-					implode( ', ', $this->expected_status_codes ),
-					$response_status_code,
-					$error_message
-				),
-				$response_status_code
-			);
+			if ( App::make( OutputInterface::class )->isVerbose() ) {
+				throw new NetworkErrorException(
+					sprintf( 'Error: %s (Status code: %s, Expected: %s)',
+						$error_message,
+						$response_status_code,
+						implode( ', ', $this->expected_status_codes ) ),
+					$response_status_code
+				);
+			} else {
+				throw new NetworkErrorException(
+					sprintf( 'Error: %s (%s)', $error_message, $response_status_code ),
+					$response_status_code
+				);
+			}
 		}
 
 		return $body;
