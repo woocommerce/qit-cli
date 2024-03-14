@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 9 Warnings: 14",
+            "test_summary": "Errors: 9 Warnings: 4",
             "debug_log": "",
             "version": "0.1-test-version",
             "update_complete": true,
@@ -45,13 +45,13 @@
                     "phpcs": {
                         "totals": {
                             "errors": 7,
-                            "warnings": 14,
+                            "warnings": 4,
                             "fixable": 0
                         },
                         "files": {
                             "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
                                 "errors": 7,
-                                "warnings": 14,
+                                "warnings": 4,
                                 "messages": [
                                     {
                                         "message": "Detected usage of a non-sanitized input variable: $_POST[\'foo\']",
@@ -104,46 +104,6 @@
                                         "column": 1
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$results = $wpdb->get_results( $wpdb->prepare(\\n",
-                                        "line": 26,
-                                        "column": 12
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$results = $wpdb->get_results( $wpdb->prepare(\\n",
-                                        "line": 26,
-                                        "column": 12
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$results = $wpdb->get_results( $sql );\\n",
-                                        "line": 44,
-                                        "column": 12
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$results = $wpdb->get_results( $sql );\\n",
-                                        "line": 44,
-                                        "column": 12
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found $sql",
                                         "source": "WordPress.DB.PreparedSQL.NotPrepared",
                                         "severity": 5,
@@ -164,26 +124,6 @@
                                         "column": 1
                                     },
                                     {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$results = $wpdb->get_results( $sql );\\n",
-                                        "line": 55,
-                                        "column": 12
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "$results = $wpdb->get_results( $sql );\\n",
-                                        "line": 55,
-                                        "column": 12
-                                    },
-                                    {
                                         "message": "Use placeholders and $wpdb->prepare(); found $sql",
                                         "source": "WordPress.DB.PreparedSQL.NotPrepared",
                                         "severity": 5,
@@ -192,26 +132,6 @@
                                         "codeFragment": "$results = $wpdb->get_results( $sql );\\n",
                                         "line": 55,
                                         "column": 32
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "\\t$scheduled_dates = $wpdb->get_results(\\n",
-                                        "line": 61,
-                                        "column": 21
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "\\t$scheduled_dates = $wpdb->get_results(\\n",
-                                        "line": 61,
-                                        "column": 21
                                     },
                                     {
                                         "message": "Incorrect number of replacements passed to $wpdb->prepare(). Found 1 replacement parameters, expected 2.",
@@ -242,26 +162,6 @@
                                         "codeFragment": "            AND ct.item_id NOT IN ($placeholder_items)\\n",
                                         "line": 69,
                                         "column": 1
-                                    },
-                                    {
-                                        "message": "Use of a direct database call is discouraged.",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.DirectQuery",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "\\t$scheduled_dates = $wpdb->get_results(\\n",
-                                        "line": 85,
-                                        "column": 21
-                                    },
-                                    {
-                                        "message": "Direct database call without caching detected. Consider using wp_cache_get() \\/ wp_cache_set() or wp_cache_delete().",
-                                        "source": "WordPress.DB.DirectDatabaseQuery.NoCaching",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "codeFragment": "\\t$scheduled_dates = $wpdb->get_results(\\n",
-                                        "line": 85,
-                                        "column": 21
                                     }
                                 ]
                             }
