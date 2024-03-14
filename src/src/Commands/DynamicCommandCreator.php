@@ -2,20 +2,24 @@
 
 namespace QIT_CLI\Commands;
 
+use QIT_CLI\App;
+use QIT_CLI\IO\Output;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class DynamicCommandCreator {
 	abstract public function register_commands( Application $application ): void;
 
 	/**
-	 * @param DynamicCommand $command
-	 * @param array<mixed>   $schema
+	 * @param DynamicCommand $command The command to add the schema to.
+	 * @param array<mixed>   $schema The schema to add to the command.
+	 * @param array<string>  $exceptions What to ignore when adding options.
+	 * @param array<string>  $whitelist If set, only these options will be added.
 	 *
 	 * @return void
 	 */
-	protected function add_schema_to_command( DynamicCommand $command, array $schema ): void {
+	public static function add_schema_to_command( Command $command, array $schema, array $exceptions = [], array $whitelist = [] ): void {
 		if ( ! empty( $schema['description'] ) ) {
 			$command->setDescription( $schema['description'] );
 		}
@@ -30,7 +34,11 @@ abstract class DynamicCommandCreator {
 					$ignore[] = 'additional_wordpress_plugins';
 				}
 
-				if ( in_array( $property_name, $ignore, true ) ) {
+				if ( in_array( $property_name, array_merge( $exceptions, $ignore ), true ) ) {
+					continue;
+				}
+
+				if ( ! empty( $whitelist ) && ! in_array( $property_name, $whitelist, true ) ) {
 					continue;
 				}
 
@@ -80,7 +88,7 @@ abstract class DynamicCommandCreator {
 					}
 				}
 
-				if ( isset( $this->output ) && $this->output instanceof OutputInterface && $this->output->isVerbose() ) {
+				if ( App::make( Output::class )->isVerbose() ) {
 					$schema_to_show = $property_schema;
 					unset( $schema_to_show['description'] );
 					$description = sprintf( '%s (Schema: %s)', $description, json_encode( $schema_to_show ) );

@@ -1,0 +1,34 @@
+{
+    "foo-custom-1": {
+        "extension_identifier": "foo-custom-1",
+        "type": "plugin",
+        "handler": "FooCustomHandler",
+        "path": "",
+        "version": "undefined",
+        "download_url": null
+    },
+    "foo-custom-2": {
+        "extension_identifier": "foo-custom-2",
+        "type": "plugin",
+        "handler": "FooCustomHandler",
+        "path": "",
+        "version": "undefined",
+        "download_url": null
+    },
+    "foo-custom-theme-1": {
+        "extension_identifier": "foo-custom-theme-1",
+        "type": "theme",
+        "handler": "FooCustomHandler",
+        "path": "",
+        "version": "undefined",
+        "download_url": null
+    },
+    "foo-custom-theme-2": {
+        "extension_identifier": "foo-custom-theme-2",
+        "type": "theme",
+        "handler": "FooCustomHandler",
+        "path": "",
+        "version": "undefined",
+        "download_url": null
+    }
+}

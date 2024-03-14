@@ -1,49 +1,83 @@
-name: QIT Windows
+name: QIT Environment Dangling Test
 
 on:
-  push:
-    branches:
-      - trunk
+  # Every day at 11pm UTC (6pm ET)
+  schedule:
+    - cron: '0 23 * * *'
   # Manually
   workflow_dispatch:
 
 jobs:
-  qit_windows:
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        php: [ 7.2, 7.3, 7.4, 8.0, 8.1, 8.2, 8.3 ]
+  test_stop_random_container:
+    runs-on: ubuntu-latest
     env:
       NO_COLOR: 1
       QIT_DISABLE_ONBOARDING: yes
     steps:
-      - name: Checkout code
+      - name: Checkout code (Cross-platform)
         uses: actions/checkout@v4
 
-      - name: Set up PHP ${{ matrix.php }}
+      - name: Setup PHP (Cross-platform)
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
-          extensions: curl, zip
-          coverage: none
+          php-version: '8.3'
 
-      - name: Composer install
-        working-directory: src
-        run: composer install
+      - name: Run setup script
+        run: bash .github/workflows/tests/environments/setup.sh ${{ secrets.QIT_STAGING_SECRET }} https://stagingcompatibilitydashboard.wpcomstaging.com
 
-      - name: Enable dev mode
-        working-directory: src
-        run: php qit-cli.php dev
+      - name: Environment Setup and Checks
+        id: env_setup
+        run: bash .github/workflows/tests/environments/start-and-assert.sh
 
-      - name: Run SSL connection without CA file
+      - name: Store the environment path in a ENV var
         working-directory: src
-        env:
-          OPENSSL_CONF: ''
+        run: echo "TEMPORARY_ENV=$(php qit-cli.php env:list --field=temporary_env)" >> $GITHUB_ENV
+
+      - name: Stop a random container from that environment.
+        working-directory: src
         run: |
-          php -d openssl.cafile='' -d curl.cainfo='' qit-cli.php sync -vvv
-          if ($LASTEXITCODE -eq 0) {
-            Write-Host "Test passed: SSL connection succeeded"
-          } else {
-            Write-Host "Test failed: SSL connection did not succeed"
-            exit 1
-          }
+          CONTAINERS=$(php qit-cli.php env:list --field=docker_images)
+          RANDOM_CONTAINER=$(echo $CONTAINERS | awk '{print $1}')
+          echo "Stopping container: $RANDOM_CONTAINER"
+          docker stop $RANDOM_CONTAINER
+
+      - name: Run a env:list to trigger the Dangling Environment Cleanup
+        working-directory: src
+        run: php qit-cli.php env:list
+
+      - name: Environment Cleanup Checks
+        id: env_cleanup
+        run: bash .github/workflows/tests/environments/dangling-cleanup-assert.sh
+
+  test_delete_environment_entry:
+    runs-on: ubuntu-latest
+    env:
+      NO_COLOR: 1
+      QIT_DISABLE_ONBOARDING: yes
+    steps:
+      - name: Checkout code (Cross-platform)
+        uses: actions/checkout@v4
+
+      - name: Setup PHP (Cross-platform)
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Run setup script
+        run: bash .github/workflows/tests/environments/setup.sh ${{ secrets.QIT_STAGING_SECRET }} https://stagingcompatibilitydashboard.wpcomstaging.com
+
+      - name: Environment Setup and Checks
+        id: env_setup
+        run: bash .github/workflows/tests/environments/start-and-assert.sh
+
+      - name: Find and delete all hidden JSON files in the directory
+        working-directory: src
+        run: php qit-cli.php cache delete environment_monitor
+
+      - name: Run a env:list to trigger the Dangling Environment Cleanup
+        working-directory: src
+        run: php qit-cli.php env:list
+
+      - name: Environment Cleanup Checks
+        id: env_cleanup
+        run: bash .github/workflows/tests/environments/dangling-cleanup-assert.sh

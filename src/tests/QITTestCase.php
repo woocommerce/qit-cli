@@ -15,7 +15,7 @@ abstract class QITTestCase extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 
-		qit_tests_clean_config_dir();
+		qit_tests_reset_config_dir();
 		App::offsetUnset( Config::class );
 		Config::set_current_manager_environment( 'tests' );
 		App::make( ManagerBackend::class )->add_manager_backend( 'tests' );

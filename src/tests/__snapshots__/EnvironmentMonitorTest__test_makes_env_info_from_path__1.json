@@ -1,0 +1,18 @@
+{
+    "environment": "e2e",
+    "temporary_env": "\/path\/to\/temporary-envs\/foo",
+    "created_at": 1708728299,
+    "status": "pending",
+    "env_id": 1234567890,
+    "volumes": [],
+    "docker_images": [],
+    "php_extensions": [],
+    "plugins": [],
+    "themes": [],
+    "site_url": null,
+    "wordpress_version": "",
+    "object_cache": false,
+    "php_version": null,
+    "domain": "localhost",
+    "woocommerce_version": null
+}

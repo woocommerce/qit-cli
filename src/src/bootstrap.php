@@ -2,6 +2,7 @@
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\Commands\CacheCommand;
 use QIT_CLI\Commands\ConfigDirCommand;
 use QIT_CLI\Commands\CreateMassTestCommands;
 use QIT_CLI\Commands\CreateRunCommands;
@@ -10,9 +11,14 @@ use QIT_CLI\Commands\Backend\AddBackend;
 use QIT_CLI\Commands\Backend\CurrentBackend;
 use QIT_CLI\Commands\Backend\RemoveBackend;
 use QIT_CLI\Commands\Backend\SwitchBackend;
+use QIT_CLI\Commands\Environment\ExecEnvironmentCommand;
+use QIT_CLI\Commands\Environment\DownEnvironmentCommand;
+use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
+use QIT_CLI\Commands\Environment\ListEnvironmentCommand;
+use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\ListCommand;
-use QIT_CLI\Commands\OnboardingCommand;
+use QIT_CLI\Commands\ConnectCommand;
 use QIT_CLI\Commands\OpenCommand;
 use QIT_CLI\Commands\Partner\AddPartner;
 use QIT_CLI\Commands\Partner\RemovePartner;
@@ -22,6 +28,7 @@ use QIT_CLI\Commands\SyncCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Config;
 use QIT_CLI\Diagnosis;
+use QIT_CLI\Environment\EnvironmentDanglingCleanup;
 use QIT_CLI\ManagerBackend;
 use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\Exceptions\UpdateRequiredException;
@@ -34,10 +41,20 @@ use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\YamlEncoder;
+use Symfony\Component\Serializer\Serializer;
 
 if ( ! isset( $container ) ) {
 	throw new LogicException( 'This file must be called from the context where a $container is defined.' );
 }
+
+define( 'MINUTE_IN_SECONDS', 60 );
+define( 'HOUR_IN_SECONDS', 60 * MINUTE_IN_SECONDS );
+define( 'DAY_IN_SECONDS', 24 * HOUR_IN_SECONDS );
+define( 'WEEK_IN_SECONDS', 7 * DAY_IN_SECONDS );
+define( 'MONTH_IN_SECONDS', 30 * DAY_IN_SECONDS );
+define( 'YEAR_IN_SECONDS', 365 * DAY_IN_SECONDS );
 
 App::setVar( 'CLI_VERSION', '@QIT_CLI_VERSION@' );
 
@@ -69,6 +86,12 @@ $container->singleton( Output::class, function () {
 	return new ConsoleOutput();
 } );
 
+$container->singleton( Serializer::class, function () {
+	return new Serializer( [], [ new JsonEncoder(), new YamlEncoder() ] );
+} );
+
+$container->bind( OutputInterface::class, $container->make( Output::class ) );
+$container->bind( InputInterface::class, $container->make( Input::class ) );
 $container->singleton( ManagerSync::class );
 $container->singleton( Config::class );
 $container->singleton( ManagerBackend::class );
@@ -140,26 +163,23 @@ try {
 	return $application;
 }
 
-if ( Config::needs_onboarding() ) {
-	try {
-		$application->add( $container->make( AddPartner::class ) );
-		$application->add( $container->make( AddBackend::class ) );
-
-		$onboarding = $container->make( OnboardingCommand::class );
-		$onboarding->setApplication( $application );
-		exit( $onboarding->run( $container->make( Input::class ), $container->make( Output::class ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	} catch ( \Exception $e ) {
-		App::make( Output::class )->writeln( $e->getMessage() );
-		exit( 1 );
-	}
-}
-
 $is_connected_to_backend = false;
 
 // Global commands.
 $application->add( $container->make( DevModeCommand::class ) );
 $application->add( $container->make( ConfigDirCommand::class ) );
-$application->add( $container->make( OnboardingCommand::class ) );
+$application->add( $container->make( ConnectCommand::class ) );
+
+// Environment commands.
+try {
+	$application->add( $container->make( UpEnvironmentCommand::class ) );
+	$application->add( $container->make( DownEnvironmentCommand::class ) );
+	$application->add( $container->make( ListEnvironmentCommand::class ) );
+	$application->add( $container->make( EnterEnvironmentCommand::class ) );
+	$application->add( $container->make( ExecEnvironmentCommand::class ) );
+} catch ( \Exception $e ) {
+	App::make( Output::class )->writeln( $e->getMessage() );
+}
 
 // Partner commands.
 $application->add( $container->make( AddPartner::class ) );
@@ -180,6 +200,7 @@ if ( Config::is_development_mode() ) {
 	$application->add( $container->make( AddBackend::class ) );
 	$application->add( $container->make( SetProxyCommand::class ) );
 	$application->add( $container->make( SyncCommand::class ) );
+	$application->add( $container->make( CacheCommand::class ) );
 
 	// Only show options to remove and see the current environment if there's at least one environment added.
 	if ( count( ManagerBackend::get_configured_manager_backends( false ) ) > 0 ) {
@@ -214,10 +235,17 @@ if ( $is_connected_to_backend ) {
 		// Dynamically crete Mass Test run command.
 		$container->make( CreateMassTestCommands::class )->register_commands( $application );
 	}
+} else {
+	$io = new Symfony\Component\Console\Style\SymfonyStyle( $container->make( Input::class ), $container->make( Output::class ) );
+	$io->section( 'Limited commands available' );
+	$io->writeln( sprintf( '<fg=black;bg=yellow>[Please run "%s %s" to connect to QIT.]</>', $argv[0] ?? 'qit', ConnectCommand::getDefaultName() ) );
+	$io->writeln( '' );
 }
 
 if ( $container->make( Output::class )->isVerbose() ) {
 	$container->make( Output::class )->writeln( sprintf( '<info>QIT Manager Backend: %s</info>', Config::get_current_manager_backend() ) );
 }
+
+App::make( EnvironmentDanglingCleanup::class )->cleanup_dangling();
 
 return $application;

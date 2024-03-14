@@ -251,7 +251,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 		$command
 			->setName( "run:$test_type" );
 
-		$this->add_schema_to_command( $command, $schema );
+		static::add_schema_to_command( $command, $schema );
 
 		// Extension slug/ID.
 		$command->addArgument(

@@ -1,0 +1,16 @@
+{
+    "type": "e2e",
+    "temporary_env": "\/tmp\/test",
+    "created_at": 123,
+    "status": "running",
+    "env_id": null,
+    "site_url": null,
+    "domain": null,
+    "php_version": null,
+    "wordpress_version": "",
+    "redis": false,
+    "docker_images": [
+        "test1",
+        "test2"
+    ]
+}

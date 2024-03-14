@@ -75,7 +75,7 @@ class CreateMassTestCommands extends DynamicCommandCreator {
 			return;
 		}
 
-		$this->add_schema_to_command( $command, $schema );
+		static::add_schema_to_command( $command, $schema );
 
 		$application->add( $command );
 	}

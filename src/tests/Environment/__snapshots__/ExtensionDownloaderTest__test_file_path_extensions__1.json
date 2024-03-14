@@ -1,0 +1,34 @@
+{
+    "\/tmp\/plugin": {
+        "extension_identifier": "\/tmp\/plugin",
+        "type": "plugin",
+        "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\FileHandler",
+        "path": "\/tmp\/plugin",
+        "version": "undefined",
+        "download_url": null
+    },
+    "\/tmp\/plugin2.zip": {
+        "extension_identifier": "\/tmp\/plugin2.zip",
+        "type": "plugin",
+        "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\FileHandler",
+        "path": "\/tmp\/plugin2.zip",
+        "version": "undefined",
+        "download_url": null
+    },
+    "\/tmp\/theme": {
+        "extension_identifier": "\/tmp\/theme",
+        "type": "theme",
+        "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\FileHandler",
+        "path": "\/tmp\/theme",
+        "version": "undefined",
+        "download_url": null
+    },
+    "\/tmp\/theme2.zip": {
+        "extension_identifier": "\/tmp\/theme2.zip",
+        "type": "theme",
+        "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\FileHandler",
+        "path": "\/tmp\/theme2.zip",
+        "version": "undefined",
+        "download_url": null
+    }
+}

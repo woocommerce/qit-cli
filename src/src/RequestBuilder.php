@@ -6,6 +6,7 @@ use Composer\CaBundle\CaBundle;
 use QIT_CLI\Exceptions\DoingAutocompleteException;
 use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\IO\Output;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class RequestBuilder {
 	/** @var string $url */
@@ -175,7 +176,7 @@ class RequestBuilder {
 			}
 		}
 
-		if ( App::make( Output::class )->isVeryVerbose() ) {
+		if ( getenv( 'QIT_DEBUG_REQUESTS' ) ) {
 			$curl_parameters[ CURLOPT_VERBOSE ] = true;
 		}
 
@@ -291,18 +292,72 @@ class RequestBuilder {
 				}
 			}
 
-			throw new NetworkErrorException(
-				sprintf(
-					'Expected return status code(s): %s. Got return status code: %s. Error message: %s',
-					implode( ', ', $this->expected_status_codes ),
-					$response_status_code,
-					$error_message
-				),
-				$response_status_code
-			);
+			if ( App::make( OutputInterface::class )->isVerbose() ) {
+				throw new NetworkErrorException(
+					sprintf( 'Error: %s (Status code: %s, Expected: %s)',
+						$error_message,
+						$response_status_code,
+					implode( ', ', $this->expected_status_codes ) ),
+					$response_status_code
+				);
+			} else {
+				throw new NetworkErrorException(
+					sprintf( 'Error: %s (%s)', $error_message, $response_status_code ),
+					$response_status_code
+				);
+			}
 		}
 
 		return $body;
+	}
+
+
+	/**
+	 * Downloads a file from the specified URL and writes it to the specified path.
+	 *
+	 * @param string $url The URL to download the file from.
+	 * @param string $file_path The path of the file to write to.
+	 *
+	 * @throws \RuntimeException If an error occurs during downloading or file handling.
+	 */
+	public static function download_file( string $url, string $file_path ): void {
+		$output = App::make( Output::class );
+
+		if ( $output->isVeryVerbose() ) {
+			$output->writeln( "Downloading $url into $file_path..." );
+		}
+
+		// Open file for writing, create it if it doesn't exist.
+		$fp = fopen( $file_path, 'w' );
+		if ( $fp === false ) {
+			throw new \RuntimeException( 'Could not open file for writing: ' . $file_path );
+		}
+
+		$curl = curl_init();
+
+		$curl_parameters = [
+			CURLOPT_URL            => $url,
+			CURLOPT_RETURNTRANSFER => false, // Directly write the output.
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_FILE           => $fp,   // Write the output to the file.
+		];
+
+		curl_setopt_array( $curl, $curl_parameters );
+
+		$start = microtime( true );
+		curl_exec( $curl );
+		if ( $output->isVerbose() ) {
+			$output->writeln( sprintf( 'Downloaded %s in %f seconds.', $url, microtime( true ) - $start ) );
+		}
+		$curl_error = curl_error( $curl );
+		curl_close( $curl );
+		fclose( $fp );
+
+		if ( $curl_error ) {
+			// Delete the potentially partially written file.
+			unlink( $file_path );
+			throw new \RuntimeException( 'Curl error: ' . $curl_error );
+		}
 	}
 
 	protected function wait_after_429( string $headers, int $max_wait = 60 ): int {

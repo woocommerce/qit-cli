@@ -112,6 +112,7 @@ class ManagerBackend {
 		}
 
 		Config::set_current_manager_environment( $manager_backend );
+		App::make( ManagerSync::class )->maybe_sync( true );
 	}
 
 	public function add_partner( string $partner, bool $switch_now = true ): void {

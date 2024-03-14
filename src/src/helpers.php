@@ -11,6 +11,27 @@ function is_windows(): bool {
 	return defined( 'PHP_WINDOWS_VERSION_BUILD' );
 }
 
+function is_wsl(): bool {
+	return getenv( 'WSL_DISTRO_NAME' ) !== false;
+}
+
+/**
+ * @return string Converts Windows-style directory separator to Unix-style. Makes sure it ends with a trailing slash.
+ */
+function normalize_path( string $path, bool $trailingslashit = true ): string {
+	$path = str_replace( '\\', '/', $path );
+
+	if ( $trailingslashit ) {
+		$path = rtrim( $path, '/' ) . '/';
+	}
+
+	return $path;
+}
+
+function use_tty(): bool {
+	return ! is_ci() && ! is_windows();
+}
+
 function validate_authentication( string $username, string $qit_token ): void {
 	$is_ci = getenv( 'CI' );
 
@@ -136,4 +157,30 @@ function generate_uuid4() {
 		mt_rand( 0, 0xffff ),
 		mt_rand( 0, 0xffff )
 	);
+}
+
+function is_ci(): bool {
+	return (bool) getenv( 'CI' );
+}
+
+/**
+ * @param int $seconds The number of seconds to format.
+ *
+ * @return string A human-readable string representing the elapsed time.
+ */
+function format_elapsed_time( int $seconds ): string {
+	$periods       = [ 'second', 'minute', 'hour', 'day', 'week', 'month', 'year' ];
+	$lengths       = [ 60, 60, 24, 7, 4.35, 12 ];
+	$count_lengths = count( $lengths );
+
+	for ( $i = 0; $seconds >= $lengths[ $i ] && $i < $count_lengths - 1; $i++ ) {
+		$seconds /= $lengths[ $i ];
+	}
+
+	$seconds = round( $seconds );
+	if ( $seconds != 1 ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison,Universal.Operators.StrictComparisons.LooseNotEqual
+		$periods[ $i ] .= 's';
+	}
+
+	return "$seconds $periods[$i] ago";
 }
