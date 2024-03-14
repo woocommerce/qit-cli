@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 4 Warnings: 3",
+            "test_summary": "Errors: 9 Warnings: 4",
             "debug_log": "",
             "version": "0.1-test-version",
             "update_complete": true,
@@ -44,14 +44,14 @@
                 "tool": {
                     "phpcs": {
                         "totals": {
-                            "errors": 2,
-                            "warnings": 3,
+                            "errors": 7,
+                            "warnings": 4,
                             "fixable": 0
                         },
                         "files": {
                             "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                                "errors": 2,
-                                "warnings": 3,
+                                "errors": 7,
+                                "warnings": 4,
                                 "messages": [
                                     {
                                         "message": "Detected usage of a non-sanitized input variable: $_POST[\'foo\']",
@@ -99,8 +99,68 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
-                                        "codeFragment": "add_filter( \'determine_user\', \'callable\' ); \\/\\/ Risky filter warning.",
+                                        "codeFragment": "add_filter( \'determine_user\', \'callable\' ); \\/\\/ Risky filter warning.\\n",
                                         "line": 23,
+                                        "column": 1
+                                    },
+                                    {
+                                        "message": "Use placeholders and $wpdb->prepare(); found $sql",
+                                        "source": "WordPress.DB.PreparedSQL.NotPrepared",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "codeFragment": "$results = $wpdb->get_results( $sql );\\n",
+                                        "line": 44,
+                                        "column": 32
+                                    },
+                                    {
+                                        "message": "Use placeholders and $wpdb->prepare(); found interpolated variable $status_placeholders at \\\\tAND status IN ( $status_placeholders )\\\\n",
+                                        "source": "WordPress.DB.PreparedSQL.InterpolatedNotPrepared",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "codeFragment": "\\tAND status IN ( $status_placeholders )\\n",
+                                        "line": 51,
+                                        "column": 1
+                                    },
+                                    {
+                                        "message": "Use placeholders and $wpdb->prepare(); found $sql",
+                                        "source": "WordPress.DB.PreparedSQL.NotPrepared",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "codeFragment": "$results = $wpdb->get_results( $sql );\\n",
+                                        "line": 55,
+                                        "column": 32
+                                    },
+                                    {
+                                        "message": "Incorrect number of replacements passed to $wpdb->prepare(). Found 1 replacement parameters, expected 2.",
+                                        "source": "WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "WARNING",
+                                        "codeFragment": "\\t\\t$wpdb->prepare(\\n",
+                                        "line": 62,
+                                        "column": 3
+                                    },
+                                    {
+                                        "message": "Use placeholders and $wpdb->prepare(); found interpolated variable $condition_placeholders at \\" not in ($condition_placeholders)\\\\n",
+                                        "source": "WordPress.DB.PreparedSQL.InterpolatedNotPrepared",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "codeFragment": "            AND tbl.\' . esc_sql($status_field) . \\" not in ($condition_placeholders)\\n",
+                                        "line": 67,
+                                        "column": 50
+                                    },
+                                    {
+                                        "message": "Use placeholders and $wpdb->prepare(); found interpolated variable $placeholder_items at             AND ct.item_id NOT IN ($placeholder_items)\\\\n",
+                                        "source": "WordPress.DB.PreparedSQL.InterpolatedNotPrepared",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "codeFragment": "            AND ct.item_id NOT IN ($placeholder_items)\\n",
+                                        "line": 69,
                                         "column": 1
                                     }
                                 ]
