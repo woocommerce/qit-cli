@@ -86,7 +86,7 @@ class EnvConfigLoader {
 
 				$prefix = null;
 
-				// Detecting the prefix from the current class namespace
+				// Detecting the prefix from the current class namespace.
 				foreach ( explode( '\\', static::class ) as $namespace ) {
 					if ( strpos( $namespace, 'HumbugBox' ) !== false ) {
 						$prefix = $namespace;
@@ -103,7 +103,7 @@ class EnvConfigLoader {
 					$tmp_file = sys_get_temp_dir() . '/' . pathinfo( $file, PATHINFO_FILENAME ) . uniqid( 'prefixed' ) . '.php';
 
 					if ( file_put_contents( $tmp_file, str_replace( 'use QIT_CLI\\', "use $prefix\\QIT_CLI\\", file_get_contents( $file ) ) ) === false ) {
-						throw new \RuntimeException( "Failed to write to the temporary file" );
+						throw new \RuntimeException( 'Failed to write to the temporary file' );
 					}
 
 					if ( $this->output->isVeryVerbose() ) {
