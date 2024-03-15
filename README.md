@@ -47,9 +47,36 @@ Official tool to streamline the testing of plugins and themes, ensuring they mee
 
 You can use these parameters individually or in combination to create different scenarios for your tests. Run `qit run:<test-type> --help` to see all the available options. Different test types will have different options to choose from.
 
+## Local Test Environment
+
+QIT ships with a powerful, flexible testing environment for WordPress plugin and theme developers.
+
+It provides an easy-to-use, ephemeral local testing setup, allowing for rapid testing and debugging without affecting your main development environment. This feature is available to all users, regardless of whether you are a Partner Developer of the Woo.com Marketplace.
+
+#### Usage
+
+1. **Basic Setup**: To quickly start an environment, run `qit env:up` in your terminal.
+2. **Configurable Environment**: `qit env:up --wordpress_version=rc --php_version=8.3 --plugins=woocommerce --themes=storefront`
+2. **Custom Configuration**: Use command-line options or create a JSON/YAML configuration file in your project directory to set default environment options. Example configurations are provided in the help section.
+
+Or just place a `qit-env.yml` file in your directory and do `qit env:up` to start the environment.
+
+```yaml
+wordpress_version: rc
+php_version: 8.3
+plugins:
+  - woocommerce
+themes:
+  - storefront  
+```
+
+More information: [Local Test Environment Documentation](https://woocommerce.github.io/qit-documentation/#/environment/getting-started)
+
 ## Can I use QIT?
 
-QIT is currently only available for plugins and themes in the Woo.com Marketplace, but we have plans to open it to all developers in the future.
+Most features of QIT requires you to log-in as a Partner Developer of the Woo.com Marketplace, but we have plans to open it to all developers in the future.
+
+The QIT Local Test Environment does not require you to be connected to Woo.com, although to install Woo.com Premium plugins and themes on your test environment you will need to be connected as a Partner Developer of the Woo.com Marketplace (and have access to the extensions you want to test).
 
 ## Support
 

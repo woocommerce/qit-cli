@@ -42,7 +42,6 @@ class UpEnvironmentCommand extends DynamicCommand {
 
 		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'], [], [
 			'wordpress_version',
-			'woocommerce_version',
 			'php_version',
 		] );
 
@@ -50,11 +49,11 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->setDescription( 'Creates a temporary local test environment that is completely ephemeral — no data is persisted. Every time you stop and restart the environment, it\'s like starting fresh.' )
 			->addOption( 'plugins', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
 			->addOption( 'themes', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Theme install, if multiple provided activates the last. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
-			->addOption( 'volumes', 'm', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
+			->addOption( 'volumes', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
 			->addOption( 'php_extensions', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions to install in the environment.', [] )
+			->addOption( 'requires', 'r', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load PHP file before running the command (may be used more than once).' )
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
-			->addOption( 'require', 'r', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load PHP file before running the command (may be used more than once).' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
 			// ->addOption( 'attached', 'a', InputOption::VALUE_NONE, 'Whether to attach to the environment after starting it.' )
 			->setAliases( [ 'env:start' ]
@@ -63,6 +62,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 		$this->add_option_to_send( 'plugins' );
 		$this->add_option_to_send( 'themes' );
 		$this->add_option_to_send( 'volumes' );
+		$this->add_option_to_send( 'requires' );
 		$this->add_option_to_send( 'php_extensions' );
 		$this->add_option_to_send( 'object_cache' );
 
@@ -96,7 +96,6 @@ class UpEnvironmentCommand extends DynamicCommand {
 					];
 					break;
 				case 'wordpress_version':
-				case 'woocommerce_version':
 					$options_example[ $opt->getName() ] = 'rc';
 					break;
 				default:
@@ -148,10 +147,6 @@ To set the PHP version, use the --php_version flag, e.g.:
 To set the WordPress version, use the --wordpress_version flag, e.g.:
 <info>qit env:up --wordpress_version=rc</info>
 
-<comment>WooCommerce Version</comment>
-To set the WooCommerce version, use the --woocommerce_version flag, e.g.:
-<info>qit env:up --woocommerce_version=rc</info>
-
 <comment>Object Cache</comment>
 To enable Object Cache (Redis) in the environment, use the --object_cache flag, e.g.:
 <info>qit env:up --object_cache</info>
@@ -180,9 +175,9 @@ To install PHP extensions in the test environment, use the --php_extensions flag
 - URL provided at command completion. Default: "http://localhost:<RANDOM_PORT>"
 
 <comment>Example:</comment>
-<info>qit env:up --wordpress_version=rc --woocommerce_version=rc --php_version=8.3 --php_extensions=gd --object_cache --plugins gutenberg --plugins automatewoo --themes storefront</info>
+<info>qit env:up --wordpress_version=rc --php_version=8.3 --php_extensions=gd --object_cache --plugins gutenberg --plugins automatewoo --themes storefront</info>
 
-This will create a disposable test environment with the latest release candidate versions of WordPress and WooCommerce, PHP 8.3, the GD extension, Object Cache enabled, Gutenberg from WordPress.org Plugin Repository and AutomateWoo from the Woo.com Marketplace installed and active, and Storefront installed.
+This will create a disposable test environment with the latest release candidate versions of WordPress, PHP 8.3, the GD extension, Object Cache enabled, Gutenberg from WordPress.org Plugin Repository and AutomateWoo from the Woo.com Marketplace installed and active, and Storefront installed.
 HELP
 			);
 	}
@@ -192,62 +187,16 @@ HELP
 			$output->writeln( '<comment>Warning: It is highly recommended to run this script from Windows Subsystem for Linux (WSL) when using Windows.</comment>' );
 		}
 
-		// Load custom PHP scripts, if any.
-		if ( ! empty( $input->getOption( 'require' ) ) ) {
-			foreach ( $input->getOption( 'require' ) as $file ) {
-				if ( file_exists( $file ) ) {
-					if ( $output->isVerbose() ) {
-						$output->writeln( sprintf( 'Loading file %s', $file ) );
-					}
-					require $file;
-				} else {
-					$output->writeln( sprintf( '<error>File %s does not exist.</error>', $file ) );
-
-					return Command::FAILURE;
-				}
-			}
-		}
-
 		try {
-			$options = $this->parse_options( $input );
+			$options_to_env_info = $this->parse_options( $input );
 		} catch ( \Exception $e ) {
 			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
 			return Command::FAILURE;
 		}
 
-		if ( $output->isVeryVerbose() ) {
-			// Print the current options being used.
-			$output->writeln( sprintf( 'Starting environment with options: %s', json_encode( $options ) ) );
-		}
-
 		if ( $input->getOption( 'skip_activating_plugins' ) ) {
 			$this->e2e_environment->set_skip_activating_plugins( true );
-		}
-
-		$options_to_env_info = [
-			'defaults'  => [],
-			'overrides' => [],
-		];
-
-		/*
-		 * Options can be explicitly set by the user or be a default value.
-		 *
-		 * This affects the order of precedence that each option gets.
-		 *
-		 * 1: Option set at runtime (will be in $GLOBALS['argv'])
-		 * 2: Option in config file (will be in .?qit-env.(json|yml))
-		 * 3. Default value
-		 */
-		foreach ( $options as $k => &$v ) {
-			// Todo: Add support for shortcuts as well.
-			foreach ( $GLOBALS['argv'] as $a ) {
-				if ( $a === "--$k" ) {
-					$options_to_env_info['overrides'][ $k ] = $v;
-					continue 2;
-				}
-			}
-			$options_to_env_info['defaults'][ $k ] = $v;
 		}
 
 		$env_info = App::make( EnvConfigLoader::class )->init_env_info( $options_to_env_info );
@@ -267,5 +216,49 @@ HELP
 		$output->writeln( $env_info->site_url );
 
 		return Command::SUCCESS;
+	}
+
+	protected function parse_options( InputInterface $input ): array {
+		$options = parent::parse_options( $input );
+
+		$options_to_env_info = [
+			'defaults'  => [],
+			'overrides' => [],
+		];
+
+		$shortcuts = [];
+
+		foreach ( $this->getDefinition()->getOptions() as $o ) {
+			$shortcuts[ $o->getShortcut() ] = $o->getName();
+		}
+
+		/*
+		 * Options can be explicitly set by the user or be a default value.
+		 *
+		 * This affects the order of precedence that each option gets.
+		 *
+		 * 1: Option set at runtime (will be in $GLOBALS['argv'])
+		 * 2: Option in config file (will be in .?qit-env.(json|yml))
+		 * 3. Default value
+		 */
+		foreach ( $options as $key => $value ) {
+			$found_override = false;
+
+			foreach ( $GLOBALS['argv'] as $arg ) {
+				$normalized_arg = ltrim( $arg, '-' );
+
+				if ( $normalized_arg === $key || ( isset( $shortcuts[ $normalized_arg ] ) && $shortcuts[ $normalized_arg ] === $key ) ) {
+					$options_to_env_info['overrides'][ $key ] = $value;
+					$found_override                           = true;
+					break;
+				}
+			}
+
+			if ( ! $found_override ) {
+				$options_to_env_info['defaults'][ $key ] = $value;
+			}
+		}
+
+		return $options_to_env_info;
 	}
 }

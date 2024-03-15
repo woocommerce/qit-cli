@@ -62,20 +62,78 @@ class EnvConfigLoader {
 		}
 
 		// Plugins.
-		foreach ( $env_config['plugins'] ?? [] as &$plugin ) {
+		foreach ( $env_config['plugins'] ?? [] as $plugin ) {
+			// If it doesn't exist, we download it.
 			if ( file_exists( $plugin ) ) {
 				$env_config['volumes'][] = $plugin . ':/var/www/html/wp-content/plugins/' . basename( $plugin );
-				unset( $plugin );
 			}
 		}
 
 		// Themes.
-		foreach ( $env_config['themes'] ?? [] as &$theme ) {
+		foreach ( $env_config['themes'] ?? [] as $theme ) {
+			// If it doesn't exist, we download it.
 			if ( file_exists( $theme ) ) {
 				$env_config['volumes'][] = $theme . ':/var/www/html/wp-content/themes/' . basename( $theme );
-				unset( $theme );
 			}
 		}
+
+		// Requires.
+		foreach ( $env_config['requires'] ?? [] as $file ) {
+			if ( file_exists( $file ) ) {
+				if ( $this->output->isVerbose() ) {
+					$this->output->writeln( sprintf( 'Loading file %s', $file ) );
+				}
+
+				$prefix = null;
+
+				/**
+				 * Since the phar is scoped with php-scoper, we need to prefix the handler as well.
+				 *
+				 * This essentially means, at runtime, replacing
+				 *  - use QIT_CLI\
+				 *  - use _HumbugBoxc7c7e1250ee1\QIT_CLI\
+				 *
+				 * Where the first part is completely random by php-scoper.
+				 * "_HumbubBox" is the default prefix of php-scoper.
+				 *
+				 * @see https://github.com/humbug/php-scoper
+				 */
+				foreach ( explode( '\\', static::class ) as $namespace ) {
+					if ( strpos( $namespace, 'HumbugBox' ) !== false ) {
+						$prefix = $namespace;
+						break;
+					}
+				}
+
+				if ( ! is_null( $prefix ) ) {
+					// Prefixed phar.
+					if ( $this->output->isVeryVerbose() ) {
+						$this->output->writeln( sprintf( 'Converting handler to use prefix %s', $prefix ) );
+					}
+
+					$tmp_file = sys_get_temp_dir() . '/' . pathinfo( $file, PATHINFO_FILENAME ) . uniqid( 'prefixed' ) . '.php';
+
+					if ( file_put_contents( $tmp_file, str_replace( 'use QIT_CLI\\', "use $prefix\\QIT_CLI\\", file_get_contents( $file ) ) ) === false ) {
+						throw new \RuntimeException( 'Failed to write to the temporary file' );
+					}
+
+					if ( $this->output->isVeryVerbose() ) {
+						$this->output->writeln( sprintf( 'Loading file %s', $tmp_file ) );
+					}
+
+					require_once $tmp_file;
+				} else {
+					// If running outside of Phar context, just require it.
+					require_once $file;
+				}
+			} else {
+				$this->output->writeln( sprintf( '<error>File %s does not exist.</error>', $file ) );
+				throw new \RuntimeException( sprintf( 'File %s does not exist.', $file ) );
+			}
+		}
+
+		// No more need for this from now on.
+		unset( $env_config['requires'] );
 
 		// Volumes can be mapped automatically depending on the working directory.
 		$env_config['volumes'] = App::make( EnvVolumeParser::class )->parse_volumes( $env_config['volumes'] ?? [] );

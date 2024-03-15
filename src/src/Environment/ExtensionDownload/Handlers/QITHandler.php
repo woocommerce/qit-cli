@@ -96,6 +96,11 @@ class QITHandler extends Handler {
 		$output = App::make( Output::class );
 
 		foreach ( $extensions as $e ) {
+			if ( ! empty( $e->path ) ) {
+				// Extension already handled (possibly by a custom handler).
+				continue;
+			}
+
 			$cache_file = $this->make_cache_path( $cache_dir, $e->type, $e->extension_identifier, $e->version );
 
 			// Cache hit?
