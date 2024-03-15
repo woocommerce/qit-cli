@@ -42,7 +42,6 @@ class UpEnvironmentCommand extends DynamicCommand {
 
 		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'], [], [
 			'wordpress_version',
-			'woocommerce_version',
 			'php_version',
 		] );
 
@@ -96,7 +95,6 @@ class UpEnvironmentCommand extends DynamicCommand {
 					];
 					break;
 				case 'wordpress_version':
-				case 'woocommerce_version':
 					$options_example[ $opt->getName() ] = 'rc';
 					break;
 				default:
@@ -148,10 +146,6 @@ To set the PHP version, use the --php_version flag, e.g.:
 To set the WordPress version, use the --wordpress_version flag, e.g.:
 <info>qit env:up --wordpress_version=rc</info>
 
-<comment>WooCommerce Version</comment>
-To set the WooCommerce version, use the --woocommerce_version flag, e.g.:
-<info>qit env:up --woocommerce_version=rc</info>
-
 <comment>Object Cache</comment>
 To enable Object Cache (Redis) in the environment, use the --object_cache flag, e.g.:
 <info>qit env:up --object_cache</info>
@@ -180,9 +174,9 @@ To install PHP extensions in the test environment, use the --php_extensions flag
 - URL provided at command completion. Default: "http://localhost:<RANDOM_PORT>"
 
 <comment>Example:</comment>
-<info>qit env:up --wordpress_version=rc --woocommerce_version=rc --php_version=8.3 --php_extensions=gd --object_cache --plugins gutenberg --plugins automatewoo --themes storefront</info>
+<info>qit env:up --wordpress_version=rc --php_version=8.3 --php_extensions=gd --object_cache --plugins gutenberg --plugins automatewoo --themes storefront</info>
 
-This will create a disposable test environment with the latest release candidate versions of WordPress and WooCommerce, PHP 8.3, the GD extension, Object Cache enabled, Gutenberg from WordPress.org Plugin Repository and AutomateWoo from the Woo.com Marketplace installed and active, and Storefront installed.
+This will create a disposable test environment with the latest release candidate versions of WordPress, PHP 8.3, the GD extension, Object Cache enabled, Gutenberg from WordPress.org Plugin Repository and AutomateWoo from the Woo.com Marketplace installed and active, and Storefront installed.
 HELP
 			);
 	}
