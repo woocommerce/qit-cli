@@ -62,20 +62,37 @@ class EnvConfigLoader {
 		}
 
 		// Plugins.
-		foreach ( $env_config['plugins'] ?? [] as &$plugin ) {
+		foreach ( $env_config['plugins'] ?? [] as $plugin ) {
+			// If it doesn't exist, we download it.
 			if ( file_exists( $plugin ) ) {
 				$env_config['volumes'][] = $plugin . ':/var/www/html/wp-content/plugins/' . basename( $plugin );
-				unset( $plugin );
 			}
 		}
 
 		// Themes.
-		foreach ( $env_config['themes'] ?? [] as &$theme ) {
+		foreach ( $env_config['themes'] ?? [] as $theme ) {
+			// If it doesn't exist, we download it.
 			if ( file_exists( $theme ) ) {
 				$env_config['volumes'][] = $theme . ':/var/www/html/wp-content/themes/' . basename( $theme );
-				unset( $theme );
 			}
 		}
+
+		// Requires
+		foreach ( $env_config['requires'] ?? [] as $file ) {
+			if ( file_exists( $file ) ) {
+				if ( $this->output->isVerbose() ) {
+					$this->output->writeln( sprintf( 'Loading file %s', $file ) );
+				}
+				require $file;
+			} else {
+				$this->output->writeln( sprintf( '<error>File %s does not exist.</error>', $file ) );
+
+				throw new \RuntimeException( sprintf( 'File %s does not exist.', $file ) );
+			}
+		}
+
+		// No more need for this from now on.
+		unset( $env_config['requires'] );
 
 		// Volumes can be mapped automatically depending on the working directory.
 		$env_config['volumes'] = App::make( EnvVolumeParser::class )->parse_volumes( $env_config['volumes'] ?? [] );
