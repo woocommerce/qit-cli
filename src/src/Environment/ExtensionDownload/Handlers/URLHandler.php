@@ -35,6 +35,11 @@ class URLHandler extends Handler {
 		$output = App::make( Output::class );
 
 		foreach ( $extensions as $e ) {
+			if ( ! empty( $e->path ) ) {
+				// Extension already handled (possibly by a custom handler).
+				continue;
+			}
+
 			// As version is "undefined", cache burst is shorter: Hour of the day (0-24).
 			$cache_burst = gmdate( 'G' );
 

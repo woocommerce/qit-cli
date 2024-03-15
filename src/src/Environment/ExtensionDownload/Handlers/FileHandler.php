@@ -17,6 +17,11 @@ class FileHandler extends Handler {
 
 	public function maybe_download_extensions( array $extensions, string $cache_dir ): void {
 		foreach ( $extensions as $e ) {
+			if ( ! empty( $e->path ) ) {
+				// Extension already handled (possibly by a custom handler).
+				continue;
+			}
+
 			if ( ! file_exists( $e->extension_identifier ) ) {
 				throw new \RuntimeException( 'File not found: ' . $e->path );
 			}

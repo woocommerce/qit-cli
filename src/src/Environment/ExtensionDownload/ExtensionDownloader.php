@@ -125,7 +125,7 @@ class ExtensionDownloader {
 				 */
 				foreach ( get_declared_classes() as $class ) {
 					if ( is_subclass_of( $class, CustomHandler::class ) ) {
-						$handler = new $class();
+						$handler = new $class( App::make( OutputInterface::class ) );
 						if ( $handler->should_handle( $ext ) ) {
 							$ext->handler = $class;
 						}

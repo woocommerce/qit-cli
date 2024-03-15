@@ -7,9 +7,17 @@ use QIT_CLI\Cache;
 use QIT_CLI\Config;
 use QIT_CLI\Environment\ExtensionDownload\Extension;
 use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
+use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\normalize_path;
 
 abstract class Handler {
+	/** @var OutputInterface */
+	protected $output;
+
+	public function __construct( OutputInterface $output ) {
+		$this->output = $output;
+	}
+
 	/**
 	 * This function should set the $version property of the given extensions.
 	 *
