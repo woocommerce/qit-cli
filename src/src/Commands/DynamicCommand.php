@@ -36,7 +36,7 @@ abstract class DynamicCommand extends Command {
 	/**
 	 * @param InputInterface $input
 	 *
-	 * @return array<mixed> The options to send.
+	 * @return array<string,scalar|array<scalar>> The keys are option names, the values are the option values. It can be boolean if option is boolean, scalar if it's a value, or array if option is an array.
 	 */
 	protected function parse_options( InputInterface $input ): array {
 		$this->validate_required_options( $input );

@@ -187,62 +187,16 @@ HELP
 			$output->writeln( '<comment>Warning: It is highly recommended to run this script from Windows Subsystem for Linux (WSL) when using Windows.</comment>' );
 		}
 
-		// Load custom PHP scripts, if any.
-		if ( ! empty( $input->getOption( 'require' ) ) ) {
-			foreach ( $input->getOption( 'require' ) as $file ) {
-				if ( file_exists( $file ) ) {
-					if ( $output->isVerbose() ) {
-						$output->writeln( sprintf( 'Loading file %s', $file ) );
-					}
-					require $file;
-				} else {
-					$output->writeln( sprintf( '<error>File %s does not exist.</error>', $file ) );
-
-					return Command::FAILURE;
-				}
-			}
-		}
-
 		try {
-			$options = $this->parse_options( $input );
+			$options_to_env_info = $this->parse_options( $input );
 		} catch ( \Exception $e ) {
 			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
 			return Command::FAILURE;
 		}
 
-		if ( $output->isVeryVerbose() ) {
-			// Print the current options being used.
-			$output->writeln( sprintf( 'Starting environment with options: %s', json_encode( $options ) ) );
-		}
-
 		if ( $input->getOption( 'skip_activating_plugins' ) ) {
 			$this->e2e_environment->set_skip_activating_plugins( true );
-		}
-
-		$options_to_env_info = [
-			'defaults'  => [],
-			'overrides' => [],
-		];
-
-		/*
-		 * Options can be explicitly set by the user or be a default value.
-		 *
-		 * This affects the order of precedence that each option gets.
-		 *
-		 * 1: Option set at runtime (will be in $GLOBALS['argv'])
-		 * 2: Option in config file (will be in .?qit-env.(json|yml))
-		 * 3. Default value
-		 */
-		foreach ( $options as $k => &$v ) {
-			// Todo: Add support for shortcuts as well.
-			foreach ( $GLOBALS['argv'] as $a ) {
-				if ( $a === "--$k" ) {
-					$options_to_env_info['overrides'][ $k ] = $v;
-					continue 2;
-				}
-			}
-			$options_to_env_info['defaults'][ $k ] = $v;
 		}
 
 		$env_info = App::make( EnvConfigLoader::class )->init_env_info( $options_to_env_info );
@@ -262,5 +216,49 @@ HELP
 		$output->writeln( $env_info->site_url );
 
 		return Command::SUCCESS;
+	}
+
+	protected function parse_options( InputInterface $input ): array {
+		$options = parent::parse_options( $input );
+
+		$options_to_env_info = [
+			'defaults'  => [],
+			'overrides' => [],
+		];
+
+		$shortcuts = [];
+
+		foreach ( $this->getDefinition()->getOptions() as $o ) {
+			$shortcuts[ $o->getShortcut() ] = $o->getName();
+		}
+
+		/*
+		 * Options can be explicitly set by the user or be a default value.
+		 *
+		 * This affects the order of precedence that each option gets.
+		 *
+		 * 1: Option set at runtime (will be in $GLOBALS['argv'])
+		 * 2: Option in config file (will be in .?qit-env.(json|yml))
+		 * 3. Default value
+		 */
+		foreach ( $options as $key => $value ) {
+			$found_override = false;
+
+			foreach ( $GLOBALS['argv'] as $arg ) {
+				$normalized_arg = ltrim( $arg, '-' );
+
+				if ( $normalized_arg === $key || ( isset( $shortcuts[ $normalized_arg ] ) && $shortcuts[ $normalized_arg ] === $key ) ) {
+					$options_to_env_info['overrides'][ $key ] = $value;
+					$found_override                           = true;
+					break;
+				}
+			}
+
+			if ( ! $found_override ) {
+				$options_to_env_info['defaults'][ $key ] = $value;
+			}
+		}
+
+		return $options_to_env_info;
 	}
 }
