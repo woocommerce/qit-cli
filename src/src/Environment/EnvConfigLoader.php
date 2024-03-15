@@ -77,7 +77,7 @@ class EnvConfigLoader {
 			}
 		}
 
-		// Requires
+		// Requires.
 		foreach ( $env_config['requires'] ?? [] as $file ) {
 			if ( file_exists( $file ) ) {
 				if ( $this->output->isVerbose() ) {
