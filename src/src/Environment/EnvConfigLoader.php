@@ -86,7 +86,18 @@ class EnvConfigLoader {
 
 				$prefix = null;
 
-				// Detecting the prefix from the current class namespace.
+				/**
+				 * Since the phar is scoped with php-scoper, we need to prefix the handler as well.
+				 *
+				 * This essentially means, at runtime, replacing
+				 *  - use QIT_CLI\
+				 *  - use _HumbugBoxc7c7e1250ee1\QIT_CLI\
+				 *
+				 * Where the first part is completely random by php-scoper.
+				 * "_HumbubBox" is the default prefix of php-scoper.
+				 *
+				 * @see https://github.com/humbug/php-scoper
+				 */
 				foreach ( explode( '\\', static::class ) as $namespace ) {
 					if ( strpos( $namespace, 'HumbugBox' ) !== false ) {
 						$prefix = $namespace;
@@ -95,7 +106,7 @@ class EnvConfigLoader {
 				}
 
 				if ( ! is_null( $prefix ) ) {
-					// If the code is running in a scoped Phar.
+					// Prefixed phar.
 					if ( $this->output->isVeryVerbose() ) {
 						$this->output->writeln( sprintf( 'Converting handler to use prefix %s', $prefix ) );
 					}
