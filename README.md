@@ -55,35 +55,28 @@ You can use QIT Local Test Environment to test your plugins and themes locally.
 
 ## QIT Local Test Environment
 
-The QIT Local Test Environment offers a powerful, flexible testing platform for WordPress plugin and theme developers. It provides an easy-to-use, ephemeral local testing setup, allowing for rapid testing and debugging without affecting your main development environment. This feature is available to all users, regardless of whether you are a Partner Developer of the Woo.com Marketplace.
+QIT offers a powerful, flexible testing platform for WordPress plugin and theme developers.
 
-#### Features
-
-- **Ephemeral Test Environments**: Each environment is temporary and completely isolated. When you stop and restart, it's like beginning with a clean slate.
-- **Configurable Versions**: Choose specific versions of WordPress, WooCommerce, and PHP for targeted testing.
-- **Plugin and Theme Testing**: Easily test your plugins and themes in different configurations. Supports various source options for plugins and themes, including direct paths, Woo.com slugs/product IDs, WordPress.org slugs, ZIP URLs, and even from other sources, such as private GitHub repos and other marketplaces, with some configuration.
-- **Volume Mapping**: Map local directories to the test environment, allowing you to test plugins and themes directly from your development workspace.
-- **PHP Extensions**: Customize the PHP environment with required extensions.
-- **Object Cache**: Option to enable Redis Object Cache for more advanced testing scenarios.
-- **Simple and Advanced Use**: Works right out of the box for simple setups or can be heavily customized via command-line options or configuration files.
+It provides an easy-to-use, ephemeral local testing setup, allowing for rapid testing and debugging without affecting your main development environment. This feature is available to all users, regardless of whether you are a Partner Developer of the Woo.com Marketplace.
 
 #### Usage
 
 1. **Basic Setup**: To quickly start an environment, run `qit env:up` in your terminal.
+2. **Configurable Environment**: `qit env:up --wordpress_version=Rc --php_version=8.3 --plugins=woocommerce --themes=storefront`
 2. **Custom Configuration**: Use command-line options or create a JSON/YAML configuration file in your project directory to set default environment options. Example configurations are provided in the help section.
 
-#### Examples
+Or just place a `qit-env.yml` file in your directory and do `qit env:up` to start the environment.
 
-- **Standard Environment**: `qit env:up --wordpress_version=6.4.3 --woocommerce_version=8.6.1 --php_version=7.4`
-- **Custom Plugin Testing**: `qit env:up --plugins=your-plugin-slug`
-- **Theme Testing**: `qit env:up --themes=your-theme-slug`
-- **Advanced Environment with Object Cache and PHP Extensions**: `qit env:up --object_cache --php_extensions=gd --php_extensions=imagick`
+```yaml
+wordpress_version: rc
+php_version: 8.3
+plugins:
+  - woocommerce
+themes:
+  - storefront  
+```
 
-#### Accessing the Test Environment
-
-Upon completion, you will be provided with a URL (typically `http://localhost:<RANDOM_PORT>`) to access your temporary WordPress instance.
-
-For detailed instructions, refer to the [official documentation](https://woocommerce.github.io/qit-documentation/#/environment/getting-started) or consult the `--help` option in the command line.
+More information: [Local Test Environment Documentation](https://woocommerce.github.io/qit-documentation/#/environment/getting-started)
 
 ## Support
 
