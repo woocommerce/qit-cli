@@ -56,7 +56,7 @@ It provides an easy-to-use, ephemeral local testing setup, allowing for rapid te
 #### Usage
 
 1. **Basic Setup**: To quickly start an environment, run `qit env:up` in your terminal.
-2. **Configurable Environment**: `qit env:up --wordpress_version=Rc --php_version=8.3 --plugins=woocommerce --themes=storefront`
+2. **Configurable Environment**: `qit env:up --wordpress_version=rc --php_version=8.3 --plugins=woocommerce --themes=storefront`
 2. **Custom Configuration**: Use command-line options or create a JSON/YAML configuration file in your project directory to set default environment options. Example configurations are provided in the help section.
 
 Or just place a `qit-env.yml` file in your directory and do `qit env:up` to start the environment.
