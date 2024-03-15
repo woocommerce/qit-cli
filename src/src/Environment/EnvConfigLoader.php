@@ -83,10 +83,40 @@ class EnvConfigLoader {
 				if ( $this->output->isVerbose() ) {
 					$this->output->writeln( sprintf( 'Loading file %s', $file ) );
 				}
-				require $file;
+
+				$prefix = null;
+
+				// Detecting the prefix from the current class namespace
+				foreach ( explode( '\\', static::class ) as $namespace ) {
+					if ( strpos( $namespace, 'HumbugBox' ) !== false ) {
+						$prefix = $namespace;
+						break;
+					}
+				}
+
+				if ( ! is_null( $prefix ) ) {
+					// If the code is running in a scoped Phar.
+					if ( $this->output->isVeryVerbose() ) {
+						$this->output->writeln( sprintf( 'Converting handler to use prefix %s', $prefix ) );
+					}
+
+					$tmp_file = sys_get_temp_dir() . '/' . pathinfo( $file, PATHINFO_FILENAME ) . uniqid( 'prefixed' ) . '.php';
+
+					if ( file_put_contents( $tmp_file, str_replace( 'use QIT_CLI\\', "use $prefix\\QIT_CLI\\", file_get_contents( $file ) ) ) === false ) {
+						throw new \RuntimeException( "Failed to write to the temporary file" );
+					}
+
+					if ( $this->output->isVeryVerbose() ) {
+						$this->output->writeln( sprintf( 'Loading file %s', $tmp_file ) );
+					}
+
+					require_once $tmp_file;
+				} else {
+					// If running outside of Phar context, just require it.
+					require_once $file;
+				}
 			} else {
 				$this->output->writeln( sprintf( '<error>File %s does not exist.</error>', $file ) );
-
 				throw new \RuntimeException( sprintf( 'File %s does not exist.', $file ) );
 			}
 		}
