@@ -47,12 +47,6 @@ Official tool to streamline the testing of plugins and themes, ensuring they mee
 
 You can use these parameters individually or in combination to create different scenarios for your tests. Run `qit run:<test-type> --help` to see all the available options. Different test types will have different options to choose from.
 
-## Can I use QIT?
-
-Most features of QIT requires you to log-in as a Partner Developer of the Woo.com Marketplace, but we have plans to open it to all developers in the future.
-
-You can use QIT Local Test Environment to test your plugins and themes locally.
-
 ## QIT Local Test Environment
 
 QIT offers a powerful, flexible testing platform for WordPress plugin and theme developers.
@@ -77,6 +71,12 @@ themes:
 ```
 
 More information: [Local Test Environment Documentation](https://woocommerce.github.io/qit-documentation/#/environment/getting-started)
+
+## Can I use QIT?
+
+Most features of QIT requires you to log-in as a Partner Developer of the Woo.com Marketplace, but we have plans to open it to all developers in the future.
+
+The QIT Local Test Environment does not require you to be connected to Woo.com, although to install Woo.com Premium plugins and themes on your test environment you will need to be connected as a Partner Developer of the Woo.com Marketplace (and have access to the extensions you want to test).
 
 ## Support
 
