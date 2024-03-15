@@ -83,7 +83,7 @@ The QIT Local Test Environment offers a powerful, flexible testing platform for 
 
 Upon completion, you will be provided with a URL (typically `http://localhost:<RANDOM_PORT>`) to access your temporary WordPress instance.
 
-For detailed instructions, refer to the [official documentation](https://woocommerce.github.io/qit-documentation/#/environment/getting-started.md) or consult the `--help` option in the command line.
+For detailed instructions, refer to the [official documentation](https://woocommerce.github.io/qit-documentation/#/environment/getting-started) or consult the `--help` option in the command line.
 
 ## Support
 
