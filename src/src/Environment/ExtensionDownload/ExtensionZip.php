@@ -15,9 +15,6 @@ class ExtensionZip {
 	/** @var Docker */
 	private $docker;
 
-	/** @var array<string, string> Keys are paths, values are checksum hashes. We use this to make sure we don't validate the same file on this request. */
-	private $already_validated = [];
-
 	public function __construct( OutputInterface $output, Docker $docker ) {
 		$this->output = $output;
 		$this->docker = $docker;
@@ -39,9 +36,7 @@ class ExtensionZip {
 			throw new \RuntimeException( 'Invalid directory.' );
 		}
 
-		if ( ! array_key_exists( normalize_path( $zip_file ), $this->already_validated ) || $this->already_validated[ normalize_path( $zip_file ) ] !== md5_file( $zip_file ) ) {
-			$this->validate_zip( $zip_file );
-		}
+		$this->validate_zip( $zip_file );
 
 		$start = microtime( true );
 
@@ -92,10 +87,6 @@ class ExtensionZip {
 	}
 
 	public function validate_zip( string $zip_file ): void {
-		// Normalize and hash the zip file path.
-		$normalized_path                             = normalize_path( $zip_file );
-		$this->already_validated[ $normalized_path ] = md5_file( $zip_file );
-
 		$start = microtime( true );
 
 		if ( class_exists( 'ZipArchive' ) ) {
@@ -143,5 +134,44 @@ class ExtensionZip {
 		if ( $this->output->isVeryVerbose() ) {
 			$this->output->writeln( sprintf( 'Docker ZIP validation of %s successful (%f seconds).', basename( $zip_file ), microtime( true ) - $start ) );
 		}
+	}
+
+	public function zip_custom_e2e_tests( string $source_dir, string $output_zip_file ): void {
+		if ( ! is_dir( $source_dir ) ) {
+			throw new \InvalidArgumentException( 'Source directory does not exist.' );
+		}
+
+		$source_dir = rtrim( $source_dir, DIRECTORY_SEPARATOR );
+
+		// Creating a temporary directory to store the zipped file
+		$temp_dir = sys_get_temp_dir() . '/' . uniqid( 'zip_', true );
+		if ( ! mkdir( $temp_dir, 0755, true ) ) {
+			throw new \RuntimeException( 'Could not create temporary directory.' );
+		}
+
+		$docker_command = [
+			$this->docker->find_docker(),
+			'run',
+			'--rm',
+			'--user',
+			implode( ':', Docker::get_user_and_group() ),
+			'-v',
+			"$source_dir:/app/source",
+			'-v',
+			"$temp_dir:/app/dest",
+			'joshkeegan/zip:latest',
+			'sh',
+			'-c',
+			"cd /app/source && zip -r /app/dest/output.zip . -x 'node_modules/*' 'playwright.config.js' 'playwright.config.ts'",
+		];
+
+		$zip_process = new Process( $docker_command );
+		$zip_process->mustRun();
+
+		// Move the zipped file from the temp directory to the desired output location
+		rename( "$temp_dir/output.zip", $output_zip_file );
+
+		// Clean up the temporary directory
+		rmdir( $temp_dir );
 	}
 }
