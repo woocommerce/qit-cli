@@ -20,7 +20,7 @@ class UploadCustomTestCommand extends Command {
 	protected $uploader;
 
 	/** @var WooExtensionsList */
-	protected $woo_extensions_list
+	protected $woo_extensions_list;
 
 	public function __construct( Zipper $zipper, Upload $uploader, WooExtensionsList $woo_extensions_list ) {
 		parent::__construct();
@@ -34,7 +34,7 @@ class UploadCustomTestCommand extends Command {
 			->addArgument( 'extension', InputArgument::REQUIRED, 'The Woo extension to upload this for.' )
 			->addArgument( 'test_path', InputArgument::REQUIRED, 'The path to the custom tests to upload.' )
 			->addArgument( 'test_type', InputArgument::OPTIONAL, 'The test type.', 'e2e' )
-			->setDescription( 'Manipulates the QIT Cache' );
+			->setDescription( 'Uploads your custom test to QIT.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -89,16 +89,20 @@ class UploadCustomTestCommand extends Command {
 			 * - playwright.config.ts
 			 */
 			$exclude = [
+				'.github/*',
+				'.git/*',
+				'.gitignore',
 				'node_modules/*',
 				'playwright.config.js',
 				'playwright.config.ts',
+				'package-lock.json',
+				'package.json',
 			];
 
 			$this->zipper->zip_directory( $test_path, $zip_to_upload, $exclude );
 		}
 
-
-		$upload_id = $this->uploader->upload_build( 'test', $extension_id, $zip_to_upload, $output );
+		$upload_id = $this->uploader->upload_build( 'custom-test', $extension_id, $zip_to_upload, $output, $test_type );
 
 		if ( empty( $upload_id ) ) {
 			$output->writeln( '<error>Failed to upload test.</error>' );
