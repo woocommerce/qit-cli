@@ -5,6 +5,7 @@ namespace QIT_CLI\Commands;
 use QIT_CLI\App;
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
+use QIT_CLI\Commands\TestRuns\RunE2ECommand;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
@@ -319,11 +320,11 @@ class CreateRunCommands extends DynamicCommandCreator {
 				$hide_e2e = true;
 			}
 
-			if ( $hide_e2e ) {
-				$command->setHidden( true );
+			if ( ! $hide_e2e ) {
+				$application->add( App::make( RunE2ECommand::class ) );
 			}
+		} else {
+			$application->add( $command );
 		}
-
-		$application->add( $command );
 	}
 }

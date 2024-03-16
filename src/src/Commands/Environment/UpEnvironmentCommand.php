@@ -210,10 +210,10 @@ HELP
 
 		if ( $input->getOption( 'json' ) ) {
 			$output->write( json_encode( $env_info ) );
+		} else {
+			// Print the site URL in the last line for easy scripting with "wc -l" or similar.
+			$output->writeln( $env_info->site_url );
 		}
-
-		// Print the site URL as the last information for easy programmatic integrations.
-		$output->writeln( $env_info->site_url );
 
 		return Command::SUCCESS;
 	}
