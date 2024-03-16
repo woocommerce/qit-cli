@@ -1,14 +1,12 @@
 <?php
 
-namespace QIT_CLI\Environment\ExtensionDownload;
+namespace QIT_CLI;
 
-use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
-use function QIT_CLI\normalize_path;
 
-class ExtensionZip {
+class Zipper {
 	/** @var OutputInterface */
 	private $output;
 
@@ -136,7 +134,7 @@ class ExtensionZip {
 		}
 	}
 
-	public function zip_custom_e2e_tests( string $source_dir, string $output_zip_file ): void {
+	public function zip_directory( string $source_dir, string $output_zip_file, array $exclude = [] ): void {
 		if ( ! is_dir( $source_dir ) ) {
 			throw new \InvalidArgumentException( 'Source directory does not exist.' );
 		}
@@ -147,6 +145,12 @@ class ExtensionZip {
 		$temp_dir = sys_get_temp_dir() . '/' . uniqid( 'zip_', true );
 		if ( ! mkdir( $temp_dir, 0755, true ) ) {
 			throw new \RuntimeException( 'Could not create temporary directory.' );
+		}
+
+		// Building the exclusion string for the Docker command
+		$exclude_string = '';
+		foreach ( $exclude as $item ) {
+			$exclude_string .= " '$item' ";
 		}
 
 		$docker_command = [
@@ -162,7 +166,7 @@ class ExtensionZip {
 			'joshkeegan/zip:latest',
 			'sh',
 			'-c',
-			"cd /app/source && zip -r /app/dest/output.zip . -x 'node_modules/*' 'playwright.config.js' 'playwright.config.ts'",
+			"cd /app/source && zip -r /app/dest/output.zip . -x $exclude_string",
 		];
 
 		$zip_process = new Process( $docker_command );

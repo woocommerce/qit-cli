@@ -4,7 +4,7 @@ namespace QIT_CLI\Environment\ExtensionDownload\Handlers;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\ExtensionDownload\Extension;
-use QIT_CLI\Environment\ExtensionDownload\ExtensionZip;
+use QIT_CLI\Zipper;
 
 class FileHandler extends Handler {
 	public function populate_extension_versions( array $extensions ): void {
@@ -82,7 +82,7 @@ class FileHandler extends Handler {
 			throw new \RuntimeException( 'Could not create temporary directory: ' . $tmp_dir );
 		}
 
-		App::make( ExtensionZip::class )->extract_zip( $extension->path, $tmp_dir );
+		App::make( Zipper::class )->extract_zip( $extension->path, $tmp_dir );
 		$ext_copy                       = clone $extension;
 		$ext_copy->extension_identifier = $tmp_dir;
 		$this->find_type_in_dir( $ext_copy );

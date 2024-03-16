@@ -8,13 +8,14 @@ use QIT_CLI\Environment\ExtensionDownload\Handlers\CustomHandler;
 use QIT_CLI\Environment\ExtensionDownload\Handlers\FileHandler;
 use QIT_CLI\Environment\ExtensionDownload\Handlers\QITHandler;
 use QIT_CLI\Environment\ExtensionDownload\Handlers\URLHandler;
+use QIT_CLI\Zipper;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ExtensionDownloader {
 	/** @var OutputInterface $output */
 	protected $output;
 
-	/** @var ExtensionZip $extension_zip */
+	/** @var Zipper $extension_zip */
 	protected $extension_zip;
 
 	/** @var QITHandler $qit_handler */
@@ -28,7 +29,7 @@ class ExtensionDownloader {
 
 	public function __construct(
 		OutputInterface $output,
-		ExtensionZip $extension_zip,
+		Zipper $extension_zip,
 		QITHandler $qit_handler,
 		URLHandler $url_handler,
 		FileHandler $file_handler

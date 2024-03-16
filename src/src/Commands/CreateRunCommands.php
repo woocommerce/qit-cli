@@ -120,7 +120,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 
 				// Upload zip.
 				if ( ! empty( $options['zip'] ) ) {
-					$options['upload_id'] = $this->upload->upload_build( $options['woo_id'], $input->getArgument( 'woo_extension' ), $options['zip'], $output );
+					$options['upload_id'] = $this->upload->upload_build( 'build', $options['woo_id'], $input->getArgument( 'woo_extension' ), $options['zip'], $output );
 					$options['event']     = 'cli_development_extension_test';
 					unset( $options['zip'] );
 				} else {
