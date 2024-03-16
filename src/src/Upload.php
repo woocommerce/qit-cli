@@ -20,10 +20,11 @@ class Upload {
 	}
 
 	/**
+	 * @param string          $upload_type Either 'build' or 'custom-test'.
 	 * @param int             $woo_extension_id The Woo extension ID that this development build is associated to.
 	 * @param string          $zip_path The local Zip file path.
 	 * @param OutputInterface $output The output instance.
-	 * @param string          $test_type Either 'build' or 'custom-test'.
+	 * @param string          $test_type The test type, if a 'custom-test'.
 	 *
 	 * @return string The Upload ID or empty, if a custom test type.
 	 */

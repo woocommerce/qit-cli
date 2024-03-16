@@ -134,6 +134,13 @@ class Zipper {
 		}
 	}
 
+	/**
+	 * @param string $source_dir The path to the directory to be zipped.
+	 * @param string $output_zip_file The path to the output zip file.
+	 * @param array<string> $exclude An array of files or directories (accepts wildcards) to exclude from the zip.
+	 *
+	 * @return void
+	 */
 	public function zip_directory( string $source_dir, string $output_zip_file, array $exclude = [] ): void {
 		if ( ! is_dir( $source_dir ) ) {
 			throw new \InvalidArgumentException( 'Source directory does not exist.' );
@@ -141,13 +148,13 @@ class Zipper {
 
 		$source_dir = rtrim( $source_dir, DIRECTORY_SEPARATOR );
 
-		// Creating a temporary directory to store the zipped file
+		// Creating a temporary directory to store the zipped file.
 		$temp_dir = sys_get_temp_dir() . '/' . uniqid( 'zip_', true );
 		if ( ! mkdir( $temp_dir, 0755, true ) ) {
 			throw new \RuntimeException( 'Could not create temporary directory.' );
 		}
 
-		// Building the exclusion string for the Docker command
+		// Building the exclusion string for the Docker command.
 		$exclude_string = '';
 		foreach ( $exclude as $item ) {
 			$exclude_string .= " '$item' ";
@@ -172,10 +179,10 @@ class Zipper {
 		$zip_process = new Process( $docker_command );
 		$zip_process->mustRun();
 
-		// Move the zipped file from the temp directory to the desired output location
+		// Move the zipped file from the temp directory to the desired output location.
 		rename( "$temp_dir/output.zip", $output_zip_file );
 
-		// Clean up the temporary directory
+		// Clean up the temporary directory.
 		rmdir( $temp_dir );
 	}
 }

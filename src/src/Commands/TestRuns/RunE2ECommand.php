@@ -129,7 +129,7 @@ class RunE2ECommand extends DynamicCommand {
 			}
 			try {
 				Environment::down( $GLOBALS['env_to_shutdown'], new NullOutput() );
-			} catch ( \Exception $e ) {
+			} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 				// no-op.
 			}
 		} );
@@ -168,7 +168,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		// Iterate over all options of UpEnvironmentCommand
 		// Remote keys in $options array that are not part of the definition
-		// Notify user if that happens
+		// Notify user if that happens.
 		$up_command_option_names = array_map( function ( $option ) {
 			return $option->getName();
 		}, $this->getApplication()->find( UpEnvironmentCommand::getDefaultName() )->getDefinition()->getOptions() );
@@ -182,7 +182,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up']["--$option_name"] = $option_value;
+				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
 			}
 		}
 

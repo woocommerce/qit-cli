@@ -51,8 +51,8 @@ abstract class DynamicCommandCreator {
 				$description = $property_schema['description'] ?? '';
 				$default     = $property_schema['default'] ?? null;
 
-				$items = $property_schema['items'] ?? '';
-				$enum  = $property_schema['enum'] ?? '';
+				$items       = $property_schema['items'] ?? '';
+				$enum        = $property_schema['enum'] ?? '';
 				$option_type = $property_schema['type'] ?? '';
 
 				if ( empty( $enum ) && ! empty( $items ) ) {

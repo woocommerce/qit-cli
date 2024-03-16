@@ -86,7 +86,7 @@ class EnvVolumeParser {
 
 			if ( count( $v ) === 3 ) {
 				$flag = $v[2];
-				if ( ! in_array( $flag, $allowed_flags ) ) {
+				if ( ! in_array( $flag, $allowed_flags, true ) ) {
 					throw new \RuntimeException(
 						'Invalid volume flag "' . $flag . '". ' .
 						'Allowed flags are: ' . implode( ', ', $allowed_flags )

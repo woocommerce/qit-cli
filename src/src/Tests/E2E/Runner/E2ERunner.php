@@ -18,6 +18,7 @@ abstract class E2ERunner {
 	 *
 	 * @return string Only "playwright" supported right now.
 	 * @throws \Exception If it can't find the runner type.
+	 * @throws \RuntimeException If it can't find a valid runner type.
 	 */
 	public static function find_runner_type( string $e2e_test_path ): string {
 		if ( ! file_exists( $e2e_test_path ) || ! is_dir( $e2e_test_path ) ) {
@@ -43,7 +44,7 @@ abstract class E2ERunner {
 				}
 
 				// Codeception.
-				if ( in_array( $file->getExtension(), [ 'php' ], true ) ) {
+				if ( in_array( $file->getExtension(), [ 'php' ], true ) ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
 					// no-op for now.
 				}
 			}

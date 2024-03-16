@@ -164,7 +164,7 @@ class UploadTest extends QITTestCase {
 		$upload = App::make( Upload::class );
 
 		$this->expectException( RuntimeException::class );
-		$upload->upload_build( 'build', 123, 'foo', __DIR__ . '/foo.zip', new NullOutput() );
+		$upload->upload_build( 'build', 123, __DIR__ . '/foo.zip', new NullOutput() );
 	}
 
 	public function test_upload_file_not_zip() {
@@ -176,7 +176,7 @@ class UploadTest extends QITTestCase {
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( 'This is not a valid zip file.' );
-		$upload->upload_build( 'build', 123, 'foo', __DIR__ . '/foo.zip', new NullOutput() );
+		$upload->upload_build( 'build', 123, __DIR__ . '/foo.zip', new NullOutput() );
 	}
 
 	/**
@@ -210,7 +210,7 @@ class UploadTest extends QITTestCase {
 
 		$this->assertMatchesSnapshot( $this->list_zip_contents( $zip, true ) );
 
-		$upload->upload_build( 'build', 123, $sut_slug, __DIR__ . "/$zip_file", new NullOutput() );
+		$upload->upload_build( 'build', 123, __DIR__ . "/$zip_file", new NullOutput() );
 
 		[ $content_size_sent, $data ] = $this->get_requests_from_upload( $upload );
 
@@ -237,7 +237,7 @@ class UploadTest extends QITTestCase {
 
 		$this->assertMatchesSnapshot( $this->list_zip_contents( $zip, true ) );
 
-		$upload->upload_build( 'build', 123, $sut_slug, __DIR__ . "/$zip_file", new NullOutput() );
+		$upload->upload_build( 'build', 123, __DIR__ . "/$zip_file", new NullOutput() );
 
 		[ $content_size_sent, $data ] = $this->get_requests_from_upload( $upload );
 
@@ -267,7 +267,7 @@ class UploadTest extends QITTestCase {
 
 		$this->assertMatchesSnapshot( $this->list_zip_contents( $zip, true ) );
 
-		$upload->upload_build( 'build', 123, $sut_slug, __DIR__ . "/$zip_file", new NullOutput() );
+		$upload->upload_build( 'build', 123, __DIR__ . "/$zip_file", new NullOutput() );
 
 		// Hydrate the chunks and validate it's the same as the source.
 		$file_string = '';

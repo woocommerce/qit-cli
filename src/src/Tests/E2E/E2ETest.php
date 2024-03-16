@@ -8,7 +8,8 @@ use QIT_CLI\Tests\E2E\Result\TestResult;
 class E2ETest {
 	/**
 	 * @param EnvInfo $env_info
-	 * @param string $test_mode - "default" or "full"
+	 * @param string  $sut       - System Under Test.
+	 * @param string  $test_mode - "default" or "full".
 	 */
 	public function run_tests( EnvInfo $env_info, string $sut, string $test_mode ) {
 		/**
@@ -18,24 +19,24 @@ class E2ETest {
 		 *  3.1 gutenberg:
 		 *        - status: pending
 		 *        - report: "/link-to-allure-report"
-		 *		  - total_tests: [
-		 * 		    - test_1
-		 * 		    - test_2
+		 *        - total_tests: [
+		 *          - test_1
+		 *          - test_2
 		 *          ]
 		 *        - tests_run: [
-		 * 		    - test_1
-		 * 		    - test_2
+		 *          - test_1
+		 *          - test_2
 		 *          ]
-		 *		  - tests_failed: [
-		 *			  - test_1
-		 *			  - test_2
+		 *        - tests_failed: [
+		 *            - test_1
+		 *            - test_2
 		 *          ]
 		 *        - debug_log: "/path/to/this-plugin-debug.log"
 		 *  4. If $test_mode is "default", we run the bootstrap phase of all plugins, and the test phase of the sut.
 		 *  If $test_mode is "full", we run the bootstrap phase of all plugins, and the test phase of all plugins.
 		 *  5. Update the TestResult with the actual results
 		 */
-		$plugins = $env_info->plugins;
+		$plugins      = $env_info->plugins;
 		$plugins_dirs = $env_info->temporary_env . '/wp-content/plugins';
 
 		$test_result = new TestResult();
@@ -44,7 +45,7 @@ class E2ETest {
 			$test_result->initialize_plugin_result( $plugin );
 		}
 
-		foreach ($plugins as $plugin ) {
+		foreach ( $plugins as $plugin ) {
 			// Set the runner.
 			$runner = E2ERunner::find_runner_type( $plugins_dirs . '/' . $plugin );
 		}
