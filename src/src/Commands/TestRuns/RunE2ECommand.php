@@ -226,12 +226,15 @@ class RunE2ECommand extends DynamicCommand {
 	 * The "pcntl" extension allows us to capture "signals" such as "Ctrl+C",
 	 * and handle them in PHP. If they have it installed, we handle it.
 	 */
-	public static function press_enter_to_terminate_callback( Process $playwright_process ): void {
+	public static function press_enter_to_terminate_callback( Process $playwright_process, array $processes = [] ): void {
 		stream_set_blocking( STDIN, 0 );
 		while ( $playwright_process->isRunning() ) {
 			$user_input = stream_get_contents( STDIN );
 			if ( $user_input !== false && strlen( $user_input ) > 0 ) {
 				$playwright_process->stop();
+				foreach ($processes as $p) {
+					$p->stop();
+				}
 				break;
 			}
 
