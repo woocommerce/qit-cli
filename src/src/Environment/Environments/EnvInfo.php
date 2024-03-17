@@ -52,6 +52,9 @@ abstract class EnvInfo implements \JsonSerializable {
 	 */
 	public $docker_images = [];
 
+	/** @var string */
+	public $docker_network;
+
 	/**
 	 * @var array<string> Array of PHP extensions to be installed in the environment.
 	 */

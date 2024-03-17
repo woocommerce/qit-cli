@@ -5,6 +5,7 @@ namespace QIT_CLI\Environment\Environments;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Config;
+use QIT_CLI\Environment\CustomTests\CustomTestsDownloader;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\EnvironmentDownloader;
 use QIT_CLI\Environment\EnvironmentMonitor;
@@ -48,8 +49,14 @@ abstract class Environment {
 	/** @var OutputInterface */
 	protected $output;
 
+	/** @var CustomTestsDownloader */
+	protected $custom_tests_downloader;
+
 	/** @var array<string,array{local: string, in_container: string}> */
 	protected $volumes;
+
+	/** @var string "up" if just spinning up the environment, "up_and_test" if running for a custom test. */
+	protected $type;
 
 	public function __construct(
 		EnvironmentDownloader $environment_downloader,
@@ -58,18 +65,19 @@ abstract class Environment {
 		Filesystem $filesystem,
 		Docker $docker,
 		OutputInterface $output,
-		ExtensionDownloader $extension_downloader
+		ExtensionDownloader $extension_downloader,
+		CustomTestsDownloader $custom_tests_downloader
 	) {
-		$this->environment_downloader = $environment_downloader;
-		$this->cache                  = $cache;
-		$this->environment_monitor    = $environment_monitor;
-		$this->filesystem             = $filesystem;
-		$this->docker                 = $docker;
-
+		$this->environment_downloader  = $environment_downloader;
+		$this->cache                   = $cache;
+		$this->environment_monitor     = $environment_monitor;
+		$this->filesystem              = $filesystem;
+		$this->docker                  = $docker;
 		$this->cache_dir               = normalize_path( Config::get_qit_dir() . 'cache' );
 		$this->source_environment_path = normalize_path( Config::get_qit_dir() . 'environments/' . $this->get_name() );
 		$this->output                  = $output;
 		$this->extension_downloader    = $extension_downloader;
+		$this->custom_tests_downloader = $custom_tests_downloader;
 	}
 
 	abstract public function get_name(): string;
@@ -101,7 +109,16 @@ abstract class Environment {
 		$this->volumes = $volumes;
 	}
 
-	public function up( bool $attached = false ): void {
+	/**
+	 * @param string $type "up" just spin the environment. "up_and_test" also download custom tests.
+	 *
+	 * @return void
+	 */
+	public function up( string $type = 'up' ): void {
+		if ( ! in_array( $type, [ 'up', 'up_and_test' ] ) ) {
+			throw new \InvalidArgumentException( 'Invalid type: ' . $type );
+		}
+
 		// Start the benchmark.
 		$start = microtime( true );
 
@@ -112,11 +129,17 @@ abstract class Environment {
 		if ( ! empty( $this->env_info->plugins ) || ! empty( $this->env_info->themes ) ) {
 			$this->output->writeln( '<info>Downloading plugins and themes...</info>' );
 		}
+
 		$this->extension_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );
+
+		if ( $type === 'up_and_test' ) {
+			$this->custom_tests_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );
+		}
+
 		$this->output->writeln( '<info>Setting up Docker...</info>' );
 		$this->generate_docker_compose();
 		$this->post_generate_docker_compose();
-		$this->up_docker_compose( $attached );
+		$this->up_docker_compose();
 		$this->post_up();
 
 		if ( $this->output->isVerbose() ) {
@@ -215,14 +238,10 @@ abstract class Environment {
 		}
 	}
 
-	protected function up_docker_compose( bool $attached ): void {
+	protected function up_docker_compose(): void {
 		$this->add_container_names();
 
-		$args = array_merge( $this->docker->find_docker_compose(), [ '-f', $this->env_info->temporary_env . '/docker-compose.yml', 'up' ] );
-
-		if ( ! $attached ) {
-			$args[] = '-d';
-		}
+		$args = array_merge( $this->docker->find_docker_compose(), [ '-f', $this->env_info->temporary_env . '/docker-compose.yml', 'up', '-d' ] );
 
 		$up_process = new Process( $args );
 
@@ -294,12 +313,26 @@ abstract class Environment {
 
 	protected function add_container_names(): void {
 		$containers = [];
+		$docker_network = null;
 
 		$file = new \SplFileObject( $this->env_info->temporary_env . '/docker-compose.yml' );
 		while ( ! $file->eof() ) {
 			$line = $file->fgets();
 			if ( preg_match( '/^\s+container_name:\s*(\w+)/', $line, $matches ) ) {
 				$containers[] = $matches[1];
+			}
+			/*
+			 * Eg:
+			 *     networks:
+             *           - qit_network_1234
+			 */
+			if ( is_null( $docker_network ) && preg_match( '/^\s+networks:\s*$/', $line ) ) {
+				// Read the next line.
+				$line = $file->fgets();
+				if ( preg_match( '/^\s+-\s*(\w+)/', $line, $matches ) ) {
+					// eg: 1234_qit_network_1234
+					$docker_network = basename( $this->env_info->temporary_env ) . '_' . $matches[1];
+				}
 			}
 		}
 		$containers = array_unique( $containers );
@@ -309,6 +342,7 @@ abstract class Environment {
 		}
 
 		$this->env_info->docker_images = $containers;
+		$this->env_info->docker_network  = $docker_network;
 	}
 
 	protected function get_nginx_port(): int {

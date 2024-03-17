@@ -206,7 +206,9 @@ HELP
 		}
 
 		$this->e2e_environment->init( $env_info );
-		$this->e2e_environment->up();
+
+		// "up_and_test" is when we are using an environment to run a custom test. "up" is spinning up the environment on-demand.
+		$this->e2e_environment->up( getenv( 'QIT_UP_AND_TEST' ) ? 'up_and_test' : 'up' );
 
 		if ( $input->getOption( 'json' ) ) {
 			$output->write( json_encode( $env_info ) );

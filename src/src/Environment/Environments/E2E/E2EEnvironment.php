@@ -111,23 +111,28 @@ class E2EEnvironment extends Environment {
 			$this->docker->run_inside_docker( $this->env_info, [ 'bash', '-c', 'wp theme list --skip-plugins --skip-themes' ] );
 		}
 
-		$io->success( 'Temporary test environment created. (' . $this->env_info->env_id . ')' );
+		if ( $this->type === 'up' ) {
+			$io->success( 'Temporary test environment created. (' . $this->env_info->env_id . ')' );
 
-		$listing = [
-			sprintf( 'URL: %s', $this->env_info->site_url ),
-			sprintf( 'Admin URL: %s/wp-admin', $this->env_info->site_url ),
-			'Admin Credentials: admin/password',
-			sprintf( 'PHP Version: %s', $this->env_info->php_version ),
-			sprintf( 'WordPress Version: %s', $this->env_info->wordpress_version ),
-			sprintf( 'Redis Object Cache? %s', $this->env_info->object_cache ? 'Yes' : 'No' ),
-			sprintf( 'Path: %s', $this->env_info->temporary_env ),
-		];
+			$listing = [
+				sprintf( 'URL: %s', $this->env_info->site_url ),
+				sprintf( 'Admin URL: %s/wp-admin', $this->env_info->site_url ),
+				'Admin Credentials: admin/password',
+				sprintf( 'PHP Version: %s', $this->env_info->php_version ),
+				sprintf( 'WordPress Version: %s', $this->env_info->wordpress_version ),
+				sprintf( 'Redis Object Cache? %s', $this->env_info->object_cache ? 'Yes' : 'No' ),
+				sprintf( 'Path: %s', $this->env_info->temporary_env ),
+			];
 
-		$io->listing( $listing );
+			$io->listing( $listing );
 
-		if ( ! $this->output->isVerbose() ) {
-			$io->writeln( sprintf( 'To see additional info, run with the "--verbose" flag.' ) );
+			if ( ! $this->output->isVerbose() ) {
+				$io->writeln( sprintf( 'To see additional info, run with the "--verbose" flag.' ) );
+			}
+		} else {
+			$this->output->writeln( '<info>Environment ready.</info>' );
 		}
+
 
 		// Try to connect to the website.
 		App::make( EnvUpChecker::class )->check_and_render( $this->env_info );

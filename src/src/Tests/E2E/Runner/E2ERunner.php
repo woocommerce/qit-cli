@@ -3,6 +3,7 @@
 namespace QIT_CLI\Tests\E2E\Runner;
 
 use QIT_CLI\Environment\Environments\EnvInfo;
+use QIT_CLI\Tests\E2E\Result\TestResult;
 use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class E2ERunner {
@@ -26,9 +27,9 @@ abstract class E2ERunner {
 		}
 
 		if ( is_dir( $e2e_test_path . '/tests' ) ) {
-			/** @var \DirectoryIterator $file */
+			/** @var \SplFileInfo $file */
 			foreach ( new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $e2e_test_path . '/tests' ) ) as $file ) {
-				if ( $file->isDot() || $file->isLink() || ! $file->isFile() ) {
+				if ( $file->getBasename() === '.' || $file->getBasename() === '..' || $file->isLink() || ! $file->isFile() ) {
 					continue;
 				}
 
@@ -53,7 +54,5 @@ abstract class E2ERunner {
 		throw new \RuntimeException( sprintf( 'Could not find a valid runner type in %s', $e2e_test_path ) );
 	}
 
-	abstract public function bootstrap_plugin( EnvInfo $env_info, string $plugin ): void;
-
-	abstract public function run_test( EnvInfo $env_info, string $plugin ): void;
+	abstract public function run_test( EnvInfo $env_info, string $plugin, TestResult $test_result ): void;
 }
