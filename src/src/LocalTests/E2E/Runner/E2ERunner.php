@@ -1,9 +1,9 @@
 <?php
 
-namespace QIT_CLI\Tests\E2E\Runner;
+namespace QIT_CLI\LocalTests\E2E\Runner;
 
 use QIT_CLI\Environment\Environments\EnvInfo;
-use QIT_CLI\Tests\E2E\Result\TestResult;
+use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class E2ERunner {

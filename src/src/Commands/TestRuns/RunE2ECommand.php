@@ -7,14 +7,13 @@ use QIT_CLI\Cache;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
-use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
-use QIT_CLI\Tests\E2E\E2ETestManager;
+use QIT_CLI\LocalTests\E2E\E2ETestManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -88,11 +87,17 @@ class RunE2ECommand extends DynamicCommand {
 
 		// Add "mode" option, which can be "headless", "headed", "ui" or "codegen"..
 		$this->addOption(
-			'mode',
-			'm',
-			InputOption::VALUE_REQUIRED,
-			'Test mode: "headless", "headed", "ui" or "codegen".',
-			'headless'
+			'ui',
+			null,
+			InputOption::VALUE_NONE,
+			'Runs tests in UI mode. In this mode, you can start and view the tests running.'
+		);
+
+		$this->addOption(
+			'codegen',
+			null,
+			InputOption::VALUE_NONE,
+			'Run the environment for Codegen. In this mode, you can generate your test files.'
 		);
 
 		// If "woo_extension" (SUT) is a theme, set this.
@@ -134,16 +139,24 @@ class RunE2ECommand extends DynamicCommand {
 			}
 		}
 
-		if ( ! in_array( $input->getOption( 'mode' ), E2ETestManager::$test_modes ) ) {
-			$output->writeln( sprintf( '<error>Invalid test mode. Allowed modes are: %s.</error>', implode( ', ', E2ETestManager::$test_modes ) ) );
+		// Check if option "--ui" is set. If it is, "--codegen" cannot be set. Also check the other way around, and set $test_mode accordingly.
+		if ( $input->getOption( 'ui' ) && $input->getOption( 'codegen' ) ) {
+			$output->writeln( '<error>Cannot run tests in both "UI" and "Codegen" mode at the same time.</error>' );
 
 			return Command::INVALID;
 		}
 
+		if ( $input->getOption( 'ui' ) ) {
+			$test_mode = E2ETestManager::$test_modes['ui'];
+		} elseif ( $input->getOption( 'codegen' ) ) {
+			$test_mode = E2ETestManager::$test_modes['codegen'];
+		} else {
+			$test_mode = E2ETestManager::$test_modes['headless'];
+		}
+
 		$woo_extension       = $input->getArgument( 'woo_extension' );
 		$compatibility       = $other_options['compatibility'];
-		$test_mode           = $input->getOption( 'mode' );
-		$woocommerce_version = $input->getOption('woocommerce_version');
+		$woocommerce_version = $input->getOption( 'woocommerce_version' );
 
 		if ( $woocommerce_version === 'nightly' ) {
 			$env_up_options['--plugins'][] = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
@@ -177,7 +190,7 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		$env_up_options['--volumes'] = $additional_volumes;
-		$env_up_options['--json'] = true;
+		$env_up_options['--json']    = true;
 
 		if ( $output->isVerbose() ) {
 			$env_up_options['--verbose'] = true;
@@ -192,6 +205,11 @@ class RunE2ECommand extends DynamicCommand {
 		$this->handle_termination();
 
 		$resource_stream = fopen( 'php://temp', 'w+' );
+
+		// Codegen runs on host so it uses the default "localhost", all other are in-container and uses "qit-docker.test".
+		if ( $test_mode !== E2ETestManager::$test_modes['codegen'] ) {
+			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO=DOCKER' );
+		}
 
 		putenv( 'QIT_UP_AND_TEST=1' );
 		putenv( sprintf( 'QIT_SUT="%s"', $woo_extension ) );

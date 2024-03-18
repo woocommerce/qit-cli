@@ -1,13 +1,13 @@
 <?php
 
-namespace QIT_CLI\Tests\E2E;
+namespace QIT_CLI\LocalTests\E2E;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
-use QIT_CLI\Tests\E2E\Result\TestResult;
-use QIT_CLI\Tests\E2E\Runner\E2ERunner;
-use QIT_CLI\Tests\E2E\Runner\PlaywrightRunner;
+use QIT_CLI\LocalTests\E2E\Result\TestResult;
+use QIT_CLI\LocalTests\E2E\Runner\E2ERunner;
+use QIT_CLI\LocalTests\E2E\Runner\PlaywrightRunner;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class E2ETestManager {
@@ -19,7 +19,6 @@ class E2ETestManager {
 
 	public static $test_modes = [
 		'headless' => 'headless',
-		'headed'   => 'headed',
 		'ui'       => 'ui',
 		'codegen'  => 'codegen',
 	];
@@ -67,16 +66,16 @@ class E2ETestManager {
 		 */
 		foreach ( $env_info->tests as $plugin_slug => $test_info ) {
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/bootstrap.php' ) ) {
-				$this->output->writeln( sprintf( 'Bootstrapping %s %s', $plugin_slug, $test_info['path'] . '/bootstrap/bootstrap.php' ) );
-				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "php /qit/tests/$plugin_slug/e2e/bootstrap/bootstrap.php" ] );
+				$this->output->writeln( sprintf( 'Bootstrapping %s %s', $plugin_slug, $test_info['path_in_container'] . '/bootstrap/bootstrap.php' ) );
+				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "php /qit/tests/e2e/$plugin_slug/bootstrap/bootstrap.php" ] );
 			}
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/bootstrap.sh' ) ) {
-				$this->output->writeln( sprintf( 'Bootstrapping %s %s', $plugin_slug, $test_info['path'] . '/bootstrap/bootstrap.sh' ) );
-				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "/qit/tests/$plugin_slug/e2e/bootstrap/bootstrap.sh" ] );
+				$this->output->writeln( sprintf( 'Bootstrapping %s %s', $plugin_slug, $test_info['path_in_container'] . '/bootstrap/bootstrap.sh' ) );
+				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "chmod +x /qit/tests/e2e/$plugin_slug/bootstrap/bootstrap.sh && /qit/tests/e2e/$plugin_slug/bootstrap/bootstrap.sh" ] );
 			}
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/must-use-plugin.php' ) ) {
-				$this->output->writeln( sprintf( 'Moving must-use plugin of %s %s', $plugin_slug, $test_info['path'] . '/bootstrap/must-use-plugin.php' ) );
-				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "mv /qit/tests/$plugin_slug/e2e/bootstrap/must-use-plugin.php /var/www/html/wp-content/mu-plugins/$plugin_slug.php" ] );
+				$this->output->writeln( sprintf( 'Moving must-use plugin of %s %s', $plugin_slug, $test_info['path_in_container'] . '/bootstrap/must-use-plugin.php' ) );
+				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "mv /qit/tests/e2e/$plugin_slug/bootstrap/must-use-plugin.php /var/www/html/wp-content/mu-plugins/$plugin_slug.php" ] );
 			}
 		}
 

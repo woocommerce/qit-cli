@@ -110,7 +110,7 @@ class UploadCustomTestCommand extends Command {
 			return Command::FAILURE;
 		}
 
-		$output->writeln( "<info>Test uploaded successfully. Upload ID: $upload_id</info>" );
+		$output->writeln( sprintf( '<info>Tests updated for extension \'%s\' successfully.</info>', $input->getArgument( 'extension' ) ) );
 
 		return Command::SUCCESS;
 	}

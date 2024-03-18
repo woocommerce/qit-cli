@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\Tests\E2E\Result;
+namespace QIT_CLI\LocalTests\E2E\Result;
 
 class TestResult {
 	public $status;

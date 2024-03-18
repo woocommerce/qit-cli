@@ -45,7 +45,16 @@ class E2EEnvironment extends Environment {
 	}
 
 	protected function post_up(): void {
-		$this->env_info->site_url = sprintf( 'http://%s:%s', $this->env_info->domain, $this->get_nginx_port() );
+		if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
+			// Inside docker, the port is always 80 (that's what Nginx is listening to).
+			$this->env_info->nginx_port = 80;
+		} else {
+			// Host port.
+			$this->env_info->nginx_port = $this->get_nginx_port();
+		}
+
+		$this->env_info->site_url   = sprintf( 'http://%s:%s', $this->env_info->domain, $this->env_info->nginx_port );
+
 		$this->environment_monitor->environment_added_or_updated( $this->env_info );
 
 		/**
@@ -66,7 +75,6 @@ class E2EEnvironment extends Environment {
 			'WOOCOMMERCE_VERSION' => $this->env_info->woocommerce_version,
 			'PLUGINS_TO_INSTALL'  => json_encode( $this->env_info->plugins ),
 			'THEMES_TO_INSTALL'   => json_encode( $this->env_info->themes ),
-			'SUT_SLUG'            => 'automatewoo', // @todo: Set this.
 			'SITE_URL'            => $this->env_info->site_url,
 			'QIT_DOCKER_REDIS'    => $this->env_info->object_cache ? 'yes' : 'no',
 		] );

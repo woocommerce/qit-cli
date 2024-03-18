@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\Tests\E2E\Runner;
+namespace QIT_CLI\LocalTests\E2E\Runner;
 
 use QIT_CLI\App;
 use QIT_CLI\Commands\TestRuns\RunE2ECommand;
@@ -8,11 +8,12 @@ use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
-use QIT_CLI\Tests\E2E\E2ETestManager;
-use QIT_CLI\Tests\E2E\Result\TestResult;
+use QIT_CLI\LocalTests\E2E\E2ETestManager;
+use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
+use function QIT_CLI\open_in_browser;
 
 class PlaywrightRunner extends E2ERunner {
 	public function run_test( EnvInfo $env_info, string $plugin, TestResult $test_result, string $test_mode ): void {
@@ -33,9 +34,30 @@ class PlaywrightRunner extends E2ERunner {
 		}
 	}
 
-	protected function run_no_codegen( string $test_mode, EnvInfo $env_info, string $plugin, TestResult $test_result ) {
+	protected function run_no_codegen( string $test_mode, E2EEnvInfo $env_info, string $plugin, TestResult $test_result ) {
 		$playwright_container_name = 'qit_playwright_' . uniqid();
 		$test_to_run               = $env_info->tests[ $plugin ]['path_in_host'];
+
+		// Generate playwright-config.
+		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright-config-generator.php' ] );
+		$process->setEnv( [
+			'BASE_URL' => $env_info->site_url,
+			'SAVE_AS' => $env_info->temporary_env . 'qit-playwright.config.js',
+ 		] );
+
+		if ( $this->output->isVeryVerbose() ) {
+			$this->output->writeln( $process->getCommandLine() );
+		}
+
+		$process->run( function ( $type, $buffer ) {
+			if ( $this->output->isVerbose() || $type === Process::ERR ) {
+				$this->output->write( $buffer );
+			}
+		} );
+
+		if ( ! $process->isSuccessful() ) {
+			throw new \RuntimeException( "Failed to generate docker-compose.yml. Output:\n" . $process->getOutput() . $process->getErrorOutput() );
+		}
 
 		$playwright_args = [
 			App::make( Docker::class )->find_docker(),
@@ -53,6 +75,8 @@ class PlaywrightRunner extends E2ERunner {
 			'PLAYWRIGHT_BROWSERS_PATH=/qit/cache/playwright',
 			'-v',
 			Config::get_qit_dir() . 'cache:/qit/cache',
+			'-v',
+			$env_info->temporary_env . 'qit-playwright.config.js:/home/pwuser/qit-playwright.config.js',
 			'--add-host=host.docker.internal:host-gateway',
 		];
 
@@ -75,7 +99,8 @@ class PlaywrightRunner extends E2ERunner {
 			'-c',
 			"cd /home/pwuser && " .
 			"npm install @playwright/test@1.42.0 playwright@1.42.0 && npx playwright install chromium && " .
-			"npx playwright test $options",
+			"ls -la && cat /home/pwuser/qit-playwright.config.js && ls -la tests &&" .
+			"npx playwright test $options --config /home/pwuser/qit-playwright.config.js",
 		] );
 
 		$playwright_process = new Process( $playwright_args );
@@ -161,8 +186,7 @@ class PlaywrightRunner extends E2ERunner {
 	 */
 	protected function get_playwright_headed_output( string $playwright_container_name ): string {
 		// Get the mapped host port for container's 8086 port.
-		$docker           = App::make( Docker::class )->find_docker();
-		$get_port_process = new Process( [ $docker, 'port', $playwright_container_name, '8086' ] );
+		$get_port_process = new Process( [ App::make( Docker::class )->find_docker(), 'port', $playwright_container_name, '8086' ] );
 		$get_port_process->run();
 		if ( ! $get_port_process->isSuccessful() ) {
 			throw new \RuntimeException( 'Could not get mapped port for Playwright container.' );
@@ -171,6 +195,8 @@ class PlaywrightRunner extends E2ERunner {
 		// Extract the host port.
 		$parts     = explode( ':', trim( $get_port_process->getOutput() ) );
 		$host_port = end( $parts );
+
+		open_in_browser( sprintf( 'http://localhost:%s', $host_port ) );
 
 		return sprintf( 'Playwright UI is available at http://localhost:%s', $host_port );
 	}

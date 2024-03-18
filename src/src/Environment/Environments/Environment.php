@@ -234,7 +234,7 @@ abstract class Environment {
 		} );
 
 		if ( ! $process->isSuccessful() ) {
-			throw new \RuntimeException( 'Failed to generate docker-compose.yml' );
+			throw new \RuntimeException( "Failed to generate qit-playwright-config.js. Output:\n" . $process->getOutput() . $process->getErrorOutput() );
 		}
 	}
 
@@ -269,7 +269,7 @@ abstract class Environment {
 
 		if ( ! $up_process->isSuccessful() ) {
 			static::down( $this->env_info );
-			throw new \RuntimeException( 'Failed to start the environment.' );
+			throw new \RuntimeException( "Failed to start the environment. Output: \n" . $up_process->getOutput() . $up_process->getErrorOutput() );
 		}
 
 		$this->env_info->status = 'started';

@@ -20,6 +20,9 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var string */
 	public $php_version;
 
+	/** @var string */
+	public $nginx_port;
+
 	/** @var string The domain being used. */
 	public $domain;
 
