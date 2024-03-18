@@ -17,6 +17,13 @@ class E2ETestManager {
 	/** @var OutputInterface $output */
 	protected $output;
 
+	public static $test_modes = [
+		'headless' => 'headless',
+		'headed'   => 'headed',
+		'ui'       => 'ui',
+		'codegen'  => 'codegen',
+	];
+
 	public function __construct( Docker $docker, OutputInterface $output ) {
 		$this->docker = $docker;
 		$this->output = $output;
@@ -26,8 +33,9 @@ class E2ETestManager {
 	 * @param E2EEnvInfo $env_info
 	 * @param string $sut - System Under Test.
 	 * @param string $compatibility_mode - "default" or "full".
+	 * @param string $mode - "headless", "headed", "ui", "codegen".
 	 */
-	public function run_tests( E2EEnvInfo $env_info, string $sut, string $compatibility_mode ) {
+	public function run_tests( E2EEnvInfo $env_info, string $sut, string $compatibility_mode, string $test_mode ) {
 		/**
 		 * 1. Iterate over the list of plugins
 		 * 2. See which of them have E2E tests
@@ -52,11 +60,6 @@ class E2ETestManager {
 		 *  If $test_mode is "full", we run the bootstrap phase of all plugins, and the test phase of all plugins.
 		 *  5. Update the TestResult with the actual results
 		 */
-
-		if ( ! in_array( $compatibility_mode, [ 'default', 'full' ] ) ) {
-			throw new \InvalidArgumentException( 'Invalid compability mode' );
-		}
-
 		$test_result = new TestResult();
 
 		/**
@@ -89,7 +92,7 @@ class E2ETestManager {
 
 			$this->output->writeln( sprintf( 'Running tests for %s %s', $plugin_slug, $test_info['path_in_host'] ) );
 			if ( E2ERunner::find_runner_type( $test_info['path_in_host'] ) === 'playwright' ) {
-				App::make( PlaywrightRunner::class )->run_test( $env_info, $plugin_slug, $test_result );
+				App::make( PlaywrightRunner::class )->run_test( $env_info, $plugin_slug, $test_result, $test_mode );
 			}
 		}
 	}

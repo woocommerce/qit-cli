@@ -68,7 +68,9 @@ class RunE2ECommand extends DynamicCommand {
 			throw new \RuntimeException( 'E2E schema not set or incomplete.' );
 		}
 
-		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'] );
+		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'],
+			[ 'woocommerce_version' ]
+		);
 
 		// Extension slug/ID.
 		$this->addArgument(
@@ -84,6 +86,15 @@ class RunE2ECommand extends DynamicCommand {
 			'Path to your E2E tests (Optional, if not set, it will try to download your custom tests that you have previously uploaded to QIT)'
 		);
 
+		// Add "mode" option, which can be "headless", "headed", "ui" or "codegen"..
+		$this->addOption(
+			'mode',
+			'm',
+			InputOption::VALUE_REQUIRED,
+			'Test mode: "headless", "headed", "ui" or "codegen".',
+			'headless'
+		);
+
 		// If "woo_extension" (SUT) is a theme, set this.
 		$this->addOption(
 			'testing_theme',
@@ -92,7 +103,14 @@ class RunE2ECommand extends DynamicCommand {
 			'If the "woo_extension" is a theme, set this flag.'
 		);
 
-		// Add "browsers" option
+		// If "woo_extension" (SUT) is a theme, set this.
+		$this->addOption(
+			'woocommerce_version',
+			'woo',
+			InputOption::VALUE_REQUIRED,
+			'The WooCommerce Version. Accepts "nightly", "stable", or a GitHub Tag (eg: 8.6.1).',
+			'stable'
+		);
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -116,9 +134,24 @@ class RunE2ECommand extends DynamicCommand {
 			}
 		}
 
+		if ( ! in_array( $input->getOption( 'mode' ), E2ETestManager::$test_modes ) ) {
+			$output->writeln( sprintf( '<error>Invalid test mode. Allowed modes are: %s.</error>', implode( ', ', E2ETestManager::$test_modes ) ) );
+
+			return Command::INVALID;
+		}
+
 		$woo_extension       = $input->getArgument( 'woo_extension' );
-		$compatibility_mode  = $other_options['compatibility'];
-		$woocommerce_version = $other_options['woocommerce_version'];
+		$compatibility       = $other_options['compatibility'];
+		$test_mode           = $input->getOption( 'mode' );
+		$woocommerce_version = $input->getOption('woocommerce_version');
+
+		if ( $woocommerce_version === 'nightly' ) {
+			$env_up_options['--plugins'][] = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
+		} elseif ( $woocommerce_version === 'stable' ) {
+			$env_up_options['--plugins'][] = 'woocommerce';
+		} else {
+			$env_up_options['--plugins'][] = "https://github.com/woocommerce/woocommerce/releases/download/$woocommerce_version/woocommerce.zip";
+		}
 
 		if ( $input->getOption( 'testing_theme' ) === 'true' ) {
 			$env_up_options['--themes'][] = $woo_extension;
@@ -144,7 +177,6 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		$env_up_options['--volumes'] = $additional_volumes;
-
 		$env_up_options['--json'] = true;
 
 		if ( $output->isVerbose() ) {
@@ -194,7 +226,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		$this->output->writeln( 'Running E2E...' );
 
-		$this->e2e_test_manager->run_tests( $env_info, $woo_extension, $compatibility_mode );
+		$this->e2e_test_manager->run_tests( $env_info, $woo_extension, $compatibility, $test_mode );
 
 		// Codegen has to run on host.
 
@@ -232,7 +264,7 @@ class RunE2ECommand extends DynamicCommand {
 			$user_input = stream_get_contents( STDIN );
 			if ( $user_input !== false && strlen( $user_input ) > 0 ) {
 				$playwright_process->stop();
-				foreach ($processes as $p) {
+				foreach ( $processes as $p ) {
 					$p->stop();
 				}
 				break;
