@@ -3,18 +3,11 @@
 namespace QIT_CLI\Tests\E2E\Runner;
 
 use QIT_CLI\App;
-use QIT_CLI\Cache;
 use QIT_CLI\Commands\TestRuns\RunE2ECommand;
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
-use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Tests\E2E\Result\TestResult;
-use Symfony\Component\Console\Helper\QuestionHelper;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
-use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
 class PlaywrightRunner extends E2ERunner {
@@ -111,84 +104,172 @@ class PlaywrightRunner extends E2ERunner {
 		RunE2ECommand::press_enter_to_terminate_callback( $playwright_process );
 	}
 
-	protected function run_codegen( E2EEnvInfo $env_info, string $plugin, TestResult $test_result ) {
-		/*
-		 * If running Codegen, the user needs to run "playwright" from host.
-		 * So let's:
-		 * - Tell this to the user.
-		 * - Print the site URL he should use ($env_info->site_url).
-		 * - Tell him to remove all hardcoded URLs from the generated tests.
-		 * - Point him to our Codegen guide (https://qit.woo.com/docs/codegen)
-		 */
-		// Inform the user about the necessity of having Playwright installed
-		// Inform the user about the necessity of having Playwright installed
-		$io = new SymfonyStyle( App::make( InputInterface::class ), $this->output );
+	protected function run_codegen( EnvInfo $env_info, string $plugin, TestResult $test_result ) {
+		$dockerfileDir  = Config::get_qit_dir() . 'cache/docker/playwright';
+		$dockerfilePath = $dockerfileDir . '/Dockerfile';
 
-		// Inform the user about the necessity of having Playwright installed
-		$io->note( 'To run the Playwright Codegen, please ensure Playwright is installed on your machine.' );
+		// Check if Dockerfile exists and create if not
+		if ( ! file_exists( $dockerfilePath ) ) {
+			if ( ! mkdir( $dockerfileDir, 0755, true ) ) {
+				throw new \RuntimeException( 'Could not create the directory for Dockerfile: ' . $dockerfileDir );
+			}
 
-		// Emphasize the site URL and related information
-		$io->section( 'Site Information' );
-		$info = [
-			sprintf( 'URL: %s', $env_info->site_url ),
-			sprintf( 'Admin URL: %s/wp-admin', $env_info->site_url ),
-			'Admin Credentials: admin / password',
-		];
-		foreach ( $info as $line ) {
-			$io->text( $line );
-		}
-		$io->newLine();
+			if ( ! file_put_contents( $dockerfilePath, $this->create_docker_file() ) ) {
+				throw new \RuntimeException( 'Could not create the Dockerfile for Playwright' );
+			}
 
-		// Instructions for Codegen
-		$io->text( [
-			'Please run Playwright Codegen using the URLs above. After generating tests:',
-			'  - Remove all hardcoded URLs from the generated tests.',
-			'  - Assume that Playwright\'s "baseURL" is set on the environment your tests will run.',
-			'  - Ensure your tests are flexible and follows good practices on choosing selectors.',
-		] );
-
-		$io->newLine();
-
-		// Link to the Codegen guide
-		$io->text( 'For detailed instructions and best practices, please refer to our Codegen guide: https://qit.woo.com/docs/codegen' );
-
-		$playwright = App::make( Cache::class )->get( 'playwright_command_host' );
-
-		if ( ! $playwright ) {
-			/*
-			 * Ask the user how we can run Playwright, eg "npx playwright" or just "playwright",
-			 * when they answer, we will validate it by trying to run "--version" on it and getting
-			 * what we expect.
-			 */
-			$question = new ConfirmationQuestion( 'Do you have Playwright installed on your machine? (yes/no) ', false );
-			$playwright = ( new QuestionHelper() )->ask( App::make( InputInterface::class ), $this->output, $question );
-			// If user answers no, tell him that he needs it to run "codegen".
-			if ( ! $playwright ) {
-				$io->error( 'You need to have Playwright installed to run "codegen".' );
-				$io->text( 'Please install Playwright and run this command again.' );
-				return;
-			} else {
-				// Ask them how they run it:
-				$question = 'How do you run Playwright on your machine? (eg: "npx playwright" or "playwright") ';
-				$playwright = $io->ask( $question );
-				// Validate the command
-				$playwright_version_process = new Process( [ $playwright, '--version' ] );
-				$playwright_version_process->run();
-				if ( ! $playwright_version_process->isSuccessful() ) {
-					$io->error( sprintf( 'Could not run "%s --version". Please ensure Playwright is installed and try again.', $playwright ) );
-					return;
-				}
+			if ( ! file_put_contents( $dockerfileDir . '/start-vnc.sh', $this->create_docker_entrypoint() ) ) {
+				throw new \RuntimeException( 'Could not create the entrypoint for Playwright' );
 			}
 		}
 
-		// Ask the user to run Playwright Codegen
-		$io->success( sprintf( 'Run Playwright Codegen from your computer now, example: "npx playwright codegen %s"', $env_info->site_url ) );
+		// Docker build
+		$imageName    = 'custom_playwright_image';
+		$buildProcess = new Process( [
+			App::make( Docker::class )->find_docker(),
+			'build',
+			'-t',
+			$imageName,
+			$dockerfileDir,
+		] );
+		$buildProcess->setTimeout( 600 );
+		$buildProcess->run( function ( $type, $out ) {
+			$this->output->writeln( $out );
+		} );
 
-		// Confirmation question
-		$io->text( 'When you are done writing tests, return here and press Enter to shut down the environment.' );
+		if ( ! $buildProcess->isSuccessful() ) {
+			throw new \RuntimeException( 'Docker image build failed: ' . $buildProcess->getErrorOutput() );
+		}
 
-		// Wait for user to press Enter
-		$io->ask( '' ); // This will wait until the user presses Enter
+		$playwright_container_name = 'qit_playwright_' . uniqid();
+		$test_to_run               = $env_info->tests[ $plugin ]['path_in_host'];
+
+		$playwright_args = [
+			App::make( Docker::class )->find_docker(),
+			'run',
+			"--name=$playwright_container_name",
+			"--network={$env_info->docker_network}",
+			'--publish',
+			'8086', // Expose the internal "8086" port to a random, free port in host.
+			'--publish',
+			'5900',
+			'--tty',
+			'--rm',
+			'--init',
+			'--user',
+			implode( ':', Docker::get_user_and_group() ),
+			'-e',
+			'PLAYWRIGHT_BROWSERS_PATH=/qit/cache/playwright',
+			'-v',
+			Config::get_qit_dir() . 'cache:/qit/cache',
+			'--add-host=host.docker.internal:host-gateway',
+		];
+
+		$playwright_args = array_merge( $playwright_args, [
+			'-v',
+			$test_to_run . ':/home/pwuser/tests/',
+		] );
+
+		$playwright_args = array_merge( $playwright_args, [
+			$imageName,
+			'sh',
+			'-c',
+			"cd /home/pwuser && " .
+			"npm install @playwright/test@1.42.0 playwright@1.42.0 && npx playwright install chromium && " .
+			"DISPLAY=:0 ./node_modules/.bin/playwright codegen",
+		] );
+
+		$playwright_process = new Process( $playwright_args );
+
+		$playwright_process->start( function ( $type, $out ) use ( $playwright_container_name ) {
+			if ( strpos( $out, 'Listening on' ) !== false ) {
+				$out = $this->get_playwright_headed_output( $playwright_container_name );
+			}
+			// Clear the current line and move the cursor to the beginning
+			echo "\r\033[K";
+
+			// Print the output from the process
+			$this->output->write( $out );
+
+			$this->output->writeln( '' );
+
+			// Redraw the prompt
+			$this->output->write( 'Press Enter to terminate...' );
+		} );
+
+		RunE2ECommand::press_enter_to_terminate_callback( $playwright_process );
+
+		return;
+
+		sleep( 5 );
+
+		$novnc_container_name = 'qit_novnc_' . uniqid();
+
+		$novnc_args = [
+			App::make( Docker::class )->find_docker(),
+			'run',
+			"--name=$novnc_container_name",
+			"--network={$env_info->docker_network}",
+			'--publish',
+			'6080',
+			'-e',
+			'AUTOCONNECT=true',
+			'-e',
+			"VNC_SERVER=$playwright_container_name:5900",
+			'-e',
+			'VIEW_ONLY=false',
+			'bonigarcia/novnc:1.1.0',
+		];
+
+		$novnc_process = new Process( $novnc_args );
+		$novnc_process->start( function ( $type, $out ) {
+			$this->output->write( $out );
+		} );
+
+		RunE2ECommand::press_enter_to_terminate_callback( $novnc_process );
+	}
+
+	protected function create_docker_file(): string {
+		return <<<'DOCKER'
+# Use an Ubuntu base image
+FROM mcr.microsoft.com/playwright:v1.42.0-jammy
+
+# Set noninteractive installation to avoid dialogs during package installations
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Update and install necessary packages
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        x11vnc \
+        xvfb \
+        fluxbox \
+        xterm && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set up the environment
+ENV DISPLAY=:0 \
+    RESOLUTION=1280x800
+
+# Add a script to start Xvfb, window manager, and x11vnc
+COPY start-vnc.sh /usr/local/bin/start-vnc
+RUN chmod +x /usr/local/bin/start-vnc
+
+# Expose the VNC port
+EXPOSE 5900
+
+# Set the entrypoint to our VNC startup script
+ENTRYPOINT ["start-vnc"]
+DOCKER;
+	}
+
+	protected function create_docker_entrypoint(): string {
+		return <<<'SHELL'
+#!/bin/sh
+Xvfb :0 -screen 0 ${RESOLUTION}x24 &
+fluxbox &
+x11vnc -display :0 -nopw -forever -create
+SHELL;
 	}
 
 	/**
