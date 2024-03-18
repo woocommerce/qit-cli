@@ -42,8 +42,8 @@ class PlaywrightRunner extends E2ERunner {
 		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright-config-generator.php' ] );
 		$process->setEnv( [
 			'BASE_URL' => $env_info->site_url,
-			'SAVE_AS' => $env_info->temporary_env . 'qit-playwright.config.js',
- 		] );
+			'SAVE_AS'  => $env_info->temporary_env . 'qit-playwright.config.js',
+		] );
 
 		if ( $this->output->isVeryVerbose() ) {
 			$this->output->writeln( $process->getCommandLine() );
@@ -97,9 +97,9 @@ class PlaywrightRunner extends E2ERunner {
 			'mcr.microsoft.com/playwright:v1.41.0-jammy',
 			'sh',
 			'-c',
-			"cd /home/pwuser && " .
-			"npm install @playwright/test@1.42.0 playwright@1.42.0 && npx playwright install chromium && " .
-			"ls -la && cat /home/pwuser/qit-playwright.config.js && ls -la tests &&" .
+			'cd /home/pwuser && ' .
+			'npm install @playwright/test@1.42.0 playwright@1.42.0 && npx playwright install chromium && ' .
+			'ls -la && cat /home/pwuser/qit-playwright.config.js && ls -la tests &&' .
 			"npx playwright test $options --config /home/pwuser/qit-playwright.config.js",
 		] );
 
@@ -109,15 +109,15 @@ class PlaywrightRunner extends E2ERunner {
 			if ( strpos( $out, 'Listening on' ) !== false ) {
 				$out = $this->get_playwright_headed_output( $playwright_container_name );
 			}
-			// Clear the current line and move the cursor to the beginning
+			// Clear the current line and move the cursor to the beginning.
 			echo "\r\033[K";
 
-			// Print the output from the process
+			// Print the output from the process.
 			$this->output->write( $out );
 
 			$this->output->writeln( '' );
 
-			// Redraw the prompt
+			// Redraw the prompt.
 			$this->output->write( 'Press Enter to terminate...' );
 		} );
 
@@ -127,10 +127,8 @@ class PlaywrightRunner extends E2ERunner {
 	protected function run_codegen( E2EEnvInfo $env_info, string $plugin, TestResult $test_result ) {
 		$io = new SymfonyStyle( App::make( InputInterface::class ), $this->output );
 
-		// Inform the user about the necessity of having Playwright installed
 		$io->note( 'To run the Playwright Codegen, please ensure Playwright is installed on your machine.' );
 
-		// Emphasize the site URL and related information
 		$io->section( 'Site Information' );
 		$info = [
 			sprintf( 'URL: %s', $env_info->site_url ),
@@ -142,7 +140,6 @@ class PlaywrightRunner extends E2ERunner {
 		}
 		$io->newLine();
 
-		// Instructions for Codegen
 		$io->text( [
 			'Please run Playwright Codegen locally using the URLs above. After generating tests:',
 			'  - Remove all hardcoded URLs from the generated tests.',
@@ -152,17 +149,11 @@ class PlaywrightRunner extends E2ERunner {
 
 		$io->newLine();
 
-		// Link to the Codegen guide
 		$io->text( 'For detailed instructions and best practices, please refer to our Codegen guide: https://qit.woo.com/docs/codegen' );
-
-		// Confirmation question
 		$io->text( 'When you are done writing tests, return here and press Enter to shut down the environment.' );
-
-		// Ask the user to run Playwright Codegen
 		$io->success( 'Run Playwright Codegen from your computer now.' );
 
-		// Wait for user to press Enter
-		$io->ask( '' ); // This will wait until the user presses Enter
+		$io->ask( '' ); // Wait for user to press Enter.
 	}
 
 	/**

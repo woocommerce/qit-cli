@@ -135,8 +135,8 @@ class Zipper {
 	}
 
 	/**
-	 * @param string $source_dir The path to the directory to be zipped.
-	 * @param string $output_zip_file The path to the output zip file.
+	 * @param string        $source_dir The path to the directory to be zipped.
+	 * @param string        $output_zip_file The path to the output zip file.
 	 * @param array<string> $exclude An array of files or directories (accepts wildcards) to exclude from the zip.
 	 *
 	 * @return void

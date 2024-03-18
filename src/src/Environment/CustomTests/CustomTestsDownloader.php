@@ -33,8 +33,8 @@ class CustomTestsDownloader {
 	}
 
 	/**
-	 * @param EnvInfo $env_info
-	 * @param string $cache_dir
+	 * @param EnvInfo           $env_info
+	 * @param string            $cache_dir
 	 * @param array<string|int> $plugins Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
 	 * @param array<string|int> $themes Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
 	 *
@@ -52,13 +52,6 @@ class CustomTestsDownloader {
 		$this->maybe_download_custom_tests( $env_info, $extensions_from_qit, $cache_dir, $test_type );
 	}
 
-	/**
-	 * @param array<Extension> $extensions
-	 * @param string $cache_dir
-	 * @param string $test_type
-	 *
-	 * @return void
-	 */
 	protected function maybe_download_custom_tests( EnvInfo $env_info, array $extensions, string $cache_dir, string $test_type ): void {
 		$custom_tests = $this->get_custom_tests_info( $extensions );
 
@@ -75,7 +68,7 @@ class CustomTestsDownloader {
 
 					$this->zipper->extract_zip( $custom_test_file_path, "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}" );
 
-					$env_info->volumes["/qit/tests/$test_type/{$extension->extension_identifier}"] = "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}";
+					$env_info->volumes[ "/qit/tests/$test_type/{$extension->extension_identifier}" ] = "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}";
 
 					if ( $env_info instanceof E2EEnvInfo ) {
 						$env_info->tests[ $extension->extension_identifier ] = [

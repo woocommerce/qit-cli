@@ -115,7 +115,7 @@ abstract class Environment {
 	 * @return void
 	 */
 	public function up( string $type = 'up' ): void {
-		if ( ! in_array( $type, [ 'up', 'up_and_test' ] ) ) {
+		if ( ! in_array( $type, [ 'up', 'up_and_test' ], true ) ) {
 			throw new \InvalidArgumentException( 'Invalid type: ' . $type );
 		}
 
@@ -312,7 +312,7 @@ abstract class Environment {
 	}
 
 	protected function add_container_names(): void {
-		$containers = [];
+		$containers     = [];
 		$docker_network = null;
 
 		$file = new \SplFileObject( $this->env_info->temporary_env . '/docker-compose.yml' );
@@ -321,16 +321,17 @@ abstract class Environment {
 			if ( preg_match( '/^\s+container_name:\s*(\w+)/', $line, $matches ) ) {
 				$containers[] = $matches[1];
 			}
+
 			/*
 			 * Eg:
 			 *     networks:
-             *           - qit_network_1234
+			 *           - qit_network_1234
 			 */
 			if ( is_null( $docker_network ) && preg_match( '/^\s+networks:\s*$/', $line ) ) {
 				// Read the next line.
 				$line = $file->fgets();
 				if ( preg_match( '/^\s+-\s*(\w+)/', $line, $matches ) ) {
-					// eg: 1234_qit_network_1234
+					// eg: "1234_qit_network_1234".
 					$docker_network = basename( $this->env_info->temporary_env ) . '_' . $matches[1];
 				}
 			}
@@ -341,8 +342,8 @@ abstract class Environment {
 			throw new \RuntimeException( 'Failed to start the environment. No containers found.' );
 		}
 
-		$this->env_info->docker_images = $containers;
-		$this->env_info->docker_network  = $docker_network;
+		$this->env_info->docker_images  = $containers;
+		$this->env_info->docker_network = $docker_network;
 	}
 
 	protected function get_nginx_port(): int {

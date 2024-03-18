@@ -1,4 +1,9 @@
 <?php
+/*
+ * We need this to shut down the environment if the user
+ * press "Ctrl+C" and has the "pcntl" extension installed.
+ */
+declare( ticks=1 );
 
 namespace QIT_CLI\Commands\TestRuns;
 
@@ -25,12 +30,6 @@ use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Process\Process;
 use function QIT_CLI\is_windows;
 use function QIT_CLI\normalize_path;
-
-/*
- * We need this to shut down the environment if the user
- * press "Ctrl+C" and has the "pcntl" extension installed.
- */
-declare( ticks=1 );
 
 class RunE2ECommand extends DynamicCommand {
 	/** @var E2EEnvironment */
@@ -177,7 +176,7 @@ class RunE2ECommand extends DynamicCommand {
 		$path = $input->getArgument( 'path' );
 
 		if ( file_exists( $path ) ) {
-			putenv( sprintf( 'QIT_CUSTOM_TESTS_PATH="%s"', $path ) );
+			putenv( sprintf( 'QIT_CUSTOM_TESTS_PATH="%s"', $path ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 
 			// Mount the tests as read-only.
 			$additional_volumes[] = normalize_path( $path ) . ':' . "/qit/tests/$woo_extension/e2e/";
@@ -208,11 +207,11 @@ class RunE2ECommand extends DynamicCommand {
 
 		// Codegen runs on host so it uses the default "localhost", all other are in-container and uses "qit-docker.test".
 		if ( $test_mode !== E2ETestManager::$test_modes['codegen'] ) {
-			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO=DOCKER' );
+			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO=DOCKER' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
 
-		putenv( 'QIT_UP_AND_TEST=1' );
-		putenv( sprintf( 'QIT_SUT="%s"', $woo_extension ) );
+		putenv( 'QIT_UP_AND_TEST=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		putenv( sprintf( 'QIT_SUT="%s"', $woo_extension ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 
 		$up_exit_status_code = $env_up_command->run(
 			new ArrayInput( $env_up_options ),
@@ -245,19 +244,6 @@ class RunE2ECommand extends DynamicCommand {
 		$this->output->writeln( 'Running E2E...' );
 
 		$this->e2e_test_manager->run_tests( $env_info, $woo_extension, $compatibility, $test_mode );
-
-		// Codegen has to run on host.
-
-		/**
-		 * docker run \
-		 * --add-host=hostmachine:host-gateway \
-		 * --rm \
-		 * --init \
-		 * -it \
-		 * -v $(pwd):/home/pwuser/tests \
-		 * mcr.microsoft.com/playwright:v1.41.0-jammy \
-		 * /bin/sh -c "cd /home/pwuser && npm install @playwright/test@1.41.0 playwright@1.41.0 && npx playwright install && npx playwright test"
-		 */
 
 		return Command::SUCCESS;
 	}
@@ -318,8 +304,7 @@ class RunE2ECommand extends DynamicCommand {
 		 * - There was a fatal, an exception, etc.
 		 */
 		register_shutdown_function( static function () {
-			echo "SHUTDOWN\n";
-			self::shutdown_test_run();
+			static::shutdown_test_run();
 		} );
 
 		/*
@@ -332,83 +317,14 @@ class RunE2ECommand extends DynamicCommand {
 		 * with "Ctrl+C" we can terminate the temporary environments.
 		 */
 		if ( function_exists( 'pcntl_signal' ) ) {
-			$signal_handler = static function ( int $signal ): void {
-				self::shutdown_test_run();
+			$signal_handler = static function (): void {
+				static::shutdown_test_run();
 				exit;
 			};
 
-			pcntl_signal( SIGINT, static function ( int $signal ): void {
-				echo "SIGINT\n";
-				self::shutdown_test_run();
-				exit;
-			} ); // Ctrl+C
-			pcntl_signal( SIGTERM, static function ( int $signal ): void {
-				echo "SIGTERM\n";
-				self::shutdown_test_run();
-				exit;
-			} ); // eg: kill 123, where "123" is the PID of this PHP process.
+			pcntl_signal( SIGINT, $signal_handler ); // Ctrl+C.
+			pcntl_signal( SIGTERM, $signal_handler ); // eg: kill 123, where "123" is the PID of this PHP process.
 		}
-	}
-
-	private function webserver(): void {
-		$playwright_server = new Process( [
-			App::make( Docker::class )->find_docker(),
-			'run',
-			"--network=$network",
-			'--name=playwright_server',
-			'--tty',
-			'--rm',
-			'--init',
-			'--user',
-			implode( ':', Docker::get_user_and_group() ),
-			'-v',
-			'/tmp/foo/tests:/home/pwuser/tests',
-			'--add-host=host.docker.internal:host-gateway',
-			'mcr.microsoft.com/playwright:v1.41.0-jammy',
-			'sh',
-			'-c',
-			// Headless.
-			//'cd /home/pwuser && npm install @playwright/test@1.41.0 playwright@1.41.0 && npx playwright install && npx playwright test',
-			'cd /home/pwuser && npx -y playwright@1.41.0 run-server --port 3000 --host 0.0.0.0',
-		] );
-
-		$playwright_server->mustRun( function ( $type, $out ) {
-			$this->output->write( $out );
-		} );
-
-		/**
-		 * docker run \
-		 * --add-host=hostmachine:host-gateway \
-		 * --rm \
-		 * --init \
-		 * -it \
-		 * -v $(pwd):/home/pwuser/tests \
-		 * mcr.microsoft.com/playwright:v1.41.0-jammy \
-		 * /bin/sh -c "cd /home/pwuser && npm install @playwright/test@1.41.0 playwright@1.41.0 && npx playwright install && npx playwright test"
-		 */
-		$playwright_process = new Process( [
-			App::make( Docker::class )->find_docker(),
-			'run',
-			"--network=$network",
-			'--tty',
-			'--rm',
-			'--init',
-			'--user',
-			implode( ':', Docker::get_user_and_group() ),
-			'-v',
-			'/tmp/foo/tests:/home/pwuser/tests',
-			'--add-host=host.docker.internal:host-gateway',
-			'mcr.microsoft.com/playwright:v1.41.0-jammy',
-			'sh',
-			'-c',
-			// Headless.
-			//'cd /home/pwuser && npm install @playwright/test@1.41.0 playwright@1.41.0 && npx playwright install && npx playwright test',
-			'cd /home/pwuser && npm install @playwright/test@1.41.0 playwright@1.41.0 && npx playwright install && PW_TEST_CONNECT_WS_ENDPOINT=ws://playwright_server:3000/ npx playwright test --ui-port=8085 --ui-host=0.0.0.0',
-		] );
-
-		$playwright_process->mustRun( function ( $type, $out ) {
-			$this->output->write( $out );
-		} );
 	}
 
 	/**
@@ -441,7 +357,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up']["--$option_name"] = $option_value;
+				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
 			}
 		}
 

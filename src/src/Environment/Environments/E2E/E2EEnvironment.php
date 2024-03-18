@@ -53,7 +53,7 @@ class E2EEnvironment extends Environment {
 			$this->env_info->nginx_port = $this->get_nginx_port();
 		}
 
-		$this->env_info->site_url   = sprintf( 'http://%s:%s', $this->env_info->domain, $this->env_info->nginx_port );
+		$this->env_info->site_url = sprintf( 'http://%s:%s', $this->env_info->domain, $this->env_info->nginx_port );
 
 		$this->environment_monitor->environment_added_or_updated( $this->env_info );
 
@@ -140,7 +140,6 @@ class E2EEnvironment extends Environment {
 		} else {
 			$this->output->writeln( '<info>Environment ready.</info>' );
 		}
-
 
 		// Try to connect to the website.
 		App::make( EnvUpChecker::class )->check_and_render( $this->env_info );

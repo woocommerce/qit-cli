@@ -30,9 +30,9 @@ class E2ETestManager {
 
 	/**
 	 * @param E2EEnvInfo $env_info
-	 * @param string $sut - System Under Test.
-	 * @param string $compatibility_mode - "default" or "full".
-	 * @param string $mode - "headless", "headed", "ui", "codegen".
+	 * @param string     $sut - System Under Test.
+	 * @param string     $compatibility_mode - "default" or "full".
+	 * @param string     $test_mode One of the allowed test modes.
 	 */
 	public function run_tests( E2EEnvInfo $env_info, string $sut, string $compatibility_mode, string $test_mode ) {
 		/**
