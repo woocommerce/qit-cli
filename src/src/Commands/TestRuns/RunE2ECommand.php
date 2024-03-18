@@ -261,9 +261,11 @@ class RunE2ECommand extends DynamicCommand {
 	 *
 	 * The "pcntl" extension allows us to capture "signals" such as "Ctrl+C",
 	 * and handle them in PHP. If they have it installed, we handle it.
+	 *
+	 * @param array<Process> $processes The processes to stop when the terminate callback is called.
 	 */
 	public static function press_enter_to_terminate_callback( Process $playwright_process, array $processes = [] ): void {
-		stream_set_blocking( STDIN, 0 );
+		stream_set_blocking( STDIN, false );
 		while ( $playwright_process->isRunning() ) {
 			$user_input = stream_get_contents( STDIN );
 			if ( $user_input !== false && strlen( $user_input ) > 0 ) {
@@ -276,11 +278,11 @@ class RunE2ECommand extends DynamicCommand {
 
 			usleep( 200000 );  // Sleep for 0.2 second.
 		}
-		stream_set_blocking( STDIN, 1 );
+		stream_set_blocking( STDIN, true );
 	}
 
 
-	public static function shutdown_test_run() {
+	public static function shutdown_test_run(): void {
 		echo "\nShutting down environment...\n";
 		// Env not up or could not parse the "up" JSON.
 		if ( empty( $GLOBALS['env_to_shutdown'] ) || ! $GLOBALS['env_to_shutdown'] instanceof EnvInfo ) {

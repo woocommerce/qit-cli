@@ -37,10 +37,11 @@ class CustomTestsDownloader {
 	 * @param string            $cache_dir
 	 * @param array<string|int> $plugins Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
 	 * @param array<string|int> $themes Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
+	 * @param string            $test_type The test type. Defaults to 'e2e'.
 	 *
 	 * @return void
 	 */
-	public function download( EnvInfo $env_info, string $cache_dir, array $plugins = [], array $themes = [], $test_type = 'e2e' ): void {
+	public function download( EnvInfo $env_info, string $cache_dir, array $plugins = [], array $themes = [], string $test_type = 'e2e' ): void {
 		$extensions = $this->extension_downloader->categorize_extensions( $plugins, $themes );
 
 		$extensions_from_qit = array_filter( $extensions, function ( $e ) {
@@ -52,6 +53,14 @@ class CustomTestsDownloader {
 		$this->maybe_download_custom_tests( $env_info, $extensions_from_qit, $cache_dir, $test_type );
 	}
 
+	/**
+	 * @param EnvInfo          $env_info
+	 * @param array<Extension> $extensions
+	 * @param string           $cache_dir
+	 * @param string           $test_type
+	 *
+	 * @return void
+	 */
 	protected function maybe_download_custom_tests( EnvInfo $env_info, array $extensions, string $cache_dir, string $test_type ): void {
 		$custom_tests = $this->get_custom_tests_info( $extensions );
 
@@ -87,7 +96,7 @@ class CustomTestsDownloader {
 		}
 	}
 
-	protected function maybe_create_cache_dir( string $cache_dir, string $test_type ) {
+	protected function maybe_create_cache_dir( string $cache_dir, string $test_type ): void {
 		$test_type_cache_dir = "$cache_dir/tests/$test_type";
 		if ( ! file_exists( $test_type_cache_dir ) ) {
 			if ( ! mkdir( $test_type_cache_dir, 0755, true ) ) {
@@ -96,6 +105,18 @@ class CustomTestsDownloader {
 		}
 	}
 
+	/**
+	 * @param array<Extension> $extensions
+	 *
+	 * @return array<string, array{
+	 *     url: string,
+	 *     version: string,
+	 *     slug: string,
+	 *     tests: array{
+	 *          e2e: string
+	 *      }
+	 *   }> Each key in the array represents a plugin identifier (e.g., 'plugin-foo').
+	 */
 	protected function get_custom_tests_info( array $extensions ): array {
 		$extensions_to_get_tests_for = implode( ',', array_map( function ( $v ) {
 			return $v->extension_identifier;
@@ -117,18 +138,6 @@ class CustomTestsDownloader {
 			$this->output->writeln( sprintf( 'Fetched custom test checksums for %d extensions from QIT in %f seconds.', count( $extensions ), microtime( true ) - $start ) );
 		}
 
-		/**
-		 * Each key in the array represents a plugin identifier (e.g., 'plugin-foo').
-		 *
-		 * @var array<string, array{
-		 *     url: string,
-		 *     version: string,
-		 *     slug: string,
-		 *     tests: array{
-		 *         e2e: string
-		 *     }
-		 * }> $download_urls
-		 */
 		$download_urls = json_decode( $response, true );
 
 		if ( ! is_array( $download_urls ) || empty( $download_urls['urls'] ) || ! is_array( $download_urls['urls'] ) ) {

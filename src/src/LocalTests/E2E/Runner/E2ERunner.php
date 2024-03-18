@@ -2,7 +2,7 @@
 
 namespace QIT_CLI\LocalTests\E2E\Runner;
 
-use QIT_CLI\Environment\Environments\EnvInfo;
+use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -54,5 +54,5 @@ abstract class E2ERunner {
 		throw new \RuntimeException( sprintf( 'Could not find a valid runner type in %s', $e2e_test_path ) );
 	}
 
-	abstract public function run_test( EnvInfo $env_info, string $plugin, TestResult $test_result, string $test_mode ): void;
+	abstract public function run_test( E2EEnvInfo $env_info, string $plugin, TestResult $test_result, string $test_mode ): void;
 }

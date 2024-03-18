@@ -16,7 +16,7 @@ use Symfony\Component\Process\Process;
 use function QIT_CLI\open_in_browser;
 
 class PlaywrightRunner extends E2ERunner {
-	public function run_test( EnvInfo $env_info, string $plugin, TestResult $test_result, string $test_mode ): void {
+	public function run_test( E2EEnvInfo $env_info, string $plugin, TestResult $test_result, string $test_mode ): void {
 		if ( ! file_exists( Config::get_qit_dir() . 'cache/playwright' ) ) {
 			if ( ! mkdir( Config::get_qit_dir() . 'cache/playwright', 0755, true ) ) {
 				throw new \RuntimeException( 'Could not create the custom tests directory: ' . Config::get_qit_dir() . 'cache/playwright' );
@@ -34,7 +34,7 @@ class PlaywrightRunner extends E2ERunner {
 		}
 	}
 
-	protected function run_no_codegen( string $test_mode, E2EEnvInfo $env_info, string $plugin, TestResult $test_result ) {
+	protected function run_no_codegen( string $test_mode, E2EEnvInfo $env_info, string $plugin, TestResult $test_result ): void {
 		$playwright_container_name = 'qit_playwright_' . uniqid();
 		$test_to_run               = $env_info->tests[ $plugin ]['path_in_host'];
 
@@ -124,7 +124,7 @@ class PlaywrightRunner extends E2ERunner {
 		RunE2ECommand::press_enter_to_terminate_callback( $playwright_process );
 	}
 
-	protected function run_codegen( E2EEnvInfo $env_info, string $plugin, TestResult $test_result ) {
+	protected function run_codegen( E2EEnvInfo $env_info, string $plugin, TestResult $test_result ): void {
 		$io = new SymfonyStyle( App::make( InputInterface::class ), $this->output );
 
 		$io->note( 'To run the Playwright Codegen, please ensure Playwright is installed on your machine.' );

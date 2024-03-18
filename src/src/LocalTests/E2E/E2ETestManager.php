@@ -17,6 +17,9 @@ class E2ETestManager {
 	/** @var OutputInterface $output */
 	protected $output;
 
+	/**
+	 * @var array<string, string>
+	 */
 	public static $test_modes = [
 		'headless' => 'headless',
 		'ui'       => 'ui',
@@ -34,7 +37,7 @@ class E2ETestManager {
 	 * @param string     $compatibility_mode - "default" or "full".
 	 * @param string     $test_mode One of the allowed test modes.
 	 */
-	public function run_tests( E2EEnvInfo $env_info, string $sut, string $compatibility_mode, string $test_mode ) {
+	public function run_tests( E2EEnvInfo $env_info, string $sut, string $compatibility_mode, string $test_mode ): void {
 		/**
 		 * 1. Iterate over the list of plugins
 		 * 2. See which of them have E2E tests
