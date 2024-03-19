@@ -9,6 +9,7 @@
         "test1",
         "test2"
     ],
+    "docker_network": null,
     "php_extensions": [],
     "plugins": [],
     "themes": [],
@@ -16,6 +17,8 @@
     "wordpress_version": "",
     "object_cache": false,
     "php_version": null,
+    "nginx_port": null,
     "domain": "localhost",
-    "woocommerce_version": null
+    "woocommerce_version": null,
+    "tests": []
 }

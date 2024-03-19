@@ -175,7 +175,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		$path = $input->getArgument( 'path' );
 
-		if ( file_exists( $path ) ) {
+		if ( ! empty( $path ) && file_exists( $path ) ) {
 			putenv( sprintf( 'QIT_CUSTOM_TESTS_PATH="%s"', $path ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 
 			// Mount the tests as read-only.
