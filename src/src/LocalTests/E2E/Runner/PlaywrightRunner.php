@@ -116,7 +116,7 @@ class PlaywrightRunner extends E2ERunner {
 			'⠏',
 		];
 
-		$playwright_process->start( function ( $type, $out ) use ( $playwright_container_name, $spinners, &$spinner_index, $test_result ) {
+		$playwright_process->start( function ( $type, $out ) use ( $playwright_container_name, $spinners, &$spinner_index ) {
 			if ( strpos( $out, 'Listening on' ) !== false ) {
 				$out = $this->get_playwright_headed_output( $playwright_container_name );
 			}

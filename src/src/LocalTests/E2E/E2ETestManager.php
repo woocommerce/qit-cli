@@ -143,7 +143,7 @@ class E2ETestManager {
 			}
 		}
 
-		$test_result->set_status('completed');
+		$test_result->set_status( 'completed' );
 
 		// Print path for results and reports.
 		$this->output->writeln( sprintf( 'Results and reports are available at %s', $test_result->get_results_dir() ) );

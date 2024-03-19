@@ -15,6 +15,7 @@ class TestResult {
 	/** @var array<mixed> */
 	public $bootstrap = [];
 
+	/** @var string */
 	protected $results_dir;
 
 	protected function __construct() {
@@ -36,15 +37,15 @@ class TestResult {
 		return $this->results_dir;
 	}
 
-	public function register_bootstrap( string $plugin_slug, string $bootstrap_type, string $status ) {
+	public function register_bootstrap( string $plugin_slug, string $bootstrap_type, string $status ): void {
 		$this->bootstrap[ $plugin_slug ][ $bootstrap_type ] = $status;
 	}
 
-	public function register_test_results( string $plugin_slug, string $results_dir ) {
+	public function register_test_results( string $plugin_slug, string $results_dir ): void {
 		$this->results[ $plugin_slug ] = $results_dir;
 	}
 
-	public function set_status( string $status ) {
+	public function set_status( string $status ): void {
 		$this->status = $status;
 	}
 }
