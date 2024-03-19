@@ -93,7 +93,7 @@ class PlaywrightRunner extends E2ERunner {
 		$playwright_process = new Process( $playwright_args );
 
 		$spinner_index = 0;
-		$spinners = [
+		$spinners      = [
 			'⠋',
 			'⠙',
 			'⠹',
@@ -125,7 +125,7 @@ class PlaywrightRunner extends E2ERunner {
 			$this->output->writeln( '' );
 
 			// Print the spinner.
-			$spinner_index = ( $spinner_index + 1 ) % count( $spinners );
+			$spinner_index = ( $spinner_index + 1 ) % count( $spinners ); // phpcs:ignore Squiz.Operators.IncrementDecrementUsage.Found
 			$spinner       = $spinners[ $spinner_index ];
 
 			// Redraw the prompt.

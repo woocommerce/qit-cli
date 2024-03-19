@@ -142,7 +142,7 @@ class E2EEnvironment extends Environment {
 		}
 
 		// Try to connect to the website if we are exposing this environment to host.
-		if ( getenv('QIT_EXPOSE_ENVIRONMENT_TO') !== 'DOCKER' ) {
+		if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) !== 'DOCKER' ) {
 			App::make( EnvUpChecker::class )->check_and_render( $this->env_info );
 		}
 

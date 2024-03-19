@@ -7,12 +7,10 @@ declare( ticks=1 );
 
 namespace QIT_CLI\Commands\TestRuns;
 
-use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
-use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\EnvInfo;
@@ -30,7 +28,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Process\Process;
 use function QIT_CLI\is_windows;
-use function QIT_CLI\normalize_path;
 
 class RunE2ECommand extends DynamicCommand {
 	/** @var E2EEnvironment */
@@ -74,10 +71,8 @@ class RunE2ECommand extends DynamicCommand {
 
 		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'],
 			[
-				/*
-				 * We remove "woocommerce_version" from the argments because we add our own,
-				 * which uses the same logic of `qit env:up`, since it's tied to Woo E2E synced tests.
-				 */
+				// We remove "woocommerce_version" from the argments because we add our own,
+				// which uses the same logic of `qit env:up`, since it's tied to Woo E2E synced tests.
 				'woocommerce_version',
 				// Todo: Implement capability of passing feature flags to tests.
 				'optional_features',
@@ -239,7 +234,6 @@ class RunE2ECommand extends DynamicCommand {
 
 		$resource_stream = fopen( 'php://temp', 'w+' );
 
-		// Codegen runs on host so it uses the default "localhost", all other are in-container and uses "qit-docker.test".
 		/*
 		 * By default "run:e2e" configures the site URL in "container mode",
 		 * which means the site URL will be accessible by other containers
@@ -249,9 +243,9 @@ class RunE2ECommand extends DynamicCommand {
 		 * URL to the host, so that the user can access it from the browser.
 		 */
 		if ( $bootstrap_only ) {
-			putenv( 'QIT_HIDE_SITE_INFO=0' );
+			putenv( 'QIT_HIDE_SITE_INFO=0' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		} else {
-			putenv( 'QIT_HIDE_SITE_INFO=1' );
+			putenv( 'QIT_HIDE_SITE_INFO=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO=DOCKER' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
 
@@ -274,7 +268,7 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		/** @var E2EEnvInfo $env_info */
-		$env_info = EnvInfo::from_array( $env_json );
+		$env_info = E2EEnvInfo::from_array( $env_json );
 
 		// Store in $GLOBALS so that's available in the shutdown function.
 		$GLOBALS['env_to_shutdown'] = $env_info;
@@ -305,7 +299,7 @@ class RunE2ECommand extends DynamicCommand {
 	 * The "pcntl" extension allows us to capture "signals" such as "Ctrl+C",
 	 * and handle them in PHP. If they have it installed, we handle it.
 	 *
-	 * @param Process $playwright_process The main playwright process to attach to.
+	 * @param Process        $playwright_process The main playwright process to attach to.
 	 * @param array<Process> $processes Optional additional processes to stop when the terminate callback is called.
 	 */
 	public static function press_enter_to_terminate_callback( Process $playwright_process, array $processes = [] ): void {
@@ -325,12 +319,12 @@ class RunE2ECommand extends DynamicCommand {
 		stream_set_blocking( STDIN, true );
 	}
 
-	public static function press_enter_to_wait_without_terminating() {
+	public static function press_enter_to_wait_without_terminating(): void {
 		stream_set_blocking( STDIN, false );
 		while ( true ) {
 			$user_input = stream_get_contents( STDIN );
 			if ( $user_input !== false && strlen( $user_input ) > 0 ) {
-				// This method DOES NOT call shutdown.
+				// This method just waits, it does not call shutdown.
 				break;
 			}
 			usleep( 200000 );  // Sleep for 0.2 second.
@@ -416,7 +410,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up']["--$option_name"] = $option_value;
+				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
 			}
 		}
 

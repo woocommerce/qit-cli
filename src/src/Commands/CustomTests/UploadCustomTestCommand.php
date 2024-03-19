@@ -104,6 +104,9 @@ class UploadCustomTestCommand extends Command {
 		return Command::SUCCESS;
 	}
 
+	/**
+	 * @return array<string> The files to exclude when zipping a custom test.
+	 */
 	public static function get_exclude_files(): array {
 		return [
 			'.github/*',

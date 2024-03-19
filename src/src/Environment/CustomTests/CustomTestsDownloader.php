@@ -67,8 +67,8 @@ class CustomTestsDownloader {
 
 		if ( ! empty( $local_path_override ) ) {
 			// Here we are running a test with a local test path override.
-			// eg: run:e2e <slug> <path>
-			$local_path_override = explode( '|', $local_path_override );
+			// eg: "run:e2e <slug> <path>".
+			$local_path_override  = explode( '|', $local_path_override );
 			$overridden_extension = $local_path_override[0];
 			$overridden_path      = $local_path_override[1];
 
@@ -113,7 +113,7 @@ class CustomTestsDownloader {
 				 */
 				if ( array_key_exists( $extension->extension_identifier, $custom_tests ) ) {
 					if ( array_key_exists( $test_type, $custom_tests[ $extension->extension_identifier ]['tests'] ) ) {
-						$custom_test_url       = $custom_tests[ $extension->extension_identifier ]['tests'][ $test_type ];
+						$custom_test_url       = $custom_tests[ $extension->extension_identifier ]['tests'][ $test_type ]; // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
 						$custom_test_file_name = md5( $custom_test_url ) . '.zip';
 						$custom_test_file_path = "$cache_dir/tests/$test_type/$custom_test_file_name";
 
