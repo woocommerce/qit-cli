@@ -66,7 +66,7 @@ class E2ETestManager {
 		 *  If $test_mode is "full", we run the bootstrap phase of all plugins, and the test phase of all plugins.
 		 *  5. Update the TestResult with the actual results
 		 */
-		$test_result = new TestResult();
+		$test_result = TestResult::init_from( $env_info );
 
 		$this->output->writeln( '<info>Bootstrapping Plugins</info>' );
 
@@ -77,14 +77,23 @@ class E2ETestManager {
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/bootstrap.php' ) ) {
 				$this->output->writeln( sprintf( 'Bootstrapping %s %s', $plugin_slug, $test_info['path_in_container'] . '/bootstrap/bootstrap.php' ) );
 				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "php /qit/tests/e2e/$plugin_slug/bootstrap/bootstrap.php" ] );
+				$test_result->register_bootstrap( $plugin_slug, 'bootstrap.php', 'processed' );
+			} else {
+				$test_result->register_bootstrap( $plugin_slug, 'bootstrap.php', 'not_present' );
 			}
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/bootstrap.sh' ) ) {
 				$this->output->writeln( sprintf( 'Bootstrapping %s %s', $plugin_slug, $test_info['path_in_container'] . '/bootstrap/bootstrap.sh' ) );
 				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "chmod +x /qit/tests/e2e/$plugin_slug/bootstrap/bootstrap.sh && /qit/tests/e2e/$plugin_slug/bootstrap/bootstrap.sh" ] );
+				$test_result->register_bootstrap( $plugin_slug, 'bootstrap.sh', 'processed' );
+			} else {
+				$test_result->register_bootstrap( $plugin_slug, 'bootstrap.sh', 'not_present' );
 			}
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/must-use-plugin.php' ) ) {
 				$this->output->writeln( sprintf( 'Moving must-use plugin of %s %s', $plugin_slug, $test_info['path_in_container'] . '/bootstrap/must-use-plugin.php' ) );
 				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "mv /qit/tests/e2e/$plugin_slug/bootstrap/must-use-plugin.php /var/www/html/wp-content/mu-plugins/qit-mu-$plugin_slug.php" ] );
+				$test_result->register_bootstrap( $plugin_slug, 'must-use-plugin.php', 'processed' );
+			} else {
+				$test_result->register_bootstrap( $plugin_slug, 'must-use-plugin.php', 'not_present' );
 			}
 		}
 
@@ -130,7 +139,13 @@ class E2ETestManager {
 			$this->output->writeln( sprintf( 'Running tests for %s %s', $plugin_slug, $test_info['path_in_host'] ) );
 			if ( E2ERunner::find_runner_type( $test_info['path_in_host'] ) === 'playwright' ) {
 				App::make( PlaywrightRunner::class )->run_test( $env_info, $plugin_slug, $test_result, $test_mode );
+				$test_result->register_test_results( $plugin_slug, $test_result->get_results_dir() . "/$plugin_slug" );
 			}
 		}
+
+		$test_result->set_status('completed');
+
+		// Print path for results and reports.
+		$this->output->writeln( sprintf( 'Results and reports are available at %s', $test_result->get_results_dir() ) );
 	}
 }

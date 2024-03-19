@@ -23,14 +23,22 @@ class PlaywrightRunner extends E2ERunner {
 			throw new \RuntimeException( sprintf( 'No tests found for plugin %s', $plugin ) );
 		}
 
-		$playwright_container_name = 'qit_playwright_' . uniqid();
+		$playwright_container_name = "qit_playwright_{$env_info->env_id}";
 		$test_to_run               = $env_info->tests[ $plugin ]['path_in_host'];
+
+		// Create results directory for this run.
+		$results_dir = $test_result->get_results_dir() . "/$plugin";
+
+		if ( ! mkdir( $results_dir, 0755, true ) ) {
+			throw new \RuntimeException( sprintf( 'Could not create the results directory: %s', $results_dir ) );
+		}
 
 		// Generate playwright-config.
 		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright-config-generator.php' ] );
 		$process->setEnv( [
-			'BASE_URL' => $env_info->site_url,
-			'SAVE_AS'  => $env_info->temporary_env . 'qit-playwright.config.js',
+			'BASE_URL'         => $env_info->site_url,
+			'SAVE_AS'          => $env_info->temporary_env . 'qit-playwright.config.js',
+			'TEST_RESULT_PATH' => $results_dir,
 		] );
 
 		if ( $this->output->isVeryVerbose() ) {
@@ -66,6 +74,8 @@ class PlaywrightRunner extends E2ERunner {
 			'-v',
 			$env_info->temporary_env . 'qit-playwright.config.js:/home/pwuser/qit-playwright.config.js',
 			'--add-host=host.docker.internal:host-gateway',
+			'-v',
+			$test_result->get_results_dir() . ':/qit/results',
 		];
 
 		$playwright_args = array_merge( $playwright_args, [
@@ -87,7 +97,7 @@ class PlaywrightRunner extends E2ERunner {
 			'-c',
 			'cd /home/pwuser && ' .
 			'npm install @playwright/test@1.42.0 playwright@1.42.0 && npx playwright install chromium && ' .
-			"npx playwright test $options --config /home/pwuser/qit-playwright.config.js",
+			"npx playwright test $options --config /home/pwuser/qit-playwright.config.js --output /qit/results/$plugin",
 		] );
 
 		$playwright_process = new Process( $playwright_args );
@@ -106,14 +116,14 @@ class PlaywrightRunner extends E2ERunner {
 			'⠏',
 		];
 
-		$playwright_process->start( function ( $type, $out ) use ( $playwright_container_name, $spinners, &$spinner_index ) {
+		$playwright_process->start( function ( $type, $out ) use ( $playwright_container_name, $spinners, &$spinner_index, $test_result ) {
 			if ( strpos( $out, 'Listening on' ) !== false ) {
 				$out = $this->get_playwright_headed_output( $playwright_container_name );
 			}
 
 			// Don't print this line.
 			if ( strpos( $out, 'To open last HTML report' ) !== false ) {
-				$out = 'To view the report <QIT REPORT HERE>';
+				$out = '';
 			}
 
 			// Clear the current line and move the cursor to the beginning.
