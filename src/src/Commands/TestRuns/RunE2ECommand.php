@@ -19,6 +19,7 @@ use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
 use QIT_CLI\LocalTests\E2E\E2ETestManager;
+use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -44,18 +45,23 @@ class RunE2ECommand extends DynamicCommand {
 	/** @var E2ETestManager */
 	protected $e2e_test_manager;
 
+	/** @var WooExtensionsList */
+	protected $woo_extensions_list;
+
 	protected static $defaultName = 'run:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	public function __construct(
 		E2EEnvironment $e2e_environment,
 		Cache $cache,
 		OutputInterface $output,
-		E2ETestManager $e2e_test_manager
+		E2ETestManager $e2e_test_manager,
+		WooExtensionsList $woo_extensions_list
 	) {
-		$this->e2e_environment  = $e2e_environment;
-		$this->cache            = $cache;
-		$this->output           = $output;
-		$this->e2e_test_manager = $e2e_test_manager;
+		$this->e2e_environment     = $e2e_environment;
+		$this->cache               = $cache;
+		$this->output              = $output;
+		$this->e2e_test_manager    = $e2e_test_manager;
+		$this->woo_extensions_list = $woo_extensions_list;
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
@@ -67,7 +73,15 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'],
-			[ 'woocommerce_version' ]
+			[
+				/*
+				 * We remove "woocommerce_version" from the argments because we add our own,
+				 * which uses the same logic of `qit env:up`, since it's tied to Woo E2E synced tests.
+				 */
+				'woocommerce_version',
+				// Todo: Implement capability of passing feature flags to tests.
+				'optional_features',
+			]
 		);
 
 		// Extension slug/ID.
@@ -115,6 +129,13 @@ class RunE2ECommand extends DynamicCommand {
 			'The WooCommerce Version. Accepts "nightly", "stable", or a GitHub Tag (eg: 8.6.1).',
 			'stable'
 		);
+
+		$this->addOption(
+			'bootstrap_only',
+			'bo',
+			InputOption::VALUE_NONE,
+			'If set, will only start the environment and bootstrap the plugins.'
+		);
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -153,9 +174,31 @@ class RunE2ECommand extends DynamicCommand {
 			$test_mode = E2ETestManager::$test_modes['headless'];
 		}
 
-		$woo_extension       = $input->getArgument( 'woo_extension' );
+		// SUT.
+		try {
+			$this->woo_extensions_list->check_woo_extension_exists( $input->getArgument( 'woo_extension' ) );
+
+			if ( is_numeric( $input->getArgument( 'woo_extension' ) ) ) {
+				$woo_extension = $this->woo_extensions_list->get_woo_extension_slug_by_id( $input->getArgument( 'woo_extension' ) );
+			} else {
+				$woo_extension = $input->getArgument( 'woo_extension' );
+			}
+		} catch ( \Exception $e ) {
+			$this->output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+
+			return Command::FAILURE;
+		}
+
+		// Test Path, if local.
+		$path = $input->getArgument( 'path' );
+
+		if ( ! empty( $path ) && file_exists( $path ) ) {
+			putenv( sprintf( 'QIT_CUSTOM_TESTS_PATH=%s|%s', $woo_extension, $path ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		}
+
 		$compatibility       = $other_options['compatibility'];
 		$woocommerce_version = $input->getOption( 'woocommerce_version' );
+		$bootstrap_only      = $input->getOption( 'bootstrap_only' );
 
 		if ( $woocommerce_version === 'nightly' ) {
 			$env_up_options['--plugins'][] = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
@@ -172,15 +215,6 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		$additional_volumes = [];
-
-		$path = $input->getArgument( 'path' );
-
-		if ( ! empty( $path ) && file_exists( $path ) ) {
-			putenv( sprintf( 'QIT_CUSTOM_TESTS_PATH="%s"', $path ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-
-			// Mount the tests as read-only.
-			$additional_volumes[] = normalize_path( $path ) . ':' . "/qit/tests/$woo_extension/e2e/";
-		}
 
 		if ( ! ExtensionDownloader::is_valid_plugin_slug( $woo_extension ) ) {
 			$output->writeln( sprintf( '<error>Invalid WooCommerce Extension Slug or Marketplace ID: "%s"</error>', $woo_extension ) );
@@ -206,7 +240,18 @@ class RunE2ECommand extends DynamicCommand {
 		$resource_stream = fopen( 'php://temp', 'w+' );
 
 		// Codegen runs on host so it uses the default "localhost", all other are in-container and uses "qit-docker.test".
-		if ( $test_mode !== E2ETestManager::$test_modes['codegen'] ) {
+		/*
+		 * By default "run:e2e" configures the site URL in "container mode",
+		 * which means the site URL will be accessible by other containers
+		 * in the network, but not from host.
+		 *
+		 * If we run in "bootstrap_only" mode, we want to expose the site
+		 * URL to the host, so that the user can access it from the browser.
+		 */
+		if ( $bootstrap_only ) {
+			putenv( 'QIT_HIDE_SITE_INFO=0' );
+		} else {
+			putenv( 'QIT_HIDE_SITE_INFO=1' );
 			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO=DOCKER' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
 
@@ -241,9 +286,7 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::FAILURE;
 		}
 
-		$this->output->writeln( 'Running E2E...' );
-
-		$this->e2e_test_manager->run_tests( $env_info, $woo_extension, $compatibility, $test_mode );
+		$this->e2e_test_manager->run_tests( $env_info, $woo_extension, $compatibility, $test_mode, $bootstrap_only );
 
 		return Command::SUCCESS;
 	}
@@ -262,7 +305,7 @@ class RunE2ECommand extends DynamicCommand {
 	 * The "pcntl" extension allows us to capture "signals" such as "Ctrl+C",
 	 * and handle them in PHP. If they have it installed, we handle it.
 	 *
-	 * @param Process        $playwright_process The main playwright process to attach to.
+	 * @param Process $playwright_process The main playwright process to attach to.
 	 * @param array<Process> $processes Optional additional processes to stop when the terminate callback is called.
 	 */
 	public static function press_enter_to_terminate_callback( Process $playwright_process, array $processes = [] ): void {
@@ -277,6 +320,19 @@ class RunE2ECommand extends DynamicCommand {
 				break;
 			}
 
+			usleep( 200000 );  // Sleep for 0.2 second.
+		}
+		stream_set_blocking( STDIN, true );
+	}
+
+	public static function press_enter_to_wait_without_terminating() {
+		stream_set_blocking( STDIN, false );
+		while ( true ) {
+			$user_input = stream_get_contents( STDIN );
+			if ( $user_input !== false && strlen( $user_input ) > 0 ) {
+				// This method DOES NOT call shutdown.
+				break;
+			}
 			usleep( 200000 );  // Sleep for 0.2 second.
 		}
 		stream_set_blocking( STDIN, true );
@@ -360,7 +416,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
+				$parsed_options['env_up']["--$option_name"] = $option_value;
 			}
 		}
 

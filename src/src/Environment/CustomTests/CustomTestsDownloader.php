@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Environment\CustomTests;
 
+use QIT_CLI\Commands\CustomTests\UploadCustomTestCommand;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\ExtensionDownload\Extension;
@@ -62,36 +63,82 @@ class CustomTestsDownloader {
 	 * @return void
 	 */
 	protected function maybe_download_custom_tests( EnvInfo $env_info, array $extensions, string $cache_dir, string $test_type ): void {
-		$custom_tests = $this->get_custom_tests_info( $extensions );
+		$local_path_override = getenv( 'QIT_CUSTOM_TESTS_PATH' );
+
+		if ( ! empty( $local_path_override ) ) {
+			// Here we are running a test with a local test path override.
+			// eg: run:e2e <slug> <path>
+			$local_path_override = explode( '|', $local_path_override );
+			$overridden_extension = $local_path_override[0];
+			$overridden_path      = $local_path_override[1];
+
+			$extensions_to_get_tests_for = array_filter( $extensions, function ( Extension $e ) use ( $overridden_extension ) {
+				return $e->extension_identifier !== $overridden_extension;
+			} );
+		} else {
+			$extensions_to_get_tests_for = $extensions;
+		}
+
+		$custom_tests = $this->get_custom_tests_info( $extensions_to_get_tests_for );
 
 		foreach ( $extensions as $extension ) {
-			if ( array_key_exists( $extension->extension_identifier, $custom_tests ) ) {
-				if ( array_key_exists( $test_type, $custom_tests[ $extension->extension_identifier ]['tests'] ) ) {
-					$custom_test_url       = $custom_tests[ $extension->extension_identifier ]['tests'][ $test_type ];
-					$custom_test_file_name = md5( $custom_test_url ) . '.zip';
-					$custom_test_file_path = "$cache_dir/tests/$test_type/$custom_test_file_name";
+			/*
+			 * Use local test.
+			 */
+			if ( isset( $overridden_extension, $overridden_path ) && $extension->extension_identifier === $overridden_extension ) {
+				if ( is_dir( $overridden_path ) ) {
+					$zip_file = tempnam( sys_get_temp_dir(), 'qit_' ) . '.zip';
+					$this->zipper->zip_directory( $overridden_path, $zip_file, UploadCustomTestCommand::get_exclude_files() );
+				} elseif ( is_file( $overridden_path ) ) {
+					$zip_file = $overridden_path;
+				} else {
+					throw new \RuntimeException( "The custom tests path provided for $overridden_extension is not a file or a directory." );
+				}
 
-					if ( ! file_exists( $custom_test_file_path ) ) {
-						RequestBuilder::download_file( $custom_test_url, $custom_test_file_path );
-					}
+				$this->zipper->extract_zip( $zip_file, "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}" );
+				$env_info->volumes[ "/qit/tests/$test_type/{$extension->extension_identifier}" ] = "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}";
 
-					$this->zipper->extract_zip( $custom_test_file_path, "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}" );
+				if ( $env_info instanceof E2EEnvInfo ) {
+					$env_info->tests[ $extension->extension_identifier ] = [
+						'extension'         => $extension->extension_identifier,
+						'type'              => $extension->type,
+						'path_in_container' => "/qit/tests/$test_type/{$extension->extension_identifier}",
+						'path_in_host'      => "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}",
+					];
+				}
+				$this->output->writeln( sprintf( 'Using local tests for %s', $extension->extension_identifier ) );
+			} else {
+				/*
+				 * Download test from QIT and map it.
+				 */
+				if ( array_key_exists( $extension->extension_identifier, $custom_tests ) ) {
+					if ( array_key_exists( $test_type, $custom_tests[ $extension->extension_identifier ]['tests'] ) ) {
+						$custom_test_url       = $custom_tests[ $extension->extension_identifier ]['tests'][ $test_type ];
+						$custom_test_file_name = md5( $custom_test_url ) . '.zip';
+						$custom_test_file_path = "$cache_dir/tests/$test_type/$custom_test_file_name";
 
-					$env_info->volumes[ "/qit/tests/$test_type/{$extension->extension_identifier}" ] = "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}";
+						if ( ! file_exists( $custom_test_file_path ) ) {
+							RequestBuilder::download_file( $custom_test_url, $custom_test_file_path );
+						}
 
-					if ( $env_info instanceof E2EEnvInfo ) {
-						$env_info->tests[ $extension->extension_identifier ] = [
-							'extension'         => $extension->extension_identifier,
-							'type'              => $extension->type,
-							'path_in_container' => "/qit/tests/$test_type/{$extension->extension_identifier}",
-							'path_in_host'      => "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}",
-						];
+						$this->zipper->extract_zip( $custom_test_file_path, "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}" );
+
+						$env_info->volumes[ "/qit/tests/$test_type/{$extension->extension_identifier}" ] = "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}";
+
+						if ( $env_info instanceof E2EEnvInfo ) {
+							$env_info->tests[ $extension->extension_identifier ] = [
+								'extension'         => $extension->extension_identifier,
+								'type'              => $extension->type,
+								'path_in_container' => "/qit/tests/$test_type/{$extension->extension_identifier}",
+								'path_in_host'      => "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}",
+							];
+						}
+					} else {
+						$this->output->writeln( sprintf( 'No custom tests found for %s', $extension->extension_identifier ) );
 					}
 				} else {
 					$this->output->writeln( sprintf( 'No custom tests found for %s', $extension->extension_identifier ) );
 				}
-			} else {
-				$this->output->writeln( sprintf( 'No custom tests found for %s', $extension->extension_identifier ) );
 			}
 		}
 	}

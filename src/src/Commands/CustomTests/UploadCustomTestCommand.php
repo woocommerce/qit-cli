@@ -88,18 +88,7 @@ class UploadCustomTestCommand extends Command {
 			 * - playwright.config.js
 			 * - playwright.config.ts
 			 */
-			$exclude = [
-				'.github/*',
-				'.git/*',
-				'.gitignore',
-				'node_modules/*',
-				'playwright.config.js',
-				'playwright.config.ts',
-				'package-lock.json',
-				'package.json',
-			];
-
-			$this->zipper->zip_directory( $test_path, $zip_to_upload, $exclude );
+			$this->zipper->zip_directory( $test_path, $zip_to_upload, static::get_exclude_files() );
 		}
 
 		$upload_id = $this->uploader->upload_build( 'custom-test', $extension_id, $zip_to_upload, $output, $test_type );
@@ -113,5 +102,18 @@ class UploadCustomTestCommand extends Command {
 		$output->writeln( sprintf( '<info>Tests updated for extension \'%s\' successfully.</info>', $input->getArgument( 'extension' ) ) );
 
 		return Command::SUCCESS;
+	}
+
+	public static function get_exclude_files(): array {
+		return [
+			'.github/*',
+			'.git/*',
+			'.gitignore',
+			'node_modules/*',
+			'playwright.config.js',
+			'playwright.config.ts',
+			'package-lock.json',
+			'package.json',
+		];
 	}
 }

@@ -119,7 +119,7 @@ class E2EEnvironment extends Environment {
 			$this->docker->run_inside_docker( $this->env_info, [ 'bash', '-c', 'wp theme list --skip-plugins --skip-themes' ] );
 		}
 
-		if ( $this->type === 'up' ) {
+		if ( ! getenv( 'QIT_HIDE_SITE_INFO' ) ) {
 			$io->success( 'Temporary test environment created. (' . $this->env_info->env_id . ')' );
 
 			$listing = [
@@ -141,8 +141,10 @@ class E2EEnvironment extends Environment {
 			$this->output->writeln( '<info>Environment ready.</info>' );
 		}
 
-		// Try to connect to the website.
-		App::make( EnvUpChecker::class )->check_and_render( $this->env_info );
+		// Try to connect to the website if we are exposing this environment to host.
+		if ( getenv('QIT_EXPOSE_ENVIRONMENT_TO') !== 'DOCKER' ) {
+			App::make( EnvUpChecker::class )->check_and_render( $this->env_info );
+		}
 
 		$io->writeln( '' );
 	}

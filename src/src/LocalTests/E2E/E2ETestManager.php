@@ -3,12 +3,15 @@
 namespace QIT_CLI\LocalTests\E2E;
 
 use QIT_CLI\App;
+use QIT_CLI\Commands\TestRuns\RunE2ECommand;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\LocalTests\E2E\Runner\E2ERunner;
 use QIT_CLI\LocalTests\E2E\Runner\PlaywrightRunner;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class E2ETestManager {
 	/** @var Docker $docker */
@@ -36,8 +39,9 @@ class E2ETestManager {
 	 * @param string     $sut - System Under Test.
 	 * @param string     $compatibility_mode - "default" or "full".
 	 * @param string     $test_mode One of the allowed test modes.
+	 * @param bool       $bootstrap_only If true, will only bootstrap.
 	 */
-	public function run_tests( E2EEnvInfo $env_info, string $sut, string $compatibility_mode, string $test_mode ): void {
+	public function run_tests( E2EEnvInfo $env_info, string $sut, string $compatibility_mode, string $test_mode, bool $bootstrap_only ): void {
 		/**
 		 * 1. Iterate over the list of plugins
 		 * 2. See which of them have E2E tests
@@ -64,6 +68,8 @@ class E2ETestManager {
 		 */
 		$test_result = new TestResult();
 
+		$this->output->writeln( '<info>Bootstrapping Plugins</info>' );
+
 		/**
 		 * Bootstrap all plugins.
 		 */
@@ -78,9 +84,38 @@ class E2ETestManager {
 			}
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/must-use-plugin.php' ) ) {
 				$this->output->writeln( sprintf( 'Moving must-use plugin of %s %s', $plugin_slug, $test_info['path_in_container'] . '/bootstrap/must-use-plugin.php' ) );
-				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "mv /qit/tests/e2e/$plugin_slug/bootstrap/must-use-plugin.php /var/www/html/wp-content/mu-plugins/$plugin_slug.php" ] );
+				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "mv /qit/tests/e2e/$plugin_slug/bootstrap/must-use-plugin.php /var/www/html/wp-content/mu-plugins/qit-mu-$plugin_slug.php" ] );
 			}
 		}
+
+		if ( $bootstrap_only ) {
+			if ( $test_mode === 'codegen' ) {
+				$io = new SymfonyStyle( App::make( InputInterface::class ), $this->output );
+
+				$io->note( 'To run the Playwright Codegen, please ensure Playwright is installed on your machine.' );
+
+				$io->text( [
+					'Please run Playwright Codegen locally using the URLs above. After generating tests:',
+					'  - Remove all hardcoded URLs from the generated tests.',
+					'  - Assume that Playwright\'s "baseURL" is set on the environment your tests will run.',
+					'  - Ensure your tests are flexible and follows good practices on choosing selectors.',
+				] );
+
+				$io->newLine();
+
+				$io->text( 'For detailed instructions and best practices, please refer to our Codegen guide: https://qit.woo.com/docs/codegen' );
+				$io->text( 'When you are done writing tests, return here and press Enter to shut down the environment.' );
+				$io->success( 'Run Playwright Codegen from your computer now.' );
+			}
+
+			$this->output->writeln( '' );
+			$this->output->writeln( '<comment>Environment ready. Press "Enter" when you are done to terminate it.</comment>' );
+			RunE2ECommand::press_enter_to_wait_without_terminating();
+
+			return;
+		}
+
+		$this->output->writeln( '<info>Running E2E Tests</info>' );
 
 		/**
 		 * Run the tests.

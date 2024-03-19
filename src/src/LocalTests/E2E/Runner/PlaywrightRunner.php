@@ -7,11 +7,7 @@ use QIT_CLI\Commands\TestRuns\RunE2ECommand;
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
-use QIT_CLI\Environment\Environments\EnvInfo;
-use QIT_CLI\LocalTests\E2E\E2ETestManager;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 use function QIT_CLI\open_in_browser;
 
@@ -27,14 +23,6 @@ class PlaywrightRunner extends E2ERunner {
 			throw new \RuntimeException( sprintf( 'No tests found for plugin %s', $plugin ) );
 		}
 
-		if ( $test_mode === E2ETestManager::$test_modes['codegen'] ) {
-			$this->run_codegen( $env_info, $plugin, $test_result );
-		} else {
-			$this->run_no_codegen( $test_mode, $env_info, $plugin, $test_result );
-		}
-	}
-
-	protected function run_no_codegen( string $test_mode, E2EEnvInfo $env_info, string $plugin, TestResult $test_result ): void {
 		$playwright_container_name = 'qit_playwright_' . uniqid();
 		$test_to_run               = $env_info->tests[ $plugin ]['path_in_host'];
 
@@ -94,21 +82,40 @@ class PlaywrightRunner extends E2ERunner {
 		}
 
 		$playwright_args = array_merge( $playwright_args, [
-			'mcr.microsoft.com/playwright:v1.41.0-jammy',
+			'mcr.microsoft.com/playwright:v1.42.0-jammy',
 			'sh',
 			'-c',
 			'cd /home/pwuser && ' .
 			'npm install @playwright/test@1.42.0 playwright@1.42.0 && npx playwright install chromium && ' .
-			'ls -la && cat /home/pwuser/qit-playwright.config.js && ls -la tests &&' .
 			"npx playwright test $options --config /home/pwuser/qit-playwright.config.js",
 		] );
 
 		$playwright_process = new Process( $playwright_args );
 
-		$playwright_process->start( function ( $type, $out ) use ( $playwright_container_name ) {
+		$spinner_index = 0;
+		$spinners = [
+			'⠋',
+			'⠙',
+			'⠹',
+			'⠸',
+			'⠼',
+			'⠴',
+			'⠦',
+			'⠧',
+			'⠇',
+			'⠏',
+		];
+
+		$playwright_process->start( function ( $type, $out ) use ( $playwright_container_name, $spinners, &$spinner_index ) {
 			if ( strpos( $out, 'Listening on' ) !== false ) {
 				$out = $this->get_playwright_headed_output( $playwright_container_name );
 			}
+
+			// Don't print this line.
+			if ( strpos( $out, 'To open last HTML report' ) !== false ) {
+				$out = 'To view the report <QIT REPORT HERE>';
+			}
+
 			// Clear the current line and move the cursor to the beginning.
 			echo "\r\033[K";
 
@@ -117,43 +124,16 @@ class PlaywrightRunner extends E2ERunner {
 
 			$this->output->writeln( '' );
 
+			// Print the spinner.
+			$spinner_index = ( $spinner_index + 1 ) % count( $spinners );
+			$spinner       = $spinners[ $spinner_index ];
+
 			// Redraw the prompt.
-			$this->output->write( 'Press Enter to terminate...' );
+			$this->output->write( "$spinner Test running... (To abort, press Enter)" );
 		} );
 
 		RunE2ECommand::press_enter_to_terminate_callback( $playwright_process );
-	}
-
-	protected function run_codegen( E2EEnvInfo $env_info, string $plugin, TestResult $test_result ): void {
-		$io = new SymfonyStyle( App::make( InputInterface::class ), $this->output );
-
-		$io->note( 'To run the Playwright Codegen, please ensure Playwright is installed on your machine.' );
-
-		$io->section( 'Site Information' );
-		$info = [
-			sprintf( 'URL: %s', $env_info->site_url ),
-			sprintf( 'Admin URL: %s/wp-admin', $env_info->site_url ),
-			'Admin Credentials: admin / password',
-		];
-		foreach ( $info as $line ) {
-			$io->text( $line );
-		}
-		$io->newLine();
-
-		$io->text( [
-			'Please run Playwright Codegen locally using the URLs above. After generating tests:',
-			'  - Remove all hardcoded URLs from the generated tests.',
-			'  - Assume that Playwright\'s "baseURL" is set on the environment your tests will run.',
-			'  - Ensure your tests are flexible and follows good practices on choosing selectors.',
-		] );
-
-		$io->newLine();
-
-		$io->text( 'For detailed instructions and best practices, please refer to our Codegen guide: https://qit.woo.com/docs/codegen' );
-		$io->text( 'When you are done writing tests, return here and press Enter to shut down the environment.' );
-		$io->success( 'Run Playwright Codegen from your computer now.' );
-
-		$io->ask( '' ); // Wait for user to press Enter.
+		echo "\r\033[K"; // Remove "Test running..." line.
 	}
 
 	/**
