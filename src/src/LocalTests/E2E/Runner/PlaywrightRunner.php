@@ -92,11 +92,11 @@ class PlaywrightRunner extends E2ERunner {
 		}
 
 		$playwright_args = array_merge( $playwright_args, [
-			'mcr.microsoft.com/playwright:v1.42.0-jammy',
+			'mcr.microsoft.com/playwright:jammy',
 			'sh',
 			'-c',
 			'cd /home/pwuser && ' .
-			'npm install @playwright/test@1.42.0 playwright@1.42.0 && npx playwright install chromium && ' .
+			'npm install @playwright/test playwright@latest && npx playwright install chromium && ' .
 			"npx playwright test $options --config /home/pwuser/qit-playwright.config.js --output /qit/results/$plugin",
 		] );
 
