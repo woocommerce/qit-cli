@@ -11,7 +11,7 @@
 
 ## Documentation
 
-For more detailed information on QIT and how to use it, refer to the [official documentation](https://woocommerce.github.io/qit-documentation/#/).
+For more detailed information on QIT and how to use it, refer to the [documentation](https://qit.woo.com/docs/).
 
 ## Quality Insights Toolkit (QIT)
 
