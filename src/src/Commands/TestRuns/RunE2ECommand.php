@@ -193,7 +193,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		$compatibility       = $other_options['compatibility'];
 		$woocommerce_version = $input->getOption( 'woocommerce_version' );
-		$bootstrap_only      = $input->getOption( 'bootstrap_only' );
+		$bootstrap_only      = $input->getOption( 'bootstrap_only' ) || $test_mode === 'codegen';
 
 		if ( $woocommerce_version === 'nightly' ) {
 			$env_up_options['--plugins'][] = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
