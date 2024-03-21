@@ -125,7 +125,7 @@ class AddBackend extends Command {
 		try {
 			$this->woo_extensions_list->fetch_woo_extensions_available();
 			if ( empty( $this->woo_extensions_list->get_woo_extension_list() ) ) {
-				throw new \RuntimeException('Failed to get the list of Extensions. Do you have any?');
+				throw new \RuntimeException( 'Failed to get the list of Extensions. Do you have any?' );
 			}
 		} catch ( \Exception $e ) {
 			$this->auth->delete_manager_secret();
