@@ -44,7 +44,7 @@ function validate_authentication( string $username, string $qit_token ): void {
 			] )
 			->request();
 	} catch ( \Exception $e ) {
-		throw new \Exception( sprintf( 'Could not authenticate to %s using the provided username and QIT Token. Questions? https://woocommerce.github.io/qit-documentation/#/authenticating', get_wccom_url() ) );
+		throw new \Exception( sprintf( 'Could not authenticate to %s using the provided username and QIT Token. Questions? https://qit.woo.com/docs/support/authenticating', get_wccom_url() ) );
 	}
 }
 

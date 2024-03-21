@@ -11,20 +11,20 @@
 
 ## Documentation
 
-For more detailed information on QIT and how to use it, refer to the [official documentation](https://woocommerce.github.io/qit-documentation/#/).
+For more detailed information on QIT and how to use it, refer to the [official documentation](https://qit.woo.com/docs).
 
 ## Quality Insights Toolkit (QIT)
 
 Official tool to streamline the testing of plugins and themes, ensuring they meet the high standards of the Woo.com Marketplace.
 
 - **Comprehensive Testing Suite**: Includes various tests to ensure thorough quality checks.
-  - [Woo E2E Test](https://woocommerce.github.io/qit-documentation/#/test-types/woo-e2e)
-  - [Woo API Test](https://woocommerce.github.io/qit-documentation/#/test-types/woo-api)
-  - [Activation Test](https://woocommerce.github.io/qit-documentation/#/test-types/activation)
-  - [Security Test](https://woocommerce.github.io/qit-documentation/#/test-types/security)
-  - [PHPStan Test](https://woocommerce.github.io/qit-documentation/#/test-types/phpstan)
-  - [PHP Compatibility Test](https://woocommerce.github.io/qit-documentation/#/test-types/phpcompatibility)
-  - [Malware Test](https://woocommerce.github.io/qit-documentation/#/test-types/malware)
+  - [Woo E2E Test](https://qit.woo.com/docs/test-types/woo-e2e/)
+  - [Woo API Test](https://qit.woo.com/docs/test-types/woo-api/)
+  - [Activation Test](https://qit.woo.com/docs/test-types/activation)
+  - [Security Test](https://qit.woo.com/docs/test-types/security)
+  - [PHPStan Test](https://qit.woo.com/docs/test-types/phpstan)
+  - [PHP Compatibility Test](https://qit.woo.com/docs/test-types/phpcompatibility)
+  - [Malware Test](https://qit.woo.com/docs/test-types/malware)
   - _Performance Tests (Work-in-progress)_
   - _Custom E2E Tests (Work-in-progress)_
 - **Configurable Environment**: Configurable PHP, WordPress, WooCommerce versions, and more.
