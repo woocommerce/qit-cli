@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands\CustomTests;
 
+use CDManager\Logger\Logger;
 use QIT_CLI\Upload;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\Zipper;
@@ -69,7 +70,7 @@ class UploadCustomTestCommand extends Command {
 		}
 
 		if ( is_file( $test_path ) ) {
-			// If it's a file, it must be a zip.
+			// If it's a file, it must be a zip. Validation is done upstream.
 			try {
 				$this->zipper->validate_zip( $test_path );
 			} catch ( \Exception $e ) {
@@ -80,15 +81,55 @@ class UploadCustomTestCommand extends Command {
 
 			$zip_to_upload = $test_path;
 		} else {
-			$zip_to_upload = sys_get_temp_dir() . '/' . uniqid( 'e2e-test-' ) . '.zip';
+			try {
+				// Is must have a "tests" directory.
+				if ( ! is_dir( $test_path . '/tests' ) ) {
+					$output->writeln( '<error>Invalid custom test format.</error>' );
+					// Print the expected directory.
+					$output->writeln( sprintf( '<info>Expected directory: %s</info>', realpath( $test_path ) . '/tests' ) );
 
-			/*
-			 * If it's a directory, we need to zip it, excluding disallowed files such as:
-			 * - "node_modules" directories
-			 * - playwright.config.js
-			 * - playwright.config.ts
-			 */
-			$this->zipper->zip_directory( $test_path, $zip_to_upload, static::get_exclude_files() );
+					return Command::FAILURE;
+				}
+
+				// If it doesn't have a "bootstrap" directory, let the user know and proceed.
+				if ( ! is_dir( $test_path . '/bootstrap' ) ) {
+					$output->writeln( '<comment>No "bootstrap" directory found.</comment>' );
+				}
+
+				// Check if at least one ".js", ".ts" or ".tsx" file exists in the tests directory.
+				$possible_pw_files = glob( "$test_path/tests/*.{js,ts,tsx}", GLOB_BRACE );
+
+				// Fail: No JS files in the tests directory.
+				if ( empty( $possible_pw_files ) ) {
+					throw new \RuntimeException( 'No ".js", ".ts" or ".tsx" file found in "tests" directory in zip file.' );
+				}
+
+				// Check that at least one of these files is actually PW.
+				$pw_files = array_filter( $possible_pw_files, static function ( $file ) {
+					$contents = file_get_contents( $file, false, null, 0, 4 * 1024 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+
+					return str_contains( $contents, '@playwright' );
+				} );
+
+				// Fail: None of the JS files are Playwright.
+				if ( empty( $pw_files ) ) {
+					throw new \RuntimeException( 'No Playwright test found in directory file.' );
+				}
+
+				$zip_to_upload = sys_get_temp_dir() . '/' . uniqid( 'e2e-test-' ) . '.zip';
+
+				/*
+				 * If it's a directory, we need to zip it, excluding disallowed files such as:
+				 * - "node_modules" directories
+				 * - playwright.config.js
+				 * - playwright.config.ts
+				 */
+				$this->zipper->zip_directory( $test_path, $zip_to_upload, static::get_exclude_files() );
+			} catch ( \Exception $e ) {
+				$output->writeln( "<error>{$e->getMessage()}</error>" );
+
+				return Command::FAILURE;
+			}
 		}
 
 		$upload_id = $this->uploader->upload_build( 'custom-test', $extension_id, $zip_to_upload, $output, $test_type );
