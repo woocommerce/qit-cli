@@ -12,6 +12,9 @@ use Symfony\Component\Process\Process;
 use function QIT_CLI\open_in_browser;
 
 class PlaywrightRunner extends E2ERunner {
+	/**
+	 * @inheritDoc
+	 */
 	public function run_test( E2EEnvInfo $env_info, array $test_infos, TestResult $test_result, string $test_mode ): void {
 		if ( ! file_exists( Config::get_qit_dir() . 'cache/playwright' ) ) {
 			if ( ! mkdir( Config::get_qit_dir() . 'cache/playwright', 0755, true ) ) {
@@ -157,26 +160,25 @@ class PlaywrightRunner extends E2ERunner {
 		RunE2ECommand::press_enter_to_terminate_callback( $playwright_process );
 		echo "\r\033[K"; // Remove "Test running..." line.
 
-
 		if ( file_exists( $results_dir . '/report/index.html' ) ) {
 			$results_process = new Process( [ PHP_BINARY, '-S', 'localhost:0', '-t', $results_dir . '/report' ] );
-			$results_process->start( function ( $type, $output ) use ( &$results_process, &$spinners, &$spinner_index ) {
+			$results_process->start( function ( $type, $output ) {
 				if ( preg_match( '/Development Server \(http:\/\/localhost:(\d+)\) started/', $output, $matches ) ) {
-					// Server started, extract the port
+					// Server started, extract the port.
 					$port = $matches[1];
-					echo "\r\033[K"; // Clear the line
-					echo "Report available on http://localhost:$port\n";
+					echo "\r\033[K"; // Clear the line.
+					echo "Report available on http://localhost:$port\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-					// Open in browser
+					// Open in browser.
 					open_in_browser( "http://localhost:$port" );
 				}
 
-				echo "\r\033[K"; // Clear the line
-				echo "(To finish, press Enter)";
+				echo "\r\033[K"; // Clear the line.
+				echo '(To finish, press Enter)';
 			} );
 
 			RunE2ECommand::press_enter_to_terminate_callback( $results_process );
-			echo "\r\033[K"; // Remove "Test running..." line after termination
+			echo "\r\033[K"; // Remove "Test running..." line after termination.
 		}
 	}
 

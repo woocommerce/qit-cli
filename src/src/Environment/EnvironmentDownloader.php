@@ -17,8 +17,8 @@ class EnvironmentDownloader {
 	/** @var OutputInterface */
 	protected $output;
 
-	public function __construct( Cache $cache, OutputInterface $output) {
-		$this->cache = $cache;
+	public function __construct( Cache $cache, OutputInterface $output ) {
+		$this->cache  = $cache;
 		$this->output = $output;
 	}
 

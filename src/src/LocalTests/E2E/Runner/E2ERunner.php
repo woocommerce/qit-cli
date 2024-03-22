@@ -54,5 +54,20 @@ abstract class E2ERunner {
 		throw new \RuntimeException( sprintf( 'Could not find a valid runner type in %s', $e2e_test_path ) );
 	}
 
+	// phpcs:disable
+	/**
+	 * @param E2EEnvInfo          $env_info
+	 * @param array<string,array{
+	 *      extension:string,
+	 *      type:string,
+	 *      path_in_container:string,
+	 *      path_in_host:string
+	 *  }>                        $test_infos
+	 * @param TestResult          $test_result
+	 * @param string              $test_mode
+	 *
+	 * @return void
+	 */
+	// phpcs:enable
 	abstract public function run_test( E2EEnvInfo $env_info, array $test_infos, TestResult $test_result, string $test_mode ): void;
 }

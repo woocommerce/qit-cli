@@ -2,7 +2,6 @@
 
 namespace QIT_CLI\Commands\CustomTests;
 
-use CDManager\Logger\Logger;
 use QIT_CLI\Upload;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\Zipper;
@@ -101,7 +100,7 @@ class UploadCustomTestCommand extends Command {
 
 				// Fail: No JS files in the tests directory.
 				if ( empty( $possible_pw_files ) ) {
-					throw new \RuntimeException( 'No ".js", ".ts" or ".tsx" file found in "tests" directory in zip file.' );
+					throw new \RuntimeException( 'No ".js", ".ts" or ".tsx" file found in "tests" directory.' );
 				}
 
 				// Check that at least one of these files is actually PW.
@@ -113,7 +112,7 @@ class UploadCustomTestCommand extends Command {
 
 				// Fail: None of the JS files are Playwright.
 				if ( empty( $pw_files ) ) {
-					throw new \RuntimeException( 'No Playwright test found in directory file.' );
+					throw new \RuntimeException( 'No Playwright test found in "tests" directory.' );
 				}
 
 				$zip_to_upload = sys_get_temp_dir() . '/' . uniqid( 'e2e-test-' ) . '.zip';
