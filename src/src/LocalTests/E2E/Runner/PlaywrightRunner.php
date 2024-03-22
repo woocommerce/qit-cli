@@ -12,25 +12,28 @@ use Symfony\Component\Process\Process;
 use function QIT_CLI\open_in_browser;
 
 class PlaywrightRunner extends E2ERunner {
-	public function run_test( E2EEnvInfo $env_info, string $plugin, TestResult $test_result, string $test_mode ): void {
+	public function run_test( E2EEnvInfo $env_info, array $test_infos, TestResult $test_result, string $test_mode ): void {
 		if ( ! file_exists( Config::get_qit_dir() . 'cache/playwright' ) ) {
 			if ( ! mkdir( Config::get_qit_dir() . 'cache/playwright', 0755, true ) ) {
 				throw new \RuntimeException( 'Could not create the custom tests directory: ' . Config::get_qit_dir() . 'cache/playwright' );
 			}
 		}
 
-		if ( ! array_key_exists( $plugin, $env_info->tests ) || ! file_exists( $env_info->tests[ $plugin ]['path_in_host'] ) ) {
-			throw new \RuntimeException( sprintf( 'No tests found for plugin %s', $plugin ) );
+		if ( ! file_exists( Config::get_qit_dir() . 'cache/npm-playwright' ) ) {
+			if ( ! mkdir( Config::get_qit_dir() . 'cache/npm-playwright', 0755, true ) ) {
+				throw new \RuntimeException( 'Could not create the npm playwright cache directory: ' . Config::get_qit_dir() . 'cache/npm-playwright' );
+			}
 		}
 
-		$playwright_container_name = "qit_playwright_{$env_info->env_id}";
-		$test_to_run               = $env_info->tests[ $plugin ]['path_in_host'];
+		$playwright_container_name = "qit_env_playwright_{$env_info->env_id}";
 
 		// Create results directory for this run.
-		$results_dir = $test_result->get_results_dir() . "/$plugin";
+		$results_dir = $test_result->get_results_dir();
 
-		if ( ! mkdir( $results_dir, 0755, true ) ) {
-			throw new \RuntimeException( sprintf( 'Could not create the results directory: %s', $results_dir ) );
+		if ( ! file_exists( $results_dir ) ) {
+			if ( ! mkdir( $results_dir, 0755, true ) ) {
+				throw new \RuntimeException( sprintf( 'Could not create the results directory: %s', $results_dir ) );
+			}
 		}
 
 		// Generate playwright-config.
@@ -62,11 +65,12 @@ class PlaywrightRunner extends E2ERunner {
 			"--network={$env_info->docker_network}",
 			'--publish',
 			'8086', // Expose the internal "8086" port to a random, free port in host.
-			'--tty',
 			'--rm',
 			'--init',
 			'--user',
 			implode( ':', Docker::get_user_and_group() ),
+			'-e',
+			'npm_config_cache=/qit/cache/npm-playwright',
 			'-e',
 			'PLAYWRIGHT_BROWSERS_PATH=/qit/cache/playwright',
 			'-v',
@@ -78,10 +82,12 @@ class PlaywrightRunner extends E2ERunner {
 			$test_result->get_results_dir() . ':/qit/results',
 		];
 
-		$playwright_args = array_merge( $playwright_args, [
-			'-v',
-			$test_to_run . ':/home/pwuser/tests/',
-		] );
+		foreach ( $test_infos as $test_to_run ) {
+			$playwright_args = array_merge( $playwright_args, [
+				'-v',
+				$test_to_run['path_in_host'] . ":/home/pwuser/tests/{$test_to_run['extension']}",
+			] );
+		}
 
 		if ( $test_mode === 'headed' ) {
 			$options = '--headed --ui-port=8086 --ui-host=0.0.0.0';
@@ -95,9 +101,9 @@ class PlaywrightRunner extends E2ERunner {
 			'mcr.microsoft.com/playwright:jammy',
 			'sh',
 			'-c',
-			'cd /home/pwuser && ' .
-			'npm install @playwright/test playwright@latest && npx playwright install chromium && ' .
-			"npx playwright test $options --config /home/pwuser/qit-playwright.config.js --output /qit/results/$plugin",
+			'mkdir /qit/results/playwright && cd /home/pwuser && ' .
+			'npm install @playwright/test@1.42.1 && npx playwright install chromium && ' .
+			"npx playwright test $options --config /home/pwuser/qit-playwright.config.js --output /qit/results/playwright",
 		] );
 
 		$playwright_process = new Process( $playwright_args );
@@ -116,7 +122,7 @@ class PlaywrightRunner extends E2ERunner {
 			'⠏',
 		];
 
-		$playwright_process->start( function ( $type, $out ) use ( $playwright_container_name, $spinners, &$spinner_index ) {
+		$output_callback = function ( $type, $out ) use ( $playwright_container_name, $spinners, &$spinner_index ) {
 			if ( strpos( $out, 'Listening on' ) !== false ) {
 				$out = $this->get_playwright_headed_output( $playwright_container_name );
 			}
@@ -140,10 +146,38 @@ class PlaywrightRunner extends E2ERunner {
 
 			// Redraw the prompt.
 			$this->output->write( "$spinner Test running... (To abort, press Enter)" );
-		} );
+		};
 
+		$playwright_process->start( $output_callback );
+
+		// Poke the output callback to print the initial message.
+		$output_callback( Process::OUT, '' );
+
+		// This will block the test until it finishes... If we get past here, it means the test is done.
 		RunE2ECommand::press_enter_to_terminate_callback( $playwright_process );
 		echo "\r\033[K"; // Remove "Test running..." line.
+
+
+		if ( file_exists( $results_dir . '/report/index.html' ) ) {
+			$results_process = new Process( [ PHP_BINARY, '-S', 'localhost:0', '-t', $results_dir . '/report' ] );
+			$results_process->start( function ( $type, $output ) use ( &$results_process, &$spinners, &$spinner_index ) {
+				if ( preg_match( '/Development Server \(http:\/\/localhost:(\d+)\) started/', $output, $matches ) ) {
+					// Server started, extract the port
+					$port = $matches[1];
+					echo "\r\033[K"; // Clear the line
+					echo "Report available on http://localhost:$port\n";
+
+					// Open in browser
+					open_in_browser( "http://localhost:$port" );
+				}
+
+				echo "\r\033[K"; // Clear the line
+				echo "(To finish, press Enter)";
+			} );
+
+			RunE2ECommand::press_enter_to_terminate_callback( $results_process );
+			echo "\r\033[K"; // Remove "Test running..." line after termination
+		}
 	}
 
 	/**
