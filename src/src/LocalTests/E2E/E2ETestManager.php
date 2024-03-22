@@ -68,6 +68,10 @@ class E2ETestManager {
 		 */
 		$test_result = TestResult::init_from( $env_info );
 
+		if ( empty( $env_info->tests ) ) {
+			throw new \RuntimeException( 'No tests found for the given plugins.' );
+		}
+
 		$this->output->writeln( '<info>Bootstrapping Plugins</info>' );
 
 		/**
