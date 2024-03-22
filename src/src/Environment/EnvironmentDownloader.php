@@ -7,24 +7,40 @@ use QIT_CLI\Cache;
 use QIT_CLI\Config;
 use QIT_CLI\ManagerSync;
 use QIT_CLI\SafeRemove;
+use Symfony\Component\Console\Output\OutputInterface;
 use ZipArchive;
 
 class EnvironmentDownloader {
 	/** @var Cache */
 	protected $cache;
 
-	public function __construct( Cache $cache ) {
+	/** @var OutputInterface */
+	protected $output;
+
+	public function __construct( Cache $cache, OutputInterface $output) {
 		$this->cache = $cache;
+		$this->output = $output;
 	}
 
 	public function maybe_download( string $env_name ): void {
+		App::make( ManagerSync::class )->maybe_sync( true );
+
 		$manager_hashes = $this->cache->get_manager_sync_data( 'environments' );
+
+		if ( $this->output->isVeryVerbose() ) {
+			$this->output->writeln( 'Environment hashes from the Manager' );
+			$this->output->writeln( json_encode( $manager_hashes, JSON_PRETTY_PRINT ) );
+		}
 
 		if ( ! isset( $manager_hashes[ $env_name ]['checksum'] ) || ! isset( $manager_hashes[ $env_name ]['url'] ) ) {
 			throw new \RuntimeException( 'E2E environment not set or incomplete.' );
 		}
 
 		$local_hash = $this->cache->get( "{$env_name}_environment_hash" );
+
+		if ( $this->output->isVeryVerbose() ) {
+			$this->output->writeln( 'Local environment hash: ' . $local_hash );
+		}
 
 		// Early bail: The local environment matches the last-known checksum that the Manager informed us, so no need to query it.
 		if ( $local_hash === $manager_hashes[ $env_name ]['checksum'] ) {
@@ -56,18 +72,6 @@ class EnvironmentDownloader {
 		}
 
 		$env_contents = @file_get_contents( $manager_hashes[ $env_name ]['url'] );
-
-		// If the download fails, we might have an outdated checksum in the cache. Try to sync and download again.
-		// This can happen in a brief time window if the environment is re-generated upstream and this client hasn't synced yet.
-		if ( ! $env_contents ) {
-			App::make( ManagerSync::class )->maybe_sync( true );
-			$manager_hashes = $this->cache->get_manager_sync_data( 'environments' );
-			$env_contents   = file_get_contents( $manager_hashes[ $env_name ]['url'] );
-
-			if ( ! $env_contents ) {
-				throw new \RuntimeException( 'Could not download environment.' );
-			}
-		}
 
 		// Save to temp zip.
 		file_put_contents( $temp_zip_path, $env_contents );
