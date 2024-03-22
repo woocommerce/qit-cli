@@ -93,6 +93,15 @@ class RunE2ECommand extends DynamicCommand {
 			'Path to your E2E tests (Optional, if not set, it will try to download your custom tests that you have previously uploaded to QIT)'
 		);
 
+		// If "woo_extension" (SUT) is a theme, set this.
+		$this->addOption(
+			'woocommerce_version',
+			null,
+			InputOption::VALUE_REQUIRED,
+			'The WooCommerce Version. Accepts "nightly", "stable", or a GitHub Tag (eg: 8.6.1).',
+			'stable'
+		);
+
 		// Add "mode" option, which can be "headless", "headed", "ui" or "codegen"..
 		$this->addOption(
 			'ui',
@@ -103,7 +112,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		$this->addOption(
 			'codegen',
-			null,
+			'c',
 			InputOption::VALUE_NONE,
 			'Run the environment for Codegen. In this mode, you can generate your test files.'
 		);
@@ -111,23 +120,14 @@ class RunE2ECommand extends DynamicCommand {
 		// If "woo_extension" (SUT) is a theme, set this.
 		$this->addOption(
 			'testing_theme',
-			'tt',
+			null,
 			InputOption::VALUE_NONE,
 			'If the "woo_extension" is a theme, set this flag.'
 		);
 
-		// If "woo_extension" (SUT) is a theme, set this.
-		$this->addOption(
-			'woocommerce_version',
-			'woo',
-			InputOption::VALUE_REQUIRED,
-			'The WooCommerce Version. Accepts "nightly", "stable", or a GitHub Tag (eg: 8.6.1).',
-			'stable'
-		);
-
 		$this->addOption(
 			'bootstrap_only',
-			'bo',
+			'b',
 			InputOption::VALUE_NONE,
 			'If set, will only start the environment and bootstrap the plugins.'
 		);
