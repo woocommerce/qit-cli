@@ -105,20 +105,7 @@ class E2ETestManager {
 			if ( $test_mode === 'codegen' ) {
 				$io = new SymfonyStyle( App::make( InputInterface::class ), $this->output );
 
-				$io->note( 'To run the Playwright Codegen, please ensure Playwright is installed on your machine.' );
-
-				$io->text( [
-					'Please run Playwright Codegen locally using the URLs above. After generating tests:',
-					'  - Remove all hardcoded URLs from the generated tests.',
-					'  - Assume that Playwright\'s "baseURL" is set on the environment your tests will run.',
-					'  - Ensure your tests are flexible and follows good practices on choosing selectors.',
-				] );
-
-				$io->newLine();
-
-				$io->text( 'For detailed instructions and best practices, please refer to our Codegen guide: https://qit.woo.com/docs/codegen' );
-				$io->text( 'When you are done writing tests, return here and press Enter to shut down the environment.' );
-				$io->success( 'Run Playwright Codegen from your computer now.' );
+				$io->success( 'Run Playwright Codegen from your computer now. Learn More: https://qit.woo.com/docs/codegen' );
 			}
 
 			$this->output->writeln( '' );
