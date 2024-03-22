@@ -36,10 +36,10 @@ class E2ETestManager {
 
 	/**
 	 * @param E2EEnvInfo $env_info
-	 * @param string     $sut - System Under Test.
-	 * @param string     $compatibility_mode - "default" or "full".
-	 * @param string     $test_mode One of the allowed test modes.
-	 * @param bool       $bootstrap_only If true, will only bootstrap.
+	 * @param string $sut - System Under Test.
+	 * @param string $compatibility_mode - "default" or "full".
+	 * @param string $test_mode One of the allowed test modes.
+	 * @param bool $bootstrap_only If true, will only bootstrap.
 	 */
 	public function run_tests( E2EEnvInfo $env_info, string $sut, string $compatibility_mode, string $test_mode, bool $bootstrap_only ): void {
 		/**
@@ -130,8 +130,12 @@ class E2ETestManager {
 
 		$this->output->writeln( '<info>Running E2E Tests</info>' );
 
+		$tests_to_run = [
+			'playwright' => [],
+		];
+
 		/**
-		 * Run the tests.
+		 * Split the test to be run.
 		 */
 		foreach ( $env_info->tests as $plugin_slug => $test_info ) {
 			$is_sut = $plugin_slug === $sut;
@@ -140,11 +144,16 @@ class E2ETestManager {
 				continue;
 			}
 
-			$this->output->writeln( sprintf( 'Running tests for %s %s', $plugin_slug, $test_info['path_in_host'] ) );
 			if ( E2ERunner::find_runner_type( $test_info['path_in_host'] ) === 'playwright' ) {
-				App::make( PlaywrightRunner::class )->run_test( $env_info, $plugin_slug, $test_result, $test_mode );
-				$test_result->register_test_results( $plugin_slug, $test_result->get_results_dir() . "/$plugin_slug" );
+				$tests_to_run['playwright'][] = $test_info;
 			}
+		}
+
+		/**
+		 * Run the tests.
+		 */
+		if ( ! empty( $tests_to_run['playwright'] ) ) {
+			App::make( PlaywrightRunner::class )->run_test( $env_info, $tests_to_run['playwright'], $test_result, $test_mode );
 		}
 
 		$test_result->set_status( 'completed' );
