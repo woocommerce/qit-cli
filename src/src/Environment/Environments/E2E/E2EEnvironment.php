@@ -120,7 +120,10 @@ class E2EEnvironment extends Environment {
 		}
 
 		if ( ! getenv( 'QIT_HIDE_SITE_INFO' ) ) {
-			$io->success( 'Temporary test environment created. (' . $this->env_info->env_id . ')' );
+
+			if ( ! getenv( 'QIT_CODEGEN' ) ) {
+				$io->success( 'Temporary test environment created. (' . $this->env_info->env_id . ')' );
+			}
 
 			$listing = [
 				sprintf( 'URL: %s', $this->env_info->site_url ),
