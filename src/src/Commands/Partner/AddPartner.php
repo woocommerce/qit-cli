@@ -125,6 +125,7 @@ TEXT
 
 		// Validate credentials.
 		$output->writeln( sprintf( 'Validating your QIT Token with %s...', get_wccom_url() ) );
+		$output->writeln('Please wait patiently, depending on how many extensions you have, this can take a while.');
 		validate_authentication( $user, $qit_token );
 		$output->writeln( '<fg=green>Validated successfully.</>' );
 
