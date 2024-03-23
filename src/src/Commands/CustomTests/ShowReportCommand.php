@@ -32,8 +32,8 @@ class ShowReportCommand extends Command {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
-		if ( ! is_null( $input->getArgument( 'report_id' ) ) ) {
-			$report_dir = $input->getArgument( 'report_id' );
+		if ( ! is_null( $input->getArgument( 'report_dir' ) ) ) {
+			$report_dir = $input->getArgument( 'report_dir' );
 		} else {
 			$report_dir = $this->cache->get( 'last_e2e_report' );
 		}
