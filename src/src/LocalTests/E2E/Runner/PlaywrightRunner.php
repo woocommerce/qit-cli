@@ -101,7 +101,7 @@ class PlaywrightRunner extends E2ERunner {
 		}
 
 		$playwright_args = array_merge( $playwright_args, [
-			'mcr.microsoft.com/playwright:jammy',
+			'automattic/qit-runner-playwright:latest',
 			'sh',
 			'-c',
 			'mkdir /qit/results/playwright && cd /home/pwuser && ' .

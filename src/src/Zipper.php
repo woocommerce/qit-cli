@@ -64,13 +64,13 @@ class Zipper {
 			'--user',
 			implode( ':', Docker::get_user_and_group() ),
 			'-v',
-			"$zip_file:/app/file.zip",
+			"$zip_file:/home/docker/file.zip",
 			'-v',
-			normalize_path( $extract_to ) . ':/app/extracted',
-			'joshkeegan/zip:latest',
+			normalize_path( $extract_to ) . ':/home/docker/extracted',
+			'automattic/qit-runner-zip:latest',
 			'sh',
 			'-c',
-			'unzip /app/file.zip -d /app/extracted',
+			'unzip /home/docker/file.zip -d /home/docker/extracted',
 		] );
 
 		$start = microtime( true );
@@ -116,11 +116,11 @@ class Zipper {
 			'--user',
 			implode( ':', Docker::get_user_and_group() ),
 			'-v',
-			"$zip_file:/app/file.zip",
-			'joshkeegan/zip:latest',
+			"$zip_file:/home/docker/file.zip",
+			'automattic/qit-runner-zip:latest',
 			'sh',
 			'-c',
-			'zip -T /app/file.zip',
+			'zip -T /home/docker/file.zip',
 		] );
 
 		$zip_process->mustRun( function ( $type, $out ) {
@@ -167,13 +167,13 @@ class Zipper {
 			'--user',
 			implode( ':', Docker::get_user_and_group() ),
 			'-v',
-			"$source_dir:/app/source",
+			"$source_dir:/home/docker/source",
 			'-v',
-			"$temp_dir:/app/dest",
-			'joshkeegan/zip:latest',
+			"$temp_dir:/home/docker/dest",
+			'automattic/qit-runner-zip:latest',
 			'sh',
 			'-c',
-			"cd /app/source && zip -r /app/dest/output.zip . -x $exclude_string",
+			"cd /home/docker/source && zip -r /home/docker/dest/output.zip . -x $exclude_string",
 		];
 
 		$zip_process = new Process( $docker_command );
