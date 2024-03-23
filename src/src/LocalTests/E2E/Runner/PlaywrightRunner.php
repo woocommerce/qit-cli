@@ -4,16 +4,12 @@ namespace QIT_CLI\LocalTests\E2E\Runner;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
-use QIT_CLI\Commands\TestRuns\RunE2ECommand;
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\LocalTests\E2E\E2ETestManager;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
-use Symfony\Component\Console\Helper\QuestionHelper;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Process\Process;
-use function QIT_CLI\is_windows;
 use function QIT_CLI\open_in_browser;
 
 class PlaywrightRunner extends E2ERunner {
@@ -173,38 +169,22 @@ class PlaywrightRunner extends E2ERunner {
 			$spinner_index = ( $spinner_index + 1 ) % count( $spinners ); // phpcs:ignore Squiz.Operators.IncrementDecrementUsage.Found
 			$spinner       = $spinners[ $spinner_index ];
 
-			// Redraw the prompt.
-			if ( is_windows() ) {
-				$this->output->write( "$spinner Test running..." );
+
+			// If PCNTL is available:
+			if ( function_exists( 'pcntl_signal' ) ) {
+				$this->output->write( "$spinner Test running... (To abort, press Ctrl+C)" );
 			} else {
-				$this->output->write( "$spinner Test running... (To abort, press Enter)" );
+				$this->output->write( "$spinner Test running..." );
 			}
 		};
 
-		$playwright_process->start( $output_callback );
+		$playwright_process->run( $output_callback );
 
-		// Poke the output callback to print the initial message.
-		$output_callback( Process::OUT, '' );
-
-		// This will block the test until it finishes... If we get past here, it means the test is done.
-		RunE2ECommand::press_enter_to_terminate_callback( $playwright_process );
 		echo "\r\033[K"; // Remove "Test running..." line.
 
 		if ( file_exists( $results_dir . '/report/index.html' ) ) {
-			$results_process = new Process( [ PHP_BINARY, '-S', 'localhost:0', '-t', $results_dir . '/report' ] );
-			$port = null;
-			$results_process->run( function ( $type, $output ) use ( &$port ) {
-				if ( preg_match( '/Development Server \(http:\/\/localhost:(\d+)\) started/', $output, $matches ) ) {
-					$port = $matches[1];
-					open_in_browser( "http://localhost:$port" );
-				}
-			} );
-
-			$question = new Question( "<info>Report available on http://localhost:$port (When you are donw viewing, press Enter)</info>" );
-			$question->setValidator( function ( $answer ) {
-				return $answer;
-			} );
-			( new QuestionHelper )->ask( App::make( InputInterface::class ), $this->output, $question );
+			App::make( Cache::class )->set( 'last_e2e_report', $results_dir . '/report', MONTH_IN_SECONDS );
+			E2ETestManager::$has_report = true;
 		}
 	}
 

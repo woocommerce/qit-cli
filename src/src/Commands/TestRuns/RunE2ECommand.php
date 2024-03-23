@@ -306,54 +306,6 @@ class RunE2ECommand extends DynamicCommand {
 		return Command::SUCCESS;
 	}
 
-	/**
-	 * Ask the user a question, without blocking the process from doing other things.
-	 *
-	 * We use this to print the "Press Enter to terminate..." message, and once
-	 * pressed, we terminate the environment gracefully.
-	 *
-	 * Without this, when asked, PHP would stop, waiting for an answer.
-	 *
-	 * We print this question because otherwise the user wouldn't have a way to
-	 * "correctly" interrupt the test if they don't have the "pcntl" extension.
-	 *
-	 * The "pcntl" extension allows us to capture "signals" such as "Ctrl+C",
-	 * and handle them in PHP. If they have it installed, we handle it.
-	 *
-	 * @param Process        $playwright_process The main playwright process to attach to.
-	 * @param array<Process> $processes Optional additional processes to stop when the terminate callback is called.
-	 */
-	public static function press_enter_to_terminate_callback( Process $playwright_process, array $processes = [] ): void {
-		stream_set_blocking( STDIN, false );
-		while ( $playwright_process->isRunning() ) {
-			$user_input = stream_get_contents( STDIN );
-			if ( $user_input !== false && strlen( $user_input ) > 0 ) {
-				$playwright_process->stop();
-				foreach ( $processes as $p ) {
-					$p->stop();
-				}
-				break;
-			}
-
-			usleep( 200000 );  // Sleep for 0.2 second.
-		}
-		stream_set_blocking( STDIN, true );
-	}
-
-	public static function press_enter_to_wait_without_terminating(): void {
-		stream_set_blocking( STDIN, false );
-		while ( true ) {
-			$user_input = stream_get_contents( STDIN );
-			if ( $user_input !== false && strlen( $user_input ) > 0 ) {
-				// This method just waits, it does not call shutdown.
-				break;
-			}
-			usleep( 200000 );  // Sleep for 0.2 second.
-		}
-		stream_set_blocking( STDIN, true );
-	}
-
-
 	public static function shutdown_test_run(): void {
 		echo "\nShutting down environment...\n";
 		// Env not up or could not parse the "up" JSON.

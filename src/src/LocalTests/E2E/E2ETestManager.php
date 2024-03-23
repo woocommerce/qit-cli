@@ -3,7 +3,6 @@
 namespace QIT_CLI\LocalTests\E2E;
 
 use QIT_CLI\App;
-use QIT_CLI\Commands\TestRuns\RunE2ECommand;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
@@ -30,6 +29,8 @@ class E2ETestManager {
 		'ui'       => 'ui',
 		'codegen'  => 'codegen',
 	];
+
+	public static $has_report = false;
 
 	public function __construct( Docker $docker, OutputInterface $output ) {
 		$this->docker = $docker;
@@ -131,9 +132,15 @@ class E2ETestManager {
 			App::make( PlaywrightRunner::class )->run_test( $env_info, $tests_to_run['playwright'], $test_result, $test_mode );
 		}
 
+		if ( static::$has_report ) {
+			$this->output->writeln( 'To open last HTML report run:' );
+			$this->output->writeln( 'qit e2e-report' );
+		}
+
 		$test_result->set_status( 'completed' );
 
-		// Print path for results and reports.
-		$this->output->writeln( sprintf( 'Results and reports are available at %s', $test_result->get_results_dir() ) );
+		if ( $this->output->isVeryVerbose() ) {
+			$this->output->writeln( sprintf( '[Verbose] Test artifacts directory: %s', $test_result->get_results_dir() ) );
+		}
 	}
 }
