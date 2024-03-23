@@ -164,7 +164,7 @@ class RunE2ECommand extends DynamicCommand {
 		if ( $input->getOption( 'ui' ) ) {
 			$test_mode = E2ETestManager::$test_modes['ui'];
 		} elseif ( $input->getOption( 'codegen' ) ) {
-			putenv( 'QIT_CODEGEN=1' );
+			putenv( 'QIT_CODEGEN=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 			$test_mode = E2ETestManager::$test_modes['codegen'];
 		} else {
 			$test_mode = E2ETestManager::$test_modes['headless'];
