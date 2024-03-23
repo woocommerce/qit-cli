@@ -5,7 +5,6 @@ namespace QIT_CLI\Environment;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
-use function QIT_CLI\is_mac;
 use function QIT_CLI\is_windows;
 use function QIT_CLI\use_tty;
 

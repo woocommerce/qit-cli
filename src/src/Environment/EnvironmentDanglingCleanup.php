@@ -12,7 +12,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
-use function QIT_CLI\is_ci;
 use function QIT_CLI\normalize_path;
 
 class EnvironmentDanglingCleanup {
