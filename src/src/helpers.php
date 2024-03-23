@@ -49,7 +49,7 @@ function validate_authentication( string $username, string $qit_token ): void {
 			->with_timeout_in_seconds( 300 ) // Depending on how many extensions the user has, this can take a while.
 			->request();
 	} catch ( \Exception $e ) {
-		throw new \Exception( sprintf( 'Could not authenticate to %s using the provided username and QIT Token. Questions? https://woocommerce.github.io/qit-documentation/#/authenticating', get_wccom_url() ) );
+		throw new \Exception( $e->getMessage() );
 	}
 }
 
