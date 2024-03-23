@@ -192,7 +192,25 @@ class RunE2ECommand extends DynamicCommand {
 			putenv( sprintf( 'QIT_CUSTOM_TESTS_PATH=%s|%s', $woo_extension, $path ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
 
-		$compatibility       = $other_options['compatibility'];
+		$compatibility = $other_options['compatibility'];
+
+		if ( $compatibility !== 'default' && $compatibility !== 'full' ) {
+			// Then it must be a comma-separated string of slugs.
+			foreach ( array_map( 'trim', explode( ',', $compatibility ) ) as $slug ) {
+				if ( ! ExtensionDownloader::is_valid_plugin_slug( $slug ) ) {
+					$output->writeln( sprintf( '<error>Invalid Compatibility mode. It can be either "default", "full", or a comma-separated list of slugs. Invalid: "%s"</error>', $slug ) );
+
+					return Command::FAILURE;
+				}
+				// Invalid. eg: "full,automatewoo".
+				if ( $slug === 'default' || $slug === 'full' ) {
+					$output->writeln( sprintf( '<error>Invalid Compatibility mode. It can be either "default", "full", or a comma-separated list of slugs. Invalid: "%s"</error>', $slug ) );
+
+					return Command::FAILURE;
+				}
+			}
+		}
+
 		$woocommerce_version = $input->getOption( 'woocommerce_version' );
 		$bootstrap_only      = $input->getOption( 'bootstrap_only' ) || $test_mode === 'codegen';
 

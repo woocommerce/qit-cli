@@ -37,35 +37,11 @@ class E2ETestManager {
 	/**
 	 * @param E2EEnvInfo $env_info
 	 * @param string     $sut - System Under Test.
-	 * @param string     $compatibility_mode - "default" or "full".
+	 * @param string     $compatibility_mode - "default", "full", or a comma-separated list of plugin slugs.
 	 * @param string     $test_mode One of the allowed test modes.
 	 * @param bool       $bootstrap_only If true, will only bootstrap.
 	 */
 	public function run_tests( E2EEnvInfo $env_info, string $sut, string $compatibility_mode, string $test_mode, bool $bootstrap_only ): void {
-		/**
-		 * 1. Iterate over the list of plugins
-		 * 2. See which of them have E2E tests
-		 * 3. Initialize a TestResult with the list of plugins, eg:
-		 *  3.1 gutenberg:
-		 *        - status: pending
-		 *        - report: "/link-to-allure-report"
-		 *        - total_tests: [
-		 *          - test_1
-		 *          - test_2
-		 *          ]
-		 *        - tests_run: [
-		 *          - test_1
-		 *          - test_2
-		 *          ]
-		 *        - tests_failed: [
-		 *            - test_1
-		 *            - test_2
-		 *          ]
-		 *        - debug_log: "/path/to/this-plugin-debug.log"
-		 *  4. If $test_mode is "default", we run the bootstrap phase of all plugins, and the test phase of the sut.
-		 *  If $test_mode is "full", we run the bootstrap phase of all plugins, and the test phase of all plugins.
-		 *  5. Update the TestResult with the actual results
-		 */
 		$test_result = TestResult::init_from( $env_info );
 
 		if ( empty( $env_info->tests ) ) {
@@ -117,6 +93,10 @@ class E2ETestManager {
 
 		$this->output->writeln( '<info>Running E2E Tests</info>' );
 
+		if ( $compatibility_mode !== 'default' && $compatibility_mode !== 'full' ) {
+			$compatibility_mode = array_map( 'trim', explode( ',', $compatibility_mode ) );
+		}
+
 		$tests_to_run = [
 			'playwright' => [],
 		];
@@ -131,8 +111,10 @@ class E2ETestManager {
 				continue;
 			}
 
-			if ( E2ERunner::find_runner_type( $test_info['path_in_host'] ) === 'playwright' ) {
-				$tests_to_run['playwright'][] = $test_info;
+			if ( $compatibility_mode === 'full' || $is_sut || in_array( $plugin_slug, $compatibility_mode, true ) ) {
+				if ( E2ERunner::find_runner_type( $test_info['path_in_host'] ) === 'playwright' ) {
+					$tests_to_run['playwright'][] = $test_info;
+				}
 			}
 		}
 
