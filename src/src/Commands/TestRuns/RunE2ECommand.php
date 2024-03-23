@@ -218,6 +218,9 @@ class RunE2ECommand extends DynamicCommand {
 
 		if ( $woocommerce_version === 'nightly' ) {
 			$env_up_options['--plugins'][] = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
+		} elseif ( $woocommerce_version === 'rc' ) {
+			$this->output->writeln( '"RC" is not yet supported by run:e2e. Using "nightly" instead. If you want a specific RC, use the GitHub Tag' );
+			$env_up_options['--plugins'][] = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
 		} elseif ( $woocommerce_version === 'stable' ) {
 			$env_up_options['--plugins'][] = 'woocommerce';
 		} else {
@@ -383,7 +386,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
+				$parsed_options['env_up']["--$option_name"] = $option_value;
 			}
 		}
 
