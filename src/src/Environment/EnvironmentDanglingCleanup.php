@@ -76,7 +76,7 @@ class EnvironmentDanglingCleanup {
 		}
 
 		if ( ! $this->header_printed ) {
-			$this->output->writeln( '<info>Cleaning up dangling temporary environments...</info>' );
+			$this->output->writeln( '<info>Removing dangling test environments...</info>' );
 			$this->header_printed = true;
 		}
 
@@ -117,37 +117,64 @@ class EnvironmentDanglingCleanup {
 			return;
 		}
 
-		// Skip asking the user permission to delete in this directory if they answer with an "A".
-		$always_delete_from_this_directory = $this->cache->get( 'always_delete_from_this_directory' );
-		$parent_dir                        = $this->get_parent_dir_to_delete();
+		$expected_directories = [
+			'bin',
+			'cache',
+			'html',
+			'mu-plugins',
+		];
 
-		if ( $always_delete_from_this_directory !== $parent_dir && ! is_ci() ) {
-			$this->output->writeln( "<info>Found dangling temporary environments in directory: $parent_dir</info>" );
-
-			$question = new Question(
-				"Do you want to clean up these environments? [Y/n/A]\nA: Yes, and always clean up in this directory in the future. (Recommended)\n",
-				'n' // Default to 'n'.
-			);
-
-			$answer = strtolower( ( new QuestionHelper() )->ask( $this->input, $this->output, $question ) );
-
-			switch ( $answer ) {
-				case 'y':
-					// no-op. Proceed with the action.
-					break;
-				case 'a':
-					$this->cache->set( 'always_delete_from_this_directory', $parent_dir, YEAR_IN_SECONDS );
-					break;
-				case 'n':
-				default:
-					$this->output->writeln( 'Please delete the dangling environments in that directory manually.' );
-
-					return;
-			}
-		}
+		$allowed_extensions = [
+			'php',
+			'js',
+			'json',
+		];
 
 		foreach ( $this->dangling_directories as $directory ) {
-			$this->output->writeln( "Removing dangling directory: {$directory}" );
+			$unexpected_contents = null;
+
+			/*
+			 * We are being extra zealous here.
+			 * We already have good security boundaries for deleting files, but since
+			 * this is a recursive directory deletion, we validate the contents of the directory to be deleted.
+			 */
+			/** @var \DirectoryIterator $file_info */
+			foreach ( new \DirectoryIterator( $directory ) as $file_info ) {
+				if ( $file_info->isDot() || $file_info->isLink() ) {
+					continue;
+				}
+
+				if ( $file_info->isDir() ) {
+					if ( ! in_array( $file_info->getFilename(), $expected_directories, true ) ) {
+						$this->debug_output( "Found non-expected directory: {$file_info->getPathname()}" );
+						$unexpected_contents = $file_info;
+						break;
+					}
+				} elseif ( $file_info->isFile() ) {
+					$extension = pathinfo( $file_info->getFilename(), PATHINFO_EXTENSION );
+					if ( ! in_array( $extension, $allowed_extensions, true ) ) {
+						$this->debug_output( "Found non-expected file: {$file_info->getPathname()}" );
+						$unexpected_contents = $file_info;
+						break;
+					}
+				}
+			}
+
+			if ( ! is_null( $unexpected_contents ) ) {
+				$this->output->writeln( '<comment>Failed to cleanup dangling directory</comment >' );
+				$this->output->writeln( sprintf( 'Unexpected file: %s', $unexpected_contents->getFilename() ) );
+
+				// Ask the user if we can delete it.
+				$question = new Question( 'Do you want to delete this directory? [y/N] ', 'n' );
+				$answer   = ( new QuestionHelper() )->ask( $this->input, $this->output, $question );
+				if ( strtolower( $answer ) !== 'y' ) {
+					$this->output->writeln( 'Skipping directory deletion.' );
+					continue;
+				}
+			}
+
+			$this->debug_output( "Removing dangling directory: {$directory}" );
+
 			SafeRemove::delete_dir( $directory, Environment::get_temp_envs_dir() );
 		}
 	}
