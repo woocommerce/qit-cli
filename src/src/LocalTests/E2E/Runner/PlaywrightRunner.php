@@ -169,14 +169,23 @@ class PlaywrightRunner extends E2ERunner {
 			$spinner_index = ( $spinner_index + 1 ) % count( $spinners ); // phpcs:ignore Squiz.Operators.IncrementDecrementUsage.Found
 			$spinner       = $spinners[ $spinner_index ];
 
-
-			// If PCNTL is available:
+			// If PCNTL is available.
 			if ( function_exists( 'pcntl_signal' ) ) {
 				$this->output->write( "$spinner Test running... (To abort, press Ctrl+C)" );
 			} else {
 				$this->output->write( "$spinner Test running..." );
 			}
 		};
+
+		if ( function_exists( 'pcntl_signal' ) ) {
+			$signal_handler = static function () use ( $playwright_process ): void {
+				// We just need to stop the process, since "--rm" takes care of the cleanup.
+				$playwright_process->stop();
+			};
+
+			pcntl_signal( SIGINT, $signal_handler ); // Ctrl+C.
+			pcntl_signal( SIGTERM, $signal_handler ); // eg: kill 123, where "123" is the PID of this PHP process.
+		}
 
 		$playwright_process->run( $output_callback );
 

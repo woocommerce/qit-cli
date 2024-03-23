@@ -27,26 +27,26 @@ class ShowReportCommand extends Command {
 
 	protected function configure() {
 		$this
-			->addArgument( 'report_id', InputArgument::OPTIONAL, '(Optional) The report ID. If not set, will show the last report.' )
+			->addArgument( 'report_dir', InputArgument::OPTIONAL, '(Optional) The report directory. If not set, will show the last report.' )
 			->setDescription( 'Shows a test report.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		if ( ! is_null( $input->getArgument( 'report_id' ) ) ) {
-			$report_id = $input->getArgument( 'report_id' );
+			$report_dir = $input->getArgument( 'report_id' );
 		} else {
-			$last_report = $this->cache->get( 'last_e2e_report' );
+			$report_dir = $this->cache->get( 'last_e2e_report' );
 		}
 
-		if ( ! file_exists( $last_report ) ) {
-			throw new \RuntimeException( sprintf( 'Could not find the report directory: %s', $last_report ) );
+		if ( ! file_exists( $report_dir ) ) {
+			throw new \RuntimeException( sprintf( 'Could not find the report directory: %s', $report_dir ) );
 		}
 
-		if ( ! file_exists( $last_report . '/index.html' ) ) {
-			throw new \RuntimeException( sprintf( 'Could not find the report file: %s', $last_report . '/index.html' ) );
+		if ( ! file_exists( $report_dir . '/index.html' ) ) {
+			throw new \RuntimeException( sprintf( 'Could not find the report file: %s', $report_dir . '/index.html' ) );
 		}
 
-		$results_process = new Process( [ PHP_BINARY, '-S', 'localhost:0', '-t', $last_report ] );
+		$results_process = new Process( [ PHP_BINARY, '-S', 'localhost:0', '-t', $report_dir ] );
 		$port            = null;
 		$results_process->start();
 
@@ -66,9 +66,8 @@ class ShowReportCommand extends Command {
 
 		open_in_browser( "http://localhost:$port" );
 
-		( new QuestionHelper )->ask( App::make( InputInterface::class ), App::make( Output::class ), new Question( "Report available on http://localhost:$port. Press Ctrl+C to quit." ) );
+		( new QuestionHelper() )->ask( App::make( InputInterface::class ), App::make( Output::class ), new Question( "Report available on http://localhost:$port. Press Ctrl+C to quit." ) );
 
 		return Command::SUCCESS;
 	}
 }
-
