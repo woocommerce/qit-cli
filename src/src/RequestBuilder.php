@@ -342,6 +342,20 @@ class RequestBuilder {
 			CURLOPT_FILE           => $fp,   // Write the output to the file.
 		];
 
+		try {
+			$ca_path_or_file = CaBundle::getSystemCaRootBundlePath();
+
+			if ( is_dir( $ca_path_or_file ) ) {
+				$curl_parameters[ CURLOPT_CAPATH ] = $ca_path_or_file;
+			} else {
+				$curl_parameters[ CURLOPT_CAINFO ] = $ca_path_or_file;
+			}
+		} catch ( \Exception $e ) {
+			if ( App::make( Output::class )->isVerbose() ) {
+				App::make( Output::class )->writeln( '<error>Could not set CAINFO for cURL: ' . $e->getMessage() . '</error>' );
+			}
+		}
+
 		curl_setopt_array( $curl, $curl_parameters );
 
 		$start = microtime( true );

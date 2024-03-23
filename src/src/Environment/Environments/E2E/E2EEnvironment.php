@@ -63,14 +63,14 @@ class E2EEnvironment extends Environment {
 		if ( ! empty( $this->env_info->php_extensions ) ) {
 			$this->output->writeln( '<info>Installing PHP extensions...</info>' );
 			// Install PHP extensions, if needed.
-			$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '/qit/bin/php-extensions.sh' ], [
+			$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', 'bash /qit/bin/php-extensions.sh' ], [
 				'PHP_EXTENSIONS' => implode( ' ', $this->env_info->php_extensions ), // Space-separated list of PHP extensions.
 			], '0:0' );
 		}
 
 		// Setup WordPress.
 		$this->output->writeln( '<info>Setting up WordPress...</info>' );
-		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', '/qit/bin/wordpress-setup.sh 2>&1' ], [
+		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/wordpress-setup.sh 2>&1' ], [
 			'WORDPRESS_VERSION'   => $this->env_info->wordpress_version,
 			'WOOCOMMERCE_VERSION' => $this->env_info->woocommerce_version,
 			'PLUGINS_TO_INSTALL'  => json_encode( $this->env_info->plugins ),

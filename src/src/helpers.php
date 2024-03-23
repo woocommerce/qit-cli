@@ -11,6 +11,10 @@ function is_windows(): bool {
 	return defined( 'PHP_WINDOWS_VERSION_BUILD' );
 }
 
+function is_mac(): bool {
+	return stripos( PHP_OS, 'Darwin' ) !== false;
+}
+
 function is_wsl(): bool {
 	return getenv( 'WSL_DISTRO_NAME' ) !== false;
 }

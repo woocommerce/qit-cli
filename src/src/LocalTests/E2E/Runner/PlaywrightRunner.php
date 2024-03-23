@@ -9,7 +9,11 @@ use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
+use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Process\Process;
+use function QIT_CLI\is_windows;
 use function QIT_CLI\open_in_browser;
 
 class PlaywrightRunner extends E2ERunner {
@@ -71,8 +75,6 @@ class PlaywrightRunner extends E2ERunner {
 			'8086', // Expose the internal "8086" port to a random, free port in host.
 			'--rm',
 			'--init',
-			'--user',
-			implode( ':', Docker::get_user_and_group() ),
 			'-e',
 			'npm_config_cache=/qit/cache/npm-playwright',
 			'-e',
@@ -85,6 +87,11 @@ class PlaywrightRunner extends E2ERunner {
 			'-v',
 			$test_result->get_results_dir() . ':/qit/results',
 		];
+
+		if ( Docker::should_set_user() ) {
+			$playwright_args[] = '--user';
+			$playwright_args[] = implode( ':', Docker::get_user_and_group() );
+		}
 
 		foreach ( $test_infos as $test_to_run ) {
 			$playwright_args = array_merge( $playwright_args, [
@@ -118,6 +125,10 @@ class PlaywrightRunner extends E2ERunner {
 		] );
 
 		$playwright_process = new Process( $playwright_args );
+
+		if ( $this->output->isVeryVerbose() ) {
+			$this->output->writeln( 'Playwright command: ' . $playwright_process->getCommandLine() );
+		}
 
 		$spinner_index = 0;
 		$spinners      = [
@@ -163,7 +174,11 @@ class PlaywrightRunner extends E2ERunner {
 			$spinner       = $spinners[ $spinner_index ];
 
 			// Redraw the prompt.
-			$this->output->write( "$spinner Test running... (To abort, press Enter)" );
+			if ( is_windows() ) {
+				$this->output->write( "$spinner Test running..." );
+			} else {
+				$this->output->write( "$spinner Test running... (To abort, press Enter)" );
+			}
 		};
 
 		$playwright_process->start( $output_callback );
@@ -177,23 +192,19 @@ class PlaywrightRunner extends E2ERunner {
 
 		if ( file_exists( $results_dir . '/report/index.html' ) ) {
 			$results_process = new Process( [ PHP_BINARY, '-S', 'localhost:0', '-t', $results_dir . '/report' ] );
-			$results_process->start( function ( $type, $output ) {
+			$port = null;
+			$results_process->run( function ( $type, $output ) use ( &$port ) {
 				if ( preg_match( '/Development Server \(http:\/\/localhost:(\d+)\) started/', $output, $matches ) ) {
-					// Server started, extract the port.
 					$port = $matches[1];
-					echo "\r\033[K"; // Clear the line.
-					echo "Report available on http://localhost:$port\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-
-					// Open in browser.
 					open_in_browser( "http://localhost:$port" );
 				}
-
-				echo "\r\033[K"; // Clear the line.
-				echo '(To finish, press Enter)';
 			} );
 
-			RunE2ECommand::press_enter_to_terminate_callback( $results_process );
-			echo "\r\033[K"; // Remove "Test running..." line after termination.
+			$question = new Question( "<info>Report available on http://localhost:$port (When you are donw viewing, press Enter)</info>" );
+			$question->setValidator( function ( $answer ) {
+				return $answer;
+			} );
+			( new QuestionHelper )->ask( App::make( InputInterface::class ), $this->output, $question );
 		}
 	}
 

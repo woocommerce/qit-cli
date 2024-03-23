@@ -135,7 +135,9 @@ class RunE2ECommand extends DynamicCommand {
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		if ( is_windows() ) {
-			$output->writeln( '<comment>Warning: It is highly recommended to run this script from Windows Subsystem for Linux (WSL) when using Windows.</comment>' );
+			$output->writeln( '<comment>To use run E2E Tests on Window, please use WSL. Check our guide here: https://qit.woo.com/docs/windows.</comment>' );
+
+			return Command::FAILURE;
 		}
 
 		try {
