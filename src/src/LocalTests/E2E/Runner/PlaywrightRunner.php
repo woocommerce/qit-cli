@@ -3,6 +3,7 @@
 namespace QIT_CLI\LocalTests\E2E\Runner;
 
 use QIT_CLI\App;
+use QIT_CLI\Cache;
 use QIT_CLI\Commands\TestRuns\RunE2ECommand;
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
@@ -75,7 +76,7 @@ class PlaywrightRunner extends E2ERunner {
 			'-e',
 			'npm_config_cache=/qit/cache/npm-playwright',
 			'-e',
-			'PLAYWRIGHT_BROWSERS_PATH=/qit/cache/playwright',
+			'PLAYWRIGHT_BROWSERS_PATH=/ms-playwright',
 			'-v',
 			Config::get_qit_dir() . 'cache:/qit/cache',
 			'-v',
@@ -100,12 +101,19 @@ class PlaywrightRunner extends E2ERunner {
 			$options = '';
 		}
 
+		try {
+			// Allow to override the Playwright version from the Manager.
+			$playwright_version_to_use = App::make( Cache::class )->get_manager_sync_data( 'playwright_version' );
+		} catch ( \Exception $e ) {
+			$playwright_version_to_use = '1.42.1';
+		}
+
 		$playwright_args = array_merge( $playwright_args, [
-			'automattic/qit-runner-playwright:latest',
+			"automattic/qit-runner-playwright:$playwright_version_to_use",
 			'sh',
 			'-c',
-			'mkdir /qit/results/playwright && cd /home/pwuser && ' .
-			'npm install @playwright/test@1.42.1 && npx playwright install chromium && ' .
+			'cd /home/pwuser && ' .
+			"npm install @playwright/test@$playwright_version_to_use && " .
 			"npx playwright test $options --config /home/pwuser/qit-playwright.config.js --output /qit/results/playwright",
 		] );
 
@@ -133,6 +141,13 @@ class PlaywrightRunner extends E2ERunner {
 			// Don't print this line.
 			if ( strpos( $out, 'To open last HTML report' ) !== false ) {
 				$out = '';
+			}
+
+			// Only print "fixuid" things if on very verbose mode.
+			if ( strpos( $out, 'fixuid' ) !== false ) {
+				if ( ! $this->output->isVeryVerbose() ) {
+					return;
+				}
 			}
 
 			// Clear the current line and move the cursor to the beginning.
