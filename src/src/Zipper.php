@@ -57,6 +57,8 @@ class Zipper {
 			}
 		}
 
+		$this->pull_zip();
+
 		$args = [
 			$this->docker->find_docker(),
 			'run',
@@ -89,6 +91,18 @@ class Zipper {
 		}
 	}
 
+	protected function pull_zip(): void {
+		if ( $this->output->isVerbose() ) {
+			$this->output->writeln( 'Pulling Docker ZIP image.' );
+		}
+		$pull_process = new Process( [ $this->docker->find_docker(), 'pull', 'automattic/qit-runner-zip:latest' ] );
+		$pull_process->run( function ( $type, $out ) {
+			if ( $this->output->isVeryVerbose() ) {
+				$this->output->write( 'Docker ZIP Pull: ' . $out );
+			}
+		} );
+	}
+
 	public function validate_zip( string $zip_file ): void {
 		$start = microtime( true );
 
@@ -109,6 +123,8 @@ class Zipper {
 				}
 			}
 		}
+
+		$this->pull_zip();
 
 		$start = microtime( true );
 
@@ -169,6 +185,8 @@ class Zipper {
 		foreach ( $exclude as $item ) {
 			$exclude_string .= " '$item' ";
 		}
+
+		$this->pull_zip();
 
 		$docker_command = [
 			$this->docker->find_docker(),
