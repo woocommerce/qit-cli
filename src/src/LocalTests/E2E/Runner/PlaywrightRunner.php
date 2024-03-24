@@ -122,6 +122,9 @@ class PlaywrightRunner extends E2ERunner {
 
 		$playwright_process = new Process( $playwright_args );
 
+		$playwright_process->setTimeout( 10800 ); // 3 hours.
+		$playwright_process->setIdleTimeout( 3600 ); // 1 hour.
+
 		if ( $this->output->isVeryVerbose() ) {
 			$this->output->writeln( 'Playwright command: ' . $playwright_process->getCommandLine() );
 		}
@@ -150,6 +153,11 @@ class PlaywrightRunner extends E2ERunner {
 				$out = '';
 			}
 
+			// Don't print this line.
+			if ( strpos( $out, 'playwright show-report' ) !== false ) {
+				$out = '';
+			}
+
 			// Only print "fixuid" things if on very verbose mode.
 			if ( strpos( $out, 'fixuid' ) !== false ) {
 				if ( ! $this->output->isVeryVerbose() ) {
@@ -161,9 +169,7 @@ class PlaywrightRunner extends E2ERunner {
 			echo "\r\033[K";
 
 			// Print the output from the process.
-			$this->output->write( $out );
-
-			$this->output->writeln( '' );
+			$this->output->writeln( $out );
 
 			// Print the spinner.
 			$spinner_index = ( $spinner_index + 1 ) % count( $spinners ); // phpcs:ignore Squiz.Operators.IncrementDecrementUsage.Found

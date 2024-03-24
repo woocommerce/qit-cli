@@ -119,7 +119,7 @@ class E2EEnvironment extends Environment {
 			$this->docker->run_inside_docker( $this->env_info, [ 'bash', '-c', 'wp theme list --skip-plugins --skip-themes' ] );
 		}
 
-		if ( ! getenv( 'QIT_HIDE_SITE_INFO' ) ) {
+		if ( $this->output->isVerbose() || ! getenv( 'QIT_HIDE_SITE_INFO' ) ) {
 
 			if ( ! getenv( 'QIT_CODEGEN' ) ) {
 				$io->success( 'Temporary test environment created. (' . $this->env_info->env_id . ')' );

@@ -101,6 +101,13 @@ class RunE2ECommand extends DynamicCommand {
 			'stable'
 		);
 
+		$this->addOption(
+			'object_cache',
+			null,
+			InputOption::VALUE_NONE,
+			'Adds object cache to the plugin.'
+		);
+
 		// Add "mode" option, which can be "headless", "headed", "ui" or "codegen"..
 		$this->addOption(
 			'ui',
@@ -249,6 +256,10 @@ class RunE2ECommand extends DynamicCommand {
 			$env_up_options['--very-verbose'] = true;
 		}
 
+		if ( $input->getOption( 'object_cache' ) ) {
+			$env_up_options['--object_cache'] = true;
+		}
+
 		// Invoke the "env:up" Command.
 		$env_up_command = $this->getApplication()->find( UpEnvironmentCommand::getDefaultName() );
 
@@ -385,7 +396,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
+				$parsed_options['env_up']["--$option_name"] = $option_value;
 			}
 		}
 
