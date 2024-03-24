@@ -14,6 +14,7 @@ use QIT_CLI\SafeRemove;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
+use function QIT_CLI\is_ci;
 use function QIT_CLI\is_windows;
 use function QIT_CLI\normalize_path;
 use function QIT_CLI\use_tty;
@@ -240,6 +241,22 @@ abstract class Environment {
 
 	protected function up_docker_compose(): void {
 		$this->add_container_names();
+
+		if ( empty( $this->cache->get( 'qit_env_up_first_run' ) ) && ! is_ci() ) {
+			$this->cache->set( 'qit_env_up_first_run', '1', - 1 );
+			$this->output->writeln( '<info>First-time setup is pulling Docker images and caching downloads. Subsequent runs will be faster.</info>' );
+		}
+
+		// Do a docker compose pull first, to make sure images are updated.
+		$pull_process = new Process( array_merge( $this->docker->find_docker_compose(), [ '-f', $this->env_info->temporary_env . '/docker-compose.yml', 'pull' ] ) );
+		$pull_process->setTimeout( 600 );
+		$pull_process->setIdleTimeout( 600 );
+		$pull_process->setPty( use_tty() );
+		$pull_process->run( function ( $type, $buffer ) {
+			if ( $this->output->isVerbose() ) {
+				$this->output->write( $buffer );
+			}
+		} );
 
 		$args = array_merge( $this->docker->find_docker_compose(), [ '-f', $this->env_info->temporary_env . '/docker-compose.yml', 'up', '-d' ] );
 
