@@ -15,12 +15,10 @@ jobs:
         os: [ ubuntu-20.04, macos-13 ]
         php: [ '7.4' ]
         wordpress: [ 'rc' ]
-        woocommerce: [ 'rc' ]
         include:
           - os: ubuntu-20.04
             php: '8.3'
             wordpress: 'rc'
-            woocommerce: 'rc'
       fail-fast: false
     env:
       NO_COLOR: 1
@@ -79,7 +77,7 @@ jobs:
         working-directory: src
         env:
           QIT_DOCKER_RUN_TIMEOUT: ${{ (matrix.os == 'ubuntu-20.04') && '300' || '1800' }}
-        run: php qit-cli.php env:up --wordpress_version ${{ matrix.wordpress }} --woocommerce_version ${{ matrix.woocommerce }} --php_version ${{ matrix.php }}
+        run: php qit-cli.php env:up --wordpress_version ${{ matrix.wordpress }} --php_version ${{ matrix.php }}
 
       - name: Get URL (Cross-platform)
         working-directory: src
