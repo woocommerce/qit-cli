@@ -5,7 +5,7 @@
  */
 declare( ticks=1 );
 
-namespace QIT_CLI\Commands\TestRuns;
+namespace QIT_CLI\Commands\CustomTests;
 
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\DynamicCommand;
