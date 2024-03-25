@@ -81,7 +81,7 @@ class RunE2ECommand extends DynamicCommand {
 		// Extension slug/ID.
 		$this->addArgument(
 			'woo_extension',
-			InputArgument::REQUIRED,
+			InputArgument::OPTIONAL,
 			'A WooCommerce Extension Slug or Marketplace ID.'
 		);
 
@@ -178,25 +178,35 @@ class RunE2ECommand extends DynamicCommand {
 			$test_mode = E2ETestManager::$test_modes['headless'];
 		}
 
+		$woo_extension = $input->getArgument( 'woo_extension' );
+
+		if ( empty( $woo_extension ) && $test_mode !== E2ETestManager::$test_modes['codegen'] ) {
+			$output->writeln( '<error>The extension parameter is only optional in --codegen mode.</error>' );
+
+			return Command::INVALID;
+		}
+
 		// SUT.
-		try {
-			$this->woo_extensions_list->check_woo_extension_exists( $input->getArgument( 'woo_extension' ) );
+		if ( ! empty( $woo_extension ) ) {
+			try {
+				$this->woo_extensions_list->check_woo_extension_exists( $input->getArgument( 'woo_extension' ) );
 
-			if ( is_numeric( $input->getArgument( 'woo_extension' ) ) ) {
-				$woo_extension = $this->woo_extensions_list->get_woo_extension_slug_by_id( $input->getArgument( 'woo_extension' ) );
-			} else {
-				$woo_extension = $input->getArgument( 'woo_extension' );
+				if ( is_numeric( $input->getArgument( 'woo_extension' ) ) ) {
+					$woo_extension = $this->woo_extensions_list->get_woo_extension_slug_by_id( $input->getArgument( 'woo_extension' ) );
+				} else {
+					$woo_extension = $input->getArgument( 'woo_extension' );
+				}
+			} catch ( \Exception $e ) {
+				$this->output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+
+				return Command::FAILURE;
 			}
-		} catch ( \Exception $e ) {
-			$this->output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
-
-			return Command::FAILURE;
 		}
 
 		// Test Path, if local.
 		$path = $input->getArgument( 'path' );
 
-		if ( ! empty( $path ) && file_exists( $path ) ) {
+		if ( ! empty( $path ) && file_exists( $path ) && ! empty( $woo_extension ) ) {
 			putenv( sprintf( 'QIT_CUSTOM_TESTS_PATH=%s|%s', $woo_extension, $path ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
 
@@ -233,18 +243,22 @@ class RunE2ECommand extends DynamicCommand {
 			$env_up_options['--plugins'][] = "https://github.com/woocommerce/woocommerce/releases/download/$woocommerce_version/woocommerce.zip";
 		}
 
-		if ( $input->getOption( 'testing_theme' ) === 'true' ) {
-			$env_up_options['--themes'][] = $woo_extension;
-		} else {
-			$env_up_options['--plugins'][] = $woo_extension;
+		if ( ! empty( $woo_extension ) ) {
+			if ( $input->getOption( 'testing_theme' ) === 'true' ) {
+				$env_up_options['--themes'][] = $woo_extension;
+			} else {
+				$env_up_options['--plugins'][] = $woo_extension;
+			}
 		}
 
 		$additional_volumes = [];
 
-		if ( ! ExtensionDownloader::is_valid_plugin_slug( $woo_extension ) ) {
-			$output->writeln( sprintf( '<error>Invalid WooCommerce Extension Slug or Marketplace ID: "%s"</error>', $woo_extension ) );
+		if ( ! empty( $woo_extension ) ) {
+			if ( ! ExtensionDownloader::is_valid_plugin_slug( $woo_extension ) ) {
+				$output->writeln( sprintf( '<error>Invalid WooCommerce Extension Slug or Marketplace ID: "%s"</error>', $woo_extension ) );
 
-			return Command::FAILURE;
+				return Command::FAILURE;
+			}
 		}
 
 		$env_up_options['--volumes'] = $additional_volumes;
@@ -314,7 +328,11 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::FAILURE;
 		}
 
-		$this->e2e_test_manager->run_tests( $env_info, $woo_extension, $compatibility, $test_mode, $bootstrap_only );
+		if ( is_null( $woo_extension ) ) {
+			$woo_extension = '';
+		}
+
+		$this->e2e_test_manager->run_tests( $env_info, $compatibility, $test_mode, $bootstrap_only, $woo_extension );
 
 		return Command::SUCCESS;
 	}
@@ -396,7 +414,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
+				$parsed_options['env_up']["--$option_name"] = $option_value;
 			}
 		}
 

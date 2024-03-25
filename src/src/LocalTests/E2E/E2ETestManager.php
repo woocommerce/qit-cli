@@ -21,6 +21,9 @@ class E2ETestManager {
 	/** @var OutputInterface $output */
 	protected $output;
 
+	/** @var PlaywrightCodegen */
+	protected $playwright_codegen;
+
 	/**
 	 * @var array<string, string>
 	 */
@@ -33,24 +36,21 @@ class E2ETestManager {
 	/** @var bool */
 	public static $has_report = false;
 
-	public function __construct( Docker $docker, OutputInterface $output ) {
+	public function __construct( Docker $docker, PlaywrightCodegen $playwright_codegen, OutputInterface $output ) {
 		$this->docker = $docker;
 		$this->output = $output;
+		$this->playwright_codegen = $playwright_codegen;
 	}
 
 	/**
 	 * @param E2EEnvInfo $env_info
-	 * @param string     $sut - System Under Test.
+	 * @param string     $sut - System Under Test, if any.
 	 * @param string     $compatibility_mode - "default", "full", or a comma-separated list of plugin slugs.
 	 * @param string     $test_mode One of the allowed test modes.
 	 * @param bool       $bootstrap_only If true, will only bootstrap.
 	 */
-	public function run_tests( E2EEnvInfo $env_info, string $sut, string $compatibility_mode, string $test_mode, bool $bootstrap_only ): void {
+	public function run_tests( E2EEnvInfo $env_info, string $compatibility_mode, string $test_mode, bool $bootstrap_only, string $sut ): void {
 		$test_result = TestResult::init_from( $env_info );
-
-		if ( empty( $env_info->tests ) ) {
-			throw new \RuntimeException( 'No tests found for the given plugins.' );
-		}
 
 		$this->output->writeln( '<info>Bootstrapping Plugins</info>' );
 
@@ -84,19 +84,26 @@ class E2ETestManager {
 		if ( $bootstrap_only ) {
 			if ( $test_mode === 'codegen' ) {
 				$io = new SymfonyStyle( App::make( InputInterface::class ), $this->output );
+				$io->success( "Open the site URL above on Playwright Codegen and start generating tests.\nLearn More: https://qit.woo.com/docs/codegen" );
 
-				$io->success( 'Run Playwright Codegen from your computer now. Learn More: https://qit.woo.com/docs/codegen' );
+				$this->playwright_codegen->open_codegen( $env_info );
+
+				return;
+			} else {
+				$this->output->writeln( '' );
+
+				$question = new Question( '<comment>Environment ready. Press "Enter" when you are done to terminate it.</comment>' );
+				$question->setValidator( function ( $answer ) {
+					return $answer;
+				} );
+				( new QuestionHelper() )->ask( App::make( InputInterface::class ), $this->output, $question );
+
+				return;
 			}
+		}
 
-			$this->output->writeln( '' );
-
-			$question = new Question( '<comment>Environment ready. Press "Enter" when you are done to terminate it.</comment>' );
-			$question->setValidator( function ( $answer ) {
-				return $answer;
-			} );
-			( new QuestionHelper() )->ask( App::make( InputInterface::class ), $this->output, $question );
-
-			return;
+		if ( empty( $env_info->tests ) ) {
+			throw new \RuntimeException( 'No tests found for the given plugins.' );
 		}
 
 		$this->output->writeln( '<info>Running E2E Tests</info>' );
