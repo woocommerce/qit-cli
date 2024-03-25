@@ -81,22 +81,13 @@ class UploadCustomTestCommand extends Command {
 			$zip_to_upload = $test_path;
 		} else {
 			try {
-				// Is must have a "tests" directory.
-				if ( ! is_dir( $test_path . '/tests' ) ) {
-					$output->writeln( '<error>Invalid custom test format.</error>' );
-					// Print the expected directory.
-					$output->writeln( sprintf( '<info>Expected directory: %s</info>', realpath( $test_path ) . '/tests' ) );
-
-					return Command::FAILURE;
-				}
-
 				// If it doesn't have a "bootstrap" directory, let the user know and proceed.
 				if ( ! is_dir( $test_path . '/bootstrap' ) ) {
 					$output->writeln( '<comment>No "bootstrap" directory found.</comment>' );
 				}
 
 				// Check if at least one ".js", ".ts" or ".tsx" file exists in the tests directory.
-				$possible_pw_files = glob( "$test_path/tests/*.{js,ts,tsx}", GLOB_BRACE );
+				$possible_pw_files = glob( "$test_path/*.{js,ts,tsx}", GLOB_BRACE );
 
 				// Fail: No JS files in the tests directory.
 				if ( empty( $possible_pw_files ) ) {
