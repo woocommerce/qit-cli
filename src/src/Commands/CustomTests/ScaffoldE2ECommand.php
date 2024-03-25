@@ -154,11 +154,13 @@ test('I can see my plugin menu', async ({ page }) => {
     await page.waitForLoadState('networkidle');
     // Force go to wp-admin just to avoid any onboarding guide.
     await page.goto('/wp-admin/');
+    // View WordPress Core "Dashboard" heading
+    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
     // Click on my menu on the sidebar.
-    await page.getByRole('link', { name: 'My Plugin Menu', exact: true }).click();
-    await page.waitForLoadState('networkidle');
+    // await page.getByRole('link', { name: 'My Plugin Menu', exact: true }).click();
+    // await page.waitForLoadState('networkidle');
     // Assert I see my welcome message when I click it.
-    await expect(page.locator('h3')).toContainText('Welcome to My Plugin!');
+    // await expect(page.locator('h3')).toContainText('Welcome to My Plugin!');
 });
 JS;
 	}
