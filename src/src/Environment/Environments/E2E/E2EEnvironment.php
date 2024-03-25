@@ -70,6 +70,9 @@ class E2EEnvironment extends Environment {
 			], '0:0' );
 		}
 
+		// Copy mu-plugins.
+		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'mkdir -p /var/www/html/wp-content/mu-plugins && cp /qit/mu-plugins/* /var/www/html/wp-content/mu-plugins 2>&1' ] );
+
 		// Setup WordPress.
 		$this->output->writeln( '<info>Setting up WordPress...</info>' );
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/wordpress-setup.sh 2>&1' ], [
@@ -175,7 +178,7 @@ class E2EEnvironment extends Environment {
 		$named_volume = sprintf( 'qit_env_volume_%s', $this->env_info->env_id );
 		$process      = new Process( [ App::make( Docker::class )->find_docker(), 'volume', 'create', $named_volume ] );
 		$process->run();
-		
+
 		$default_volumes['/var/www/html'] = $named_volume;
 
 		return $default_volumes;
