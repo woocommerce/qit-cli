@@ -75,6 +75,9 @@ class ScaffoldE2ECommand extends Command {
 		}
 
 		$output->writeln( '<info>Example E2E test generated in: ' . $path_to_generate . '</info>' );
+		$output->writeln( 'You can now run your example test with <comment>qit run:e2e <your_slug> <path_to_test> --ui</comment>' );
+		$output->writeln( 'When you are ready to publish your tests, you can run <comment>qit upload:test <your_slug> <path_to_test></comment>' );
+		$output->writeln( 'Read more about it on our documentation: https://qit.woo.com/docs/' );
 
 		return Command::SUCCESS;
 	}
