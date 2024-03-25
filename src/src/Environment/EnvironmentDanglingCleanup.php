@@ -42,6 +42,9 @@ class EnvironmentDanglingCleanup {
 	/** @var array<string> */
 	protected $dangling_networks = [];
 
+	/** @var array<string> */
+	protected $dangling_volumes = [];
+
 	public function __construct(
 		EnvironmentMonitor $environment_monitor,
 		Filesystem $filesystem,
@@ -67,6 +70,7 @@ class EnvironmentDanglingCleanup {
 		$this->detect_dangling_containers_exited();
 		$this->detect_dangling_containers_running();
 		$this->detect_dangling_networks();
+		$this->detect_dangling_volumes();
 		$this->detect_dangling_directories();
 
 		// Check if there are actions to perform.
@@ -109,6 +113,17 @@ class EnvironmentDanglingCleanup {
 				$remove_process->mustRun();
 			} catch ( \Exception $e ) {
 				$this->debug_output( "Failed to remove network: {$network_name} - " . $remove_process->getOutput() . $remove_process->getErrorOutput() );
+			}
+		}
+
+		foreach ( $this->dangling_volumes as $volume_name ) {
+			$this->debug_output( "Removing dangling Docker volume: {$volume_name}" );
+
+			$remove_process = new Process( [ 'docker', 'volume', 'rm', $volume_name ] );
+			try {
+				$remove_process->mustRun();
+			} catch ( \Exception $e ) {
+				$this->debug_output( "Failed to remove volume: {$volume_name} - " . $remove_process->getOutput() . $remove_process->getErrorOutput() );
 			}
 		}
 
@@ -328,6 +343,38 @@ class EnvironmentDanglingCleanup {
 
 			if ( strpos( $network_name, '_qit_network_' ) !== false ) {
 				$this->dangling_networks[] = $network_name;
+			}
+		}
+	}
+
+	protected function detect_dangling_volumes(): void {
+		$running_environments = $this->environment_monitor->get();
+
+		// List the networks.
+		$list_process = new Process( [ 'docker', 'volume', 'ls', '--format=json', '--filter=name=_qit_env_volume_' ] );
+		$list_process->run();
+		$volumes_output = $list_process->getOutput();
+
+		$lines = explode( "\n", $volumes_output );
+
+		foreach ( $lines as $line ) {
+			$c = json_decode( $line, true );
+			if ( $c === null ) {
+				continue;
+			}
+			if ( empty( $c['Name'] ) ) {
+				continue;
+			}
+			$volume_name = $c['Name'];
+
+			foreach ( $running_environments as $env_info ) {
+				if ( strpos( $volume_name, $env_info->env_id ) !== false ) {
+					continue 2;
+				}
+			}
+
+			if ( strpos( $volume_name, '_qit_env_volume_' ) !== false ) {
+				$this->dangling_volumes[] = $volume_name;
 			}
 		}
 	}
