@@ -160,8 +160,8 @@ class EnvironmentDanglingCleanup {
 			}
 
 			if ( ! is_null( $unexpected_contents ) ) {
-				$this->output->writeln( '<comment>Failed to cleanup dangling directory</comment >' );
-				$this->output->writeln( sprintf( 'Unexpected file: %s', $unexpected_contents->getFilename() ) );
+				$this->output->writeln( '<comment>Failed to cleanup dangling directory</comment>' );
+				$this->output->writeln( sprintf( 'Unexpected %s: %s', $unexpected_contents->isDir() ? 'directory' : 'file', $unexpected_contents->getFilename() ) );
 
 				// Ask the user if we can delete it.
 				$question = new Question( 'Do you want to delete this directory? [y/N] ', 'n' );
