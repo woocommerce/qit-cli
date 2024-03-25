@@ -5,6 +5,8 @@ namespace QIT_CLI\Commands\CustomTests;
 use QIT_CLI\Upload;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\Zipper;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -87,11 +89,19 @@ class UploadCustomTestCommand extends Command {
 				}
 
 				// Check if at least one ".js", ".ts" or ".tsx" file exists in the tests directory.
-				$possible_pw_files = glob( "$test_path/*.{js,ts,tsx}", GLOB_BRACE );
+				$possible_pw_files = [];
+				$extensions        = [ 'js', 'ts', 'tsx' ];
+
+				foreach ( new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $test_path ) ) as $file ) {
+					if ( $file->isDir() || ! in_array( $file->getExtension(), $extensions, true ) ) {
+						continue;
+					}
+					$possible_pw_files[] = $file->getPathname();
+				}
 
 				// Fail: No JS files in the tests directory.
 				if ( empty( $possible_pw_files ) ) {
-					throw new \RuntimeException( 'No ".js", ".ts" or ".tsx" file found in "tests" directory.' );
+					throw new \RuntimeException( 'No ".js", ".ts" or ".tsx" file found.' );
 				}
 
 				// Check that at least one of these files is actually PW.
@@ -103,7 +113,7 @@ class UploadCustomTestCommand extends Command {
 
 				// Fail: None of the JS files are Playwright.
 				if ( empty( $pw_files ) ) {
-					throw new \RuntimeException( 'No Playwright test found in "tests" directory.' );
+					throw new \RuntimeException( 'No Playwright test found.' );
 				}
 
 				$zip_to_upload = sys_get_temp_dir() . '/' . uniqid( 'e2e-test-' ) . '.zip';
