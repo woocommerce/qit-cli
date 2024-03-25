@@ -176,21 +176,14 @@ abstract class Environment {
 		$process = new Process( [ PHP_BINARY, $this->env_info->temporary_env . '/docker-compose-generator.php' ] );
 
 		$default_volumes = [
-			'/qit/bin'   => "{$this->env_info->temporary_env}/bin",
-			'/qit/cache' => $this->cache_dir,
+			'/qit/bin'        => "{$this->env_info->temporary_env}/bin",
+			'/qit/mu-plugins' => "{$this->env_info->temporary_env}/mu-plugins",
+			'/qit/cache'      => $this->cache_dir,
 		];
 
 		$default_volumes = $this->additional_default_volumes( $default_volumes );
 
 		$volumes = array_merge( $default_volumes, $this->env_info->volumes );
-
-		// Map mu-plugins individually instead of the whole container to avoid bringing mu-plugins in container back to host.
-		foreach ( new \DirectoryIterator( $this->env_info->temporary_env . '/mu-plugins' ) as $mu_plugin ) {
-			/** @var \SplFileInfo $mu_plugin */
-			if ( $mu_plugin->isFile() && $mu_plugin->getExtension() === 'php' ) {
-				$volumes[ '/var/www/html/wp-content/mu-plugins/' . $mu_plugin->getFilename() ] = "{$this->env_info->temporary_env}/mu-plugins/{$mu_plugin->getFilename()}";
-			}
-		}
 
 		/*
 		 * Create directories if needed so that they are mapped to inside
@@ -198,6 +191,9 @@ abstract class Environment {
 		 * at which point create the parent dir.
 		 */
 		foreach ( $volumes as $in_container => $local ) {
+			if ( strpos( $local, 'qit_env_volume' ) !== false ) {
+				continue;
+			}
 			if ( stripos( $local, '.' ) === false ) {
 				if ( ! file_exists( $local ) ) {
 					if ( ! mkdir( $local, 0755, true ) ) {

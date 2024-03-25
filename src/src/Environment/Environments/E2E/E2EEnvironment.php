@@ -3,12 +3,14 @@
 namespace QIT_CLI\Environment\Environments\E2E;
 
 use QIT_CLI\App;
+use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\EnvUpChecker;
 use QIT_CLI\Environment\PluginActivationReportRenderer;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Process\Process;
 
 class E2EEnvironment extends Environment {
 	/** @var string */
@@ -169,7 +171,12 @@ class E2EEnvironment extends Environment {
 	 * @return array<string,string>
 	 */
 	protected function additional_default_volumes( array $default_volumes ): array {
-		$default_volumes['/var/www/html'] = "{$this->env_info->temporary_env}/html";
+		// Create a named docker volume.
+		$named_volume = sprintf( 'qit_env_volume_%s', $this->env_info->env_id );
+		$process      = new Process( [ App::make( Docker::class )->find_docker(), 'volume', 'create', $named_volume ] );
+		$process->run();
+		
+		$default_volumes['/var/www/html'] = $named_volume;
 
 		return $default_volumes;
 	}
