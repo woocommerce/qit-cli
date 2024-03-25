@@ -116,15 +116,20 @@ class EnvironmentDanglingCleanup {
 			return;
 		}
 
+		/*
+		 * The directories that are expected to exist in the root dir of a temporary environment.
+		 */
 		$expected_directories = [
 			'bin',
 			'cache',
 			'html',
-			'playwright-codegen',
 			'docker',
 			'mu-plugins',
 		];
 
+		/*
+		 * The file extensions that are expected to exist in the root dir of a temporary environment.
+		 */
 		$allowed_extensions = [
 			'php',
 			'js',

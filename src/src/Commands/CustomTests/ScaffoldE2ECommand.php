@@ -53,15 +53,15 @@ class ScaffoldE2ECommand extends Command {
 			return Command::FAILURE;
 		}
 
-		// bootstrap.php.
-		if ( ! file_put_contents( $path_to_generate . '/bootstrap/bootstrap.php', $this->bootstrap_php_example() ) ) {
+		// bootstrap.php (read from text file to avoid our prefixer).
+		if ( ! file_put_contents( $path_to_generate . '/bootstrap/bootstrap.php', file_get_contents( __DIR__ . '/scaffolding/bootstrap-php.txt' ) ) ) {
 			$output->writeln( '<error>Could not create file: ' . $path_to_generate . '/bootstrap/bootstrap.php</error>' );
 
 			return Command::FAILURE;
 		}
 
-		// mu-plugin.php.
-		if ( ! file_put_contents( $path_to_generate . '/bootstrap/mu-plugin.php', $this->bootstrap_mu_plugin_example() ) ) {
+		// mu-plugin.php (read from text file to avoid our prefixer).
+		if ( ! file_put_contents( $path_to_generate . '/bootstrap/mu-plugin.php', file_get_contents( __DIR__ . '/scaffolding/mu-plugin.txt' ) ) ) {
 			$output->writeln( '<error>Could not create file: ' . $path_to_generate . '/bootstrap/mu-plugin.php</error>' );
 
 			return Command::FAILURE;
@@ -87,51 +87,20 @@ class ScaffoldE2ECommand extends Command {
 		return <<<'SHELL'
 #!/bin/bash
 
-# (All bootstrap files are optional, if you don't need them, just delete this file)
+# Bootstrap Shell Script (Optional)
+
+# Purpose: This script is executed before test runs to set up the testing environment.
 #
-# This is an example bootstrap shell script.
-# It will be executed before the tests are run.
-# You can use WP CLI here to setup things that are needed for your tests.
-# For instance, if your tests require a specific theme to be active, you can install it here.
-# wp theme install twentytwentynine
-# Then, during your test, you can activate the theme you installed.
-# Or anything else you might need to do with WP CLI.
+# Usage:
+# - Use WP CLI to configure prerequisites for your tests. 
+# - Example: To install a specific theme required for tests:
+#   wp theme install twentytwentynine
+#   (You can then activate this theme during your tests)
 #
-# Read more about it on our documentation: https://qit.woo.com/docs/
+# Note: Delete this file if it's not required for your setup.
+#
+# Documentation: Detailed instructions available at https://qit.woo.com/docs/
 SHELL;
-	}
-
-	protected function bootstrap_php_example(): string {
-		return <<<'PHP'
-<?php
-/*
- * (All bootstrap files are optional, if you don't need them, just delete this file)
- * 
- * This is an example bootstrap PHP script.
- * It will be executed before the tests are run.
- * This file will be called only ONCE during the bootstrap phase, before the tests are run.
- * If you need something that runs on every request, use the mu-plugin.php instead.
- * This is a plain PHP script without WordPress.
- * If you need WordPress here, you can load it with:
- * require '/var/www/html/wp-load.php';
- * 
- * Read more about it on our documentation: https://qit.woo.com/docs/
- */
-PHP;
-	}
-
-	protected function bootstrap_mu_plugin_example(): string {
-		return <<<'PHP'
-<?php
-/*
- * (All bootstrap files are optional, if you don't need them, just delete this file)
- * 
- * This is an example mu-plugin PHP script.
- * It will be executed on every request.
- * 
- * Read more about it on our documentation: https://qit.woo.com/docs/
- */
-PHP;
 	}
 
 	protected function example_spec_js(): string {
