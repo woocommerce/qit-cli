@@ -171,7 +171,7 @@ class EnvironmentDanglingCleanup {
 				$this->output->writeln( sprintf( 'Unexpected %s: %s', $unexpected_contents->isDir() ? 'directory' : 'file', $unexpected_contents->getFilename() ) );
 
 				// Ask the user if we can delete it.
-				$question = new Question( sprintf('Do you want to delete this directory "%s"? [y/N] ', $directory), 'n' );
+				$question = new Question( sprintf( 'Do you want to delete this directory "%s"? [y/N] ', $directory ), 'n' );
 				$answer   = ( new QuestionHelper() )->ask( $this->input, $this->output, $question );
 				if ( strtolower( $answer ) !== 'y' ) {
 					$this->output->writeln( 'Skipping directory deletion.' );

@@ -37,17 +37,17 @@ class E2ETestManager {
 	public static $has_report = false;
 
 	public function __construct( Docker $docker, PlaywrightCodegen $playwright_codegen, OutputInterface $output ) {
-		$this->docker = $docker;
-		$this->output = $output;
+		$this->docker             = $docker;
+		$this->output             = $output;
 		$this->playwright_codegen = $playwright_codegen;
 	}
 
 	/**
 	 * @param E2EEnvInfo $env_info
-	 * @param string     $sut - System Under Test, if any.
 	 * @param string     $compatibility_mode - "default", "full", or a comma-separated list of plugin slugs.
 	 * @param string     $test_mode One of the allowed test modes.
 	 * @param bool       $bootstrap_only If true, will only bootstrap.
+	 * @param string     $sut - System Under Test, if any.
 	 */
 	public function run_tests( E2EEnvInfo $env_info, string $compatibility_mode, string $test_mode, bool $bootstrap_only, string $sut ): void {
 		$test_result = TestResult::init_from( $env_info );

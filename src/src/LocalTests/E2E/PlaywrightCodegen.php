@@ -7,7 +7,7 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use Symfony\Component\Process\Process;
 
 class PlaywrightCodegen {
-	public function open_codegen( E2EEnvInfo $env_info ) {
+	public function open_codegen( E2EEnvInfo $env_info ): void {
 		if ( ! file_exists( Config::get_qit_dir() . 'playwright-codegen' ) ) {
 			if ( ! mkdir( Config::get_qit_dir() . 'playwright-codegen', 0755, true ) ) {
 				throw new \RuntimeException( 'Could not create the playwright-codegen directory: ' . Config::get_qit_dir() . 'playwright-codegen' );
@@ -33,7 +33,7 @@ class PlaywrightCodegen {
 		$process->setIdleTimeout( 600 );
 		$process->run();
 
-		// Open Codegen;
+		// Open Codegen.
 		$process = new Process( [ 'npx', 'playwright', 'codegen', $env_info->site_url ], Config::get_qit_dir() . 'playwright-codegen' );
 		$process->setTimeout( null );
 		$process->setIdleTimeout( null );
