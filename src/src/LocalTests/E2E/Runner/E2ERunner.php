@@ -26,28 +26,26 @@ abstract class E2ERunner {
 			throw new \Exception( "Invalid E2E Test Path: $e2e_test_path" );
 		}
 
-		if ( is_dir( $e2e_test_path . '/tests' ) ) {
-			/** @var \SplFileInfo $file */
-			foreach ( new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $e2e_test_path . '/tests' ) ) as $file ) {
-				if ( $file->getBasename() === '.' || $file->getBasename() === '..' || $file->isLink() || ! $file->isFile() ) {
-					continue;
-				}
+		/** @var \SplFileInfo $file */
+		foreach ( new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $e2e_test_path ) ) as $file ) {
+			if ( $file->getBasename() === '.' || $file->getBasename() === '..' || $file->isLink() || ! $file->isFile() ) {
+				continue;
+			}
 
-				// Fetch the first 4kb of the file.
-				$contents = file_get_contents( $file->getPathname(), false, null, 0, 4096 );
+			// Fetch the first 4kb of the file.
+			$contents = file_get_contents( $file->getPathname(), false, null, 0, 4096 );
 
-				// Playwright.
-				if ( in_array( $file->getExtension(), [ 'js', 'ts', 'tsx' ], true ) ) {
-					// Search for playwright module imports.
-					if ( strpos( $contents, '@playwright' ) !== false ) {
-						return 'playwright';
-					}
+			// Playwright.
+			if ( in_array( $file->getExtension(), [ 'js', 'ts', 'tsx' ], true ) ) {
+				// Search for playwright module imports.
+				if ( strpos( $contents, '@playwright' ) !== false ) {
+					return 'playwright';
 				}
+			}
 
-				// Codeception.
-				if ( in_array( $file->getExtension(), [ 'php' ], true ) ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
-					// no-op for now.
-				}
+			// Codeception.
+			if ( in_array( $file->getExtension(), [ 'php' ], true ) ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
+				// no-op for now.
 			}
 		}
 
