@@ -3,10 +3,10 @@
 namespace QIT_CLI\Commands\CustomTests;
 
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use function QIT_CLI\normalize_path;
 
 class ScaffoldE2ECommand extends Command {
@@ -21,13 +21,9 @@ class ScaffoldE2ECommand extends Command {
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		$path = $input->getArgument( 'path' );
 
-		$path_to_generate = normalize_path( $path ) . 'e2e';
+		$path_to_generate = normalize_path( $path );
 
-		$helper   = new QuestionHelper();
-		$question = $this->getHelper( 'question' )->createQuestion( $output, 'This will scaffold an example E2E test in ' . $path_to_generate . '. Continue? [y/n] ', 'y' );
-		if ( ! $helper->ask( $input, $output, $question, 'y' ) ) {
-			$output->writeln( 'Aborted.' );
-
+		if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "Generating E2E tests in \"$path_to_generate\" <question>Continue? (y/n)</question> ", false ) ) ) {
 			return Command::SUCCESS;
 		}
 
@@ -51,32 +47,34 @@ class ScaffoldE2ECommand extends Command {
 		}
 
 		// bootstrap.sh.
-		if ( ! file_get_contents( $path_to_generate . '/bootstrap/bootstrap.sh', $this->generate_bootstrap_shell_example() ) ) {
+		if ( ! file_put_contents( $path_to_generate . '/bootstrap/bootstrap.sh', $this->generate_bootstrap_shell_example() ) ) {
 			$output->writeln( '<error>Could not create file: ' . $path_to_generate . '/bootstrap/bootstrap.sh</error>' );
 
 			return Command::FAILURE;
 		}
 
 		// bootstrap.php.
-		if ( ! file_get_contents( $path_to_generate . '/bootstrap/bootstrap.php', $this->bootstrap_php_example() ) ) {
+		if ( ! file_put_contents( $path_to_generate . '/bootstrap/bootstrap.php', $this->bootstrap_php_example() ) ) {
 			$output->writeln( '<error>Could not create file: ' . $path_to_generate . '/bootstrap/bootstrap.php</error>' );
 
 			return Command::FAILURE;
 		}
 
 		// mu-plugin.php.
-		if ( ! file_get_contents( $path_to_generate . '/bootstrap/mu-plugin.php', $this->bootstrap_mu_plugin_example() ) ) {
+		if ( ! file_put_contents( $path_to_generate . '/bootstrap/mu-plugin.php', $this->bootstrap_mu_plugin_example() ) ) {
 			$output->writeln( '<error>Could not create file: ' . $path_to_generate . '/bootstrap/mu-plugin.php</error>' );
 
 			return Command::FAILURE;
 		}
 
 		// example.spec.js.
-		if ( ! file_get_contents( $path_to_generate . '/example.spec.js', $this->example_spec_js() ) ) {
+		if ( ! file_put_contents( $path_to_generate . '/example.spec.js', $this->example_spec_js() ) ) {
 			$output->writeln( '<error>Could not create file: ' . $path_to_generate . '/example.spec.js</error>' );
 
 			return Command::FAILURE;
 		}
+
+		$output->writeln( '<info>Example E2E test generated in: ' . $path_to_generate . '</info>' );
 
 		return Command::SUCCESS;
 	}
