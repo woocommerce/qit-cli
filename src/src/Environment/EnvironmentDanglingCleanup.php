@@ -120,6 +120,8 @@ class EnvironmentDanglingCleanup {
 			'bin',
 			'cache',
 			'html',
+			'playwright-codegen',
+			'docker',
 			'mu-plugins',
 		];
 
