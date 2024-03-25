@@ -64,14 +64,14 @@ class ScaffoldE2ECommand extends Command {
 			return Command::FAILURE;
 		}
 
-		// mu-plugin.php
+		// mu-plugin.php.
 		if ( ! file_get_contents( $path_to_generate . '/bootstrap/mu-plugin.php', $this->bootstrap_mu_plugin_example() ) ) {
 			$output->writeln( '<error>Could not create file: ' . $path_to_generate . '/bootstrap/mu-plugin.php</error>' );
 
 			return Command::FAILURE;
 		}
 
-		// example.spec.js
+		// example.spec.js.
 		if ( ! file_get_contents( $path_to_generate . '/example.spec.js', $this->example_spec_js() ) ) {
 			$output->writeln( '<error>Could not create file: ' . $path_to_generate . '/example.spec.js</error>' );
 
@@ -159,6 +159,5 @@ test('I can see my plugin menu', async ({ page }) => {
     await expect(page.locator('h3')).toContainText('Welcome to My Plugin!');
 });
 JS;
-
 	}
 }
