@@ -70,9 +70,6 @@ abstract class EnvInfo implements \JsonSerializable {
 	 */
 	public $themes = [];
 
-	/** @var string */
-	public $mounted_volume_path;
-
 	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
 		return $this;
