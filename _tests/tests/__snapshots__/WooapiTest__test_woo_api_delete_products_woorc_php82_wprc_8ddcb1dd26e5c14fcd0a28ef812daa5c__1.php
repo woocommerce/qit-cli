@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 7 failed, 13 passed, 20 total | Tests: 77 skipped, 22 failed, 158 passed, 257 total.",
+            "test_summary": "Test Suites: 0 skipped, 8 failed, 12 passed, 20 total | Tests: 77 skipped, 24 failed, 156 passed, 257 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,12 +41,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 7,
-                "numPassedTestSuites": 13,
+                "numFailedTestSuites": 8,
+                "numPassedTestSuites": 12,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 20,
-                "numFailedTests": 22,
-                "numPassedTests": 158,
+                "numFailedTests": 24,
+                "numPassedTests": 156,
                 "numPendingTests": 77,
                 "numTotalTests": 257,
                 "testResults": [
@@ -115,7 +115,7 @@
                     },
                     {
                         "file": "customers\\/customers-crud.test.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Customers API tests: CRUD": [],
@@ -134,11 +134,11 @@
                                 },
                                 {
                                     "title": "can retrieve customers",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can retrieve all customers",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "Customers API tests: CRUD > Create a customer": [
@@ -1376,7 +1376,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 7 failed, 13 passed, 20 total | Tests: 77 skipped, 22 failed, 158 passed, 257 total."
+                "summary": "Test Suites: 0 skipped, 8 failed, 12 passed, 20 total | Tests: 77 skipped, 24 failed, 156 passed, 257 total."
             }
         },
         {
