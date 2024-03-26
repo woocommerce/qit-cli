@@ -147,7 +147,7 @@ abstract class Environment {
 				'run',
 				'--rm',
 				'-v',
-				sprintf( "%s:/app/qit", \Phar::running() ? \Phar::running( true ) : QIT_ABSPATH ),
+				sprintf( "%s:/app/qit", \Phar::running() ? \Phar::running( false ) : QIT_ABSPATH ),
 				'-v',
 				"qit_env_volume_{$this->env_info->env_id}:/var/www/html",
 				'-v',
@@ -163,7 +163,7 @@ abstract class Environment {
 				'automattic/qit-runner-php-7.4-fpm-alpine:latest',
 				'sh',
 				'-c',
-				sprintf( 'php %s internal:ext-download "%s" --json', \Phar::running() ? \Phar::running( true ) : '/app/qit/qit-cli.php', base64_encode( json_encode( $this->env_info ) ) ),
+				sprintf( 'php %s internal:ext-download "%s" --json', \Phar::running() ? '/app/qit': '/app/qit/qit-cli.php', base64_encode( json_encode( $this->env_info ) ) ),
 			]
 		);
 
