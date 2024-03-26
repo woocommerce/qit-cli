@@ -239,10 +239,6 @@ if ( $is_connected_to_backend ) {
 	$application->add( $container->make( ShowReportCommand::class ) );
 	$application->add( $container->make( ScaffoldE2ECommand::class ) );
 
-	if ( getenv( 'QIT_INTERNAL' ) ) {
-		$application->add( $container->make( ExtensionDownloaderCommand::class ) );
-	}
-
 	if ( Config::is_development_mode() ) {
 		// Dynamically crete Mass Test run command.
 		$container->make( CreateMassTestCommands::class )->register_commands( $application );

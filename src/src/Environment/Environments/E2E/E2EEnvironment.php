@@ -72,7 +72,7 @@ class E2EEnvironment extends Environment {
 		}
 
 		// Copy mu-plugins.
-		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'mkdir -p /var/www/html/wp-content/mu-plugins && cp /qit/mu-plugins/* /var/www/html/wp-content/mu-plugins 2>&1' ], [], '82:82' );
+		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'mkdir -p /var/www/html/wp-content/mu-plugins && cp /qit/mu-plugins/* /var/www/html/wp-content/mu-plugins 2>&1' ] );
 
 		// Setup WordPress.
 		$this->output->writeln( '<info>Setting up WordPress...</info>' );
@@ -83,7 +83,7 @@ class E2EEnvironment extends Environment {
 			'THEMES_TO_INSTALL'   => json_encode( $this->env_info->themes ),
 			'SITE_URL'            => $this->env_info->site_url,
 			'QIT_DOCKER_REDIS'    => $this->env_info->object_cache ? 'yes' : 'no',
-		],'82:82' );
+		] );
 
 		// Activate plugins.
 		if ( ! $this->skip_activating_plugins ) {
@@ -177,8 +177,46 @@ class E2EEnvironment extends Environment {
 	protected function additional_default_volumes( array $default_volumes ): array {
 		// Create a named docker volume.
 		$named_volume = sprintf( 'qit_env_volume_%s', $this->env_info->env_id );
-		$process      = new Process( [ App::make( Docker::class )->find_docker(), 'volume', 'create', $named_volume ] );
-		$process->run();
+		$process      = new Process( [
+			App::make( Docker::class )->find_docker(),
+			'volume',
+			'create',
+			'--driver',
+			'local',
+			$named_volume,
+		] );
+		if ( $this->output->isVerbose() ) {
+			$this->output->writeln( $process->getCommandLine() );
+		}
+		$process->mustRun( function ( $type, $buffer ) {
+			if ( $this->output->isVerbose() ) {
+				$this->output->write( $buffer );
+			}
+		} );
+
+		$args = [
+			App::make( Docker::class )->find_docker(),
+			'run',
+			'--rm',
+			'--mount',
+			'src=' . $named_volume . ',dst=/var/www/html',
+			'busybox',
+			'sh',
+			'-c',
+			'mkdir -p /var/www/html/wp-content/plugins && mkdir -p /var/www/html/wp-content/themes && chown -R 82:82 /var/www/html',
+		];
+
+		/*
+		 * Create "wp-content/plugins" and "wp-content/themes" directories mount binds have correct parent directory permissions.
+		 * We make them owned by 82:82, which is the UID of "www-data" in our alpine PHP images.
+		 * Once the container starts and the entrypoint is triggered, FixUID will map these to the runtime UID.
+		 */
+		$dirs_process = new Process( $args );
+		$dirs_process->mustRun( function ( $type, $buffer ) {
+			if ( $this->output->isVerbose() ) {
+				$this->output->write( $buffer );
+			}
+		} );
 
 		$default_volumes['/var/www/html'] = $named_volume;
 

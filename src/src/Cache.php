@@ -125,9 +125,6 @@ class Cache {
 	 * @throws \RuntimeException When could not write to the cache file.
 	 */
 	protected function save(): void {
-		if ( getenv( 'QIT_INTERNAL' ) ) {
-			return;
-		}
 		$written = file_put_contents( $this->cache_file_path, json_encode( $this->cache ) );
 
 		if ( ! $written ) {
