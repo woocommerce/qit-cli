@@ -140,6 +140,7 @@ class EnvironmentDanglingCleanup {
 			'html',
 			'docker',
 			'mu-plugins',
+			'tests',
 		];
 
 		/*
