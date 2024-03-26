@@ -66,6 +66,11 @@ class ExtensionDownloader {
 			App::make( $handler_type )->maybe_download_extensions( $e, $cache_dir );
 		}
 
+		// Internal developer error.
+		if ( empty( $env_info->mounted_volume_path ) ) {
+			throw new \LogicException( 'Mounted volume path is not set.' );
+		}
+
 		foreach ( $extensions as $e ) {
 			if ( ! file_exists( $e->path ) ) {
 				throw new \RuntimeException( 'Download failed.' );
@@ -74,7 +79,8 @@ class ExtensionDownloader {
 			clearstatcache( true, $e->path );
 
 			if ( is_file( $e->path ) ) {
-				$this->extension_zip->extract_zip( $e->path, "$env_info->temporary_env/html/wp-content/{$e->type}s" );
+				// Volume bind.
+				$this->extension_zip->extract_zip( $e->path, "$env_info->mounted_volume_path/wp-content/{$e->type}s" );
 			} elseif ( is_dir( $e->path ) ) {
 				if ( ! getenv( 'QIT_ALLOW_WRITE' ) ) {
 					// Set it as read-only to prevent dev messing up their local copy inadvertently (default behavior).
@@ -82,10 +88,11 @@ class ExtensionDownloader {
 					// Inform the user about the read-only mapping.
 					$this->output->writeln( "Notice: Mapping '{$e->type}s/{$e->extension_identifier}' as read-only to protect your local copy." );
 
-					// Set it as read-only.
-					$env_info->volumes[ "/app/wp-content/{$e->type}s/{$e->extension_identifier}:ro" ] = $e->path;
+					// Mount-bind. Set it as read-only.
+					$env_info->volumes[ "/var/www/html/wp-content/{$e->type}s/{$e->extension_identifier}:ro" ] = $e->path;
 				} else {
-					$env_info->volumes[ "/app/wp-content/{$e->type}s/{$e->extension_identifier}" ] = $e->path;
+					// Mount-bind.
+					$env_info->volumes[ "/var/www/html/wp-content/{$e->type}s/{$e->extension_identifier}" ] = $e->path;
 				}
 			} else {
 				throw new \RuntimeException( 'Download failed.' );

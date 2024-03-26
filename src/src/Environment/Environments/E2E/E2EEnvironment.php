@@ -11,6 +11,7 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
+use function QIT_CLI\normalize_path;
 
 class E2EEnvironment extends Environment {
 	/** @var string */
@@ -174,10 +175,29 @@ class E2EEnvironment extends Environment {
 	 * @return array<string,string>
 	 */
 	protected function additional_default_volumes( array $default_volumes ): array {
-		// Create a named docker volume.
+		/*
+		 * Mounted volumes are only available inside the Docker container.
+		 * Since they are not available on the host, it's much faster on
+		 * virtualized environments such as Mac.
+		 *
+		 * For the main /var/www/html volume, we use a mounted volume,
+		 * for the others we use regular bind mounts.
+		 */
 		$named_volume = sprintf( 'qit_env_volume_%s', $this->env_info->env_id );
 		$process      = new Process( [ App::make( Docker::class )->find_docker(), 'volume', 'create', $named_volume ] );
 		$process->run();
+
+		// Inspect volume.
+		$inspect_process = new Process( [ App::make( Docker::class )->find_docker(), 'volume', 'inspect', $named_volume ] );
+		$inspect_process->run();
+		$volume_info = json_decode( $inspect_process->getOutput(), true );
+		$mount_point = normalize_path( $volume_info[0]['Mountpoint'] ) ?? '';
+
+		if ( empty( $mount_point ) ) {
+			throw new \RuntimeException( sprintf( 'Could not find mount point for volume %s', $named_volume ) );
+		}
+
+		$this->env_info->mounted_volume_path = $mount_point;
 
 		$default_volumes['/var/www/html'] = $named_volume;
 
