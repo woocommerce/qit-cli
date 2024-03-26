@@ -112,29 +112,34 @@ class CustomTestsDownloader {
 				 * Download test from QIT and map it.
 				 */
 				if ( array_key_exists( $extension->extension_identifier, $custom_tests ) ) {
-					if ( array_key_exists( $test_type, $custom_tests[ $extension->extension_identifier ]['tests'] ) ) {
-						$custom_test_url       = $custom_tests[ $extension->extension_identifier ]['tests'][ $test_type ]; // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
-						$custom_test_file_name = md5( $custom_test_url ) . '.zip';
-						$custom_test_file_path = "$cache_dir/tests/$test_type/$custom_test_file_name";
+					if ( array_key_exists( 'tests', $custom_tests[ $extension->extension_identifier ] ) ) {
+						if ( array_key_exists( $test_type, $custom_tests[ $extension->extension_identifier ]['tests'] ) ) {
+							$custom_test_url       = $custom_tests[ $extension->extension_identifier ]['tests'][ $test_type ]; // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
+							$custom_test_file_name = md5( $custom_test_url ) . '.zip';
+							$custom_test_file_path = "$cache_dir/tests/$test_type/$custom_test_file_name";
 
-						if ( ! file_exists( $custom_test_file_path ) ) {
-							RequestBuilder::download_file( $custom_test_url, $custom_test_file_path );
-						}
+							if ( ! file_exists( $custom_test_file_path ) ) {
+								RequestBuilder::download_file( $custom_test_url, $custom_test_file_path );
+							}
 
-						$this->zipper->extract_zip( $custom_test_file_path, "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}" );
+							$this->zipper->extract_zip( $custom_test_file_path, "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}" );
 
-						$env_info->volumes[ "/qit/tests/$test_type/{$extension->extension_identifier}" ] = "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}";
+							$env_info->volumes[ "/qit/tests/$test_type/{$extension->extension_identifier}" ] = "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}";
 
-						if ( $env_info instanceof E2EEnvInfo ) {
-							$env_info->tests[ $extension->extension_identifier ] = [
-								'extension'         => $extension->extension_identifier,
-								'type'              => $extension->type,
-								'path_in_container' => "/qit/tests/$test_type/{$extension->extension_identifier}",
-								'path_in_host'      => "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}",
-							];
+							if ( $env_info instanceof E2EEnvInfo ) {
+								$env_info->tests[ $extension->extension_identifier ] = [
+									'extension'         => $extension->extension_identifier,
+									'type'              => $extension->type,
+									'path_in_container' => "/qit/tests/$test_type/{$extension->extension_identifier}",
+									'path_in_host'      => "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}",
+								];
+							}
+						} else {
+							$this->output->writeln( sprintf( 'No custom tests found for %s', $extension->extension_identifier ) );
 						}
 					} else {
-						$this->output->writeln( sprintf( 'No custom tests found for %s', $extension->extension_identifier ) );
+						// WordPress.org plugins.
+						$this->output->writeln( sprintf( 'No custom tests found for %s.', $extension->extension_identifier ) );
 					}
 				} else {
 					$this->output->writeln( sprintf( 'No custom tests found for %s', $extension->extension_identifier ) );

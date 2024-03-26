@@ -36,7 +36,6 @@ class Zipper {
 			}
 		}
 
-
 		$this->validate_zip( $zip_file );
 
 		$start = microtime( true );
