@@ -127,9 +127,15 @@ abstract class Environment {
 		$this->maybe_create_cache_dir();
 		$this->copy_environment();
 		$this->environment_monitor->environment_added_or_updated( $this->env_info );
+
+		$this->generate_docker_compose();
+		$this->post_generate_docker_compose();
+
 		if ( ! empty( $this->env_info->plugins ) || ! empty( $this->env_info->themes ) ) {
 			$this->output->writeln( '<info>Downloading plugins and themes...</info>' );
 		}
+
+		$extension_downloader = new Process( [  ] );
 
 		$this->extension_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );
 
@@ -138,8 +144,6 @@ abstract class Environment {
 		}
 
 		$this->output->writeln( '<info>Setting up Docker...</info>' );
-		$this->generate_docker_compose();
-		$this->post_generate_docker_compose();
 		$this->up_docker_compose();
 		$this->post_up();
 

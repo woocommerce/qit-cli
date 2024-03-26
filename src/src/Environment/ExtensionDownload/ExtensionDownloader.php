@@ -74,7 +74,11 @@ class ExtensionDownloader {
 			clearstatcache( true, $e->path );
 
 			if ( is_file( $e->path ) ) {
+				// Extract zip to temp environment.
 				$this->extension_zip->extract_zip( $e->path, "$env_info->temporary_env/html/wp-content/{$e->type}s" );
+
+				// Add a volume bind.
+				$env_info->volumes[ "/var/www/html/wp-content/{$e->type}s/{$e->extension_identifier}" ] = "$env_info->temporary_env/html/wp-content/{$e->type}s/{$e->extension_identifier}";
 			} elseif ( is_dir( $e->path ) ) {
 				if ( ! getenv( 'QIT_ALLOW_WRITE' ) ) {
 					// Set it as read-only to prevent dev messing up their local copy inadvertently (default behavior).
@@ -82,10 +86,11 @@ class ExtensionDownloader {
 					// Inform the user about the read-only mapping.
 					$this->output->writeln( "Notice: Mapping '{$e->type}s/{$e->extension_identifier}' as read-only to protect your local copy." );
 
-					// Set it as read-only.
-					$env_info->volumes[ "/app/wp-content/{$e->type}s/{$e->extension_identifier}:ro" ] = $e->path;
+					// Add a read-only volume bind.
+					$env_info->volumes[ "/var/www/html/wp-content/{$e->type}s/{$e->extension_identifier}:ro" ] = $e->path;
 				} else {
-					$env_info->volumes[ "/app/wp-content/{$e->type}s/{$e->extension_identifier}" ] = $e->path;
+					// Add a volume bind.
+					$env_info->volumes[ "/var/www/html/wp-content/{$e->type}s/{$e->extension_identifier}" ] = $e->path;
 				}
 			} else {
 				throw new \RuntimeException( 'Download failed.' );
