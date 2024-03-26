@@ -149,6 +149,7 @@ class EnvironmentDanglingCleanup {
 			'php',
 			'js',
 			'json',
+			'yml',
 		];
 
 		foreach ( $this->dangling_directories as $directory ) {

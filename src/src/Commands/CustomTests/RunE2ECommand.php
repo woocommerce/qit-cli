@@ -70,7 +70,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'],
 			[
-				// We remove "woocommerce_version" from the argments because we add our own,
+				// We remove "woocommerce_version" from the arguments because we add our own,
 				// which uses the same logic of `qit env:up`, since it's tied to Woo E2E synced tests.
 				'woocommerce_version',
 				// Todo: Implement capability of passing feature flags to tests.
@@ -96,9 +96,9 @@ class RunE2ECommand extends DynamicCommand {
 		$this->addOption(
 			'woocommerce_version',
 			null,
-			InputOption::VALUE_REQUIRED,
+			InputOption::VALUE_OPTIONAL,
 			'The WooCommerce Version. Accepts "nightly", "stable", or a GitHub Tag (eg: 8.6.1).',
-			'stable'
+			''
 		);
 
 		$this->addOption(
@@ -232,15 +232,17 @@ class RunE2ECommand extends DynamicCommand {
 		$woocommerce_version = $input->getOption( 'woocommerce_version' );
 		$bootstrap_only      = $input->getOption( 'bootstrap_only' ) || $test_mode === 'codegen';
 
-		if ( $woocommerce_version === 'nightly' ) {
-			$env_up_options['--plugins'][] = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
-		} elseif ( $woocommerce_version === 'rc' ) {
-			$this->output->writeln( '"RC" is not yet supported by run:e2e. Using "nightly" instead. If you want a specific RC, use the GitHub Tag' );
-			$env_up_options['--plugins'][] = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
-		} elseif ( $woocommerce_version === 'stable' ) {
-			$env_up_options['--plugins'][] = 'woocommerce';
-		} else {
-			$env_up_options['--plugins'][] = "https://github.com/woocommerce/woocommerce/releases/download/$woocommerce_version/woocommerce.zip";
+		if ( ! empty( $woocommerce_version ) ) {
+			if ( $woocommerce_version === 'nightly' ) {
+				$env_up_options['--plugins'][] = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
+			} elseif ( $woocommerce_version === 'rc' ) {
+				$this->output->writeln( '"RC" is not yet supported by run:e2e. Using "nightly" instead. If you want a specific RC, use the GitHub Tag' );
+				$env_up_options['--plugins'][] = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
+			} elseif ( $woocommerce_version === 'stable' ) {
+				$env_up_options['--plugins'][] = 'woocommerce';
+			} else {
+				$env_up_options['--plugins'][] = "https://github.com/woocommerce/woocommerce/releases/download/$woocommerce_version/woocommerce.zip";
+			}
 		}
 
 		if ( ! empty( $woo_extension ) ) {
