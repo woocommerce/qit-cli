@@ -6,6 +6,7 @@ use QIT_CLI\Commands\CacheCommand;
 use QIT_CLI\Commands\ConfigDirCommand;
 use QIT_CLI\Commands\CreateMassTestCommands;
 use QIT_CLI\Commands\CreateRunCommands;
+use QIT_CLI\Commands\CustomTests\ExtensionDownloaderCommand;
 use QIT_CLI\Commands\CustomTests\ScaffoldE2ECommand;
 use QIT_CLI\Commands\CustomTests\ShowReportCommand;
 use QIT_CLI\Commands\CustomTests\UploadCustomTestCommand;
@@ -237,6 +238,10 @@ if ( $is_connected_to_backend ) {
 	$application->add( $container->make( UploadCustomTestCommand::class ) );
 	$application->add( $container->make( ShowReportCommand::class ) );
 	$application->add( $container->make( ScaffoldE2ECommand::class ) );
+
+	if ( getenv( 'QIT_INTERNAL' ) ) {
+		$application->add( $container->make( ExtensionDownloaderCommand::class ) );
+	}
 
 	if ( Config::is_development_mode() ) {
 		// Dynamically crete Mass Test run command.

@@ -135,9 +135,50 @@ abstract class Environment {
 			$this->output->writeln( '<info>Downloading plugins and themes...</info>' );
 		}
 
-		$extension_downloader = new Process( [  ] );
+		if ( ! file_exists( Config::get_qit_dir() . 'ext-cache' ) ) {
+			if ( ! mkdir( Config::get_qit_dir() . 'ext-cache', 0755 ) ) {
+				throw new \RuntimeException( 'Failed to create ext-cache directory on ' . Config::get_qit_dir() . 'ext-cache' );
+			}
+		}
 
-		$this->extension_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );
+		$extension_downloader = new Process(
+			[
+				$this->docker->find_docker(),
+				'run',
+				'--rm',
+				'-v',
+				sprintf( "%s:/app/qit", \Phar::running() ? \Phar::running( true ) : QIT_ABSPATH ),
+				'-v',
+				"qit_env_volume_{$this->env_info->env_id}:/var/www/html",
+				'-v',
+				sprintf( '%s:/qit/home', Config::get_qit_dir() ),
+				'-v',
+				sprintf( '%s:/qit/home/ext-cache', $this->cache_dir ),
+				'-e',
+				'QIT_INTERNAL=1',
+				'-e',
+				'QIT_HOME=/qit/home',
+				'--network',
+				'host',
+				'automattic/qit-runner-php-7.4-fpm-alpine:latest',
+				'sh',
+				'-c',
+				sprintf( 'php %s internal:ext-download "%s" --json', \Phar::running() ? \Phar::running( true ) : '/app/qit/qit-cli.php', base64_encode( json_encode( $this->env_info ) ) ),
+			]
+		);
+
+		$extension_downloader->setTimeout( 600 );
+		$extension_downloader->setIdleTimeout( 600 );
+		$extension_downloader->setPty( false );
+		$extension_downloader->run( function ( $type, $buffer ) {
+			if ( $this->output->isVerbose() ) {
+				$this->output->write( $buffer );
+			}
+		} );
+
+		if ( ! $extension_downloader->isSuccessful() ) {
+			throw new \RuntimeException( "Failed to download extensions. Output: \n" . $extension_downloader->getOutput() . $extension_downloader->getErrorOutput() );
+		}
 
 		if ( $type === 'up_and_test' ) {
 			$this->custom_tests_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );

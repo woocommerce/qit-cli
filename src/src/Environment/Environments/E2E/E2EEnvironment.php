@@ -72,7 +72,7 @@ class E2EEnvironment extends Environment {
 		}
 
 		// Copy mu-plugins.
-		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'mkdir -p /var/www/html/wp-content/mu-plugins && cp /qit/mu-plugins/* /var/www/html/wp-content/mu-plugins 2>&1' ] );
+		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'mkdir -p /var/www/html/wp-content/mu-plugins && cp /qit/mu-plugins/* /var/www/html/wp-content/mu-plugins 2>&1' ], [], '82:82' );
 
 		// Setup WordPress.
 		$this->output->writeln( '<info>Setting up WordPress...</info>' );
@@ -83,7 +83,7 @@ class E2EEnvironment extends Environment {
 			'THEMES_TO_INSTALL'   => json_encode( $this->env_info->themes ),
 			'SITE_URL'            => $this->env_info->site_url,
 			'QIT_DOCKER_REDIS'    => $this->env_info->object_cache ? 'yes' : 'no',
-		] );
+		],'82:82' );
 
 		// Activate plugins.
 		if ( ! $this->skip_activating_plugins ) {
@@ -179,41 +179,6 @@ class E2EEnvironment extends Environment {
 		$named_volume = sprintf( 'qit_env_volume_%s', $this->env_info->env_id );
 		$process      = new Process( [ App::make( Docker::class )->find_docker(), 'volume', 'create', $named_volume ] );
 		$process->run();
-
-		/*
-
-		// Inspect volume.
-		$inspect_process = new Process( [ App::make( Docker::class )->find_docker(), 'volume', 'inspect', $named_volume ] );
-		$inspect_process->run();
-		$volume_info = json_decode( $inspect_process->getOutput(), true );
-		$mount_point = normalize_path( $volume_info[0]['Mountpoint'] ) ?? '';
-
-		if ( empty( $mount_point ) ) {
-			throw new \RuntimeException( sprintf( 'Could not find mount point for volume %s', $named_volume ) );
-		}
-
-		$args = [
-			App::make( Docker::class )->find_docker(),
-			'run', '--rm',
-			'-v', $named_volume.':/var/www/html',
-			'busybox',
-			'sh',
-			'-c',
-		];
-
-		if (Docker::should_set_user()) {
-			$u = Docker::get_user_and_group();
-
-			$args = array_merge( $args, [ "mkdir -p /var/www/html/wp-content/plugins && mkdir -p /var/www/html/wp-content/themes && && chown -R {$u['user']}:{$u['group']} /var/www/html/wp-content" ] );
-		} else {
-			$args = array_merge( $args, [ 'mkdir -p /var/www/html/wp-content/plugins && mkdir -p /var/www/html/wp-content/themes && && chown -R 82:82 /var/www/html/wp-content' ] );
-		}
-
-
-		// Create "wp-content/plugins" and "wp-content/themes" directories
-		$dirs_process = new Process( $args );
-		$dirs_process->run();
-		*/
 
 		$default_volumes['/var/www/html'] = $named_volume;
 

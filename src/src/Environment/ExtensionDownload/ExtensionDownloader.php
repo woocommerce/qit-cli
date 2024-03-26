@@ -66,6 +66,8 @@ class ExtensionDownloader {
 			App::make( $handler_type )->maybe_download_extensions( $e, $cache_dir );
 		}
 
+		$is_docker = file_exists( '/.dockerenv' );
+
 		foreach ( $extensions as $e ) {
 			if ( ! file_exists( $e->path ) ) {
 				throw new \RuntimeException( 'Download failed.' );
@@ -75,10 +77,13 @@ class ExtensionDownloader {
 
 			if ( is_file( $e->path ) ) {
 				// Extract zip to temp environment.
-				$this->extension_zip->extract_zip( $e->path, "$env_info->temporary_env/html/wp-content/{$e->type}s" );
-
-				// Add a volume bind.
-				$env_info->volumes[ "/var/www/html/wp-content/{$e->type}s/{$e->extension_identifier}" ] = "$env_info->temporary_env/html/wp-content/{$e->type}s/{$e->extension_identifier}";
+				if ($is_docker) {
+					$this->extension_zip->extract_zip( $e->path, "/var/www/html/wp-content/{$e->type}s" );
+				} else {
+					$this->extension_zip->extract_zip( $e->path, "$env_info->temporary_env/html/wp-content/{$e->type}s" );
+					// Add a volume bind.
+					$env_info->volumes[ "/var/www/html/wp-content/{$e->type}s/{$e->extension_identifier}" ] = "$env_info->temporary_env/html/wp-content/{$e->type}s/{$e->extension_identifier}";
+				}
 			} elseif ( is_dir( $e->path ) ) {
 				if ( ! getenv( 'QIT_ALLOW_WRITE' ) ) {
 					// Set it as read-only to prevent dev messing up their local copy inadvertently (default behavior).

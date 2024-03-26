@@ -30,9 +30,12 @@ class Zipper {
 		}
 
 		// Make sure $extract_to is within Config Dir or sys_get_temp_dir.
-		if ( strpos( normalize_path( $extract_to ), Config::get_qit_dir() ) !== 0 && strpos( normalize_path( $extract_to ), normalize_path( sys_get_temp_dir() ) ) !== 0 ) {
-			throw new \RuntimeException( 'Invalid directory.' );
+		if ( ! file_exists( '/.dockerenv' ) ) {
+			if ( strpos( normalize_path( $extract_to ), Config::get_qit_dir() ) !== 0 && strpos( normalize_path( $extract_to ), normalize_path( sys_get_temp_dir() ) ) !== 0 ) {
+				throw new \RuntimeException( 'Invalid directory.' );
+			}
 		}
+
 
 		$this->validate_zip( $zip_file );
 

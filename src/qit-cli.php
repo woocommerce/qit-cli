@@ -6,6 +6,7 @@ use QIT_CLI\IO\Output;
 use Symfony\Component\Console\Application;
 
 try {
+	define( 'QIT_ABSPATH', __DIR__ );
 	require_once __DIR__ . '/vendor/autoload.php';
 	require_once __DIR__ . '/src/helpers.php';
 
