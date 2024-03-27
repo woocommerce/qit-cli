@@ -116,12 +116,24 @@ class PlaywrightRunner extends E2ERunner {
 			'sh',
 			'-c',
 			'cd /home/pwuser && ' .
-			"npm install @playwright/test@$playwright_version_to_use && " .
 			"npx playwright test $options --config /home/pwuser/qit-playwright.config.js --output /qit/results/playwright",
 		] );
 
-		$playwright_process = new Process( $playwright_args );
+		// Pull the image.
+		$pull_process = new Process( [ App::make( Docker::class )->find_docker(), 'pull', "automattic/qit-runner-playwright:$playwright_version_to_use" ] );
+		$pull_process->setTimeout( 300 );
+		$pull_process->setIdleTimeout( 300 );
+		$pull_process->run( function ( $type, $buffer ) {
+			if ( $this->output->isVerbose() || $type === Process::ERR ) {
+				$this->output->write( $buffer );
+			}
+		} );
+		if ( ! $pull_process->isSuccessful() ) {
+			throw new \RuntimeException( 'Could not pull the Playwright image.' );
+		}
 
+		// Run the tests.
+		$playwright_process = new Process( $playwright_args );
 		$playwright_process->setTimeout( 10800 ); // 3 hours.
 		$playwright_process->setIdleTimeout( 3600 ); // 1 hour.
 
