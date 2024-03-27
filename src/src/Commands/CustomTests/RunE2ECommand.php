@@ -92,6 +92,15 @@ class RunE2ECommand extends DynamicCommand {
 			'Path to your E2E tests (Optional, if not set, it will try to download your custom tests that you have previously uploaded to QIT)'
 		);
 
+		// If testing a development build, set this.
+		$this->addOption(
+			'zip',
+			null,
+			InputOption::VALUE_OPTIONAL,
+			'If testing a development build, set this to the path of the zip file.',
+			null
+		);
+
 		// If "woo_extension" (SUT) is a theme, set this.
 		$this->addOption(
 			'woocommerce_version',
@@ -186,20 +195,37 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::INVALID;
 		}
 
+		$sut_slug = '';
+
 		// SUT.
 		if ( ! empty( $woo_extension ) ) {
-			try {
-				$this->woo_extensions_list->check_woo_extension_exists( $input->getArgument( 'woo_extension' ) );
+			$zip = $input->getOption( 'zip' );
 
-				if ( is_numeric( $input->getArgument( 'woo_extension' ) ) ) {
-					$woo_extension = $this->woo_extensions_list->get_woo_extension_slug_by_id( $input->getArgument( 'woo_extension' ) );
-				} else {
-					$woo_extension = $input->getArgument( 'woo_extension' );
+			if ( empty( $zip ) ) {
+				// Testing a SUT that is published.
+				try {
+					$this->woo_extensions_list->check_woo_extension_exists( $input->getArgument( 'woo_extension' ) );
+
+					if ( is_numeric( $input->getArgument( 'woo_extension' ) ) ) {
+						$woo_extension = $this->woo_extensions_list->get_woo_extension_slug_by_id( $input->getArgument( 'woo_extension' ) );
+					} else {
+						$woo_extension = $input->getArgument( 'woo_extension' );
+					}
+
+					$sut_slug = $woo_extension;
+				} catch ( \Exception $e ) {
+					$this->output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+
+					return Command::FAILURE;
 				}
-			} catch ( \Exception $e ) {
-				$this->output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
-
-				return Command::FAILURE;
+			} else {
+				// Testing a development build as SUT.
+				if ( is_numeric( $input->getArgument( 'woo_extension' ) ) ) {
+					$sut_slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( $input->getArgument( 'woo_extension' ) );
+				} else {
+					$sut_slug = $input->getArgument( 'woo_extension' );
+				}
+				$woo_extension = $zip;
 			}
 		}
 
@@ -255,8 +281,8 @@ class RunE2ECommand extends DynamicCommand {
 
 		$additional_volumes = [];
 
-		if ( ! empty( $woo_extension ) ) {
-			if ( ! ExtensionDownloader::is_valid_plugin_slug( $woo_extension ) ) {
+		if ( ! empty( $sut_slug ) ) {
+			if ( ! ExtensionDownloader::is_valid_plugin_slug( $sut_slug ) ) {
 				$output->writeln( sprintf( '<error>Invalid WooCommerce Extension Slug or Marketplace ID: "%s"</error>', $woo_extension ) );
 
 				return Command::FAILURE;
@@ -300,7 +326,7 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		putenv( 'QIT_UP_AND_TEST=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-		putenv( sprintf( 'QIT_SUT="%s"', $woo_extension ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		putenv( sprintf( 'QIT_SUT="%s"', $sut_slug ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 
 		$up_exit_status_code = $env_up_command->run(
 			new ArrayInput( $env_up_options ),
@@ -416,7 +442,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
+				$parsed_options['env_up']["--$option_name"] = $option_value;
 			}
 		}
 

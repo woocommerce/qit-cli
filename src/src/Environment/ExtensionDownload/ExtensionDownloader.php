@@ -115,9 +115,15 @@ class ExtensionDownloader {
 		] as $type => $extension_ids ) {
 			foreach ( $extension_ids as $extension_id ) {
 				$ext                       = new Extension();
-				$ext->extension_identifier = $extension_id;
 				$ext->type                 = $type;
 				$ext->path                 = '';
+
+				if ( file_exists( $extension_id ) ) {
+					// If the extension_id is a file, we use the basename, if it's a file, we remove the extension.
+					$ext->extension_identifier = is_dir( $extension_id ) ? basename( $extension_id ) : pathinfo( $extension_id, PATHINFO_FILENAME );
+				} else {
+					$ext->extension_identifier = $extension_id;
+				}
 
 				if ( array_key_exists( $extension_id, $extensions ) ) {
 					throw new \InvalidArgumentException( 'Duplicate extension found.' );
