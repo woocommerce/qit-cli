@@ -87,17 +87,17 @@ class RunE2ECommand extends DynamicCommand {
 
 		// Extension slug/ID.
 		$this->addArgument(
-			'path',
+			'test-path',
 			InputArgument::OPTIONAL,
 			'Path to your E2E tests (Optional, if not set, it will try to download your custom tests that you have previously uploaded to QIT)'
 		);
 
 		// If testing a development build, set this.
 		$this->addOption(
-			'zip',
+			'sut',
 			null,
 			InputOption::VALUE_OPTIONAL,
-			'If testing a development build, set this to the path of the zip file.',
+			'Path to the development build of the extension you are testing. Accepts a WordPress plugin or theme directory, or a WordPress plugin or theme zip file.',
 			null
 		);
 
@@ -214,23 +214,23 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		// Local ZIP build for the SUT.
-		$zip = $input->getOption( 'zip' );
+		$sut_override = $input->getOption( 'sut' );
 
-		if ( ! empty( $zip ) ) {
+		if ( ! empty( $sut_override ) ) {
 			if ( empty( $woo_extension ) ) {
-				$this->output->writeln( '<error>Cannot set the "zip" option without setting the "woo_extension" argument.</error>' );
+				$this->output->writeln( '<error>Cannot set the "sut" option without setting the "woo_extension" argument.</error>' );
 
 				return Command::INVALID;
 			}
 
-			putenv( sprintf( 'QIT_SUT_ZIP=%s', $zip ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+			putenv( sprintf( 'QIT_SUT_OVERRIDE=%s', $sut_override ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
 
 		// Test Path, if local.
-		$path = $input->getArgument( 'path' );
+		$test_path = $input->getArgument( 'test-path' );
 
-		if ( ! empty( $path ) && file_exists( $path ) && ! empty( $woo_extension ) ) {
-			putenv( sprintf( 'QIT_CUSTOM_TESTS_PATH=%s|%s', $woo_extension, $path ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		if ( ! empty( $test_path ) && file_exists( $test_path ) && ! empty( $woo_extension ) ) {
+			putenv( sprintf( 'QIT_CUSTOM_TESTS_PATH=%s|%s', $woo_extension, $test_path ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
 
 		$compatibility = $other_options['compatibility'];

@@ -83,7 +83,7 @@ class ExtensionDownloader {
 					// Set it as read-only to prevent dev messing up their local copy inadvertently (default behavior).
 
 					// Inform the user about the read-only mapping.
-					$this->output->writeln( "Notice: Mapping '{$e->type}s/{$e->extension_identifier}' as read-only to protect your local copy." );
+					$this->output->writeln( "Info: Mapping '{$e->type}s/{$e->extension_identifier}' as read-only to protect your local copy." );
 
 					// Add a read-only volume bind.
 					$env_info->volumes[ "/var/www/html/wp-content/{$e->type}s/{$e->extension_identifier}:ro" ] = $e->path;
@@ -126,13 +126,13 @@ class ExtensionDownloader {
 				}
 
 				if ( getenv( 'QIT_SUT' ) === $ext->extension_identifier ) {
-					if ( getenv( 'QIT_SUT_ZIP' ) ) {
+					if ( getenv( 'QIT_SUT_OVERRIDE' ) ) {
 						static $printed = false;
 						if ( ! $printed ) {
-							$this->output->writeln( sprintf( 'Using local development build for %s.', $ext->extension_identifier ) );
+							$this->output->writeln( sprintf( 'Using local build for %s.', $ext->extension_identifier ) );
 							$printed = true;
 						}
-						$ext->path = getenv( 'QIT_SUT_ZIP' );
+						$ext->path = getenv( 'QIT_SUT_OVERRIDE' );
 					}
 				}
 
