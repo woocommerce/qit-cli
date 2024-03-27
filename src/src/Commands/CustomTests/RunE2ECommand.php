@@ -195,38 +195,35 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::INVALID;
 		}
 
-		$sut_slug = '';
-
 		// SUT.
 		if ( ! empty( $woo_extension ) ) {
-			$zip = $input->getOption( 'zip' );
+			// Testing a SUT that is published.
+			try {
+				$this->woo_extensions_list->check_woo_extension_exists( $input->getArgument( 'woo_extension' ) );
 
-			if ( empty( $zip ) ) {
-				// Testing a SUT that is published.
-				try {
-					$this->woo_extensions_list->check_woo_extension_exists( $input->getArgument( 'woo_extension' ) );
-
-					if ( is_numeric( $input->getArgument( 'woo_extension' ) ) ) {
-						$woo_extension = $this->woo_extensions_list->get_woo_extension_slug_by_id( $input->getArgument( 'woo_extension' ) );
-					} else {
-						$woo_extension = $input->getArgument( 'woo_extension' );
-					}
-
-					$sut_slug = $woo_extension;
-				} catch ( \Exception $e ) {
-					$this->output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
-
-					return Command::FAILURE;
-				}
-			} else {
-				// Testing a development build as SUT.
 				if ( is_numeric( $input->getArgument( 'woo_extension' ) ) ) {
-					$sut_slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( $input->getArgument( 'woo_extension' ) );
+					$woo_extension = $this->woo_extensions_list->get_woo_extension_slug_by_id( $input->getArgument( 'woo_extension' ) );
 				} else {
-					$sut_slug = $input->getArgument( 'woo_extension' );
+					$woo_extension = $input->getArgument( 'woo_extension' );
 				}
-				$woo_extension = $zip;
+			} catch ( \Exception $e ) {
+				$this->output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+
+				return Command::FAILURE;
 			}
+		}
+
+		// Local ZIP build for the SUT.
+		$zip = $input->getOption( 'zip' );
+
+		if ( ! empty( $zip ) ) {
+			if ( empty( $woo_extension ) ) {
+				$this->output->writeln( '<error>Cannot set the "zip" option without setting the "woo_extension" argument.</error>' );
+
+				return Command::INVALID;
+			}
+
+			putenv( sprintf( 'QIT_SUT_ZIP=%s', $zip ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
 
 		// Test Path, if local.
@@ -326,7 +323,7 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		putenv( 'QIT_UP_AND_TEST=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-		putenv( sprintf( 'QIT_SUT="%s"', $sut_slug ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		putenv( sprintf( 'QIT_SUT=%s', $woo_extension ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 
 		$up_exit_status_code = $env_up_command->run(
 			new ArrayInput( $env_up_options ),

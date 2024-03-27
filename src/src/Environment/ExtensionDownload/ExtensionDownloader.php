@@ -125,6 +125,17 @@ class ExtensionDownloader {
 					$ext->extension_identifier = $extension_id;
 				}
 
+				if ( getenv( 'QIT_SUT' ) === $ext->extension_identifier ) {
+					if ( getenv( 'QIT_SUT_ZIP' ) ) {
+						static $printed = false;
+						if ( ! $printed ) {
+							$this->output->writeln( sprintf( 'Using local development build for %s.', $ext->extension_identifier ) );
+							$printed = true;
+						}
+						$ext->path = getenv( 'QIT_SUT_ZIP' );
+					}
+				}
+
 				if ( array_key_exists( $extension_id, $extensions ) ) {
 					throw new \InvalidArgumentException( 'Duplicate extension found.' );
 				}
