@@ -2102,12 +2102,7 @@
             }
         },
         {
-            "debug_log": [
-                {
-                    "count": "1",
-                    "message": "PHP Fatal error: Maximum execution time of 30 seconds exceeded in \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php on line 129"
-                }
-            ]
+            "debug_log": []
         }
     ]
 ]';

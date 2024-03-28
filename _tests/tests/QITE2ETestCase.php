@@ -166,6 +166,13 @@ class QITE2ETestCase extends TestCase {
 							continue;
 						}
 
+						// Ignore containing "Maximum execution time of 30 seconds exceeded in" in E2E.
+						if ( stripos( $file_path, 'woo-e2e/' ) !== false && stripos( $debug_log['message'], 'Maximum execution time of 30 seconds exceeded in' ) !== false ) {
+							echo "Removing 'Maximum execution time of 30 seconds exceeded in' from debug_log.message\n";
+							unset( $value[ $k ] );
+							continue;
+						}
+
 						/*
 						 * Normalize PHP debug logs captured during test runs.
 						 *
