@@ -125,12 +125,12 @@ class AddBackend extends Command {
 		try {
 			$this->woo_extensions_list->fetch_woo_extensions_available();
 			if ( empty( $this->woo_extensions_list->get_woo_extension_list() ) ) {
-				throw new \RuntimeException();
+				throw new \RuntimeException( 'Failed to get the list of Extensions. Do you have any?' );
 			}
 		} catch ( \Exception $e ) {
 			$this->auth->delete_manager_secret();
 			$this->cache->delete( 'manager_url' );
-			$output->writeln( sprintf( '<error>We could not authenticate to %s using the provided Manager Secret.</error>', escapeshellarg( $manager_url ) ) );
+			$output->writeln( sprintf( '<error>We could not authenticate to %s using the provided Manager Secret. Error: %s</error>', escapeshellarg( $manager_url ), $e->getMessage() ) );
 
 			return Command::FAILURE;
 		}

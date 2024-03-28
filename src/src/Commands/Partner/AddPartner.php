@@ -42,7 +42,7 @@ class AddPartner extends Command {
 	protected function configure() {
 		$this
 			->setDescription( 'Configure a new WCCOM Marketplace Partner that the QIT CLI can connect to.' )
-			->setHelp( sprintf( "Configure the QIT CLI to be able to interact with %s on behalf of a given partner.\nAuthenticating documentation: https://woocommerce.github.io/qit-documentation/#/authenticating", get_wccom_url() ) )
+			->setHelp( sprintf( "Configure the QIT CLI to be able to interact with %s on behalf of a given partner.\nAuthenticating documentation: https://qit.woo.com/docs/support/authenticating", get_wccom_url() ) )
 			->addOption( 'user', 'u', InputOption::VALUE_OPTIONAL, '(Optional) Woo.com Partner Developer username.' )
 			->addOption( 'qit_token', 't', InputOption::VALUE_OPTIONAL, '(Optional) Woo.com Partner Developer QIT Token.' )
 			->addOption( 'application_password', 'p', InputOption::VALUE_OPTIONAL, '(DEPRECATED) This has been renamed to "QIT Token" and will be removed. A regular application password will not work.' );
@@ -95,11 +95,11 @@ TEXT
 
 			$question->setValidator( function ( $qit_token ) {
 				if ( empty( $qit_token ) ) {
-					throw new \RuntimeException( 'Invalid QIT Token. Questions? https://woocommerce.github.io/qit-documentation/#/authenticating' );
+					throw new \RuntimeException( 'Invalid QIT Token. Questions? https://qit.woo.com/docs/support/authenticating' );
 				}
 
 				if ( ! preg_match( '#^[a-z0-9 ]+$#i', $qit_token ) ) {
-					throw new \RuntimeException( 'A QIT Token should consist of alpha-numeric characters and spaces. Questions? https://woocommerce.github.io/qit-documentation/#/authenticating' );
+					throw new \RuntimeException( 'A QIT Token should consist of alpha-numeric characters and spaces. Questions? https://qit.woo.com/docs/support/authenticating' );
 				}
 
 				return $qit_token;
@@ -117,7 +117,7 @@ TEXT
 		$user = strtolower( $user );
 
 		if ( ! filter_var( $user, FILTER_VALIDATE_EMAIL ) && ! preg_match( '#^[a-z0-9_-]{1,70}$#i', $user ) ) {
-			throw new \InvalidArgumentException( 'The username must be either a valid e-mail, or contain only letters, numbers, underscores or dashes. Questions? https://woocommerce.github.io/qit-documentation/#/authenticating' );
+			throw new \InvalidArgumentException( 'The username must be either a valid e-mail, or contain only letters, numbers, underscores or dashes. Questions? https://qit.woo.com/docs/support/authenticating' );
 		}
 
 		// Remove any non-alphanumeric characters from the username.
@@ -167,8 +167,8 @@ TEXT;
 		$io->section( <<<SECTION
 Getting Started:
 
-Documentation: https://woocommerce.github.io/qit-documentation/
-Running Tests: https://woocommerce.github.io/qit-documentation/#/cli/running-tests
+Documentation: https://qit.woo.com/docs/
+Running Tests: https://qit.woo.com/docs/cli/running-tests
 SECTION
 		);
 

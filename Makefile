@@ -16,16 +16,16 @@ endif
 ## Run a command inside an alpine PHP 8 CLI image.
 ## 1. Command to execute, eg: "./vendor/bin/phpcs" 2. Working dir (optional)
 define execPhpAlpine
-    @docker image inspect qit-cli-php-xdebug > /dev/null 2>&1 || docker build --build-arg CI=${CI} -t qit-cli-php-xdebug ./_build/docker/php83
+    @docker image inspect qit-cli-php-xdebug-pcntl > /dev/null 2>&1 || docker build --build-arg CI=${CI} -t qit-cli-php-xdebug-pcntl ./_build/docker/php83
     docker run --rm \
         --user $(DOCKER_USER) \
         -v "${PWD}:/app" \
-        -v "${PWD}/_build/docker/php83/ini:/usr/local/etc/php/conf.d/" \
+        -v "${PWD}/_build/docker/php83/ini/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini" \
         --env QIT_HOME=/tmp \
         --env PHP_IDE_CONFIG=serverName=qit_cli \
         --workdir "$(2:=/)" \
         --add-host host.docker.internal:host-gateway \
-        qit-cli-php-xdebug \
+        qit-cli-php-xdebug-pcntl \
         bash -c "php -d xdebug.start_with_request=$(if $(filter 1,$(DEBUG)),yes,no) -d memory_limit=1G $(1)"
 endef
 

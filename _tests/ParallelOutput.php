@@ -8,6 +8,7 @@ class ParallelOutput {
 	private $headers;
 	private $processStatus;
 	private $startTimes;
+	private $nonJsonOutput;
 
 	public function __construct() {
 		$this->rawOutput     = '';
