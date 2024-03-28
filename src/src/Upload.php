@@ -28,7 +28,7 @@ class Upload {
 	 *
 	 * @return string The Upload ID or empty, if a custom test type.
 	 */
-	public function upload_build( string $upload_type, int $woo_extension_id, string $zip_path, OutputInterface $output, string $test_type = '' ): string {
+	public function upload_build( string $upload_type, int $woo_extension_id, string $zip_path, OutputInterface $output, string $test_type = '', string $test_tag = '' ): string {
 		if ( ! file_exists( $zip_path ) ) {
 			throw new \RuntimeException( sprintf( 'File %s does not exist.', $zip_path ) );
 		}
@@ -73,6 +73,10 @@ class Upload {
 
 			if ( ! empty( $test_type ) ) {
 				$data['test_type'] = $test_type;
+			}
+
+			if ( ! empty( $test_tag ) ) {
+				$data['test_tag'] = $test_tag;
 			}
 
 			$r = $this->request_builder

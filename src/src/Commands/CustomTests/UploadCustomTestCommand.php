@@ -36,12 +36,14 @@ class UploadCustomTestCommand extends Command {
 			->addArgument( 'extension', InputArgument::REQUIRED, 'The Woo extension to upload this for.' )
 			->addArgument( 'test_path', InputArgument::REQUIRED, 'The path to the custom tests to upload.' )
 			->addArgument( 'test_type', InputArgument::OPTIONAL, 'The test type.', 'e2e' )
+			->addOption( 'tag', null, InputArgument::OPTIONAL, 'The tag to use for the test. You can upload tests with different tags and choose a tag when running.', 'default' )
 			->setDescription( 'Uploads your custom test to QIT.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		$test_path = $input->getArgument( 'test_path' );
 		$test_type = $input->getArgument( 'test_type' );
+		$tag       = $input->getOption( 'tag' );
 
 		// Early bail: We only support E2E for now.
 		if ( $test_type !== 'e2e' ) {
@@ -132,7 +134,7 @@ class UploadCustomTestCommand extends Command {
 			}
 		}
 
-		$upload_id = $this->uploader->upload_build( 'custom-test', $extension_id, $zip_to_upload, $output, $test_type );
+		$upload_id = $this->uploader->upload_build( 'custom-test', $extension_id, $zip_to_upload, $output, $test_type, $tag );
 
 		if ( empty( $upload_id ) ) {
 			$output->writeln( '<error>Failed to upload test.</error>' );
