@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 3 failed, 78 passed, 81 total | Tests: 254 skipped, 4 failed, 63 passed, 321 total.",
+            "test_summary": "Test Suites: 0 skipped, 8 failed, 73 passed, 81 total | Tests: 194 skipped, 20 failed, 107 passed, 321 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -41,13 +41,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 3,
-                "numPassedTestSuites": 78,
+                "numFailedTestSuites": 8,
+                "numPassedTestSuites": 73,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 81,
-                "numFailedTests": 4,
-                "numPassedTests": 63,
-                "numPendingTests": 254,
+                "numFailedTests": 20,
+                "numPassedTests": 107,
+                "numPendingTests": 194,
                 "numTotalTests": 321,
                 "testResults": [
                     {
@@ -489,7 +489,7 @@
                     {
                         "file": "merchant\\/create-shipping-zones.spec.js",
                         "status": "failed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
@@ -520,32 +520,32 @@
                                 },
                                 {
                                     "title": "allows customer to benefit from a free Free shipping if in BC",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "allows customer to pay for a Flat rate shipping method",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/customer-payment-page.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
+                        "status": "failed",
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Merchant Flow: Orders > Customer Payment Page": [
                                 {
                                     "title": "should show the customer payment page link on a pending order",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "should load the customer payment page",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can pay for the order through the customer payment page",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -553,25 +553,25 @@
                     {
                         "file": "merchant\\/order-bulk-edit.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Bulk edit orders": [
                                 {
                                     "title": "can bulk update order status",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/order-coupon.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Apply Coupon": [
                                 {
                                     "title": "can apply a coupon",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can remove a coupon",
@@ -582,59 +582,59 @@
                     },
                     {
                         "file": "merchant\\/order-edit.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
+                        "status": "failed",
+                        "has_pending": false,
                         "tests": {
                             "Edit order": [
                                 {
                                     "title": "can view single order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can update order status",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can update order status to cancelled",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can update order details",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can add and delete order notes",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can load billing details",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Edit order > Downloadable product permissions": [
                                 {
                                     "title": "can add downloadable product permissions to order without product",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can add downloadable product permissions to order with product",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can edit downloadable product permissions",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can revoke downloadable product permissions",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "should not allow downloading a product if download attempts are exceeded",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "should not allow downloading a product if expiration date has passed",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -647,7 +647,7 @@
                             "Merchant > Order Action emails received": [
                                 {
                                     "title": "can receive new order email",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can receive completed email",
@@ -655,15 +655,15 @@
                                 },
                                 {
                                     "title": "can receive cancelled order email",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can resend new order notification",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can email invoice\\/order details to customer",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -693,81 +693,81 @@
                     },
                     {
                         "file": "merchant\\/order-search.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
+                        "status": "failed",
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Orders > Search orders": [
                                 {
                                     "title": "can search for order by order id",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"James\\" as the billing first name",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Doe\\" as the billing last name",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Automattic\\" as the billing company name",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"address1\\" as the billing first address",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"address2\\" as the billing second address",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"San Francisco\\" as the billing city name",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"94107\\" as the billing post code",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"john.doe.ordersearch@example.com\\" as the billing email",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"123456789\\" as the billing phone",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"CA\\" as the billing state",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Tim\\" as the shipping first name",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Clark\\" as the shipping last name",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Oxford Ave\\" as the shipping first address",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Linwood Ave\\" as the shipping second address",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Buffalo\\" as the shipping city name",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"14201\\" as the shipping post code",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Wanted Product\\" as the shipping item name",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -775,95 +775,95 @@
                     {
                         "file": "merchant\\/order-status-filter.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Orders > Filter Order by Status": [
                                 {
                                     "title": "should filter by All",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should filter by Pending payment",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should filter by Processing",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should filter by On hold",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should filter by Completed",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should filter by Cancelled",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should filter by Refunded",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should filter by Failed",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/page-loads.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "WooCommerce Page Load > Load WooCommerce sub pages": [
                                 {
                                     "title": "Can load Home",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Can load Orders",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Can load Customers",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Can load Reports",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Can load Settings",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Can load Status",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ],
                             "WooCommerce Page Load > Load Products sub pages": [
                                 {
                                     "title": "Can load All Products",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "Can load Add New",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Can load Categories",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Can load Tags",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Can load Attributes",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ],
                             "WooCommerce Page Load > Load Marketing sub pages": [
@@ -2098,7 +2098,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 3 failed, 78 passed, 81 total | Tests: 254 skipped, 4 failed, 63 passed, 321 total."
+                "summary": "Test Suites: 0 skipped, 8 failed, 73 passed, 81 total | Tests: 194 skipped, 20 failed, 107 passed, 321 total."
             }
         },
         {
