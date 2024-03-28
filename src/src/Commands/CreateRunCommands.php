@@ -5,6 +5,7 @@ namespace QIT_CLI\Commands;
 use QIT_CLI\App;
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
+use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
@@ -119,7 +120,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 
 				// Upload zip.
 				if ( ! empty( $options['zip'] ) ) {
-					$options['upload_id'] = $this->upload->upload_build( $options['woo_id'], $input->getArgument( 'woo_extension' ), $options['zip'], $output );
+					$options['upload_id'] = $this->upload->upload_build( 'build', $options['woo_id'], $options['zip'], $output );
 					$options['event']     = 'cli_development_extension_test';
 					unset( $options['zip'] );
 				} else {
@@ -319,11 +320,11 @@ class CreateRunCommands extends DynamicCommandCreator {
 				$hide_e2e = true;
 			}
 
-			if ( $hide_e2e ) {
-				$command->setHidden( true );
+			if ( ! $hide_e2e ) {
+				$application->add( App::make( RunE2ECommand::class ) );
 			}
+		} else {
+			$application->add( $command );
 		}
-
-		$application->add( $command );
 	}
 }

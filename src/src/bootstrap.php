@@ -6,6 +6,10 @@ use QIT_CLI\Commands\CacheCommand;
 use QIT_CLI\Commands\ConfigDirCommand;
 use QIT_CLI\Commands\CreateMassTestCommands;
 use QIT_CLI\Commands\CreateRunCommands;
+use QIT_CLI\Commands\CustomTests\ExtensionDownloaderCommand;
+use QIT_CLI\Commands\CustomTests\ScaffoldE2ECommand;
+use QIT_CLI\Commands\CustomTests\ShowReportCommand;
+use QIT_CLI\Commands\CustomTests\UploadCustomTestCommand;
 use QIT_CLI\Commands\DevModeCommand;
 use QIT_CLI\Commands\Backend\AddBackend;
 use QIT_CLI\Commands\Backend\CurrentBackend;
@@ -230,6 +234,10 @@ if ( $is_connected_to_backend ) {
 
 	// List the Woo Extensions the user can run tests against.
 	$application->add( $container->make( WooExtensionsCommand::class ) );
+
+	$application->add( $container->make( UploadCustomTestCommand::class ) );
+	$application->add( $container->make( ShowReportCommand::class ) );
+	$application->add( $container->make( ScaffoldE2ECommand::class ) );
 
 	if ( Config::is_development_mode() ) {
 		// Dynamically crete Mass Test run command.

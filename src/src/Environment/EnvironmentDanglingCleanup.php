@@ -12,7 +12,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
-use function QIT_CLI\is_ci;
 use function QIT_CLI\normalize_path;
 
 class EnvironmentDanglingCleanup {
@@ -43,6 +42,9 @@ class EnvironmentDanglingCleanup {
 	/** @var array<string> */
 	protected $dangling_networks = [];
 
+	/** @var array<string> */
+	protected $dangling_volumes = [];
+
 	public function __construct(
 		EnvironmentMonitor $environment_monitor,
 		Filesystem $filesystem,
@@ -68,6 +70,7 @@ class EnvironmentDanglingCleanup {
 		$this->detect_dangling_containers_exited();
 		$this->detect_dangling_containers_running();
 		$this->detect_dangling_networks();
+		$this->detect_dangling_volumes();
 		$this->detect_dangling_directories();
 
 		// Check if there are actions to perform.
@@ -76,7 +79,7 @@ class EnvironmentDanglingCleanup {
 		}
 
 		if ( ! $this->header_printed ) {
-			$this->output->writeln( '<info>Cleaning up dangling temporary environments...</info>' );
+			$this->output->writeln( '<info>Removing dangling test environments...</info>' );
 			$this->header_printed = true;
 		}
 
@@ -113,41 +116,88 @@ class EnvironmentDanglingCleanup {
 			}
 		}
 
+		foreach ( $this->dangling_volumes as $volume_name ) {
+			$this->debug_output( "Removing dangling Docker volume: {$volume_name}" );
+
+			$remove_process = new Process( [ 'docker', 'volume', 'rm', $volume_name ] );
+			try {
+				$remove_process->mustRun();
+			} catch ( \Exception $e ) {
+				$this->debug_output( "Failed to remove volume: {$volume_name} - " . $remove_process->getOutput() . $remove_process->getErrorOutput() );
+			}
+		}
+
 		if ( empty( $this->dangling_directories ) ) {
 			return;
 		}
 
-		// Skip asking the user permission to delete in this directory if they answer with an "A".
-		$always_delete_from_this_directory = $this->cache->get( 'always_delete_from_this_directory' );
-		$parent_dir                        = $this->get_parent_dir_to_delete();
+		/*
+		 * The directories that are expected to exist in the root dir of a temporary environment.
+		 */
+		$expected_directories = [
+			'bin',
+			'cache',
+			'html',
+			'docker',
+			'mu-plugins',
+			'tests',
+		];
 
-		if ( $always_delete_from_this_directory !== $parent_dir && ! is_ci() ) {
-			$this->output->writeln( "<info>Found dangling temporary environments in directory: $parent_dir</info>" );
-
-			$question = new Question(
-				"Do you want to clean up these environments? [Y/n/A]\nA: Yes, and always clean up in this directory in the future. (Recommended)\n",
-				'n' // Default to 'n'.
-			);
-
-			$answer = strtolower( ( new QuestionHelper() )->ask( $this->input, $this->output, $question ) );
-
-			switch ( $answer ) {
-				case 'y':
-					// no-op. Proceed with the action.
-					break;
-				case 'a':
-					$this->cache->set( 'always_delete_from_this_directory', $parent_dir, YEAR_IN_SECONDS );
-					break;
-				case 'n':
-				default:
-					$this->output->writeln( 'Please delete the dangling environments in that directory manually.' );
-
-					return;
-			}
-		}
+		/*
+		 * The file extensions that are expected to exist in the root dir of a temporary environment.
+		 */
+		$allowed_extensions = [
+			'php',
+			'js',
+			'json',
+			'yml',
+		];
 
 		foreach ( $this->dangling_directories as $directory ) {
-			$this->output->writeln( "Removing dangling directory: {$directory}" );
+			$unexpected_contents = null;
+
+			/*
+			 * We are being extra zealous here.
+			 * We already have good security boundaries for deleting files, but since
+			 * this is a recursive directory deletion, we validate the contents of the directory to be deleted.
+			 */
+			/** @var \DirectoryIterator $file_info */
+			foreach ( new \DirectoryIterator( $directory ) as $file_info ) {
+				if ( $file_info->isDot() || $file_info->isLink() ) {
+					continue;
+				}
+
+				if ( $file_info->isDir() ) {
+					if ( ! in_array( $file_info->getFilename(), $expected_directories, true ) ) {
+						$this->debug_output( "Found non-expected directory: {$file_info->getPathname()}" );
+						$unexpected_contents = $file_info;
+						break;
+					}
+				} elseif ( $file_info->isFile() ) {
+					$extension = pathinfo( $file_info->getFilename(), PATHINFO_EXTENSION );
+					if ( ! in_array( $extension, $allowed_extensions, true ) ) {
+						$this->debug_output( "Found non-expected file: {$file_info->getPathname()}" );
+						$unexpected_contents = $file_info;
+						break;
+					}
+				}
+			}
+
+			if ( ! is_null( $unexpected_contents ) ) {
+				$this->output->writeln( '<comment>Failed to cleanup dangling directory</comment>' );
+				$this->output->writeln( sprintf( 'Unexpected %s: %s', $unexpected_contents->isDir() ? 'directory' : 'file', $unexpected_contents->getFilename() ) );
+
+				// Ask the user if we can delete it.
+				$question = new Question( sprintf( 'Do you want to delete this directory "%s"? [y/N] ', $directory ), 'n' );
+				$answer   = ( new QuestionHelper() )->ask( $this->input, $this->output, $question );
+				if ( strtolower( $answer ) !== 'y' ) {
+					$this->output->writeln( 'Skipping directory deletion.' );
+					continue;
+				}
+			}
+
+			$this->debug_output( "Removing dangling directory: {$directory}" );
+
 			SafeRemove::delete_dir( $directory, Environment::get_temp_envs_dir() );
 		}
 	}
@@ -295,6 +345,38 @@ class EnvironmentDanglingCleanup {
 
 			if ( strpos( $network_name, '_qit_network_' ) !== false ) {
 				$this->dangling_networks[] = $network_name;
+			}
+		}
+	}
+
+	protected function detect_dangling_volumes(): void {
+		$running_environments = $this->environment_monitor->get();
+
+		// List the networks.
+		$list_process = new Process( [ 'docker', 'volume', 'ls', '--format=json', '--filter=name=_qit_env_volume_' ] );
+		$list_process->run();
+		$volumes_output = $list_process->getOutput();
+
+		$lines = explode( "\n", $volumes_output );
+
+		foreach ( $lines as $line ) {
+			$c = json_decode( $line, true );
+			if ( $c === null ) {
+				continue;
+			}
+			if ( empty( $c['Name'] ) ) {
+				continue;
+			}
+			$volume_name = $c['Name'];
+
+			foreach ( $running_environments as $env_info ) {
+				if ( strpos( $volume_name, $env_info->env_id ) !== false ) {
+					continue 2;
+				}
+			}
+
+			if ( strpos( $volume_name, '_qit_env_volume_' ) !== false ) {
+				$this->dangling_volumes[] = $volume_name;
 			}
 		}
 	}

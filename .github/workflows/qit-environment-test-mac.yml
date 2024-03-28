@@ -1,4 +1,8 @@
-name: QIT Environment Test - Linux
+##
+# ARM64 Macs such as M1/M2/M3 can't run Docker in CI, so we test only with older Macs.
+# More info: https://github.com/douglascamata/setup-docker-macos-action
+##
+name: QIT Environment Test - Mac (non M1)
 
 on:
   # Every day at 11pm UTC (6pm ET)
@@ -8,17 +12,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  linux_environment_test:
+  mac_environment_test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-20.04 ]
+        os: [ macos-13 ]
         php: [ '7.4' ]
         wordpress: [ 'rc' ]
-        include:
-          - os: ubuntu-20.04
-            php: '8.3'
-            wordpress: 'rc'
       fail-fast: false
     env:
       NO_COLOR: 1
@@ -37,6 +37,14 @@ jobs:
 
       - name: Connect to Staging QIT
         run: ./qit backend:add --environment="staging" --qit_secret="${{ secrets.QIT_STAGING_SECRET }}" --manager_url="https://stagingcompatibilitydashboard.wpcomstaging.com"
+
+      - name: Setup Docker on macOS
+        if: matrix.os == 'macos-13'
+        uses: douglascamata/setup-docker-macos-action@v1-alpha
+
+      - name: Check Colima Status (Mac)
+        if: matrix.os == 'macos-13'
+        run: colima status
 
       - name: Debug Docker and Docker Compose
         run: |
@@ -59,6 +67,8 @@ jobs:
 
       - name: Start environment
         working-directory: src
+        env:
+          QIT_DOCKER_RUN_TIMEOUT: 1800
         run: php qit-cli.php env:up --wordpress_version ${{ matrix.wordpress }} --php_version ${{ matrix.php }}
 
       - name: Get URL

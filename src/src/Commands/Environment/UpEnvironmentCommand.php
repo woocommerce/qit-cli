@@ -184,7 +184,9 @@ HELP
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		if ( is_windows() ) {
-			$output->writeln( '<comment>Warning: It is highly recommended to run this script from Windows Subsystem for Linux (WSL) when using Windows.</comment>' );
+			$output->writeln( '<comment>To use QIT Environments on Window, please use WSL. Check our guide here: https://qit.woo.com/docs/windows.</comment>' );
+
+			return Command::FAILURE;
 		}
 
 		try {
@@ -206,14 +208,16 @@ HELP
 		}
 
 		$this->e2e_environment->init( $env_info );
-		$this->e2e_environment->up();
+
+		// "up_and_test" is when we are using an environment to run a custom test. "up" is spinning up the environment on-demand.
+		$this->e2e_environment->up( getenv( 'QIT_UP_AND_TEST' ) ? 'up_and_test' : 'up' );
 
 		if ( $input->getOption( 'json' ) ) {
 			$output->write( json_encode( $env_info ) );
+		} else {
+			// Print the site URL in the last line for easy scripting with "wc -l" or similar.
+			$output->writeln( $env_info->site_url );
 		}
-
-		// Print the site URL as the last information for easy programmatic integrations.
-		$output->writeln( $env_info->site_url );
 
 		return Command::SUCCESS;
 	}

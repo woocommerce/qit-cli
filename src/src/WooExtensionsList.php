@@ -38,6 +38,19 @@ class WooExtensionsList {
 		}
 	}
 
+	/**
+	 * @param string|int $slug_or_id
+	 *
+	 * @return void
+	 */
+	public function check_woo_extension_exists( $slug_or_id ): void {
+		if ( is_numeric( $slug_or_id ) ) {
+			$this->get_woo_extension_slug_by_id( $slug_or_id );
+		} else {
+			$this->get_woo_extension_id_by_slug( $slug_or_id );
+		}
+	}
+
 	public function get_woo_extension_id_by_slug( string $woo_extension_slug ): int {
 		$extensions = $this->get_woo_extension_list();
 
@@ -48,5 +61,17 @@ class WooExtensionsList {
 		}
 
 		throw new \UnexpectedValueException( "Could not find Woo Extension with slug $woo_extension_slug." );
+	}
+
+	public function get_woo_extension_slug_by_id( int $woo_extension_id ): string {
+		$extensions = $this->get_woo_extension_list();
+
+		foreach ( $extensions as $e ) {
+			if ( $e['id'] === $woo_extension_id ) {
+				return $e['slug'];
+			}
+		}
+
+		throw new \UnexpectedValueException( "Could not find Woo Extension with id $woo_extension_id." );
 	}
 }

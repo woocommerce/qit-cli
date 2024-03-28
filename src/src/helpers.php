@@ -11,6 +11,10 @@ function is_windows(): bool {
 	return defined( 'PHP_WINDOWS_VERSION_BUILD' );
 }
 
+function is_mac(): bool {
+	return stripos( PHP_OS, 'Darwin' ) !== false;
+}
+
 function is_wsl(): bool {
 	return getenv( 'WSL_DISTRO_NAME' ) !== false;
 }
@@ -42,6 +46,7 @@ function validate_authentication( string $username, string $qit_token ): void {
 			->with_post_body( [
 				'app_pass' => base64_encode( sprintf( '%s:%s', $username, $qit_token ) ),
 			] )
+			->with_timeout_in_seconds( 300 ) // Depending on how many extensions the user has, this can take a while.
 			->request();
 	} catch ( \Exception $e ) {
 		throw new \Exception( sprintf( 'Could not authenticate to %s using the provided username and QIT Token. Questions? https://qit.woo.com/docs/support/authenticating', get_wccom_url() ) );

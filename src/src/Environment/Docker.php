@@ -45,7 +45,7 @@ class Docker {
 			$command[] = 'PAGER=more';
 		}
 
-		if ( ! empty( $user ) ) {
+		if ( ! empty( $user ) && static::should_set_user() ) {
 			$command[] = '--user';
 			$command[] = $user;
 		}
@@ -129,7 +129,7 @@ class Docker {
 			}
 		}
 
-		if ( ! is_null( $user ) ) {
+		if ( ! is_null( $user ) && static::should_set_user() ) {
 			$docker_command[] = '--user';
 			$docker_command[] = $user;
 
@@ -195,6 +195,13 @@ class Docker {
 
 			throw new \RuntimeException( $message );
 		}
+	}
+
+	/**
+	 * @return bool Whether the user should be set in the docker command.
+	 */
+	public static function should_set_user(): bool {
+		return ! is_windows();
 	}
 
 	/**

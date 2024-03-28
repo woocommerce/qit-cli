@@ -3,7 +3,9 @@
 namespace QIT_CLI\Environment;
 
 use QIT_CLI\App;
+use QIT_CLI\Config;
 use Symfony\Component\Console\Output\OutputInterface;
+use function QIT_CLI\normalize_path;
 
 class EnvVolumeParser {
 	/** @var OutputInterface */
@@ -44,10 +46,11 @@ class EnvVolumeParser {
 
 		foreach ( $volumes as $volume ) {
 			$v = explode( ':', $volume );
-			if ( count( $v ) !== 2 ) {
+			if ( count( $v ) !== 2 && count( $v ) !== 3 ) {
 				throw new \RuntimeException(
 					'Invalid volume mapping format in "' . $volume . '". ' .
-					'Expected format is "/source/path:/destination/path".'
+					'Expected format is either "/source/path:/destination/path" or ' .
+					'"/source/path:/destination/path:flags".'
 				);
 			}
 			if ( ! file_exists( $v[0] ) ) {
@@ -74,7 +77,30 @@ class EnvVolumeParser {
 				continue;
 			}
 
-			$parsed_volumes[ $v[1] ] = $v[0];
+			// Add "read-only" flag to all local volumes outside of $config_dir.
+			if ( strpos( normalize_path( $v[0] ), Config::get_qit_dir() ) !== 0 ) {
+				$v[2] = 'ro';
+			}
+
+			$allowed_flags = [ 'ro', 'rw', 'delegated', 'cached', 'nocopy', 'z', 'Z' ];
+
+			if ( count( $v ) === 3 ) {
+				$flag = $v[2];
+				if ( ! in_array( $flag, $allowed_flags, true ) ) {
+					throw new \RuntimeException(
+						'Invalid volume flag "' . $flag . '". ' .
+						'Allowed flags are: ' . implode( ', ', $allowed_flags )
+					);
+				}
+			}
+
+			if ( count( $v ) === 3 ) {
+				// [in-container]:[flags] = [host]
+				$parsed_volumes[ $v[1] . ':' . $v[2] ] = $v[0];
+			} else {
+				// [in-container] = [host]
+				$parsed_volumes[ $v[1] ] = $v[0];
+			}
 		}
 
 		return $parsed_volumes;

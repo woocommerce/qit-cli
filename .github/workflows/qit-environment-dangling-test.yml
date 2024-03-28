@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  environment_dangling_tests:
+  test_stop_random_container:
     runs-on: ubuntu-latest
     env:
       NO_COLOR: 1
@@ -22,44 +22,62 @@ jobs:
         with:
           php-version: '8.3'
 
-      - name: Composer install (Unix)
+      - name: Run setup script
+        run: bash .github/workflows/tests/environments/setup.sh ${{ secrets.QIT_STAGING_SECRET }} https://stagingcompatibilitydashboard.wpcomstaging.com
+
+      - name: Environment Setup and Checks
+        id: env_setup
+        run: bash .github/workflows/tests/environments/start-and-assert.sh
+
+      - name: Store the environment path in a ENV var
         working-directory: src
-        run: composer install
+        run: echo "TEMPORARY_ENV=$(php qit-cli.php env:list --field=temporary_env)" >> $GITHUB_ENV
 
-      - name: Enable dev mode
+      - name: Stop a random container from that environment.
         working-directory: src
-        run: php qit-cli.php dev
-
-      - name: Connect to Staging QIT
-        working-directory: src
-        run: php qit-cli.php backend:add --environment="staging" --qit_secret="${{ secrets.QIT_STAGING_SECRET }}" --manager_url="https://stagingcompatibilitydashboard.wpcomstaging.com"
-
-      - name: Add "qit.test" to hosts file (Linux)
-        run: sudo echo "127.0.0.1 qit.test" | sudo tee -a /etc/hosts
-
-      - name: Start environment
-        working-directory: src
-        run: php qit-cli.php env:up
-
-      - name: Test Site Up
         run: |
-          # Fetch the site URL
-          SITE_URL=$(php qit-cli.php env:list --field=site_url)
-          echo "Site URL: $SITE_URL"
+          CONTAINERS=$(php qit-cli.php env:list --field=docker_images)
+          RANDOM_CONTAINER=$(echo $CONTAINERS | awk '{print $1}')
+          echo "Stopping container: $RANDOM_CONTAINER"
+          docker stop $RANDOM_CONTAINER
 
-          # Assert home page is 200
-          HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}\n" $SITE_URL)
-          if [ "$HTTP_STATUS" -ne 200 ]; then
-            echo "Home page is not up. HTTP status: $HTTP_STATUS"
-            exit 1
-          fi
-          echo "Home page is up. HTTP status: $HTTP_STATUS"
+      - name: Run a env:list to trigger the Dangling Environment Cleanup
+        working-directory: src
+        run: php qit-cli.php env:list
 
-          # Assert the name property in the JSON response
-          JSON_RESPONSE=$(curl -s $SITE_URL/wp-json)
-          NAME_PROPERTY=$(echo $JSON_RESPONSE | jq -r '.name')
-          if [ "$NAME_PROPERTY" != "WooCommerce Core E2E Test Suite" ]; then
-            echo "Name property does not match. Found: $NAME_PROPERTY"
-            exit 1
-          fi
-          echo "Name property matches: $NAME_PROPERTY"
+      - name: Environment Cleanup Checks
+        id: env_cleanup
+        run: bash .github/workflows/tests/environments/dangling-cleanup-assert.sh
+
+  test_delete_environment_entry:
+    runs-on: ubuntu-latest
+    env:
+      NO_COLOR: 1
+      QIT_DISABLE_ONBOARDING: yes
+    steps:
+      - name: Checkout code (Cross-platform)
+        uses: actions/checkout@v4
+
+      - name: Setup PHP (Cross-platform)
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Run setup script
+        run: bash .github/workflows/tests/environments/setup.sh ${{ secrets.QIT_STAGING_SECRET }} https://stagingcompatibilitydashboard.wpcomstaging.com
+
+      - name: Environment Setup and Checks
+        id: env_setup
+        run: bash .github/workflows/tests/environments/start-and-assert.sh
+
+      - name: Find and delete all hidden JSON files in the directory
+        working-directory: src
+        run: php qit-cli.php cache delete environment_monitor
+
+      - name: Run a env:list to trigger the Dangling Environment Cleanup
+        working-directory: src
+        run: php qit-cli.php env:list
+
+      - name: Environment Cleanup Checks
+        id: env_cleanup
+        run: bash .github/workflows/tests/environments/dangling-cleanup-assert.sh
