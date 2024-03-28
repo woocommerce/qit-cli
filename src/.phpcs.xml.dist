@@ -5,7 +5,7 @@
     <arg value="sp"/>
     <arg name="colors"/>
     <arg name="extensions" value="php"/>
-    <arg name="parallel" value="8"/>
+    <arg name="parallel" value="16"/>
 
     <config name="testVersion" value="7.2-"/>
     <rule ref="PHPCompatibility"/>
