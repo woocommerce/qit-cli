@@ -74,6 +74,18 @@ class QITE2ETestCase extends TestCase {
 					return preg_match( '/^\d+$/', $value );
 				}
 			],
+			'runner' => [
+				'normalize' => 'normalized',
+				'validate'  => static function ( $value ) {
+					return ! empty( $value );
+				},
+			],
+			'workflow_id' => [
+				'normalize' => '1234567890',
+				'validate'  => static function ( $value ) {
+					return ! empty( $value );
+				},
+			],
 			'test_result_json' => [
 				'normalize' => static function( $value ) {
 					// Encode as JSON if needed.
