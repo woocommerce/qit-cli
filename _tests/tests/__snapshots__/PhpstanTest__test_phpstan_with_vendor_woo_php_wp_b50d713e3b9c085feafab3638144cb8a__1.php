@@ -37,6 +37,8 @@
             "update_complete": true,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
+            "workflow_id": "1234567890",
+            "runner": "normalized",
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {
