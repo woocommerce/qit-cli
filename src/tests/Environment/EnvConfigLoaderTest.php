@@ -3,6 +3,7 @@
 use PHPUnit\Framework\TestCase;
 use QIT_CLI\App;
 use QIT_CLI\Environment\EnvConfigLoader;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -41,12 +42,10 @@ class EnvConfigLoaderTest extends TestCase {
 		if ( ! file_put_contents( $this->configDir . $filename, $content ) ) {
 			throw new RuntimeException( 'Could not create file.' );
 		}
-
 	}
 
 	public function test_env_config_loader_no_file() {
 		$this->assertEquals( [], $this->sut->load_config() );
-
 	}
 
 	public function test_env_config_loader_from_json() {
@@ -213,5 +212,166 @@ class EnvConfigLoaderTest extends TestCase {
 
 		$this->expectException( \RuntimeException::class );
 		$this->sut->load_config();
+	}
+
+	public function test_env_config_loader_plugins_array() {
+		$complexStructure = [
+			'plugins' => [
+				'automatewoo' => [
+					'test_tag' => 'bar',
+				],
+			],
+		];
+		$this->create_config_file( 'qit-env.json', json_encode( $complexStructure ) );
+
+		$this->assertMatchesJsonSnapshot( json_encode( $this->normalized_env_info( $this->sut->load_config() ) ) );
+	}
+
+	public function test_env_config_loader_plugins_string() {
+		$complexStructure = [
+			'plugins' => [
+				'automatewoo',
+			],
+		];
+		$this->create_config_file( 'qit-env.json', json_encode( $complexStructure ) );
+
+		$this->assertMatchesJsonSnapshot( json_encode( $this->normalized_env_info( $this->sut->load_config() ) ) );
+	}
+
+	public function test_env_config_loader_plugins_mixed() {
+		$complexStructure = [
+			'plugins' => [
+				'automatewoo_birthdays' => [
+					'test_tag' => 'bar',
+				],
+				'automatewoo',
+			],
+			'themes'  => [
+				'twentytwenty',
+				'twentytwentyone' => [
+					'test_tag' => 'foo',
+				],
+			],
+		];
+		$this->create_config_file( 'qit-env.json', json_encode( $complexStructure ) );
+
+		$this->assertMatchesJsonSnapshot( json_encode( $this->normalized_env_info( $this->sut->load_config() ) ) );
+	}
+
+	public function test_env_config_loader_plugins_override() {
+		$override_structure = [
+			'plugins' => [
+				'automatewoo_birthdays: untrimed_override',
+				'automatewoo'                           => [
+					'test_tag' => 'array_override',
+				],
+				'automatewoo_source_from_key'           => [
+					'source' => 'source_from_value',
+				],
+				'https://woo.com/automatewoo-url',
+				'https://woo.com/automatewoo-url-array' => [
+					'test_tag' => 'test_tag_array',
+				],
+				// 'https://woo.com/automatewoo-referrals:bar', <!-- Forbidden because we can't infer the "slug" to get the "bar" test tag. -->
+				'{"source": "https://woo.com/automatewoo-referrals", "slug": "automatewoo-referrals", "test_tag": "bar"}',
+				'C:\\Users\\user\\Desktop\\automatewoo-url-windows',
+				'C:\\Users\\user\\Desktop\\automatewoo-url-windows:baz',
+			],
+			'themes'  => [
+				'twentytwentyone:string_override',
+			],
+		];
+		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
+
+		$this->assertMatchesJsonSnapshot( json_encode( $this->normalized_env_info( $this->sut->load_config(), $override_structure ) ) );
+	}
+
+	public function test_env_config_loader_plugins_url_without_source() {
+		$this->expectException( InvalidArgumentException::class );
+		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
+		$this->normalized_env_info( $this->sut->load_config(), [
+			'plugins' => [
+				'https://woo.com/automatewoo-url',
+			],
+		] );
+	}
+
+	public function test_env_config_loader_plugins_url_without_source_json() {
+		$this->expectException( InvalidArgumentException::class );
+		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
+		$this->normalized_env_info( $this->sut->load_config(), [
+			'plugins' => [
+				'{"source": "https://woo.com/automatewoo-url"}',
+			],
+		] );
+	}
+
+	public function test_env_config_loader_plugins_url_with_source() {
+		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
+		$this->assertMatchesJsonSnapshot(
+			json_encode(
+				$this->normalized_env_info( $this->sut->load_config(), [
+					'plugins' => [
+						'automatewoo' => [
+							'source' => 'https://woo.com/automatewoo-url',
+						],
+					],
+				] )
+			)
+		);
+	}
+
+	public function test_env_config_loader_plugins_url_with_source_and_tags() {
+		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
+		$this->assertMatchesJsonSnapshot(
+			json_encode(
+				$this->normalized_env_info( $this->sut->load_config(), [
+					'plugins' => [
+						'automatewoo' => [
+							'source'   => 'https://woo.com/automatewoo-url',
+							'test_tag' => 'rc',
+						],
+					],
+				] )
+			)
+		);
+	}
+
+	public function test_env_config_loader_plugins_url_with_source_json() {
+		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
+		$this->assertMatchesJsonSnapshot(
+			json_encode(
+				$this->normalized_env_info( $this->sut->load_config(), [
+					'plugins' => [
+						'{"source":"https://woo.com/automatewoo-url", "slug":"automatewoo"}',
+					],
+				] )
+			)
+		);
+	}
+
+	public function test_env_config_loader_plugins_url_with_source_and_tags_json() {
+		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
+		$this->assertMatchesJsonSnapshot(
+			json_encode(
+				$this->normalized_env_info( $this->sut->load_config(), [
+					'plugins' => [
+						'{"source":"https://woo.com/automatewoo-url", "slug":"automatewoo", "test_tag": "rc"}',
+					],
+				] )
+			)
+		);
+	}
+
+	protected function normalized_env_info( array $defaults, array $overrides = [] ): EnvInfo {
+		$env_info = App::make( EnvConfigLoader::class )->init_env_info( [ 'defaults' => $defaults, 'overrides' => $overrides ] );
+
+		$original_env_id         = $env_info->env_id;
+		$normalized_env_id       = '123456';
+		$env_info->env_id        = $normalized_env_id;
+		$env_info->temporary_env = str_replace( $original_env_id, $normalized_env_id, $env_info->temporary_env );
+		$env_info->created_at    = 1711651749;
+
+		return $env_info;
 	}
 }

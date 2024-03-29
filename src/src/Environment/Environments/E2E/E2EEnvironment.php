@@ -78,9 +78,6 @@ class E2EEnvironment extends Environment {
 		$this->output->writeln( '<info>Setting up WordPress...</info>' );
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/wordpress-setup.sh 2>&1' ], [
 			'WORDPRESS_VERSION'   => $this->env_info->wordpress_version,
-			'WOOCOMMERCE_VERSION' => $this->env_info->woocommerce_version,
-			'PLUGINS_TO_INSTALL'  => json_encode( $this->env_info->plugins ),
-			'THEMES_TO_INSTALL'   => json_encode( $this->env_info->themes ),
 			'SITE_URL'            => $this->env_info->site_url,
 			'QIT_DOCKER_REDIS'    => $this->env_info->object_cache ? 'yes' : 'no',
 		] );

@@ -1,0 +1,55 @@
+{
+    "environment": "e2e",
+    "temporary_env": "\/tmp\/.woo-qit-tests\/temporary-envs\/e2e-123456\/",
+    "created_at": 1711651749,
+    "status": "pending",
+    "env_id": "123456",
+    "volumes": [],
+    "docker_images": [],
+    "docker_network": null,
+    "php_extensions": [],
+    "plugins": [
+        {
+            "source": "automatewoo_birthdays",
+            "test_tag": "untrimed_override"
+        },
+        {
+            "source": "automatewoo",
+            "test_tag": "array_override"
+        },
+        {
+            "source": "https:\/\/woo.com\/automatewoo-referrals",
+            "test_tag": "bar"
+        },
+        {
+            "source": "https:\/\/woo.com\/automatewoo-url",
+            "test_tag": "none"
+        },
+        {
+            "source": "https:\/\/woo.com\/automatewoo-url-array",
+            "test_tag": "test_tag_array"
+        },
+        {
+            "source": "C:\\Users\\user\\Desktop\\automatewoo-url-windows",
+            "test_tag": "none"
+        },
+        {
+            "source": "C:\\Users\\user\\Desktop\\automatewoo-url-windows",
+            "test_tag": "baz"
+        }
+    ],
+    "themes": [
+        {
+            "source": "twentytwentyone",
+            "test_tag": "string_override"
+        }
+    ],
+    "site_url": null,
+    "wordpress_version": "",
+    "object_cache": false,
+    "php_version": null,
+    "nginx_port": null,
+    "domain": "localhost",
+    "woocommerce_version": null,
+    "tests": []
+}

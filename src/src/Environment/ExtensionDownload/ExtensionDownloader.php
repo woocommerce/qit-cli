@@ -42,8 +42,8 @@ class ExtensionDownloader {
 	}
 
 	/**
-	 * @param EnvInfo           $env_info
-	 * @param string            $cache_dir
+	 * @param EnvInfo $env_info
+	 * @param string $cache_dir
 	 * @param array<string|int> $plugins Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
 	 * @param array<string|int> $themes Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
 	 *
@@ -77,7 +77,7 @@ class ExtensionDownloader {
 				// Extract zip to temp environment.
 				$this->extension_zip->extract_zip( $e->path, "$env_info->temporary_env/html/wp-content/{$e->type}s" );
 				// Add a volume bind.
-				$env_info->volumes[ "/var/www/html/wp-content/{$e->type}s/{$e->extension_identifier}" ] = "$env_info->temporary_env/html/wp-content/{$e->type}s/{$e->extension_identifier}";
+				$env_info->volumes["/var/www/html/wp-content/{$e->type}s/{$e->extension_identifier}"] = "$env_info->temporary_env/html/wp-content/{$e->type}s/{$e->extension_identifier}";
 			} elseif ( is_dir( $e->path ) ) {
 				if ( ! getenv( 'QIT_ALLOW_WRITE' ) ) {
 					// Set it as read-only to prevent dev messing up their local copy inadvertently (default behavior).
@@ -86,10 +86,10 @@ class ExtensionDownloader {
 					$this->output->writeln( "Info: Mapping '{$e->type}s/{$e->extension_identifier}' as read-only to protect your local copy." );
 
 					// Add a read-only volume bind.
-					$env_info->volumes[ "/var/www/html/wp-content/{$e->type}s/{$e->extension_identifier}:ro" ] = $e->path;
+					$env_info->volumes["/var/www/html/wp-content/{$e->type}s/{$e->extension_identifier}:ro"] = $e->path;
 				} else {
 					// Add a volume bind.
-					$env_info->volumes[ "/var/www/html/wp-content/{$e->type}s/{$e->extension_identifier}" ] = $e->path;
+					$env_info->volumes["/var/www/html/wp-content/{$e->type}s/{$e->extension_identifier}"] = $e->path;
 				}
 			} else {
 				throw new \RuntimeException( 'Download failed.' );
@@ -98,31 +98,37 @@ class ExtensionDownloader {
 	}
 
 	/**
-	 * @param array<string|int> $plugins
-	 * @param array<string|int> $themes
+	 * @param array{source:string, slug:string, test_tag:string} $plugins
+	 * @param array{source:string, slug:string, test_tag:string} $themes
 	 *
 	 * @return array<Extension>
 	 */
 	public function categorize_extensions( array $plugins, array $themes ): array {
 		/**
-		 * @param array<int, Extension> $extensions
+		 * @param array<int, Extension> $categorized_extensions
 		 */
-		$extensions = [];
+		$categorized_extensions = [];
 
-		foreach ( [
-			'plugin' => $plugins,
-			'theme'  => $themes,
-		] as $type => $extension_ids ) {
-			foreach ( $extension_ids as $extension_id ) {
-				$ext                       = new Extension();
-				$ext->type                 = $type;
-				$ext->path                 = '';
+		foreach (
+			[
+				'plugin' => $plugins,
+				'theme'  => $themes,
+			] as $type => $extensions
+		) {
+			foreach ( $extensions as $extension ) {
+				$source = $extension['source'];
 
-				if ( file_exists( $extension_id ) ) {
+				$ext           = new Extension();
+				$ext->type     = $type;
+				$ext->path     = '';
+				$ext->slug     = $extension['slug'];
+				$ext->test_tag = $extension['test_tag'];
+
+				if ( file_exists( $source ) ) {
 					// If the extension_id is a file, we use the basename, if it's a file, we remove the extension.
-					$ext->extension_identifier = is_dir( $extension_id ) ? basename( $extension_id ) : pathinfo( $extension_id, PATHINFO_FILENAME );
+					$ext->extension_identifier = is_dir( $source ) ? basename( $source ) : pathinfo( $source, PATHINFO_FILENAME );
 				} else {
-					$ext->extension_identifier = $extension_id;
+					$ext->extension_identifier = $source;
 				}
 
 				if ( getenv( 'QIT_SUT' ) === $ext->extension_identifier ) {
@@ -136,7 +142,7 @@ class ExtensionDownloader {
 					}
 				}
 
-				if ( array_key_exists( $extension_id, $extensions ) ) {
+				if ( array_key_exists( $source, $categorized_extensions ) ) {
 					throw new \InvalidArgumentException( 'Duplicate extension found.' );
 				}
 
@@ -156,23 +162,23 @@ class ExtensionDownloader {
 				}
 
 				if ( empty( $ext->handler ) ) {
-					if ( is_numeric( $extension_id ) ) {
+					if ( is_numeric( $source ) ) {
 						// Woo.com product ID.
 						$ext->handler = QITHandler::class;
-					} elseif ( preg_match( '#^https?://#i', $extension_id ) ) {
+					} elseif ( preg_match( '#^https?://#i', $source ) ) {
 						$ext->handler = URLHandler::class;
-					} elseif ( preg_match( '#^[\w-]+/[\w-]+(?:\#[\w-]+)?$#', $extension_id ) ) {
+					} elseif ( preg_match( '#^[\w-]+/[\w-]+(?:\#[\w-]+)?$#', $source ) ) {
 						// GitHub Repo, similar to wp-env.
 						throw new \InvalidArgumentException( 'Installing from GitHub repositories is not supported yet.' );
-					} elseif ( preg_match( '#^ssh://#i', $extension_id ) ) {
+					} elseif ( preg_match( '#^ssh://#i', $source ) ) {
 						// SSH URLs, similar to wp-env.
 						throw new \InvalidArgumentException( 'SSH URLs are currently not supported.' );
-					} elseif ( file_exists( $extension_id ) ) {
+					} elseif ( file_exists( $source ) ) {
 						// Local path.
 						$ext->handler = FileHandler::class;
 					} else {
 						// If it's none of the above, it's a slug.
-						if ( static::is_valid_plugin_slug( $extension_id ) ) {
+						if ( static::is_valid_plugin_slug( $source ) ) {
 							$ext->handler = QITHandler::class;
 						} else {
 							throw new \InvalidArgumentException( 'The provided string could not be parsed as any of the valid formats: WP.org/Woo.com Slugs, Woo.com product ID, Local path, or Zip URLs.' );
@@ -181,13 +187,13 @@ class ExtensionDownloader {
 				}
 
 				// Call this callback so that handlers can set up some extension properties early on if needed.
-				App::make( $ext->handler )->assign_handler_to_extension( $extension_id, $ext );
+				App::make( $ext->handler )->assign_handler_to_extension( $source, $ext );
 
-				$extensions[ $extension_id ] = $ext;
+				$categorized_extensions[ $source ] = $ext;
 			}
 		}
 
-		return $extensions;
+		return $categorized_extensions;
 	}
 
 	/**

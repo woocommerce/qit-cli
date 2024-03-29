@@ -1,0 +1,27 @@
+{
+    "environment": "e2e",
+    "temporary_env": "\/tmp\/.woo-qit-tests\/temporary-envs\/e2e-123456\/",
+    "created_at": 1711651749,
+    "status": "pending",
+    "env_id": "123456",
+    "volumes": [],
+    "docker_images": [],
+    "docker_network": null,
+    "php_extensions": [],
+    "plugins": [
+        {
+            "source": "automatewoo",
+            "slug": "automatewoo",
+            "test_tag": "bar"
+        }
+    ],
+    "themes": [],
+    "site_url": null,
+    "wordpress_version": "",
+    "object_cache": false,
+    "php_version": null,
+    "nginx_port": null,
+    "domain": "localhost",
+    "woocommerce_version": null,
+    "tests": []
+}

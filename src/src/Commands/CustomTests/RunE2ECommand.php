@@ -92,6 +92,14 @@ class RunE2ECommand extends DynamicCommand {
 			'Path to your E2E tests (Optional, if not set, it will try to download your custom tests that you have previously uploaded to QIT)'
 		);
 
+		$this->addOption(
+			'test_tag',
+			null,
+			InputOption::VALUE_OPTIONAL,
+			'The tag of the test to run. If not set, it will run the default test.',
+			'default'
+		);
+
 		// If testing a development build, set this.
 		$this->addOption(
 			'sut',
@@ -269,6 +277,11 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		if ( ! empty( $woo_extension ) ) {
+			$test_tag = $input->getOption( 'test_tag' );
+			if ( ! empty( $test_tag ) ) {
+				$woo_extension = $woo_extension . ':' . $test_tag;
+			}
+
 			if ( $input->getOption( 'testing_theme' ) === 'true' ) {
 				$env_up_options['--themes'][] = $woo_extension;
 			} else {
@@ -277,14 +290,6 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		$additional_volumes = [];
-
-		if ( ! empty( $sut_slug ) ) {
-			if ( ! ExtensionDownloader::is_valid_plugin_slug( $sut_slug ) ) {
-				$output->writeln( sprintf( '<error>Invalid WooCommerce Extension Slug or Marketplace ID: "%s"</error>', $woo_extension ) );
-
-				return Command::FAILURE;
-			}
-		}
 
 		$env_up_options['--volumes'] = $additional_volumes;
 		$env_up_options['--json']    = true;

@@ -5,6 +5,7 @@ namespace QIT_CLI\Environment;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Environment\Environments\EnvInfo;
+use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Serializer\Serializer;
 
@@ -29,10 +30,12 @@ class EnvConfigLoader {
 	 *
 	 * @return EnvInfo Returns an EnvInfo object.
 	 */
-	public function init_env_info( array $options = [
-		'defaults'  => [],
-		'overrides' => [],
-	] ): EnvInfo {
+	public function init_env_info(
+		array $options = [
+			'defaults'  => [],
+			'overrides' => [],
+		]
+	): EnvInfo {
 		// Load the environment config file..
 		$env_config = $this->load_config();
 
@@ -51,6 +54,7 @@ class EnvConfigLoader {
 					throw new \RuntimeException( "Disallowed key '$d' found in options" );
 				}
 			}
+
 			$env_config[ $key ] = $value;
 		}
 
@@ -61,21 +65,105 @@ class EnvConfigLoader {
 			}
 		}
 
-		// Plugins.
-		foreach ( $env_config['plugins'] ?? [] as $plugin ) {
-			// If it doesn't exist, we download it.
-			if ( file_exists( $plugin ) ) {
-				$env_config['volumes'][] = $plugin . ':/var/www/html/wp-content/plugins/' . basename( $plugin );
-			}
-		}
+		$parse_plugins_and_themes = function ( &$env_config ): void {
+			foreach (
+				[
+					'plugins' => $env_config['plugins'] ?? [],
+					'themes'  => $env_config['themes'] ?? [],
+				] as $type => $plugins_or_themes
+			) {
+				$env_config[ $type ] = [];
 
-		// Themes.
-		foreach ( $env_config['themes'] ?? [] as $theme ) {
-			// If it doesn't exist, we download it.
-			if ( file_exists( $theme ) ) {
-				$env_config['volumes'][] = $theme . ':/var/www/html/wp-content/themes/' . basename( $theme );
+				// Normalize non-arrays to arrays.
+				foreach ( $plugins_or_themes as &$p_or_t ) {
+					if ( ! is_array( $p_or_t ) ) {
+						// If it starts with "{" we consider it a JSON.
+						if ( strpos( $p_or_t, '{' ) === 0 ) {
+							$p_or_t = json_decode( $p_or_t, true );
+
+							if ( is_null( $p_or_t ) ) {
+								throw new \RuntimeException( 'Invalid JSON string>' );
+							}
+
+							continue;
+						}
+
+						// Split source from test tag.
+						$last_colon_pos = strrpos( $p_or_t, ':' );
+
+						if ( $last_colon_pos !== false ) {
+							// Split the string at the last colon
+							$source   = substr( $p_or_t, 0, $last_colon_pos );
+							$test_tag = substr( $p_or_t, $last_colon_pos + 1 );
+
+							// Trim and check if test_tag is valid
+							$test_tag_trimmed = trim( $test_tag );
+							if ( preg_match( '/^[a-zA-Z0-9_-]+$/', $test_tag_trimmed ) ) {
+								// Valid test_tag
+								$p_or_t = [
+									'source'   => trim( $source ),
+									'test_tag' => $test_tag_trimmed,
+								];
+							} else {
+								// If invalid test_tag, treat the whole string as the source
+								$p_or_t = [
+									'source'   => trim( $p_or_t ),
+									'test_tag' => 'none',
+								];
+							}
+						} else {
+							// No colon, the whole string is the source
+							$p_or_t = [
+								'source'   => trim( $p_or_t ),
+								'test_tag' => 'none',
+							];
+						}
+					}
+
+					unset( $p_or_t );
+				}
+
+				// Validate and use.
+				foreach ( $plugins_or_themes as $maybe_slug => $p_or_t ) {
+					if ( ! is_array( $p_or_t ) ) {
+						throw new \LogicException();
+					}
+
+					// This can happen if the user passes a manual JSON string without the "source" key.
+					if ( empty( $p_or_t['source'] ) && empty( $maybe_slug ) ) {
+						throw new \InvalidArgumentException( 'The "source" is required for plugins and themes' );
+					}
+
+					// This can happen if the user has a config file without the "source" parameter, which is expected, since we infer from the key.
+					if ( empty( $p_or_t['source'] ) ) {
+						$p_or_t['source'] = $maybe_slug;
+					}
+
+					if ( empty( $p_or_t['slug'] ) ) {
+						if ( ! empty( $maybe_slug ) ) {
+							$p_or_t['slug'] = $maybe_slug;
+						} else {
+							$p_or_t['slug'] = $p_or_t['source'];
+						}
+					}
+
+					if ( ! ExtensionDownloader::is_valid_plugin_slug( $p_or_t['slug'] ) ) {
+						throw new \InvalidArgumentException( 'Invalid plugin slug: ' . $p_or_t['slug'] );
+					}
+
+					$args = [
+						'source'   => trim( $p_or_t['source'] ),
+						'slug'     => trim( $p_or_t['slug'] ),
+						'test_tag' => trim( $p_or_t['test_tag'] ?? 'none' ),
+					];
+
+					$env_config[ $type ][] = $args;
+				}
 			}
-		}
+		};
+
+		// Plugins and Themes.
+		$parse_plugins_and_themes( $env_config );
 
 		// Requires.
 		foreach ( $env_config['requires'] ?? [] as $file ) {

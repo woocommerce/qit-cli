@@ -6,8 +6,14 @@ class Extension {
 	/** @var string */
 	public $extension_identifier;
 
+	/** @var string|int */
+	public $source;
+
 	/** @var 'plugin'|'theme' */
 	public $type;
+
+	/** @var string */
+	public $slug;
 
 	/**
 	 * @var string A FQDN for an instance of Handler.
@@ -23,4 +29,7 @@ class Extension {
 
 	/** @var string */
 	public $download_url;
+
+	/** @var string */
+	public $test_tag;
 }

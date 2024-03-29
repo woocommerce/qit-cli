@@ -139,6 +139,14 @@ If the config file is placed in the root directory of your plugin, the command a
 Parameters specified at runtime override config file settings.
 Example: <info>qit env:up --php_version=8.3</info> forces PHP version 8.3 regardless of config files.
 
+<comment>Plugins and Themes</comment>
+Install additional plugins in the environment using the --plugins and --themes flag.
+Repeat multiple times to install many, e.g:
+<info>qit env:up --plugins automatewoo --plugins contact-form-7</info>
+
+PS: To install premium plugins from the Woo.com Marketplace, you need to have access to them.
+PS 2: Plugins are activated automatically in the test environment. Themes are only installed.
+
 <comment>PHP Version</comment>
 To set the PHP version, use the --php_version flag, e.g.:
 <info>qit env:up --php_version=8.3</info>
@@ -150,17 +158,6 @@ To set the WordPress version, use the --wordpress_version flag, e.g.:
 <comment>Object Cache</comment>
 To enable Object Cache (Redis) in the environment, use the --object_cache flag, e.g.:
 <info>qit env:up --object_cache</info>
-
-<comment>Installing Multiple Plugins</comment>
-To install multiple plugins, use the --plugins flag multiple times, e.g.:
-<info>qit env:up --plugins=woocommerce --plugins=wordpress-importer --plugins=automatewoo</info>
-To install premium plugins from the Woo.com Marketplace, you need to be authenticated in QIT with a user that has access to these plugins. 
-Plugins are activated automatically in the test environment.
-
-<comment>Installing Themes</comment>
-To install a theme, use the --themes flag, e.g.:
-<info>qit env:up --themes=storefront</info>
-Themes are not activated automatically in the test environment, as contrary to plugins, there can only be one theme active.
 
 <comment>Volumes</comment>
 To map a local directory to the test environment, use the --volumes flag, e.g.:
