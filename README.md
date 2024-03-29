@@ -15,7 +15,7 @@ For more detailed information on QIT and how to use it, refer to the [documentat
 
 ## Quality Insights Toolkit (QIT)
 
-Official tool to streamline the testing of plugins and themes, ensuring they meet the high standards of the Woo.com Marketplace.
+QIT is a testing platform for WordPress Plugins and Themes developed by WooCommerce that allows developers to run a series of managed tests out-of-the-box. We are currently in closed beta operating only in the Woo Marketplace.
 
 - **Comprehensive Testing Suite**: Includes various tests to ensure thorough quality checks.
   - [Woo E2E Test](https://qit.woo.com/docs/test-types/woo-e2e)
