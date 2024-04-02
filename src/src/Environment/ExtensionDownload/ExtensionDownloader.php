@@ -86,7 +86,7 @@ class ExtensionDownloader {
 					$this->output->writeln( "Info: Mapping '{$e->type}s/{$e->extension_identifier}' as read-only to protect your local copy." );
 
 					// Add a read-only volume bind.
-					$env_info->volumes["/var/www/html/wp-content/{$e->type}s/{$e->extension_identifier}:ro"] = $e->path;
+					$env_info->volumes["/var/www/html/wp-content/{$e->type}s/{$e->extension_identifier}:ro,cached"] = $e->path;
 				} else {
 					// Add a volume bind.
 					$env_info->volumes["/var/www/html/wp-content/{$e->type}s/{$e->extension_identifier}"] = $e->path;
