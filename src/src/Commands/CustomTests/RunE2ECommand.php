@@ -111,7 +111,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		// If "woo_extension" (SUT) is a theme, set this.
 		$this->addOption(
-			'woocommerce_version',
+			'woo',
 			null,
 			InputOption::VALUE_OPTIONAL,
 			'The WooCommerce Version. Accepts "nightly", "stable", or a GitHub Tag (eg: 8.6.1).',
@@ -174,7 +174,7 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		foreach ( $other_options as $k => $o ) {
-			if ( ! in_array( $k, [ 'compatibility', 'woocommerce_version' ], true ) ) {
+			if ( ! in_array( $k, [ 'compatibility', 'woo' ], true ) ) {
 				$this->output->writeln( sprintf( '<comment>Option "%s" is not part of the "env:up" command definition and will be ignored.</comment>', $k ) );
 			}
 		}
@@ -260,19 +260,19 @@ class RunE2ECommand extends DynamicCommand {
 			}
 		}
 
-		$woocommerce_version = $input->getOption( 'woocommerce_version' );
+		$woo = $input->getOption( 'woo' );
 		$bootstrap_only      = $input->getOption( 'bootstrap_only' ) || $test_mode === 'codegen';
 
-		if ( ! empty( $woocommerce_version ) ) {
-			if ( $woocommerce_version === 'nightly' ) {
+		if ( ! empty( $woo ) ) {
+			if ( $woo === 'nightly' ) {
 				$env_up_options['--plugins'][] = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
-			} elseif ( $woocommerce_version === 'rc' ) {
-				$this->output->writeln( '"RC" is not yet supported by run:e2e. Using "nightly" instead. If you want a specific RC, use the GitHub Tag' );
+			} elseif ( $woo === 'rc' ) {
+				$this->output->writeln( 'Using "nightly" instead. If you want a specific RC, please use the GitHub tag, eg: "1.2.3-rc.1"' );
 				$env_up_options['--plugins'][] = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
-			} elseif ( $woocommerce_version === 'stable' ) {
+			} elseif ( $woo === 'stable' ) {
 				$env_up_options['--plugins'][] = 'woocommerce';
 			} else {
-				$env_up_options['--plugins'][] = "https://github.com/woocommerce/woocommerce/releases/download/$woocommerce_version/woocommerce.zip";
+				$env_up_options['--plugins'][] = "https://github.com/woocommerce/woocommerce/releases/download/$woo/woocommerce.zip";
 			}
 		}
 
