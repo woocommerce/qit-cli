@@ -86,8 +86,21 @@ class QITE2ETestCase extends TestCase {
 					return ! empty( $value );
 				},
 			],
+			'test_summary' => [
+				'normalize' => static function ( $value ) use ( $file_path ) {
+					if ( stripos( $file_path, 'delete_products' ) !== false  ) {
+						// We don't really care how it fails, we just want to make sure it fails.
+						return 'Delete_Products Normalized Summary';
+					}
+
+					return $value;
+				},
+				'validate'  => static function ( $value ) {
+					return ! empty( $value );
+				},
+			],
 			'test_result_json' => [
-				'normalize' => static function( $value ) {
+				'normalize' => static function( $value ) use ( $file_path ) {
 					// Encode as JSON if needed.
 					$array = false;
 					if ( is_array( $value ) ) {
@@ -107,6 +120,11 @@ class QITE2ETestCase extends TestCase {
 					// Decode if needed.
 					if ( $array ) {
 						$value = json_decode( $value, true );
+					}
+
+					if ( stripos( $file_path, 'delete_products' ) !== false ) {
+						// We don't really care how it fails, we just want to make sure it fails.
+						return [];
 					}
 
 					return $value;
