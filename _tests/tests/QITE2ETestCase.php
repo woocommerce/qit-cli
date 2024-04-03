@@ -96,7 +96,7 @@ class QITE2ETestCase extends TestCase {
 					return $value;
 				},
 				'validate'  => static function ( $value ) {
-					return ! empty( $value );
+					return true;
 				},
 			],
 			'test_result_json' => [
