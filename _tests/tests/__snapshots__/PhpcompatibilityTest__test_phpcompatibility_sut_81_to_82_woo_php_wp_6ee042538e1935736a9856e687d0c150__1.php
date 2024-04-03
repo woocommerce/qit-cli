@@ -128,13 +128,13 @@
                                         "column": 17
                                     },
                                     {
-                                        "message": "Declaring a required parameter after an optional one is deprecated since PHP 8.0. Parameter $a is optional, while parameter $b is required.",
-                                        "source": "PHPCompatibility.FunctionDeclarations.RemovedOptionalBeforeRequiredParam.Deprecated",
+                                        "message": "Declaring an optional parameter before a required parameter is deprecated since PHP 8.0. Parameter $a is optional, while parameter $b is required. The $a parameter is implicitly treated as a required parameter.",
+                                        "source": "PHPCompatibility.FunctionDeclarations.RemovedOptionalBeforeRequiredParam.Deprecated80",
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "WARNING",
                                         "line": 66,
-                                        "column": 35
+                                        "column": 26
                                     },
                                     {
                                         "message": "\\"Only Serializable\\" classes are deprecated since PHP 8.1. The magic __serialize() and __unserialize() methods need to be implemented for cross-version compatibility. Missing implementation of: __serialize() and __unserialize()",
