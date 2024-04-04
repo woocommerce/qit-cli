@@ -1384,6 +1384,10 @@
         {
             "debug_log": [
                 {
+                    "count": "650",
+                    "message": "Automattic\\\\WooCommerce\\\\Admin\\\\DataSourcePoller is deprecated since version 8.8.0! Use Automattic\\\\WooCommerce\\\\Admin\\\\RemoteSpecs\\\\DataSourcePoller instead."
+                },
+                {
                     "count": "550",
                     "message": "PHP Notice: $order is Automattic\\\\WooCommerce\\\\Admin\\\\Overrides\\\\Order as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 41"
                 }

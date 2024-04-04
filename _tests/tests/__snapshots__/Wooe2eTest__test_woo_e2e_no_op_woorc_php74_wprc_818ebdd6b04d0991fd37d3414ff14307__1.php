@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 90 passed, 90 total | Tests: 22 skipped, 0 failed, 308 passed, 330 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 90 passed, 90 total | Tests: 25 skipped, 0 failed, 305 passed, 330 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -48,8 +48,8 @@
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 90,
                 "numFailedTests": 0,
-                "numPassedTests": 308,
-                "numPendingTests": 22,
+                "numPassedTests": 305,
+                "numPendingTests": 25,
                 "numTotalTests": 330,
                 "testResults": [
                     {
@@ -1814,11 +1814,11 @@
                                 },
                                 {
                                     "title": "can choose different shipping types in the checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows existing customer to place an order",
@@ -1826,7 +1826,7 @@
                                 },
                                 {
                                     "title": "can create an account during checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2210,11 +2210,16 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 90 passed, 90 total | Tests: 22 skipped, 0 failed, 308 passed, 330 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 90 passed, 90 total | Tests: 25 skipped, 0 failed, 305 passed, 330 total."
             }
         },
         {
-            "debug_log": []
+            "debug_log": [
+                {
+                    "count": "14150",
+                    "message": "Automattic\\\\WooCommerce\\\\Admin\\\\DataSourcePoller is deprecated since version 8.8.0! Use Automattic\\\\WooCommerce\\\\Admin\\\\RemoteSpecs\\\\DataSourcePoller instead."
+                }
+            ]
         }
     ]
 ]';
