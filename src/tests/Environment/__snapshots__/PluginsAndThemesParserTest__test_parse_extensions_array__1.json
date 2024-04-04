@@ -1,0 +1,28 @@
+[
+    {
+        "action": "bootstrap",
+        "slug": "qit-beaver",
+        "source": "https:\/\/github.com\/qitbeaver\/qit-beaver",
+        "test_tags": [
+            "stable",
+            "\/path\/to\/local\/test"
+        ]
+    },
+    {
+        "action": "test",
+        "slug": "cat-pictures",
+        "source": "https:\/\/github.com\/cat\/pictures",
+        "test_tags": [
+            "beta",
+            "release-candidate"
+        ]
+    },
+    {
+        "action": "test",
+        "slug": "dog-pictures",
+        "source": "https:\/\/github.com\/cat\/pictures?foo=bar",
+        "test_tags": [
+            "default"
+        ]
+    }
+]

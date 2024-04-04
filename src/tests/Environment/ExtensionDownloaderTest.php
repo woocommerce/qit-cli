@@ -1,7 +1,7 @@
 <?php
 
 use QIT_CLI\App;
-use QIT_CLI\Environment\ExtensionDownload\Extension;
+use QIT_CLI\Environment\Extension;
 use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
 use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;

@@ -5,7 +5,6 @@ namespace QIT_CLI\Environment;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Environment\Environments\EnvInfo;
-use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Serializer\Serializer;
 
@@ -19,10 +18,14 @@ class EnvConfigLoader {
 	/** @var OutputInterface */
 	protected $output;
 
-	public function __construct( Serializer $serializer, Cache $cache, OutputInterface $output ) {
-		$this->serializer = $serializer;
-		$this->cache      = $cache;
-		$this->output     = $output;
+	/** @var PluginsAndThemesParser */
+	protected $plugins_and_themes_parser;
+
+	public function __construct( Serializer $serializer, Cache $cache, OutputInterface $output, PluginsAndThemesParser $plugins_and_themes_parser ) {
+		$this->serializer                = $serializer;
+		$this->cache                     = $cache;
+		$this->output                    = $output;
+		$this->plugins_and_themes_parser = $plugins_and_themes_parser;
 	}
 
 	/**
@@ -38,6 +41,7 @@ class EnvConfigLoader {
 	): EnvInfo {
 		// Load the environment config file..
 		$env_config = $this->load_config();
+		$this->normalize_plural_to_singular( $env_config );
 
 		// Check that config file doesn't contain disallowed keys.
 		foreach ( EnvInfo::$not_user_configurable as $d ) {
@@ -55,7 +59,12 @@ class EnvConfigLoader {
 				}
 			}
 
-			$env_config[ $key ] = $value;
+			// If it's an array, append, otherwise replace.
+			if ( is_array( $value ) && array_key_exists( $key, $env_config ) && is_array( $env_config[ $key ] ) ) {
+				$env_config[ $key ] = array_merge( $env_config[ $key ], $value );
+			} else {
+				$env_config[ $key ] = $value;
+			}
 		}
 
 		// Set the defaults.
@@ -65,108 +74,12 @@ class EnvConfigLoader {
 			}
 		}
 
-		$parse_plugins_and_themes = function ( &$env_config ): void {
-			foreach (
-				[
-					'plugins' => $env_config['plugins'] ?? [],
-					'themes'  => $env_config['themes'] ?? [],
-				] as $type => $plugins_or_themes
-			) {
-				$env_config[ $type ] = [];
-
-				// Normalize non-arrays to arrays.
-				foreach ( $plugins_or_themes as &$p_or_t ) {
-					if ( ! is_array( $p_or_t ) ) {
-						// If it starts with "{" we consider it a JSON.
-						if ( strpos( $p_or_t, '{' ) === 0 ) {
-							$p_or_t = json_decode( $p_or_t, true );
-
-							if ( is_null( $p_or_t ) ) {
-								throw new \RuntimeException( 'Invalid JSON string>' );
-							}
-
-							continue;
-						}
-
-						// Split source from test tag.
-						$last_colon_pos = strrpos( $p_or_t, ':' );
-
-						if ( $last_colon_pos !== false ) {
-							// Split the string at the last colon
-							$source   = substr( $p_or_t, 0, $last_colon_pos );
-							$test_tag = substr( $p_or_t, $last_colon_pos + 1 );
-
-							// Trim and check if test_tag is valid
-							$test_tag_trimmed = trim( $test_tag );
-							if ( preg_match( '/^[a-zA-Z0-9_-]+$/', $test_tag_trimmed ) ) {
-								// Valid test_tag
-								$p_or_t = [
-									'source'   => trim( $source ),
-									'test_tag' => $test_tag_trimmed,
-								];
-							} else {
-								// If invalid test_tag, treat the whole string as the source
-								$p_or_t = [
-									'source'   => trim( $p_or_t ),
-									'test_tag' => 'none',
-								];
-							}
-						} else {
-							// No colon, the whole string is the source
-							$p_or_t = [
-								'source'   => trim( $p_or_t ),
-								'test_tag' => 'none',
-							];
-						}
-					}
-
-					unset( $p_or_t );
-				}
-
-				// Validate and use.
-				foreach ( $plugins_or_themes as $maybe_slug => $p_or_t ) {
-					if ( ! is_array( $p_or_t ) ) {
-						throw new \LogicException();
-					}
-
-					// This can happen if the user passes a manual JSON string without the "source" key.
-					if ( empty( $p_or_t['source'] ) && empty( $maybe_slug ) ) {
-						throw new \InvalidArgumentException( 'The "source" is required for plugins and themes' );
-					}
-
-					// This can happen if the user has a config file without the "source" parameter, which is expected, since we infer from the key.
-					if ( empty( $p_or_t['source'] ) ) {
-						$p_or_t['source'] = $maybe_slug;
-					}
-
-					if ( empty( $p_or_t['slug'] ) ) {
-						if ( ! empty( $maybe_slug ) ) {
-							$p_or_t['slug'] = $maybe_slug;
-						} else {
-							$p_or_t['slug'] = $p_or_t['source'];
-						}
-					}
-
-					if ( ! ExtensionDownloader::is_valid_plugin_slug( $p_or_t['slug'] ) ) {
-						throw new \InvalidArgumentException( 'Invalid plugin slug: ' . $p_or_t['slug'] );
-					}
-
-					$args = [
-						'source'   => trim( $p_or_t['source'] ),
-						'slug'     => trim( $p_or_t['slug'] ),
-						'test_tag' => trim( $p_or_t['test_tag'] ?? 'none' ),
-					];
-
-					$env_config[ $type ][] = $args;
-				}
-			}
-		};
-
 		// Plugins and Themes.
-		$parse_plugins_and_themes( $env_config );
+		$env_config['plugin'] = $this->plugins_and_themes_parser->parse_extensions( $env_config['plugin'] ?? [] );
+		$env_config['theme']  = $this->plugins_and_themes_parser->parse_extensions( $env_config['theme'] ?? [] );
 
 		// Requires.
-		foreach ( $env_config['requires'] ?? [] as $file ) {
+		foreach ( $env_config['require'] ?? [] as $file ) {
 			if ( file_exists( $file ) ) {
 				if ( $this->output->isVerbose() ) {
 					$this->output->writeln( sprintf( 'Loading file %s', $file ) );
@@ -221,10 +134,10 @@ class EnvConfigLoader {
 		}
 
 		// No more need for this from now on.
-		unset( $env_config['requires'] );
+		unset( $env_config['require'] );
 
 		// Volumes can be mapped automatically depending on the working directory.
-		$env_config['volumes'] = App::make( EnvVolumeParser::class )->parse_volumes( $env_config['volumes'] ?? [] );
+		$env_config['volume'] = App::make( EnvVolumeParser::class )->parse_volumes( $env_config['volume'] ?? [] );
 
 		// Parse and Validate.
 		foreach ( $env_config as $key => &$value ) {
@@ -253,9 +166,15 @@ class EnvConfigLoader {
 			}
 		}
 
+		$this->normalize_singular_to_plural( $env_config );
+
 		$env_info = EnvInfo::from_array( $env_config );
 
 		return $env_info;
+	}
+
+	protected function parse_plugins_and_themes() {
+
 	}
 
 	/**
@@ -378,6 +297,57 @@ class EnvConfigLoader {
 		}
 
 		return $config_1;
+	}
+
+	protected function normalize_plural_to_singular( array &$config ): void {
+		/*
+		 * These values make sense to be plural in config, but we want to normalize them to singular.
+		 * This way the user can do:
+		 * plugins:
+		 *  - foo
+		 *  - bar
+		 * On the config file, and --plugin foo --plugin bar in the CLI parameters.
+		 */
+		$plurals = [ 'plugins', 'themes', 'volumes' ];
+
+		// Convert scalars to arrays.
+		foreach ( $plurals as $plural ) {
+			if ( array_key_exists( $plural, $config ) && ! is_array( $config[ $plural ] ) ) {
+				$config[ $plural ] = [ $config[ $plural ] ];
+			}
+		}
+
+		// Normalize plural to singular. If it already exists, throw.
+		foreach ( $plurals as $plural ) {
+			$singular = rtrim( $plural, 's' );
+			if ( array_key_exists( $plural, $config ) && ! array_key_exists( $singular, $config ) ) {
+				$config[ $singular ] = $config[ $plural ];
+				unset( $config[ $plural ] );
+			} elseif ( array_key_exists( $plural, $config ) && array_key_exists( $singular, $config ) ) {
+				throw new \RuntimeException( "Both '$plural' and '$singular' keys exist in the environment config." );
+			}
+		}
+	}
+
+	protected function normalize_singular_to_plural( array &$config ): void {
+		/*
+		 * These values make sense to be singular in config, but we want to normalize them to plural.
+		 * This way the user can do:
+		 * plugin: foo
+		 * On the config file, and --plugins foo in the CLI parameters.
+		 */
+		$singulars = [ 'plugin', 'theme', 'volume' ];
+
+		// Normalize singular to plural. If it already exists, throw.
+		foreach ( $singulars as $singular ) {
+			$plural = $singular . 's';
+			if ( array_key_exists( $singular, $config ) && ! array_key_exists( $plural, $config ) ) {
+				$config[ $plural ] = $config[ $singular ];
+				unset( $config[ $singular ] );
+			} elseif ( array_key_exists( $singular, $config ) && array_key_exists( $plural, $config ) ) {
+				throw new \RuntimeException( "Both '$singular' and '$plural' keys exist in the environment config." );
+			}
+		}
 	}
 
 	/**

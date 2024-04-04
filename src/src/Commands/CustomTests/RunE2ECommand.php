@@ -68,92 +68,23 @@ class RunE2ECommand extends DynamicCommand {
 			throw new \RuntimeException( 'E2E schema not set or incomplete.' );
 		}
 
-		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'],
-			[
-				// We remove "woocommerce_version" from the arguments because we add our own,
-				// which uses the same logic of `qit env:up`, since it's tied to Woo E2E synced tests.
-				'woocommerce_version',
-				// Todo: Implement capability of passing feature flags to tests.
-				'optional_features',
-			]
-		);
-
-		// Extension slug/ID.
-		$this->addArgument(
-			'woo_extension',
-			InputArgument::OPTIONAL,
-			'A WooCommerce Extension Slug or Marketplace ID.'
-		);
-
-		// Extension slug/ID.
-		$this->addArgument(
-			'test-path',
-			InputArgument::OPTIONAL,
-			'Path to your E2E tests (Optional, if not set, it will try to download your custom tests that you have previously uploaded to QIT)'
-		);
-
-		$this->addOption(
-			'test_tag',
-			null,
-			InputOption::VALUE_OPTIONAL,
-			'The tag of the test to run. If not set, it will run the default test.',
-			'default'
-		);
-
-		// If testing a development build, set this.
-		$this->addOption(
-			'sut',
-			null,
-			InputOption::VALUE_OPTIONAL,
-			'Path to the development build of the extension you are testing. Accepts a WordPress plugin or theme directory, or a WordPress plugin or theme zip file.',
-			null
-		);
-
-		// If "woo_extension" (SUT) is a theme, set this.
-		$this->addOption(
-			'woo',
-			null,
-			InputOption::VALUE_OPTIONAL,
-			'The WooCommerce Version. Accepts "nightly", "stable", or a GitHub Tag (eg: 8.6.1).',
-			''
-		);
-
-		$this->addOption(
-			'object_cache',
-			null,
-			InputOption::VALUE_NONE,
-			'Adds object cache to the plugin.'
-		);
-
-		// Add "mode" option, which can be "headless", "headed", "ui" or "codegen"..
-		$this->addOption(
-			'ui',
-			null,
-			InputOption::VALUE_NONE,
-			'Runs tests in UI mode. In this mode, you can start and view the tests running.'
-		);
-
-		$this->addOption(
-			'codegen',
-			'c',
-			InputOption::VALUE_NONE,
-			'Run the environment for Codegen. In this mode, you can generate your test files.'
-		);
-
-		// If "woo_extension" (SUT) is a theme, set this.
-		$this->addOption(
-			'testing_theme',
-			null,
-			InputOption::VALUE_NONE,
-			'If the "woo_extension" is a theme, set this flag.'
-		);
-
-		$this->addOption(
-			'bootstrap_only',
-			'b',
-			InputOption::VALUE_NONE,
-			'If set, will only start the environment and bootstrap the plugins.'
-		);
+		$this
+			->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'A WooCommerce Extension Slug or Marketplace ID.' )
+			->addArgument( 'test_path', InputArgument::OPTIONAL, 'Path to your E2E tests (Optional, if not set, it will try to download your custom tests that you have previously uploaded to QIT)' )
+			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
+			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Theme install, if multiple provided activates the last. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
+			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
+			->addOption( 'php_ext', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions to install in the environment.', [] )
+			->addOption( 'require', 'r', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load PHP file before running the command (may be used more than once).' )
+			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
+			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
+			->addOption( 'test_tag', null, InputOption::VALUE_OPTIONAL, 'The tag of the test to run. If not set, it will run the default test.', 'default' )
+			->addOption( 'sut', null, InputOption::VALUE_OPTIONAL, 'Path to the development build of the extension you are testing. Accepts a WordPress plugin or theme directory, or a WordPress plugin or theme zip file.', null )
+			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "nightly", "stable", or a GitHub Tag (eg: 8.6.1).' )
+			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode. In this mode, you can start and view the tests running.' )
+			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run the environment for Codegen. In this mode, you can generate your test files.' )
+			->addOption( 'testing_theme', null, InputOption::VALUE_NONE, 'If the "woo_extension" is a theme, set this flag.' )
+			->addOption( 'bootstrap_only', 'b', InputOption::VALUE_NONE, 'If set, will only start the environment and bootstrap the plugins.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -173,11 +104,13 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::FAILURE;
 		}
 
+		/*
 		foreach ( $other_options as $k => $o ) {
 			if ( ! in_array( $k, [ 'compatibility', 'woo' ], true ) ) {
 				$this->output->writeln( sprintf( '<comment>Option "%s" is not part of the "env:up" command definition and will be ignored.</comment>', $k ) );
 			}
 		}
+		*/
 
 		// Check if option "--ui" is set. If it is, "--codegen" cannot be set. Also check the other way around, and set $test_mode accordingly.
 		if ( $input->getOption( 'ui' ) && $input->getOption( 'codegen' ) ) {
@@ -235,46 +168,13 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		// Test Path, if local.
-		$test_path = $input->getArgument( 'test-path' );
+		$test_path = $input->getArgument( 'test_path' );
 
 		if ( ! empty( $test_path ) && file_exists( $test_path ) && ! empty( $woo_extension ) ) {
 			putenv( sprintf( 'QIT_CUSTOM_TESTS_PATH=%s|%s', $woo_extension, $test_path ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
 
-		$compatibility = $other_options['compatibility'];
-
-		if ( $compatibility !== 'default' && $compatibility !== 'full' ) {
-			// Then it must be a comma-separated string of slugs.
-			foreach ( array_map( 'trim', explode( ',', $compatibility ) ) as $slug ) {
-				if ( ! ExtensionDownloader::is_valid_plugin_slug( $slug ) ) {
-					$output->writeln( sprintf( '<error>Invalid Compatibility mode. It can be either "default", "full", or a comma-separated list of slugs. Invalid: "%s"</error>', $slug ) );
-
-					return Command::FAILURE;
-				}
-				// Invalid. eg: "full,automatewoo".
-				if ( $slug === 'default' || $slug === 'full' ) {
-					$output->writeln( sprintf( '<error>Invalid Compatibility mode. It can be either "default", "full", or a comma-separated list of slugs. Invalid: "%s"</error>', $slug ) );
-
-					return Command::FAILURE;
-				}
-			}
-		}
-
-		$woo = $input->getOption( 'woo' );
-		$bootstrap_only      = $input->getOption( 'bootstrap_only' ) || $test_mode === 'codegen';
-
-		if ( ! empty( $woo ) ) {
-			if ( $woo === 'nightly' ) {
-				$env_up_options['--plugins'][] = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
-			} elseif ( $woo === 'rc' ) {
-				$this->output->writeln( 'Using "nightly" instead. If you want a specific RC, please use the GitHub tag, eg: "1.2.3-rc.1"' );
-				$env_up_options['--plugins'][] = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
-			} elseif ( $woo === 'stable' ) {
-				$env_up_options['--plugins'][] = 'woocommerce';
-			} else {
-				$env_up_options['--plugins'][] = "https://github.com/woocommerce/woocommerce/releases/download/$woo/woocommerce.zip";
-			}
-		}
+		$bootstrap_only = $input->getOption( 'bootstrap_only' ) || $test_mode === 'codegen';
 
 		if ( ! empty( $woo_extension ) ) {
 			$test_tag = $input->getOption( 'test_tag' );
@@ -283,15 +183,15 @@ class RunE2ECommand extends DynamicCommand {
 			}
 
 			if ( $input->getOption( 'testing_theme' ) === 'true' ) {
-				$env_up_options['--themes'][] = $woo_extension;
+				$env_up_options['--theme'][] = $woo_extension;
 			} else {
-				$env_up_options['--plugins'][] = $woo_extension;
+				$env_up_options['--plugin'][] = $woo_extension;
 			}
 		}
 
 		$additional_volumes = [];
 
-		$env_up_options['--volumes'] = $additional_volumes;
+		$env_up_options['--volume'] = $additional_volumes;
 		$env_up_options['--json']    = true;
 
 		if ( $output->isVerbose() ) {
@@ -425,8 +325,8 @@ class RunE2ECommand extends DynamicCommand {
 	 *
 	 * @return array<mixed>
 	 */
-	protected function parse_options( InputInterface $input ): array {
-		$options = parent::parse_options( $input );
+	protected function parse_options( InputInterface $input, bool $filter_to_send = true ): array {
+		$options = parent::parse_options( $input, false );
 
 		// Iterate over all options of UpEnvironmentCommand
 		// Remote keys in $options array that are not part of the definition

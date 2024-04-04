@@ -3,7 +3,7 @@
 namespace QIT_CLI\Environment\ExtensionDownload\Handlers;
 
 use QIT_CLI\App;
-use QIT_CLI\Environment\ExtensionDownload\Extension;
+use QIT_CLI\Environment\Extension;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
 
@@ -26,7 +26,7 @@ class URLHandler extends Handler {
 	}
 
 	/**
-	 * @param array<Extension> $extensions
+	 * @param array<\QIT_CLI\Environment\Extension> $extensions
 	 * @param string           $cache_dir
 	 *
 	 * @throws \RuntimeException If an error occurs during downloading or file handling.

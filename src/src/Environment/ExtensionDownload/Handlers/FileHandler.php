@@ -3,7 +3,7 @@
 namespace QIT_CLI\Environment\ExtensionDownload\Handlers;
 
 use QIT_CLI\App;
-use QIT_CLI\Environment\ExtensionDownload\Extension;
+use QIT_CLI\Environment\Extension;
 use QIT_CLI\Zipper;
 
 class FileHandler extends Handler {

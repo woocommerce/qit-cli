@@ -5,7 +5,7 @@ namespace QIT_CLI\Environment\CustomTests;
 use QIT_CLI\Commands\CustomTests\UploadCustomTestCommand;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
-use QIT_CLI\Environment\ExtensionDownload\Extension;
+use QIT_CLI\Environment\Extension;
 use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
 use QIT_CLI\Environment\ExtensionDownload\Handlers\QITHandler;
 use QIT_CLI\RequestBuilder;
@@ -158,7 +158,7 @@ class CustomTestsDownloader {
 	}
 
 	/**
-	 * @param array<Extension> $extensions
+	 * @param array<\QIT_CLI\Environment\Extension> $extensions
 	 *
 	 * @return array<string, array{
 	 *     url: string,

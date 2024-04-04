@@ -4,6 +4,7 @@ namespace QIT_CLI\Environment\Environments;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Extension;
 use QIT_CLI\IO\Output;
 use function QIT_CLI\normalize_path;
 
@@ -61,20 +62,12 @@ abstract class EnvInfo implements \JsonSerializable {
 	public $php_extensions = [];
 
 	/**
-	 * @var array{
-	 *     source: string,
-	 *     slug: string,
-	 *     test_tag: string,
-	 * } Array of plugins to feed to WP CLI.
+	 * @var array<\QIT_CLI\Environment\Extension> Array of plugins to feed to WP CLI.
 	 */
 	public $plugins = [];
 
 	/**
-	 * @var array{
-	 *     source: string,
-	 *     slug: string,
-	 *     test_tag: string,
-	 *  }  Array of themes to feed to WP CLI.
+	 * @var array<Extension> Array of themes to feed to WP CLI.
 	 */
 	public $themes = [];
 

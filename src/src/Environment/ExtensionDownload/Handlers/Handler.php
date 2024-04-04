@@ -5,7 +5,7 @@ namespace QIT_CLI\Environment\ExtensionDownload\Handlers;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Config;
-use QIT_CLI\Environment\ExtensionDownload\Extension;
+use QIT_CLI\Environment\Extension;
 use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\normalize_path;
@@ -23,7 +23,7 @@ abstract class Handler {
 	 *
 	 * This is used for creating the cache file name
 	 *
-	 * @param array<Extension> $extensions The extensions to get versions for.
+	 * @param array<\QIT_CLI\Environment\Extension> $extensions The extensions to get versions for.
 	 *
 	 * @return void
 	 */

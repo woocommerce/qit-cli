@@ -1,0 +1,78 @@
+[
+    {
+        "action": "install",
+        "slug": "qit-beaver",
+        "source": "qit-beaver",
+        "test_tags": [
+            "default"
+        ]
+    },
+    {
+        "action": "test",
+        "slug": "qit-cat",
+        "source": "qit-cat",
+        "test_tags": [
+            "rc"
+        ]
+    },
+    {
+        "action": "test",
+        "slug": "qit-cat",
+        "source": "qit-cat",
+        "test_tags": [
+            "rc",
+            "feature-foo"
+        ]
+    },
+    {
+        "action": "test",
+        "slug": "qit-cat",
+        "source": "qit-cat",
+        "test_tags": [
+            "rc",
+            "feature-foo"
+        ]
+    },
+    {
+        "action": "test",
+        "slug": "qit-cat",
+        "source": "qit-cat",
+        "test_tags": [
+            "rc",
+            "feature-foo"
+        ]
+    },
+    {
+        "action": "bootstrap",
+        "slug": "qit-beaver",
+        "source": "https:\/\/github.com\/qitbeaver\/qit-beaver",
+        "test_tags": [
+            "stable",
+            "beta"
+        ]
+    },
+    {
+        "action": "test",
+        "slug": "cat-pictures",
+        "source": "https:\/\/github.com\/cat\/pictures",
+        "test_tags": [
+            "default"
+        ]
+    },
+    {
+        "action": "bootstrap",
+        "slug": "dog-pictures",
+        "source": "https:\/\/github.com\/cat\/pictures?foo=bar",
+        "test_tags": [
+            "default"
+        ]
+    },
+    {
+        "action": "install",
+        "slug": "dog-pictures",
+        "source": "https:\/\/github.com\/cat\/pictures",
+        "test_tags": [
+            "default"
+        ]
+    }
+]
