@@ -2216,8 +2216,8 @@
         {
             "debug_log": [
                 {
-                    "count": "20",
-                    "message": "PHP Deprecated: strlen(): Passing null to parameter #1 ($string) of type string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/formatting.php on line 3557"
+                    "count": "14100",
+                    "message": "Automattic\\\\WooCommerce\\\\Admin\\\\DataSourcePoller is deprecated since version 8.8.0! Use Automattic\\\\WooCommerce\\\\Admin\\\\RemoteSpecs\\\\DataSourcePoller instead."
                 }
             ]
         }

@@ -2214,7 +2214,12 @@
             }
         },
         {
-            "debug_log": []
+            "debug_log": [
+                {
+                    "count": "13925",
+                    "message": "Automattic\\\\WooCommerce\\\\Admin\\\\DataSourcePoller is deprecated since version 8.8.0! Use Automattic\\\\WooCommerce\\\\Admin\\\\RemoteSpecs\\\\DataSourcePoller instead."
+                }
+            ]
         }
     ]
 ]';
