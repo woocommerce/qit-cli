@@ -15,6 +15,7 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
+use QIT_CLI\Environment\Extension;
 use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
 use QIT_CLI\LocalTests\E2E\E2ETestManager;
 use QIT_CLI\WooExtensionsList;
@@ -179,7 +180,7 @@ class RunE2ECommand extends DynamicCommand {
 		if ( ! empty( $woo_extension ) ) {
 			$test_tag = $input->getOption( 'test_tag' );
 			if ( ! empty( $test_tag ) ) {
-				$woo_extension = $woo_extension . ':' . $test_tag;
+				$woo_extension = sprintf( '%s:%s:%s', $woo_extension, Extension::$allowed_actions['test'], $test_tag );
 			}
 
 			if ( $input->getOption( 'testing_theme' ) === 'true' ) {

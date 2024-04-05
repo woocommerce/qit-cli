@@ -1,3 +1,4 @@
 plugins:
   automatewoo:
-    test_tag: foo
+    test_tags:
+      - foo

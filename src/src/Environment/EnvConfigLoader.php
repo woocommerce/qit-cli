@@ -75,8 +75,8 @@ class EnvConfigLoader {
 		}
 
 		// Plugins and Themes.
-		$env_config['plugin'] = $this->plugins_and_themes_parser->parse_extensions( $env_config['plugin'] ?? [] );
-		$env_config['theme']  = $this->plugins_and_themes_parser->parse_extensions( $env_config['theme'] ?? [] );
+		$env_config['plugin'] = $this->plugins_and_themes_parser->parse_extensions( $env_config['plugin'] ?? [], getenv( 'QIT_UP_AND_TEST' ) ? Extension::$allowed_actions['bootstrap'] : Extension::$allowed_actions['install'] );
+		$env_config['theme']  = $this->plugins_and_themes_parser->parse_extensions( $env_config['theme'] ?? [], getenv( 'QIT_UP_AND_TEST' ) ? Extension::$allowed_actions['bootstrap'] : Extension::$allowed_actions['install'] );
 
 		// Requires.
 		foreach ( $env_config['require'] ?? [] as $file ) {

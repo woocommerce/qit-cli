@@ -28,6 +28,58 @@ class PluginsAndThemesParser {
 				if ( ! is_numeric( $key ) ) {
 					$extension['slug'] = $key;
 				}
+
+				$expected_keys = [
+					'action',
+					'slug',
+					'source',
+					'test_tags',
+				];
+
+				foreach ( $extension as $k => $v ) {
+					if ( ! in_array( $k, $expected_keys ) ) {
+						throw new \InvalidArgumentException( sprintf( 'Invalid key "%s" in extension array. Expected keys: %s', $k, implode( ', ', $expected_keys ) ) );
+					}
+				}
+
+				// If user set a "source", make sure it's valid.
+				if ( isset( $extension['source'] ) ) {
+					if ( ! is_string( $extension['source'] ) ) {
+						throw new \InvalidArgumentException( sprintf( 'Invalid source "%s". Source must be a string.', $extension['source'] ) );
+					}
+
+					if ( empty( $extension['source'] ) ) {
+						throw new \InvalidArgumentException( 'If set, source cannot be empty.' );
+					}
+				}
+
+				// If user set an "action", make sure it's valid.
+				if ( isset( $extension['action'] ) ) {
+					if ( ! in_array( $extension['action'], Extension::$allowed_actions ) ) {
+						throw new \InvalidArgumentException( sprintf( 'Invalid action "%s". Valid actions are: %s', $extension['action'], implode( ', ', Extension::$allowed_actions ) ) );
+					}
+				}
+
+				// If user set "test_tags", make sure it's valid.
+				if ( isset( $extension['test_tags'] ) ) {
+					if ( ! is_array( $extension['test_tags'] ) ) {
+						$example              = $extension;
+						$example['test_tags'] = [
+							'example-foo',
+							'example-bar',
+						];
+						throw new \InvalidArgumentException( sprintf( "\"test_tags\" must be an array. \n\nActual:\n%s \n\nExpected: \n%s.", json_encode( $extension, JSON_PRETTY_PRINT ), json_encode( $example, JSON_PRETTY_PRINT ) ) );
+					}
+				}
+
+				if ( isset( $extension['slug'] ) ) {
+					try {
+						$this->woo_extensions_list->get_woo_extension_id_by_slug( $extension['slug'] );
+					} catch ( \Exception $e ) {
+						// Plugin not found, or no permission.
+						throw new \Exception( sprintf( 'Plugin with slug "%s" not found.', $extension['slug'] ) );
+					}
+				}
 			}
 
 			if ( ! isset( $extension['source'] ) && ! isset( $extension['slug'] ) ) {
@@ -103,6 +155,15 @@ class PluginsAndThemesParser {
 
 			// Sort by key.
 			ksort( $extension, SORT_STRING );
+
+			// Check if this "slug" is already defined, if it is, override it.
+			foreach ( $parsed_extensions as $p ) {
+				if ( $p['slug'] === $extension['slug'] ) {
+					$parsed_extensions[ $key ] = $extension;
+					$this->output->writeln( sprintf( '<comment>Overriding extension "%s".</comment>', $extension['slug'] ) );
+					continue 2;
+				}
+			}
 
 			$parsed_extensions[] = $extension;
 		}
