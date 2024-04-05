@@ -2216,7 +2216,7 @@
         {
             "debug_log": [
                 {
-                    "count": "13975",
+                    "count": "14000",
                     "message": "Automattic\\\\WooCommerce\\\\Admin\\\\DataSourcePoller is deprecated since version 8.8.0! Use Automattic\\\\WooCommerce\\\\Admin\\\\RemoteSpecs\\\\DataSourcePoller instead."
                 }
             ]
