@@ -11,32 +11,30 @@
 
 ## Quality Insights Toolkit (QIT)
 
-QIT is a testing platform for WordPress Plugins and Themes developed by WooCommerce that allows developers to run a series of managed tests out-of-the-box. We are currently in closed beta operating only in the Woo Marketplace.
+QIT is a testing platform for WordPress Plugins and Themes developed by WooCommerce, designed to simplify and streamline your testing process. We are currently in closed beta operating only in the Woo Marketplace.
 
 #### Managed Tests
 
 Run tests out-of-the box with zero configuration.
 
-- [Woo E2E Test](https://qit.woo.com/docs/test-types/woo-e2e)
-- [Woo API Test](https://qit.woo.com/docs/test-types/woo-api)
-- [Activation Test](https://qit.woo.com/docs/test-types/activation)
-- [Security Test](https://qit.woo.com/docs/test-types/security)
-- [PHPStan Test](https://qit.woo.com/docs/test-types/phpstan)
-- [PHP Compatibility Test](https://qit.woo.com/docs/test-types/phpcompatibility)
-- [Malware Test](https://qit.woo.com/docs/test-types/malware)
+- [Woo E2E Test](https://qit.woo.com/docs/test-types/woo-e2e) - Runs WooCommerce End-to-End tests alongside your extension.
+- [Woo API Test](https://qit.woo.com/docs/test-types/woo-api) - Runs WooCommerce API tests with your extension.
+- [Activation Test](https://qit.woo.com/docs/test-types/activation) - Activates your plugin and logs any PHP notice, warning, and error.
+- [Security Test](https://qit.woo.com/docs/test-types/security) - Scan your plugin for adherence to best practices in writing secure code.
+- [PHPStan Test](https://qit.woo.com/docs/test-types/phpstan) - Run PHPStan checks to catch issues early.
+- [PHP Compatibility Test](https://qit.woo.com/docs/test-types/phpcompatibility) - Run PHPCompatibility tests to detect issues with different PHP versions.
+- [Malware Test](https://qit.woo.com/docs/test-types/malware) - Scan your code with the Malware check.
 - _Performance Tests (Work-in-progress)_
 
 #### **Custom E2E Tests** _(Coming Soon)_
 
-Write your own E2E tests and share them with the community, or leverage pre-built ones to effortlessly increase your test coverage. Run compatibility tests with other plugins, and, with a little bit of configuration, create a matrix to run the same tests using various versions of PHP, WP and Woo, for increased coverage. [Read more about Custom E2E Tests](https://qit.woo.com/docs/custom-tests/introduction).
+Write your own E2E tests using frameworks such as [Playwright](https://playwright.dev/), or leverage pre-built ones to effortlessly increase your test coverage. [Read more about Custom E2E Tests](https://qit.woo.com/docs/custom-tests/introduction).
 
 #### Local Test Environment _(Coming Soon)_
 
-Fast, disposable and configurable local test environment that aims to do one thing well: Run tests.
+Fast, disposable and configurable test environment designed to do one thing well: **Run tests.**
 
-- Very small docker images based on Alpine, which makes them perfect for running on CI.
-- Our custom-built Docker images are published on ARM64 and AMD64 CPU architectures, granting maximum performance on newer Mac CPUs.
-- The Docker volumes are optimized for reducing I/O bottleneck on environments where Docker runs in a virtualized context, such as on Macs.
+Our Alpine-based Docker images are perfect for CI systems, while also offering native ARM64 support for Apple Silicon and optimized Docker volumes for faster performance on Mac, Linux, and Windows WSL for local tests. 
 
 [Read more about the Local Test Environment.](https://qit.woo.com/docs/environment/getting-started)
 
