@@ -28,7 +28,7 @@ Run tests out-of-the box with zero configuration.
 
 #### **Custom E2E Tests** _(Coming Soon)_
 
-Write your own E2E tests and share them with the community, or leverage pre-built ones to effortlessly increase your test coverage. Run compatibility tests with other plugins, and, with a little bit of configuration, create a matrix to run the same tests using various versions of PHP, WP and Woo, for increased coverage. [Read more about Custom E2E Tests.](https://qit.woo.com/docs/custom-tests/introduction)
+Write your own E2E tests and share them with the community, or leverage pre-built ones to effortlessly increase your test coverage. Run compatibility tests with other plugins, and, with a little bit of configuration, create a matrix to run the same tests using various versions of PHP, WP and Woo, for increased coverage. [Read more about Custom E2E Tests](https://qit.woo.com/docs/custom-tests/introduction).
 
 #### Local Test Environment _(Coming Soon)_
 
