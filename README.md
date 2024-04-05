@@ -28,7 +28,9 @@ Run tests out-of-the box with zero configuration.
 
 #### **Custom E2E Tests** _(Coming Soon)_
 
-Write your own E2E tests using frameworks such as [Playwright](https://playwright.dev/), or leverage pre-built tests to effortlessly increase your test coverage. [Read more about Custom E2E Tests](https://qit.woo.com/docs/custom-tests/introduction).
+Write your own E2E tests using frameworks such as [Playwright](https://playwright.dev/), or leverage pre-built tests to effortlessly increase your test coverage.
+
+[Read more about Custom E2E Tests](https://qit.woo.com/docs/custom-tests/introduction).
 
 #### Local Test Environment _(Coming Soon)_
 
