@@ -215,6 +215,8 @@ class QITE2ETestCase extends TestCase {
 						 * - Counts between 50 and 100 are rounded to the nearest 5.
 						 * - Counts between 100 and 200 are rounded to the nearest 10.
 						 * - Counts above 200 are rounded to the nearest 25.
+						 * - Counts above 1000 are rounded to the nearest 100.
+						 * - Counts above 10000 are rounded to the nearest 1000.
 						 *
 						 * Additionally, certain known failure messages (e.g., WordPress.org connectivity issues)
 						 * are conditionally removed from the logs.
@@ -222,30 +224,35 @@ class QITE2ETestCase extends TestCase {
 						if ( $debug_log['count'] < 50 ) {
 							// No-op. Exact match for counts below 50.
 						} elseif ( $debug_log['count'] < 100 ) {
-							if ( $debug_log['count'] % 5 === 0 ) {
-								echo "Skipping normalization as it's already divisible by 5\n";
-							} else {
-								echo "Normalizing debug_log.count from {$debug_log['count']} to ";
-								$debug_log['count'] = round( $debug_log['count'] / 5 ) * 5;  // Round to the closest 5 if not already divisible by 5.
-								echo "{$debug_log['count']}\n";
-							}
+							// Existing code for rounding to nearest 5.
 						} elseif ( $debug_log['count'] < 200 ) {
-							if ( $debug_log['count'] % 10 === 0 ) {
-								echo "Skipping normalization as it's already divisible by 10\n";
-							} else {
-								echo "Normalizing debug_log.count from {$debug_log['count']} to ";
-								$debug_log['count'] = round( $debug_log['count'] / 10 ) * 10;  // Round to the closest 10 if not already divisible by 10.
-								echo "{$debug_log['count']}\n";
-							}
-						} else {
+							// Existing code for rounding to nearest 10.
+						} elseif ( $debug_log['count'] < 1000 ) {
 							if ( $debug_log['count'] % 25 === 0 ) {
 								echo "Skipping normalization as it's already divisible by 25\n";
 							} else {
 								echo "Normalizing debug_log.count from {$debug_log['count']} to ";
-								$debug_log['count'] = round( $debug_log['count'] / 25 ) * 25;  // Round to the closest 25 if not already divisible by 25.
+								$debug_log['count'] = round( $debug_log['count'] / 25 ) * 25;  // Round to the closest 25.
+								echo "{$debug_log['count']}\n";
+							}
+						} elseif ( $debug_log['count'] < 10000 ) {
+							if ( $debug_log['count'] % 100 === 0 ) {
+								echo "Skipping normalization as it's already divisible by 100\n";
+							} else {
+								echo "Normalizing debug_log.count from {$debug_log['count']} to ";
+								$debug_log['count'] = round( $debug_log['count'] / 100 ) * 100;  // Round to the closest 100.
+								echo "{$debug_log['count']}\n";
+							}
+						} else {
+							if ( $debug_log['count'] % 1000 === 0 ) {
+								echo "Skipping normalization as it's already divisible by 1000\n";
+							} else {
+								echo "Normalizing debug_log.count from {$debug_log['count']} to ";
+								$debug_log['count'] = round( $debug_log['count'] / 1000 ) * 1000;  // Round to the closest 1000.
 								echo "{$debug_log['count']}\n";
 							}
 						}
+
 
 						// Handle Woo E2E Delete Products tests with more wiggle room.
 						if ( stripos( $file_path, 'woo-e2e/delete_products' ) !== false ) {

@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 81 passed, 81 total | Tests: 19 skipped, 0 failed, 302 passed, 321 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 81 passed, 81 total | Tests: 21 skipped, 0 failed, 300 passed, 321 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -48,8 +48,8 @@
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 81,
                 "numFailedTests": 0,
-                "numPassedTests": 302,
-                "numPendingTests": 19,
+                "numPassedTests": 300,
+                "numPendingTests": 21,
                 "numTotalTests": 321,
                 "testResults": [
                     {
@@ -1713,7 +1713,7 @@
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows existing customer to place an order",
@@ -1721,7 +1721,7 @@
                                 },
                                 {
                                     "title": "can create an account during checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2100,7 +2100,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 81 passed, 81 total | Tests: 19 skipped, 0 failed, 302 passed, 321 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 81 passed, 81 total | Tests: 21 skipped, 0 failed, 300 passed, 321 total."
             }
         },
         {
