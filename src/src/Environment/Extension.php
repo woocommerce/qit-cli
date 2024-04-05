@@ -3,6 +3,12 @@
 namespace QIT_CLI\Environment;
 
 class Extension {
+	public static $allowed_actions = [
+		'install'   => 'install',
+		'bootstrap' => 'bootstrap',
+		'test'      => 'test',
+	];
+
 	/** @var string The input the user provided. */
 	public $extension_identifier;
 

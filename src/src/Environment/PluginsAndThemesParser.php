@@ -103,43 +103,64 @@ class PluginsAndThemesParser {
 			return $json_array;
 		}
 
-		// Default parsed structure.
+		/**
+		 * Short Syntax Parsing:
+		 *
+		 * If the string isn't JSON, parse it as a "short syntax" string, which goes like this:
+		 *
+		 * {source}:{action}:{test_tags}
+		 *
+		 * - Source can be slugs, IDs, URLs or file paths.
+		 * - Action is optional and is one of the strings in Extension::$allowed_actions (e.g., "install", "bootstrap", "test").
+		 * - Test tags are optional and can be a comma-separated list of alphanumeric strings, or local paths.
+		 *
+		 * Parsing Logic:
+		 *
+		 * The parser searches for the "action:" part of the string.
+		 * - If no action is found, the entire string is considered as the source. In this case, there are no test tags.
+		 * - If an action is found, the left part is the source, the right part, if present, is the test tags, which we explode by comma.
+		 */
 		$parsed_short_syntax = [
-			'source'      => '',
+			'source'    => '',
 			'action'    => $default_action,
 			'test_tags' => [],
 		];
 
-		// Known actions.
-		$actions     = [ 'install', 'bootstrap', 'test' ];
-		$actionFound = false;
+		$action_found = false;
 
-		foreach ( $actions as $action ) {
-			$actionPattern = ":$action";
-			$actionPos     = strpos( $extension, $actionPattern );
+		foreach ( Extension::$allowed_actions as $action ) {
+			$action_pattern = ":$action";
+			$action_pos     = strpos( $extension, $action_pattern );
 
-			// Check if action is found and is either at the end or followed by another ':'.
-			if ( $actionPos !== false && ( strlen( $extension ) == $actionPos + strlen( $actionPattern ) || $extension[ $actionPos + strlen( $actionPattern ) ] == ':' ) ) {
-				$actionFound                   = true;
-				$parsed_short_syntax['source']   = substr( $extension, 0, $actionPos );
-				$parsed_short_syntax['action'] = $action;
-
-				// Extract and process 'test_tags' if any.
-				$testTagsStr = substr( $extension, $actionPos + strlen( $actionPattern ) + 1 );
-				if ( ! empty( $testTagsStr ) ) {
-					$parsed_short_syntax['test_tags'] = array_filter( array_map( 'trim', explode( ',', $testTagsStr ) ), 'strlen' );
-				}
-
-				break;
+			// Continue. Action not found.
+			if ( $action_pos === false ) {
+				continue;
 			}
+
+			$action_found = true;
+
+			// Anything on the left of the action is the source.
+			$parsed_short_syntax['source'] = substr( $extension, 0, $action_pos );
+			$parsed_short_syntax['action'] = $action;
+
+			// Anything on the right of the action is the test_tags, if any.
+			$test_tag_str = substr( $extension, $action_pos + strlen( $action_pattern ) + 1 );
+
+			if ( ! empty( $test_tag_str ) ) {
+				// We explode the test tags by comma.
+				// array_map(trim) will normalize "foo, bar" into "foo,bar"
+				// array_filter will remove empty strings.
+				$parsed_short_syntax['test_tags'] = array_filter( array_map( 'trim', explode( ',', $test_tag_str ) ), 'strlen' );
+			}
+
+			break;
 		}
 
 		// If no action is found, the entire string is considered as 'slug'.
-		if ( ! $actionFound ) {
+		if ( ! $action_found ) {
 			$parsed_short_syntax['source'] = $extension;
 		}
 
 		return $parsed_short_syntax;
 	}
-
 }

@@ -69,10 +69,8 @@ YML;
 	public function test_parse_extensions_option() {
 		/*
 		 * Equivalent to:
-		 * --plugin qit-beaver \
-		 * --plugin qit-cat:test:rc,feature-foo \
-		 * --plugin "slug=qit-beaver,source=https://github.com/qitbeaver/qit-beaver,test_tags=stable|beta,action=test-action" \
-		 * --plugin "slug=cat-pictures,source=https://github.com/cat/pictures,test_tags=,action=deploy-action"
+		 * --plugin qit-beaver
+		 * --plugin qit-cat:test:rc,feature-foo
 		 */
 		$cli_array = [
 			'plugins' => [
@@ -95,22 +93,24 @@ YML;
 	public function test_parse_extensions_infer() {
 		$cli_array = [
 			'plugins' => [
-				'{"source":"https://github.com/qitbeaver/foo-extension.zip"}',
-				'{"source":"/path/to/file/bar-extension.zip"}',
-				'{"source":"/path/to/file/baz-extension"}',
 				'qit-beaver',
 				'qit-cat:test:rc',
 				'qit-cat:test:rc,feature-foo',
 				'qit-cat:test:rc, feature-foo',
 				'qit-cat:test:rc, feature-foo, ',
-				'https://github.com/qitbeaver/foo-extension.zip:test:rc,feature-foo', // New scenarios that I need to account for.
-				'/path/to/file/bar-extension.zip:test:rc,feature-foo', // New scenarios that I need to account for.
-				'/path/to/file/baz-extension:test:rc,feature-foo', // New scenarios that I need to account for.
-				'/path/to/file/bar-extension.zip', // New scenarios that I need to account for.
-				'C:\\Program Files\\example\\qit-beaver.zip',  // Windows file path
-				'ftp://ftp.example.com/qit-beaver.zip',  // FTP protocol
-				'ssh://example.com:/path/to/qit-beaver.zip',  // SSH protocol
-				'\\\\network-share\\plugins\\qit-beaver.zip',  // Windows network share
+				'qit-cat:test:rc,/path/to/tests',
+				'https://github.com/qitbeaver/foo-extension.zip:test:rc,feature-foo', // URL, short syntax.
+				'https://github.com/qitbeaver/foo-extension.zip:test:~/dev/foo-tests,foobarbaz', // URL, short syntax.
+				'/path/to/file/bar-extension.zip:test:rc,feature-foo', // File path, short syntax.
+				'/path/to/file/baz-extension:test:rc,feature-foo', // Directory, short syntax.
+				'/path/to/file/bar-extension.zip', // File, short syntax, defaults.
+				'C:\\Program Files\\example\\qit-beaver.zip',  // Windows file path.
+				'ftp://ftp.example.com/qit-beaver.zip',  // We don't really support this, but just in case.
+				'ssh://example.com:/path/to/qit-beaver.zip', // We don't really support this, but just in case.
+				'\\\\network-share\\plugins\\qit-beaver.zip', // We don't really support this, but just in case.
+				'{"source":"https://github.com/qitbeaver/foo-extension.zip"}', // If they want to, just use JSON.
+				'{"source":"/path/to/file/bar-extension.zip"}', // If they want to, just use JSON.
+				'{"source":"/path/to/file/baz-extension"}', // If they want to, just use JSON.
 			],
 		];
 
