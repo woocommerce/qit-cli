@@ -1132,6 +1132,18 @@
     {
       "id": 789,
       "slug": "baz-extension"
+    },
+    {
+      "id": 1234,
+      "slug": "qit-beaver"
+    },
+    {
+      "id": 12345,
+      "slug": "qit-cat"
+    },
+    {
+      "id": 12345,
+      "slug": "qit-dog"
     }
   ],
   "environments": {

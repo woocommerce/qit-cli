@@ -74,5 +74,14 @@
         "test_tags": [
             "default"
         ]
+    },
+    {
+        "action": "bootstrap",
+        "slug": "qit-beaver",
+        "source": "https:\/\/github.com\/qitbeaver\/qit-beaver",
+        "test_tags": [
+            "stable",
+            "\/path\/to\/local\/test"
+        ]
     }
 ]

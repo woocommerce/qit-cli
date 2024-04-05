@@ -16,13 +16,5 @@
             "beta",
             "release-candidate"
         ]
-    },
-    {
-        "action": "test",
-        "slug": "dog-pictures",
-        "source": "https:\/\/github.com\/cat\/pictures?foo=bar",
-        "test_tags": [
-            "default"
-        ]
     }
 ]

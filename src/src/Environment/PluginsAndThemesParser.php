@@ -4,6 +4,7 @@ namespace QIT_CLI\Environment;
 
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Output\OutputInterface;
+use function QIT_CLI\normalize_path;
 
 class PluginsAndThemesParser {
 	/** @var OutputInterface */
@@ -20,9 +21,13 @@ class PluginsAndThemesParser {
 	public function parse_extensions( array $plugins_or_themes, string $default_action = 'install' ): array {
 		$parsed_extensions = [];
 
-		foreach ( $plugins_or_themes as $extension ) {
+		foreach ( $plugins_or_themes as $key => $extension ) {
 			if ( is_string( $extension ) ) {
 				$extension = $this->parse_string_extension( $extension, $default_action );
+			} elseif ( is_array( $extension ) && ! isset( $extension['slug'] ) ) {
+				if ( ! is_numeric( $key ) ) {
+					$extension['slug'] = $key;
+				}
 			}
 
 			if ( ! isset( $extension['source'] ) && ! isset( $extension['slug'] ) ) {
@@ -39,7 +44,26 @@ class PluginsAndThemesParser {
 						$extension['slug'] = $extension['source'];
 					}
 				} catch ( \Exception $e ) {
-					throw new \Exception( "Please provide a valid 'slug' for the plugin with source '{$extension['source']}'." );
+					// Source is not a slug of a ID. Try to infer it.
+					try {
+						/*
+						 * If the source is a URL, we can try to infer the slug from the file that is being downloaded, eg:
+						 *
+						 * https://github.com/foo/bar/releases/qit-beaver.zip (inferred slug is "qit-beaver")
+						 *
+						 * If the source is a local file path, we infer from the basename of the file without the extension, eg:
+						 * /path/to/qit-beaver.zip (inferred slug is "qit-beaver")
+						 *
+						 * If it's a directory, it's the basename of the dir, eg:
+						 * /path/to/qit-beaver (inferred slug is "qit-beaver")
+						 */
+						$extension['slug'] = pathinfo( normalize_path( $extension['source'] ), PATHINFO_FILENAME );
+
+						// Validate it's found.
+						$this->woo_extensions_list->get_woo_extension_id_by_slug( $extension['slug'] );
+					} catch ( \Exception $e ) {
+						throw new \Exception( "Please provide a valid 'slug' for the plugin with source '{$extension['source']}'." );
+					}
 				}
 			}
 
@@ -79,18 +103,43 @@ class PluginsAndThemesParser {
 			return $json_array;
 		}
 
-		// If it's not a JSON, then it must be a short syntax.
-		$parsed_short_syntax           = [];
-		$parts                         = explode( ':', $extension );
-		$parsed_short_syntax['slug']   = $parts[0];
-		$parsed_short_syntax['action'] = $parts[1] ?? $default_action;
-		if ( isset( $parts[2] ) ) {
-			// "rc,feature-foo" => ['rc', 'feature-foo'].
-			// "rc, feature-foo" => ['rc', 'feature-foo'] (That's why we use array_map - trim).
-			// "rc,feature-foo," => ['rc', 'feature-foo'] (That's why we use array_filter - strlen).
-			$parsed_short_syntax['test_tags'] = array_filter( array_map( 'trim', explode( ',', $parts[2] ) ), 'strlen' );
+		// Default parsed structure.
+		$parsed_short_syntax = [
+			'source'      => '',
+			'action'    => $default_action,
+			'test_tags' => [],
+		];
+
+		// Known actions.
+		$actions     = [ 'install', 'bootstrap', 'test' ];
+		$actionFound = false;
+
+		foreach ( $actions as $action ) {
+			$actionPattern = ":$action";
+			$actionPos     = strpos( $extension, $actionPattern );
+
+			// Check if action is found and is either at the end or followed by another ':'.
+			if ( $actionPos !== false && ( strlen( $extension ) == $actionPos + strlen( $actionPattern ) || $extension[ $actionPos + strlen( $actionPattern ) ] == ':' ) ) {
+				$actionFound                   = true;
+				$parsed_short_syntax['source']   = substr( $extension, 0, $actionPos );
+				$parsed_short_syntax['action'] = $action;
+
+				// Extract and process 'test_tags' if any.
+				$testTagsStr = substr( $extension, $actionPos + strlen( $actionPattern ) + 1 );
+				if ( ! empty( $testTagsStr ) ) {
+					$parsed_short_syntax['test_tags'] = array_filter( array_map( 'trim', explode( ',', $testTagsStr ) ), 'strlen' );
+				}
+
+				break;
+			}
+		}
+
+		// If no action is found, the entire string is considered as 'slug'.
+		if ( ! $actionFound ) {
+			$parsed_short_syntax['source'] = $extension;
 		}
 
 		return $parsed_short_syntax;
 	}
+
 }
