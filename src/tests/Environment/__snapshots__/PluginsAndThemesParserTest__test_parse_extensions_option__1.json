@@ -81,7 +81,7 @@
         "source": "https:\/\/github.com\/qitbeaver\/qit-beaver",
         "test_tags": [
             "stable",
-            "\/path\/to\/local\/test"
+            "\/tmp\/test-tag-local-zip.zip"
         ]
     }
 ]

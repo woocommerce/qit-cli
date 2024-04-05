@@ -67,7 +67,7 @@ class PluginsAndThemesParser {
 				}
 			}
 
-			// Set 'source' to 'slug' if 'source' is not provided.
+			// If "source" is empty  'source' to 'slug' if 'source' is not provided.
 			if ( ! isset( $extension['source'] ) && isset( $extension['slug'] ) ) {
 				$extension['source'] = $extension['slug'];
 			}
@@ -82,8 +82,23 @@ class PluginsAndThemesParser {
 				$extension['test_tags'] = [ 'default' ];
 			}
 
-			if ( ! in_array( $extension['action'], [ 'install', 'bootstrap', 'test' ], true ) ) {
-				throw new \InvalidArgumentException( sprintf( 'Invalid action "%s". Valid actions are: %s', $extension['action'], implode( ', ', [ 'install', 'bootstrap', 'test' ] ) ) );
+			foreach ( $extension['test_tags'] as $test_tag ) {
+				if ( ! file_exists( $test_tag ) ) {
+					if ( ! preg_match( '/^[a-z0-9-_]+$/i', $test_tag ) ) {
+						throw new \InvalidArgumentException( sprintf( 'Invalid test tag "%s". Test tags must either be alphanumeric strings (dashes and underscores allowed), a local zip file, or a directory.', $test_tag ) );
+					}
+				} else {
+					// File exists. If it's a file, it must be a zip one.
+					if ( is_file( $test_tag ) ) {
+						if ( pathinfo( $test_tag, PATHINFO_EXTENSION ) !== 'zip' ) {
+							throw new \InvalidArgumentException( sprintf( 'Invalid test tag "%s". Test tags must either be alphanumeric strings (dashes and underscores allowed), a local zip file, or a directory.', $test_tag ) );
+						}
+					}
+				}
+			}
+
+			if ( ! in_array( $extension['action'], Extension::$allowed_actions, true ) ) {
+				throw new \InvalidArgumentException( sprintf( 'Invalid action "%s". Valid actions are: %s', $extension['action'], implode( ', ', Extension::$allowed_actions ) ) );
 			}
 
 			// Sort by key.

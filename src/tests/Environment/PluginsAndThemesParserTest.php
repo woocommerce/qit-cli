@@ -14,6 +14,12 @@ class PluginsAndThemesParserTest extends TestCase {
 	/** @var PluginsAndThemesParser */
 	protected $sut;
 
+	/** @var string */
+	protected $test_tag_local_directory;
+
+	/** @var string */
+	protected $test_tag_local_zip;
+
 	public function setUp(): void {
 		parent::setUp();
 
@@ -22,15 +28,26 @@ class PluginsAndThemesParserTest extends TestCase {
 		   ->give( NullOutput::class );
 
 		$this->sut = App::make( PluginsAndThemesParser::class );
+
+		$this->test_tag_local_directory = sys_get_temp_dir() . '/test-tag-local-dir';
+		mkdir( $this->test_tag_local_directory );
+		$this->test_tag_local_zip = sys_get_temp_dir() . '/test-tag-local-zip.zip';
+		touch( $this->test_tag_local_zip );
+	}
+
+	protected function tearDown(): void {
+		rmdir( $this->test_tag_local_directory );
+		unlink( $this->test_tag_local_zip );
+		parent::tearDown();
 	}
 
 	public function test_parse_extensions_array() {
-		$json = <<<'JSON'
+		$json = <<<JSON
 {
   "plugins": {
     "qit-beaver": {
       "source": "https://github.com/qitbeaver/qit-beaver",
-      "test_tags": ["stable", "/path/to/local/test"],
+      "test_tags": ["stable", "{$this->test_tag_local_directory}"],
       "action": "bootstrap"
     },
     "cat-pictures": {
@@ -42,13 +59,13 @@ class PluginsAndThemesParserTest extends TestCase {
 }
 JSON;
 
-		$yml        = <<<'YML'
+		$yml        = <<<YML
 plugins:
   qit-beaver:
     source: https://github.com/qitbeaver/qit-beaver
     test_tags:
       - stable
-      - "/path/to/local/test"
+      - "{$this->test_tag_local_directory}"
     action: bootstrap
   cat-pictures:
     source: https://github.com/cat/pictures
@@ -83,7 +100,7 @@ YML;
 				'{"slug": "cat-pictures", "source": "https://github.com/cat/pictures", "action": "test"}',
 				'{"slug": "dog-pictures", "source": "https://github.com/cat/pictures?foo=bar", "action": "bootstrap"}',
 				'{"slug": "dog-pictures", "source": "https://github.com/cat/pictures"}',
-				'{"slug":"qit-beaver","source":"https://github.com/qitbeaver/qit-beaver","test_tags":["stable","/path/to/local/test"],"action":"bootstrap"}',
+				'{"slug":"qit-beaver","source":"https://github.com/qitbeaver/qit-beaver","test_tags":["stable","' . $this->test_tag_local_zip . '"],"action":"bootstrap"}',
 			],
 		];
 
@@ -98,9 +115,9 @@ YML;
 				'qit-cat:test:rc,feature-foo',
 				'qit-cat:test:rc, feature-foo',
 				'qit-cat:test:rc, feature-foo, ',
-				'qit-cat:test:rc,/path/to/tests',
+				"qit-cat:test:rc,{$this->test_tag_local_zip},",
 				'https://github.com/qitbeaver/foo-extension.zip:test:rc,feature-foo', // URL, short syntax.
-				'https://github.com/qitbeaver/foo-extension.zip:test:~/dev/foo-tests,foobarbaz', // URL, short syntax.
+				"https://github.com/qitbeaver/foo-extension.zip:test:{$this->test_tag_local_directory},foobarbaz", // URL, short syntax.
 				'/path/to/file/bar-extension.zip:test:rc,feature-foo', // File path, short syntax.
 				'/path/to/file/baz-extension:test:rc,feature-foo', // Directory, short syntax.
 				'/path/to/file/bar-extension.zip', // File, short syntax, defaults.

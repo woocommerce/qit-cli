@@ -48,7 +48,7 @@
         "source": "qit-cat",
         "test_tags": [
             "rc",
-            "\/path\/to\/tests"
+            "\/tmp\/test-tag-local-zip.zip"
         ]
     },
     {
@@ -65,7 +65,7 @@
         "slug": "foo-extension",
         "source": "https:\/\/github.com\/qitbeaver\/foo-extension.zip",
         "test_tags": [
-            "~\/dev\/foo-tests",
+            "\/tmp\/test-tag-local-dir",
             "foobarbaz"
         ]
     },
