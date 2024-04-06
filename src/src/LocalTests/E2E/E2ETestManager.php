@@ -59,21 +59,21 @@ class E2ETestManager {
 		foreach ( $env_info->tests as $plugin_slug => $test_info ) {
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/bootstrap.php' ) ) {
 				$this->output->writeln( sprintf( 'Bootstrapping %s %s', $plugin_slug, $test_info['path_in_container'] . '/bootstrap/bootstrap.php' ) );
-				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "php /qit/tests/e2e/$plugin_slug/bootstrap/bootstrap.php" ] );
+				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "php {$test_info['path_in_container']}/bootstrap/bootstrap.php" ] );
 				$test_result->register_bootstrap( $plugin_slug, 'bootstrap.php', 'processed' );
 			} else {
 				$test_result->register_bootstrap( $plugin_slug, 'bootstrap.php', 'not_present' );
 			}
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/bootstrap.sh' ) ) {
 				$this->output->writeln( sprintf( 'Bootstrapping %s %s', $plugin_slug, $test_info['path_in_container'] . '/bootstrap/bootstrap.sh' ) );
-				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "bash /qit/tests/e2e/$plugin_slug/bootstrap/bootstrap.sh" ] );
+				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "bash {$test_info['path_in_container']}/bootstrap/bootstrap.sh" ] );
 				$test_result->register_bootstrap( $plugin_slug, 'bootstrap.sh', 'processed' );
 			} else {
 				$test_result->register_bootstrap( $plugin_slug, 'bootstrap.sh', 'not_present' );
 			}
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/must-use-plugin.php' ) ) {
 				$this->output->writeln( sprintf( 'Moving must-use plugin of %s %s', $plugin_slug, $test_info['path_in_container'] . '/bootstrap/must-use-plugin.php' ) );
-				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "mv /qit/tests/e2e/$plugin_slug/bootstrap/must-use-plugin.php /var/www/html/wp-content/mu-plugins/qit-mu-$plugin_slug.php" ] );
+				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "mv {$test_info['path_in_container']}/bootstrap/must-use-plugin.php /var/www/html/wp-content/mu-plugins/qit-mu-$plugin_slug.php" ] );
 				$test_result->register_bootstrap( $plugin_slug, 'must-use-plugin.php', 'processed' );
 			} else {
 				$test_result->register_bootstrap( $plugin_slug, 'must-use-plugin.php', 'not_present' );
@@ -107,10 +107,6 @@ class E2ETestManager {
 
 		$this->output->writeln( '<info>Running E2E Tests</info>' );
 
-		if ( $compatibility_mode !== 'default' && $compatibility_mode !== 'full' ) {
-			$compatibility_mode = array_map( 'trim', explode( ',', $compatibility_mode ) );
-		}
-
 		$tests_to_run = [
 			'playwright' => [],
 		];
@@ -119,16 +115,8 @@ class E2ETestManager {
 		 * Split the test to be run.
 		 */
 		foreach ( $env_info->tests as $plugin_slug => $test_info ) {
-			$is_sut = $plugin_slug === $sut;
-
-			if ( $compatibility_mode === 'default' && ! $is_sut ) {
-				continue;
-			}
-
-			if ( $compatibility_mode === 'full' || $is_sut || in_array( $plugin_slug, $compatibility_mode, true ) ) {
-				if ( E2ERunner::find_runner_type( $test_info['path_in_host'] ) === 'playwright' ) {
-					$tests_to_run['playwright'][] = $test_info;
-				}
+			if ( E2ERunner::find_runner_type( $test_info['path_in_host'] ) === 'playwright' ) {
+				$tests_to_run['playwright'][] = $test_info;
 			}
 		}
 

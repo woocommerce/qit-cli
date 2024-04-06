@@ -92,7 +92,7 @@ class PlaywrightRunner extends E2ERunner {
 		foreach ( $test_infos as $test_to_run ) {
 			$playwright_args = array_merge( $playwright_args, [
 				'-v',
-				$test_to_run['path_in_host'] . ":/home/pwuser/tests/{$test_to_run['extension']}",
+				"{$test_to_run['path_in_host']}:/home/pwuser/{$test_to_run['extension']}/{$test_to_run['test_tag']}",
 			] );
 		}
 

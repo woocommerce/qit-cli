@@ -89,6 +89,7 @@ class CustomTestsDownloader {
 						$env_info->tests[ $extension->slug ][] = [
 							'extension'         => $extension->slug,
 							'type'              => $extension->type,
+							'test_tag'          => "local-$k",
 							'path_in_container' => $path_in_container,
 							'path_in_host'      => $path_in_host,
 						];
@@ -121,6 +122,7 @@ class CustomTestsDownloader {
 										$env_info->tests[ $extension->slug ] = [
 											'extension'         => $extension->slug,
 											'type'              => $extension->type,
+											'test_tag'          => $test_tag,
 											'path_in_container' => $path_in_container,
 											'path_in_host'      => $path_in_host,
 										];
