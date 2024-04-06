@@ -15,19 +15,9 @@ class URLHandler extends Handler {
 		// No-op.
 	}
 
-	public function assign_handler_to_extension( string $extesion_input, Extension $extension ): void {
-		// URLs that ends with ".zip".
-		if ( substr( $extesion_input, - 4 ) !== '.zip' ) {
-			throw new \InvalidArgumentException( 'We currently only support .zip URLs' );
-		}
-
-		$extension->download_url         = $extesion_input;
-		$extension->extension_identifier = md5( $extesion_input );
-	}
-
 	/**
 	 * @param array<\QIT_CLI\Environment\Extension> $extensions
-	 * @param string           $cache_dir
+	 * @param string $cache_dir
 	 *
 	 * @throws \RuntimeException If an error occurs during downloading or file handling.
 	 */
@@ -35,32 +25,37 @@ class URLHandler extends Handler {
 		$output = App::make( Output::class );
 
 		foreach ( $extensions as $e ) {
-			if ( ! empty( $e->path ) ) {
+			if ( ! empty( $e->downloaded_source ) ) {
 				// Extension already handled (possibly by a custom handler).
 				continue;
+			}
+
+			// URLs that ends with ".zip".
+			if ( substr( $e->source, - 4 ) !== '.zip' ) {
+				throw new \InvalidArgumentException( 'We currently only support .zip URLs' );
 			}
 
 			// As version is "undefined", cache burst is shorter: Hour of the day (0-24).
 			$cache_burst = gmdate( 'G' );
 
-			$cache_file = $this->make_cache_path( $cache_dir, $e->type, $e->extension_identifier, $e->version, $cache_burst );
+			$cache_file = $this->make_cache_path( $cache_dir, $e->type, $e->slug, $e->version, $cache_burst );
 
 			// Cache hit?
 			if ( file_exists( $cache_file ) ) {
 				if ( $output->isVeryVerbose() ) {
-					$output->writeln( "Using cached {$e->type} {$e->extension_identifier}." );
+					$output->writeln( "Using cached {$e->type} {$e->slug}." );
 				}
-				$e->path = $cache_file;
+				$e->downloaded_source = $cache_file;
 
 				continue;
 			} else {
 				if ( $output->isVeryVerbose() ) {
-					$output->writeln( "Cache miss on {$e->type} {$e->extension_identifier}." );
+					$output->writeln( "Cache miss on {$e->type} {$e->slug}." );
 				}
 			}
 
-			RequestBuilder::download_file( $e->download_url, $cache_file );
-			$e->path = $cache_file;
+			RequestBuilder::download_file( $e->source, $cache_file );
+			$e->downloaded_source = $cache_file;
 		}
 	}
 }

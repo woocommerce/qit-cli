@@ -9,11 +9,19 @@ class Extension {
 		'test'      => 'test',
 	];
 
+	public static $allowed_types = [
+		'plugin'   => 'plugin',
+		'theme' => 'theme',
+	];
+
 	/** @var string The input the user provided. */
 	public $extension_identifier;
 
-	/** @var string|int The "source" that points to the extension file or directory. */
+	/** @var string|int The "source" can be a slug, a URL, a directory or a zip file. */
 	public $source;
+
+	/** @var string|int The file or directory of the source once it's downloaded (or, if it was already a local file, points to it). */
+	public $downloaded_source;
 
 	/** @var 'plugin'|'theme' */
 	public $type;
@@ -27,17 +35,8 @@ class Extension {
 	 */
 	public $handler;
 
-	/** @var string The locall path to a extension file (to be used in the temporary environment) */
-	public $path;
-
 	/** @var string */
 	public $version = 'undefined';
-
-	/** @var string */
-	public $download_url;
-
-	/** @var string */
-	public $test_tag;
 
 	/**
 	 * @var string<'install'|'bootstrap'|'test'>

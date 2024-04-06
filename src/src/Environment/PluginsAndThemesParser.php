@@ -18,8 +18,19 @@ class PluginsAndThemesParser {
 		$this->woo_extensions_list = $woo_extensions_list;
 	}
 
-	public function parse_extensions( array $plugins_or_themes, string $default_action = 'install' ): array {
+	/**
+	 * @param array $plugins_or_themes
+	 * @param string $default_action
+	 *
+	 * @return array<Extension>
+	 * @throws \Exception
+	 */
+	public function parse_extensions( array $plugins_or_themes, string $type, string $default_action = 'install' ): array {
 		$parsed_extensions = [];
+
+		if ( ! in_array( $type, Extension::$allowed_types, true ) ) {
+			throw new \LogicException( sprintf( 'Invalid type "%s". Valid types are: %s', $type, implode( ', ', Extension::$allowed_types ) ) );
+		}
 
 		foreach ( $plugins_or_themes as $key => $extension ) {
 			if ( is_string( $extension ) ) {
@@ -156,16 +167,23 @@ class PluginsAndThemesParser {
 			// Sort by key.
 			ksort( $extension, SORT_STRING );
 
+			$extension_instance            = new Extension();
+			$extension_instance->slug      = $extension['slug'];
+			$extension_instance->source    = $extension['source'];
+			$extension_instance->action    = $extension['action'];
+			$extension_instance->test_tags = $extension['test_tags'];
+			$extension_instance->type      = $type;
+
 			// Check if this "slug" is already defined, if it is, override it.
 			foreach ( $parsed_extensions as $k => $p ) {
-				if ( $p['slug'] === $extension['slug'] ) {
-					$parsed_extensions[ $k ] = $extension;
+				if ( $p->slug === $extension_instance->slug ) {
+					$parsed_extensions[ $k ] = $extension_instance;
 					$this->output->writeln( sprintf( '<comment>Overriding extension "%s".</comment>', $extension['slug'] ) );
 					continue 2;
 				}
 			}
 
-			$parsed_extensions[] = $extension;
+			$parsed_extensions[] = $extension_instance;
 		}
 
 		return $parsed_extensions;

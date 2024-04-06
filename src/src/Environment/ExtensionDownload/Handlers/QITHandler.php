@@ -12,11 +12,11 @@ class QITHandler extends Handler {
 	public function populate_extension_versions( array $extensions ): void {
 		$output                 = App::make( Output::class );
 		$extensions_to_download = array_filter( $extensions, function ( Extension $v ) {
-			return ! file_exists( $v->path );
+			return ! file_exists( $v->downloaded_source );
 		} );
 
 		$extensions_to_download = implode( ',', array_map( function ( $v ) {
-			return $v->extension_identifier;
+			return $v->slug;
 		}, $extensions_to_download ) );
 
 		if ( empty( $extensions_to_download ) ) {
@@ -56,39 +56,39 @@ class QITHandler extends Handler {
 
 		// Validate that all extensions we asked are here and are in the format we expect.
 		foreach ( $extensions as $e ) {
-			if ( ! array_key_exists( $e->extension_identifier, $download_urls ) ) {
-				throw new \RuntimeException( 'No download URL found for ' . $e->extension_identifier );
+			if ( ! array_key_exists( $e->slug, $download_urls ) ) {
+				throw new \RuntimeException( 'No download URL found for ' . $e->source );
 			}
 
-			if ( empty( $download_urls[ $e->extension_identifier ]['url'] ) ) {
-				throw new \RuntimeException( 'No download URL found for ' . $e->extension_identifier );
+			if ( empty( $download_urls[ $e->slug ]['url'] ) ) {
+				throw new \RuntimeException( 'No download URL found for ' . $e->source );
 			}
 
-			if ( empty( $download_urls[ $e->extension_identifier ]['version'] ) ) {
-				throw new \RuntimeException( 'No version found for ' . $e->extension_identifier );
+			if ( empty( $download_urls[ $e->slug ]['version'] ) ) {
+				throw new \RuntimeException( 'No version found for ' . $e->source );
 			}
 
-			if ( empty( $download_urls[ $e->extension_identifier ]['slug'] ) ) {
-				throw new \RuntimeException( 'No slug found for ' . $e->extension_identifier );
+			if ( empty( $download_urls[ $e->slug ]['slug'] ) ) {
+				throw new \RuntimeException( 'No slug found for ' . $e->source );
 			}
 		}
 
 		foreach ( $extensions as $e ) {
 			// Eg: "product-bundles".
-			$requested_slug = $e->extension_identifier;
+			$requested_slug = $e->slug;
 
 			// Eg: "woocommerce-product-bundles".
-			$actual_slug = $download_urls[ $e->extension_identifier ]['slug'];
+			$actual_slug = $download_urls[ $e->slug ]['slug'];
 
-			$e->extension_identifier = $actual_slug;
-			$e->version              = $download_urls[ $requested_slug ]['version'];
-			$e->download_url         = $download_urls[ $requested_slug ]['url'];
+			$e->slug    = $actual_slug;
+			$e->version = $download_urls[ $requested_slug ]['version'];
+			$e->source  = $download_urls[ $requested_slug ]['url'];
 		}
 	}
 
 	/**
 	 * @param array<\QIT_CLI\Environment\Extension> $extensions
-	 * @param string           $cache_dir
+	 * @param string $cache_dir
 	 *
 	 * @throws \RuntimeException If an error occurs during downloading or file handling.
 	 */
@@ -96,33 +96,33 @@ class QITHandler extends Handler {
 		$output = App::make( Output::class );
 
 		foreach ( $extensions as $e ) {
-			if ( ! empty( $e->path ) ) {
+			if ( ! empty( $e->downloaded_source ) ) {
 				// Extension already handled (possibly by a custom handler).
 				continue;
 			}
 
-			$cache_file = $this->make_cache_path( $cache_dir, $e->type, $e->extension_identifier, $e->version );
+			$cache_file = $this->make_cache_path( $cache_dir, $e->type, $e->slug, $e->version );
 
 			// Cache hit?
 			if ( file_exists( $cache_file ) ) {
 				if ( $output->isVeryVerbose() ) {
-					$output->writeln( "Using cached {$e->type} {$e->extension_identifier}." );
+					$output->writeln( "Using cached {$e->type} {$e->slug}." );
 				}
-				$e->path = $cache_file;
+				$e->downloaded_source = $cache_file;
 
 				continue;
 			} else {
 				if ( $output->isVeryVerbose() ) {
-					$output->writeln( "Cache miss on {$e->type} {$e->extension_identifier}." );
+					$output->writeln( "Cache miss on {$e->type} {$e->slug}." );
 				}
 			}
 
-			if ( empty( $e->download_url ) ) {
-				throw new \RuntimeException( 'No download URL found for ' . $e->extension_identifier );
+			if ( empty( $e->source ) ) {
+				throw new \RuntimeException( 'No download URL found for ' . $e->slug );
 			}
 
-			RequestBuilder::download_file( $e->download_url, $cache_file );
-			$e->path = $cache_file;
+			RequestBuilder::download_file( $e->source, $cache_file );
+			$e->downloaded_source = $cache_file;
 		}
 	}
 }

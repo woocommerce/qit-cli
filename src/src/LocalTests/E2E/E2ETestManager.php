@@ -44,12 +44,11 @@ class E2ETestManager {
 
 	/**
 	 * @param E2EEnvInfo $env_info
-	 * @param string     $compatibility_mode - "default", "full", or a comma-separated list of plugin slugs.
 	 * @param string     $test_mode One of the allowed test modes.
 	 * @param bool       $bootstrap_only If true, will only bootstrap.
 	 * @param string     $sut - System Under Test, if any.
 	 */
-	public function run_tests( E2EEnvInfo $env_info, string $compatibility_mode, string $test_mode, bool $bootstrap_only, string $sut ): void {
+	public function run_tests( E2EEnvInfo $env_info, string $test_mode, bool $bootstrap_only, string $sut ): void {
 		$test_result = TestResult::init_from( $env_info );
 
 		$this->output->writeln( '<info>Bootstrapping Plugins</info>' );

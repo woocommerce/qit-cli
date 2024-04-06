@@ -34,115 +34,108 @@ class CustomTestsDownloader {
 	}
 
 	/**
-	 * @param EnvInfo           $env_info
-	 * @param string            $cache_dir
-	 * @param array<string|int> $plugins Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
-	 * @param array<string|int> $themes Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
-	 * @param string            $test_type The test type. Defaults to 'e2e'.
+	 * @param EnvInfo $env_info
+	 * @param string $cache_dir
+	 * @param array<Extension> $plugins Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
+	 * @param array<Extension> $themes Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
+	 * @param string $test_type The test type. Defaults to 'e2e'.
 	 *
 	 * @return void
 	 */
 	public function download( EnvInfo $env_info, string $cache_dir, array $plugins = [], array $themes = [], string $test_type = 'e2e' ): void {
 		$extensions = $this->extension_downloader->categorize_extensions( $plugins, $themes );
 
-		$extensions_from_qit = array_filter( $extensions, function ( $e ) {
-			return $e->handler === QITHandler::class;
-		} );
-
 		$this->maybe_create_cache_dir( $cache_dir, $test_type );
 
-		$this->maybe_download_custom_tests( $env_info, $extensions_from_qit, $cache_dir, $test_type );
+		$this->maybe_download_custom_tests( $env_info, $extensions, $cache_dir, $test_type );
 	}
 
 	/**
-	 * @param EnvInfo          $env_info
+	 * @param EnvInfo $env_info
 	 * @param array<Extension> $extensions
-	 * @param string           $cache_dir
-	 * @param string           $test_type
+	 * @param string $cache_dir
+	 * @param string $test_type
 	 *
 	 * @return void
 	 */
 	protected function maybe_download_custom_tests( EnvInfo $env_info, array $extensions, string $cache_dir, string $test_type ): void {
-		$local_path_override = getenv( 'QIT_CUSTOM_TESTS_PATH' );
+		$custom_tests = $this->get_custom_tests_info( $extensions );
 
-		if ( ! empty( $local_path_override ) ) {
-			// Here we are running a test with a local test path override.
-			// eg: "run:e2e <slug> <path>".
-			$local_path_override  = explode( '|', $local_path_override );
-			$overridden_extension = $local_path_override[0];
-			$overridden_path      = $local_path_override[1];
-
-			$extensions_to_get_tests_for = array_filter( $extensions, function ( Extension $e ) use ( $overridden_extension ) {
-				return $e->extension_identifier !== $overridden_extension;
-			} );
-		} else {
-			$extensions_to_get_tests_for = $extensions;
-		}
-
-		$custom_tests = $this->get_custom_tests_info( $extensions_to_get_tests_for );
+		// Todo: Check if all requested test tags were found, probably fail if not.
 
 		foreach ( $extensions as $extension ) {
-			/*
-			 * Use local test.
-			 */
-			if ( isset( $overridden_extension, $overridden_path ) && $extension->extension_identifier === $overridden_extension ) {
-				if ( is_dir( $overridden_path ) ) {
-					$zip_file = tempnam( sys_get_temp_dir(), 'qit_' ) . '.zip';
-					$this->zipper->zip_directory( $overridden_path, $zip_file, UploadCustomTestCommand::get_exclude_files() );
-				} elseif ( is_file( $overridden_path ) ) {
-					$zip_file = $overridden_path;
-				} else {
-					throw new \RuntimeException( "The custom tests path provided for $overridden_extension is not a file or a directory." );
-				}
-
-				$this->zipper->extract_zip( $zip_file, "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}" );
-				$env_info->volumes[ "/qit/tests/$test_type/{$extension->extension_identifier}" ] = "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}";
-
-				if ( $env_info instanceof E2EEnvInfo ) {
-					$env_info->tests[ $extension->extension_identifier ] = [
-						'extension'         => $extension->extension_identifier,
-						'type'              => $extension->type,
-						'path_in_container' => "/qit/tests/$test_type/{$extension->extension_identifier}",
-						'path_in_host'      => "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}",
-					];
-				}
-				$this->output->writeln( sprintf( 'Using local tests for %s', $extension->extension_identifier ) );
-			} else {
+			foreach ( $extension->test_tags as $k => $test_tag ) {
 				/*
-				 * Download test from QIT and map it.
+				 * Use local test.
 				 */
-				if ( array_key_exists( $extension->extension_identifier, $custom_tests ) ) {
-					if ( array_key_exists( 'tests', $custom_tests[ $extension->extension_identifier ] ) ) {
-						if ( array_key_exists( $test_type, $custom_tests[ $extension->extension_identifier ]['tests'] ) ) {
-							$custom_test_url       = $custom_tests[ $extension->extension_identifier ]['tests'][ $test_type ]; // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
-							$custom_test_file_name = md5( $custom_test_url ) . '.zip';
-							$custom_test_file_path = "$cache_dir/tests/$test_type/$custom_test_file_name";
+				if ( file_exists( $test_tag ) ) {
+					if ( is_dir( $test_tag ) ) {
+						$zip_file = tempnam( sys_get_temp_dir(), 'qit_' ) . '.zip';
+						$this->zipper->zip_directory( $test_tag, $zip_file, UploadCustomTestCommand::get_exclude_files() );
+					} elseif ( is_file( $test_tag ) ) {
+						$zip_file = $test_tag;
+					} else {
+						throw new \RuntimeException( "The custom tests path provided for '$test_tag' is not a file or a directory." );
+					}
 
-							if ( ! file_exists( $custom_test_file_path ) ) {
-								RequestBuilder::download_file( $custom_test_url, $custom_test_file_path );
-							}
+					$path_in_host      = "{$env_info->temporary_env}/tests/$test_type/{$extension->slug}/local-$k";
+					$path_in_container = "/qit/tests/$test_type/{$extension->slug}/local-$k";
 
-							$this->zipper->extract_zip( $custom_test_file_path, "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}" );
+					$this->zipper->extract_zip( $zip_file, $path_in_host );
 
-							$env_info->volumes[ "/qit/tests/$test_type/{$extension->extension_identifier}" ] = "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}";
+					$env_info->volumes[ $path_in_container ] = $path_in_host;
 
-							if ( $env_info instanceof E2EEnvInfo ) {
-								$env_info->tests[ $extension->extension_identifier ] = [
-									'extension'         => $extension->extension_identifier,
-									'type'              => $extension->type,
-									'path_in_container' => "/qit/tests/$test_type/{$extension->extension_identifier}",
-									'path_in_host'      => "{$env_info->temporary_env}/tests/$test_type/{$extension->extension_identifier}",
-								];
+					if ( $env_info instanceof E2EEnvInfo ) {
+						$env_info->tests[ $extension->slug ][] = [
+							'extension'         => $extension->slug,
+							'type'              => $extension->type,
+							'path_in_container' => $path_in_container,
+							'path_in_host'      => $path_in_host,
+						];
+					}
+
+					$this->output->writeln( sprintf( 'Using local tests for %s', $extension->slug ) );
+				} else {
+					/*
+					 * Download test from QIT and map it.
+					 */
+					if ( array_key_exists( $extension->slug, $custom_tests ) ) {
+						if ( array_key_exists( 'tests', $custom_tests[ $extension->slug ] ) ) {
+							if ( array_key_exists( $test_type, $custom_tests[ $extension->slug ]['tests'] ) ) {
+								foreach ( $custom_tests[ $extension->slug ]['tests'][ $test_type ] as $custom_test_url ) {
+									$custom_test_file_name = md5( $custom_test_url ) . '.zip';
+									$custom_test_file_path = "$cache_dir/tests/$test_type/$custom_test_file_name";
+
+									if ( ! file_exists( $custom_test_file_path ) ) {
+										RequestBuilder::download_file( $custom_test_url, $custom_test_file_path );
+									}
+
+									$path_in_host      = "{$env_info->temporary_env}/tests/$test_type/{$extension->slug}/$test_tag";
+									$path_in_container = "/qit/tests/$test_type/{$extension->slug}/$test_tag";
+
+									$this->zipper->extract_zip( $custom_test_file_path, $path_in_host );
+
+									$env_info->volumes[ $path_in_container ] = $path_in_host;
+
+									if ( $env_info instanceof E2EEnvInfo ) {
+										$env_info->tests[ $extension->slug ] = [
+											'extension'         => $extension->slug,
+											'type'              => $extension->type,
+											'path_in_container' => $path_in_container,
+											'path_in_host'      => $path_in_host,
+										];
+									}
+								}
+							} else {
+								$this->output->writeln( sprintf( 'No custom tests found for %s', $extension->slug ) );
 							}
 						} else {
-							$this->output->writeln( sprintf( 'No custom tests found for %s', $extension->extension_identifier ) );
+							// WordPress.org plugins.
+							$this->output->writeln( sprintf( 'No custom tests found for %s.', $extension->slug ) );
 						}
 					} else {
-						// WordPress.org plugins.
-						$this->output->writeln( sprintf( 'No custom tests found for %s.', $extension->extension_identifier ) );
+						$this->output->writeln( sprintf( 'No custom tests found for %s', $extension->slug ) );
 					}
-				} else {
-					$this->output->writeln( sprintf( 'No custom tests found for %s', $extension->extension_identifier ) );
 				}
 			}
 		}
@@ -170,9 +163,19 @@ class CustomTestsDownloader {
 	 *   }> Each key in the array represents a plugin identifier (e.g., 'plugin-foo').
 	 */
 	protected function get_custom_tests_info( array $extensions ): array {
-		$extensions_to_get_tests_for = implode( ',', array_map( function ( $v ) {
-			return $v->extension_identifier;
-		}, $extensions ) );
+		$test_tags_to_fetch          = [];
+		$extensions_to_get_tests_for = [];
+
+		foreach ( $extensions as $ext ) {
+			foreach ( $ext->test_tags as $test_tag ) {
+				if ( ! file_exists( $test_tag ) ) {
+					$test_tags_to_fetch[] = "{$ext->slug}:{$test_tag}";
+					if ( ! in_array( $ext->slug, $extensions_to_get_tests_for, true ) ) {
+						$extensions_to_get_tests_for[] = $ext->slug;
+					}
+				}
+			}
+		}
 
 		if ( empty( $extensions_to_get_tests_for ) ) {
 			return [];
@@ -182,8 +185,8 @@ class CustomTestsDownloader {
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/download-urls' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
-				'with_tests' => true,
 				'extensions' => $extensions_to_get_tests_for,
+				'test_tags'  => implode( ',', $test_tags_to_fetch ),
 			] )
 			->request();
 		if ( $this->output->isVerbose() ) {

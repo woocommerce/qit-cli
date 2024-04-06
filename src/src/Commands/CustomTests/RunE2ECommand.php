@@ -250,7 +250,7 @@ class RunE2ECommand extends DynamicCommand {
 			$woo_extension = '';
 		}
 
-		$this->e2e_test_manager->run_tests( $env_info, $compatibility, $test_mode, $wait, $woo_extension );
+		$this->e2e_test_manager->run_tests( $env_info, $test_mode, $wait, $woo_extension );
 
 		return Command::SUCCESS;
 	}

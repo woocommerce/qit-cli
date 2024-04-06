@@ -62,7 +62,7 @@ abstract class EnvInfo implements \JsonSerializable {
 	public $php_extensions = [];
 
 	/**
-	 * @var array<\QIT_CLI\Environment\Extension> Array of plugins to feed to WP CLI.
+	 * @var array<Extension> Array of plugins to feed to WP CLI.
 	 */
 	public $plugins = [];
 
