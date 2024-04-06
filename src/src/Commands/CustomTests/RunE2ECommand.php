@@ -144,7 +144,7 @@ class RunE2ECommand extends DynamicCommand {
 				}
 			}
 
-			$sut           = [
+			$sut = [
 				'source'    => empty( $source ) ? $woo_extension : $source,
 				'action'    => empty( $action ) ? Extension::$allowed_actions['test'] : $action,
 				'test_tags' => empty( $test ) ? [ 'default' ] : implode( ',', $test ),
@@ -154,7 +154,7 @@ class RunE2ECommand extends DynamicCommand {
 			try {
 				$this->woo_extensions_list->get_woo_extension_id_by_slug( $woo_extension );
 				$sut['slug'] = $woo_extension;
-			} catch ( \Exception $e ) {
+			} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 				// No-op.
 			}
 
@@ -246,11 +246,7 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::FAILURE;
 		}
 
-		if ( is_null( $woo_extension ) ) {
-			$woo_extension = '';
-		}
-
-		$this->e2e_test_manager->run_tests( $env_info, $test_mode, $wait, $woo_extension );
+		$this->e2e_test_manager->run_tests( $env_info, $test_mode, $wait );
 
 		return Command::SUCCESS;
 	}
@@ -332,7 +328,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up']["--$option_name"] = $option_value;
+				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
 			}
 		}
 

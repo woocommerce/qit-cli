@@ -10,8 +10,8 @@ class Extension {
 	];
 
 	public static $allowed_types = [
-		'plugin'   => 'plugin',
-		'theme' => 'theme',
+		'plugin' => 'plugin',
+		'theme'  => 'theme',
 	];
 
 	/** @var string The input the user provided. */

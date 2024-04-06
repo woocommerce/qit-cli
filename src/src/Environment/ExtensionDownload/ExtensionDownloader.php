@@ -43,8 +43,8 @@ class ExtensionDownloader {
 	}
 
 	/**
-	 * @param EnvInfo $env_info
-	 * @param string $cache_dir
+	 * @param EnvInfo          $env_info
+	 * @param string           $cache_dir
 	 * @param array<Extension> $plugins Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
 	 * @param array<Extension> $themes Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
 	 *
@@ -78,7 +78,7 @@ class ExtensionDownloader {
 				// Extract zip to temp environment.
 				$this->extension_zip->extract_zip( $e->downloaded_source, "$env_info->temporary_env/html/wp-content/{$e->type}s" );
 				// Add a volume bind.
-				$env_info->volumes["/var/www/html/wp-content/{$e->type}s/{$e->slug}"] = "$env_info->temporary_env/html/wp-content/{$e->type}s/{$e->slug}";
+				$env_info->volumes[ "/var/www/html/wp-content/{$e->type}s/{$e->slug}" ] = "$env_info->temporary_env/html/wp-content/{$e->type}s/{$e->slug}";
 			} elseif ( is_dir( $e->downloaded_source ) ) {
 				if ( ! getenv( 'QIT_ALLOW_WRITE' ) ) {
 					// Set it as read-only to prevent dev messing up their local copy inadvertently (default behavior).
@@ -87,10 +87,10 @@ class ExtensionDownloader {
 					$this->output->writeln( "Info: Mapping '{$e->type}s/{$e->slug}' as read-only to protect your local copy." );
 
 					// Add a read-only volume bind.
-					$env_info->volumes["/var/www/html/wp-content/{$e->type}s/{$e->slug}:ro,cached"] = $e->downloaded_source;
+					$env_info->volumes[ "/var/www/html/wp-content/{$e->type}s/{$e->slug}:ro,cached" ] = $e->downloaded_source;
 				} else {
 					// Add a volume bind.
-					$env_info->volumes["/var/www/html/wp-content/{$e->type}s/{$e->slug}"] = $e->downloaded_source;
+					$env_info->volumes[ "/var/www/html/wp-content/{$e->type}s/{$e->slug}" ] = $e->downloaded_source;
 				}
 			} else {
 				throw new \RuntimeException( 'Download failed.' );

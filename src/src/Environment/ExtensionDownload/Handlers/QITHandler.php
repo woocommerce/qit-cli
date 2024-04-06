@@ -88,7 +88,7 @@ class QITHandler extends Handler {
 
 	/**
 	 * @param array<\QIT_CLI\Environment\Extension> $extensions
-	 * @param string $cache_dir
+	 * @param string                                $cache_dir
 	 *
 	 * @throws \RuntimeException If an error occurs during downloading or file handling.
 	 */

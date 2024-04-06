@@ -19,11 +19,14 @@ class PluginsAndThemesParser {
 	}
 
 	/**
-	 * @param array $plugins_or_themes
-	 * @param string $default_action
+	 * @param array                                $plugins_or_themes
+	 * @param string<'plugin'|'theme'>             $type
+	 * @param string<'install'|'bootstrap'|'test'> $default_action
 	 *
 	 * @return array<Extension>
-	 * @throws \Exception
+	 * @throws \Exception If it couldn't parse the extensions.
+	 * @throws \InvalidArgumentException If the extensions are invalid.
+	 * @throws \LogicException If the type is invalid.
 	 */
 	public function parse_extensions( array $plugins_or_themes, string $type, string $default_action = 'install' ): array {
 		$parsed_extensions = [];
@@ -48,7 +51,7 @@ class PluginsAndThemesParser {
 				];
 
 				foreach ( $extension as $k => $v ) {
-					if ( ! in_array( $k, $expected_keys ) ) {
+					if ( ! in_array( $k, $expected_keys, true ) ) {
 						throw new \InvalidArgumentException( sprintf( 'Invalid key "%s" in extension array. Expected keys: %s', $k, implode( ', ', $expected_keys ) ) );
 					}
 				}
@@ -66,7 +69,7 @@ class PluginsAndThemesParser {
 
 				// If user set an "action", make sure it's valid.
 				if ( isset( $extension['action'] ) ) {
-					if ( ! in_array( $extension['action'], Extension::$allowed_actions ) ) {
+					if ( ! in_array( $extension['action'], Extension::$allowed_actions, true ) ) {
 						throw new \InvalidArgumentException( sprintf( 'Invalid action "%s". Valid actions are: %s', $extension['action'], implode( ', ', Extension::$allowed_actions ) ) );
 					}
 				}

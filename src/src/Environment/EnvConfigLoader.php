@@ -183,7 +183,6 @@ class EnvConfigLoader {
 	}
 
 	protected function parse_plugins_and_themes() {
-
 	}
 
 	/**
