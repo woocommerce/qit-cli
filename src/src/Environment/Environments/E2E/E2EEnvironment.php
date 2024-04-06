@@ -11,7 +11,6 @@ use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
-use function QIT_CLI\normalize_path;
 
 class E2EEnvironment extends Environment {
 	/** @var string */

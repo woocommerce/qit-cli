@@ -3,7 +3,6 @@
 namespace QIT_CLI\Environment\ExtensionDownload\Handlers;
 
 use QIT_CLI\App;
-use QIT_CLI\Environment\Extension;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
 

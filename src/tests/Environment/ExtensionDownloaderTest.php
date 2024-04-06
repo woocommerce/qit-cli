@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class FooCustomHandler extends \QIT_CLI\Environment\ExtensionDownload\Handlers\CustomHandler {
 	public function should_handle( Extension $extension ): bool {
-		return strpos( $extension->extension_identifier, 'foo-custom' ) !== false;
+		return strpos( $extension->slug, 'foo-custom' ) !== false;
 	}
 
 	public function populate_extension_versions( array $extensions ): void {

@@ -166,7 +166,7 @@ class RunE2ECommand extends DynamicCommand {
 				$env_up_options['--plugin'][] = $woo_extension;
 			}
 		} else {
-			if ( ! empty( $sut_source ) ) {
+			if ( ! empty( $source ) ) {
 				$this->output->writeln( '<error>Cannot set the "source" option without setting the "woo_extension" argument.</error>' );
 
 				return Command::INVALID;

@@ -7,7 +7,6 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Extension;
 use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
-use QIT_CLI\Environment\ExtensionDownload\Handlers\QITHandler;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Zipper;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -100,40 +99,32 @@ class CustomTestsDownloader {
 					/*
 					 * Download test from QIT and map it.
 					 */
-					if ( array_key_exists( $extension->slug, $custom_tests ) ) {
-						if ( array_key_exists( 'tests', $custom_tests[ $extension->slug ] ) ) {
-							if ( array_key_exists( $test_type, $custom_tests[ $extension->slug ]['tests'] ) ) {
-								foreach ( $custom_tests[ $extension->slug ]['tests'][ $test_type ] as $custom_test_url ) {
-									$custom_test_file_name = md5( $custom_test_url ) . '.zip';
-									$custom_test_file_path = "$cache_dir/tests/$test_type/$custom_test_file_name";
+					if ( isset( $custom_tests[ $extension->slug ]['tests'][ $test_type ] ) ) {
+						// @phpstan-ignore-next-line
+						foreach ( $custom_tests[ $extension->slug ]['tests'][ $test_type ] as $custom_test_url ) {
+							$custom_test_file_name = md5( $custom_test_url ) . '.zip';
+							$custom_test_file_path = "$cache_dir/tests/$test_type/$custom_test_file_name";
 
-									if ( ! file_exists( $custom_test_file_path ) ) {
-										RequestBuilder::download_file( $custom_test_url, $custom_test_file_path );
-									}
-
-									$path_in_host      = "{$env_info->temporary_env}/tests/$test_type/{$extension->slug}/$test_tag";
-									$path_in_container = "/qit/tests/$test_type/{$extension->slug}/$test_tag";
-
-									$this->zipper->extract_zip( $custom_test_file_path, $path_in_host );
-
-									$env_info->volumes[ $path_in_container ] = $path_in_host;
-
-									if ( $env_info instanceof E2EEnvInfo ) {
-										$env_info->tests[ $extension->slug ] = [
-											'extension'    => $extension->slug,
-											'type'         => $extension->type,
-											'test_tag'     => $test_tag,
-											'path_in_container' => $path_in_container,
-											'path_in_host' => $path_in_host,
-										];
-									}
-								}
-							} else {
-								$this->output->writeln( sprintf( 'No custom tests found for %s', $extension->slug ) );
+							if ( ! file_exists( $custom_test_file_path ) ) {
+								RequestBuilder::download_file( $custom_test_url, $custom_test_file_path );
 							}
-						} else {
-							// WordPress.org plugins.
-							$this->output->writeln( sprintf( 'No custom tests found for %s.', $extension->slug ) );
+
+							$path_in_host      = "{$env_info->temporary_env}/tests/$test_type/{$extension->slug}/$test_tag";
+							$path_in_container = "/qit/tests/$test_type/{$extension->slug}/$test_tag";
+
+							$this->zipper->extract_zip( $custom_test_file_path, $path_in_host );
+
+							$env_info->volumes[ $path_in_container ] = $path_in_host;
+
+							if ( $env_info instanceof E2EEnvInfo ) {
+								$env_info->tests[ $extension->slug ] = [
+									'extension'         => $extension->slug,
+									'type'              => $extension->type,
+									'test_tag'          => $test_tag,
+									'path_in_container' => $path_in_container,
+									'path_in_host'      => $path_in_host,
+								];
+							}
 						}
 					} else {
 						$this->output->writeln( sprintf( 'No custom tests found for %s', $extension->slug ) );

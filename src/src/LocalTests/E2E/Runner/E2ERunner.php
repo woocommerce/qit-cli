@@ -58,6 +58,7 @@ abstract class E2ERunner {
 	 * @param array<string,array{
 	 *      extension:string,
 	 *      type:string,
+	 *      test_tag:string,
 	 *      path_in_container:string,
 	 *      path_in_host:string
 	 *  }>                        $test_infos

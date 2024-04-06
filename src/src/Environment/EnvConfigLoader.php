@@ -182,9 +182,6 @@ class EnvConfigLoader {
 		return $env_info;
 	}
 
-	protected function parse_plugins_and_themes() {
-	}
-
 	/**
 	 * @return array<mixed> Multidimensional array of scalars.
 	 */
@@ -307,6 +304,11 @@ class EnvConfigLoader {
 		return $config_1;
 	}
 
+	/**
+	 * @param array<string, mixed> $config
+	 *
+	 * @return void
+	 */
 	protected function normalize_plural_to_singular( array &$config ): void {
 		/*
 		 * These values make sense to be plural in config, but we want to normalize them to singular.
@@ -337,6 +339,11 @@ class EnvConfigLoader {
 		}
 	}
 
+	/**
+	 * @param array<string, mixed> $config
+	 *
+	 * @return void
+	 */
 	protected function normalize_singular_to_plural( array &$config ): void {
 		/*
 		 * These values make sense to be singular in config, but we want to normalize them to plural.

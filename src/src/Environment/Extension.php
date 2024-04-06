@@ -3,19 +3,21 @@
 namespace QIT_CLI\Environment;
 
 class Extension {
+	/** @var array<string> */
 	public static $allowed_actions = [
 		'install'   => 'install',
 		'bootstrap' => 'bootstrap',
 		'test'      => 'test',
 	];
 
+	/** @var array<string> */
 	public static $allowed_types = [
 		'plugin' => 'plugin',
 		'theme'  => 'theme',
 	];
 
-	/** @var string The input the user provided. */
-	public $extension_identifier;
+	/** @var string */
+	public $slug;
 
 	/** @var string|int The "source" can be a slug, a URL, a directory or a zip file. */
 	public $source;
@@ -23,11 +25,11 @@ class Extension {
 	/** @var string|int The file or directory of the source once it's downloaded (or, if it was already a local file, points to it). */
 	public $downloaded_source;
 
-	/** @var 'plugin'|'theme' */
+	/**
+	 * @see Extension::$allowed_types
+	 * @var string
+	 */
 	public $type;
-
-	/** @var string */
-	public $slug;
 
 	/**
 	 * @var string A FQDN for an instance of Handler.
@@ -39,14 +41,13 @@ class Extension {
 	public $version = 'undefined';
 
 	/**
-	 * @var string<'install'|'bootstrap'|'test'>
+	 * @see Extension::$allowed_actions
+	 * @var string
 	 */
 	public $action;
 
 	/**
-	 * @var array{
-	 *     source: string,
-	 * } Keys are the test tags. Values are the source of the test, which is usually the same of the test tag, but can be overridden to be a local path as well.
+	 * @var array<string,string> Test tags to fetch for this extension.
 	 */
 	public $test_tags;
 }

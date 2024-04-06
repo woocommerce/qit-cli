@@ -19,14 +19,24 @@ class PluginsAndThemesParser {
 	}
 
 	/**
-	 * @param array                                $plugins_or_themes
-	 * @param string<'plugin'|'theme'>             $type
-	 * @param string<'install'|'bootstrap'|'test'> $default_action
+	 * // phpcs:disable
+	 * @param array<int|string, string|array{
+	 *     source?: string,
+	 *     slug?: string,
+	 *     action?: string,
+	 *     test_tags?: array<string>,
+	 * }> $plugins_or_themes
+	 * // phpcs:enable
+	 * @param string                          $type One of Extension::$allowed_types.
+	 * @param string                          $default_action One of Extension::$allowed_actions.
 	 *
 	 * @return array<Extension>
 	 * @throws \Exception If it couldn't parse the extensions.
 	 * @throws \InvalidArgumentException If the extensions are invalid.
 	 * @throws \LogicException If the type is invalid.
+	 *
+	 * @see Extension::$allowed_types
+	 * @see Extension::$allowed_actions
 	 */
 	public function parse_extensions( array $plugins_or_themes, string $type, string $default_action = 'install' ): array {
 		$parsed_extensions = [];
@@ -35,65 +45,17 @@ class PluginsAndThemesParser {
 			throw new \LogicException( sprintf( 'Invalid type "%s". Valid types are: %s', $type, implode( ', ', Extension::$allowed_types ) ) );
 		}
 
-		foreach ( $plugins_or_themes as $key => $extension ) {
+		foreach ( $plugins_or_themes as $potential_slug => $extension ) {
 			if ( is_string( $extension ) ) {
+				/*
+				 * Short-syntax like "qit-beaver:test:rc,foo-feature"
+				 */
 				$extension = $this->parse_string_extension( $extension, $default_action );
-			} elseif ( is_array( $extension ) && ! isset( $extension['slug'] ) ) {
-				if ( ! is_numeric( $key ) ) {
-					$extension['slug'] = $key;
-				}
-
-				$expected_keys = [
-					'action',
-					'slug',
-					'source',
-					'test_tags',
-				];
-
-				foreach ( $extension as $k => $v ) {
-					if ( ! in_array( $k, $expected_keys, true ) ) {
-						throw new \InvalidArgumentException( sprintf( 'Invalid key "%s" in extension array. Expected keys: %s', $k, implode( ', ', $expected_keys ) ) );
-					}
-				}
-
-				// If user set a "source", make sure it's valid.
-				if ( isset( $extension['source'] ) ) {
-					if ( ! is_string( $extension['source'] ) ) {
-						throw new \InvalidArgumentException( sprintf( 'Invalid source "%s". Source must be a string.', $extension['source'] ) );
-					}
-
-					if ( empty( $extension['source'] ) ) {
-						throw new \InvalidArgumentException( 'If set, source cannot be empty.' );
-					}
-				}
-
-				// If user set an "action", make sure it's valid.
-				if ( isset( $extension['action'] ) ) {
-					if ( ! in_array( $extension['action'], Extension::$allowed_actions, true ) ) {
-						throw new \InvalidArgumentException( sprintf( 'Invalid action "%s". Valid actions are: %s', $extension['action'], implode( ', ', Extension::$allowed_actions ) ) );
-					}
-				}
-
-				// If user set "test_tags", make sure it's valid.
-				if ( isset( $extension['test_tags'] ) ) {
-					if ( ! is_array( $extension['test_tags'] ) ) {
-						$example              = $extension;
-						$example['test_tags'] = [
-							'example-foo',
-							'example-bar',
-						];
-						throw new \InvalidArgumentException( sprintf( "\"test_tags\" must be an array. \n\nActual:\n%s \n\nExpected: \n%s.", json_encode( $extension, JSON_PRETTY_PRINT ), json_encode( $example, JSON_PRETTY_PRINT ) ) );
-					}
-				}
-
-				if ( isset( $extension['slug'] ) ) {
-					try {
-						$this->woo_extensions_list->get_woo_extension_id_by_slug( $extension['slug'] );
-					} catch ( \Exception $e ) {
-						// Plugin not found, or no permission.
-						throw new \Exception( sprintf( 'Plugin with slug "%s" not found.', $extension['slug'] ) );
-					}
-				}
+			} elseif ( is_array( $extension ) ) {
+				/*
+				 * Arrays comes from config files.
+				 */
+				$extension = $this->parse_array_extension( $extension, $potential_slug );
 			}
 
 			if ( ! isset( $extension['source'] ) && ! isset( $extension['slug'] ) ) {
@@ -104,7 +66,7 @@ class PluginsAndThemesParser {
 			if ( ! isset( $extension['slug'] ) ) {
 				try {
 					if ( is_numeric( $extension['source'] ) ) {
-						$extension['slug'] = $this->woo_extensions_list->get_woo_extension_slug_by_id( $extension['source'] );
+						$extension['slug'] = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $extension['source'] );
 					} else {
 						$this->woo_extensions_list->get_woo_extension_id_by_slug( $extension['source'] );
 						$extension['slug'] = $extension['source'];
@@ -133,8 +95,8 @@ class PluginsAndThemesParser {
 				}
 			}
 
-			// If "source" is empty  'source' to 'slug' if 'source' is not provided.
-			if ( ! isset( $extension['source'] ) && isset( $extension['slug'] ) ) {
+			// If "source" is empty, use slug as the source.
+			if ( ! isset( $extension['source'] ) ) {
 				$extension['source'] = $extension['slug'];
 			}
 
@@ -192,6 +154,16 @@ class PluginsAndThemesParser {
 		return $parsed_extensions;
 	}
 
+	/**
+	 * @param string $extension
+	 * @param string $default_action
+	 *
+	 * @return array{
+	 *     source: string,
+	 *     action: string,
+	 *     test_tags: array<string>,
+	 * }
+	 */
 	protected function parse_string_extension( string $extension, string $default_action ): array {
 		$json_array = json_decode( $extension, true );
 
@@ -247,7 +219,9 @@ class PluginsAndThemesParser {
 				// We explode the test tags by comma.
 				// array_map(trim) will normalize "foo, bar" into "foo,bar"
 				// array_filter will remove empty strings.
-				$parsed_short_syntax['test_tags'] = array_filter( array_map( 'trim', explode( ',', $test_tag_str ) ), 'strlen' );
+				$parsed_short_syntax['test_tags'] = array_filter( array_map( 'trim', explode( ',', $test_tag_str ) ), static function ( $item ) {
+					return strlen( $item ) > 0;
+				} );
 			}
 
 			break;
@@ -259,5 +233,98 @@ class PluginsAndThemesParser {
 		}
 
 		return $parsed_short_syntax;
+	}
+
+	/**
+	 * @param array<mixed> $extension
+	 * @param int|string   $potential_slug
+	 *
+	 * @return array{
+	 *     action?: string,
+	 *     slug?: string,
+	 *     source?: string,
+	 *     test_tags?: array<string>,
+	 * } The parsed extension.
+	 * @throws \Exception When the extension can't be found.
+	 * @throws \InvalidArgumentException When couldn't parse or validate the extension that was defined in a config file.
+	 */
+	protected function parse_array_extension( array $extension, $potential_slug ): array {
+		/*
+		 * "$potential_slug" will usually hold the slug, example:
+		 *
+		 * plugins:
+		 *  qit-beaver: (This is $potential_slug)
+		 *      source: ~/qit-beaver
+		 *      action: install
+		 *
+		 * We use this key, unless a slug is explicitly defined:
+		 * plugins:
+		 *  qit-beaver:
+		 *      slug: qit-beaver (if this is set, we use this)
+		 *      source: ~/qit-beaver
+		 */
+		if ( ! is_numeric( $potential_slug ) && ! isset( $extension['slug'] ) ) {
+			$extension['slug'] = $potential_slug;
+		}
+
+		/*
+		 * Validate only allowed keys are defined.
+		 *
+		 * This is useful to clearly inform the user about typos, such as "test_tag" instead of "test_tags".
+		 */
+		$allowed_keys = [
+			'action',
+			'slug',
+			'source',
+			'test_tags',
+		];
+		foreach ( $extension as $k => $v ) {
+			if ( ! in_array( $k, $allowed_keys, true ) ) {
+				throw new \InvalidArgumentException( sprintf( 'Invalid key "%s" in extension array. Expected keys: %s', $k, implode( ', ', $allowed_keys ) ) );
+			}
+		}
+
+		// If user set a "source", make sure it's valid.
+		if ( isset( $extension['source'] ) ) {
+			// @phpstan-ignore-next-line
+			if ( ! is_string( $extension['source'] ) ) {
+				throw new \InvalidArgumentException( sprintf( 'Invalid source "%s". Source must be a string.', $extension['source'] ) );
+			}
+
+			if ( empty( $extension['source'] ) ) {
+				throw new \InvalidArgumentException( 'If set, source cannot be empty.' );
+			}
+		}
+
+		// If user set an "action", make sure it's valid.
+		if ( isset( $extension['action'] ) ) {
+			if ( ! in_array( $extension['action'], Extension::$allowed_actions, true ) ) {
+				throw new \InvalidArgumentException( sprintf( 'Invalid action "%s". Valid actions are: %s', $extension['action'], implode( ', ', Extension::$allowed_actions ) ) );
+			}
+		}
+
+		// If user set "test_tags", make sure it's valid.
+		if ( isset( $extension['test_tags'] ) ) {
+			// @phpstan-ignore-next-line
+			if ( ! is_array( $extension['test_tags'] ) ) {
+				$example              = $extension;
+				$example['test_tags'] = [
+					'example-foo',
+					'example-bar',
+				];
+				throw new \InvalidArgumentException( sprintf( "\"test_tags\" must be an array. \n\nActual:\n%s \n\nExpected: \n%s.", json_encode( $extension, JSON_PRETTY_PRINT ), json_encode( $example, JSON_PRETTY_PRINT ) ) );
+			}
+		}
+
+		if ( isset( $extension['slug'] ) ) {
+			try {
+				$this->woo_extensions_list->get_woo_extension_id_by_slug( $extension['slug'] );
+			} catch ( \Exception $e ) {
+				// Plugin not found, or no permission.
+				throw new \Exception( sprintf( 'Plugin with slug "%s" not found.', $extension['slug'] ) );
+			}
+		}
+
+		return $extension;
 	}
 }
