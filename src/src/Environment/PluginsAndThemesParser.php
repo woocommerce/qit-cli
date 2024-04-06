@@ -114,7 +114,7 @@ class PluginsAndThemesParser {
 						// Validate it's found.
 						$this->woo_extensions_list->get_woo_extension_id_by_slug( $extension['slug'] );
 					} catch ( \Exception $e ) {
-						throw new \Exception( "Please provide a valid 'slug' for the plugin with source '{$extension['source']}'." );
+						throw new \Exception( "Could not find an extension with slug {$extension['slug']}. (Inferred from '{$extension['source']}')" );
 					}
 				}
 			}
@@ -157,9 +157,9 @@ class PluginsAndThemesParser {
 			ksort( $extension, SORT_STRING );
 
 			// Check if this "slug" is already defined, if it is, override it.
-			foreach ( $parsed_extensions as $p ) {
+			foreach ( $parsed_extensions as $k => $p ) {
 				if ( $p['slug'] === $extension['slug'] ) {
-					$parsed_extensions[ $key ] = $extension;
+					$parsed_extensions[ $k ] = $extension;
 					$this->output->writeln( sprintf( '<comment>Overriding extension "%s".</comment>', $extension['slug'] ) );
 					continue 2;
 				}
