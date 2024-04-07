@@ -98,6 +98,7 @@ class PluginsAndThemesParser {
 
 			// If "source" is empty, use slug as the source.
 			if ( ! isset( $extension['source'] ) ) {
+				// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
 				$extension['source'] = $extension['slug'];
 			}
 
@@ -106,7 +107,7 @@ class PluginsAndThemesParser {
 
 			// Ensure test_tags is set.
 			// @phpstan-ignore-next-line.
-			if ( ! isset( $extension['test_tags'] ) || ! is_array( $extension['test_tags'] ) ) {
+			if ( empty( $extension['test_tags'] ) || ! is_array( $extension['test_tags'] ) ) {
 				$extension['test_tags'] = [ 'default' ];
 			}
 
