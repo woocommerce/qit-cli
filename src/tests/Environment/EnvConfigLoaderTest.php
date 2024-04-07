@@ -217,8 +217,8 @@ class EnvConfigLoaderTest extends TestCase {
 	public function test_env_config_loader_plugins_array() {
 		$complexStructure = [
 			'plugins' => [
-				'automatewoo' => [
-					'test_tag' => 'bar',
+				'qit-beaver' => [
+					'test_tags' => [ 'bar' ],
 				],
 			],
 		];
@@ -230,7 +230,7 @@ class EnvConfigLoaderTest extends TestCase {
 	public function test_env_config_loader_plugins_string() {
 		$complexStructure = [
 			'plugins' => [
-				'automatewoo',
+				'qit-beaver',
 			],
 		];
 		$this->create_config_file( 'qit-env.json', json_encode( $complexStructure ) );
@@ -241,15 +241,15 @@ class EnvConfigLoaderTest extends TestCase {
 	public function test_env_config_loader_plugins_mixed() {
 		$complexStructure = [
 			'plugins' => [
-				'automatewoo_birthdays' => [
-					'test_tag' => 'bar',
+				'qit-cat' => [
+					'test_tags' => [ 'bar' ],
 				],
-				'automatewoo',
+				'qit-beaver',
 			],
 			'themes'  => [
-				'twentytwenty',
-				'twentytwentyone' => [
-					'test_tag' => 'foo',
+				'qit-dog',
+				'foo-extension' => [
+					'test_tags' => [ 'foo' ],
 				],
 			],
 		];
@@ -261,49 +261,29 @@ class EnvConfigLoaderTest extends TestCase {
 	public function test_env_config_loader_plugins_override() {
 		$override_structure = [
 			'plugins' => [
-				'automatewoo_birthdays: untrimed_override',
-				'automatewoo'                           => [
-					'test_tag' => 'array_override',
+				'qit-beaver'    => [
+					'test_tags' => [ 'array_override' ],
 				],
-				'automatewoo_source_from_key'           => [
+				'qit-dog'       => [
 					'source' => 'source_from_value',
 				],
-				'https://woo.com/automatewoo-url',
-				'https://woo.com/automatewoo-url-array' => [
-					'test_tag' => 'test_tag_array',
+				'https://woo.com/qit-beaver',
+				'foo-extension' => [
+					'source'    => 'https://woo.com/foo-extension',
+					'test_tags' => [ 'test_tag_array' ],
 				],
-				// 'https://woo.com/automatewoo-referrals:bar', <!-- Forbidden because we can't infer the "slug" to get the "bar" test tag. -->
-				'{"source": "https://woo.com/automatewoo-referrals", "slug": "automatewoo-referrals", "test_tag": "bar"}',
-				'C:\\Users\\user\\Desktop\\automatewoo-url-windows',
-				'C:\\Users\\user\\Desktop\\automatewoo-url-windows:baz',
+				// 'https://woo.com/qit-dog:bar', <!-- Forbidden because we can't infer the "slug" to get the "bar" test tag. -->
+				'{"source": "https://woo.com/qit-dog", "slug": "qit-dog", "test_tags": ["bar"]}',
+				'C:\\Users\\user\\Desktop\\qit-beaver',
+				'C:\\Users\\user\\Desktop\\qit-beaver:install',
 			],
 			'themes'  => [
-				'twentytwentyone:string_override',
+				'qit-beaver:test',
 			],
 		];
 		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $this->normalized_env_info( $this->sut->load_config(), $override_structure ) ) );
-	}
-
-	public function test_env_config_loader_plugins_url_without_source() {
-		$this->expectException( InvalidArgumentException::class );
-		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
-		$this->normalized_env_info( $this->sut->load_config(), [
-			'plugins' => [
-				'https://woo.com/automatewoo-url',
-			],
-		] );
-	}
-
-	public function test_env_config_loader_plugins_url_without_source_json() {
-		$this->expectException( InvalidArgumentException::class );
-		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
-		$this->normalized_env_info( $this->sut->load_config(), [
-			'plugins' => [
-				'{"source": "https://woo.com/automatewoo-url"}',
-			],
-		] );
 	}
 
 	public function test_env_config_loader_plugins_url_with_source() {
@@ -312,8 +292,8 @@ class EnvConfigLoaderTest extends TestCase {
 			json_encode(
 				$this->normalized_env_info( $this->sut->load_config(), [
 					'plugins' => [
-						'automatewoo' => [
-							'source' => 'https://woo.com/automatewoo-url',
+						'qit-beaver' => [
+							'source' => 'https://woo.com/qit-beaver',
 						],
 					],
 				] )
@@ -327,9 +307,9 @@ class EnvConfigLoaderTest extends TestCase {
 			json_encode(
 				$this->normalized_env_info( $this->sut->load_config(), [
 					'plugins' => [
-						'automatewoo' => [
-							'source'   => 'https://woo.com/automatewoo-url',
-							'test_tag' => 'rc',
+						'qit-beaver' => [
+							'source'    => 'https://woo.com/qit-beaver',
+							'test_tags' => [ 'rc' ],
 						],
 					],
 				] )
@@ -343,7 +323,7 @@ class EnvConfigLoaderTest extends TestCase {
 			json_encode(
 				$this->normalized_env_info( $this->sut->load_config(), [
 					'plugins' => [
-						'{"source":"https://woo.com/automatewoo-url", "slug":"automatewoo"}',
+						'{"source":"https://woo.com/qit-beaver", "slug":"qit-beaver"}',
 					],
 				] )
 			)
@@ -356,7 +336,7 @@ class EnvConfigLoaderTest extends TestCase {
 			json_encode(
 				$this->normalized_env_info( $this->sut->load_config(), [
 					'plugins' => [
-						'{"source":"https://woo.com/automatewoo-url", "slug":"automatewoo", "test_tag": "rc"}',
+						'{"source":"https://woo.com/qit-beaver", "slug":"qit-beaver", "test_tags": ["rc"]}',
 					],
 				] )
 			)

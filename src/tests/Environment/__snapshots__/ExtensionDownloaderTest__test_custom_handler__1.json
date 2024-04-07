@@ -1,34 +1,42 @@
 {
     "foo-custom-1": {
-        "extension_identifier": "foo-custom-1",
+        "slug": "foo-custom-1",
+        "source": "foo-custom-1",
+        "downloaded_source": null,
         "type": "plugin",
         "handler": "FooCustomHandler",
-        "path": "",
         "version": "undefined",
-        "download_url": null
+        "action": null,
+        "test_tags": null
     },
     "foo-custom-2": {
-        "extension_identifier": "foo-custom-2",
+        "slug": "foo-custom-2",
+        "source": "foo-custom-2",
+        "downloaded_source": null,
         "type": "plugin",
         "handler": "FooCustomHandler",
-        "path": "",
         "version": "undefined",
-        "download_url": null
+        "action": null,
+        "test_tags": null
     },
     "foo-custom-theme-1": {
-        "extension_identifier": "foo-custom-theme-1",
+        "slug": "foo-custom-theme-1",
+        "source": "foo-custom-theme-1",
+        "downloaded_source": null,
         "type": "theme",
         "handler": "FooCustomHandler",
-        "path": "",
         "version": "undefined",
-        "download_url": null
+        "action": null,
+        "test_tags": null
     },
     "foo-custom-theme-2": {
-        "extension_identifier": "foo-custom-theme-2",
+        "slug": "foo-custom-theme-2",
+        "source": "foo-custom-theme-2",
+        "downloaded_source": null,
         "type": "theme",
         "handler": "FooCustomHandler",
-        "path": "",
         "version": "undefined",
-        "download_url": null
+        "action": null,
+        "test_tags": null
     }
 }

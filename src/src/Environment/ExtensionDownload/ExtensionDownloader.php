@@ -117,6 +117,21 @@ class ExtensionDownloader {
 			] as $type => $extensions
 		) {
 			foreach ( $extensions as $ext ) {
+				if ( ! $ext instanceof Extension ) {
+					throw new \LogicException( 'Invalid extension object.' );
+				}
+
+				// At this point, source for all extensions should be set.
+				if ( empty( $ext->source ) ) {
+					throw new \LogicException( 'Extension source is required.' );
+				}
+
+				// At this point, slug should already be inferred from the source.
+				if ( empty( $ext->slug ) ) {
+					throw new \LogicException( 'Extension slug should be defined at this point.' );
+				}
+
+				// @phan-suppress-next-line PhanPossiblyUndeclaredVariable
 				if ( array_key_exists( $ext->slug, $categorized_extensions ) ) {
 					throw new \InvalidArgumentException( 'Duplicate extension found.' );
 				}

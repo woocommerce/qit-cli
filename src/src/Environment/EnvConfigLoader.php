@@ -41,7 +41,6 @@ class EnvConfigLoader {
 	): EnvInfo {
 		// Load the environment config file..
 		$env_config = $this->load_config();
-		$this->normalize_plural_to_singular( $env_config );
 
 		// Check that config file doesn't contain disallowed keys.
 		foreach ( EnvInfo::$not_user_configurable as $d ) {
@@ -73,6 +72,8 @@ class EnvConfigLoader {
 				$env_config[ $key ] = $value;
 			}
 		}
+
+		$this->normalize_plural_to_singular( $env_config );
 
 		// Plugins and Themes.
 		$env_config['plugin'] = $this->plugins_and_themes_parser->parse_extensions(

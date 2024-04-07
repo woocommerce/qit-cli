@@ -6,7 +6,6 @@ use QIT_CLI\Commands\CacheCommand;
 use QIT_CLI\Commands\ConfigDirCommand;
 use QIT_CLI\Commands\CreateMassTestCommands;
 use QIT_CLI\Commands\CreateRunCommands;
-use QIT_CLI\Commands\CustomTests\ExtensionDownloaderCommand;
 use QIT_CLI\Commands\CustomTests\ScaffoldE2ECommand;
 use QIT_CLI\Commands\CustomTests\ShowReportCommand;
 use QIT_CLI\Commands\CustomTests\UploadCustomTestCommand;

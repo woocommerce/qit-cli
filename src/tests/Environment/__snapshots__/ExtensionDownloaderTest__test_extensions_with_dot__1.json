@@ -1,26 +1,32 @@
 {
     "plugin-v1.2.3": {
-        "extension_identifier": "plugin-v1.2.3",
+        "slug": "plugin-v1.2.3",
+        "source": "plugin-v1.2.3",
+        "downloaded_source": null,
         "type": "plugin",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
-        "path": "",
         "version": "undefined",
-        "download_url": null
+        "action": null,
+        "test_tags": null
     },
     "plugin-v4.5.6": {
-        "extension_identifier": "plugin-v4.5.6",
+        "slug": "plugin-v4.5.6",
+        "source": "plugin-v4.5.6",
+        "downloaded_source": null,
         "type": "plugin",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
-        "path": "",
         "version": "undefined",
-        "download_url": null
+        "action": null,
+        "test_tags": null
     },
     "theme-v7.8.9": {
-        "extension_identifier": "theme-v7.8.9",
+        "slug": "theme-v7.8.9",
+        "source": "theme-v7.8.9",
+        "downloaded_source": null,
         "type": "theme",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
-        "path": "",
         "version": "undefined",
-        "download_url": null
+        "action": null,
+        "test_tags": null
     }
 }

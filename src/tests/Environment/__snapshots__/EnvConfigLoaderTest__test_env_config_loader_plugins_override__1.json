@@ -10,38 +10,54 @@
     "php_extensions": [],
     "plugins": [
         {
-            "source": "automatewoo_birthdays",
-            "test_tag": "untrimed_override"
+            "slug": "qit-beaver",
+            "source": "C:\\Users\\user\\Desktop\\qit-beaver",
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "undefined",
+            "action": "install",
+            "test_tags": [
+                "default"
+            ]
         },
         {
-            "source": "automatewoo",
-            "test_tag": "array_override"
+            "slug": "qit-dog",
+            "source": "https:\/\/woo.com\/qit-dog",
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "undefined",
+            "action": "install",
+            "test_tags": [
+                "bar"
+            ]
         },
         {
-            "source": "https:\/\/woo.com\/automatewoo-referrals",
-            "test_tag": "bar"
-        },
-        {
-            "source": "https:\/\/woo.com\/automatewoo-url",
-            "test_tag": "none"
-        },
-        {
-            "source": "https:\/\/woo.com\/automatewoo-url-array",
-            "test_tag": "test_tag_array"
-        },
-        {
-            "source": "C:\\Users\\user\\Desktop\\automatewoo-url-windows",
-            "test_tag": "none"
-        },
-        {
-            "source": "C:\\Users\\user\\Desktop\\automatewoo-url-windows",
-            "test_tag": "baz"
+            "slug": "foo-extension",
+            "source": "https:\/\/woo.com\/foo-extension",
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "undefined",
+            "action": "install",
+            "test_tags": [
+                "test_tag_array"
+            ]
         }
     ],
     "themes": [
         {
-            "source": "twentytwentyone",
-            "test_tag": "string_override"
+            "slug": "qit-beaver",
+            "source": "qit-beaver",
+            "downloaded_source": null,
+            "type": "theme",
+            "handler": null,
+            "version": "undefined",
+            "action": "test",
+            "test_tags": [
+                "default"
+            ]
         }
     ],
     "site_url": null,

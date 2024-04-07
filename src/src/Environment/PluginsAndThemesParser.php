@@ -20,6 +20,7 @@ class PluginsAndThemesParser {
 
 	/**
 	 * // phpcs:disable
+	 *
 	 * @param array<int|string, string|array{
 	 *     source?: string,
 	 *     slug?: string,
@@ -101,15 +102,15 @@ class PluginsAndThemesParser {
 			}
 
 			// Set default action if not provided.
-			if ( ! isset( $extension['action'] ) ) {
-				$extension['action'] = $default_action;
-			}
+			$extension['action'] = $extension['action'] ?? $default_action;
 
 			// Ensure test_tags is set.
-			if ( empty( $extension['test_tags'] ) ) {
+			// @phpstan-ignore-next-line.
+			if ( ! isset( $extension['test_tags'] ) || ! is_array( $extension['test_tags'] ) ) {
 				$extension['test_tags'] = [ 'default' ];
 			}
 
+			// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
 			foreach ( $extension['test_tags'] as $test_tag ) {
 				if ( ! file_exists( $test_tag ) ) {
 					if ( ! preg_match( '/^[a-z0-9-_]+$/i', $test_tag ) ) {

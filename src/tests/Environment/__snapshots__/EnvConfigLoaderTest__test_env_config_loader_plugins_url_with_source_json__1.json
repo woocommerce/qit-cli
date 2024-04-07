@@ -10,9 +10,16 @@
     "php_extensions": [],
     "plugins": [
         {
-            "source": "https:\/\/woo.com\/automatewoo-url",
-            "slug": "automatewoo",
-            "test_tag": "none"
+            "slug": "qit-beaver",
+            "source": "https:\/\/woo.com\/qit-beaver",
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "undefined",
+            "action": "install",
+            "test_tags": [
+                "default"
+            ]
         }
     ],
     "themes": [],

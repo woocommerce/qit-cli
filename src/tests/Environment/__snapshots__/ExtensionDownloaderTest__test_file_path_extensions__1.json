@@ -1,34 +1,42 @@
 {
-    "\/tmp\/plugin": {
-        "extension_identifier": "plugin",
+    "b1e11c1fb5a6645067d2725427d8ee70": {
+        "slug": "b1e11c1fb5a6645067d2725427d8ee70",
+        "source": "\/tmp\/plugin",
+        "downloaded_source": null,
         "type": "plugin",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\FileHandler",
-        "path": "\/tmp\/plugin",
         "version": "undefined",
-        "download_url": null
+        "action": null,
+        "test_tags": null
     },
-    "\/tmp\/plugin2.zip": {
-        "extension_identifier": "plugin2",
+    "9629d5fe1854eae2a590ec1923c54d87": {
+        "slug": "9629d5fe1854eae2a590ec1923c54d87",
+        "source": "\/tmp\/plugin2.zip",
+        "downloaded_source": null,
         "type": "plugin",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\FileHandler",
-        "path": "\/tmp\/plugin2.zip",
         "version": "undefined",
-        "download_url": null
+        "action": null,
+        "test_tags": null
     },
-    "\/tmp\/theme": {
-        "extension_identifier": "theme",
+    "77ee9bc47105a874f85e814cf072729d": {
+        "slug": "77ee9bc47105a874f85e814cf072729d",
+        "source": "\/tmp\/theme",
+        "downloaded_source": null,
         "type": "theme",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\FileHandler",
-        "path": "\/tmp\/theme",
         "version": "undefined",
-        "download_url": null
+        "action": null,
+        "test_tags": null
     },
-    "\/tmp\/theme2.zip": {
-        "extension_identifier": "theme2",
+    "36d755f331b385dbd16b552001f819fb": {
+        "slug": "36d755f331b385dbd16b552001f819fb",
+        "source": "\/tmp\/theme2.zip",
+        "downloaded_source": null,
         "type": "theme",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\FileHandler",
-        "path": "\/tmp\/theme2.zip",
         "version": "undefined",
-        "download_url": null
+        "action": null,
+        "test_tags": null
     }
 }

@@ -1,152 +1,61 @@
 [
     {
-        "action": "install",
         "slug": "qit-beaver",
-        "source": "qit-beaver",
+        "source": "\\\\network-share\\plugins\\qit-beaver.zip",
+        "downloaded_source": null,
+        "type": "plugin",
+        "handler": null,
+        "version": "undefined",
+        "action": "install",
         "test_tags": [
             "default"
         ]
     },
     {
-        "action": "test",
         "slug": "qit-cat",
         "source": "qit-cat",
-        "test_tags": [
-            "rc"
-        ]
-    },
-    {
+        "downloaded_source": null,
+        "type": "plugin",
+        "handler": null,
+        "version": "undefined",
         "action": "test",
-        "slug": "qit-cat",
-        "source": "qit-cat",
-        "test_tags": [
-            "rc",
-            "feature-foo"
-        ]
-    },
-    {
-        "action": "test",
-        "slug": "qit-cat",
-        "source": "qit-cat",
-        "test_tags": [
-            "rc",
-            "feature-foo"
-        ]
-    },
-    {
-        "action": "test",
-        "slug": "qit-cat",
-        "source": "qit-cat",
-        "test_tags": [
-            "rc",
-            "feature-foo"
-        ]
-    },
-    {
-        "action": "test",
-        "slug": "qit-cat",
-        "source": "qit-cat",
         "test_tags": [
             "rc",
             "\/tmp\/test-tag-local-zip.zip"
         ]
     },
     {
-        "action": "test",
         "slug": "foo-extension",
         "source": "https:\/\/github.com\/qitbeaver\/foo-extension.zip",
+        "downloaded_source": null,
+        "type": "plugin",
+        "handler": null,
+        "version": "undefined",
+        "action": "install",
         "test_tags": [
-            "rc",
-            "feature-foo"
+            "default"
         ]
     },
     {
-        "action": "test",
-        "slug": "foo-extension",
-        "source": "https:\/\/github.com\/qitbeaver\/foo-extension.zip",
-        "test_tags": [
-            "\/tmp\/test-tag-local-dir",
-            "foobarbaz"
-        ]
-    },
-    {
-        "action": "test",
         "slug": "bar-extension",
         "source": "\/path\/to\/file\/bar-extension.zip",
+        "downloaded_source": null,
+        "type": "plugin",
+        "handler": null,
+        "version": "undefined",
+        "action": "install",
         "test_tags": [
-            "rc",
-            "feature-foo"
+            "default"
         ]
     },
     {
-        "action": "test",
         "slug": "baz-extension",
         "source": "\/path\/to\/file\/baz-extension",
-        "test_tags": [
-            "rc",
-            "feature-foo"
-        ]
-    },
-    {
+        "downloaded_source": null,
+        "type": "plugin",
+        "handler": null,
+        "version": "undefined",
         "action": "install",
-        "slug": "bar-extension",
-        "source": "\/path\/to\/file\/bar-extension.zip",
-        "test_tags": [
-            "default"
-        ]
-    },
-    {
-        "action": "install",
-        "slug": "qit-beaver",
-        "source": "C:\\Program Files\\example\\qit-beaver.zip",
-        "test_tags": [
-            "default"
-        ]
-    },
-    {
-        "action": "install",
-        "slug": "qit-beaver",
-        "source": "ftp:\/\/ftp.example.com\/qit-beaver.zip",
-        "test_tags": [
-            "default"
-        ]
-    },
-    {
-        "action": "install",
-        "slug": "qit-beaver",
-        "source": "ssh:\/\/example.com:\/path\/to\/qit-beaver.zip",
-        "test_tags": [
-            "default"
-        ]
-    },
-    {
-        "action": "install",
-        "slug": "qit-beaver",
-        "source": "\\\\network-share\\plugins\\qit-beaver.zip",
-        "test_tags": [
-            "default"
-        ]
-    },
-    {
-        "action": "install",
-        "slug": "foo-extension",
-        "source": "https:\/\/github.com\/qitbeaver\/foo-extension.zip",
-        "test_tags": [
-            "default"
-        ]
-    },
-    {
-        "action": "install",
-        "slug": "bar-extension",
-        "source": "\/path\/to\/file\/bar-extension.zip",
-        "test_tags": [
-            "default"
-        ]
-    },
-    {
-        "action": "install",
-        "slug": "baz-extension",
-        "source": "\/path\/to\/file\/baz-extension",
         "test_tags": [
             "default"
         ]

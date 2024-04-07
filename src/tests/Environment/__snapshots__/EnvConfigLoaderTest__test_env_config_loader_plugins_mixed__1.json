@@ -10,26 +10,54 @@
     "php_extensions": [],
     "plugins": [
         {
-            "source": "automatewoo_birthdays",
-            "slug": "automatewoo_birthdays",
-            "test_tag": "bar"
+            "slug": "qit-cat",
+            "source": "qit-cat",
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "undefined",
+            "action": "install",
+            "test_tags": [
+                "bar"
+            ]
         },
         {
-            "source": "automatewoo",
-            "slug": "automatewoo",
-            "test_tag": "none"
+            "slug": "qit-beaver",
+            "source": "qit-beaver",
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "undefined",
+            "action": "install",
+            "test_tags": [
+                "default"
+            ]
         }
     ],
     "themes": [
         {
-            "source": "twentytwenty",
-            "slug": "twentytwenty",
-            "test_tag": "none"
+            "slug": "qit-dog",
+            "source": "qit-dog",
+            "downloaded_source": null,
+            "type": "theme",
+            "handler": null,
+            "version": "undefined",
+            "action": "install",
+            "test_tags": [
+                "default"
+            ]
         },
         {
-            "source": "twentytwentyone",
-            "slug": "twentytwentyone",
-            "test_tag": "foo"
+            "slug": "foo-extension",
+            "source": "foo-extension",
+            "downloaded_source": null,
+            "type": "theme",
+            "handler": null,
+            "version": "undefined",
+            "action": "install",
+            "test_tags": [
+                "foo"
+            ]
         }
     ],
     "site_url": null,
