@@ -219,6 +219,7 @@ class PlaywrightRunner extends E2ERunner {
 	}
 
 	/**
+	 * // phpcs:disable
 	 * @param array<string,array{
 	 *      extension:string,
 	 *      type:string,
@@ -226,8 +227,9 @@ class PlaywrightRunner extends E2ERunner {
 	 *      path_in_container:string,
 	 *      path_in_host:string
 	 *  }> $test_infos
+	 * // phpcs:enable
 	 *
-	 * @return array<string,array<string,scalar>
+	 * @return array<int,array<string,scalar>>
 	 */
 	protected function make_projects( array $test_infos ): array {
 		$projects = [];
