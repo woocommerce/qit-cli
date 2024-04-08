@@ -127,7 +127,7 @@ class CustomTestsDownloader {
 							}
 						}
 					} else {
-						$this->output->writeln( sprintf( 'No custom tests found for %s', $extension->slug ) );
+						$this->output->writeln( sprintf( 'No test tag "%s" found for extension "%s".', $test_tag, $extension->slug ) );
 					}
 				}
 			}

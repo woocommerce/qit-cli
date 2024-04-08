@@ -1,4 +1,4 @@
 plugins:
   automatewoo:
     test_tags:
-      - foo
+      - default

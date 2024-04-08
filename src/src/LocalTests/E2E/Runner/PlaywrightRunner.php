@@ -40,17 +40,22 @@ class PlaywrightRunner extends E2ERunner {
 			}
 		}
 
-		// Generate global-setup.js.
-		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright/global-setup-generator.php' ] );
+		// Generate db-import.js.
+		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright/db-import-generator.php' ] );
 		$process->setEnv( [
-			'SAVE_AS' => $env_info->temporary_env . 'global-setup.js',
+			'SAVE_AS' => $env_info->temporary_env . 'db-import.js',
 		] );
+		$process->run( function ( $type, $buffer ) {
+			if ( $this->output->isVerbose() || $type === Process::ERR ) {
+				$this->output->write( $buffer );
+			}
+		} );
 
 		// Generate playwright-config.
 		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright/playwright-config-generator.php' ] );
 		$process->setEnv( [
 			'BASE_URL'         => $env_info->site_url,
-			'PROJECTS'         => json_encode( $this->make_projects( $test_infos ) ),
+			'PROJECTS'         => json_encode( $this->make_projects( $test_infos ), JSON_UNESCAPED_SLASHES ),
 			'SAVE_AS'          => $env_info->temporary_env . 'qit-playwright.config.js',
 			'TEST_RESULT_PATH' => $results_dir,
 		] );
@@ -86,6 +91,8 @@ class PlaywrightRunner extends E2ERunner {
 			Config::get_qit_dir() . 'cache:/qit/cache',
 			'-v',
 			$env_info->temporary_env . 'qit-playwright.config.js:/home/pwuser/qit-playwright.config.js',
+			'-v',
+			$env_info->temporary_env . '/playwright/db-import.js:/home/pwuser/db-import.js',
 			'--add-host=host.docker.internal:host-gateway',
 			'-v',
 			$test_result->get_results_dir() . ':/qit/results',
@@ -235,25 +242,42 @@ class PlaywrightRunner extends E2ERunner {
 	 */
 	protected function make_projects( array $test_infos ): array {
 		$projects = [];
+		$is_first = true;
 
 		foreach ( $test_infos as $t ) {
-			// Run "entrypoint.spec.js" first, if it exists.
-			$base_dir = sprintf( '/home/pwuser/%s/%s', $t['extension'], $t['test_tag'] );
-			if ( file_exists( "$base_dir/entrypoint.spec.js" ) ) {
+			$base_dir       = sprintf( '/home/pwuser/%s/%s', $t['extension'], $t['test_tag'] );
+			$has_entrypoint = file_exists( "$base_dir/entrypoint.spec.js" );
+
+			// Include setup project before each project, except the first one.
+			if ( ! $is_first ) {
+				$projects[] = [
+					'name'      => 'db-import',
+					'testMatch' => '/home/pwuser/db-import.js',
+					'use'       => [
+						'browserName' => 'chromium',
+					],
+				];
+			} else {
+				$is_first = false;
+			}
+
+			if ( $has_entrypoint ) {
+				// Run the entrypoint.
 				$projects[] = [
 					'name'      => sprintf( '%s-%s-entrypoint', $t['extension'], $t['test_tag'] ),
-					'testMatch' => "$base_dir/entrypoint.spec.(js|ts)",
+					'testDir'   => $base_dir,
+					'testMatch' => 'entrypoint.qit.js',
 					'use'       => [
 						'browserName' => 'chromium',
 					],
 				];
 			}
 
-			// Run the test, except the entrypoint.
+			// Run the test.
 			$projects[] = [
-				'name'      => sprintf( '%s-%s', $t['extension'], $t['test_tag'] ),
-				'testMatch' => "$base_dir/**/*.spec.(js|ts)",
-				'use'       => [
+				'name'    => sprintf( '%s-%s', $t['extension'], $t['test_tag'] ),
+				'testDir' => $base_dir,
+				'use'     => [
 					'browserName' => 'chromium',
 				],
 			];

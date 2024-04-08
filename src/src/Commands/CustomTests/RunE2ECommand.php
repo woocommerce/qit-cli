@@ -85,7 +85,7 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode. In this mode, you can start and view the tests running.' )
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run the environment for Codegen. In this mode, you can generate your test files.' )
 			->addOption( 'testing_theme', null, InputOption::VALUE_NONE, 'If the "woo_extension" is a theme, set this flag.' )
-			->addOption( 'wait', 'w', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it up until you shut it down.' );
+			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it up until you shut it down.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -120,7 +120,7 @@ class RunE2ECommand extends DynamicCommand {
 			$test_mode = E2ETestManager::$test_modes['headless'];
 		}
 
-		$wait          = $input->getOption( 'wait' ) || $test_mode === 'codegen';
+		$wait          = $input->getOption( 'up_only' ) || $test_mode === 'codegen';
 		$woo_extension = $input->getArgument( 'woo_extension' );
 		$wp            = $input->getOption( 'wp' );
 		$source        = $input->getOption( 'source' );
@@ -129,7 +129,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		// Validate the extension is set if needed.
 		if ( empty( $woo_extension ) && ! $wait ) {
-			$output->writeln( '<error>The extension parameter is only optional in --wait or --codegen modes.</error>' );
+			$output->writeln( '<error>The extension parameter is only optional in --up_only or --codegen modes.</error>' );
 
 			return Command::INVALID;
 		}

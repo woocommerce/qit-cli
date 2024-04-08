@@ -335,7 +335,13 @@ class EnvConfigLoader {
 				$config[ $singular ] = $config[ $plural ];
 				unset( $config[ $plural ] );
 			} elseif ( array_key_exists( $plural, $config ) && array_key_exists( $singular, $config ) ) {
-				throw new \RuntimeException( "Both '$plural' and '$singular' keys exist in the environment config." );
+				// If both exist, both should be array and should be merged.
+				if ( ! is_array( $config[ $plural ] ) || ! is_array( $config[ $singular ] ) ) {
+					throw new \RuntimeException( "Both '$singular' and '$plural' keys exist in the environment config, but one of them is not an array." );
+				}
+
+				$config[ $singular ] = array_merge( $config[ $singular ], $config[ $plural ] );
+				unset( $config[ $plural ] );
 			}
 		}
 	}

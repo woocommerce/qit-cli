@@ -26,6 +26,23 @@ class PlaywrightCodegen {
 			}
 		}
 
+		// Check if node, npm and npx are available.
+		$process = new Process( [ 'node', '--version' ] );
+		$process->run();
+		if ( ! $process->isSuccessful() ) {
+			throw new \RuntimeException( 'npm is not available. Please install npm.' );
+		}
+
+		$node_version = trim( ltrim( $process->getOutput(), 'v' ) );
+
+		// Minimum Node 18.
+		if ( version_compare( $node_version, '18', '<' ) ) {
+			$this->output->writeln( sprintf( '<comment>Playwright requires Node 18 or higher. Detected Node version: %s. Please upgrade Node.js.</comment>', $node_version ) );
+
+			// We bail here without an error, which will keep the environment up so the user can connect to it using other means.
+			return;
+		}
+
 		// Check if npm and npx are available.
 		$process = new Process( [ 'npm', '--version' ] );
 		$process->run();
@@ -73,6 +90,14 @@ class PlaywrightCodegen {
 
 			return;
 		}
+
+		// Playwright install.
+		$process = new Process( [ 'npx', 'playwright', 'install', 'chromium' ], Config::get_qit_dir() . 'playwright-codegen' );
+		$process->setTimeout( null );
+		$process->setIdleTimeout( null );
+		$process->run( function ( $type, $buffer ) {
+			$this->output->write( $buffer );
+		} );
 
 		// Open Codegen.
 		$process = new Process( [ 'npx', 'playwright', 'codegen', $env_info->site_url ], Config::get_qit_dir() . 'playwright-codegen' );
