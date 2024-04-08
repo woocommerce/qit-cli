@@ -235,7 +235,7 @@ class PlaywrightRunner extends E2ERunner {
 
 		foreach ( $test_infos as $t ) {
 			$base_dir       = sprintf( '/home/pwuser/%s/%s', $t['extension'], $t['test_tag'] );
-			$has_entrypoint = file_exists( "$base_dir/entrypoint.spec.js" );
+			$has_entrypoint = file_exists( "{$t['path_in_host']}/entrypoint.qit.js" );
 
 			// Include db-import before each project, except the first one.
 			if ( $is_first ) {
