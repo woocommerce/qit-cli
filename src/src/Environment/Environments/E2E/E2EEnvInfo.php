@@ -32,6 +32,7 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var array<string,array{
 	 *     extension:string,
 	 *     type:string,
+	 *     action:string,
 	 *     path_in_container:string,
 	 *     path_in_host:string
 	 * }> $tests Keys are extension slugs, values are arrays of test info.

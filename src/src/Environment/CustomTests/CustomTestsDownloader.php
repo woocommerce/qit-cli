@@ -63,6 +63,10 @@ class CustomTestsDownloader {
 		// Todo: Check if all requested test tags were found, probably fail if not.
 
 		foreach ( $extensions as $extension ) {
+			// Don't try to download custom tests for extensions that we are just installing.
+			if ( $extension->action === Extension::$allowed_actions['install'] ) {
+				continue;
+			}
 			foreach ( $extension->test_tags as $k => $test_tag ) {
 				/*
 				 * Use local test.
@@ -88,6 +92,7 @@ class CustomTestsDownloader {
 						$env_info->tests[ $extension->slug ][] = [
 							'extension'         => $extension->slug,
 							'type'              => $extension->type,
+							'action'            => $extension->action,
 							'test_tag'          => "local-$k",
 							'path_in_container' => $path_in_container,
 							'path_in_host'      => $path_in_host,
@@ -120,6 +125,7 @@ class CustomTestsDownloader {
 								$env_info->tests[ $extension->slug ] = [
 									'extension'         => $extension->slug,
 									'type'              => $extension->type,
+									'action'            => $extension->action,
 									'test_tag'          => $test_tag,
 									'path_in_container' => $path_in_container,
 									'path_in_host'      => $path_in_host,

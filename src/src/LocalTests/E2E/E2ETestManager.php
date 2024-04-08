@@ -5,6 +5,7 @@ namespace QIT_CLI\LocalTests\E2E;
 use QIT_CLI\App;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Extension;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\LocalTests\E2E\Runner\E2ERunner;
 use QIT_CLI\LocalTests\E2E\Runner\PlaywrightRunner;
@@ -56,6 +57,9 @@ class E2ETestManager {
 		 * Bootstrap all plugins.
 		 */
 		foreach ( $env_info->tests as $plugin_slug => $test_info ) {
+			if ( $test_info['action'] !== Extension::$allowed_actions['bootstrap'] && $test_info['action'] !== Extension::$allowed_actions['test'] ) {
+				continue;
+			}
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/bootstrap.php' ) ) {
 				$this->output->writeln( sprintf( 'Bootstrapping %s %s', $plugin_slug, $test_info['path_in_container'] . '/bootstrap/bootstrap.php' ) );
 				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "php {$test_info['path_in_container']}/bootstrap/bootstrap.php" ] );
@@ -104,7 +108,15 @@ class E2ETestManager {
 			throw new \RuntimeException( 'No tests found for the given plugins.' );
 		}
 
-		if ( count( $env_info->tests ) > 1 ) {
+		$test_phases = 0;
+
+		foreach ( $env_info->tests as $test_info ) {
+			if ( $test_info['action'] === Extension::$allowed_actions['test'] ) {
+				++$test_phases;
+			}
+		}
+
+		if ( $test_phases > 1 ) {
 			// Do a DB export.
 			$this->output->writeln( '<info>Exporting DB</info>' );
 			$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', 'wp db export /tmp/qit-bootstrap.sql' ] );
@@ -120,7 +132,7 @@ class E2ETestManager {
 		 * Split the test to be run.
 		 */
 		foreach ( $env_info->tests as $plugin_slug => $test_info ) {
-			if ( E2ERunner::find_runner_type( $test_info['path_in_host'] ) === 'playwright' ) {
+			if ( $test_info['action'] === Extension::$allowed_actions['test'] && E2ERunner::find_runner_type( $test_info['path_in_host'] ) === 'playwright' ) {
 				$tests_to_run['playwright'][] = $test_info;
 			}
 		}
