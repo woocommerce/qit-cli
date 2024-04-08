@@ -88,6 +88,10 @@ class PluginsAndThemesParser {
 						 */
 						$extension['slug'] = pathinfo( normalize_path( $extension['source'] ), PATHINFO_FILENAME );
 
+						if ( $this->output->isVerbose() ) {
+							$this->output->writeln( sprintf( '<comment>Inferred slug "%s" from source "%s".</comment>', $extension['slug'], $extension['source'] ) );
+						}
+
 						// Validate it's found.
 						$this->woo_extensions_list->get_woo_extension_id_by_slug( $extension['slug'] );
 					} catch ( \Exception $e ) {

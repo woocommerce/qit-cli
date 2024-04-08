@@ -40,10 +40,17 @@ class PlaywrightRunner extends E2ERunner {
 			}
 		}
 
+		// Generate global-setup.js.
+		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright/global-setup-generator.php' ] );
+		$process->setEnv( [
+			'SAVE_AS' => $env_info->temporary_env . 'global-setup.js',
+		] );
+
 		// Generate playwright-config.
-		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright-config-generator.php' ] );
+		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright/playwright-config-generator.php' ] );
 		$process->setEnv( [
 			'BASE_URL'         => $env_info->site_url,
+			'PROJECTS'         => json_encode( $this->make_projects( $test_infos ) ),
 			'SAVE_AS'          => $env_info->temporary_env . 'qit-playwright.config.js',
 			'TEST_RESULT_PATH' => $results_dir,
 		] );
@@ -213,6 +220,46 @@ class PlaywrightRunner extends E2ERunner {
 			App::make( Cache::class )->set( 'last_e2e_report', $results_dir . '/report', MONTH_IN_SECONDS );
 			E2ETestManager::$has_report = true;
 		}
+	}
+
+	/**
+	 * @param array<string,array{
+	 *      extension:string,
+	 *      type:string,
+	 *      test_tag:string,
+	 *      path_in_container:string,
+	 *      path_in_host:string
+	 *  }> $test_infos
+	 *
+	 * @return array<string,array<string,scalar>
+	 */
+	protected function make_projects( array $test_infos ): array {
+		$projects = [];
+
+		foreach ( $test_infos as $t ) {
+			// Run "entrypoint.spec.js" first, if it exists.
+			$base_dir = sprintf( '/home/pwuser/%s/%s', $t['extension'], $t['test_tag'] );
+			if ( file_exists( "$base_dir/entrypoint.spec.js" ) ) {
+				$projects[] = [
+					'name'      => sprintf( '%s-%s-entrypoint', $t['extension'], $t['test_tag'] ),
+					'testMatch' => "$base_dir/entrypoint.spec.(js|ts)",
+					'use'       => [
+						'browserName' => 'chromium',
+					],
+				];
+			}
+
+			// Run the test, except the entrypoint.
+			$projects[] = [
+				'name'      => sprintf( '%s-%s', $t['extension'], $t['test_tag'] ),
+				'testMatch' => "$base_dir/**/*.spec.(js|ts)",
+				'use'       => [
+					'browserName' => 'chromium',
+				],
+			];
+		}
+
+		return $projects;
 	}
 
 	/**

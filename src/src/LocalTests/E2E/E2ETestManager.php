@@ -104,6 +104,12 @@ class E2ETestManager {
 			throw new \RuntimeException( 'No tests found for the given plugins.' );
 		}
 
+		if ( count( $env_info->tests ) > 1 ) {
+			// Do a DB export.
+			$this->output->writeln( '<info>Exporting DB</info>' );
+			$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', 'wp db export /tmp/qit-bootstrap.sql' ] );
+		}
+
 		$this->output->writeln( '<info>Running E2E Tests</info>' );
 
 		$tests_to_run = [
