@@ -40,17 +40,6 @@ class PlaywrightRunner extends E2ERunner {
 			}
 		}
 
-		// Generate db-import.js.
-		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright/db-import-generator.php' ] );
-		$process->setEnv( [
-			'SAVE_AS' => $env_info->temporary_env . 'db-import.js',
-		] );
-		$process->run( function ( $type, $buffer ) {
-			if ( $this->output->isVerbose() || $type === Process::ERR ) {
-				$this->output->write( $buffer );
-			}
-		} );
-
 		// Generate playwright-config.
 		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright/playwright-config-generator.php' ] );
 		$process->setEnv( [
@@ -248,8 +237,10 @@ class PlaywrightRunner extends E2ERunner {
 			$base_dir       = sprintf( '/home/pwuser/%s/%s', $t['extension'], $t['test_tag'] );
 			$has_entrypoint = file_exists( "$base_dir/entrypoint.spec.js" );
 
-			// Include setup project before each project, except the first one.
-			if ( ! $is_first ) {
+			// Include db-import before each project, except the first one.
+			if ( $is_first ) {
+				$is_first = false;
+			} else {
 				$projects[] = [
 					'name'      => 'db-import',
 					'testMatch' => '/home/pwuser/db-import.js',
@@ -257,8 +248,6 @@ class PlaywrightRunner extends E2ERunner {
 						'browserName' => 'chromium',
 					],
 				];
-			} else {
-				$is_first = false;
 			}
 
 			if ( $has_entrypoint ) {
