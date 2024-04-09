@@ -16,7 +16,7 @@
             "type": "plugin",
             "handler": null,
             "version": "undefined",
-            "action": "install",
+            "action": "activate",
             "test_tags": [
                 "bar"
             ]
@@ -28,7 +28,7 @@
             "type": "plugin",
             "handler": null,
             "version": "undefined",
-            "action": "install",
+            "action": "activate",
             "test_tags": [
                 "default"
             ]
@@ -42,7 +42,7 @@
             "type": "theme",
             "handler": null,
             "version": "undefined",
-            "action": "install",
+            "action": "activate",
             "test_tags": [
                 "default"
             ]
@@ -54,7 +54,7 @@
             "type": "theme",
             "handler": null,
             "version": "undefined",
-            "action": "install",
+            "action": "activate",
             "test_tags": [
                 "foo"
             ]

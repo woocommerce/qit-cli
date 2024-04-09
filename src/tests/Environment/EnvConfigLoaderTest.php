@@ -275,7 +275,7 @@ class EnvConfigLoaderTest extends TestCase {
 				// 'https://woo.com/qit-dog:bar', <!-- Forbidden because we can't infer the "slug" to get the "bar" test tag. -->
 				'{"source": "https://woo.com/qit-dog", "slug": "qit-dog", "test_tags": ["bar"]}',
 				'C:\\Users\\user\\Desktop\\qit-beaver',
-				'C:\\Users\\user\\Desktop\\qit-beaver:install',
+				'C:\\Users\\user\\Desktop\\qit-beaver:activate',
 			],
 			'themes'  => [
 				'qit-beaver:test',

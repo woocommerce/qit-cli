@@ -89,11 +89,11 @@ class CustomTestsDownloader {
 					$env_info->volumes[ $path_in_container ] = $path_in_host;
 
 					if ( $env_info instanceof E2EEnvInfo ) {
-						$env_info->tests[ $extension->slug ][] = [
-							'extension'         => $extension->slug,
+						$env_info->tests[] = [
+							'slug'              => $extension->slug,
+							'test_tag'          => "local-$k",
 							'type'              => $extension->type,
 							'action'            => $extension->action,
-							'test_tag'          => "local-$k",
 							'path_in_container' => $path_in_container,
 							'path_in_host'      => $path_in_host,
 						];
@@ -106,7 +106,10 @@ class CustomTestsDownloader {
 					 */
 					if ( isset( $custom_tests[ $extension->slug ]['tests'][ $test_type ] ) ) {
 						// @phpstan-ignore-next-line
-						foreach ( $custom_tests[ $extension->slug ]['tests'][ $test_type ] as $custom_test_url ) {
+						foreach ( $custom_tests[ $extension->slug ]['tests'][ $test_type ] as $tag_url => $custom_test_url ) {
+							if ( $tag_url !== $test_tag ) {
+								continue;
+							}
 							$custom_test_file_name = md5( $custom_test_url ) . '.zip';
 							$custom_test_file_path = "$cache_dir/tests/$test_type/$custom_test_file_name";
 
@@ -122,11 +125,11 @@ class CustomTestsDownloader {
 							$env_info->volumes[ $path_in_container ] = $path_in_host;
 
 							if ( $env_info instanceof E2EEnvInfo ) {
-								$env_info->tests[ $extension->slug ] = [
-									'extension'         => $extension->slug,
+								$env_info->tests[] = [
+									'slug'              => $extension->slug,
+									'test_tag'          => $test_tag,
 									'type'              => $extension->type,
 									'action'            => $extension->action,
-									'test_tag'          => $test_tag,
 									'path_in_container' => $path_in_container,
 									'path_in_host'      => $path_in_host,
 								];

@@ -99,7 +99,7 @@ class PlaywrightRunner extends E2ERunner {
 		foreach ( $test_infos as $test_to_run ) {
 			$playwright_args = array_merge( $playwright_args, [
 				'-v',
-				"{$test_to_run['path_in_host']}:/home/pwuser/{$test_to_run['extension']}/{$test_to_run['test_tag']}",
+				"{$test_to_run['path_in_host']}:/home/pwuser/{$test_to_run['slug']}/{$test_to_run['test_tag']}",
 			] );
 		}
 
@@ -223,14 +223,17 @@ class PlaywrightRunner extends E2ERunner {
 	}
 
 	/**
-	 * // phpcs:disable
-	 * @param array<string,array{
-	 *      extension:string,
-	 *      type:string,
+	 * // phpcs:disable Squiz.Commenting.FunctionComment.MissingParamName
+	 *
+	 * @param array<int,array{
+	 *      slug:string,
 	 *      test_tag:string,
+	 *      type:string,
+	 *      action:string,
 	 *      path_in_container:string,
 	 *      path_in_host:string
-	 *  }> $test_infos
+	 *  }>                     $test_infos
+	 *
 	 * // phpcs:enable
 	 *
 	 * @return array<int,array<string,scalar>>
@@ -240,7 +243,7 @@ class PlaywrightRunner extends E2ERunner {
 		$is_first = true;
 
 		foreach ( $test_infos as $t ) {
-			$base_dir       = sprintf( '/home/pwuser/%s/%s', $t['extension'], $t['test_tag'] );
+			$base_dir       = sprintf( '/home/pwuser/%s/%s', $t['slug'], $t['test_tag'] );
 			$has_entrypoint = file_exists( "{$t['path_in_host']}/entrypoint.qit.js" );
 
 			// Include db-import before each project, except the first one.
@@ -259,7 +262,7 @@ class PlaywrightRunner extends E2ERunner {
 			if ( $has_entrypoint ) {
 				// Run the entrypoint.
 				$projects[] = [
-					'name'      => sprintf( '%s-%s-entrypoint', $t['extension'], $t['test_tag'] ),
+					'name'      => sprintf( '%s-%s-entrypoint', $t['slug'], $t['test_tag'] ),
 					'testDir'   => $base_dir,
 					'testMatch' => 'entrypoint.qit.js',
 					'use'       => [
@@ -270,7 +273,7 @@ class PlaywrightRunner extends E2ERunner {
 
 			// Run the test.
 			$projects[] = [
-				'name'    => sprintf( '%s-%s', $t['extension'], $t['test_tag'] ),
+				'name'    => sprintf( '%s-%s', $t['slug'], $t['test_tag'] ),
 				'testDir' => $base_dir,
 				'use'     => [
 					'browserName' => 'chromium',

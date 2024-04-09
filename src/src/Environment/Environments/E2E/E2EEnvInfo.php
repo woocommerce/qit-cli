@@ -29,13 +29,14 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var string */
 	public $woocommerce_version;
 
-	/** @var array<string,array{
-	 *     extension:string,
+	/** @var array<int,array{
+	 *     slug:string,
+	 *     test_tag:string,
 	 *     type:string,
 	 *     action:string,
 	 *     path_in_container:string,
 	 *     path_in_host:string
-	 * }> $tests Keys are extension slugs, values are arrays of test info.
+	 * }> $tests
 	 */
 	public $tests = [];
 }

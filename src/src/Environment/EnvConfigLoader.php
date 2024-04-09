@@ -49,8 +49,6 @@ class EnvConfigLoader {
 			}
 		}
 
-		$this->normalize_plural_to_singular( $env_config );
-
 		// Load the environment config from user input.
 		foreach ( $options['overrides'] as $key => $value ) {
 			// Check that options don't contain disallowed keys.
@@ -74,6 +72,8 @@ class EnvConfigLoader {
 				$env_config[ $key ] = $value;
 			}
 		}
+
+		$this->normalize_plural_to_singular( $env_config );
 
 		// Plugins and Themes.
 		$env_config['plugin'] = $this->plugins_and_themes_parser->parse_extensions(

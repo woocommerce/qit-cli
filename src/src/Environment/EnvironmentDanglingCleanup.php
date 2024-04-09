@@ -141,7 +141,7 @@ class EnvironmentDanglingCleanup {
 			'docker',
 			'mu-plugins',
 			'tests',
-			'playwright'
+			'playwright',
 		];
 
 		/*

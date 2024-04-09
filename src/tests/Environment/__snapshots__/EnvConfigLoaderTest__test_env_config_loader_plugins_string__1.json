@@ -16,7 +16,7 @@
             "type": "plugin",
             "handler": null,
             "version": "undefined",
-            "action": "install",
+            "action": "activate",
             "test_tags": [
                 "default"
             ]
