@@ -78,13 +78,13 @@ class EnvConfigLoader {
 		// Plugins and Themes.
 		$env_config['plugin'] = $this->plugins_and_themes_parser->parse_extensions(
 			$env_config['plugin'] ?? [],
-			Extension::$allowed_types['plugin'],
+			Extension::TYPES['plugin'],
 			getenv( 'QIT_UP_AND_TEST' ) ? Extension::ACTIONS['bootstrap'] : Extension::ACTIONS['activate']
 		);
 
 		$env_config['theme'] = $this->plugins_and_themes_parser->parse_extensions(
 			$env_config['theme'] ?? [],
-			Extension::$allowed_types['theme'],
+			Extension::TYPES['theme'],
 			getenv( 'QIT_UP_AND_TEST' ) ? Extension::ACTIONS['bootstrap'] : Extension::ACTIONS['activate']
 		);
 

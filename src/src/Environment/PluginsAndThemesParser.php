@@ -28,7 +28,7 @@ class PluginsAndThemesParser {
 	 *     test_tags?: array<string>,
 	 * }> $plugins_or_themes
 	 * // phpcs:enable
-	 * @param string                          $type One of Extension::$allowed_types.
+	 * @param string                          $type One of Extension::TYPES.
 	 * @param string                          $default_action One of Extension::ACTIONS.
 	 *
 	 * @return array<Extension>
@@ -36,14 +36,14 @@ class PluginsAndThemesParser {
 	 * @throws \InvalidArgumentException If the extensions are invalid.
 	 * @throws \LogicException If the type is invalid.
 	 *
-	 * @see Extension::$allowed_types
+	 * @see Extension::TYPES
 	 * @see Extension::ACTIONS
 	 */
 	public function parse_extensions( array $plugins_or_themes, string $type, string $default_action = Extension::ACTIONS['activate'] ): array {
 		$parsed_extensions = [];
 
-		if ( ! in_array( $type, Extension::$allowed_types, true ) ) {
-			throw new \LogicException( sprintf( 'Invalid type "%s". Valid types are: %s', $type, implode( ', ', Extension::$allowed_types ) ) );
+		if ( ! in_array( $type, Extension::TYPES, true ) ) {
+			throw new \LogicException( sprintf( 'Invalid type "%s". Valid types are: %s', $type, implode( ', ', Extension::TYPES ) ) );
 		}
 
 		foreach ( $plugins_or_themes as $potential_slug => $extension ) {

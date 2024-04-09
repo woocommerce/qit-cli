@@ -11,7 +11,7 @@ class Extension {
 	];
 
 	/** @var array<string> */
-	public static $allowed_types = [
+	const TYPES = [
 		'plugin' => 'plugin',
 		'theme'  => 'theme',
 	];
@@ -26,7 +26,7 @@ class Extension {
 	public $downloaded_source;
 
 	/**
-	 * @see Extension::$allowed_types
+	 * @see Extension::TYPES
 	 * @var string
 	 */
 	public $type;

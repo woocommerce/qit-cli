@@ -81,7 +81,7 @@ YML;
 
 		$this->assertEquals( $json_array, $yaml_array );
 
-		$this->assertMatchesJsonSnapshot( $this->sut->parse_extensions( $yaml_array['plugins'], Extension::$allowed_types['plugin'] ) );
+		$this->assertMatchesJsonSnapshot( $this->sut->parse_extensions( $yaml_array['plugins'], Extension::TYPES['plugin'] ) );
 	}
 
 	public function test_parse_extensions_option() {
@@ -105,7 +105,7 @@ YML;
 			],
 		];
 
-		$this->assertMatchesJsonSnapshot( $this->sut->parse_extensions( $cli_array['plugins'], Extension::$allowed_types['plugin'] ) );
+		$this->assertMatchesJsonSnapshot( $this->sut->parse_extensions( $cli_array['plugins'], Extension::TYPES['plugin'] ) );
 	}
 
 	public function test_parse_extensions_infer() {
@@ -132,6 +132,6 @@ YML;
 			],
 		];
 
-		$this->assertMatchesJsonSnapshot( $this->sut->parse_extensions( $cli_array['plugins'], Extension::$allowed_types['plugin'] ) );
+		$this->assertMatchesJsonSnapshot( $this->sut->parse_extensions( $cli_array['plugins'], Extension::TYPES['plugin'] ) );
 	}
 }
