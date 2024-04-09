@@ -141,6 +141,7 @@ class EnvironmentDanglingCleanup {
 			'docker',
 			'mu-plugins',
 			'tests',
+			'playwright'
 		];
 
 		/*
@@ -409,6 +410,13 @@ class EnvironmentDanglingCleanup {
 
 			if ( substr( $container_name, 0, strlen( 'qit_env_' ) ) === 'qit_env_' ) {
 				$running_containers[] = $container_name;
+			}
+		}
+
+		foreach ( $running_environments as $env_info ) {
+			if ( empty( $env_info->docker_images ) ) {
+				$this->debug_output( "Removing dangling environment (no containers): {$env_info->env_id}" );
+				Environment::down( $env_info );
 			}
 		}
 
