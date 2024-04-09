@@ -64,7 +64,7 @@ class CustomTestsDownloader {
 
 		foreach ( $extensions as $extension ) {
 			// Don't try to download custom tests for extensions that we are just installing.
-			if ( $extension->action === Extension::$allowed_actions['install'] ) {
+			if ( $extension->action === Extension::ACTIONS['activate'] ) {
 				continue;
 			}
 			foreach ( $extension->test_tags as $k => $test_tag ) {

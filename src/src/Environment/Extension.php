@@ -4,8 +4,8 @@ namespace QIT_CLI\Environment;
 
 class Extension {
 	/** @var array<string> */
-	public static $allowed_actions = [
-		'install'   => 'install',
+	const ACTIONS = [
+		'activate'  => 'activate',
 		'bootstrap' => 'bootstrap',
 		'test'      => 'test',
 	];
@@ -41,7 +41,7 @@ class Extension {
 	public $version = 'undefined';
 
 	/**
-	 * @see Extension::$allowed_actions
+	 * @see Extension::ACTIONS
 	 * @var string
 	 */
 	public $action;

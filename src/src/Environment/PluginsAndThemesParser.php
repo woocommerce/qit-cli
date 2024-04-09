@@ -29,7 +29,7 @@ class PluginsAndThemesParser {
 	 * }> $plugins_or_themes
 	 * // phpcs:enable
 	 * @param string                          $type One of Extension::$allowed_types.
-	 * @param string                          $default_action One of Extension::$allowed_actions.
+	 * @param string                          $default_action One of Extension::ACTIONS.
 	 *
 	 * @return array<Extension>
 	 * @throws \Exception If it couldn't parse the extensions.
@@ -37,9 +37,9 @@ class PluginsAndThemesParser {
 	 * @throws \LogicException If the type is invalid.
 	 *
 	 * @see Extension::$allowed_types
-	 * @see Extension::$allowed_actions
+	 * @see Extension::ACTIONS
 	 */
-	public function parse_extensions( array $plugins_or_themes, string $type, string $default_action = 'install' ): array {
+	public function parse_extensions( array $plugins_or_themes, string $type, string $default_action = Extension::ACTIONS['activate'] ): array {
 		$parsed_extensions = [];
 
 		if ( ! in_array( $type, Extension::$allowed_types, true ) ) {
@@ -131,8 +131,8 @@ class PluginsAndThemesParser {
 				}
 			}
 
-			if ( ! in_array( $extension['action'], Extension::$allowed_actions, true ) ) {
-				throw new \InvalidArgumentException( sprintf( 'Invalid action "%s". Valid actions are: %s', $extension['action'], implode( ', ', Extension::$allowed_actions ) ) );
+			if ( ! in_array( $extension['action'], Extension::ACTIONS, true ) ) {
+				throw new \InvalidArgumentException( sprintf( 'Invalid action "%s". Valid actions are: %s', $extension['action'], implode( ', ', Extension::ACTIONS ) ) );
 			}
 
 			// Sort by key.
@@ -186,7 +186,7 @@ class PluginsAndThemesParser {
 		 * {source}:{action}:{test_tags}
 		 *
 		 * - Source can be slugs, IDs, URLs or file paths.
-		 * - Action is optional and is one of the strings in Extension::$allowed_actions (e.g., "install", "bootstrap", "test").
+		 * - Action is optional and is one of the strings in Extension::ACTIONS (e.g., "install", "bootstrap", "test").
 		 * - Test tags are optional and can be a comma-separated list of alphanumeric strings, or local paths.
 		 *
 		 * Parsing Logic:
@@ -203,7 +203,7 @@ class PluginsAndThemesParser {
 
 		$action_found = false;
 
-		foreach ( Extension::$allowed_actions as $action ) {
+		foreach ( Extension::ACTIONS as $action ) {
 			$action_pattern = ":$action";
 			$action_pos     = strpos( $extension, $action_pattern );
 
@@ -304,8 +304,8 @@ class PluginsAndThemesParser {
 
 		// If user set an "action", make sure it's valid.
 		if ( isset( $extension['action'] ) ) {
-			if ( ! in_array( $extension['action'], Extension::$allowed_actions, true ) ) {
-				throw new \InvalidArgumentException( sprintf( 'Invalid action "%s". Valid actions are: %s', $extension['action'], implode( ', ', Extension::$allowed_actions ) ) );
+			if ( ! in_array( $extension['action'], Extension::ACTIONS, true ) ) {
+				throw new \InvalidArgumentException( sprintf( 'Invalid action "%s". Valid actions are: %s', $extension['action'], implode( ', ', Extension::ACTIONS ) ) );
 			}
 		}
 

@@ -57,7 +57,7 @@ class E2ETestManager {
 		 * Bootstrap all plugins.
 		 */
 		foreach ( $env_info->tests as $plugin_slug => $test_info ) {
-			if ( $test_info['action'] !== Extension::$allowed_actions['bootstrap'] && $test_info['action'] !== Extension::$allowed_actions['test'] ) {
+			if ( $test_info['action'] !== Extension::ACTIONS['bootstrap'] && $test_info['action'] !== Extension::ACTIONS['test'] ) {
 				continue;
 			}
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/bootstrap.php' ) ) {
@@ -111,7 +111,7 @@ class E2ETestManager {
 		$test_phases = 0;
 
 		foreach ( $env_info->tests as $test_info ) {
-			if ( $test_info['action'] === Extension::$allowed_actions['test'] ) {
+			if ( $test_info['action'] === Extension::ACTIONS['test'] ) {
 				++$test_phases;
 			}
 		}
@@ -132,7 +132,7 @@ class E2ETestManager {
 		 * Split the test to be run.
 		 */
 		foreach ( $env_info->tests as $plugin_slug => $test_info ) {
-			if ( $test_info['action'] === Extension::$allowed_actions['test'] && E2ERunner::find_runner_type( $test_info['path_in_host'] ) === 'playwright' ) {
+			if ( $test_info['action'] === Extension::ACTIONS['test'] && E2ERunner::find_runner_type( $test_info['path_in_host'] ) === 'playwright' ) {
 				$tests_to_run['playwright'][] = $test_info;
 			}
 		}

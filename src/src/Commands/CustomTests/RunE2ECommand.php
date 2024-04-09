@@ -72,7 +72,7 @@ class RunE2ECommand extends DynamicCommand {
 			->addArgument( 'test_path', InputArgument::OPTIONAL, 'Path to your E2E tests (Optional, if not set, it will try to download your custom tests that you have previously uploaded to QIT)' )
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, '(Optional) Zip or directory of the main extension under test. If not set, will use the latest released build.' )
 			->addOption( 'test', null, InputOption::VALUE_OPTIONAL, '(Optional) The tests for the main extension under test. Accepts test tags, or a test directory. If not set, will use the "default" test tag of this extension.' )
-			->addOption( 'action', null, InputOption::VALUE_OPTIONAL, sprintf( '(Optional) The action for the main extension under test, can be %s. <comment>[default: "%s"]</comment>', implode( ', ', Extension::$allowed_actions ), Extension::$allowed_actions['test'] ) )
+			->addOption( 'action', null, InputOption::VALUE_OPTIONAL, sprintf( '(Optional) The action for the main extension under test, can be %s. <comment>[default: "%s"]</comment>', implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['test'] ) )
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Theme install, if multiple provided activates the last. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
 			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
@@ -341,7 +341,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
+				$parsed_options['env_up']["--$option_name"] = $option_value;
 			}
 		}
 
