@@ -135,30 +135,43 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		if ( ! empty( $woo_extension ) ) {
-			if ( ! empty( $source ) || ! empty( $test ) || ! empty( $action ) ) {
-				foreach ( Extension::$allowed_actions as $a ) {
-					if ( strpos( $woo_extension, ":$a" ) !== false ) {
+			$short_syntax = false;
+			foreach ( Extension::ACTIONS as $a ) {
+				// Using short syntax.
+				if ( strpos( $woo_extension, ":$a" ) !== false ) {
+					$short_syntax = true;
+					if ( ! empty( $source ) || ! empty( $test ) || ! empty( $action ) ) {
 						// They can either use "woo_extension" as a slug with "--source" and "--test", or "woo_extension" as a short-syntax, but they cannot mix both.
 						throw new \InvalidArgumentException( 'Cannot set the "source", "test" or "action" options when using the short-syntax for the "woo_extension" argument.' );
 					}
 				}
 			}
 
-			$sut = [
-				'source'    => empty( $source ) ? $woo_extension : $source,
-				'action'    => empty( $action ) ? Extension::$allowed_actions['test'] : $action,
-				'test_tags' => empty( $test ) ? [ 'default' ] : implode( ',', $test ),
-			];
+			/*
+			 * If it's short syntax, we just pass it raw to the "env:up" command.
+			 * eg: qit-beaver:test:rc,default
+			 *
+			 * If it's not short syntax, we compose it in a JSON string and send it to "env:up".
+			 * eg: qit-beaver
+			 * eg 2: qit-beaver --source /path/to/extension --test rc,default,~/qit-beaver-tests --action=test
+			 */
+			if ( ! $short_syntax) {
+				$sut = [
+					'source'    => empty( $source ) ? $woo_extension : $source,
+					'action'    => empty( $action ) ? Extension::ACTIONS['test'] : $action,
+					'test_tags' => empty( $test ) ? [ 'default' ] : implode( ',', $test ),
+				];
 
-			// If the "woo_extension" is a valid slug, set it so we don't have to infer from "source".
-			try {
-				$this->woo_extensions_list->get_woo_extension_id_by_slug( $woo_extension );
-				$sut['slug'] = $woo_extension;
-			} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-				// No-op.
+				// If the "woo_extension" is a valid slug, set it so we don't have to infer from "source".
+				try {
+					$this->woo_extensions_list->get_woo_extension_id_by_slug( $woo_extension );
+					$sut['slug'] = $woo_extension;
+				} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+					// No-op.
+				}
+
+				$woo_extension = json_encode( $sut );
 			}
-
-			$woo_extension = json_encode( $sut );
 
 			if ( $input->getOption( 'testing_theme' ) === 'true' ) {
 				$env_up_options['--theme'][] = $woo_extension;
