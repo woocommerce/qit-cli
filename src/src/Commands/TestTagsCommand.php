@@ -19,7 +19,7 @@ class TestTagsCommand extends Command {
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		try {
-			$json = ( new RequestBuilder( get_manager_url() . "/wp-json/cd/v1/get_extensions" ) )
+			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get_extensions' ) )
 				->with_method( 'POST' )
 				->with_post_body( [
 					'list_tests' => true,
@@ -40,11 +40,10 @@ class TestTagsCommand extends Command {
 		}
 
 		$table = new Table( $output );
-		$table->setHeaders(['Slug', 'E2E Tests', 'Type']);
+		$table->setHeaders( [ 'Slug', 'E2E Tests', 'Type' ] );
 
-		foreach ($test_tags as $tag => $data) {
-			$e2eTests = implode(', ', $data['tests']['e2e'] ?? []);
-			$table->addRow([$data['slug'], $e2eTests, $data['type']]);
+		foreach ( $test_tags as $tag => $data ) {
+			$table->addRow( [ $data['slug'], implode( ', ', $data['tests']['e2e'] ?? [] ), $data['type'] ] );
 		}
 
 		$table->render();
