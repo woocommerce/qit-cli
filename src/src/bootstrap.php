@@ -28,6 +28,7 @@ use QIT_CLI\Commands\Partner\RemovePartner;
 use QIT_CLI\Commands\Partner\SwitchPartner;
 use QIT_CLI\Commands\SetProxyCommand;
 use QIT_CLI\Commands\SyncCommand;
+use QIT_CLI\Commands\TestTagsCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Config;
 use QIT_CLI\Diagnosis;
@@ -233,6 +234,7 @@ if ( $is_connected_to_backend ) {
 
 	// List the Woo Extensions the user can run tests against.
 	$application->add( $container->make( WooExtensionsCommand::class ) );
+	$application->add( $container->make( TestTagsCommand::class ) );
 
 	$application->add( $container->make( UploadCustomTestCommand::class ) );
 	$application->add( $container->make( ShowReportCommand::class ) );
