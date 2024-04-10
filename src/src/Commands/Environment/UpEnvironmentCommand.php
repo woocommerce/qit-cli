@@ -50,7 +50,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Theme install, if multiple provided activates the last. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
 			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
-			->addOption( 'php_ext', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions to install in the environment.', [] )
+			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions to install in the environment.', [] )
 			->addOption( 'require', 'r', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load PHP file before running the command (may be used more than once).' )
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
 			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "nightly", "stable", or a GitHub Tag (eg: 8.6.1).' )
@@ -83,7 +83,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 						'/home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin',
 					];
 					break;
-				case 'php_ext':
+				case 'php_extension':
 					$options_example[ $opt->getName() ] = [
 						'gd',
 						'imagick',
@@ -159,14 +159,14 @@ To map a local directory to the test environment, use the --volumes flag, e.g.:
 This will map the local directory /home/mycomputer/my-plugin to the test environment at /var/www/html/wp-content/plugins/my-plugin.
 
 <comment>PHP Extensions</comment>
-To install PHP extensions in the test environment, use the --php_ext flag, e.g.:
-<info>qit env:up --php_ext=gd --php_ext=imagick</info>
+To install PHP extensions in the test environment, use the --php_extension flag, e.g.:
+<info>qit env:up --php_extension gd --php_extension imagick</info>
 
 <comment>Accessing the Test Website:</comment>
 - URL provided at command completion. Default: "http://localhost:<RANDOM_PORT>"
 
 <comment>Example:</comment>
-<info>qit env:up --wordpress_version=rc --php_version=8.3 --php_ext=gd --object_cache --plugins gutenberg --plugins automatewoo --themes storefront</info>
+<info>qit env:up --wordpress_version=rc --php_version=8.3 --php_extension gd --object_cache --plugin gutenberg --plugin automatewoo --theme storefront</info>
 
 This will create a disposable test environment with the latest release candidate versions of WordPress, PHP 8.3, the GD extension, Object Cache enabled, Gutenberg from WordPress.org Plugin Repository and AutomateWoo from the Woo.com Marketplace installed and active, and Storefront installed.
 HELP
