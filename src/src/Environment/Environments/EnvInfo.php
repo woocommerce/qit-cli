@@ -124,6 +124,18 @@ abstract class EnvInfo implements \JsonSerializable {
 			if ( property_exists( $env_info, $key ) ) {
 				$env_info->$key = $value;
 			} else {
+				// Boilerplate options added by Symfony Console.
+				$ignore_keys = [
+					'json',
+					'help',
+					'quiet',
+					'verbose',
+					'version',
+					'no-interaction'
+				];
+				if ( in_array( $key, $ignore_keys ) ) {
+					continue;
+				}
 				App::make( Output::class )->writeln( sprintf( '<comment>Warning: Key "%s" not found in environment info.</comment>', $key ) );
 			}
 		}

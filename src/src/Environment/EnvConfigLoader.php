@@ -319,7 +319,7 @@ class EnvConfigLoader {
 		 *  - bar
 		 * On the config file, and --plugin foo --plugin bar in the CLI parameters.
 		 */
-		$plurals = [ 'plugins', 'themes', 'volumes' ];
+		$plurals = [ 'plugins', 'themes', 'volumes', 'php_extensions' ];
 
 		// Convert scalars to arrays.
 		foreach ( $plurals as $plural ) {
@@ -358,7 +358,7 @@ class EnvConfigLoader {
 		 * plugin: foo
 		 * On the config file, and --plugins foo in the CLI parameters.
 		 */
-		$singulars = [ 'plugin', 'theme', 'volume' ];
+		$singulars = [ 'plugin', 'theme', 'volume', 'php_extension' ];
 
 		// Normalize singular to plural. If it already exists, throw.
 		foreach ( $singulars as $singular ) {
