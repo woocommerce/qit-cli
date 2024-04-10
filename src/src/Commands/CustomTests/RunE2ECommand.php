@@ -9,6 +9,7 @@ namespace QIT_CLI\Commands\CustomTests;
 
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\DynamicCommand;
+use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
@@ -66,6 +67,11 @@ class RunE2ECommand extends DynamicCommand {
 		if ( ! is_array( $schemas['e2e']['properties'] ) ) {
 			throw new \RuntimeException( 'E2E schema not set or incomplete.' );
 		}
+
+		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'], [], [
+			'wordpress_version',
+			'php_version',
+		] );
 
 		$this
 			->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'A QIT plugin-syntax as defined in the documentation: source:action:test-tags:slug. Only "source" is required, and it can be a slug, a file, a URL. Action can be "activate", "bootstrap", and "test", and test-tags are a comme-separated list of tests. Slug is usually not required. Read the docs.' )
