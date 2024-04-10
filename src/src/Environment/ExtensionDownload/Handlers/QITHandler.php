@@ -12,7 +12,7 @@ class QITHandler extends Handler {
 	public function populate_extension_versions( array $extensions ): void {
 		$output                 = App::make( Output::class );
 		$extensions_to_download = array_filter( $extensions, function ( Extension $v ) {
-			return ! file_exists( $v->downloaded_source );
+			return ! isset( $v->downloaded_source ) || ! file_exists( $v->downloaded_source );
 		} );
 
 		$extensions_to_download = implode( ',', array_map( function ( $v ) {
