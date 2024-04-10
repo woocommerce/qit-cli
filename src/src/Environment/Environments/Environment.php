@@ -306,20 +306,22 @@ abstract class Environment {
 			return;
 		}
 
-		$down_process = new Process( array_merge( App::make( Docker::class )->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'down' ] ) );
-		$down_process->setTimeout( 300 );
-		$down_process->setIdleTimeout( 300 );
-		$down_process->setPty( use_tty() );
+		if ( file_exists( $env_info->temporary_env . '/docker-compose.yml' ) ) {
+			$down_process = new Process( array_merge( App::make( Docker::class )->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'down' ] ) );
+			$down_process->setTimeout( 300 );
+			$down_process->setIdleTimeout( 300 );
+			$down_process->setPty( use_tty() );
 
-		$down_process->run( static function ( $type, $buffer ) use ( $output ) {
-			$output->write( $buffer );
-		} );
+			$down_process->run( static function ( $type, $buffer ) use ( $output ) {
+				$output->write( $buffer );
+			} );
 
-		if ( $down_process->isSuccessful() ) {
-			$output->writeln( 'Removing temporary environment: ' . $env_info->temporary_env );
-			SafeRemove::delete_dir( $env_info->temporary_env, static::get_temp_envs_dir() );
-		} else {
-			$output->writeln( 'Failed to remove temporary environment: ' . $env_info->temporary_env );
+			if ( $down_process->isSuccessful() ) {
+				$output->writeln( 'Removing temporary environment: ' . $env_info->temporary_env );
+				SafeRemove::delete_dir( $env_info->temporary_env, static::get_temp_envs_dir() );
+			} else {
+				$output->writeln( 'Failed to remove temporary environment: ' . $env_info->temporary_env );
+			}
 		}
 
 		// Remove volume.
@@ -328,7 +330,9 @@ abstract class Environment {
 			'volume',
 			'remove',
 			sprintf( 'qit_env_volume_%s', $env_info->env_id ),
+			'--force'
 		] );
+
 		$process->run( function ( $type, $buffer ) use ( $output ) {
 			if ( $output->isVerbose() ) {
 				$output->write( $buffer );
