@@ -72,6 +72,7 @@ class CustomTestsDownloader {
 				 * Use local test.
 				 */
 				if ( file_exists( $test_tag ) ) {
+					$this->output->writeln( sprintf( 'Found local test file "%s" and using it for extension "%s".', $test_tag, $extension->slug ) );
 					if ( is_dir( $test_tag ) ) {
 						$zip_file = tempnam( sys_get_temp_dir(), 'qit_' ) . '.zip';
 						$this->zipper->zip_directory( $test_tag, $zip_file, UploadCustomTestCommand::get_exclude_files() );

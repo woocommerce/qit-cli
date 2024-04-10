@@ -170,11 +170,16 @@ class Zipper {
 	 * @return void
 	 */
 	public function zip_directory( string $source_dir, string $output_zip_file, array $exclude = [] ): void {
-		if ( ! is_dir( $source_dir ) ) {
-			throw new \InvalidArgumentException( 'Source directory does not exist.' );
+		$source_dir_realpath = rtrim( realpath( $source_dir ), DIRECTORY_SEPARATOR );
+
+		if ( ! is_dir( $source_dir_realpath ) ) {
+			throw new \InvalidArgumentException( "Directory '$source_dir' not found." );
 		}
 
-		$source_dir = rtrim( $source_dir, DIRECTORY_SEPARATOR );
+		// Check if directory is empty.
+		if ( count( scandir( $source_dir_realpath ) ) === 2 ) {
+			throw new \InvalidArgumentException( "Directory '$source_dir' is empty." );
+		}
 
 		// Creating a temporary directory to store the zipped file.
 		$temp_dir = sys_get_temp_dir() . '/' . uniqid( 'zip_', true );
@@ -195,7 +200,7 @@ class Zipper {
 			'run',
 			'--rm',
 			'-v',
-			"$source_dir:/home/docker/source",
+			"$source_dir_realpath:/home/docker/source",
 			'-v',
 			"$temp_dir:/home/docker/dest",
 			'automattic/qit-runner-zip:latest',
