@@ -68,11 +68,8 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		$this
-			->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'A WooCommerce Extension Slug or Marketplace ID.' )
-			->addArgument( 'test_path', InputArgument::OPTIONAL, 'Path to your E2E tests (Optional, if not set, it will try to download your custom tests that you have previously uploaded to QIT)' )
-			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, '(Optional) Zip or directory of the main extension under test. If not set, will use the latest released build.' )
-			->addOption( 'test', null, InputOption::VALUE_OPTIONAL, '(Optional) The tests for the main extension under test. Accepts test tags, or a test directory. If not set, will use the "default" test tag of this extension.' )
-			->addOption( 'action', null, InputOption::VALUE_OPTIONAL, sprintf( '(Optional) The action for the main extension under test, can be %s. <comment>[default: "%s"]</comment>', implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['test'] ) )
+			->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'A QIT plugin-syntax as defined in the documentation: source:action:test-tags:slug. Only "source" is required, and it can be a slug, a file, a URL. Action can be "activate", "bootstrap", and "test", and test-tags are a comme-separated list of tests. Slug is usually not required. Read the docs.' )
+			->addArgument( 'test', InputArgument::OPTIONAL, '(Optional) The tests for the main extension under test. Accepts test tags, or a test directory. If not set, will use the "default" test tag of this extension.' )
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Theme install, if multiple provided activates the last. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
 			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
@@ -122,10 +119,8 @@ class RunE2ECommand extends DynamicCommand {
 
 		$wait          = $input->getOption( 'up_only' ) || $test_mode === 'codegen';
 		$woo_extension = $input->getArgument( 'woo_extension' );
+		$test          = $input->getArgument( 'test' );
 		$wp            = $input->getOption( 'wp' );
-		$source        = $input->getOption( 'source' );
-		$test          = $input->getOption( 'test' );
-		$action        = $input->getOption( 'action' );
 
 		// Validate the extension is set if needed.
 		if ( empty( $woo_extension ) && ! $wait ) {
@@ -135,44 +130,14 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		if ( ! empty( $woo_extension ) ) {
-			$short_syntax = false;
-			foreach ( Extension::ACTIONS as $a ) {
-				// Using short syntax.
-				if ( strpos( $woo_extension, ":$a" ) !== false ) {
-					$short_syntax = true;
-					if ( ! empty( $source ) || ! empty( $test ) || ! empty( $action ) ) {
-						// They can either use "woo_extension" as a slug with "--source" and "--test", or "woo_extension" as a short-syntax, but they cannot mix both.
-						throw new \InvalidArgumentException( 'Cannot set the "source", "test" or "action" options when using the short-syntax for the "woo_extension" argument.' );
-					}
+			if ( ! empty( $test ) ) {
+				if ( ! file_exists( $test ) ) {
+					$output->writeln( "<error>Test file '$test' does not exist.</error>" );
+
+					return Command::INVALID;
 				}
+				$woo_extension = sprintf( '%s:test:%s', $woo_extension, realpath( $test ) );
 			}
-
-			/*
-			 * If it's short syntax, we just pass it raw to the "env:up" command.
-			 * eg: qit-beaver:test:rc,default
-			 *
-			 * If it's not short syntax, we compose it in a JSON string and send it to "env:up".
-			 * eg: qit-beaver
-			 * eg 2: qit-beaver --source /path/to/extension --test rc,default,~/qit-beaver-tests --action=test
-			 */
-			if ( ! $short_syntax ) {
-				$sut = [
-					'source'    => empty( $source ) ? $woo_extension : $source,
-					'action'    => empty( $action ) ? Extension::ACTIONS['test'] : $action,
-					'test_tags' => empty( $test ) ? [ 'default' ] : implode( ',', $test ),
-				];
-
-				// If the "woo_extension" is a valid slug, set it so we don't have to infer from "source".
-				try {
-					$this->woo_extensions_list->get_woo_extension_id_by_slug( $woo_extension );
-					$sut['slug'] = $woo_extension;
-				} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-					// No-op.
-				}
-
-				$woo_extension = json_encode( $sut );
-			}
-
 			if ( $input->getOption( 'testing_theme' ) === 'true' ) {
 				$env_up_options['--theme'][] = $woo_extension;
 			} else {
@@ -341,7 +306,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
+				$parsed_options['env_up']["--$option_name"] = $option_value;
 			}
 		}
 
