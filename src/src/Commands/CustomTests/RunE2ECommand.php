@@ -137,19 +137,21 @@ class RunE2ECommand extends DynamicCommand {
 					return Command::INVALID;
 				}
 				$woo_extension = sprintf( '%s:test:%s', $woo_extension, realpath( $test ) );
-			}
+			} else {
+				$has_action = false;
 
-			$has_action = false;
-			foreach ( Extension::ACTIONS as $action ) {
-				if ( strpos( $woo_extension, ":$action" ) !== false ) {
-					$has_action = true;
-					break;
+				foreach ( Extension::ACTIONS as $action ) {
+					if ( strpos( $woo_extension, ":$action" ) !== false ) {
+						$has_action = true;
+						break;
+					}
+				}
+
+				if ( ! $has_action ) {
+					$woo_extension = "$woo_extension:test";
 				}
 			}
 
-			if ( ! $has_action ) {
-				$woo_extension = "$woo_extension:test";
-			}
 			if ( $input->getOption( 'testing_theme' ) === 'true' ) {
 				$env_up_options['--theme'][] = $woo_extension;
 			} else {

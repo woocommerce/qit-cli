@@ -340,7 +340,7 @@ class EnvConfigLoader {
 					throw new \RuntimeException( "Both '$singular' and '$plural' keys exist in the environment config, but one of them is not an array." );
 				}
 
-				$config[ $singular ] = array_merge( $config[ $singular ], $config[ $plural ] );
+				$config[ $singular ] = array_merge( $config[ $plural ], $config[ $singular ] );
 				unset( $config[ $plural ] );
 			}
 		}
