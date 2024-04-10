@@ -50,12 +50,16 @@ class E2EEnvironment extends Environment {
 		if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
 			// Inside docker, the port is always 80 (that's what Nginx is listening to).
 			$this->env_info->nginx_port = '80';
+
+			// Site URL without explicit port.
+			$this->env_info->site_url = sprintf( 'http://%s', $this->env_info->domain );
 		} else {
 			// Host port.
 			$this->env_info->nginx_port = (string) $this->get_nginx_port();
-		}
 
-		$this->env_info->site_url = sprintf( 'http://%s:%s', $this->env_info->domain, $this->env_info->nginx_port );
+			// Site URL with explicit port.
+			$this->env_info->site_url = sprintf( 'http://%s:%s', $this->env_info->domain, $this->env_info->nginx_port );
+		}
 
 		$this->environment_monitor->environment_added_or_updated( $this->env_info );
 
