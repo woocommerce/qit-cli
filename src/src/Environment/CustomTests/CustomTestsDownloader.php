@@ -60,8 +60,6 @@ class CustomTestsDownloader {
 	protected function maybe_download_custom_tests( EnvInfo $env_info, array $extensions, string $cache_dir, string $test_type ): void {
 		$custom_tests = $this->get_custom_tests_info( $extensions );
 
-		// Todo: Check if all requested test tags were found, probably fail if not.
-
 		foreach ( $extensions as $extension ) {
 			// Don't try to download custom tests for extensions that we are just installing.
 			if ( $extension->action === Extension::ACTIONS['activate'] ) {
@@ -82,25 +80,26 @@ class CustomTestsDownloader {
 						throw new \RuntimeException( "The custom tests path provided for '$test_tag' is not a file or a directory." );
 					}
 
-					$path_in_host      = "{$env_info->temporary_env}/tests/$test_type/{$extension->slug}/local-$k";
-					$path_in_container = "/qit/tests/$test_type/{$extension->slug}/local-$k";
+					$test_tag                     = $k > 0 ? "local-$k" : 'local';
+					$path_in_host                 = "{$env_info->temporary_env}/tests/$test_type/{$extension->slug}/$test_tag";
+					$path_in_php_container        = "/qit/tests/$test_type/{$extension->slug}/$test_tag";
+					$path_in_playwright_container = "/home/pwuser/$extension->slug/$test_tag";
 
 					$this->zipper->extract_zip( $zip_file, $path_in_host );
 
-					$env_info->volumes[ $path_in_container ] = $path_in_host;
+					$env_info->volumes[ $path_in_php_container ] = $path_in_host;
 
 					if ( $env_info instanceof E2EEnvInfo ) {
 						$env_info->tests[] = [
-							'slug'              => $extension->slug,
-							'test_tag'          => "local-$k",
-							'type'              => $extension->type,
-							'action'            => $extension->action,
-							'path_in_container' => $path_in_container,
-							'path_in_host'      => $path_in_host,
+							'slug'                         => $extension->slug,
+							'test_tag'                     => $test_tag,
+							'type'                         => $extension->type,
+							'action'                       => $extension->action,
+							'path_in_php_container'        => $path_in_php_container,
+							'path_in_playwright_container' => $path_in_playwright_container,
+							'path_in_host'                 => $path_in_host,
 						];
 					}
-
-					$this->output->writeln( sprintf( 'Using local tests for %s', $extension->slug ) );
 				} else {
 					/*
 					 * Download test from QIT and map it.
@@ -118,21 +117,23 @@ class CustomTestsDownloader {
 								RequestBuilder::download_file( $custom_test_url, $custom_test_file_path );
 							}
 
-							$path_in_host      = "{$env_info->temporary_env}/tests/$test_type/{$extension->slug}/$test_tag";
-							$path_in_container = "/qit/tests/$test_type/{$extension->slug}/$test_tag";
+							$path_in_host                 = "{$env_info->temporary_env}/tests/$test_type/{$extension->slug}/$test_tag";
+							$path_in_php_container        = "/qit/tests/$test_type/{$extension->slug}/$test_tag";
+							$path_in_playwright_container = "/home/pwuser/$extension->slug/$test_tag";
 
 							$this->zipper->extract_zip( $custom_test_file_path, $path_in_host );
 
-							$env_info->volumes[ $path_in_container ] = $path_in_host;
+							$env_info->volumes[ $path_in_php_container ] = $path_in_host;
 
 							if ( $env_info instanceof E2EEnvInfo ) {
 								$env_info->tests[] = [
-									'slug'              => $extension->slug,
-									'test_tag'          => $test_tag,
-									'type'              => $extension->type,
-									'action'            => $extension->action,
-									'path_in_container' => $path_in_container,
-									'path_in_host'      => $path_in_host,
+									'slug'         => $extension->slug,
+									'test_tag'     => $test_tag,
+									'type'         => $extension->type,
+									'action'       => $extension->action,
+									'path_in_php_container' => $path_in_php_container,
+									'path_in_playwright_container' => $path_in_playwright_container,
+									'path_in_host' => $path_in_host,
 								];
 							}
 						}

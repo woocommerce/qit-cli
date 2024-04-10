@@ -131,11 +131,13 @@ abstract class EnvInfo implements \JsonSerializable {
 					'quiet',
 					'verbose',
 					'version',
-					'no-interaction'
+					'no-interaction',
 				];
-				if ( in_array( $key, $ignore_keys ) ) {
+
+				if ( in_array( $key, $ignore_keys, true ) ) {
 					continue;
 				}
+
 				App::make( Output::class )->writeln( sprintf( '<comment>Warning: Key "%s" not found in environment info.</comment>', $key ) );
 			}
 		}

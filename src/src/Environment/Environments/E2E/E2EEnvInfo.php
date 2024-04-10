@@ -34,7 +34,8 @@ class E2EEnvInfo extends EnvInfo {
 	 *     test_tag:string,
 	 *     type:string,
 	 *     action:string,
-	 *     path_in_container:string,
+	 *     path_in_php_container:string,
+	 *     path_in_playwright_container:string,
 	 *     path_in_host:string
 	 * }> $tests
 	 */

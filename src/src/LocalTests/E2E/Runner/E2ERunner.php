@@ -57,12 +57,13 @@ abstract class E2ERunner {
 	 *
 	 * // phpcs:disable Squiz.Commenting.FunctionComment.MissingParamName
 	 * @param array<int,array{
-	 *      slug:string,
-	 *      test_tag:string,
-	 *      type:string,
-	 *      action:string,
-	 *      path_in_container:string,
-	 *      path_in_host:string
+	 *     slug:string,
+	 *     test_tag:string,
+	 *     type:string,
+	 *     action:string,
+	 *     path_in_php_container:string,
+	 *     path_in_playwright_container:string,
+	 *     path_in_host:string
 	 *  }>                     $test_infos
 	 *
 	 * // phpcs:enable

@@ -330,7 +330,7 @@ abstract class Environment {
 			'volume',
 			'remove',
 			sprintf( 'qit_env_volume_%s', $env_info->env_id ),
-			'--force'
+			'--force',
 		] );
 
 		$process->run( function ( $type, $buffer ) use ( $output ) {

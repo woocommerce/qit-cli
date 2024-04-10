@@ -78,6 +78,9 @@ class PlaywrightRunner extends E2ERunner {
 			'PLAYWRIGHT_BROWSERS_PATH=/ms-playwright',
 			'-v',
 			Config::get_qit_dir() . 'cache:/qit/cache',
+			// Map the named volume so that PW can share data with the PHP container and vice-versa.
+			'-v',
+			"qit_env_volume_{$env_info->env_id}" . ':/var/www/html',
 			'-v',
 			$env_info->temporary_env . 'qit-playwright.config.js:/home/pwuser/qit-playwright.config.js',
 			'-v',
@@ -99,7 +102,7 @@ class PlaywrightRunner extends E2ERunner {
 		foreach ( $test_infos as $test_to_run ) {
 			$playwright_args = array_merge( $playwright_args, [
 				'-v',
-				"{$test_to_run['path_in_host']}:/home/pwuser/{$test_to_run['slug']}/{$test_to_run['test_tag']}",
+				"{$test_to_run['path_in_host']}:{$test_to_run['path_in_playwright_container']}",
 			] );
 		}
 
@@ -226,12 +229,13 @@ class PlaywrightRunner extends E2ERunner {
 	 * // phpcs:disable Squiz.Commenting.FunctionComment.MissingParamName
 	 *
 	 * @param array<int,array{
-	 *      slug:string,
-	 *      test_tag:string,
-	 *      type:string,
-	 *      action:string,
-	 *      path_in_container:string,
-	 *      path_in_host:string
+	 *     slug:string,
+	 *     test_tag:string,
+	 *     type:string,
+	 *     action:string,
+	 *     path_in_php_container:string,
+	 *     path_in_playwright_container:string,
+	 *     path_in_host:string
 	 *  }>                     $test_infos
 	 *
 	 * // phpcs:enable
@@ -243,7 +247,7 @@ class PlaywrightRunner extends E2ERunner {
 		$is_first = true;
 
 		foreach ( $test_infos as $t ) {
-			$base_dir       = sprintf( '/home/pwuser/%s/%s', $t['slug'], $t['test_tag'] );
+			$base_dir       = $t['path_in_playwright_container'];
 			$has_entrypoint = file_exists( "{$t['path_in_host']}/entrypoint.qit.js" );
 
 			// Include db-import before each project, except the first one.

@@ -163,12 +163,6 @@ class RunE2ECommand extends DynamicCommand {
 			} else {
 				$env_up_options['--plugin'][] = $woo_extension;
 			}
-		} else {
-			if ( ! empty( $source ) ) {
-				$this->output->writeln( '<error>Cannot set the "source" option without setting the "woo_extension" argument.</error>' );
-
-				return Command::INVALID;
-			}
 		}
 
 		if ( ! empty( $wp ) ) {
@@ -326,7 +320,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up']["--$option_name"] = $option_value;
+				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
 			}
 		}
 
