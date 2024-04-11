@@ -21,15 +21,10 @@ class TestResult {
 	protected function __construct() {
 	}
 
-	public static function init_from( E2EEnvInfo $env_info, ?string $result_dir ): TestResult {
+	public static function init_from( E2EEnvInfo $env_info ): TestResult {
 		$instance              = new self();
 		$instance->status      = 'pending';
-
-		if ( is_null( $result_dir ) ) {
-			$instance->results_dir = normalize_path( sys_get_temp_dir() ) . "qit-results-{$env_info->env_id}";
-		} else {
-			$instance->results_dir = $result_dir;
-		}
+		$instance->results_dir = normalize_path( sys_get_temp_dir() ) . "qit-results-{$env_info->env_id}";
 
 		if ( ! mkdir( $instance->results_dir, 0755, false ) ) {
 			throw new \RuntimeException( sprintf( 'Could not create the results directory: %s', $instance->results_dir ) );

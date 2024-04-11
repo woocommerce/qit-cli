@@ -48,6 +48,9 @@ class ShowReportCommand extends Command {
 		}
 
 		if ( $input->getOption( 'dir_only' ) ) {
+			// We usually want the "HTML" report, but here print the general result directory.
+			$report_dir = dirname( $report_dir );
+
 			$output->writeln( $report_dir );
 
 			return Command::SUCCESS;
