@@ -8,6 +8,7 @@ namespace WooE2EMuPlugin;
 
 use WP_REST_Request;
 use WP_REST_Response;
+use ActionScheduler_QueueRunner;
 
 /**
  * Filter Setter
@@ -179,11 +180,9 @@ function test_helper_apis() {
 					$option_name  = sanitize_text_field( $request['option_name'] );
 					$option_value = sanitize_text_field( $request['option_value'] );
 
-					if ( update_option( $option_name, $option_value ) ) {
-						return new WP_REST_Response( 'Option updated', 200 );
-					}
+					update_option( $option_name, $option_value );
 
-					return new WP_REST_Response( 'Invalid request body', 400 );
+					return new WP_REST_Response( 'Option updated', 200 );
 				},
 				'permission_callback' => $is_allowed,
 			)

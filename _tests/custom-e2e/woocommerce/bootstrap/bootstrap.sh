@@ -9,7 +9,13 @@ echo -e 'Install TwentyTwentyFour theme \n'
 wp --path=/var/www/html theme install twentytwentyfour
 
 echo -e 'Install Basic Auth Plugin \n'
-wp plugin install https://github.com/WP-API/Basic-Auth/archive/master.zip --activate
+wp --path=/var/www/html plugin install https://github.com/WP-API/Basic-Auth/archive/master.zip --activate
+
+echo -e 'Reset plugin that allows us to reset WooCommerce state between tests.'
+wp --path=/var/www/html plugin install https://github.com/woocommerce/woocommerce-reset/zipball/trunk/ --activate
+
+echo -e 'install the WP Mail Logging plugin to test emails'
+wp --path=/var/www/html plugin install wp-mail-logging --activate
 
 echo -e 'Update URL structure \n'
 wp --path=/var/www/html rewrite structure '/%postname%/' --hard

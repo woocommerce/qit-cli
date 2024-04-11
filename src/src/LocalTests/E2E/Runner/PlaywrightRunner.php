@@ -93,6 +93,8 @@ class PlaywrightRunner extends E2ERunner {
 			$env_info->temporary_env . '/playwright/qitHelpers.js:/qitHelpers/qitHelpers.js',
 			'-v',
 			$env_info->temporary_env . '/playwright/qitHelpers-package.json:/qitHelpers/package.json',
+			'-v',
+			$env_info->temporary_env . '/playwright/global-setup.js:/qit/tests/e2e/global-setup.js',
 			'--add-host=host.docker.internal:host-gateway',
 			'-v',
 			$test_result->get_results_dir() . ':/qit/results',
