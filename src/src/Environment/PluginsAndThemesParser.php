@@ -252,7 +252,6 @@ class PluginsAndThemesParser {
 	 *     source?: string,
 	 *     test_tags?: array<string>,
 	 * } The parsed extension.
-	 * @throws \Exception When the extension can't be found.
 	 * @throws \InvalidArgumentException When couldn't parse or validate the extension that was defined in a config file.
 	 */
 	protected function parse_array_extension( array $extension, $potential_slug ): array {

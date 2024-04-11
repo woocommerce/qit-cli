@@ -138,7 +138,6 @@ class PlaywrightRunner extends E2ERunner {
 		} else {
 			$shard = '';
 		}
-
 		try {
 			// Allow to override the Playwright version from the Manager.
 			$playwright_version_to_use = App::make( Cache::class )->get_manager_sync_data( 'playwright_version' );
@@ -305,9 +304,9 @@ class PlaywrightRunner extends E2ERunner {
 
 			// Run the test.
 			$args = [
-				'name'       => sprintf( '%s-%s', $t['slug'], $t['test_tag'] ),
-				'testDir'    => $base_dir,
-				'use'        => [
+				'name'    => sprintf( '%s-%s', $t['slug'], $t['test_tag'] ),
+				'testDir' => $base_dir,
+				'use'     => [
 					'browserName' => 'chromium',
 					'stateDir'    => $base_dir . '/.state',
 					'qitTestTag'  => $t['test_tag'],

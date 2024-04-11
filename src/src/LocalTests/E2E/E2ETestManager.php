@@ -44,9 +44,9 @@ class E2ETestManager {
 	}
 
 	/**
-	 * @param E2EEnvInfo $env_info
-	 * @param string     $test_mode One of the allowed test modes.
-	 * @param bool       $bootstrap_only If true, will only bootstrap.
+	 * @param E2EEnvInfo  $env_info
+	 * @param string      $test_mode One of the allowed test modes.
+	 * @param bool        $bootstrap_only If true, will only bootstrap.
 	 * @param string|null $shard
 	 */
 	public function run_tests( E2EEnvInfo $env_info, string $test_mode, bool $bootstrap_only, ?string $shard = null ): void {
