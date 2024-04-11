@@ -28,6 +28,7 @@ class ShowReportCommand extends Command {
 	protected function configure() {
 		$this
 			->addArgument( 'report_dir', InputArgument::OPTIONAL, '(Optional) The report directory. If not set, will show the last report.' )
+			->addOption( 'dir_only', null, null, 'Only show the report directory.' )
 			->setDescription( 'Shows a test report.' );
 	}
 
@@ -44,6 +45,12 @@ class ShowReportCommand extends Command {
 
 		if ( ! file_exists( $report_dir . '/index.html' ) ) {
 			throw new \RuntimeException( sprintf( 'Could not find the report file: %s', $report_dir . '/index.html' ) );
+		}
+
+		if ( $input->getOption( 'dir_only' ) ) {
+			$output->writeln( $report_dir );
+
+			return Command::SUCCESS;
 		}
 
 		$results_process = new Process( [ PHP_BINARY, '-S', 'localhost:0', '-t', $report_dir ] );

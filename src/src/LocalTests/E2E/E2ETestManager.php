@@ -50,7 +50,13 @@ class E2ETestManager {
 	 * @param string|null $shard
 	 */
 	public function run_tests( E2EEnvInfo $env_info, string $test_mode, bool $bootstrap_only, ?string $shard = null ): void {
-		$test_result = TestResult::init_from( $env_info );
+		if ( ! is_null( $shard ) ) {
+			$result_dir = getcwd() . '/results';
+		} else {
+			$result_dir = null;
+		}
+
+		$test_result = TestResult::init_from( $env_info, $result_dir );
 
 		$this->output->writeln( '<info>Bootstrapping Plugins</info>' );
 
