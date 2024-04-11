@@ -171,6 +171,22 @@ class RunE2ECommand extends DynamicCommand {
 			$env_up_options['--wordpress_version'] = $wp;
 		}
 
+		if ( ! is_null( $shard ) ) {
+			if ( ! preg_match( '/^\d+\/\d+$/', $shard ) ) {
+				$output->writeln( '<error>Invalid shard format. Should be in the format current/total, eg: 1/5.</error>' );
+
+				return Command::INVALID;
+			}
+
+			// Validate first part is higher than 0, and lower or equal to the second part.
+			[ $current, $total ] = explode( '/', $shard );
+			if ( $current <= 0 || $current > $total ) {
+				$output->writeln( '<error>Invalid shard format. First part should be higher than 0, and lower or equal to the second part.</error>' );
+
+				return Command::INVALID;
+			}
+		}
+
 		$additional_volumes = [];
 
 		$env_up_options['--volume'] = $additional_volumes;
