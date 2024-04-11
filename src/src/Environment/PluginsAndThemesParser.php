@@ -215,10 +215,14 @@ class PluginsAndThemesParser {
 			$parsed_short_syntax['source'] = substr( $extension, 0, $action_pos );
 			$parsed_short_syntax['action'] = $action;
 
-			// Anything on the right of the action is the test_tags, if any.
+			// Anything on the right of the action is the test_tags, if any, and the slug.
 			$test_tag_str = substr( $extension, $action_pos + strlen( $action_pattern ) + 1 );
 
 			if ( ! empty( $test_tag_str ) ) {
+				// Left of ":" is the test_tag_str, right is the slug.
+				if ( strpos( $test_tag_str, ':' ) !== false ) {
+					[ $test_tag_str, $parsed_short_syntax['slug'] ] = explode( ':', $test_tag_str, 2 );
+				}
 				// We explode the test tags by comma.
 				// array_map(trim) will normalize "foo, bar" into "foo,bar"
 				// array_filter will remove empty strings.
