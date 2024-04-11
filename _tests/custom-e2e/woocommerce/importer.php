@@ -1,6 +1,6 @@
 <?php
 
-$directory = new RecursiveDirectoryIterator( './tests' );
+$directory = new RecursiveDirectoryIterator( './utils' );
 $iterator  = new RecursiveIteratorIterator( $directory );
 
 foreach ( $iterator as $file ) {

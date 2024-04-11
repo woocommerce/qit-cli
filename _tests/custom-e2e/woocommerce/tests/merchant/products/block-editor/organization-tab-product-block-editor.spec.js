@@ -1,3 +1,4 @@
+const qit = require('/qitHelpers');
 const { test } = require( '../../../../fixtures/block-editor-fixtures' );
 const { expect } = require( '@playwright/test' );
 

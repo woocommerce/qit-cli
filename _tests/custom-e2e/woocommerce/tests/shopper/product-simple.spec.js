@@ -1,3 +1,4 @@
+const qit = require('/qitHelpers');
 /* eslint-disable playwright/no-networkidle */
 /* eslint-disable jest/valid-expect */
 const { test, expect } = require( '@playwright/test' );

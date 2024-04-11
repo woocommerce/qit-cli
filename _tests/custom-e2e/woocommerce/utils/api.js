@@ -1,3 +1,4 @@
+const qit = require('/qitHelpers');
 const wcApi = require( '@woocommerce/woocommerce-rest-api' ).default;
 const { async } = require( 'regenerator-runtime' );
 const config = require( '/qit/tests/e2e/qit-playwright.config' );

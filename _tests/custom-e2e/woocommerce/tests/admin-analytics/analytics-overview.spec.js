@@ -1,3 +1,4 @@
+const qit = require('/qitHelpers');
 const { test, expect, Page, Locator } = require( '@playwright/test' );
 const { admin } = require( '../../test-data/data' );
 

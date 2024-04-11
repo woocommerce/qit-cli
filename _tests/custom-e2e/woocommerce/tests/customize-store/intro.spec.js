@@ -1,3 +1,4 @@
+const qit = require('/qitHelpers');
 const { test, expect, request } = require( '@playwright/test' );
 const { activateTheme, DEFAULT_THEME } = require( '../../utils/themes' );
 const { setOption } = require( '../../utils/options' );

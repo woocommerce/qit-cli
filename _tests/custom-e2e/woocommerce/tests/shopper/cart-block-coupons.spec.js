@@ -1,3 +1,4 @@
+const qit = require('/qitHelpers');
 const { test, expect } = require( '@playwright/test' );
 const { admin } = require( '../../test-data/data' );
 const { disableWelcomeModal } = require( '../../utils/editor' );

@@ -1,3 +1,4 @@
+const qit = require('/qitHelpers');
 /* eslint-disable no-console */
 const { test, expect } = require( '@playwright/test' );
 const { admin } = require( '../../test-data/data' );

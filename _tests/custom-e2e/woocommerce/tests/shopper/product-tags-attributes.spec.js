@@ -1,3 +1,4 @@
+const qit = require('/qitHelpers');
 const { test, expect, request } = require( '@playwright/test' );
 const { admin } = require( '../../test-data/data' );
 const pageTitle = 'Product Showcase';

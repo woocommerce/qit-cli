@@ -1,3 +1,4 @@
+const qit = require('/qitHelpers');
 const { test, expect } = require( '@playwright/test' );
 const { getOrderIdFromUrl } = require( '../../utils/order' );
 const wcApi = require( '@woocommerce/woocommerce-rest-api' ).default;

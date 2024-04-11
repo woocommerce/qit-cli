@@ -1,3 +1,4 @@
+const qit = require('/qitHelpers');
 const { test } = require( '@playwright/test' );
 const {
 	clickAddNewMenuItem,

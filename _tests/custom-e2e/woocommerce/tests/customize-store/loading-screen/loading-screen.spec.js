@@ -1,3 +1,4 @@
+const qit = require('/qitHelpers');
 const { test: base, expect, request } = require( '@playwright/test' );
 const { AssemblerPage } = require( '../assembler/assembler.page' );
 const { setOption } = require( '../../../utils/options' );

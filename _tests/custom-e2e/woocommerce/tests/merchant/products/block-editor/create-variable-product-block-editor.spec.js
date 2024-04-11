@@ -1,3 +1,4 @@
+const qit = require('/qitHelpers');
 /* eslint-disable playwright/no-conditional-in-test */
 const { test } = require( '../../../../fixtures/block-editor-fixtures' );
 const { expect } = require( '@playwright/test' );
