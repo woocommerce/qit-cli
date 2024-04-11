@@ -1,83 +1,83 @@
 name: QIT Environment Dangling Test
 
 on:
-  # Every day at 11pm UTC (6pm ET)
-  schedule:
-    - cron: '0 23 * * *'
   # Manually
   workflow_dispatch:
 
 jobs:
-  test_stop_random_container:
+  playwright-tests:
+    timeout-minutes: 60
     runs-on: ubuntu-latest
-    env:
-      NO_COLOR: 1
-      QIT_DISABLE_ONBOARDING: yes
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: [1, 2, 3, 4]
+        shardTotal: [4]
     steps:
-      - name: Checkout code (Cross-platform)
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
       - name: Setup PHP (Cross-platform)
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
 
-      - name: Run setup script
-        run: bash .github/workflows/tests/environments/setup.sh ${{ secrets.QIT_STAGING_SECRET }} https://stagingcompatibilitydashboard.wpcomstaging.com
+      - name: Enable dev mode
+        run: ./qit dev
 
-      - name: Environment Setup and Checks
-        id: env_setup
-        run: bash .github/workflows/tests/environments/start-and-assert.sh
+      - name: Connect to Staging QIT
+        run: ./qit backend:add --environment="staging" --qit_secret="${{ secrets.QIT_STAGING_SECRET }}" --manager_url="https://stagingcompatibilitydashboard.wpcomstaging.com"
 
-      - name: Store the environment path in a ENV var
+      - name: Composer install
         working-directory: src
-        run: echo "TEMPORARY_ENV=$(php qit-cli.php env:list --field=temporary_env)" >> $GITHUB_ENV
+        run: composer install
 
-      - name: Stop a random container from that environment.
+      - name: Start environment
+        working-directory: src
+        run: php qit-cli.php run:e2e https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip:test:./../_tests/custom-e2e/woocommerce:woocommerce -v --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+
+      - name: Set the path in an env var
         working-directory: src
         run: |
-          CONTAINERS=$(php qit-cli.php env:list --field=docker_images)
-          RANDOM_CONTAINER=$(echo $CONTAINERS | awk '{print $1}')
-          echo "Stopping container: $RANDOM_CONTAINER"
-          docker stop $RANDOM_CONTAINER
+          echo "BLOB_REPORT_PATH=$(php qit-cli.php e2e-report --dir_only)/blob" >> $GITHUB_ENV
 
-      - name: Run a env:list to trigger the Dangling Environment Cleanup
-        working-directory: src
-        run: php qit-cli.php env:list
-
-      - name: Environment Cleanup Checks
-        id: env_cleanup
-        run: bash .github/workflows/tests/environments/dangling-cleanup-assert.sh
-
-  test_delete_environment_entry:
-    runs-on: ubuntu-latest
-    env:
-      NO_COLOR: 1
-      QIT_DISABLE_ONBOARDING: yes
-    steps:
-      - name: Checkout code (Cross-platform)
-        uses: actions/checkout@v4
-
-      - name: Setup PHP (Cross-platform)
-        uses: shivammathur/setup-php@v2
+      - name: Upload blob report to GitHub Actions Artifacts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
         with:
-          php-version: '8.3'
+          name: blob-report-${{ matrix.shardIndex }}
+          path: ${{ env.BLOB_REPORT_PATH }}
+          retention-days: 1
 
-      - name: Run setup script
-        run: bash .github/workflows/tests/environments/setup.sh ${{ secrets.QIT_STAGING_SECRET }} https://stagingcompatibilitydashboard.wpcomstaging.com
+  merge-reports:
+    # Merge reports after playwright-tests, even if some shards have failed
+    if: ${{ !cancelled() }}
+    needs: [playwright-tests]
 
-      - name: Environment Setup and Checks
-        id: env_setup
-        run: bash .github/workflows/tests/environments/start-and-assert.sh
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
 
-      - name: Find and delete all hidden JSON files in the directory
-        working-directory: src
-        run: php qit-cli.php cache delete environment_monitor
+      - name: Install Playwright
+        run: npm install playwright
 
-      - name: Run a env:list to trigger the Dangling Environment Cleanup
-        working-directory: src
-        run: php qit-cli.php env:list
+      - name: Download blob reports from GitHub Actions Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-blob-reports
+          pattern: blob-report-*
+          merge-multiple: true
 
-      - name: Environment Cleanup Checks
-        id: env_cleanup
-        run: bash .github/workflows/tests/environments/dangling-cleanup-assert.sh
+      - name: Merge into HTML Report
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-report--attempt-${{ github.run_attempt }}
+          path: playwright-report
+          retention-days: 14
