@@ -61,85 +61,54 @@ class CustomTestsDownloader {
 		$custom_tests = $this->get_custom_tests_info( $extensions );
 
 		foreach ( $extensions as $extension ) {
-			// Don't try to download custom tests for extensions that we are just installing.
 			if ( $extension->action === Extension::ACTIONS['activate'] ) {
 				continue;
 			}
+
 			foreach ( $extension->test_tags as $k => $test_tag ) {
-				/*
-				 * Use local test.
-				 */
 				if ( file_exists( $test_tag ) ) {
-					$this->output->writeln( sprintf( 'Found local test file "%s" and using it for extension "%s".', $test_tag, $extension->slug ) );
 					if ( is_dir( $test_tag ) ) {
 						$zip_file = tempnam( sys_get_temp_dir(), 'qit_' ) . '.zip';
 						$this->zipper->zip_directory( $test_tag, $zip_file, UploadCustomTestCommand::get_exclude_files() );
-					} elseif ( is_file( $test_tag ) ) {
+					} else {
 						$zip_file = $test_tag;
-					} else {
-						throw new \RuntimeException( "The custom tests path provided for '$test_tag' is not a file or a directory." );
 					}
 
-					$test_tag                     = $k > 0 ? "local-$k" : 'local';
-					$path_in_host                 = "{$env_info->temporary_env}/tests/$test_type/{$extension->slug}/$test_tag";
-					$path_in_php_container        = "/qit/tests/$test_type/{$extension->slug}/$test_tag";
-					$path_in_playwright_container = "/home/pwuser/$extension->slug/$test_tag";
+					$processed_test_tag = $k > 0 ? "local-$k" : 'local';
+				} elseif ( isset( $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ] ) ) { // @phpstan-ignore-line
+					$custom_test_url       = $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ];
+					$custom_test_file_name = md5( $custom_test_url ) . '.zip';
+					$custom_test_file_path = "$cache_dir/tests/$test_type/$custom_test_file_name";
 
-					$this->zipper->extract_zip( $zip_file, $path_in_host );
-
-					$env_info->volumes[ $path_in_php_container ] = $path_in_host;
-
-					if ( $env_info instanceof E2EEnvInfo ) {
-						$env_info->tests[] = [
-							'slug'                         => $extension->slug,
-							'test_tag'                     => $test_tag,
-							'type'                         => $extension->type,
-							'action'                       => $extension->action,
-							'path_in_php_container'        => $path_in_php_container,
-							'path_in_playwright_container' => $path_in_playwright_container,
-							'path_in_host'                 => $path_in_host,
-						];
+					if ( ! file_exists( $custom_test_file_path ) ) {
+						RequestBuilder::download_file( $custom_test_url, $custom_test_file_path );
 					}
+
+					$zip_file           = $custom_test_file_path;
+					$processed_test_tag = $test_tag;
 				} else {
-					/*
-					 * Download test from QIT and map it.
-					 */
-					if ( isset( $custom_tests[ $extension->slug ]['tests'][ $test_type ] ) ) {
-						// @phpstan-ignore-next-line
-						foreach ( $custom_tests[ $extension->slug ]['tests'][ $test_type ] as $tag_url => $custom_test_url ) {
-							if ( $tag_url !== $test_tag ) {
-								continue;
-							}
-							$custom_test_file_name = md5( $custom_test_url ) . '.zip';
-							$custom_test_file_path = "$cache_dir/tests/$test_type/$custom_test_file_name";
+					$this->output->writeln( sprintf( 'No test tag "%s" found for extension "%s".', $test_tag, $extension->slug ) );
+					continue;
+				}
 
-							if ( ! file_exists( $custom_test_file_path ) ) {
-								RequestBuilder::download_file( $custom_test_url, $custom_test_file_path );
-							}
+				$path_in_host                 = "{$env_info->temporary_env}/tests/$test_type/{$extension->slug}/$processed_test_tag";
+				$path_in_php_container        = "/qit/tests/$test_type/{$extension->slug}/$processed_test_tag";
+				$path_in_playwright_container = "/home/pwuser/{$extension->slug}/$processed_test_tag";
 
-							$path_in_host                 = "{$env_info->temporary_env}/tests/$test_type/{$extension->slug}/$test_tag";
-							$path_in_php_container        = "/qit/tests/$test_type/{$extension->slug}/$test_tag";
-							$path_in_playwright_container = "/home/pwuser/$extension->slug/$test_tag";
+				$this->zipper->extract_zip( $zip_file, $path_in_host );
 
-							$this->zipper->extract_zip( $custom_test_file_path, $path_in_host );
+				$env_info->volumes[ $path_in_php_container ] = $path_in_host;
 
-							$env_info->volumes[ $path_in_php_container ] = $path_in_host;
-
-							if ( $env_info instanceof E2EEnvInfo ) {
-								$env_info->tests[] = [
-									'slug'         => $extension->slug,
-									'test_tag'     => $test_tag,
-									'type'         => $extension->type,
-									'action'       => $extension->action,
-									'path_in_php_container' => $path_in_php_container,
-									'path_in_playwright_container' => $path_in_playwright_container,
-									'path_in_host' => $path_in_host,
-								];
-							}
-						}
-					} else {
-						$this->output->writeln( sprintf( 'No test tag "%s" found for extension "%s".', $test_tag, $extension->slug ) );
-					}
+				if ( $env_info instanceof E2EEnvInfo ) {
+					$env_info->tests[] = [
+						'slug'                         => $extension->slug,
+						'test_tag'                     => $processed_test_tag,
+						'type'                         => $extension->type,
+						'action'                       => $extension->action,
+						'path_in_php_container'        => $path_in_php_container,
+						'path_in_playwright_container' => $path_in_playwright_container,
+						'path_in_host'                 => $path_in_host,
+					];
 				}
 			}
 		}

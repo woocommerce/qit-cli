@@ -76,19 +76,23 @@ class PlaywrightRunner extends E2ERunner {
 			'npm_config_cache=/qit/cache/npm-playwright',
 			'-e',
 			'PLAYWRIGHT_BROWSERS_PATH=/ms-playwright',
+			'-e',
+			sprintf( 'BASE_URL=%s', $env_info->site_url ),
+			'-e',
+			sprintf( 'QIT_DOMAIN=%s', $env_info->domain ),
 			'-v',
 			Config::get_qit_dir() . 'cache:/qit/cache',
 			// Map the named volume so that PW can share data with the PHP container and vice-versa.
 			'-v',
 			"qit_env_volume_{$env_info->env_id}" . ':/var/www/html',
 			'-v',
-			$env_info->temporary_env . 'qit-playwright.config.js:/home/pwuser/qit-playwright.config.js',
+			$env_info->temporary_env . 'qit-playwright.config.js:/qit/tests/e2e/qit-playwright.config.js',
 			'-v',
-			$env_info->temporary_env . '/playwright/db-import.js:/home/pwuser/db-import.js',
+			$env_info->temporary_env . '/playwright/db-import.js:/qit/tests/e2e/db-import.js',
 			'-v',
-			$env_info->temporary_env . '/playwright/qitHelpers.js:/home/pwuser/node_modules/qitHelpers/qitHelpers.js',
+			$env_info->temporary_env . '/playwright/qitHelpers.js:/qitHelpers/qitHelpers.js',
 			'-v',
-			$env_info->temporary_env . '/playwright/qitHelpers-package.json:/home/pwuser/node_modules/qitHelpers/package.json',
+			$env_info->temporary_env . '/playwright/qitHelpers-package.json:/qitHelpers/package.json',
 			'--add-host=host.docker.internal:host-gateway',
 			'-v',
 			$test_result->get_results_dir() . ':/qit/results',
@@ -99,11 +103,24 @@ class PlaywrightRunner extends E2ERunner {
 			$playwright_args[] = implode( ':', Docker::get_user_and_group() );
 		}
 
+		$dependencies_command    = ' && ';
+		$dependencies_to_install = [];
+
 		foreach ( $test_infos as $test_to_run ) {
 			$playwright_args = array_merge( $playwright_args, [
 				'-v',
-				"{$test_to_run['path_in_host']}:{$test_to_run['path_in_playwright_container']}",
+				"{$test_to_run['path_in_host']}:{$test_to_run['path_in_php_container']}",
 			] );
+
+			if ( file_exists( "{$test_to_run['path_in_host']}/bootstrap/dependencies.json" ) ) {
+				// Read the dependencies JSON and append.
+				$dependencies            = json_decode( file_get_contents( "{$test_to_run['path_in_host']}/bootstrap/dependencies.json" ), true );
+				$dependencies_to_install = array_merge( $dependencies_to_install, $dependencies );
+			}
+		}
+
+		if ( ! empty( $dependencies_to_install ) ) {
+			$dependencies_command = '&& npm install ' . implode( ' ', $dependencies_to_install ) . ' && ';
 		}
 
 		if ( $test_mode === 'headed' ) {
@@ -125,8 +142,8 @@ class PlaywrightRunner extends E2ERunner {
 			"automattic/qit-runner-playwright:$playwright_version_to_use",
 			'sh',
 			'-c',
-			'cd /home/pwuser && ' .
-			"npx playwright test $options --config /home/pwuser/qit-playwright.config.js --output /qit/results/playwright",
+			"cd /qit/tests/e2e $dependencies_command" .
+			"npx playwright test $options --config /qit/tests/e2e/qit-playwright.config.js --output /qit/results/playwright",
 		] );
 
 		// Pull the image.
@@ -236,7 +253,7 @@ class PlaywrightRunner extends E2ERunner {
 	 *     path_in_php_container:string,
 	 *     path_in_playwright_container:string,
 	 *     path_in_host:string
-	 *  }>                     $test_infos
+	 *  }> $test_infos
 	 *
 	 * // phpcs:enable
 	 *
@@ -247,8 +264,8 @@ class PlaywrightRunner extends E2ERunner {
 		$is_first = true;
 
 		foreach ( $test_infos as $t ) {
-			$base_dir       = $t['path_in_playwright_container'];
-			$has_entrypoint = file_exists( "{$t['path_in_host']}/entrypoint.qit.js" );
+			$base_dir       = $t['path_in_php_container'];
+			$has_entrypoint = file_exists( "{$t['path_in_host']}/bootstrap/entrypoint.js" );
 
 			// Include db-import before each project, except the first one.
 			if ( $is_first ) {
@@ -256,7 +273,7 @@ class PlaywrightRunner extends E2ERunner {
 			} else {
 				$projects[] = [
 					'name'      => 'db-import',
-					'testMatch' => '/home/pwuser/db-import.js',
+					'testMatch' => '/qit/tests/e2e/db-import.js',
 					'use'       => [
 						'browserName' => 'chromium',
 					],
@@ -267,22 +284,34 @@ class PlaywrightRunner extends E2ERunner {
 				// Run the entrypoint.
 				$projects[] = [
 					'name'      => sprintf( '%s-%s-entrypoint', $t['slug'], $t['test_tag'] ),
-					'testDir'   => $base_dir,
-					'testMatch' => 'entrypoint.qit.js',
+					'testDir'   => "$base_dir/bootstrap",
+					'testMatch' => 'entrypoint.js',
 					'use'       => [
 						'browserName' => 'chromium',
+						'stateDir'    => $base_dir . '/.state',
+						'qitTestTag'  => $t['test_tag'],
+						'qitTestSlug' => $t['slug'],
 					],
 				];
 			}
 
 			// Run the test.
-			$projects[] = [
-				'name'    => sprintf( '%s-%s', $t['slug'], $t['test_tag'] ),
-				'testDir' => $base_dir,
-				'use'     => [
+			$args = [
+				'name'       => sprintf( '%s-%s', $t['slug'], $t['test_tag'] ),
+				'testDir'    => $base_dir,
+				'use'        => [
 					'browserName' => 'chromium',
+					'stateDir'    => $base_dir . '/.state',
+					'qitTestTag'  => $t['test_tag'],
+					'qitTestSlug' => $t['slug'],
 				],
 			];
+
+			if ( $has_entrypoint ) {
+				$args['dependencies'] = [ sprintf( '%s-%s-entrypoint', $t['slug'], $t['test_tag'] ) ];
+			}
+
+			$projects[] = $args;
 		}
 
 		return $projects;

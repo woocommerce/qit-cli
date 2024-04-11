@@ -69,6 +69,7 @@ class E2ETestManager {
 				'QIT_TEST_DIR' => $test_info['path_in_php_container'],
 			];
 
+			// bootstrap.php.
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/bootstrap.php' ) ) {
 				$this->output->writeln( sprintf( 'Bootstrapping %s %s', $plugin_slug, $test_info['path_in_php_container'] . '/bootstrap/bootstrap.php' ) );
 				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "php {$test_info['path_in_php_container']}/bootstrap/bootstrap.php" ], $env_vars );
@@ -76,6 +77,8 @@ class E2ETestManager {
 			} else {
 				$test_result->register_bootstrap( $plugin_slug, 'bootstrap.php', 'not_present' );
 			}
+
+			// bootstrap.sh.
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/bootstrap.sh' ) ) {
 				$this->output->writeln( sprintf( 'Bootstrapping %s %s', $plugin_slug, $test_info['path_in_php_container'] . '/bootstrap/bootstrap.sh' ) );
 				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "bash {$test_info['path_in_php_container']}/bootstrap/bootstrap.sh" ], $env_vars );
@@ -83,6 +86,8 @@ class E2ETestManager {
 			} else {
 				$test_result->register_bootstrap( $plugin_slug, 'bootstrap.sh', 'not_present' );
 			}
+
+			// must-use-plugin.php.
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/must-use-plugin.php' ) ) {
 				$this->output->writeln( sprintf( 'Moving must-use plugin of %s %s', $plugin_slug, $test_info['path_in_php_container'] . '/bootstrap/must-use-plugin.php' ) );
 				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "mv {$test_info['path_in_php_container']}/bootstrap/must-use-plugin.php /var/www/html/wp-content/mu-plugins/qit-mu-$plugin_slug.php" ], $env_vars );
