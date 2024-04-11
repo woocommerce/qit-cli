@@ -16,7 +16,7 @@ class PlaywrightRunner extends E2ERunner {
 	/**
 	 * @inheritDoc
 	 */
-	public function run_test( E2EEnvInfo $env_info, array $test_infos, TestResult $test_result, string $test_mode ): void {
+	public function run_test( E2EEnvInfo $env_info, array $test_infos, TestResult $test_result, string $test_mode, ?string $shard = null ): void {
 		if ( ! file_exists( Config::get_qit_dir() . 'cache/playwright' ) ) {
 			if ( ! mkdir( Config::get_qit_dir() . 'cache/playwright', 0755, true ) ) {
 				throw new \RuntimeException( 'Could not create the custom tests directory: ' . Config::get_qit_dir() . 'cache/playwright' );
@@ -133,6 +133,12 @@ class PlaywrightRunner extends E2ERunner {
 			$options = '';
 		}
 
+		if ( ! is_null( $shard ) ) {
+			$shard = "--shard $shard";
+		} else {
+			$shard = '';
+		}
+
 		try {
 			// Allow to override the Playwright version from the Manager.
 			$playwright_version_to_use = App::make( Cache::class )->get_manager_sync_data( 'playwright_version' );
@@ -145,7 +151,7 @@ class PlaywrightRunner extends E2ERunner {
 			'sh',
 			'-c',
 			"cd /qit/tests/e2e $dependencies_command" .
-			"npx playwright test $options --config /qit/tests/e2e/qit-playwright.config.js --output /qit/results/playwright",
+			"npx playwright test $options --config /qit/tests/e2e/qit-playwright.config.js --output /qit/results/playwright $shard",
 		] );
 
 		// Pull the image.

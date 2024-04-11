@@ -47,8 +47,9 @@ class E2ETestManager {
 	 * @param E2EEnvInfo $env_info
 	 * @param string     $test_mode One of the allowed test modes.
 	 * @param bool       $bootstrap_only If true, will only bootstrap.
+	 * @param string|null $shard
 	 */
-	public function run_tests( E2EEnvInfo $env_info, string $test_mode, bool $bootstrap_only ): void {
+	public function run_tests( E2EEnvInfo $env_info, string $test_mode, bool $bootstrap_only, ?string $shard = null ): void {
 		$test_result = TestResult::init_from( $env_info );
 
 		$this->output->writeln( '<info>Bootstrapping Plugins</info>' );
@@ -155,7 +156,7 @@ class E2ETestManager {
 		 * Run the tests.
 		 */
 		if ( ! empty( $tests_to_run['playwright'] ) ) {
-			App::make( PlaywrightRunner::class )->run_test( $env_info, $tests_to_run['playwright'], $test_result, $test_mode );
+			App::make( PlaywrightRunner::class )->run_test( $env_info, $tests_to_run['playwright'], $test_result, $test_mode, $shard );
 		}
 
 		if ( static::$has_report ) {

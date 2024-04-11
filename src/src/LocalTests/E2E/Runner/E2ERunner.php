@@ -70,8 +70,9 @@ abstract class E2ERunner {
 	 *
 	 * @param TestResult       $test_result
 	 * @param string           $test_mode
+	 * @param string|null      $shard
 	 *
 	 * @return void
 	 */
-	abstract public function run_test( E2EEnvInfo $env_info, array $test_infos, TestResult $test_result, string $test_mode ): void;
+	abstract public function run_test( E2EEnvInfo $env_info, array $test_infos, TestResult $test_result, string $test_mode, ?string $shard = null ): void;
 }
