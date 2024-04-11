@@ -150,7 +150,7 @@ class PlaywrightRunner extends E2ERunner {
 			'sh',
 			'-c',
 			"cd /qit/tests/e2e $dependencies_command" .
-			"npx playwright test $options --config /qit/tests/e2e/qit-playwright.config.js --output /qit/results/playwright $shard",
+			"cat /qit/tests/e2e/qit-playwright.config.js && npx playwright test $options --config /qit/tests/e2e/qit-playwright.config.js --output /qit/results/playwright $shard",
 		] );
 
 		// Pull the image.
