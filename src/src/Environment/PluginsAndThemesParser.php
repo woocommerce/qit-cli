@@ -319,15 +319,6 @@ class PluginsAndThemesParser {
 			}
 		}
 
-		if ( isset( $extension['slug'] ) ) {
-			try {
-				$this->woo_extensions_list->get_woo_extension_id_by_slug( $extension['slug'] );
-			} catch ( \Exception $e ) {
-				// Plugin not found, or no permission.
-				throw new \Exception( sprintf( 'Plugin with slug "%s" not found.', $extension['slug'] ) );
-			}
-		}
-
 		return $extension;
 	}
 }
