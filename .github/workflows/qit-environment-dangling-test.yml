@@ -26,6 +26,11 @@ jobs:
       - name: Enable dev mode
         run: ./qit dev
 
+      # Delay start of tests based on shardIndex to space out requests and avoid 429.
+      # Example: This step causes shard 1 to start immediately, shard 2 to start after a 10-second delay, shard 3 after a 20-second delay, etc.
+      - name: Wait before running tests
+        run: sleep $(( (${{ matrix.shardIndex }} - 1) * 10 ))
+
       - name: Connect to Staging QIT
         run: ./qit backend:add --environment="staging" --qit_secret="${{ secrets.QIT_STAGING_SECRET }}" --manager_url="https://stagingcompatibilitydashboard.wpcomstaging.com"
 
