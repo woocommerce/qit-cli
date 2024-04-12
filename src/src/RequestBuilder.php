@@ -360,7 +360,7 @@ class RequestBuilder {
 
 		$start = microtime( true );
 		curl_exec( $curl );
-		if ( $output->isVerbose() ) {
+		if ( $output->isVerbose() && ! is_ci() ) {
 			$output->writeln( sprintf( 'Downloaded %s in %f seconds.', $url, microtime( true ) - $start ) );
 		}
 		$curl_error = curl_error( $curl );
