@@ -352,9 +352,13 @@ class PlaywrightRunner extends E2ERunner {
 			throw new \RuntimeException( 'Could not get mapped port for Playwright container.' );
 		}
 
-		// Extract the host port.
-		$parts     = explode( ':', trim( $get_port_process->getOutput() ) );
-		$host_port = end( $parts );
+		// Extract the host port specifically looking for IPv4 format (0.0.0.0:port).
+		$output = trim( $get_port_process->getOutput() );
+		preg_match( '/0\.0\.0\.0:(\d+)/', $output, $matches );
+		if ( empty( $matches ) ) {
+			throw new \RuntimeException( 'Could not find an IPv4 mapped port for the Playwright container.' );
+		}
+		$host_port = $matches[1];  // Get the port number from the match.
 
 		open_in_browser( sprintf( 'http://localhost:%s', $host_port ) );
 
