@@ -165,8 +165,8 @@ class E2ETestManager {
 		}
 
 		if ( static::$has_report ) {
-			$this->output->writeln( 'To open last HTML report run:' );
-			$this->output->writeln( 'qit e2e-report' );
+			$this->output->writeln( '' );
+			$this->output->writeln( 'To open last HTML report run: qit e2e-report' );
 		}
 
 		$test_result->set_status( 'completed' );

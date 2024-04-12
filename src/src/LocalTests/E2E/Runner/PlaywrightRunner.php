@@ -9,6 +9,8 @@ use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\LocalTests\E2E\E2ETestManager;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
+use Symfony\Component\Console\Cursor;
+use Symfony\Component\Console\Terminal;
 use Symfony\Component\Process\Process;
 use function QIT_CLI\open_in_browser;
 
@@ -63,6 +65,8 @@ class PlaywrightRunner extends E2ERunner {
 			throw new \RuntimeException( "Failed to generate docker-compose.yml. Output:\n" . $process->getOutput() . $process->getErrorOutput() );
 		}
 
+		$ci = ! empty( getenv( 'CI' ) );
+
 		$playwright_args = [
 			App::make( Docker::class )->find_docker(),
 			'run',
@@ -99,6 +103,11 @@ class PlaywrightRunner extends E2ERunner {
 			'-v',
 			$test_result->get_results_dir() . ':/qit/results',
 		];
+
+		if ( $ci ) {
+			$playwright_args[] = '-e';
+			$playwright_args[] = 'FORCE_COLOR=false';
+		}
 
 		if ( Docker::should_set_user() ) {
 			$playwright_args[] = '--user';
@@ -150,7 +159,7 @@ class PlaywrightRunner extends E2ERunner {
 			'sh',
 			'-c',
 			"cd /qit/tests/e2e $dependencies_command" .
-			"cat /qit/tests/e2e/qit-playwright.config.js && npx playwright test $options --config /qit/tests/e2e/qit-playwright.config.js --output /qit/results/playwright $shard",
+			"npx playwright test $options --config /qit/tests/e2e/qit-playwright.config.js --output /qit/results/playwright $shard 2>&1",
 		] );
 
 		// Pull the image.
@@ -175,45 +184,48 @@ class PlaywrightRunner extends E2ERunner {
 			$this->output->writeln( 'Playwright command: ' . $playwright_process->getCommandLine() );
 		}
 
-		$spinner_index = 0;
-		$spinners      = [
-			'⠋',
-			'⠙',
-			'⠹',
-			'⠸',
-			'⠼',
-			'⠴',
-			'⠦',
-			'⠧',
-			'⠇',
-			'⠏',
-		];
+		$has_previous_line = false;
 
-		$output_callback = function ( $type, $out ) use ( $playwright_container_name, $spinners, &$spinner_index ) {
+		$output_callback = function ( $type, $out ) use ( $playwright_container_name, $ci, &$has_previous_line ) {
+			$terminal = new Terminal();
+			$cursor   = new Cursor( $this->output );
+			$width    = $terminal->getWidth();
+
 			if ( strpos( $out, 'Listening on' ) !== false ) {
 				$out = $this->get_playwright_headed_output( $playwright_container_name );
 			}
 
 			if ( strpos( $out, 'To open last HTML report' ) !== false || strpos( $out, 'playwright show-report' ) !== false ) {
-				$out = '';  // Suppress certain lines.
+				return;  // Suppress certain lines.
 			}
 
 			if ( strpos( $out, 'fixuid' ) !== false && ! $this->output->isVeryVerbose() ) {
 				return;
 			}
 
-			// Use TTY-specific commands only if output is decorated (in a TTY).
-			if ( $this->output->isDecorated() ) {
-				echo "\r\033[K";  // Clear the current line in a TTY environment.
-				$this->output->writeln( $out );
-				$spinner = $spinners[ ( $spinner_index ++ % count( $spinners ) ) ];
-				if ( function_exists( 'pcntl_signal' ) ) {
-					$this->output->write( "$spinner Test running... (To abort, press Ctrl+C)" );
-				} else {
-					$this->output->write( "$spinner Test running..." );
+			// Remove same-line cursor movement and clear line.
+			$out = preg_replace( '/\e\[1A|\e\[2K/', '', $out );
+			$out = trim( $out );
+
+			if ( empty( $out ) ) {
+				return;
+			}
+
+			// eg: [3/18] [foo] Test name.
+			if ( ! $ci && preg_match( '/\[\d+\/\d+\]/', $out ) ) {
+				// Test line code.
+				if ( $has_previous_line ) {
+					$cursor->moveUp( 1 );
+					$cursor->moveToColumn( 0 );
+					$cursor->clearOutput();
 				}
+				$out = substr( $out, 0, $width );
+				$out = str_replace( "\n", '', $out );
+				// Fill string with empty characters until it matches the width of the terminal.
+				$out = str_pad( $out, $width, ' ' );
+				$this->output->writeln( trim( $out ) );
+				$has_previous_line = true;
 			} else {
-				// For non-TTY environments, just print the output without special formatting or spinners.
 				$this->output->writeln( $out );
 			}
 		};
@@ -221,7 +233,7 @@ class PlaywrightRunner extends E2ERunner {
 		if ( function_exists( 'pcntl_signal' ) ) {
 			$signal_handler = static function () use ( $playwright_process ): void {
 				// We just need to stop the process, since "--rm" takes care of the cleanup.
-				$playwright_process->stop();
+				$playwright_process->signal( SIGTERM );
 			};
 
 			pcntl_signal( SIGINT, $signal_handler ); // Ctrl+C.
@@ -229,8 +241,6 @@ class PlaywrightRunner extends E2ERunner {
 		}
 
 		$playwright_process->run( $output_callback );
-
-		echo "\r\033[K"; // Remove "Test running..." line.
 
 		if ( file_exists( $results_dir . '/report/index.html' ) ) {
 			App::make( Cache::class )->set( 'last_e2e_report', $results_dir . '/report', MONTH_IN_SECONDS );
