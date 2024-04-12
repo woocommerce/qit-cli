@@ -43,6 +43,7 @@ jobs:
         run: php qit-cli.php run:e2e https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip:test:./../_tests/custom-e2e/woocommerce:woocommerce -v --shard ${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - name: Set the path in an env var
+        if: ${{ !cancelled() }}
         working-directory: src
         run: |
           echo "BLOB_REPORT_PATH=$(php qit-cli.php e2e-report --dir_only)/blob" >> $GITHUB_ENV
