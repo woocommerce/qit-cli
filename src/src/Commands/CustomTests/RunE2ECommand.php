@@ -7,6 +7,7 @@ declare( ticks=1 );
 
 namespace QIT_CLI\Commands\CustomTests;
 
+use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
@@ -84,6 +85,7 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Whether to enable Object Cache (Redis) in the environment.' )
 			->addOption( 'no_activate', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright Sharding argument.' )
+			->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional options and parameters to pass to Playwright.' )
 			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "nightly", "stable", or a GitHub Tag (eg: 8.6.1).' )
 			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'The WordPress version. Accepts a version number, ‘latest’ or ‘nightly’.', 'latest' )
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode. In this mode, you can start and view the tests running.' )
@@ -129,6 +131,7 @@ class RunE2ECommand extends DynamicCommand {
 		$test          = $input->getArgument( 'test' );
 		$wp            = $input->getOption( 'wp' );
 		$shard         = $input->getOption( 'shard' );
+		App::setVar( 'pw_options', $input->getOption( 'pw_options' ) ?? '' );
 
 		// Validate the extension is set if needed.
 		if ( empty( $woo_extension ) && ! $wait ) {
@@ -259,10 +262,11 @@ class RunE2ECommand extends DynamicCommand {
 		$exit_status_code = $this->e2e_test_manager->run_tests( $env_info, $test_mode, $wait, $shard );
 
 		if ( $exit_status_code === Command::SUCCESS ) {
-
 			return Command::SUCCESS;
 		} else {
-			$this->output->writeln( sprintf( '<error>Tests failed. Exit status code: %s</error>', $exit_status_code ) );
+			if ( ! $wait ) {
+				$this->output->writeln( sprintf( '<error>Tests failed. Exit status code: %s</error>', $exit_status_code ) );
+			}
 
 			return Command::FAILURE;
 		}

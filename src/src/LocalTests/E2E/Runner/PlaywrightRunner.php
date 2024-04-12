@@ -134,12 +134,12 @@ class PlaywrightRunner extends E2ERunner {
 			$dependencies_command = '&& npm install ' . implode( ' ', $dependencies_to_install ) . ' && ';
 		}
 
+		$options = App::getVar( 'pw_options', '' );
+
 		if ( $test_mode === 'headed' ) {
-			$options = '--headed --ui-port=8086 --ui-host=0.0.0.0';
+			$options .= ' --headed --ui-port=8086 --ui-host=0.0.0.0';
 		} elseif ( $test_mode === 'ui' ) {
-			$options = '--ui --ui-port=8086 --ui-host=0.0.0.0';
-		} else {
-			$options = '';
+			$options .= ' --ui --ui-port=8086 --ui-host=0.0.0.0';
 		}
 
 		if ( ! is_null( $shard ) ) {
@@ -159,7 +159,7 @@ class PlaywrightRunner extends E2ERunner {
 			'sh',
 			'-c',
 			"cd /qit/tests/e2e $dependencies_command" .
-			"npx playwright test $options --config /qit/tests/e2e/qit-playwright.config.js --output /qit/results/playwright $shard 2>&1",
+			"npx playwright test $options --config /qit/tests/e2e/qit-playwright.config.js --output /qit/results/playwright $shard",
 		] );
 
 		// Pull the image.

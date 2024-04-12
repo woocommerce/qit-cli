@@ -8,7 +8,7 @@ const { ENABLE_HPOS } = qit.getEnv();
 
 async function setup() {
 	// Copy the files from "./test-data/images" to "/var/www/html/wp-content/uploads/woo-entrypoint" using node, and create the dir first.
-	const source = '/qit/tests/e2e/woocommerce/local/test-data/images';
+	const source = path.resolve(__dirname, './../test-data/images');
 	const dest = '/var/www/html/wp-content/uploads/woo-entrypoint';
 	fs.mkdirSync(dest, { recursive: true });
 	fs.readdirSync(source).forEach(file => {
