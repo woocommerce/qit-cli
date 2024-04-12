@@ -16,7 +16,7 @@ class PlaywrightRunner extends E2ERunner {
 	/**
 	 * @inheritDoc
 	 */
-	public function run_test( E2EEnvInfo $env_info, array $test_infos, TestResult $test_result, string $test_mode, ?string $shard = null ): void {
+	public function run_test( E2EEnvInfo $env_info, array $test_infos, TestResult $test_result, string $test_mode, ?string $shard = null ): int {
 		if ( ! file_exists( Config::get_qit_dir() . 'cache/playwright' ) ) {
 			if ( ! mkdir( Config::get_qit_dir() . 'cache/playwright', 0755, true ) ) {
 				throw new \RuntimeException( 'Could not create the custom tests directory: ' . Config::get_qit_dir() . 'cache/playwright' );
@@ -236,6 +236,8 @@ class PlaywrightRunner extends E2ERunner {
 			App::make( Cache::class )->set( 'last_e2e_report', $results_dir . '/report', MONTH_IN_SECONDS );
 			E2ETestManager::$has_report = true;
 		}
+
+		return $playwright_process->getExitCode();
 	}
 
 	/**

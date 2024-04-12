@@ -256,9 +256,17 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::FAILURE;
 		}
 
-		$this->e2e_test_manager->run_tests( $env_info, $test_mode, $wait, $shard );
+		$exit_status_code = $this->e2e_test_manager->run_tests( $env_info, $test_mode, $wait, $shard );
 
-		return Command::SUCCESS;
+		if ( $exit_status_code === Command::SUCCESS ) {
+			$this->output->writeln( '<info>Tests ran successfully.</info>' );
+
+			return Command::SUCCESS;
+		} else {
+			$this->output->writeln( sprintf( '<error>Tests failed. Exit status code: %s</error>', $exit_status_code ) );
+
+			return Command::FAILURE;
+		}
 	}
 
 	public static function shutdown_test_run(): void {

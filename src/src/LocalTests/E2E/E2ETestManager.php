@@ -48,8 +48,10 @@ class E2ETestManager {
 	 * @param string      $test_mode One of the allowed test modes.
 	 * @param bool        $bootstrap_only If true, will only bootstrap.
 	 * @param string|null $shard
+	 *
+	 * @return int The exit status code.
 	 */
-	public function run_tests( E2EEnvInfo $env_info, string $test_mode, bool $bootstrap_only, ?string $shard = null ): void {
+	public function run_tests( E2EEnvInfo $env_info, string $test_mode, bool $bootstrap_only, ?string $shard = null ): int {
 		$test_result = TestResult::init_from( $env_info );
 
 		$this->output->writeln( '<info>Bootstrapping Plugins</info>' );
@@ -105,7 +107,7 @@ class E2ETestManager {
 
 				$this->playwright_codegen->open_codegen( $env_info );
 
-				return;
+				return 0;
 			} else {
 				$this->output->writeln( '' );
 
@@ -115,7 +117,7 @@ class E2ETestManager {
 				} );
 				( new QuestionHelper() )->ask( App::make( InputInterface::class ), $this->output, $question );
 
-				return;
+				return 0;
 			}
 		}
 
@@ -152,11 +154,14 @@ class E2ETestManager {
 			}
 		}
 
+		// "Not found" by default.
+		$exit_status_code = 127;
+
 		/**
 		 * Run the tests.
 		 */
 		if ( ! empty( $tests_to_run['playwright'] ) ) {
-			App::make( PlaywrightRunner::class )->run_test( $env_info, $tests_to_run['playwright'], $test_result, $test_mode, $shard );
+			$exit_status_code = App::make( PlaywrightRunner::class )->run_test( $env_info, $tests_to_run['playwright'], $test_result, $test_mode, $shard );
 		}
 
 		if ( static::$has_report ) {
@@ -169,5 +174,7 @@ class E2ETestManager {
 		if ( $this->output->isVeryVerbose() ) {
 			$this->output->writeln( sprintf( '[Verbose] Test artifacts directory: %s', $test_result->get_results_dir() ) );
 		}
+
+		return $exit_status_code;
 	}
 }

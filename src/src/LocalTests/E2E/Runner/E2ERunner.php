@@ -72,7 +72,7 @@ abstract class E2ERunner {
 	 * @param string           $test_mode
 	 * @param string|null      $shard
 	 *
-	 * @return void
+	 * @return int The exit status code of the test process.
 	 */
-	abstract public function run_test( E2EEnvInfo $env_info, array $test_infos, TestResult $test_result, string $test_mode, ?string $shard = null ): void;
+	abstract public function run_test( E2EEnvInfo $env_info, array $test_infos, TestResult $test_result, string $test_mode, ?string $shard = null ): int;
 }
