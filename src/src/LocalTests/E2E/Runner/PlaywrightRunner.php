@@ -194,38 +194,27 @@ class PlaywrightRunner extends E2ERunner {
 				$out = $this->get_playwright_headed_output( $playwright_container_name );
 			}
 
-			// Don't print this line.
-			if ( strpos( $out, 'To open last HTML report' ) !== false ) {
-				$out = '';
+			if ( strpos( $out, 'To open last HTML report' ) !== false || strpos( $out, 'playwright show-report' ) !== false ) {
+				$out = '';  // Suppress certain lines.
 			}
 
-			// Don't print this line.
-			if ( strpos( $out, 'playwright show-report' ) !== false ) {
-				$out = '';
+			if ( strpos( $out, 'fixuid' ) !== false && ! $this->output->isVeryVerbose() ) {
+				return;
 			}
 
-			// Only print "fixuid" things if on very verbose mode.
-			if ( strpos( $out, 'fixuid' ) !== false ) {
-				if ( ! $this->output->isVeryVerbose() ) {
-					return;
+			// Use TTY-specific commands only if output is decorated (in a TTY).
+			if ( $this->output->isDecorated() ) {
+				echo "\r\033[K";  // Clear the current line in a TTY environment.
+				$this->output->writeln( $out );
+				$spinner = $spinners[ ( $spinner_index ++ % count( $spinners ) ) ];
+				if ( function_exists( 'pcntl_signal' ) ) {
+					$this->output->write( "$spinner Test running... (To abort, press Ctrl+C)" );
+				} else {
+					$this->output->write( "$spinner Test running..." );
 				}
-			}
-
-			// Clear the current line and move the cursor to the beginning.
-			echo "\r\033[K";
-
-			// Print the output from the process.
-			$this->output->writeln( $out );
-
-			// Print the spinner.
-			$spinner_index = ( $spinner_index + 1 ) % count( $spinners ); // phpcs:ignore Squiz.Operators.IncrementDecrementUsage.Found
-			$spinner       = $spinners[ $spinner_index ];
-
-			// If PCNTL is available.
-			if ( function_exists( 'pcntl_signal' ) ) {
-				$this->output->write( "$spinner Test running... (To abort, press Ctrl+C)" );
 			} else {
-				$this->output->write( "$spinner Test running..." );
+				// For non-TTY environments, just print the output without special formatting or spinners.
+				$this->output->writeln( $out );
 			}
 		};
 
