@@ -77,36 +77,45 @@ class ShowReportCommand extends Command
     protected function start_server($report_dir, $start_port = 0): int
     {
         $max_tries = 10; // Maximum number of ports to try before giving up.
-        $port = $start_port;
-        $results_process = new Process([PHP_BINARY, '-S', "localhost:$port", '-t', $report_dir]);
-        $results_process->start();
+        $global_timeout = 30; // Global timeout in seconds.
+        $start_time = microtime(true); // Capture start time for timeout check.
 
-        $waited = 0;
-        while ($results_process->isRunning()) {
-            usleep(200000); // wait 0.2 seconds.
-            $waited += 0.2;
-            if ($waited > 30) { // Timeout after 30 seconds of waiting.
-                $results_process->stop(); // Stop the current process.
-                if ($port === 0 || $port >= 8000 + $max_tries) {
+        $port = $start_port;
+        do {
+            $results_process = new Process([PHP_BINARY, '-S', "localhost:$port", '-t', $report_dir]);
+            $results_process->start();
+
+            // Wait for the server to start or for the process to stop.
+            while ($results_process->isRunning() && (microtime(true) - $start_time) < $global_timeout) {
+                usleep(200000); // wait 0.2 seconds.
+
+                // Check for a message indicating the server has started.
+                if (preg_match('/Development Server \(http:\/\/localhost:(\d+)\) started/', $results_process->getErrorOutput(), $matches)) {
+                    return (int)$matches[1]; // Return the port number on success.
+                }
+            }
+
+            // Stop the process if still running after checking.
+            if ($results_process->isRunning()) {
+                $results_process->stop();
+            }
+
+            // Calculate the remaining time.
+            if ((microtime(true) - $start_time) >= $global_timeout) {
+                throw new \RuntimeException("Timeout reached while trying to start the server.");
+            }
+
+            // Determine the next port to try.
+            if ($port === 0) {
+                $port = 8000; // Start from 8000 if the initial attempt was on system-assigned port.
+            } else {
+                $port++; // Increment port number.
+                if ($port >= 8000 + $max_tries) {
                     throw new \RuntimeException('Could not start the server on any port.');
                 }
-                // If the system-assigned port failed, start from 8000.
-                return $this->start_server($report_dir, 8000);
             }
-
-            // Check for a message indicating the server has started.
-            if (preg_match('/Development Server \(http:\/\/localhost:(\d+)\) started/', $results_process->getErrorOutput(), $matches)) {
-                return (int)$matches[1]; // Return the port number on success.
-            }
-        }
-
-        if (!$results_process->isSuccessful()) {
-            echo $results_process->getOutput() . "\n" . $results_process->getErrorOutput();
-        }
-
-        $new_port = $port === 0 ? 8000 : $port + 1;
-
-        // If we exit the loop without having found a port, increment the port number and try again.
-        return $this->start_server($report_dir, $new_port);
+            sleep(1);
+        } while (true); // Continue until a port is found or timeout/global limit is reached.
     }
+
 }
