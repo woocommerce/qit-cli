@@ -53,7 +53,7 @@ class ListTestTagsCommand extends Command {
 				}
 			}
 
-			$output->writeln( implode( ', ', $specific_extension_tags ) );
+			$output->writeln( implode( ',', $specific_extension_tags ) );
 
 			return Command::SUCCESS;
 		}
