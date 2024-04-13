@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\Commands\CustomTests;
+namespace QIT_CLI\Commands\Tags;
 
 use QIT_CLI\Upload;
 use QIT_CLI\WooExtensionsList;
@@ -12,8 +12,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UploadCustomTestCommand extends Command {
-	protected static $defaultName = 'upload:test'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+class UploadTestTagsCommand extends Command {
+	protected static $defaultName = 'tag:upload'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/** @var Zipper */
 	protected $zipper;
@@ -35,15 +35,15 @@ class UploadCustomTestCommand extends Command {
 		$this
 			->addArgument( 'extension', InputArgument::REQUIRED, 'The Woo extension to upload this for.' )
 			->addArgument( 'test_path', InputArgument::REQUIRED, 'The path to the custom tests to upload.' )
+			->addArgument( 'test_tag', InputArgument::OPTIONAL, 'The tag to use for the test. You can upload tests with different tags and choose a tag when running.', 'default' )
 			->addArgument( 'test_type', InputArgument::OPTIONAL, 'The test type.', 'e2e' )
-			->addOption( 'tag', null, InputArgument::OPTIONAL, 'The tag to use for the test. You can upload tests with different tags and choose a tag when running.', 'default' )
 			->setDescription( 'Uploads your custom test to QIT.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		$test_path = $input->getArgument( 'test_path' );
 		$test_type = $input->getArgument( 'test_type' );
-		$tag       = $input->getOption( 'tag' );
+		$tag       = $input->getArgument( 'test_tag' );
 
 		// Early bail: We only support E2E for now.
 		if ( $test_type !== 'e2e' ) {

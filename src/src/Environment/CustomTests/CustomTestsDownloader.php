@@ -2,7 +2,7 @@
 
 namespace QIT_CLI\Environment\CustomTests;
 
-use QIT_CLI\Commands\CustomTests\UploadCustomTestCommand;
+use QIT_CLI\Commands\Tags\UploadTestTagsCommand;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Extension;
@@ -69,7 +69,7 @@ class CustomTestsDownloader {
 				if ( file_exists( $test_tag ) ) {
 					if ( is_dir( $test_tag ) ) {
 						$zip_file = tempnam( sys_get_temp_dir(), 'qit_' ) . '.zip';
-						$this->zipper->zip_directory( $test_tag, $zip_file, UploadCustomTestCommand::get_exclude_files() );
+						$this->zipper->zip_directory( $test_tag, $zip_file, UploadTestTagsCommand::get_exclude_files() );
 					} else {
 						$zip_file = $test_tag;
 					}

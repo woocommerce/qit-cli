@@ -1,19 +1,22 @@
 <?php
 
-namespace QIT_CLI\Commands;
+namespace QIT_CLI\Commands\Tags;
 
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
-class TestTagsCommand extends Command {
-	protected static $defaultName = 'test-tags'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+class ListTestTagsCommand extends Command {
+	protected static $defaultName = 'tag:list'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	protected function configure() {
 		$this
+			// Add an optional "extension" argument to fetch test tags just for this one.
+			->addArgument( 'extension', InputArgument::OPTIONAL, 'If set, will return the test tags of this extension only, in a comma-separated list.' )
 			->setDescription( 'List the Test Tags you have access to test.' );
 	}
 
@@ -39,6 +42,23 @@ class TestTagsCommand extends Command {
 			return Command::FAILURE;
 		}
 
+		// Specific extension tags.
+		if ( ! empty( $input->getArgument( 'extension' ) ) ) {
+			$specific_extension_tags = [];
+			// Return only the test-tags for this extension.
+			foreach ( $test_tags as $slug => $data ) {
+				if ( $slug === $input->getArgument( 'extension' ) ) {
+					$specific_extension_tags = $data['tests']['e2e'] ?? [];
+					break;
+				}
+			}
+
+			$output->writeln( implode( ', ', $specific_extension_tags ) );
+
+			return Command::SUCCESS;
+		}
+
+		// Tags of all extensions this user has access to.
 		$table = new Table( $output );
 		$table->setHeaders( [ 'Slug', 'E2E Tests', 'Type' ] );
 
