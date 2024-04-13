@@ -129,8 +129,8 @@ function validate_context(): void {
 		throw new RuntimeException( 'Invalid action. Please use "run" or "update".' );
 	}
 
-	if ( ! file_exists( __DIR__ . '/../qit' ) ) {
-		throw new RuntimeException( '"qit" binary does not exist in the parent directory.' . dirname( __DIR__ ) );
+	if ( ! file_exists( __DIR__ . '/../../qit' ) ) {
+		throw new RuntimeException( '"qit" binary does not exist in the parent-parent directory.' . dirname( __DIR__ ) );
 	}
 }
 
@@ -294,7 +294,7 @@ function run_test_runs( array $test_runs ) {
 	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
 		foreach ( $test_type_test_runs as &$t ) {
 			$php      = ( new PhpExecutableFinder() )->find( false );
-			$qit      = realpath( __DIR__ . '/../qit' );
+			$qit      = realpath( __DIR__ . '/../../qit' );
 			$sut_slug = $t['sut_slug'];
 
 			$args = [
