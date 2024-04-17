@@ -58,9 +58,11 @@ class ShowReportCommand extends Command {
 
 		try {
 			$port = $this->start_server( $report_dir );
-			echo "Server started on port: $port\n";
+			echo "Server started on port: $port\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		} catch ( \RuntimeException $e ) {
-			echo "Error: " . $e->getMessage() . "\n";
+			echo 'Error: ' . $e->getMessage() . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+			return Command::FAILURE;
 		}
 
 		open_in_browser( "http://localhost:$port" );
@@ -70,7 +72,7 @@ class ShowReportCommand extends Command {
 		return Command::SUCCESS;
 	}
 
-	protected function start_server( $report_dir, $start_port = 0 ): int {
+	protected function start_server( string $report_dir, int $start_port = 0 ): int {
 		$max_tries      = 10; // Maximum number of ports to try before giving up.
 		$global_timeout = 30; // Global timeout in seconds.
 		$start_time     = microtime( true );
@@ -83,7 +85,7 @@ class ShowReportCommand extends Command {
 			if ( $port === 0 ) {
 				do {
 					$port = rand( 30000, 40000 );
-				} while ( in_array( $port, $attempted_ports ) ); // Ensure not to repeat the same port.
+				} while ( in_array( $port, $attempted_ports, true ) ); // Ensure not to repeat the same port.
 			}
 
 			$attempted_ports[] = $port;
@@ -108,7 +110,7 @@ class ShowReportCommand extends Command {
 
 			// Calculate the remaining time.
 			if ( ( microtime( true ) - $start_time ) >= $global_timeout ) {
-				throw new \RuntimeException( "Timeout reached while trying to start the server." );
+				throw new \RuntimeException( 'Timeout reached while trying to start the server.' );
 			}
 
 			// Reset port to 0 to allow random selection again.

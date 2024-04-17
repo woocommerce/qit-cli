@@ -63,7 +63,7 @@ class DeleteTestTagsCommand extends Command {
 		// Woo Extension ID / Slug. Bail if not found.
 		if ( is_numeric( $extension ) ) {
 			// Map ID to slug.
-			$extension = $this->woo_extensions_list->get_woo_extension_slug_by_id( $extension );
+			$extension = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $extension );
 		} else {
 			try {
 				// Validate provided slug.
