@@ -7,13 +7,11 @@
   "require": {
     "php": "^7.2.5 | ^8"
   },
-  "minimum-stability": "dev",
   "require-dev": {
-    "lucatume/di52": "^3",
-    "symfony/console": "^5",
     "phpunit/phpunit": "^8",
     "spatie/phpunit-snapshot-assertions": "^3.0",
     "symfony/process": "^5",
-    "symfony/filesystem": "^5"
+    "symfony/filesystem": "^5",
+    "vlucas/phpdotenv": "^5"
   }
 }

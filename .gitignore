@@ -26,3 +26,5 @@ dev/
 _build/docker/php83/xdebug/*
 !_build/docker/php83/xdebug/.gitkeep
 !_build/docker/php83/xdebug/README.md
+_tests/custom_tests/.env
+_tests/custom_tests/tmp_qit_config

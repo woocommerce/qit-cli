@@ -1,5 +1,6 @@
 <?php
 
+use lucatume\DI52\App;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,20 +13,36 @@ class QITTestRunner extends Command {
 
 	protected function configure() {
 		$this
-			->addOption( 'user', InputArgument::REQUIRED, 'The QIT username to authenticate with.', getenv( 'QIT_SELF_TEST_CUSTOM_USER' ) )
-			->addOption( 'qit_token', InputArgument::REQUIRED, 'The QIT token to authenticate the password with.', getenv( 'QIT_SELF_TEST_CUSTOM_PARTNER_QIT_TOKEN' ) )
-			->addOption( 'qit_secret', InputArgument::REQUIRED, 'The QIT secret to use to change environments.', getenv( 'QIT_SELF_TEST_CUSTOM_QIT_MANAGER_QIT_SECRET' ) )
-			->addOption( 'manager_url', InputArgument::REQUIRED, 'The QIT Manager environment URL to authenticate against.', getenv( 'QIT_SELF_TEST_CUSTOM_MANAGER_URL' ) )
-			->addOption( 'environment', InputArgument::REQUIRED, 'The environment being added.', getenv( 'QIT_SELF_TEST_CUSTOM_ENVIRONMENT' ) )
+			->addArgument( 'partner_user', InputArgument::OPTIONAL, 'The QIT username to authenticate with.', getenv( 'QIT_CUSTOM_TESTS_USER' ) ?: '' )
+			->addArgument( 'partner_qit_token', InputArgument::OPTIONAL, 'The QIT token to authenticate the password with.', getenv( 'QIT_CUSTOM_TESTS_ENV_TOKEN' ) ?: '' )
+			->addArgument( 'env_secret', InputArgument::OPTIONAL, 'The QIT secret to use to change environments.', getenv( 'QIT_CUSTOM_TESTS_SECRET' ) ?: '' )
+			->addArgument( 'env_url', InputArgument::OPTIONAL, 'The QIT Manager environment URL to authenticate against.', getenv( 'QIT_CUSTOM_TESTS_URL' ) ?: 'https://stagingcompatibilitydashboard.wpcomstaging.com/' )
+			->addArgument( 'env_type', InputArgument::OPTIONAL, 'The environment being added.', getenv( 'QIT_CUSTOM_TESTS_ENV' ) ?: 'staging' )
 			->setDescription( 'Run self-tests for the Custom Tests' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
+		if ( empty( $input->getArgument( 'partner_user' ) ) || empty( $input->getArgument( 'partner_qit_token' ) ) || empty( $input->getArgument( 'env_secret' ) ) || empty( $input->getArgument( 'env_url' ) ) || empty( $input->getArgument( 'env_type' ) ) ) {
+			$output->writeln( '<error>Missing required arguments.</error>' );
+
+			return Command::FAILURE;
+		}
+
 		$this->init( $input );
 
 		// We are now authenticated in the environment as the partner, so we just need to run the tests.
+		$phpunit = new Process( [
+			PHP_BINARY,
+			'vendor/bin/phpunit',
+			'tests',
+			'--bootstrap',
+			'./tests/bootstrap.php'
+		] );
+		$phpunit->run( static function ( $type, $buffer ) use ( $output ) {
+			$output->write( $buffer );
+		} );
 
-		return Command::SUCCESS;
+		return $phpunit->isSuccessful() ? Command::SUCCESS : Command::FAILURE;
 	}
 
 	/**
@@ -45,32 +62,32 @@ class QITTestRunner extends Command {
 		}
 
 		// Enable dev mode.
-		$dev = new Process( [ \QIT_CLI\App::getVar( 'qit' ), 'dev' ] );
+		$dev = new Process( [ App::getVar( 'qit' ), 'dev' ] );
 		$this->set_qit_home( $dev );
 		$dev->mustRun();
 
 		// Add the environment.
 		$add_environment = new Process( [
-			\QIT_CLI\App::getVar( 'qit' ),
+			App::getVar( 'qit' ),
 			'backend:add',
 			'--manager_url',
-			$input->getOption( 'manager_url' ),
+			$input->getArgument( 'env_url' ),
 			'--qit_secret',
-			$input->getOption( 'qit_secret' ),
+			$input->getArgument( 'env_secret' ),
 			'--environment',
-			$input->getOption( 'environment' ),
+			$input->getArgument( 'env_type' ),
 		] );
 		$this->set_qit_home( $add_environment );
 		$add_environment->mustRun();
 
 		// Add the partner account that will be used.
 		$add_partner = new Process( [
-			\QIT_CLI\App::getVar( 'qit' ),
+			App::getVar( 'qit' ),
 			'partner:add',
 			'--user',
-			$input->getOption( 'user' ),
+			$input->getArgument( 'partner_user' ),
 			'--qit_token',
-			$input->getOption( 'qit_token' ),
+			$input->getArgument( 'partner_qit_token' ),
 		] );
 		$this->set_qit_home( $add_partner );
 		$add_partner->mustRun();
