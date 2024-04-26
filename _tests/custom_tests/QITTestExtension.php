@@ -178,7 +178,7 @@ class QITTestFinish implements ExecutionFinishedSubscriber {
 			// Copy files from $GLOBALS['QIT_HOME'] . '/cache' to __DIR__. '/cache'
 			$fs->mirror( $GLOBALS['QIT_HOME'] . '/cache', __DIR__ . '/cache' );
 
-			if ( $GLOBALS['IS_SOURCE'] ) {
+			if ( isset( $GLOBALS['IS_SOURCE'] ) && $GLOBALS['IS_SOURCE'] ) {
 				$timeout = 300;
 				// Wait for all other tests to finish.
 				while ( count( glob( sys_get_temp_dir() . '/qit-running-*' ) ) > 1 ) {
