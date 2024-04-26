@@ -3,6 +3,24 @@
 class RunE2ETest extends \PHPUnit\Framework\TestCase {
 	use \Spatie\Snapshots\MatchesSnapshots;
 
+	public function test_fails_if_dependency_unmet() {
+		$scaffolded_dir = sys_get_temp_dir() . '/qit_scaffolded_e2e-' . uniqid();
+		qit( [ 'scaffold:e2e', $scaffolded_dir ] );
+
+		$output = qit( [
+			'run:e2e',
+			'automatewoo',
+			$scaffolded_dir,
+		],
+			[],
+			1
+		);
+
+		$output = $this->normalize_scaffolded_output( $output );
+
+		$this->assertMatchesSnapshot( $output );
+	}
+
 	public function test_runs_scaffolded_e2e() {
 		$scaffolded_dir = sys_get_temp_dir() . '/qit_scaffolded_e2e-' . uniqid();
 		qit( [ 'scaffold:e2e', $scaffolded_dir ] );
@@ -11,6 +29,8 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 				'run:e2e',
 				'automatewoo',
 				$scaffolded_dir,
+				'--plugin',
+				'woocommerce:activate',
 			]
 		);
 
@@ -33,6 +53,8 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 		$output = qit( [
 			'run:e2e',
 			'automatewoo:test:self-test-scaffolded',
+			'--plugin',
+			'woocommerce:activate',
 		] );
 
 		$output = $this->normalize_scaffolded_output( $output );
