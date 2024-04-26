@@ -23,8 +23,10 @@ class ScaffoldE2ECommand extends Command {
 
 		$path_to_generate = normalize_path( $path );
 
-		if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "Generating E2E tests in \"$path_to_generate\" <question>Continue? (y/n)</question> ", false ) ) ) {
-			return Command::SUCCESS;
+		if ( file_exists( $path_to_generate ) ) {
+			if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "Directory already exists. Scaffold E2E tests in \"$path_to_generate\" anyway? <question>(y/n)</question> ", false ) ) ) {
+				return Command::SUCCESS;
+			}
 		}
 
 		if ( file_exists( $path_to_generate ) ) {
