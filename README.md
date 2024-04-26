@@ -7,34 +7,51 @@
 [![QIT Self-Tests - PHPCompatibilityWP](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-phpcompatibility.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-phpcompatibility.yml)
 [![QIT Self-Tests - Malware](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-malware.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-malware.yml)
 
-<p align="center"><img src="https://woo.com/wp-content/themes/woo/images/logo-woocommerce-bubble.svg" alt="WooCommerce" style="width:100px;height:auto;"></p>
+<p align="center"><img src="https://woocommerce.com/wp-content/themes/woo/images/logo-woocommerce-bubble.svg" alt="WooCommerce" style="width:100px;height:auto;"></p>
+
+## Quality Insights Toolkit (QIT)
+
+QIT is a testing platform for WordPress Plugins and Themes developed by WooCommerce, designed to simplify and streamline your testing process. We are currently in closed beta operating only in the Woo Marketplace.
+
+#### Managed Tests
+
+Run tests out-of-the box with zero configuration.
+
+- [Woo E2E Test](https://qit.woo.com/docs/test-types/woo-e2e) - Runs WooCommerce End-to-End tests alongside your extension.
+- [Woo API Test](https://qit.woo.com/docs/test-types/woo-api) - Runs WooCommerce API tests with your extension.
+- [Activation Test](https://qit.woo.com/docs/test-types/activation) - Activates your plugin and logs any PHP notice, warning, and error.
+- [Security Test](https://qit.woo.com/docs/test-types/security) - Scan your plugin for adherence to best practices in writing secure code.
+- [PHPStan Test](https://qit.woo.com/docs/test-types/phpstan) - Run PHPStan checks to catch issues early.
+- [PHP Compatibility Test](https://qit.woo.com/docs/test-types/phpcompatibility) - Run PHPCompatibility tests to detect issues with different PHP versions.
+- [Malware Test](https://qit.woo.com/docs/test-types/malware) - Scan your code with the Malware check.
+- _Performance Tests (Work-in-progress)_
+
+#### **Custom E2E Tests** _(Coming Soon)_
+
+Write your own E2E tests using frameworks such as [Playwright](https://playwright.dev/), or leverage pre-built tests to effortlessly increase your test coverage.
+
+[Read more about Custom E2E Tests](https://qit.woo.com/docs/custom-tests/introduction).
+
+#### Local Test Environment _(Coming Soon)_
+
+Fast, disposable and configurable test environment designed to do one thing well: **Run tests.**
+
+Our Alpine-based Docker images are perfect for CI systems, while also offering native ARM64 support for Apple Silicon and optimized Docker volumes for faster performance on Mac, Linux, and Windows WSL for local tests. 
+
+[Read more about the Local Test Environment.](https://qit.woo.com/docs/environment/getting-started)
+
+#### And much more:
+
+- **Configurable Environment**: Configurable PHP, WordPress, WooCommerce versions, and more.
+- **In-Depth Analysis**: Tracks all PHP notices, warnings, and errors during testing.
+- **Development & Published Versions**: Test with both development and published versions of your plugins.
+- **GitHub Integration**: Integrate QIT into your PR reviews with GitHub Actions.
+- **Test Reports**: Detailed test reports to help you understand the results.
+- **Notifications**: Stay informed with test result notifications.
 
 ## Documentation
 
 For more detailed information on QIT and how to use it, refer to the [documentation](https://qit.woo.com/docs/).
-
-## Quality Insights Toolkit (QIT)
-
-QIT is a testing platform for WordPress Plugins and Themes developed by WooCommerce that allows developers to run a series of managed tests out-of-the-box. We are currently in closed beta operating only in the Woo Marketplace.
-
-- **Comprehensive Testing Suite**: Includes various tests to ensure thorough quality checks.
-  - [Woo E2E Test](https://qit.woo.com/docs/test-types/woo-e2e)
-  - [Woo API Test](https://qit.woo.com/docs/test-types/woo-api)
-  - [Activation Test](https://qit.woo.com/docs/test-types/activation)
-  - [Security Test](https://qit.woo.com/docs/test-types/security)
-  - [PHPStan Test](https://qit.woo.com/docs/test-types/phpstan)
-  - [PHP Compatibility Test](https://qit.woo.com/docs/test-types/phpcompatibility)
-  - [Malware Test](https://qit.woo.com/docs/test-types/malware)
-  - _Performance Tests (Work-in-progress)_
-  - _Custom E2E Tests (Work-in-progress)_
-- **Configurable Environment**: Configurable PHP, WordPress, WooCommerce versions, and more.
-- **In-Depth Analysis**: Tracks all PHP notices, warnings, and errors during testing.
-- **Feature Flags**: Supports various WooCommerce feature flags for extended coverage.
-- **Compatibility Testing**: Support activation of additional WordPress plugins for compatibility testing.
-- **Development & Stable Versions**: Test with both development builds and published stable versions.
-- **GitHub Integration**: Integrate QIT into your PR reviews with GitHub Actions.
-- **Test Reports**: Detailed test reports to help you understand the results.
-- **Notifications**: Stay informed with test result notifications.
 
 <p align="center">
   <img src="https://github.com/woocommerce/qit-cli/assets/9341686/640698a7-01c3-498a-8bb2-7c5e337e0a9c" alt="Qit Quick Demo">
@@ -43,15 +60,15 @@ QIT is a testing platform for WordPress Plugins and Themes developed by WooComme
 ## Installing QIT
 
 1. Run `composer require woocommerce/qit-cli --dev`
-2. Execute `./vendor/bin/qit` to authenticate with your Woo.com Partner Developer account.
+2. Execute `./vendor/bin/qit` to authenticate with your WooCommerce.com Partner Developer account.
 
 You can use these parameters individually or in combination to create different scenarios for your tests. Run `qit run:<test-type> --help` to see all the available options. Different test types will have different options to choose from.
 
 ## Can I use QIT?
 
-Most features of QIT requires you to log-in as a Partner Developer of the Woo.com Marketplace, but we have plans to open it to all developers in the future.
+Most features of QIT requires you to log-in as a Partner Developer of the WooCommerce.com Marketplace, but we have plans to open it to all developers in the future.
 
-The QIT Local Test Environment does not require you to be connected to Woo.com, although to install Woo.com Premium plugins and themes on your test environment you will need to be connected as a Partner Developer of the Woo.com Marketplace (and have access to the extensions you want to test).
+The QIT Local Test Environment does not require you to be connected to WooCommerce.com, although to install WooCommerce.com Premium plugins and themes on your test environment you will need to be connected as a Partner Developer of the Woo.com Marketplace (and have access to the extensions you want to test).
 
 ## Support
 

@@ -43,8 +43,8 @@ class AddPartner extends Command {
 		$this
 			->setDescription( 'Configure a new WCCOM Marketplace Partner that the QIT CLI can connect to.' )
 			->setHelp( sprintf( "Configure the QIT CLI to be able to interact with %s on behalf of a given partner.\nAuthenticating documentation: https://qit.woo.com/docs/support/authenticating", get_wccom_url() ) )
-			->addOption( 'user', 'u', InputOption::VALUE_OPTIONAL, '(Optional) Woo.com Partner Developer username.' )
-			->addOption( 'qit_token', 't', InputOption::VALUE_OPTIONAL, '(Optional) Woo.com Partner Developer QIT Token.' )
+			->addOption( 'user', 'u', InputOption::VALUE_OPTIONAL, '(Optional) WooCommerce.com Partner Developer username.' )
+			->addOption( 'qit_token', 't', InputOption::VALUE_OPTIONAL, '(Optional) WooCommerce.com Partner Developer QIT Token.' )
 			->addOption( 'application_password', 'p', InputOption::VALUE_OPTIONAL, '(DEPRECATED) This has been renamed to "QIT Token" and will be removed. A regular application password will not work.' );
 	}
 
