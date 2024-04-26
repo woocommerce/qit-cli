@@ -100,18 +100,18 @@ class Docker {
 	}
 
 	/**
-	 * @param EnvInfo              $env_info
-	 * @param array<scalar>        $command The Command to run, in a Symfony Process format.
+	 * @param EnvInfo $env_info
+	 * @param array<scalar> $command The Command to run, in a Symfony Process format.
 	 * @param array<string,scalar> $env_vars Any additional env vars to set in the process.
-	 * @param string|null          $user The user to run the command as.
-	 * @param int                  $timeout
-	 * @param string               $image The docker image to run the command in.
+	 * @param string|null $user The user to run the command as.
+	 * @param int $timeout
+	 * @param string $image The docker image to run the command in.
 	 *
 	 * @return void
 	 */
 	public function run_inside_docker( EnvInfo $env_info, array $command, array $env_vars = [], ?string $user = null, int $timeout = 300, string $image = 'php', bool $force_output = false ): void {
-		$docker_image   = $env_info->get_docker_container( $image );
-		$docker_command = [ $this->find_docker(), 'exec' ];
+		$docker_container = $env_info->get_docker_container( $image );
+		$docker_command   = [ $this->find_docker(), 'exec' ];
 
 		if ( $this->output->isVerbose() && use_tty() ) {
 			$docker_command = array_merge( $docker_command, [ '-it' ] );
@@ -149,7 +149,7 @@ class Docker {
 			$docker_command[] = "$key=$value";
 		}
 
-		$docker_command[] = $docker_image;
+		$docker_command[] = $docker_container;
 		$docker_command   = array_merge( $docker_command, $command );
 
 		if ( getenv( 'QIT_DOCKER_RUN_TIMEOUT' ) !== false && is_numeric( getenv( 'QIT_DOCKER_RUN_TIMEOUT' ) ) ) {
@@ -173,10 +173,11 @@ class Docker {
 		} );
 
 		if ( ! $process->isSuccessful() ) {
+			$exit_code    = $process->getExitCode();
 			$output       = $process->getOutput();
 			$error_output = $process->getErrorOutput();
 
-			$message = 'Command not successul.';
+			$message = "Command not successul (Container $docker_container exited with $exit_code).";
 
 			// If $force_output is true, we already printed this.
 			if ( ! $force_output ) {

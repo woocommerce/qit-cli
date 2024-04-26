@@ -66,6 +66,10 @@ class EnvironmentDanglingCleanup {
 	}
 
 	public function cleanup_dangling(): void {
+		if ( getenv( 'QIT_DISABLE_CLEANUP' ) === '1' ) {
+			return;
+		}
+
 		$this->remove_dangling_environments();
 		$this->detect_dangling_containers_exited();
 		$this->detect_dangling_containers_running();
