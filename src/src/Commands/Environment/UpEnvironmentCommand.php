@@ -52,6 +52,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
 			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions to install in the environment.', [] )
 			->addOption( 'require', 'r', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load PHP file before running the command (may be used more than once).' )
+			->addOption( 'config', null, InputOption::VALUE_OPTIONAL, '(Optional) QIT config file to use.' )
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
 			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "nightly", "stable", or a GitHub Tag (eg: 8.6.1).' )
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
@@ -129,14 +130,16 @@ The command searches for a config file in the current directory from which it's 
 A config file located at /home/mycomputer/my-plugin/qit-env.json is detected when you run <info>cd /home/mycomputer/my-plugin && qit env:up</info>.
 If the config file is placed in the root directory of your plugin, the command automatically includes that plugin in the environment.
 
+You can also pass a "--config" parameter and point it to a file path.
+
 <comment>Parameters:</comment>
 Parameters specified at runtime override config file settings.
-Example: <info>qit env:up --php_version=8.3</info> forces PHP version 8.3 regardless of config files.
+Example: <info>qit env:up --php_version 8.3</info> forces PHP version 8.3 regardless of config files.
 
 <comment>Plugins and Themes</comment>
 Install additional plugins in the environment using the --plugins and --themes flag.
 Repeat multiple times to install many, e.g:
-<info>qit env:up --plugins automatewoo --plugins contact-form-7</info>
+<info>qit env:up --plugin automatewoo --plugin contact-form-7</info>
 
 PS: To install premium plugins from the Woo.com Marketplace, you need to have access to them.
 PS 2: Plugins are activated automatically in the test environment. Themes are only installed.
@@ -204,6 +207,10 @@ HELP
 
 		if ( $input->getOption( 'skip_activating_plugins' ) ) {
 			$this->e2e_environment->set_skip_activating_plugins( true );
+		}
+
+		if ( !empty( $input->getOption( 'config' ) ) ) {
+			App::setVar( 'QIT_CONFIG_OVERRIDE', $input->getOption( 'config' ) );
 		}
 
 		$env_info = App::make( EnvConfigLoader::class )->init_env_info( $options_to_env_info );

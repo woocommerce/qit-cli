@@ -187,6 +187,29 @@ class EnvConfigLoader {
 	 * @return array<mixed> Multidimensional array of scalars.
 	 */
 	public function load_config(): array {
+		// If it's an override (user passed --config) parameter, load it and return.
+		if ( ! empty( App::getVar( 'QIT_CONFIG_OVERRIDE' ) ) ) {
+			$config_override = App::getVar( 'QIT_CONFIG_OVERRIDE' );
+
+			if ( ! file_exists( $config_override ) ) {
+				throw new \RuntimeException( "Config file '$config_override' does not exist." );
+			}
+
+			$this->output->writeln( 'Loading environment config from override parameter ' . $config_override . '...' );
+
+			try {
+				$env_config = $this->serializer->decode( file_get_contents( $config_override ), pathinfo( $config_override, PATHINFO_EXTENSION ) );
+
+				if ( ! is_array( $env_config ) ) {
+					throw new \Exception( 'Invalid config file' );
+				}
+
+				return $env_config;
+			} catch ( \Exception $e ) {
+				throw new \RuntimeException( 'Failed to load environment config: ' . $e->getMessage() );
+			}
+		}
+
 		/*
 		 * Rules:
 		 * - Directory is working-directory gwtcwd();
