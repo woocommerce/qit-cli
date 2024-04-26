@@ -24,6 +24,10 @@ class QITTestStart implements ExecutionStartedSubscriber {
 			throw new \LogicException( 'The "QIT_HOME" and "qit" GLOBALS must be set.' );
 		}
 
+		if ( file_exists( __DIR__ . '/qit-env.json' ) ) {
+			throw new \RuntimeException( 'qit-env.json file already exists. This can affect test results, please delete it and run again.' );
+		}
+
 		// Enable dev mode.
 		$dev = new Process( [ $GLOBALS['qit'], 'dev' ] );
 		$dev->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
@@ -76,6 +80,10 @@ class QITTestFinish implements ExecutionFinishedSubscriber {
 		// Check that $GLOBALS['QIT_HOME'] is inside this directory.
 		if ( strpos( $GLOBALS['QIT_HOME'], __DIR__ ) !== 0 ) {
 			throw new \RuntimeException( sprintf( 'The QIT_HOME directory is not inside the test directory. This is a security risk. QIT_HOME: %s, Test Directory: %s', $GLOBALS['QIT_HOME'], __DIR__ ) );
+		}
+
+		if ( file_exists( __DIR__ . '/qit-env.json' ) ) {
+			unlink( __DIR__ . '/qit-env.json' );
 		}
 
 		if ( $fs->exists( $GLOBALS['QIT_HOME'] ) ) {

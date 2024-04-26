@@ -26,7 +26,13 @@ $qit_tmp_dir = __DIR__ . "/tmp_qit_config-$run_id";
 $GLOBALS['QIT_HOME'] = $qit_tmp_dir;
 $GLOBALS['RUN_ID']   = $qit_tmp_dir;
 
-function qit( array $command, int $expected_exit_code = 0 ): string {
+function qit( array $command, array $qit_env_json = [], int $expected_exit_code = 0 ): string {
+	if ( ! empty( $qit_env_json ) ) {
+		if ( ! file_put_contents( __DIR__ . '/qit-env.json', json_encode( $qit_env_json ) ) ) {
+			throw new \RuntimeException( 'Failed to write to file.' );
+		}
+	}
+
 	$args = [ $GLOBALS['qit'] ];
 	$args = array_merge( $args, $command );
 	$qit  = new Process( $args );

@@ -41,4 +41,17 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 		// Check that PHP Version is as expected:
 		$this->assertStringContainsString( 'PHP Version: 8.3', $output );
 	}
+
+	public function test_env_up_with_file() {
+		$output = qit( [ 'env:up' ], [
+			'wordpress_version' => '6.4',
+			'php_version'       => '8.2',
+		] );
+
+		// Check that WordPress Version is as expected:
+		$this->assertStringContainsString( 'WordPress Version: 6.4', $output );
+
+		// Check that PHP Version is as expected:
+		$this->assertStringContainsString( 'PHP Version: 8.2', $output );
+	}
 }
