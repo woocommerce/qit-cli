@@ -54,11 +54,29 @@ class QITTestStart implements ExecutionStartedSubscriber {
 		] );
 		$add_partner->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
 		$add_partner->mustRun();
+
+		// Copy files from __DIR__. '/cache' to $GLOBALS['QIT_HOME'] . '/cache'
+		$fs = new Filesystem();
+		$fs->mirror( __DIR__ . '/cache', $GLOBALS['QIT_HOME'] . '/cache' );
+
+		pcntl_signal( SIGINT, function () {
+			QITTestFinish::delete_temp_environment();
+			exit( 1 );
+		} );
+
+		pcntl_signal( SIGTERM, function () {
+			QITTestFinish::delete_temp_environment();
+			exit( 1 );
+		} );
 	}
 }
 
 class QITTestFinish implements ExecutionFinishedSubscriber {
 	public function notify( ExecutionFinished $event ): void {
+		self::delete_temp_environment();
+	}
+
+	public static function delete_temp_environment(): void {
 		if ( empty( $GLOBALS['QIT_HOME'] ) || empty( $GLOBALS['qit'] ) ) {
 			throw new \LogicException( 'The "QIT_HOME" and "qit" GLOBALS must be set.' );
 		}
@@ -71,6 +89,9 @@ class QITTestFinish implements ExecutionFinishedSubscriber {
 		}
 
 		if ( $fs->exists( $GLOBALS['QIT_HOME'] ) ) {
+			// Copy files from $GLOBALS['QIT_HOME'] . '/cache' to __DIR__. '/cache'
+			$fs->mirror( $GLOBALS['QIT_HOME'] . '/cache', __DIR__ . '/cache' );
+
 			$fs->remove( $GLOBALS['QIT_HOME'] );
 		}
 	}

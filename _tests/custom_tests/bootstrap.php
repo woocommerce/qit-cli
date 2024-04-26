@@ -24,7 +24,7 @@ $run_id      = uniqid( 'qit_custom_tests_' );
 $qit_tmp_dir = __DIR__ . "/tmp_qit_config-$run_id";
 
 $GLOBALS['QIT_HOME'] = $qit_tmp_dir;
-$GLOBALS['RUN_ID'] = $qit_tmp_dir;
+$GLOBALS['RUN_ID']   = $qit_tmp_dir;
 
 function qit( array $command, int $expected_exit_code = 0 ): string {
 	$args = [ $GLOBALS['qit'] ];

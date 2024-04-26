@@ -24,4 +24,21 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 
 		$this->assertMatchesSnapshot( $normalizedOutput );
 	}
+
+	public function test_env_up_with_parameters() {
+		$output = qit( [
+				'env:up',
+				'--wordpress_version',
+				'6.5',
+				'--php_version',
+				'8.3',
+			]
+		);
+
+		// Check that WordPress Version is as expected:
+		$this->assertStringContainsString( 'WordPress Version: 6.5', $output );
+
+		// Check that PHP Version is as expected:
+		$this->assertStringContainsString( 'PHP Version: 8.3', $output );
+	}
 }
