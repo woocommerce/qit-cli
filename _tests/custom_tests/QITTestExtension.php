@@ -58,16 +58,6 @@ class QITTestStart implements ExecutionStartedSubscriber {
 		// Copy files from __DIR__. '/cache' to $GLOBALS['QIT_HOME'] . '/cache'
 		$fs = new Filesystem();
 		$fs->mirror( __DIR__ . '/cache', $GLOBALS['QIT_HOME'] . '/cache' );
-
-		pcntl_signal( SIGINT, function () {
-			QITTestFinish::delete_temp_environment();
-			exit( 1 );
-		} );
-
-		pcntl_signal( SIGTERM, function () {
-			QITTestFinish::delete_temp_environment();
-			exit( 1 );
-		} );
 	}
 }
 
