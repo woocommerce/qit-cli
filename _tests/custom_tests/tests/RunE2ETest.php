@@ -14,6 +14,33 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 			]
 		);
 
+		$output = $this->normalize_scaffolded_output( $output );
+
+		$this->assertMatchesSnapshot( $output );
+	}
+
+	public function test_tag_and_run_test() {
+		$scaffolded_dir = sys_get_temp_dir() . '/qit_scaffolded_e2e-' . uniqid();
+		qit( [ 'scaffold:e2e', $scaffolded_dir ] );
+
+		qit( [
+			'tag:upload',
+			'automatewoo',
+			$scaffolded_dir,
+			'self-test-scaffolded',
+		] );
+
+		$output = qit( [
+			'run:e2e',
+			'automatewoo:test:self-test-scaffolded',
+		] );
+
+		$output = $this->normalize_scaffolded_output( $output );
+
+		$this->assertMatchesSnapshot( $output );
+	}
+
+	protected function normalize_scaffolded_output( string $output ): string {
 		/*
 		 * Warning: Key "skip_activating_plugins" not found in environment info.
 		 * Downloading plugins and themes...
@@ -56,6 +83,6 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 		// "npm install -g npm@10.6.0" => "npm install -g npm@VERSION_2"
 		$output = preg_replace( '/npm install -g npm@\d+\.\d+\.\d+/', 'npm install -g npm@VERSION_2', $output );
 
-		$this->assertMatchesSnapshot( $output );
+		return $output;
 	}
 }

@@ -1,0 +1,19 @@
+Warning: Key "skip_activating_plugins" not found in environment info.
+Downloading plugins and themes...
+Setting up Docker...
+Setting up WordPress...
+Activating plugins...
+Plugin automatewoo/automatewoo.php failed to activate.
+Environment ready.
+
+Bootstrapping Plugins
+Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-scaffolded/bootstrap/bootstrap.php
+Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-scaffolded/bootstrap/bootstrap.sh
+Running E2E Tests
+Running 1 test using 1 worker
+[1/1] [automatewoo-self-test-scaffolded] › automatewoo/self-test-scaffolded/ex
+1 passed (TIME)
+
+To open last HTML report run: qit e2e-report
+
+Shutting down environment...
