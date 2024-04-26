@@ -60,8 +60,11 @@ class QITTestStart implements ExecutionStartedSubscriber {
 		if ( flock( $lock_file, LOCK_EX | LOCK_NB ) ) {
 			// Since we are the single process that has an exclusive lock, we run the initialization.
 
+			// Cleanup initial state.
 			array_map( 'unlink', glob( sys_get_temp_dir() . '/qit-running-*' ) );
 			unlink( sys_get_temp_dir() . '/qit-semaphore' );
+			// Delete all directories in the current dir that matches the pattern "tmp_qit_config-*"
+			$fs->remove( glob( __DIR__ . '/tmp_qit_config-*' ) );
 
 			// Enable dev mode.
 			$dev = new Process( [ $GLOBALS['qit'], 'dev' ] );

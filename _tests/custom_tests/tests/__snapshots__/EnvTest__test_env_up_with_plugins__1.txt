@@ -1,0 +1,5 @@
+name	status	update	version	update_version	auto_update
+automatewoo    active    none    NORMALIZED_VERSION    off
+woocommerce    active    available    NORMALIZED_VERSION    8.8.2    off
+qit-wp-cli	must-use	none			off
+wp-cli-github-cache	must-use	none			off

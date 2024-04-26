@@ -232,7 +232,7 @@ abstract class Environment {
 		} );
 
 		if ( ! $process->isSuccessful() ) {
-			throw new \RuntimeException( "Failed to generate qit-playwright-config.js. Output:\n" . $process->getOutput() . $process->getErrorOutput() );
+			throw new \RuntimeException( "Failed to generate docker-compose.yml. Output:\n" . $process->getOutput() . $process->getErrorOutput() );
 		}
 	}
 
