@@ -42,6 +42,16 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 		$this->assertStringContainsString( 'PHP Version: 8.3', $output );
 	}
 
+	public function test_env_up_with_object_cache() {
+		$output = qit( [
+				'env:up',
+				'--object_cache',
+			]
+		);
+
+		$this->assertStringContainsString( 'Redis Object Cache? Yes', $output );
+	}
+
 	public function test_env_up_with_file() {
 		$output = qit( [ 'env:up' ], [
 			'wordpress_version' => '6.4',
