@@ -1,4 +1,70 @@
-/tmp/qit_scaffolded_e2e-662acae89ab3c/bootstrap/bootstrap.sh: "#!/bin/bash\n\n# Bootstrap Shell Script (Optional)\n\n# Purpose: This script is executed before test runs to set up the testing environment.\n#\n# Usage:\n# - Use WP CLI to configure prerequisites for your tests. \n# - Example: To install a specific theme required for tests:\n#   wp theme install twentytwentynine\n#   (You can then activate this theme during your tests)\n#\n# Note: Delete this file if it's not required for your setup.\n#\n# Documentation: Detailed instructions available at https://qit.woo.com/docs/"
-/tmp/qit_scaffolded_e2e-662acae89ab3c/bootstrap/bootstrap.php: "<?php\n/*\n * Bootstrap File (Optional)\n *\n * Purpose: This script initializes the testing environment. It runs once during the bootstrap phase, before test execution.\n *\n * Notes:\n * - If not required, feel free to delete this file.\n * - This is a standalone PHP script without WordPress integration.\n * - To include WordPress, add: require '/var/www/html/wp-load.php';\n * - For scripts that need to run on every request, consider using 'mu-plugin.php' instead.\n *\n * Documentation: For detailed usage instructions, visit https://qit.woo.com/docs/\n */\n"
-/tmp/qit_scaffolded_e2e-662acae89ab3c/bootstrap/mu-plugin.php: "<?php\n/*\n * mu-plugin File (Optional)\n *\n * Purpose: This script is executed on every request.\n *\n * Notes:\n * - If this file is not needed for your setup, feel free to delete it.\n *\n * Documentation: For more information, please visit https://qit.woo.com/docs/\n */\n"
-/tmp/qit_scaffolded_e2e-662acae89ab3c/example.spec.js: "/*\n * This is an example E2E test. You can write your own tests, or generate them with Codegen.\n * \n * Read more about it on our documentation: https://qit.woo.com/docs/\n */\nimport { test, expect } from '@playwright/test';\n\ntest('I can see my plugin menu', async ({ page }) => {\n    // Log-in as admin.\n    await page.goto('/wp-admin/');\n    await page.getByLabel('Username or Email Address').click();\n    await page.getByLabel('Username or Email Address').fill('admin');\n    await page.getByLabel('Password', { exact: true }).click();\n    await page.getByLabel('Password', { exact: true }).fill('password');\n    await page.getByRole('button', { name: 'Log In' }).click();\n    await page.waitForLoadState('networkidle');\n    // Force go to wp-admin just to avoid any onboarding guide.\n    await page.goto('/wp-admin/');\n    // View WordPress Core \"Dashboard\" heading\n    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();\n    // Click on my menu on the sidebar.\n    // await page.getByRole('link', { name: 'My Plugin Menu', exact: true }).click();\n    // await page.waitForLoadState('networkidle');\n    // Assert I see my welcome message when I click it.\n    // await expect(page.locator('h3')).toContainText('Welcome to My Plugin!');\n});"
+/tmp/qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/bootstrap.sh: |-
+    #!/bin/bash
+
+    # Bootstrap Shell Script (Optional)
+
+    # Purpose: This script is executed before test runs to set up the testing environment.
+    #
+    # Usage:
+    # - Use WP CLI to configure prerequisites for your tests. 
+    # - Example: To install a specific theme required for tests:
+    #   wp theme install twentytwentynine
+    #   (You can then activate this theme during your tests)
+    #
+    # Note: Delete this file if it's not required for your setup.
+    #
+    # Documentation: Detailed instructions available at https://qit.woo.com/docs/
+/tmp/qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/bootstrap.php: |
+    <?php
+    /*
+     * Bootstrap File (Optional)
+     *
+     * Purpose: This script initializes the testing environment. It runs once during the bootstrap phase, before test execution.
+     *
+     * Notes:
+     * - If not required, feel free to delete this file.
+     * - This is a standalone PHP script without WordPress integration.
+     * - To include WordPress, add: require '/var/www/html/wp-load.php';
+     * - For scripts that need to run on every request, consider using 'mu-plugin.php' instead.
+     *
+     * Documentation: For detailed usage instructions, visit https://qit.woo.com/docs/
+     */
+/tmp/qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/mu-plugin.php: |
+    <?php
+    /*
+     * mu-plugin File (Optional)
+     *
+     * Purpose: This script is executed on every request.
+     *
+     * Notes:
+     * - If this file is not needed for your setup, feel free to delete it.
+     *
+     * Documentation: For more information, please visit https://qit.woo.com/docs/
+     */
+/tmp/qit_scaffolded_e2e-NORMALIZED_ID/example.spec.js: |-
+    /*
+     * This is an example E2E test. You can write your own tests, or generate them with Codegen.
+     * 
+     * Read more about it on our documentation: https://qit.woo.com/docs/
+     */
+    import { test, expect } from '@playwright/test';
+
+    test('I can see my plugin menu', async ({ page }) => {
+        // Log-in as admin.
+        await page.goto('/wp-admin/');
+        await page.getByLabel('Username or Email Address').click();
+        await page.getByLabel('Username or Email Address').fill('admin');
+        await page.getByLabel('Password', { exact: true }).click();
+        await page.getByLabel('Password', { exact: true }).fill('password');
+        await page.getByRole('button', { name: 'Log In' }).click();
+        await page.waitForLoadState('networkidle');
+        // Force go to wp-admin just to avoid any onboarding guide.
+        await page.goto('/wp-admin/');
+        // View WordPress Core "Dashboard" heading
+        await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
+        // Click on my menu on the sidebar.
+        // await page.getByRole('link', { name: 'My Plugin Menu', exact: true }).click();
+        // await page.waitForLoadState('networkidle');
+        // Assert I see my welcome message when I click it.
+        // await expect(page.locator('h3')).toContainText('Welcome to My Plugin!');
+    });

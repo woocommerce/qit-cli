@@ -17,6 +17,10 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 		// Replace all instances of the environment ID and port number in the output
 		$normalizedOutput = str_replace( $envId, 'ENV_ID', $output );
 		$normalizedOutput = str_replace( $port, 'PORT', $normalizedOutput );
+		$normalizedOutput = str_replace( $GLOBALS['RUN_ID'], 'RUN_ID', $normalizedOutput );
+
+		// "WordPress Version: 6.5.2" => "WordPress Version: 6.5.2-normalized"
+		$normalizedOutput = preg_replace( '/WordPress Version: .+/', 'WordPress Version: NORMALIZED', $normalizedOutput );
 
 		$this->assertMatchesSnapshot( $normalizedOutput );
 	}

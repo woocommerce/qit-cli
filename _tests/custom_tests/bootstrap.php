@@ -1,8 +1,6 @@
 <?php
 
 use Dotenv\Dotenv;
-use lucatume\DI52\App;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
 $dotenv = Dotenv::createImmutable( __DIR__ );
@@ -15,50 +13,24 @@ $dotenv->required( [
 	'QIT_CUSTOM_TESTS_ENV',
 ] );
 
-function init() {
-	// Delete the "tmp_qit_config" directory if it exists.
-	$fs = new Filesystem();
-	if ( $fs->exists( __DIR__ . '/tmp_qit_config' ) ) {
-		$fs->remove( __DIR__ . '/tmp_qit_config' );
-	}
-
-	// Enable dev mode.
-	$dev = new Process( [ App::getVar( 'qit' ), 'dev' ] );
-	$dev->setEnv( [ 'QIT_HOME' => __DIR__ . '/tmp_qit_config' ] );
-	$dev->mustRun();
-
-	// Add the environment.
-	$add_environment = new Process( [
-		App::getVar( 'qit' ),
-		'backend:add',
-		'--manager_url',
-		$_ENV['QIT_CUSTOM_TESTS_URL'],
-		'--qit_secret',
-		$_ENV['QIT_CUSTOM_TESTS_SECRET'],
-		'--environment',
-		$_ENV['QIT_CUSTOM_TESTS_ENV'],
-	] );
-	$add_environment->setEnv( [ 'QIT_HOME' => __DIR__ . '/tmp_qit_config' ] );
-	$add_environment->mustRun();
-
-	// Add the partner account that will be used.
-	$add_partner = new Process( [
-		App::getVar( 'qit' ),
-		'partner:add',
-		'--user',
-		$_ENV['QIT_CUSTOM_TESTS_USER'],
-		'--qit_token',
-		$_ENV['QIT_CUSTOM_TESTS_USER_QIT_TOKEN'],
-	] );
-	$add_partner->setEnv( [ 'QIT_HOME' => __DIR__ . '/tmp_qit_config' ] );
-	$add_partner->mustRun();
+if ( ! file_exists( __DIR__ . '/../../qit' ) ) {
+	throw new \RuntimeException( sprintf( 'The qit binary was not found at %s.', realpath( __DIR__ . '/../../qit' ) ) );
 }
 
+$GLOBALS['qit'] = __DIR__ . '/../../qit';
+
+// Generate an ID for this run.
+$run_id      = uniqid( 'qit_custom_tests_' );
+$qit_tmp_dir = __DIR__ . "/tmp_qit_config-$run_id";
+
+$GLOBALS['QIT_HOME'] = $qit_tmp_dir;
+$GLOBALS['RUN_ID'] = $qit_tmp_dir;
+
 function qit( array $command, int $expected_exit_code = 0 ): string {
-	$args = [ __DIR__ . '/../../qit' ];
+	$args = [ $GLOBALS['qit'] ];
 	$args = array_merge( $args, $command );
 	$qit  = new Process( $args );
-	$qit->setEnv( [ 'QIT_HOME' => __DIR__ . '/tmp_qit_config' ] );
+	$qit->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
 	$qit->run();
 
 	if ( $qit->getExitCode() !== $expected_exit_code ) {

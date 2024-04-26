@@ -3,10 +3,10 @@
         bootstrap="./bootstrap.php"
         backupGlobals="false"
         colors="true"
-        convertErrorsToExceptions="true"
-        convertNoticesToExceptions="true"
-        convertWarningsToExceptions="true"
 >
+    <extensions>
+        <bootstrap class="QITTestExtension"/>
+    </extensions>
     <testsuites>
         <testsuite name="QIT_Custom_Tests">
             <directory suffix="Test.php">tests</directory>

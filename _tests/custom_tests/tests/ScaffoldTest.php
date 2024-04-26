@@ -8,6 +8,11 @@ class ScaffoldTest extends \PHPUnit\Framework\TestCase {
 		$output         = qit( [ 'scaffold:e2e', $scaffolded_dir ] );
 		$this->assertDirectoryExists( $scaffolded_dir );
 
+		$normalize_path = function ( $path ) {
+			// "/tmp/qit_scaffolded_e2e-662bcfc1a99ed/bootstrap/bootstrap.sh" => "/tmp/qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/bootstrap.sh"
+			return preg_replace( '/\/tmp\/qit_scaffolded_e2e-\w+/', '/tmp/qit_scaffolded_e2e-NORMALIZED_ID', $path );
+		};
+
 		// Snapshot the directory files and contents.
 		$files     = [];
 		$directory = new RecursiveDirectoryIterator( $scaffolded_dir );
@@ -18,9 +23,9 @@ class ScaffoldTest extends \PHPUnit\Framework\TestCase {
 			}
 
 			if ( $file->isFile() ) {
-				$files[ $file->getPathname() ] = file_get_contents( $file->getPathname() );
+				$files[ $normalize_path( $file->getPathname() ) ] = file_get_contents( $file->getPathname() );
 			} else {
-				$files[ $file->getPathname() ] = '';
+				$files[ $normalize_path( $file->getPathname() ) ] = '';
 			}
 		}
 		$this->assertMatchesSnapshot( $files );

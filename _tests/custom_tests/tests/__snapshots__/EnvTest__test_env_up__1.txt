@@ -1,0 +1,19 @@
+Warning: Key "skip_activating_plugins" not found in environment info.
+Setting up Docker...
+First-time setup is pulling Docker images and caching downloads. Subsequent runs will be faster.
+Setting up WordPress...
+Activating plugins...
+
+ [OK] Temporary test environment created. (ENV_ID)                       
+
+ * URL: http://localhost:PORT
+ * Admin URL: http://localhost:PORT/wp-admin
+ * Admin Credentials: admin/password
+ * PHP Version: 7.4
+ * WordPress Version: NORMALIZED
+ * Redis Object Cache? No
+ * Path: RUN_ID/temporary-envs/e2e-ENV_ID/
+
+To see additional info, run with the "--verbose" flag.
+
+http://localhost:PORT
