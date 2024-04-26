@@ -7,7 +7,7 @@
 [![QIT Self-Tests - PHPCompatibilityWP](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-phpcompatibility.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-phpcompatibility.yml)
 [![QIT Self-Tests - Malware](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-malware.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-malware.yml)
 
-<p align="center"><img src="https://woo.com/wp-content/themes/woo/images/logo-woocommerce-bubble.svg" alt="WooCommerce" style="width:100px;height:auto;"></p>
+<p align="center"><img src="https://woocommerce.com/wp-content/themes/woo/images/logo-woocommerce-bubble.svg" alt="WooCommerce" style="width:100px;height:auto;"></p>
 
 ## Quality Insights Toolkit (QIT)
 
@@ -60,15 +60,15 @@ For more detailed information on QIT and how to use it, refer to the [documentat
 ## Installing QIT
 
 1. Run `composer require woocommerce/qit-cli --dev`
-2. Execute `./vendor/bin/qit` to authenticate with your Woo.com Partner Developer account.
+2. Execute `./vendor/bin/qit` to authenticate with your WooCommerce.com Partner Developer account.
 
 You can use these parameters individually or in combination to create different scenarios for your tests. Run `qit run:<test-type> --help` to see all the available options. Different test types will have different options to choose from.
 
 ## Can I use QIT?
 
-Most features of QIT requires you to log-in as a Partner Developer of the Woo.com Marketplace, but we have plans to open it to all developers in the future.
+Most features of QIT requires you to log-in as a Partner Developer of the WooCommerce.com Marketplace, but we have plans to open it to all developers in the future.
 
-The QIT Local Test Environment does not require you to be connected to Woo.com, although to install Woo.com Premium plugins and themes on your test environment you will need to be connected as a Partner Developer of the Woo.com Marketplace (and have access to the extensions you want to test).
+The QIT Local Test Environment does not require you to be connected to WooCommerce.com, although to install WooCommerce.com Premium plugins and themes on your test environment you will need to be connected as a Partner Developer of the Woo.com Marketplace (and have access to the extensions you want to test).
 
 ## Support
 
