@@ -78,7 +78,7 @@ class EnvironmentDanglingCleanup {
 		$this->detect_dangling_directories();
 
 		// Check if there are actions to perform.
-		if ( empty( $this->dangling_directories ) && empty( $this->dangling_containers ) && empty( $this->dangling_networks ) ) {
+		if ( empty( $this->dangling_directories ) && empty( $this->dangling_containers ) && empty( $this->dangling_networks ) && empty( $this->dangling_volumes ) ) {
 			return;
 		}
 
@@ -358,7 +358,7 @@ class EnvironmentDanglingCleanup {
 		$running_environments = $this->environment_monitor->get();
 
 		// List the networks.
-		$list_process = new Process( [ 'docker', 'volume', 'ls', '--format=json', '--filter=name=_qit_env_volume_' ] );
+		$list_process = new Process( [ 'docker', 'volume', 'ls', '--format=json', '--filter=name=qit_env_volume_' ] );
 		$list_process->run();
 		$volumes_output = $list_process->getOutput();
 
@@ -380,7 +380,7 @@ class EnvironmentDanglingCleanup {
 				}
 			}
 
-			if ( strpos( $volume_name, '_qit_env_volume_' ) !== false ) {
+			if ( strpos( $volume_name, 'qit_env_volume_' ) !== false ) {
 				$this->dangling_volumes[] = $volume_name;
 			}
 		}

@@ -30,7 +30,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 	public function test_env_up_with_parameters() {
 		$output = qit( [
 				'env:up',
-				'--wordpress_version',
+				'--wp',
 				'6.5',
 				'--php_version',
 				'8.3',
@@ -56,8 +56,8 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 
 	public function test_env_up_with_file() {
 		$output = qit( [ 'env:up' ], [
-			'wordpress_version' => '6.4',
-			'php_version'       => '8.2',
+			'wp'          => '6.4',
+			'php_version' => '8.2',
 		] );
 
 		// Check that WordPress Version is as expected:
@@ -69,8 +69,8 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 
 	public function test_env_up_with_file_and_parameters() {
 		$output = qit( [ 'env:up' ], [
-			'wordpress_version' => '6.4',
-			'php_version'       => '8.3',
+			'wp'          => '6.4',
+			'php_version' => '8.3',
 		] );
 
 		// Check that WordPress Version is as expected:
@@ -112,12 +112,14 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 		$headers              = preg_split( '/\s+/', trim( $lines[0] ) );  // Split the header to find the index of 'version'
 		$version_index        = array_search( 'version', $headers );  // Locate the index of the 'version' column
 		$update_version_index = array_search( 'update_version', $headers );  // Locate the index of the 'update_version' column
+		$update_index         = array_search( 'update', $headers );  // Locate the index of the 'update' column
 
 		foreach ( $lines as $key => $line ) {
 			if ( strpos( $line, 'automatewoo' ) !== false || strpos( $line, 'woocommerce' ) !== false ) {
 				$parts                          = preg_split( '/\s+/', trim( $line ) );
 				$parts[ $version_index ]        = 'NORMALIZED_VERSION';
 				$parts[ $update_version_index ] = 'NORMALIZED_VERSION';
+				$parts[ $update_index ]         = 'NORMALIZED';
 				$lines[ $key ]                  = implode( '    ', $parts );
 			}
 		}
@@ -151,6 +153,101 @@ PHP
 			'--env_id',
 			$json['env_id'],
 			'wp plugin get qit-tmp-plugin',
+		] );
+
+		$this->assertMatchesSnapshot( $output );
+	}
+
+	public function test_env_up_wordpress_stable_version() {
+		$json = json_decode( qit( [ 'env:up', '--json', '--wp', 'stable' ] ), true );
+
+		$output = qit( [
+			'env:exec',
+			'--env_id',
+			$json['env_id'],
+			'wp core check-update --force-check',
+		] );
+
+		$this->assertStringContainsString( 'WordPress is at the latest version', $output );
+	}
+
+	public function test_env_up_wordpress_nightly_version() {
+		$json = json_decode( qit( [ 'env:up', '--json', '--wp', 'nightly' ] ), true );
+
+		$output = qit( [
+			'env:exec',
+			'--env_id',
+			$json['env_id'],
+			'wp core version',
+		] );
+
+		// Preg match "6.6-alpha-58052"
+		$version_parts = explode( '-', $output );
+		$this->assertEquals( 3, count( $version_parts ) );
+		$this->assertEquals( 'alpha', $version_parts[1] );
+		$this->assertIsNumeric( $version_parts[2] );
+	}
+
+	public function test_env_up_woocommerce_stable_version() {
+		$json = json_decode( qit( [ 'env:up', '--json', '--woo', 'stable', ] ), true );
+
+		$output = qit( [
+			'env:exec',
+			'--env_id',
+			$json['env_id'],
+			'wp plugin update woocommerce',
+		] );
+
+		$this->assertMatchesSnapshot( $output );
+	}
+
+	public function test_env_up_woocommerce_stable_version_alternative_syntax() {
+		$json = json_decode( qit( [ 'env:up', '--json', '--plugin', 'woocommerce', ] ), true );
+
+		$output = qit( [
+			'env:exec',
+			'--env_id',
+			$json['env_id'],
+			'wp plugin update woocommerce',
+		] );
+
+		$this->assertMatchesSnapshot( $output );
+	}
+
+	public function test_env_up_woocommerce_nightly_version() {
+		$json = json_decode( qit( [
+			'env:up',
+			'--json',
+			'--woo',
+			'nightly',
+		] ), true );
+
+		$output = qit( [
+			'env:exec',
+			'--env_id',
+			$json['env_id'],
+			'wp plugin get woocommerce',
+		] );
+
+		$this->assertMatchesSnapshot( $output );
+	}
+
+	public function test_env_up_woocommerce_rc_version() {
+		$this->markTestSkipped();
+		$json = json_decode( qit( [
+			'env:up',
+			'--json',
+			'--woo',
+			'rc',
+			'--plugin',
+			'https://github.com/woocommerce/woocommerce/releases/download/wc-beta-tester-2.3.0/woocommerce-beta-tester.zip:activate',
+		] ), true );
+
+		$output = qit( [
+			'env:exec',
+			'--env_id',
+			$json['env_id'],
+			'wp plugin update woocommerce',
 		] );
 
 		$this->assertMatchesSnapshot( $output );

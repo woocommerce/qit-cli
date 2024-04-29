@@ -3,9 +3,17 @@
 namespace QIT_CLI\Environment;
 
 class EnvironmentVersionResolver {
-	public static function resolve_woo( string $woo ): string {
+	/**
+	 * @param string $woo
+	 *
+	 * @return string|array A plugin syntax, can be a string or an array.
+	 */
+	public static function resolve_woo( string $woo ) {
 		if ( $woo === 'nightly' ) {
-			$woo = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
+			$woo = [
+				'slug'   => 'woocommerce',
+				'source' => 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip',
+			];
 		} elseif ( $woo === 'rc' ) {
 			throw new \InvalidArgumentException( 'Using "nightly" instead. If you want a specific RC, please use the GitHub tag, eg: "1.2.3-rc.1"' );
 		} elseif ( $woo === 'stable' ) {

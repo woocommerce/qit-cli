@@ -126,7 +126,6 @@ class E2EEnvironment extends Environment {
 		}
 
 		if ( $this->output->isVerbose() || ! getenv( 'QIT_HIDE_SITE_INFO' ) ) {
-
 			if ( ! getenv( 'QIT_CODEGEN' ) ) {
 				$io->success( 'Temporary test environment created. (' . $this->env_info->env_id . ')' );
 			}

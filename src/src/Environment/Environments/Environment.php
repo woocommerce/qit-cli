@@ -307,7 +307,7 @@ abstract class Environment {
 		}
 
 		if ( file_exists( $env_info->temporary_env . '/docker-compose.yml' ) ) {
-			$down_process = new Process( array_merge( App::make( Docker::class )->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'down' ] ) );
+			$down_process = new Process( array_merge( App::make( Docker::class )->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'down', '--volumes', '--remove-orphans' ] ) );
 			$down_process->setTimeout( 300 );
 			$down_process->setIdleTimeout( 300 );
 			$down_process->setPty( use_tty() );

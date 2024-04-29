@@ -184,6 +184,11 @@ HELP
 			return Command::FAILURE;
 		}
 
+		$woo                     = $input->getOption( 'woo' );
+		$skip_activating_plugins = $input->getOption( 'skip_activating_plugins' );
+		$input->setOption( 'woo', null );
+		$input->setOption( 'skip_activating_plugins', null );
+
 		try {
 			$options_to_env_info = $this->parse_options( $input );
 		} catch ( \Exception $e ) {
@@ -192,11 +197,11 @@ HELP
 			return Command::FAILURE;
 		}
 
-		if ( ! empty( $input->getOption( 'woo' ) ) ) {
-			$options_to_env_info['--plugin'][] = EnvironmentVersionResolver::resolve_woo( $input->getOption( 'woo' ) );
+		if ( ! empty( $woo ) ) {
+			$options_to_env_info['overrides']['plugin'][] = EnvironmentVersionResolver::resolve_woo( $woo );
 		}
 
-		if ( $input->getOption( 'skip_activating_plugins' ) ) {
+		if ( $skip_activating_plugins ) {
 			$this->e2e_environment->set_skip_activating_plugins( true );
 		}
 

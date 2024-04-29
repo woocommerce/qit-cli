@@ -1,0 +1,7 @@
+Field	Value
+name	woocommerce
+title	WooCommerce
+author	Automattic
+version	9.0.0-dev
+description	An ecommerce toolkit that helps you sell anything. Beautifully.
+status	active
