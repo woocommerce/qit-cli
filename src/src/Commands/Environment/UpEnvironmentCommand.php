@@ -209,7 +209,7 @@ HELP
 			$this->e2e_environment->set_skip_activating_plugins( true );
 		}
 
-		if ( !empty( $input->getOption( 'config' ) ) ) {
+		if ( ! empty( $input->getOption( 'config' ) ) ) {
 			App::setVar( 'QIT_CONFIG_OVERRIDE', $input->getOption( 'config' ) );
 		}
 
