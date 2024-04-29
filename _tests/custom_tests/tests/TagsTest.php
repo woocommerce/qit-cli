@@ -1,7 +1,11 @@
 <?php
 
+use QIT\SelfTests\CustomTests\Traits\ScaffoldHelpers;
+use Spatie\Snapshots\MatchesSnapshots;
+
 class TagsTest extends \PHPUnit\Framework\TestCase {
-	use \Spatie\Snapshots\MatchesSnapshots;
+	use ScaffoldHelpers;
+	use MatchesSnapshots;
 
 	public function test_runs_scaffolded_e2e() {
 		// Make sure we start from a clean state.
@@ -11,13 +15,10 @@ class TagsTest extends \PHPUnit\Framework\TestCase {
 			// No-op.
 		}
 
-		$scaffolded_dir = sys_get_temp_dir() . '/qit_scaffolded_e2e-' . uniqid();
-		qit( [ 'scaffold:e2e', $scaffolded_dir ] );
-
 		$output = qit( [
 				'tag:upload',
 				'automatewoo',
-				$scaffolded_dir,
+				$this->scaffold_test(),
 				'self-test-scaffolded',
 			]
 		);

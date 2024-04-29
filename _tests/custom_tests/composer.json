@@ -8,6 +8,9 @@
     "php": "^8"
   },
   "autoload": {
+    "psr-4": {
+      "QIT\\SelfTests\\CustomTests\\": "tests"
+    },
     "files": [
       "QITTestExtension.php"
     ]

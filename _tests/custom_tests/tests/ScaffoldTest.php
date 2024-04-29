@@ -1,11 +1,14 @@
 <?php
 
+use QIT\SelfTests\CustomTests\Traits\ScaffoldHelpers;
+use Spatie\Snapshots\MatchesSnapshots;
+
 class ScaffoldTest extends \PHPUnit\Framework\TestCase {
-	use \Spatie\Snapshots\MatchesSnapshots;
+	use ScaffoldHelpers;
+	use MatchesSnapshots;
 
 	public function test_scaffold_e2e() {
-		$scaffolded_dir = sys_get_temp_dir() . '/qit_scaffolded_e2e-' . uniqid();
-		$output         = qit( [ 'scaffold:e2e', $scaffolded_dir ] );
+		$scaffolded_dir = $this->scaffold_test();
 		$this->assertDirectoryExists( $scaffolded_dir );
 
 		$normalize_path = function ( $path ) {

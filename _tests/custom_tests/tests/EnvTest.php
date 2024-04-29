@@ -1,7 +1,9 @@
 <?php
 
+use Spatie\Snapshots\MatchesSnapshots;
+
 class EnvTest extends \PHPUnit\Framework\TestCase {
-	use \Spatie\Snapshots\MatchesSnapshots;
+	use MatchesSnapshots;
 
 	public function test_env_up() {
 		$output = qit( [ 'env:up' ] );
