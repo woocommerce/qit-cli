@@ -6,8 +6,8 @@ Activating plugins...
 Environment ready.
 
 Bootstrapping Plugins
-Bootstrapping woocommerce /qit/tests/e2e/woocommerce/self-test-scaffolded/bootstrap/bootstrap.php
-Bootstrapping woocommerce /qit/tests/e2e/woocommerce/self-test-scaffolded/bootstrap/bootstrap.sh
+Bootstrapping woocommerce /qit/tests/e2e/woocommerce/self-test-bootstrap-additional/bootstrap/bootstrap.php
+Bootstrapping woocommerce /qit/tests/e2e/woocommerce/self-test-bootstrap-additional/bootstrap/bootstrap.sh
 Bootstrapping automatewoo /qit/tests/e2e/automatewoo/local/bootstrap/bootstrap.php
 Bootstrapping automatewoo /qit/tests/e2e/automatewoo/local/bootstrap/bootstrap.sh
 Running E2E Tests

@@ -6,14 +6,14 @@ Activating plugins...
 Environment ready.
 
 Bootstrapping Plugins
-Bootstrapping woocommerce /qit/tests/e2e/woocommerce/self-test-scaffolded/bootstrap/bootstrap.php
-Bootstrapping woocommerce /qit/tests/e2e/woocommerce/self-test-scaffolded/bootstrap/bootstrap.sh
+Bootstrapping woocommerce /qit/tests/e2e/woocommerce/self-test-sut-and-test-additional/bootstrap/bootstrap.php
+Bootstrapping woocommerce /qit/tests/e2e/woocommerce/self-test-sut-and-test-additional/bootstrap/bootstrap.sh
 Bootstrapping automatewoo /qit/tests/e2e/automatewoo/local/bootstrap/bootstrap.php
 Bootstrapping automatewoo /qit/tests/e2e/automatewoo/local/bootstrap/bootstrap.sh
 Exporting DB
 Running E2E Tests
 Running 3 tests using 1 worker
-[1/3] [woocommerce-self-test-scaffolded] › woocommerce/self-test-scaffolded/ex
+[1/3] [woocommerce-self-test-sut-and-test-additional] › woocommerce/self-test-
 [1A[0G[0J[2/3] [db-import] › db-import.js:5:5 › Database Import
 [db-import] › db-import.js:5:5 › Database Import
 Success: Imported from '/tmp/qit-bootstrap.sql'.

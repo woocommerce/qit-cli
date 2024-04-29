@@ -17,9 +17,8 @@ class TagsTest extends \PHPUnit\Framework\TestCase {
 
 		$output = qit( [
 				'tag:upload',
-				'automatewoo',
+				'automatewoo:self-test-scaffolded',
 				$this->scaffold_test(),
-				'self-test-scaffolded',
 			]
 		);
 		$this->assertMatchesSnapshot( $output );

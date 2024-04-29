@@ -33,9 +33,8 @@ class UploadTestTagsCommand extends Command {
 
 	protected function configure() {
 		$this
-			->addArgument( 'extension', InputArgument::REQUIRED, 'The Woo extension to upload this for.' )
+			->addArgument( 'test_tag', InputArgument::REQUIRED, 'The test tag to upload, can be "my-extension", or "my-extension:my-test-tag". If test tag is not specified, it is the same as running "my-extension:default".' )
 			->addArgument( 'test_path', InputArgument::REQUIRED, 'The path to the custom tests to upload.' )
-			->addArgument( 'test_tag', InputArgument::OPTIONAL, 'The tag to use for the test. You can upload tests with different tags and choose a tag when running.', 'default' )
 			->addArgument( 'test_type', InputArgument::OPTIONAL, 'The test type.', 'e2e' )
 			->setDescription( 'Uploads your custom test to QIT.' );
 	}
@@ -59,12 +58,26 @@ class UploadTestTagsCommand extends Command {
 			return Command::FAILURE;
 		}
 
+		if ( strpos( $tag, ':' ) !== false ) {
+			$tag_parts = explode( ':', $tag );
+			if ( count( $tag_parts ) !== 2 ) {
+				$output->writeln( '<error>Invalid test tag. Expected format: slug:tag</error>' );
+
+				return Command::FAILURE;
+			}
+			$extension = $tag_parts[0];
+			$tag       = $tag_parts[1];
+		} else {
+			$extension = $tag;
+			$tag       = 'default';
+		}
+
 		// Woo Extension ID / Slug. Bail if not found.
-		if ( is_numeric( $input->getArgument( 'extension' ) ) ) {
-			$extension_id = $input->getArgument( 'extension' );
+		if ( is_numeric( $extension ) ) {
+			$extension_id = $extension;
 		} else {
 			try {
-				$extension_id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $input->getArgument( 'extension' ) );
+				$extension_id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $extension );
 			} catch ( \Exception $e ) {
 				$output->writeln( "<error>{$e->getMessage()}</error>" );
 
@@ -142,7 +155,7 @@ class UploadTestTagsCommand extends Command {
 			return Command::FAILURE;
 		}
 
-		$output->writeln( sprintf( '<info>Tests updated for extension \'%s\' successfully.</info>', $input->getArgument( 'extension' ) ) );
+		$output->writeln( sprintf( '<info>Tests updated for extension \'%s\' successfully.</info>', $extension ) );
 
 		return Command::SUCCESS;
 	}

@@ -6,18 +6,18 @@ Activating plugins...
 Environment ready.
 
 Bootstrapping Plugins
-Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-scaffolded/bootstrap/bootstrap.php
-Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-scaffolded/bootstrap/bootstrap.sh
-Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-scaffolded-another/bootstrap/bootstrap.php
-Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-scaffolded-another/bootstrap/bootstrap.sh
+Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-multiple-test-tags/bootstrap/bootstrap.php
+Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-multiple-test-tags/bootstrap/bootstrap.sh
+Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-multiple-test-tags-another/bootstrap/bootstrap.php
+Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-multiple-test-tags-another/bootstrap/bootstrap.sh
 Exporting DB
 Running E2E Tests
 Running 3 tests using 1 worker
-[1/3] [automatewoo-self-test-scaffolded] › automatewoo/self-test-scaffolded/ex
+[1/3] [automatewoo-self-test-multiple-test-tags] › automatewoo/self-test-multi
 [1A[0G[0J[2/3] [db-import] › db-import.js:5:5 › Database Import
 [db-import] › db-import.js:5:5 › Database Import
 Success: Imported from '/tmp/qit-bootstrap.sql'.
-[1A[0G[0J[3/3] [automatewoo-self-test-scaffolded-another] › automatewoo/self-test-scaff
+[1A[0G[0J[3/3] [automatewoo-self-test-multiple-test-tags-another] › automatewoo/self-te
 3 passed (TIME)
 
 To open last HTML report run: qit e2e-report

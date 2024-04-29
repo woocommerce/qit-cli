@@ -111,11 +111,13 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 		$lines         = explode( "\n", $output );
 		$headers       = preg_split( '/\s+/', trim( $lines[0] ) );  // Split the header to find the index of 'version'
 		$version_index = array_search( 'version', $headers );  // Locate the index of the 'version' column
+		$update_version_index = array_search( 'update_version', $headers );  // Locate the index of the 'update_version' column
 
 		foreach ( $lines as $key => $line ) {
 			if ( strpos( $line, 'automatewoo' ) !== false || strpos( $line, 'woocommerce' ) !== false ) {
 				$parts                   = preg_split( '/\s+/', trim( $line ) );
 				$parts[ $version_index ] = 'NORMALIZED_VERSION';
+				$parts[ $update_version_index ] = 'NORMALIZED_VERSION';
 				$lines[ $key ]           = implode( '    ', $parts );
 			}
 		}

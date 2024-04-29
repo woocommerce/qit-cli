@@ -26,9 +26,8 @@ class CompatibilityTest extends \PHPUnit\Framework\TestCase {
 		// Upload Woo Test Tag.
 		qit( [
 				'tag:upload',
-				'woocommerce',
+				'woocommerce:self-test-bootstrap-additional',
 				$this->scaffold_test(),
-				'self-test-scaffolded',
 			]
 		);
 
@@ -38,12 +37,12 @@ class CompatibilityTest extends \PHPUnit\Framework\TestCase {
 				'automatewoo',
 				$this->scaffold_test(),
 				'--plugin',
-				'woocommerce:bootstrap:self-test-scaffolded',
+				'woocommerce:bootstrap:self-test-bootstrap-additional',
 			]
 		);
 
 		// Cleanup.
-		qit( [ 'tag:delete', 'woocommerce:self-test-scaffolded' ] );
+		qit( [ 'tag:delete', 'woocommerce:self-test-bootstrap-additional' ] );
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
@@ -54,9 +53,8 @@ class CompatibilityTest extends \PHPUnit\Framework\TestCase {
 		// Upload Woo Test Tag.
 		qit( [
 				'tag:upload',
-				'woocommerce',
+				'woocommerce:self-test-sut-and-test-additional',
 				$this->scaffold_test(),
-				'self-test-scaffolded',
 			]
 		);
 
@@ -66,12 +64,54 @@ class CompatibilityTest extends \PHPUnit\Framework\TestCase {
 				'automatewoo',
 				$this->scaffold_test(),
 				'--plugin',
-				'woocommerce:test:self-test-scaffolded',
+				'woocommerce:test:self-test-sut-and-test-additional',
 			]
 		);
 
 		// Cleanup.
-		qit( [ 'tag:delete', 'woocommerce:self-test-scaffolded' ] );
+		qit( [ 'tag:delete', 'woocommerce:self-test-sut-and-test-additional' ] );
+
+		$output = $this->normalize_scaffolded_test_run_output( $output );
+
+		$this->assertMatchesSnapshot( $output );
+	}
+
+	public function test_multiple_tags_and_multiple_plugins_with_multiple_tags() {
+		qit( [
+			'tag:upload',
+			'automatewoo:self-test-multiple-test-tags',
+			$this->scaffold_test(),
+		] );
+
+		qit( [
+			'tag:upload',
+			'automatewoo:self-test-multiple-test-tags-another',
+			$this->scaffold_test( 'another-tag' ),
+		] );
+
+		qit( [
+			'tag:upload',
+			'woocommerce:self-test-multiple-test-tags',
+			$this->scaffold_test(),
+		] );
+
+		qit( [
+			'tag:upload',
+			'woocommerce:self-test-multiple-test-tags-another',
+			$this->scaffold_test( 'another-tag' ),
+		] );
+
+		$output = qit( [
+			'run:e2e',
+			'automatewoo:test:self-test-multiple-test-tags,self-test-multiple-test-tags-another',
+			'--plugin',
+			'woocommerce:test:self-test-multiple-test-tags,self-test-multiple-test-tags-another',
+		] );
+
+		qit( [ 'tag:delete', 'automatewoo:self-test-multiple-test-tags' ] );
+		qit( [ 'tag:delete', 'automatewoo:self-test-multiple-test-tags-another' ] );
+		qit( [ 'tag:delete', 'woocommerce:self-test-multiple-test-tags' ] );
+		qit( [ 'tag:delete', 'woocommerce:self-test-multiple-test-tags-another' ] );
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 

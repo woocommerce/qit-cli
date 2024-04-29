@@ -6,11 +6,11 @@ Activating plugins...
 Environment ready.
 
 Bootstrapping Plugins
-Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-scaffolded/bootstrap/bootstrap.php
-Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-scaffolded/bootstrap/bootstrap.sh
+Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-tag-and-run/bootstrap/bootstrap.php
+Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-tag-and-run/bootstrap/bootstrap.sh
 Running E2E Tests
 Running 1 test using 1 worker
-[1/1] [automatewoo-self-test-scaffolded] › automatewoo/self-test-scaffolded/ex
+[1/1] [automatewoo-self-test-tag-and-run] › automatewoo/self-test-tag-and-run/
 1 passed (TIME)
 
 To open last HTML report run: qit e2e-report
