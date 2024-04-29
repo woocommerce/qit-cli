@@ -6,7 +6,7 @@ class EnvironmentVersionResolver {
 	/**
 	 * @param string $woo
 	 *
-	 * @return string|array A plugin syntax, can be a string or an array.
+	 * @return string|array{slug: string, source: string} A plugin syntax, can be a string or an array.
 	 */
 	public static function resolve_woo( string $woo ) {
 		if ( $woo === 'nightly' ) {

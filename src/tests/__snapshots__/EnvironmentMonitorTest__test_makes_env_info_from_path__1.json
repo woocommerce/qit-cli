@@ -11,7 +11,7 @@
     "plugins": [],
     "themes": [],
     "site_url": null,
-    "wordpress_version": "",
+    "wp": "",
     "object_cache": false,
     "php_version": null,
     "nginx_port": null,
