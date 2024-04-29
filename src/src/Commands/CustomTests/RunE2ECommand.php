@@ -70,13 +70,14 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'], [], [
-			'wordpress_version',
 			'php_version',
 		] );
 
 		$this
 			->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'A QIT plugin-syntax as defined in the documentation: source:action:test-tags:slug. Only "source" is required, and it can be a slug, a file, a URL. Action can be "activate", "bootstrap", and "test", and test-tags are a comme-separated list of tests. Slug is usually not required. Read the docs.' )
 			->addArgument( 'test', InputArgument::OPTIONAL, '(Optional) The tests for the main extension under test. Accepts test tags, or a test directory. If not set, will use the "default" test tag of this extension.' )
+			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'The WordPress version. Accepts "stable", "nightly", or a version number.', 'stable' )
+			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "stable", "nightly", or a GitHub Tag (eg: 8.6.1).' )
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Theme install, if multiple provided activates the last. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
 			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
@@ -87,8 +88,6 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'no_activate', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright Sharding argument.' )
 			->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional options and parameters to pass to Playwright.' )
-			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "nightly", "stable", or a GitHub Tag (eg: 8.6.1).' )
-			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'The WordPress version. Accepts a version number, ‘latest’ or ‘nightly’.', 'latest' )
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode. In this mode, you can start and view the tests running.' )
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run the environment for Codegen. In this mode, you can generate your test files.' )
 			->addOption( 'testing_theme', null, InputOption::VALUE_NONE, 'If the "woo_extension" is a theme, set this flag.' )
@@ -130,7 +129,6 @@ class RunE2ECommand extends DynamicCommand {
 		$wait          = $input->getOption( 'up_only' ) || $test_mode === 'codegen';
 		$woo_extension = $input->getArgument( 'woo_extension' );
 		$test          = $input->getArgument( 'test' );
-		$wp            = $input->getOption( 'wp' );
 		$shard         = $input->getOption( 'shard' );
 		App::setVar( 'pw_options', $input->getOption( 'pw_options' ) ?? '' );
 
@@ -169,10 +167,6 @@ class RunE2ECommand extends DynamicCommand {
 			} else {
 				$env_up_options['--plugin'][] = $woo_extension;
 			}
-		}
-
-		if ( ! empty( $wp ) ) {
-			$env_up_options['--wordpress_version'] = $wp;
 		}
 
 		if ( ! is_null( $shard ) ) {

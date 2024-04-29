@@ -163,15 +163,11 @@ class EnvConfigLoader {
 						}
 					}
 					break;
-				case 'wordpress_version':
-					if ( in_array( $value, [ 'stable', 'rc' ], true ) ) {
-						$value = $this->cache->get_manager_sync_data( 'versions' )['wordpress'][ $value ];
-					}
+				case 'wp':
+					$value = EnvironmentVersionResolver::resolve_wp( $value );
 					break;
-				case 'woocommerce_version':
-					if ( in_array( $value, [ 'stable', 'rc' ], true ) ) {
-						$value = $this->cache->get_manager_sync_data( 'versions' )['woocommerce'][ $value ];
-					}
+				case 'woo':
+					$value = EnvironmentVersionResolver::resolve_woo( $value );
 					break;
 			}
 		}

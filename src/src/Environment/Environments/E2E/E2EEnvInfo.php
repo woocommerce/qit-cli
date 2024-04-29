@@ -12,7 +12,7 @@ class E2EEnvInfo extends EnvInfo {
 	public $site_url;
 
 	/** @var string */
-	public $wordpress_version = '';
+	public $wp = '';
 
 	/** @var bool */
 	public $object_cache = false;

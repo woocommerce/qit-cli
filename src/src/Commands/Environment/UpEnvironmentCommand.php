@@ -8,6 +8,7 @@ use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Environment\EnvConfigLoader;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
+use QIT_CLI\Environment\EnvironmentVersionResolver;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -41,12 +42,13 @@ class UpEnvironmentCommand extends DynamicCommand {
 		}
 
 		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'], [], [
-			'wordpress_version',
 			'php_version',
 		] );
 
 		$this
 			->setDescription( 'Creates a temporary local test environment that is completely ephemeral — no data is persisted. Every time you stop and restart the environment, it\'s like starting fresh.' )
+			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'The WordPress version. Accepts "stable", "nightly", or a version number.', 'stable' )
+			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "stable", "nightly", or a GitHub Tag (eg: 8.6.1).' )
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Theme install, if multiple provided activates the last. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
 			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
@@ -54,7 +56,6 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->addOption( 'require', 'r', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load PHP file before running the command (may be used more than once).' )
 			->addOption( 'config', null, InputOption::VALUE_OPTIONAL, '(Optional) QIT config file to use.' )
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
-			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "nightly", "stable", or a GitHub Tag (eg: 8.6.1).' )
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
 			// ->addOption( 'attached', 'a', InputOption::VALUE_NONE, 'Whether to attach to the environment after starting it.' )
@@ -91,7 +92,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 					];
 					break;
 				case 'wp':
-					$options_example[ $opt->getName() ] = 'rc';
+					$options_example[ $opt->getName() ] = 'nightly';
 					break;
 				default:
 					$options_example[ $opt->getName() ] = $opt->getDefault();
@@ -149,16 +150,16 @@ To set the PHP version, use the --php_version flag, e.g.:
 <info>qit env:up --php_version=8.3</info>
 
 <comment>WordPress Version</comment>
-To set the WordPress version, use the --wordpress_version flag, e.g.:
-<info>qit env:up --wordpress_version=rc</info>
+To set the WordPress version, use the --wp flag, e.g.:
+<info>qit env:up --wp 6.5.2</info>
 
 <comment>Object Cache</comment>
 To enable Object Cache (Redis) in the environment, use the --object_cache flag, e.g.:
 <info>qit env:up --object_cache</info>
 
 <comment>Volumes</comment>
-To map a local directory to the test environment, use the --volumes flag, e.g.:
-<info>qit env:up --volumes=/home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin</info>
+To map a local directory to the test environment, use the --volume flag, e.g.:
+<info>qit env:up --volume /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin</info>
 This will map the local directory /home/mycomputer/my-plugin to the test environment at /var/www/html/wp-content/plugins/my-plugin.
 
 <comment>PHP Extensions</comment>
@@ -169,9 +170,9 @@ To install PHP extensions in the test environment, use the --php_extension flag,
 - URL provided at command completion. Default: "http://localhost:<RANDOM_PORT>"
 
 <comment>Example:</comment>
-<info>qit env:up --wordpress_version=rc --php_version=8.3 --php_extension gd --object_cache --plugin gutenberg --plugin automatewoo --theme storefront</info>
+<info>qit env:up --wp nightly --php_version=8.3 --php_extension gd --object_cache --plugin gutenberg --plugin automatewoo --theme storefront</info>
 
-This will create a disposable test environment with the latest release candidate versions of WordPress, PHP 8.3, the GD extension, Object Cache enabled, Gutenberg from WordPress.org Plugin Repository and AutomateWoo from the Woo.com Marketplace installed and active, and Storefront installed.
+This will create a disposable test environment with the nightly version of WordPress, PHP 8.3, the GD extension, Object Cache enabled, Gutenberg from WordPress.org Plugin Repository and AutomateWoo from the Woo.com Marketplace installed and active, and Storefront installed.
 HELP
 			);
 	}
@@ -191,18 +192,8 @@ HELP
 			return Command::FAILURE;
 		}
 
-		$woo = $input->getOption( 'woo' );
-		if ( ! empty( $woo ) ) {
-			if ( $woo === 'nightly' ) {
-				$options_to_env_info['--plugin'][] = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
-			} elseif ( $woo === 'rc' ) {
-				$this->output->writeln( 'Using "nightly" instead. If you want a specific RC, please use the GitHub tag, eg: "1.2.3-rc.1"' );
-				$options_to_env_info['--plugin'][] = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
-			} elseif ( $woo === 'stable' ) {
-				$options_to_env_info['--plugin'][] = 'woocommerce';
-			} else {
-				$options_to_env_info['--plugin'][] = "https://github.com/woocommerce/woocommerce/releases/download/$woo/woocommerce.zip";
-			}
+		if ( ! empty( $input->getOption( 'woo' ) ) ) {
+			$options_to_env_info['--plugin'][] = EnvironmentVersionResolver::resolve_woo( $input->getOption( 'woo' ) );
 		}
 
 		if ( $input->getOption( 'skip_activating_plugins' ) ) {
