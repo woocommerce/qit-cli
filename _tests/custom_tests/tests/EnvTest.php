@@ -108,20 +108,50 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 		 */
 
 		// Iterate over each line, for the "automatewoo" and "woocommerce", normalize the version.
-		$lines         = explode( "\n", $output );
-		$headers       = preg_split( '/\s+/', trim( $lines[0] ) );  // Split the header to find the index of 'version'
-		$version_index = array_search( 'version', $headers );  // Locate the index of the 'version' column
+		$lines                = explode( "\n", $output );
+		$headers              = preg_split( '/\s+/', trim( $lines[0] ) );  // Split the header to find the index of 'version'
+		$version_index        = array_search( 'version', $headers );  // Locate the index of the 'version' column
 		$update_version_index = array_search( 'update_version', $headers );  // Locate the index of the 'update_version' column
 
 		foreach ( $lines as $key => $line ) {
 			if ( strpos( $line, 'automatewoo' ) !== false || strpos( $line, 'woocommerce' ) !== false ) {
-				$parts                   = preg_split( '/\s+/', trim( $line ) );
-				$parts[ $version_index ] = 'NORMALIZED_VERSION';
+				$parts                          = preg_split( '/\s+/', trim( $line ) );
+				$parts[ $version_index ]        = 'NORMALIZED_VERSION';
 				$parts[ $update_version_index ] = 'NORMALIZED_VERSION';
-				$lines[ $key ]           = implode( '    ', $parts );
+				$lines[ $key ]                  = implode( '    ', $parts );
 			}
 		}
 		$output = implode( "\n", $lines );
+
+		$this->assertMatchesSnapshot( $output );
+	}
+
+	public function test_env_up_with_additional_volumes() {
+		file_put_contents( sys_get_temp_dir() . '/qit-tmp-plugin.php',
+			<<<'PHP'
+<?php
+/**
+ * Plugin Name: QIT Temporary Plugin
+ * Description: A temporary plugin for testing.
+ * Version: 1.0
+ */
+PHP
+		);
+
+		$json = json_decode( qit( [
+				'env:up',
+				'--json',
+				'--volume',
+				sprintf( sys_get_temp_dir() . '/qit-tmp-plugin.php' . ':/var/www/html/wp-content/plugins/qit-tmp-plugin.php' ),
+			]
+		), true );
+
+		$output = qit( [
+			'env:exec',
+			'--env_id',
+			$json['env_id'],
+			'wp plugin get qit-tmp-plugin',
+		] );
 
 		$this->assertMatchesSnapshot( $output );
 	}

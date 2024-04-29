@@ -1,0 +1,7 @@
+Field	Value
+name	qit-tmp-plugin
+title	QIT Temporary Plugin
+author	
+version	1.0
+description	A temporary plugin for testing.
+status	active
