@@ -58,4 +58,34 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 
 		$this->assertMatchesSnapshot( $output );
 	}
+
+	public function test_multiple_tags_and_run_tests() {
+		qit( [
+			'tag:upload',
+			'automatewoo',
+			$this->scaffold_test(),
+			'self-test-scaffolded',
+		] );
+
+		qit( [
+			'tag:upload',
+			'automatewoo',
+			$this->scaffold_test( 'another-tag' ),
+			'self-test-scaffolded-another',
+		] );
+
+		$output = qit( [
+			'run:e2e',
+			'automatewoo:test:self-test-scaffolded,self-test-scaffolded-another',
+			'--plugin',
+			'woocommerce:activate',
+		] );
+
+		qit( [ 'tag:delete', 'automatewoo:self-test-scaffolded' ] );
+		qit( [ 'tag:delete', 'automatewoo:self-test-scaffolded-another' ] );
+
+		$output = $this->normalize_scaffolded_test_run_output( $output );
+
+		$this->assertMatchesSnapshot( $output );
+	}
 }
