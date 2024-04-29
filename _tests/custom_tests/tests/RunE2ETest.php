@@ -52,6 +52,8 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 			'woocommerce:activate',
 		] );
 
+		qit( [ 'tag:delete', 'automatewoo:self-test-scaffolded' ] );
+
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
 		$this->assertMatchesSnapshot( $output );
