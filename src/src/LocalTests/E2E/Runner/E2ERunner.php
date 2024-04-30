@@ -63,7 +63,8 @@ abstract class E2ERunner {
 	 *     action:string,
 	 *     path_in_php_container:string,
 	 *     path_in_playwright_container:string,
-	 *     path_in_host:string
+	 *     path_in_host:string,
+	 *     path_in_host_original:string
 	 *  }>                     $test_infos
 	 *
 	 * // phpcs:enable

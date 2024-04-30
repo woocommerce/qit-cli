@@ -87,6 +87,7 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Whether to enable Object Cache (Redis) in the environment.' )
 			->addOption( 'no_activate', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright Sharding argument.' )
+			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
 			->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional options and parameters to pass to Playwright.' )
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode. In this mode, you can start and view the tests running.' )
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run the environment for Codegen. In this mode, you can generate your test files.' )
@@ -126,11 +127,18 @@ class RunE2ECommand extends DynamicCommand {
 			$test_mode = E2ETestManager::$test_modes['headless'];
 		}
 
-		$wait          = $input->getOption( 'up_only' ) || $test_mode === 'codegen';
-		$woo_extension = $input->getArgument( 'woo_extension' );
-		$test          = $input->getArgument( 'test' );
-		$shard         = $input->getOption( 'shard' );
-		App::setVar( 'pw_options', $input->getOption( 'pw_options' ) ?? '' );
+		$wait             = $input->getOption( 'up_only' ) || $test_mode === 'codegen';
+		$woo_extension    = $input->getArgument( 'woo_extension' );
+		$test             = $input->getArgument( 'test' );
+		$shard            = $input->getOption( 'shard' );
+		$update_snapshots = $input->getOption( 'update_snapshots' );
+		$pw_options       = $input->getOption( 'pw_options' ) ?? '';
+
+		if ( ! empty( $update_snapshots ) ) {
+			$pw_options .= ' --update-snapshots';
+		}
+
+		App::setVar( 'pw_options', $pw_options );
 
 		// Validate the extension is set if needed.
 		if ( empty( $woo_extension ) && ! $wait ) {
@@ -162,7 +170,7 @@ class RunE2ECommand extends DynamicCommand {
 				}
 			}
 
-			if ( $input->getOption( 'testing_theme' ) === 'true' ) {
+			if ( $input->getOption( 'testing_theme' ) ) {
 				$env_up_options['--theme'][] = $woo_extension;
 			} else {
 				$env_up_options['--plugin'][] = $woo_extension;
@@ -344,7 +352,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
+				$parsed_options['env_up']["--$option_name"] = $option_value;
 			}
 		}
 

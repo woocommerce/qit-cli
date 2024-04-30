@@ -33,11 +33,11 @@ class CustomTestsDownloader {
 	}
 
 	/**
-	 * @param EnvInfo          $env_info
-	 * @param string           $cache_dir
+	 * @param EnvInfo $env_info
+	 * @param string $cache_dir
 	 * @param array<Extension> $plugins Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
 	 * @param array<Extension> $themes Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
-	 * @param string           $test_type The test type. Defaults to 'e2e'.
+	 * @param string $test_type The test type. Defaults to 'e2e'.
 	 *
 	 * @return void
 	 */
@@ -50,10 +50,10 @@ class CustomTestsDownloader {
 	}
 
 	/**
-	 * @param EnvInfo          $env_info
+	 * @param EnvInfo $env_info
 	 * @param array<Extension> $extensions
-	 * @param string           $cache_dir
-	 * @param string           $test_type
+	 * @param string $cache_dir
+	 * @param string $test_type
 	 *
 	 * @return void
 	 */
@@ -66,9 +66,11 @@ class CustomTestsDownloader {
 			}
 
 			foreach ( $extension->test_tags as $k => $test_tag ) {
+				$original_path = null;
 				if ( file_exists( $test_tag ) ) {
 					if ( is_dir( $test_tag ) ) {
-						$zip_file = tempnam( sys_get_temp_dir(), 'qit_' ) . '.zip';
+						$original_path = $test_tag;
+						$zip_file      = tempnam( sys_get_temp_dir(), 'qit_' ) . '.zip';
 						$this->zipper->zip_directory( $test_tag, $zip_file, UploadTestTagsCommand::get_exclude_files() );
 					} else {
 						$zip_file = $test_tag;
@@ -108,6 +110,7 @@ class CustomTestsDownloader {
 						'path_in_php_container'        => $path_in_php_container,
 						'path_in_playwright_container' => $path_in_playwright_container,
 						'path_in_host'                 => $path_in_host,
+						'path_in_host_original'        => $original_path ?? '',
 					];
 				}
 			}

@@ -12,6 +12,7 @@ use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Terminal;
 use Symfony\Component\Process\Process;
+use function QIT_CLI\normalize_path;
 use function QIT_CLI\open_in_browser;
 
 class PlaywrightRunner extends E2ERunner {
@@ -245,6 +246,45 @@ class PlaywrightRunner extends E2ERunner {
 		if ( file_exists( $results_dir . '/report/index.html' ) ) {
 			App::make( Cache::class )->set( 'last_e2e_report', $results_dir . '/report', MONTH_IN_SECONDS );
 			E2ETestManager::$has_report = true;
+		}
+
+		// Copy snapshots from Container to Host if needed.
+		if ( strpos( $options, '--update-snapshots' ) !== false ) {
+			$php_container_name = $env_info->get_docker_container( 'php' );
+			$docker             = App::make( Docker::class )->find_docker();
+
+			foreach ( $test_infos as $test_to_run ) {
+				if ( empty( $test_to_run['path_in_host_original'] ) || ! file_exists( $test_to_run['path_in_host_original'] ) ) {
+					continue;
+				}
+
+				// Check if the test has snapshots.
+				$check_directory_process = new Process( [
+					$docker,
+					'exec',
+					$php_container_name,
+					'test',
+					'-d',
+					"{$test_to_run['path_in_php_container']}/__snapshots__",
+				] );
+				$check_directory_process->run();
+
+				// If it has, and "update-snapshots" is true, copy it back to the source.
+				if ( $check_directory_process->isSuccessful() ) {
+					$copy_snapshots_process = new Process( [
+						$docker,
+						'container',
+						'cp',
+						"$php_container_name:{$test_to_run['path_in_php_container']}/__snapshots__",
+						normalize_path( $test_to_run['path_in_host_original'] ),
+					] );
+					$this->output->writeln( $copy_snapshots_process->getCommandLine() );
+					$copy_snapshots_process->run();
+					if ( ! $copy_snapshots_process->isSuccessful() ) {
+						throw new \RuntimeException( 'Could not copy snapshots from the PHP container.' );
+					}
+				}
+			}
 		}
 
 		return $playwright_process->getExitCode();
