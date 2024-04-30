@@ -219,7 +219,6 @@ class EnvironmentDanglingCleanup {
 				} );
 			}
 
-
 			SafeRemove::delete_dir( $directory, Environment::get_temp_envs_dir() );
 		}
 	}
