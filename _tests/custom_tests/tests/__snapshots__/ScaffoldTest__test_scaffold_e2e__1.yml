@@ -48,18 +48,11 @@
      * Read more about it on our documentation: https://qit.woo.com/docs/
      */
     import { test, expect } from '@playwright/test';
+    import qit from '/qitHelpers';
 
     test('I can see my plugin menu', async ({ page }) => {
         // Log-in as admin.
-        await page.goto('/wp-admin/');
-        await page.getByLabel('Username or Email Address').click();
-        await page.getByLabel('Username or Email Address').fill('admin');
-        await page.getByLabel('Password', { exact: true }).click();
-        await page.getByLabel('Password', { exact: true }).fill('password');
-        await page.getByRole('button', { name: 'Log In' }).click();
-        await page.waitForLoadState('networkidle');
-        // Force go to wp-admin just to avoid any onboarding guide.
-        await page.goto('/wp-admin/');
+        await qit.loginAsAdmin(page);
         // View WordPress Core "Dashboard" heading
         await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
         // Click on my menu on the sidebar.

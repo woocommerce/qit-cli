@@ -16,7 +16,7 @@ Running 3 tests using 1 worker
 [1A[0G[0J[2/3] [db-import] › db-import.js:5:5 › Database Import
 [db-import] › db-import.js:5:5 › Database Import
 Success: Imported from '/tmp/qit-bootstrap.sql'.
-[1A[0G[0J[3/3] [automatewoo-local] › automatewoo/local/example.spec.js:8:5 › I can se
+[1A[0G[0J[3/3] [automatewoo-local] › automatewoo/local/example.spec.js:9:5 › I can se
 3 passed (TIME)
 
 To open last HTML report run: qit e2e-report

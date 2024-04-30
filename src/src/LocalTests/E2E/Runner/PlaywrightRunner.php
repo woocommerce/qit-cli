@@ -43,6 +43,15 @@ class PlaywrightRunner extends E2ERunner {
 			}
 		}
 
+		if ( file_exists( getcwd() . '/qit-playwright-config-overrides.json' ) ) {
+			$config_overrides = file_get_contents( getcwd() . '/playwright-config-overrides.json' );
+			if ( is_null( json_decode( $config_overrides, true ) ) ) {
+				throw new \RuntimeException( 'Invalid JSON in playwright-config-overrides.json' );
+			}
+		} else {
+			$config_overrides = json_encode( [] );
+		}
+
 		// Generate playwright-config.
 		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright/playwright-config-generator.php' ] );
 		$process->setEnv( [
@@ -50,6 +59,7 @@ class PlaywrightRunner extends E2ERunner {
 			'PROJECTS'         => json_encode( $this->make_projects( $test_infos ), JSON_UNESCAPED_SLASHES ),
 			'SAVE_AS'          => $env_info->temporary_env . 'qit-playwright.config.js',
 			'TEST_RESULT_PATH' => $results_dir,
+			'CONFIG_OVERRIDES' => $config_overrides,
 		] );
 
 		if ( $this->output->isVeryVerbose() ) {
@@ -278,7 +288,6 @@ class PlaywrightRunner extends E2ERunner {
 						"$php_container_name:{$test_to_run['path_in_php_container']}/__snapshots__",
 						normalize_path( $test_to_run['path_in_host_original'] ),
 					] );
-					$this->output->writeln( $copy_snapshots_process->getCommandLine() );
 					$copy_snapshots_process->run();
 					if ( ! $copy_snapshots_process->isSuccessful() ) {
 						throw new \RuntimeException( 'Could not copy snapshots from the PHP container.' );

@@ -85,4 +85,119 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 
 		$this->assertMatchesSnapshot( $output );
 	}
+
+	public function test_theme_as_sut() {
+		// Scaffold.
+		$scaffolded_dir = $this->scaffold_test();
+
+		$activate_theme_test = <<<'JS'
+import { test, expect } from '@playwright/test';
+import qit from '/qitHelpers';
+
+test('I can activate Bistro', async ({ page }) => {
+    await qit.loginAsAdmin(page);
+    await page.getByRole('link', { name: 'Appearance' }).click();
+    await expect(page.getByRole('cell', { name: 'Bistro' })).toBeVisible();
+    await page.getByRole('link', { name: 'Install Parent Theme' }).click();
+    await page.getByRole('link', { name: 'Activate “Storefront”' }).click();
+    await page.getByLabel('Activate Bistro').click();
+    await page.goto('/');
+});
+JS;
+
+		// Create a new test that will activate the theme.
+		if ( ! file_put_contents( $scaffolded_dir . '/activate-theme.spec.js', $activate_theme_test ) ) {
+			throw new \RuntimeException( 'Failed to create the scaffolded test file.' );
+
+		}
+
+		// Run.
+		$output = qit( [
+			'run:e2e',
+			'bistro',
+			$scaffolded_dir,
+			'--testing_theme',
+		] );
+
+		$output = $this->normalize_scaffolded_test_run_output( $output );
+
+		$this->assertMatchesSnapshot( $output );
+	}
+
+	public function test_run_with_snapshot() {
+		// Scaffold.
+		$scaffolded_dir = $this->scaffold_test();
+
+		$activate_theme_test = <<<'JS'
+import { test, expect } from '@playwright/test';
+import qit from '/qitHelpers';
+
+test('I can activate Bistro', async ({ page }) => {
+    await qit.loginAsAdmin(page);
+    await page.getByRole('link', { name: 'Appearance' }).click();
+    await expect(page.getByRole('cell', { name: 'Bistro' })).toBeVisible();
+    await page.getByRole('link', { name: 'Install Parent Theme' }).click();
+    await page.getByRole('link', { name: 'Activate “Storefront”' }).click();
+    await page.getByLabel('Activate Bistro').click();
+    await page.goto('/');
+    await expect(page).toHaveScreenshot('home.png', { maxDiffPixels: 100 });
+});
+JS;
+
+		// Create a new test that will activate the theme.
+		if ( ! file_put_contents( $scaffolded_dir . '/activate-theme.spec.js', $activate_theme_test ) ) {
+			throw new \RuntimeException( 'Failed to create the scaffolded test file.' );
+		}
+
+		$this->assertFileDoesNotExist( $scaffolded_dir . '/__snapshots__' );
+
+		// Run the first time to generate snapshots.
+		$output = qit( [
+			'run:e2e',
+			'bistro',
+			$scaffolded_dir,
+			'--testing_theme',
+			'--update_snapshots',
+		] );
+
+		$this->assertFileExists( $scaffolded_dir . '/__snapshots__' );
+		$this->assertMatchesSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
+
+		// Run the second time to validate snapshot.
+		$output = qit( [
+			'run:e2e',
+			'bistro',
+			$scaffolded_dir,
+			'--testing_theme',
+		] );
+
+		$this->assertMatchesSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
+	}
+
+	public function test_playwright_config_override() {
+		// Create a unique directory in tmp using tempnam and sys_get_dir.
+		$unique_dir = tempnam( sys_get_temp_dir(), 'qit' );
+
+		chdir( $unique_dir );
+
+		file_put_contents( $unique_dir . '/qit-playwright-config-overrides.json', json_encode( [
+			'reportSlowTests' => [
+				'max'       => 10,
+				'threshold' => 1,
+			],
+		] ) );
+
+		$output = qit( [
+				'run:e2e',
+				'automatewoo',
+				$this->scaffold_test(),
+				'--plugin',
+				'woocommerce:activate',
+			]
+		);
+
+		$output = $this->normalize_scaffolded_test_run_output( $output );
+
+		$this->assertMatchesSnapshot( $output );
+	}
 }
