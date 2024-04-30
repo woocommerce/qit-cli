@@ -261,4 +261,55 @@ PHP
 
 		$this->assertMatchesSnapshot( $output );
 	}
+
+	public function test_env_up_with_additional_php_extensions() {
+		$json = json_decode( qit( [
+				'env:up',
+				'--json',
+				'--php_extension',
+				'gd',
+			]
+		), true );
+
+		$output = qit( [
+			'env:exec',
+			'--env_id',
+			$json['env_id'],
+			'php -m | grep gd',
+		] );
+
+		$this->assertMatchesSnapshot( $output );
+	}
+
+	public function test_env_up_with_additional_themes() {
+		$json = json_decode( qit( [
+				'env:up',
+				'--json',
+				'--theme',
+				'storefront',
+				'--theme',
+				'twentyseventeen',
+			]
+		), true );
+
+		$output = '';
+
+		$output .= qit( [
+			'env:exec',
+			'--env_id',
+			$json['env_id'],
+			'wp theme get storefront --fields=name,status',
+		] );
+
+		$output .= "\n";
+
+		$output .= qit( [
+			'env:exec',
+			'--env_id',
+			$json['env_id'],
+			'wp theme get twentyseventeen --fields=name,status',
+		] );
+
+		$this->assertMatchesSnapshot( $output );
+	}
 }
