@@ -33,11 +33,11 @@ class CustomTestsDownloader {
 	}
 
 	/**
-	 * @param EnvInfo $env_info
-	 * @param string $cache_dir
+	 * @param EnvInfo          $env_info
+	 * @param string           $cache_dir
 	 * @param array<Extension> $plugins Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
 	 * @param array<Extension> $themes Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
-	 * @param string $test_type The test type. Defaults to 'e2e'.
+	 * @param string           $test_type The test type. Defaults to 'e2e'.
 	 *
 	 * @return void
 	 */
@@ -50,10 +50,10 @@ class CustomTestsDownloader {
 	}
 
 	/**
-	 * @param EnvInfo $env_info
+	 * @param EnvInfo          $env_info
 	 * @param array<Extension> $extensions
-	 * @param string $cache_dir
-	 * @param string $test_type
+	 * @param string           $cache_dir
+	 * @param string           $test_type
 	 *
 	 * @return void
 	 */
