@@ -2,9 +2,11 @@
 
 namespace QIT_CLI\Environment;
 
+use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
+use QIT_CLI\IO\Output;
 use QIT_CLI\SafeRemove;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,6 +15,7 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use function QIT_CLI\normalize_path;
+use function QIT_CLI\use_tty;
 
 class EnvironmentDanglingCleanup {
 	/** @var EnvironmentMonitor */
@@ -202,6 +205,20 @@ class EnvironmentDanglingCleanup {
 			}
 
 			$this->debug_output( "Removing dangling directory: {$directory}" );
+
+			if ( file_exists( $directory . '/docker-compose.yml' ) ) {
+				$down_process = new Process( array_merge( App::make( Docker::class )->find_docker_compose(), [ '-f', $directory . '/docker-compose.yml', 'down', '--volumes', '--remove-orphans' ] ) );
+				$down_process->setTimeout( 300 );
+				$down_process->setIdleTimeout( 300 );
+				$down_process->setPty( use_tty() );
+
+				$output = App::make( Output::class );
+
+				$down_process->run( static function ( $type, $buffer ) use ( $output ) {
+					$output->write( $buffer );
+				} );
+			}
+
 
 			SafeRemove::delete_dir( $directory, Environment::get_temp_envs_dir() );
 		}

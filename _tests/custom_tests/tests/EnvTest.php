@@ -5,6 +5,11 @@ use Spatie\Snapshots\MatchesSnapshots;
 class EnvTest extends \PHPUnit\Framework\TestCase {
 	use MatchesSnapshots;
 
+	protected function tearDown(): void {
+		qit( [ 'env:down' ] );
+		parent::tearDown();
+	}
+
 	public function test_env_up() {
 		$output = qit( [ 'env:up' ] );
 
@@ -129,6 +134,10 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function test_env_up_with_additional_volumes() {
+		if ( file_exists( sys_get_temp_dir() . '/qit-tmp-plugin.php' ) && ! unlink( sys_get_temp_dir() . '/qit-tmp-plugin.php' ) ) {
+			throw new \RuntimeException( 'Could not delete the temporary file.' );
+		}
+
 		file_put_contents( sys_get_temp_dir() . '/qit-tmp-plugin.php',
 			<<<'PHP'
 <?php
