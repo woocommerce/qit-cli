@@ -44,7 +44,7 @@
         {
             "test_result_json": {
                 "results_overview": {
-                    "total_extensions": "0",
+                    "total_extensions": "1",
                     "extensions_with_errors": {
                         "": {
                             "\\/": 2,
