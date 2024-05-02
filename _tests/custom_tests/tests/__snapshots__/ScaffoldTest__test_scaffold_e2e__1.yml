@@ -1,3 +1,18 @@
+/tmp-normalized/qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/bootstrap.php: |
+    <?php
+    /*
+     * Bootstrap File (Optional)
+     *
+     * Purpose: This script initializes the testing environment. It runs once during the bootstrap phase, before test execution.
+     *
+     * Notes:
+     * - If not required, feel free to delete this file.
+     * - This is a standalone PHP script without WordPress integration.
+     * - To include WordPress, add: require '/var/www/html/wp-load.php';
+     * - For scripts that need to run on every request, consider using 'mu-plugin.php' instead.
+     *
+     * Documentation: For detailed usage instructions, visit https://qit.woo.com/docs/
+     */
 /tmp-normalized/qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/bootstrap.sh: |-
     #!/bin/bash
 
@@ -14,21 +29,6 @@
     # Note: Delete this file if it's not required for your setup.
     #
     # Documentation: Detailed instructions available at https://qit.woo.com/docs/
-/tmp-normalized/qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/bootstrap.php: |
-    <?php
-    /*
-     * Bootstrap File (Optional)
-     *
-     * Purpose: This script initializes the testing environment. It runs once during the bootstrap phase, before test execution.
-     *
-     * Notes:
-     * - If not required, feel free to delete this file.
-     * - This is a standalone PHP script without WordPress integration.
-     * - To include WordPress, add: require '/var/www/html/wp-load.php';
-     * - For scripts that need to run on every request, consider using 'mu-plugin.php' instead.
-     *
-     * Documentation: For detailed usage instructions, visit https://qit.woo.com/docs/
-     */
 /tmp-normalized/qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/mu-plugin.php: |
     <?php
     /*

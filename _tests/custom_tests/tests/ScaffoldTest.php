@@ -35,6 +35,9 @@ class ScaffoldTest extends \PHPUnit\Framework\TestCase {
 			}
 		}
 
+		// Sort files alphabetically.
+		ksort( $files );
+
 		$this->assertMatchesSnapshot( $files );
 	}
 }

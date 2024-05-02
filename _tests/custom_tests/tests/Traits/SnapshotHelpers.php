@@ -22,26 +22,19 @@ trait SnapshotHelpers {
 		$normalized_spaces = '';
 
 		$lines_to_remove = [
-			'contains' => [
-				'First-time setup is pulling Docker images',
-				'npm',
-			],
-			'equals'   => [
-				"notice\n",
-			],
+			'First-time setup is pulling Docker images',
+			'npm',
 		];
 
 		foreach ( explode( "\n", $actual ) as $line ) {
-			foreach ( $lines_to_remove['contains'] as $c ) {
-				if ( strpos( $line, $c ) !== false ) {
+			foreach ( $lines_to_remove as $to_remove ) {
+				if ( strpos( $line, $to_remove ) !== false ) {
 					continue 2;
 				}
 			}
 
-			foreach ( $lines_to_remove['equals'] as $e ) {
-				if ( $line === $e ) {
-					continue 2;
-				}
+			if ( trim( $line ) === 'notice' ) {
+				continue;
 			}
 
 			// Normalize lines.
