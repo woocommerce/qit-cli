@@ -1,9 +1,9 @@
 <?php
 
-use Spatie\Snapshots\MatchesSnapshots;
+use QIT\SelfTests\CustomTests\Traits\SnapshotHelpers;
 
 class EnvTest extends \PHPUnit\Framework\TestCase {
-	use MatchesSnapshots;
+	use SnapshotHelpers;
 
 	protected function tearDown(): void {
 		qit( [ 'env:down' ] );
@@ -29,7 +29,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 		// "WordPress Version: 6.5.2" => "WordPress Version: 6.5.2-normalized"
 		$normalizedOutput = preg_replace( '/WordPress Version: .+/', 'WordPress Version: NORMALIZED', $normalizedOutput );
 
-		$this->assertMatchesSnapshot( $normalizedOutput );
+		$this->assertMatchesNormalizedSnapshot( $normalizedOutput );
 	}
 
 	public function test_env_up_with_parameters() {
@@ -130,7 +130,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 		}
 		$output = implode( "\n", $lines );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
 	public function test_env_up_with_additional_volumes() {
@@ -164,7 +164,7 @@ PHP
 			'wp plugin get qit-tmp-plugin',
 		] );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
 	public function test_env_up_wordpress_stable_version() {
@@ -207,7 +207,7 @@ PHP
 			'wp plugin update woocommerce',
 		] );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
 	public function test_env_up_woocommerce_stable_version_alternative_syntax() {
@@ -220,7 +220,7 @@ PHP
 			'wp plugin update woocommerce',
 		] );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
 	public function test_env_up_woocommerce_nightly_version() {
@@ -238,7 +238,7 @@ PHP
 			'wp plugin get woocommerce',
 		] );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
 	public function test_env_up_woocommerce_rc_version() {
@@ -259,7 +259,7 @@ PHP
 			'wp plugin update woocommerce',
 		] );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
 	public function test_env_up_with_additional_php_extensions() {
@@ -278,7 +278,7 @@ PHP
 			'php -m | grep gd',
 		] );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
 	public function test_env_up_with_additional_themes() {
@@ -310,6 +310,6 @@ PHP
 			'wp theme get twentyseventeen --fields=name,status',
 		] );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 }

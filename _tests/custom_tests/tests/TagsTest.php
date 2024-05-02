@@ -1,11 +1,11 @@
 <?php
 
 use QIT\SelfTests\CustomTests\Traits\ScaffoldHelpers;
-use Spatie\Snapshots\MatchesSnapshots;
+use QIT\SelfTests\CustomTests\Traits\SnapshotHelpers;
 
 class TagsTest extends \PHPUnit\Framework\TestCase {
 	use ScaffoldHelpers;
-	use MatchesSnapshots;
+	use SnapshotHelpers;
 
 	public function test_runs_scaffolded_e2e() {
 		// Make sure we start from a clean state.
@@ -21,7 +21,7 @@ class TagsTest extends \PHPUnit\Framework\TestCase {
 				$this->scaffold_test(),
 			]
 		);
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 
 		// All test tags, which should include this one.
 		$output = qit( [ 'tag:list', ] );

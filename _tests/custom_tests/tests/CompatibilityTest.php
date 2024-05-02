@@ -1,10 +1,10 @@
 <?php
 
 use QIT\SelfTests\CustomTests\Traits\ScaffoldHelpers;
-use Spatie\Snapshots\MatchesSnapshots;
+use QIT\SelfTests\CustomTests\Traits\SnapshotHelpers;
 
 class CompatibilityTest extends \PHPUnit\Framework\TestCase {
-	use MatchesSnapshots;
+	use SnapshotHelpers;
 	use ScaffoldHelpers;
 
 	public function test_sut_and_activate_additional() {
@@ -19,7 +19,7 @@ class CompatibilityTest extends \PHPUnit\Framework\TestCase {
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
 	public function test_sut_and_bootstrap_additional() {
@@ -46,7 +46,7 @@ class CompatibilityTest extends \PHPUnit\Framework\TestCase {
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
 	public function test_sut_and_test_additional() {
@@ -73,7 +73,7 @@ class CompatibilityTest extends \PHPUnit\Framework\TestCase {
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
 	public function test_multiple_tags_and_multiple_plugins_with_multiple_tags() {
@@ -115,6 +115,6 @@ class CompatibilityTest extends \PHPUnit\Framework\TestCase {
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 }

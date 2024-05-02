@@ -1,11 +1,11 @@
 <?php
 
 use QIT\SelfTests\CustomTests\Traits\ScaffoldHelpers;
-use Spatie\Snapshots\MatchesSnapshots;
+use QIT\SelfTests\CustomTests\Traits\SnapshotHelpers;
 
 class ScaffoldTest extends \PHPUnit\Framework\TestCase {
 	use ScaffoldHelpers;
-	use MatchesSnapshots;
+	use SnapshotHelpers;
 
 	public function test_scaffold_e2e() {
 		$scaffolded_dir = $this->scaffold_test();
@@ -31,6 +31,6 @@ class ScaffoldTest extends \PHPUnit\Framework\TestCase {
 				$files[ $normalize_path( $file->getPathname() ) ] = '';
 			}
 		}
-		$this->assertMatchesSnapshot( $files );
+		$this->assertMatchesNormalizedSnapshot( $files );
 	}
 }

@@ -1,10 +1,6 @@
 <?php
 
-use Spatie\Snapshots\MatchesSnapshots;
-
 class BasicTest extends \PHPUnit\Framework\TestCase {
-	use MatchesSnapshots;
-
 	public function test_run_env_up_exists() {
 		qit( [ 'env:up', '--help' ] );
 		// If we got here, it means the command ran successfully.

@@ -1,10 +1,10 @@
 <?php
 
 use QIT\SelfTests\CustomTests\Traits\ScaffoldHelpers;
-use Spatie\Snapshots\MatchesSnapshots;
+use QIT\SelfTests\CustomTests\Traits\SnapshotHelpers;
 
 class RunE2ETest extends \PHPUnit\Framework\TestCase {
-	use MatchesSnapshots;
+	use SnapshotHelpers;
 	use ScaffoldHelpers;
 
 	public function test_fails_if_dependency_unmet() {
@@ -19,7 +19,7 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
 	public function test_runs_scaffolded_e2e() {
@@ -34,7 +34,7 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
 	public function test_tag_and_run_test() {
@@ -55,7 +55,7 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
 	public function test_multiple_tags_and_run_tests() {
@@ -83,7 +83,7 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
 	public function test_theme_as_sut() {
@@ -121,7 +121,7 @@ JS;
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
 	public function test_run_with_snapshot() {
@@ -161,7 +161,7 @@ JS;
 		] );
 
 		$this->assertFileExists( $scaffolded_dir . '/__snapshots__' );
-		$this->assertMatchesSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
+		$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
 
 		// Run the second time to validate snapshot.
 		$output = qit( [
@@ -171,7 +171,7 @@ JS;
 			'--testing_theme',
 		] );
 
-		$this->assertMatchesSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
+		$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
 	}
 
 	public function test_playwright_config_override() {
@@ -202,6 +202,6 @@ JS;
 		// Sometimes, for some reason, this has some spaces. "Consider splitting slow test files to speed up parallel execution"
 		$output = preg_replace( '#\s+Consider#', "\nConsider", $output );
 
-		$this->assertMatchesSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 }
