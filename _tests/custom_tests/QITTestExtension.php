@@ -52,9 +52,15 @@ class QITTestStart implements ExecutionStartedSubscriber {
 		$fs = new Filesystem();
 
 		// We utilize the filesystem as shared state to coordinate parallel processes.
-		touch( sys_get_temp_dir() . '/test-initialization-lock-file' );
+		if ( ! touch( sys_get_temp_dir() . '/test-initialization-lock-file' ) ) {
+			throw new \RuntimeException( 'Failed to create lock file.' );
+		}
 
 		$lock_file = fopen( sys_get_temp_dir() . '/test-initialization-lock-file', 'w+' );
+
+		if ( ! $lock_file ) {
+			throw new \RuntimeException( 'Failed to open lock file.' );
+		}
 
 		// Attempt to get an exclusive lock - first process wins.
 		if ( flock( $lock_file, LOCK_EX | LOCK_NB ) ) {
@@ -156,7 +162,9 @@ class QITTestStart implements ExecutionStartedSubscriber {
 			// Wait after unlocking so that other processes can copy this source directory.
 			sleep( 10 );
 		} else {
-			touch( sys_get_temp_dir() . "/qit-running-{$GLOBALS['RUN_ID']}" );
+			if ( ! touch( sys_get_temp_dir() . "/qit-running-{$GLOBALS['RUN_ID']}" ) ) {
+				throw new \RuntimeException( 'Failed to create running file.' );
+			}
 
 			// If no exclusive lock is available, block until the first process is done with initialization
 			flock( $lock_file, LOCK_SH );
@@ -184,6 +192,9 @@ class QITTestStart implements ExecutionStartedSubscriber {
 		// Make sure each parallel process is spaced out a little bit.
 		$semaphore = sys_get_temp_dir() . '/qit-semaphore.log';
 		$fp        = fopen( $semaphore, 'c+' );
+		if ( ! $fp ) {
+			throw new \RuntimeException( 'Failed to open semaphore file.' );
+		}
 		$start     = microtime( true );
 		if ( flock( $fp, LOCK_EX ) ) {
 			if ( empty( fread( $fp, 1 ) ) ) {
