@@ -47,7 +47,7 @@ class QITTestStart implements ExecutionStartedSubscriber {
 		$qit_tmp_dir = __DIR__ . "/tmp/tmp_qit_config-$run_id";
 
 		$GLOBALS['QIT_HOME'] = $qit_tmp_dir;
-		$GLOBALS['RUN_ID']   = $qit_tmp_dir;
+		$GLOBALS['RUN_ID']   = $run_id;
 
 		$fs = new Filesystem();
 
