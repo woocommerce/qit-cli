@@ -26,18 +26,14 @@ jobs:
         working-directory: _tests/custom_tests
         run: composer install
 
-      - name: Copy .env.sample
-        working-directory: _tests/custom_tests
-        run: cp .env.sample .env
-
       - name: Fill in .env
         working-directory: _tests/custom_tests
         run: |
-          echo "QIT_CUSTOM_TESTS_USER=${{ secrets.QIT_USER }}" >> .env
-          echo "QIT_CUSTOM_TESTS_USER_QIT_TOKEN=${{ secrets.QIT_ACCESS_TOKEN }}" >> .env
-          echo "QIT_CUSTOM_TESTS_SECRET=${{ secrets.QIT_STAGING_SECRET }}" >> .env
-          echo "QIT_CUSTOM_TESTS_URL=https://stagingcompatibilitydashboard.wpcomstaging.com/" >> .env
-          echo "QIT_CUSTOM_TESTS_ENV=staging" >> .env
+          echo 'QIT_CUSTOM_TESTS_USER="${{ secrets.QIT_USER }}"' >> .env
+          echo 'QIT_CUSTOM_TESTS_USER_QIT_TOKEN="${{ secrets.QIT_ACCESS_TOKEN }}"' >> .env
+          echo 'QIT_CUSTOM_TESTS_SECRET="${{ secrets.QIT_STAGING_SECRET }}"' >> .env
+          echo 'QIT_CUSTOM_TESTS_URL="https://stagingcompatibilitydashboard.wpcomstaging.com/"' >> .env
+          echo 'QIT_CUSTOM_TESTS_ENV="staging"' >> .env
 
       - name: Run tests in parallel
         working-directory: _tests/custom_tests
