@@ -35,6 +35,11 @@ jobs:
           echo 'QIT_CUSTOM_TESTS_URL="https://stagingcompatibilitydashboard.wpcomstaging.com/"' >> .env
           echo 'QIT_CUSTOM_TESTS_ENV="staging"' >> .env
 
+      - name: Create tmp directory on the workspace.
+        run: mkdir -p ${{ github.workspace }}/tmp
+
       - name: Run tests in parallel
         working-directory: _tests/custom_tests
-        run: ./vendor/bin/phpunit --stop-on-failure --verbose
+        env:
+          TMPDIR: ${{ github.workspace }}/tmp
+        run: ./vendor/bin/paratest
