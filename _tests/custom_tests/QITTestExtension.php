@@ -118,7 +118,15 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				echo $buffer;
 			} );
 
-			if ( strpos( $extensions->getOutput(), '18734003134382' ) === false ) {
+			$woocommerce_ids_per_environment = [
+				'staging'    => 18734003134382,
+				'local'      => 18734002449992,
+				'production' => 18734002449992,
+			];
+
+			$woocommerce_id = $woocommerce_ids_per_environment[ $_ENV['QIT_CUSTOM_TESTS_ENV'] ];
+
+			if ( strpos( $extensions->getOutput(), $woocommerce_id ) === false ) {
 				if ( ! fwrite( $lock_file, 'failed' ) ) {
 					throw new \RuntimeException( 'Failed to write to lock file.' );
 				}
