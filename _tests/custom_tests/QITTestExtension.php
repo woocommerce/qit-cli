@@ -120,9 +120,7 @@ class QITTestStart implements ExecutionStartedSubscriber {
 			// Validate connection. Run "qit extensions" and assert "18734003134382" is present, which is the ID of the "woocommerce" extension.
 			$extensions = new Process( [ $GLOBALS['qit'], 'extensions' ] );
 			$extensions->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
-			$extensions->mustRun( function ( $type, $buffer ) {
-				echo $buffer;
-			} );
+			$extensions->mustRun();
 
 			$woocommerce_ids_per_environment = [
 				'staging'    => 18734003134382,
