@@ -74,11 +74,19 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				unlink( sys_get_temp_dir() . '/qit-semaphore' );
 			}
 			// Delete all directories in the current dir that matches the pattern "tmp_qit_config-*"
-			$fs->remove( glob( __DIR__ . '/tmp/tmp_qit_config-*' ) );
+			$fs->remove( __DIR__ . '/tmp/' );
+
+			if ( ! mkdir( __DIR__ . '/tmp', 0755, true ) ) {
+				throw new \RuntimeException( 'Failed to create the tmp directory.' );
+			}
 
 			// Enable dev mode.
 			$dev = new Process( [ $GLOBALS['qit'], 'dev' ] );
-			$dev->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
+			$dev->setEnv( [
+				'QIT_HOME' => $GLOBALS['QIT_HOME'],
+			] );
+			$dev->setTimeout( 30 );
+			$dev->setIdleTimeout( 30 );
 			$dev->mustRun( function ( $type, $buffer ) {
 				echo $buffer;
 			} );
@@ -193,7 +201,7 @@ class QITTestStart implements ExecutionStartedSubscriber {
 		if ( ! $fp ) {
 			throw new \RuntimeException( "Failed to open semaphore file. $semaphore" );
 		}
-		$start     = microtime( true );
+		$start = microtime( true );
 		if ( flock( $fp, LOCK_EX ) ) {
 			if ( empty( fread( $fp, 1 ) ) ) {
 				// First process.

@@ -19,3 +19,4 @@ Consider splitting slow test files to speed up parallel execution
 To open last HTML report run: qit e2e-report
 
 Shutting down environment...
+

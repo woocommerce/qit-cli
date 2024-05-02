@@ -3,3 +3,4 @@ automatewoo    active    NORMALIZED    NORMALIZED_VERSION    NORMALIZED_VERSION
 woocommerce    active    NORMALIZED    NORMALIZED_VERSION    NORMALIZED_VERSION
 qit-wp-cli	must-use	none			off
 wp-cli-github-cache	must-use	none			off
+

@@ -61,6 +61,8 @@ function qit( array $command, array $qit_env_json = [], int $expected_exit_code 
 	$qit = new Process( $args );
 	$qit->setTimeout( 300 );
 	$qit->setIdleTimeout( 300 );
+	$qit->setTty( false );
+	$qit->setPty( false );
 	$qit->setEnv( [
 		'QIT_HOME'            => $GLOBALS['QIT_HOME'],
 		'QIT_DISABLE_CLEANUP' => '1', // We need to disable it because of parallelization with individualized QIT_HOMEs.

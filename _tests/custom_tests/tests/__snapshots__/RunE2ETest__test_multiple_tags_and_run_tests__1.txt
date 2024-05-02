@@ -22,3 +22,4 @@ Success: Imported from '/tmp-normalized/qit-bootstrap.sql'.
 To open last HTML report run: qit e2e-report
 
 Shutting down environment...
+

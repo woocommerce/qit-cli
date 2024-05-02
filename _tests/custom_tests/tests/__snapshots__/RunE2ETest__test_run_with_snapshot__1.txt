@@ -18,3 +18,4 @@ A snapshot doesn't exist at /qit/tests/e2e/bistro/local/__snapshots__/activate-t
 To open last HTML report run: qit e2e-report
 
 Shutting down environment...
+

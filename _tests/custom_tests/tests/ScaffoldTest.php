@@ -31,6 +31,7 @@ class ScaffoldTest extends \PHPUnit\Framework\TestCase {
 				$files[ $normalize_path( $file->getPathname() ) ] = '';
 			}
 		}
-		$this->assertMatchesNormalizedSnapshot( $files );
+
+		$this->assertMatchesSnapshot( $files );
 	}
 }

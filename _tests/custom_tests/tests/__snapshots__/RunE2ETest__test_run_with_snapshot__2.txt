@@ -16,3 +16,4 @@ Running 2 tests using 1 worker
 To open last HTML report run: qit e2e-report
 
 Shutting down environment...
+

@@ -7,7 +7,7 @@ use Spatie\Snapshots\MatchesSnapshots;
 trait SnapshotHelpers {
 	use MatchesSnapshots;
 
-	public function assertMatchesNormalizedSnapshot( $actual, ?\Spatie\Snapshots\Driver $driver = null ): void {
+	public function assertMatchesNormalizedSnapshot( string $actual, ?\Spatie\Snapshots\Driver $driver = null ): void {
 		$actual = str_replace( sys_get_temp_dir(), '/tmp-normalized', $actual );
 		$actual = str_replace( '/tmp/', '/tmp-normalized/', $actual );
 
@@ -19,6 +19,12 @@ trait SnapshotHelpers {
 			$actual = preg_replace( '/First-time setup is pulling Docker images and caching downloads. Subsequent runs will be faster.\n/', '', $actual );
 		}
 
-		$this->assertMatchesSnapshot( $actual, $driver );
+		$normalized_spaces = '';
+
+		foreach ( explode( "\n", $actual ) as $line ) {
+			$normalized_spaces .= trim( $line ) . "\n";
+		}
+
+		$this->assertMatchesTextSnapshot( $normalized_spaces, $driver );
 	}
 }
