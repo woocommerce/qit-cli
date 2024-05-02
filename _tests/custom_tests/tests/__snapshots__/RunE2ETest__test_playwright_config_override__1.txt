@@ -11,7 +11,7 @@ Bootstrapping automatewoo /qit/tests/e2e/automatewoo/local/bootstrap/bootstrap.p
 Bootstrapping automatewoo /qit/tests/e2e/automatewoo/local/bootstrap/bootstrap.sh
 Running E2E Tests
 Running 1 test using 1 worker
-[1/1] [automatewoo-local] › automatewoo/local/example.spec.js:9:5 › I can se
+[1/1] [automatewoo-local] › automatewoo/local/example.spec.js:9:5 › I can see my plugin menu
 Slow test file: [automatewoo-local] › automatewoo/local/example.spec.js (<time>s)
 Consider splitting slow test files to speed up parallel execution
 1 passed (TIME)

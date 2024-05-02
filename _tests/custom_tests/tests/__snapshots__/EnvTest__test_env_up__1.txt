@@ -3,7 +3,7 @@ First-time setup is pulling Docker images and caching downloads. Subsequent runs
 Setting up WordPress...
 Activating plugins...
 
- [OK] Temporary test environment created. (ENV_ID)                       
+ [OK] Temporary test environment created. (ENV_ID)                                                               
 
  * URL: http://localhost:PORT
  * Admin URL: http://localhost:PORT/wp-admin
@@ -11,7 +11,7 @@ Activating plugins...
  * PHP Version: 7.4
  * WordPress Version: NORMALIZED
  * Redis Object Cache? No
- * Path: RUN_ID/temporary-envs/e2e-ENV_ID/
+ * Path: QIT_HOME/temporary-envs/e2e-ENV_ID/
 
 To see additional info, run with the "--verbose" flag.
 
