@@ -58,6 +58,7 @@ class QITTestStart implements ExecutionStartedSubscriber {
 
 		// Attempt to get an exclusive lock - first process wins.
 		if ( flock( $lock_file, LOCK_EX | LOCK_NB ) ) {
+			echo sprintf( "Process %s has exclusive lock\n", getenv( 'TEST_TOKEN' ) );
 			// Since we are the single process that has an exclusive lock, we run the initialization.
 
 			// Cleanup initial state.
@@ -130,12 +131,14 @@ class QITTestStart implements ExecutionStartedSubscriber {
 			fclose( $lock_file );
 
 			// Wait after unlocking so that other processes can copy this source directory.
-			sleep( 5 );
+			sleep( 10 );
 		} else {
 			touch( sys_get_temp_dir() . "/qit-running-{$GLOBALS['RUN_ID']}" );
 
 			// If no exclusive lock is available, block until the first process is done with initialization
 			flock( $lock_file, LOCK_SH );
+
+			echo sprintf( "Process %s proceeding after the lock is released\n", getenv( 'TEST_TOKEN' ) );
 
 			// Read the contents of the lock file to get the QIT_HOME directory.
 			$source_qit_home = fread( $lock_file, 1024 );
