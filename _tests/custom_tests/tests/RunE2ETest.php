@@ -175,24 +175,19 @@ JS;
 	}
 
 	public function test_playwright_config_override() {
-		// Create a unique directory in tmp using tempnam and sys_get_dir.
-		$unique_dir = tempnam( sys_get_temp_dir(), 'qit' );
-
-		chdir( $unique_dir );
-
-		file_put_contents( $unique_dir . '/qit-playwright-config-overrides.json', json_encode( [
-			'reportSlowTests' => [
-				'max'       => 10,
-				'threshold' => 1,
-			],
-		] ) );
-
 		$output = qit( [
-				'run:e2e',
-				'automatewoo',
-				$this->scaffold_test(),
-				'--plugin',
-				'woocommerce:activate',
+			'run:e2e',
+			'automatewoo',
+			$this->scaffold_test(),
+			'--plugin',
+			'woocommerce:activate',
+		], [
+				'playwright_config' => [
+					'reportSlowTests' => [
+						'max'       => 10,
+						'threshold' => 1,
+					],
+				],
 			]
 		);
 

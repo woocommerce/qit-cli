@@ -1,3 +1,5 @@
+Loading environment config from override parameter /tmp/qit-env-3d530d87059d85a478f799ac95f47149.json...
+Warning: Key "config" not found in environment info.
 Downloading plugins and themes...
 Setting up Docker...
 Setting up WordPress...
@@ -10,6 +12,8 @@ Bootstrapping automatewoo /qit/tests/e2e/automatewoo/local/bootstrap/bootstrap.s
 Running E2E Tests
 Running 1 test using 1 worker
 [1/1] [automatewoo-local] › automatewoo/local/example.spec.js:9:5 › I can se
+Slow test file: [automatewoo-local] › automatewoo/local/example.spec.js (6.9s)
+Consider splitting slow test files to speed up parallel execution
 1 passed (TIME)
 
 To open last HTML report run: qit e2e-report

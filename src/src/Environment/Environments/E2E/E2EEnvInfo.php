@@ -40,4 +40,7 @@ class E2EEnvInfo extends EnvInfo {
 	 * }> $tests
 	 */
 	public $tests = [];
+
+	/** @var array<mixed>> */
+	public $playwright_config = [];
 }

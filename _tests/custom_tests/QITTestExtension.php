@@ -44,7 +44,7 @@ class QITTestStart implements ExecutionStartedSubscriber {
 
 		// Generate an ID for this run.
 		$run_id      = uniqid( 'qit_custom_tests_' );
-		$qit_tmp_dir = __DIR__ . "/tmp_qit_config-$run_id";
+		$qit_tmp_dir = __DIR__ . "/tmp/tmp_qit_config-$run_id";
 
 		$GLOBALS['QIT_HOME'] = $qit_tmp_dir;
 		$GLOBALS['RUN_ID']   = $qit_tmp_dir;
@@ -63,7 +63,9 @@ class QITTestStart implements ExecutionStartedSubscriber {
 			// Cleanup initial state.
 			array_map( 'unlink', glob( sys_get_temp_dir() . '/qit-running-*' ) );
 			array_map( 'unlink', glob( sys_get_temp_dir() . '/qit-test-tag-lock-*' ) );
-			unlink( sys_get_temp_dir() . '/qit-semaphore' );
+			if ( file_exists( sys_get_temp_dir() . '/qit-semaphore' ) ) {
+				unlink( sys_get_temp_dir() . '/qit-semaphore' );
+			}
 			// Delete all directories in the current dir that matches the pattern "tmp_qit_config-*"
 			$fs->remove( glob( __DIR__ . '/tmp_qit_config-*' ) );
 
@@ -133,8 +135,8 @@ class QITTestStart implements ExecutionStartedSubscriber {
 
 		// Make sure each parallel process is spaced out a little bit.
 		$semaphore = sys_get_temp_dir() . '/qit-semaphore.log';
-		$fp = fopen( $semaphore, 'c+' );
-		$start = microtime( true );
+		$fp        = fopen( $semaphore, 'c+' );
+		$start     = microtime( true );
 		if ( flock( $fp, LOCK_EX ) ) {
 			if ( empty( fread( $fp, 1 ) ) ) {
 				// First process.
@@ -155,7 +157,14 @@ class QITTestStart implements ExecutionStartedSubscriber {
 
 class QITTestFinish implements ExecutionFinishedSubscriber {
 	public function notify( ExecutionFinished $event ): void {
-		unlink( sys_get_temp_dir() . "/qit-running-{$GLOBALS['RUN_ID']}" );
+		if ( ! isset( $GLOBALS['RUN_ID'] ) ) {
+			throw new \RuntimeException( 'The "RUN_ID" GLOBAL must be set.' );
+		}
+
+		if ( file_exists( sys_get_temp_dir() . "/qit-running-{$GLOBALS['RUN_ID']}" ) ) {
+			unlink( sys_get_temp_dir() . "/qit-running-{$GLOBALS['RUN_ID']}" );
+		}
+
 		self::delete_temp_environment();
 	}
 

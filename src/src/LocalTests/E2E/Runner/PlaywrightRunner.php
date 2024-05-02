@@ -43,13 +43,15 @@ class PlaywrightRunner extends E2ERunner {
 			}
 		}
 
-		if ( file_exists( getcwd() . '/qit-playwright-config-overrides.json' ) ) {
-			$config_overrides = file_get_contents( getcwd() . '/playwright-config-overrides.json' );
-			if ( is_null( json_decode( $config_overrides, true ) ) ) {
-				throw new \RuntimeException( 'Invalid JSON in playwright-config-overrides.json' );
+		// Special settings for running self-tests.
+		if ( getenv( 'QIT_SELF_TESTS' ) ) {
+			if ( ! isset( $env_info->playwright_config['reportSlowTests'] ) ) {
+				// Increase the "reportSlowTests" for more reliable snapshot testing.
+				$env_info->playwright_config['reportSlowTests'] = [
+					'max'       => 10,
+					'threshold' => 60000,
+				];
 			}
-		} else {
-			$config_overrides = json_encode( [] );
 		}
 
 		// Generate playwright-config.
@@ -59,7 +61,7 @@ class PlaywrightRunner extends E2ERunner {
 			'PROJECTS'         => json_encode( $this->make_projects( $test_infos ), JSON_UNESCAPED_SLASHES ),
 			'SAVE_AS'          => $env_info->temporary_env . 'qit-playwright.config.js',
 			'TEST_RESULT_PATH' => $results_dir,
-			'CONFIG_OVERRIDES' => $config_overrides,
+			'CONFIG_OVERRIDES' => json_encode( $env_info->playwright_config ),
 		] );
 
 		if ( $this->output->isVeryVerbose() ) {
