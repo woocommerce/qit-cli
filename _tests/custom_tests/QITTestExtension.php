@@ -148,6 +148,8 @@ class QITTestStart implements ExecutionStartedSubscriber {
 
 			$GLOBALS['IS_SOURCE'] = true;
 
+			echo "Main process has authenticated and is releasing the lock...\n";
+
 			flock( $lock_file, LOCK_UN );
 			fclose( $lock_file );
 
@@ -240,6 +242,7 @@ class QITTestFinish implements ExecutionFinishedSubscriber {
 				$timeout = 300;
 				// Wait for all other tests to finish.
 				while ( count( glob( sys_get_temp_dir() . '/qit-running-*' ) ) > 1 ) {
+					echo sprintf( "Main process is waiting for %d other tests to finish.\n", count( glob( sys_get_temp_dir() . '/qit-running-*' ) ) - 1 );
 					sleep( 5 );
 					$timeout -= 5;
 					if ( $timeout <= 0 ) {

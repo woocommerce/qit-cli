@@ -37,4 +37,4 @@ jobs:
 
       - name: Run tests in parallel
         working-directory: _tests/custom_tests
-        run: ./vendor/bin/paratest
+        run: ./vendor/bin/paratest --verbose
