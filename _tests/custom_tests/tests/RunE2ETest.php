@@ -94,13 +94,13 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 import { test, expect } from '@playwright/test';
 import qit from '/qitHelpers';
 
-test('I can activate Bistro', async ({ page }) => {
+test('I can activate Deli', async ({ page }) => {
     await qit.loginAsAdmin(page);
     await page.getByRole('link', { name: 'Appearance' }).click();
-    await expect(page.getByRole('cell', { name: 'Bistro' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'Deli' })).toBeVisible();
     await page.getByRole('link', { name: 'Install Parent Theme' }).click();
     await page.getByRole('link', { name: 'Activate “Storefront”' }).click();
-    await page.getByLabel('Activate Bistro').click();
+    await page.getByLabel('Activate Deli').click();
     await page.goto('/');
 });
 JS;
@@ -114,7 +114,7 @@ JS;
 		// Run.
 		$output = qit( [
 			'run:e2e',
-			'bistro',
+			'deli',
 			$scaffolded_dir,
 			'--testing_theme',
 		] );
@@ -132,13 +132,13 @@ JS;
 import { test, expect } from '@playwright/test';
 import qit from '/qitHelpers';
 
-test('I can activate Bistro', async ({ page }) => {
+test('I can activate Deli', async ({ page }) => {
     await qit.loginAsAdmin(page);
     await page.getByRole('link', { name: 'Appearance' }).click();
-    await expect(page.getByRole('cell', { name: 'Bistro' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'Deli' })).toBeVisible();
     await page.getByRole('link', { name: 'Install Parent Theme' }).click();
     await page.getByRole('link', { name: 'Activate “Storefront”' }).click();
-    await page.getByLabel('Activate Bistro').click();
+    await page.getByLabel('Activate Deli').click();
     await page.goto('/');
     await expect(page).toHaveScreenshot('home.png', { maxDiffPixels: 100 });
 });
@@ -154,7 +154,7 @@ JS;
 		// Run the first time to generate snapshots.
 		$output = qit( [
 			'run:e2e',
-			'bistro',
+			'deli',
 			$scaffolded_dir,
 			'--testing_theme',
 			'--update_snapshots',
@@ -166,7 +166,7 @@ JS;
 		// Run the second time to validate snapshot.
 		$output = qit( [
 			'run:e2e',
-			'bistro',
+			'deli',
 			$scaffolded_dir,
 			'--testing_theme',
 		] );

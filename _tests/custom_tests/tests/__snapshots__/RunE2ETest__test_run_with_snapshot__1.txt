@@ -5,14 +5,14 @@ Activating plugins...
 Environment ready.
 
 Bootstrapping Plugins
-Bootstrapping bistro /qit/tests/e2e/bistro/local/bootstrap/bootstrap.php
-Bootstrapping bistro /qit/tests/e2e/bistro/local/bootstrap/bootstrap.sh
+Bootstrapping deli /qit/tests/e2e/deli/local/bootstrap/bootstrap.php
+Bootstrapping deli /qit/tests/e2e/deli/local/bootstrap/bootstrap.sh
 Running E2E Tests
 Running 2 tests using 1 worker
-[1/2] [bistro-local] › bistro/local/activate-theme.spec.js:4:5 › I can activate Bistro
-[bistro-local] › bistro/local/activate-theme.spec.js:4:5 › I can activate Bistro
-A snapshot doesn't exist at /qit/tests/e2e/bistro/local/__snapshots__/activate-theme.spec.js/home.png, writing actual.
-[1A[0G[0J[2/2] [bistro-local] › bistro/local/example.spec.js:9:5 › I can see my plugin menu
+[1/2] [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli
+[deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli
+A snapshot doesn't exist at /qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png, writing actual.
+[1A[0G[0J[2/2] [deli-local] › deli/local/example.spec.js:9:5 › I can see my plugin menu
 2 passed (TIME)
 
 To open last HTML report run: qit e2e-report
