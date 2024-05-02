@@ -86,7 +86,9 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				$_ENV['QIT_CUSTOM_TESTS_ENV'],
 			] );
 			$add_environment->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
-			$add_environment->mustRun();
+			$add_environment->mustRun( function ( $type, $buffer ) {
+				echo $buffer;
+			} );
 
 			// Add the partner account that will be used.
 			$add_partner = new Process( [
@@ -98,7 +100,9 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				$_ENV['QIT_CUSTOM_TESTS_USER_QIT_TOKEN'],
 			] );
 			$add_partner->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
-			$add_partner->mustRun();
+			$add_partner->mustRun( function ( $type, $buffer ) {
+				echo $buffer;
+			} );
 
 			if ( ! fwrite( $lock_file, $GLOBALS['QIT_HOME'] ) ) {
 				throw new \RuntimeException( 'Failed to write to lock file.' );
