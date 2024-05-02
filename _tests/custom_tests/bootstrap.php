@@ -67,6 +67,7 @@ function qit( array $command, array $qit_env_json = [], int $expected_exit_code 
 		'QIT_HOME'            => $GLOBALS['QIT_HOME'],
 		'QIT_DISABLE_CLEANUP' => '1', // We need to disable it because of parallelization with individualized QIT_HOMEs.
 		'QIT_SELF_TESTS'      => '1',
+		'CI'                  => '1',
 		'COLUMNS'             => '300',  // Set a fixed width so that we can snapshot the output.
 	] );
 	$qit->run();

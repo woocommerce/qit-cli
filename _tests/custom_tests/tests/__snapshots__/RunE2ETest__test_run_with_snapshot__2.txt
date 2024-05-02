@@ -10,7 +10,7 @@ Bootstrapping deli /qit/tests/e2e/deli/local/bootstrap/bootstrap.sh
 Running E2E Tests
 Running 2 tests using 1 worker
 [1/2] [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli
-[1A[0G[0J[2/2] [deli-local] › deli/local/example.spec.js:9:5 › I can see my plugin menu
+[2/2] [deli-local] › deli/local/example.spec.js:9:5 › I can see my plugin menu
 2 passed (TIME)
 
 To open last HTML report run: qit e2e-report
