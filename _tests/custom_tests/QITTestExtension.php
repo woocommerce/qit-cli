@@ -118,6 +118,10 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				mkdir( __DIR__ . '/cache' );
 			}
 
+			if ( ! file_exists( __DIR__ . '/tmp' ) ) {
+				mkdir( __DIR__ . '/tmp' );
+			}
+
 			$fs->mirror( __DIR__ . '/cache', $GLOBALS['QIT_HOME'] . '/cache' );
 
 			$GLOBALS['IS_SOURCE'] = true;
