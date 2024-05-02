@@ -17,10 +17,14 @@ jobs:
       - name: Checkout code (Cross-platform)
         uses: actions/checkout@v4
 
+      - name: Create tmp directory on the workspace.
+        run: mkdir -p ${{ github.workspace }}/tmp
+
       - name: Setup PHP (Cross-platform)
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
+          ini-values: sys_temp_dir=${{ github.workspace }}/tmp
 
       - name: Composer install
         working-directory: _tests/custom_tests
@@ -35,11 +39,6 @@ jobs:
           echo 'QIT_CUSTOM_TESTS_URL="https://stagingcompatibilitydashboard.wpcomstaging.com/"' >> .env
           echo 'QIT_CUSTOM_TESTS_ENV="staging"' >> .env
 
-      - name: Create tmp directory on the workspace.
-        run: mkdir -p ${{ github.workspace }}/tmp
-
       - name: Run tests in parallel
         working-directory: _tests/custom_tests
-        env:
-          TMPDIR: ${{ github.workspace }}/tmp
         run: ./vendor/bin/paratest
