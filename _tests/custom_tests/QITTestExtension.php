@@ -67,7 +67,7 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				unlink( sys_get_temp_dir() . '/qit-semaphore' );
 			}
 			// Delete all directories in the current dir that matches the pattern "tmp_qit_config-*"
-			$fs->remove( glob( __DIR__ . '/tmp_qit_config-*' ) );
+			$fs->remove( glob( __DIR__ . '/tmp/tmp_qit_config-*' ) );
 
 			// Enable dev mode.
 			$dev = new Process( [ $GLOBALS['qit'], 'dev' ] );
