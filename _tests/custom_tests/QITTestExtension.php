@@ -111,8 +111,21 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				echo "Skipping partner add for staging environment\n";
 			}
 
-			if ( ! fwrite( $lock_file, $GLOBALS['QIT_HOME'] ) ) {
-				throw new \RuntimeException( 'Failed to write to lock file.' );
+			// Validate connection. Run "qit extensions" and assert "18734003134382" is present, which is the ID of the "woocommerce" extension.
+			$extensions = new Process( [ $GLOBALS['qit'], 'extensions' ] );
+			$extensions->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
+			$extensions->mustRun( function ( $type, $buffer ) {
+				echo $buffer;
+			} );
+
+			if ( strpos( $extensions->getOutput(), '18734003134382' ) === false ) {
+				if ( ! fwrite( $lock_file, 'failed' ) ) {
+					throw new \RuntimeException( 'Failed to write to lock file.' );
+				}
+			} else {
+				if ( ! fwrite( $lock_file, $GLOBALS['QIT_HOME'] ) ) {
+					throw new \RuntimeException( 'Failed to write to lock file.' );
+				}
 			}
 
 			if ( ! file_exists( __DIR__ . '/cache' ) ) {
@@ -143,6 +156,10 @@ class QITTestStart implements ExecutionStartedSubscriber {
 			// Read the contents of the lock file to get the QIT_HOME directory.
 			$source_qit_home = fread( $lock_file, 1024 );
 			fclose( $lock_file );
+
+			if ( $source_qit_home === 'failed' ) {
+				throw new \RuntimeException( 'Bailing because it failed to initialize.' );
+			}
 
 			if ( ! file_exists( $source_qit_home ) ) {
 				throw new \RuntimeException( sprintf( 'The QIT_HOME directory "%s" does not exist.', $source_qit_home ) );

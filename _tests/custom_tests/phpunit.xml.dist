@@ -3,6 +3,7 @@
         bootstrap="./bootstrap.php"
         backupGlobals="false"
         colors="true"
+        stopOnWarning="true"
 >
     <extensions>
         <bootstrap class="QITTestExtension"/>
