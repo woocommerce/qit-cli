@@ -1,4 +1,4 @@
-/tmp/qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/bootstrap.sh: |-
+/tmp-normalized/qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/bootstrap.sh: |-
     #!/bin/bash
 
     # Bootstrap Shell Script (Optional)
@@ -14,7 +14,7 @@
     # Note: Delete this file if it's not required for your setup.
     #
     # Documentation: Detailed instructions available at https://qit.woo.com/docs/
-/tmp/qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/bootstrap.php: |
+/tmp-normalized/qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/bootstrap.php: |
     <?php
     /*
      * Bootstrap File (Optional)
@@ -29,7 +29,7 @@
      *
      * Documentation: For detailed usage instructions, visit https://qit.woo.com/docs/
      */
-/tmp/qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/mu-plugin.php: |
+/tmp-normalized/qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/mu-plugin.php: |
     <?php
     /*
      * mu-plugin File (Optional)
@@ -41,7 +41,7 @@
      *
      * Documentation: For more information, please visit https://qit.woo.com/docs/
      */
-/tmp/qit_scaffolded_e2e-NORMALIZED_ID/example.spec.js: |-
+/tmp-normalized/qit_scaffolded_e2e-NORMALIZED_ID/example.spec.js: |-
     /*
      * This is an example E2E test. You can write your own tests, or generate them with Codegen.
      * 
