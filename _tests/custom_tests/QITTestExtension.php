@@ -72,7 +72,9 @@ class QITTestStart implements ExecutionStartedSubscriber {
 			// Enable dev mode.
 			$dev = new Process( [ $GLOBALS['qit'], 'dev' ] );
 			$dev->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
-			$dev->mustRun();
+			$dev->mustRun( function ( $type, $buffer ) {
+				echo $buffer;
+			} );
 
 			// Add the environment.
 			$add_environment = new Process( [
@@ -90,19 +92,23 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				echo $buffer;
 			} );
 
-			// Add the partner account that will be used.
-			$add_partner = new Process( [
-				$GLOBALS['qit'],
-				'partner:add',
-				'--user',
-				$_ENV['QIT_CUSTOM_TESTS_USER'],
-				'--qit_token',
-				$_ENV['QIT_CUSTOM_TESTS_USER_QIT_TOKEN'],
-			] );
-			$add_partner->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
-			$add_partner->mustRun( function ( $type, $buffer ) {
-				echo $buffer;
-			} );
+			if ( $_ENV['QIT_CUSTOM_TESTS_ENV'] !== 'staging' ) {
+				// Add the partner account that will be used.
+				$add_partner = new Process( [
+					$GLOBALS['qit'],
+					'partner:add',
+					'--user',
+					$_ENV['QIT_CUSTOM_TESTS_USER'],
+					'--qit_token',
+					$_ENV['QIT_CUSTOM_TESTS_USER_QIT_TOKEN'],
+				] );
+				$add_partner->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
+				$add_partner->mustRun( function ( $type, $buffer ) {
+					echo $buffer;
+				} );
+			} else {
+				echo "Skipping partner add for staging environment\n";
+			}
 
 			if ( ! fwrite( $lock_file, $GLOBALS['QIT_HOME'] ) ) {
 				throw new \RuntimeException( 'Failed to write to lock file.' );
