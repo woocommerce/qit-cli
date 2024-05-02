@@ -13,6 +13,8 @@ jobs:
     env:
       NO_COLOR: 1
       QIT_DISABLE_ONBOARDING: yes
+      QIT_DISABLE_CLEANUP: 1
+      QIT_SELF_TESTS: 1
     steps:
       - name: Checkout code (Cross-platform)
         uses: actions/checkout@v4
