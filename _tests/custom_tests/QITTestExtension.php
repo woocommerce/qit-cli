@@ -114,6 +114,10 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				throw new \RuntimeException( 'Failed to write to lock file.' );
 			}
 
+			if ( ! file_exists( __DIR__ . '/cache' ) ) {
+				mkdir( __DIR__ . '/cache' );
+			}
+
 			$fs->mirror( __DIR__ . '/cache', $GLOBALS['QIT_HOME'] . '/cache' );
 
 			$GLOBALS['IS_SOURCE'] = true;
