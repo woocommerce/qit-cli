@@ -29,3 +29,4 @@ _build/docker/php83/xdebug/*
 _tests/custom_tests/.env
 _tests/custom_tests/tmp_qit_config*
 _tests/custom_tests/cache
+_tests/custom_tests/tmp/
