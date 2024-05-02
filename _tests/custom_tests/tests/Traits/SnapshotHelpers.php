@@ -9,6 +9,7 @@ trait SnapshotHelpers {
 
 	public function assertMatchesNormalizedSnapshot( $actual, ?\Spatie\Snapshots\Driver $driver = null ): void {
 		$actual = str_replace( sys_get_temp_dir(), '/tmp-normalized', $actual );
+		$actual = str_replace( '/tmp/', '/tmp-normalized/', $actual );
 
 		/*
 		 * "paratest" sets the "TEST_TOKEN" env var.
@@ -17,7 +18,7 @@ trait SnapshotHelpers {
 		if ( empty( getenv( 'TEST_TOKEN' ) ) ) {
 			$actual = preg_replace( '/First-time setup is pulling Docker images and caching downloads. Subsequent runs will be faster.\n/', '', $actual );
 		}
-		
+
 		$this->assertMatchesSnapshot( $actual, $driver );
 	}
 }
