@@ -204,7 +204,7 @@ class QITTestFinish implements ExecutionFinishedSubscriber {
 
 		if ( $fs->exists( $GLOBALS['QIT_HOME'] ) ) {
 			// Copy files from $GLOBALS['QIT_HOME'] . '/cache' to __DIR__. '/cache'
-			if ( file_exists( __DIR__ . '/cache' ) ) {
+			if ( file_exists( $GLOBALS['QIT_HOME'] . '/cache' ) ) {
 				$fs->mirror( $GLOBALS['QIT_HOME'] . '/cache', __DIR__ . '/cache' );
 			}
 
