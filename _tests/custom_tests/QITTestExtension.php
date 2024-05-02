@@ -200,7 +200,9 @@ class QITTestFinish implements ExecutionFinishedSubscriber {
 
 		if ( $fs->exists( $GLOBALS['QIT_HOME'] ) ) {
 			// Copy files from $GLOBALS['QIT_HOME'] . '/cache' to __DIR__. '/cache'
-			$fs->mirror( $GLOBALS['QIT_HOME'] . '/cache', __DIR__ . '/cache' );
+			if ( file_exists( __DIR__ . '/cache' ) ) {
+				$fs->mirror( $GLOBALS['QIT_HOME'] . '/cache', __DIR__ . '/cache' );
+			}
 
 			if ( isset( $GLOBALS['IS_SOURCE'] ) && $GLOBALS['IS_SOURCE'] ) {
 				$timeout = 300;
