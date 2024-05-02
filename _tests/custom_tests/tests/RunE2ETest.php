@@ -200,7 +200,7 @@ JS;
 		$output = preg_replace( '/\d+\.\d+s/', '<time>s', $output );
 
 		// Sometimes, for some reason, this has some spaces. "Consider splitting slow test files to speed up parallel execution"
-		$output = preg_replace( '#^\s+Consider#', 'Consider', $output );
+		$output = preg_replace( '#\s+Consider#', 'Consider', $output );
 
 		$this->assertMatchesSnapshot( $output );
 	}
