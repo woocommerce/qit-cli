@@ -27,9 +27,11 @@ jobs:
         run: composer install
 
       - name: Copy .env.sample
+        working-directory: _tests/custom_tests
         run: cp .env.sample .env
 
       - name: Fill in .env
+        working-directory: _tests/custom_tests
         run: |
           echo "QIT_CUSTOM_TESTS_USER=${{ secrets.QIT_USER }}" >> .env
           echo "QIT_CUSTOM_TESTS_USER_QIT_TOKEN=${{ secrets.QIT_ACCESS_TOKEN }}" >> .env
