@@ -216,6 +216,10 @@ class QITTestStart implements ExecutionStartedSubscriber {
 
 class QITTestFinish implements ExecutionFinishedSubscriber {
 	public function notify( ExecutionFinished $event ): void {
+		if ( getenv( 'CI' ) ) {
+			echo "Skipping cleanup because this is a CI environment.\n";
+		}
+
 		if ( ! isset( $GLOBALS['RUN_ID'] ) ) {
 			throw new \RuntimeException( 'The "RUN_ID" GLOBAL must be set.' );
 		}
