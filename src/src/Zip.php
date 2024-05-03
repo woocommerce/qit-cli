@@ -5,6 +5,10 @@ namespace QIT_CLI;
 use ZipArchive;
 
 class Zip {
+
+	/**
+	 * @var string[]
+	 */
 	protected static $system_files = [
 		// https://github.com/github/gitignore/blob/main/Global/Windows.gitignore.
 		'Thumbs.db',
