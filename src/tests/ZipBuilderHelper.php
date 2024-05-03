@@ -22,7 +22,7 @@ class ZipBuilderHelper {
 	 * @param string $source The file to be added.
 	 * @param string $target The target path in the archive.
 	 *
-	 * @return ZipBuilder The current ZipBuilder instance.
+	 * @return self The current ZipBuilder instance.
 	 */
 	public function with_file( $source, $target ): self {
 		$this->files[] = array(
