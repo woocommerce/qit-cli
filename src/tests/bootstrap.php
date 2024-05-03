@@ -32,6 +32,7 @@ function qit_tests_reset_config_dir() {
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/helpers.php';
+require_once __DIR__ . '/ZipBuilderHelper.php';
 
 qit_tests_reset_config_dir();
 
