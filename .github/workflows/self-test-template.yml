@@ -12,6 +12,8 @@ on:
         required: true
       QIT_ACCESS_TOKEN:
         required: true
+      QIT_STAGING_SECRET:
+        required: true
 
 jobs:
   self_test:
@@ -60,8 +62,14 @@ jobs:
         working-directory: _tests/managed_tests
         run: composer install
 
-      - name: Connect to QIT
-        run: ./qit partner:add --user="${{ secrets.QIT_USER }}" --application_password="${{ secrets.QIT_ACCESS_TOKEN }}"
+      #- name: Connect to QIT
+      #  run: ./qit partner:add --user="${{ secrets.QIT_USER }}" --application_password="${{ secrets.QIT_ACCESS_TOKEN }}"
+
+      - name: Enable dev (Staging)
+        run: ./qit dev
+
+      - name: Connect to QIT (Staging)
+        run: ./qit backend:add --environment="staging" --qit_secret="${{ secrets.QIT_STAGING_SECRET }}" --manager_url="https://stagingcompatibilitydashboard.wpcomstaging.com"
 
       ### Cache ZIP Image
       - name: Set up date
