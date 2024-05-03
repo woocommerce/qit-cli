@@ -51,8 +51,7 @@ class Zip {
 	 * @throws \Exception If the zip file is invalid.
 	 */
 	public static function validate_zip( string $filepath ) {
-		$zip_filename = basename( $filepath );
-		$zip          = self::open_file( $filepath );
+		$zip = self::open_file( $filepath );
 
 		// Example (foo => foo/).
 		$plugin_slug = self::extract_slug_from_filepath( $filepath );
@@ -71,6 +70,10 @@ class Zip {
 					throw new \RuntimeException( 'Cannot read zip index.', 400 );
 				}
 
+				if ( str_contains( $info['name'], '/vendor' ) || str_contains( $info['name'], '/node_modules' ) ) {
+					continue;
+				}
+
 				if ( self::is_file_invalid( $info['name'] ) ) {
 					throw new \RuntimeException( sprintf( 'Invalid (%s) file/folder inside zip file', $info['name'] ), 400 );
 				}
@@ -80,17 +83,8 @@ class Zip {
 				}
 			}
 
-			++$left;
-			--$right;
-		}
-
-		// We didn't find a parent directory.
-		if ( ! $found_parent_directory ) {
-			// If the zip does not have a parent directory matching the plugin slug, the zip file should match the plugin slug.
-			if ( $zip_filename !== $plugin_slug . '.zip' ) {
-				// If both conditions fails, then the zip file is invalid.
-				throw new \RuntimeException( "Zip validation failed. We expected to find a parent directory named '$plugin_slug' in the root of the zip, if the parent directory can't be found, the zip name should be '$plugin_slug.zip'. It was '$zip_filename'. Please reach out on https://qit.woo.com/docs/support/contact-us for more information.", 400 );
-			}
+			++ $left;
+			-- $right;
 		}
 
 		$zip->close();
