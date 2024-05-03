@@ -2,7 +2,6 @@
 
 namespace QIT_CLI;
 
-use WCCOM_Plugin\Partner_Dashboard\Submission_Runner\ZIP\Exceptions\InvalidZipException;
 use ZipArchive;
 
 class Zip {
@@ -83,8 +82,8 @@ class Zip {
 				}
 			}
 
-			++ $left;
-			-- $right;
+			++$left;
+			--$right;
 		}
 
 		$zip->close();
