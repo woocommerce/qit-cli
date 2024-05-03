@@ -3,11 +3,11 @@
 namespace QIT_CLI;
 
 use WCCOM_Plugin\Partner_Dashboard\Submission_Runner\ZIP\Exceptions\InvalidZipException;
-use \ZipArchive;
+use ZipArchive;
 
 class Zip {
-	protected static array $system_files = [
-		// https://github.com/github/gitignore/blob/main/Global/Windows.gitignore
+	protected static $system_files = [
+		// https://github.com/github/gitignore/blob/main/Global/Windows.gitignore.
 		'Thumbs.db',
 		'Thumbs.db:encryptable',
 		'Desktop.ini',
@@ -15,10 +15,10 @@ class Zip {
 		'ehthumbs.db',
 		'ehthumbs_vista.db',
 		'$RECYCLE.BIN/',
-		// https://github.com/github/gitignore/blob/main/Global/Linux.gitignore
+		// https://github.com/github/gitignore/blob/main/Global/Linux.gitignore.
 		'~',
 		'.directory',
-		// https://github.com/github/gitignore/blob/main/Global/macOS.gitignore
+		// https://github.com/github/gitignore/blob/main/Global/macOS.gitignore.
 		'.DS_Store',
 		'.AppleDouble',
 		'.LSOverride',
@@ -31,7 +31,7 @@ class Zip {
 	 * @param string $filepath
 	 *
 	 * @return \ZipArchive
-	 * @throws \RuntimeException
+	 * @throws \RuntimeException If the file is not a valid zip file.
 	 */
 	private static function open_file( string $filepath ) {
 		$zip    = new ZipArchive();
@@ -48,7 +48,7 @@ class Zip {
 	 * @param string $filepath
 	 *
 	 * @return void
-	 * @throws \Exception
+	 * @throws \Exception If the zip file is invalid.
 	 */
 	public static function validate_zip( string $filepath ) {
 		$zip_filename = basename( $filepath );
@@ -80,10 +80,9 @@ class Zip {
 				}
 			}
 
-			++ $left;
-			-- $right;
+			++$left;
+			--$right;
 		}
-
 
 		// We didn't find a parent directory.
 		if ( ! $found_parent_directory ) {
