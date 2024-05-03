@@ -26,6 +26,7 @@ use QIT_CLI\Commands\Partner\SwitchPartner;
 use QIT_CLI\Commands\SetProxyCommand;
 use QIT_CLI\Commands\SyncCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
+use QIT_CLI\Commands\RunValidateZipCommand;
 use QIT_CLI\Config;
 use QIT_CLI\Diagnosis;
 use QIT_CLI\Environment\EnvironmentDanglingCleanup;
@@ -169,6 +170,7 @@ $is_connected_to_backend = false;
 $application->add( $container->make( DevModeCommand::class ) );
 $application->add( $container->make( ConfigDirCommand::class ) );
 $application->add( $container->make( ConnectCommand::class ) );
+$application->add( $container->make( RunValidateZipCommand::class ) );
 
 // Environment commands.
 try {
