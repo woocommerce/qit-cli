@@ -271,7 +271,7 @@ function add_task_id_to_process( Process $process, array $test_run ) {
 		$task_id_parts[] = sprintf( "[Woo %s]", $test_run['woo'] );
 	}
 	if ( ! empty( $test_run['features'] ) ) {
-		$task_id_parts[] = sprintf( "[Features %s]", $test_run['features'] );
+		$task_id_parts[] = sprintf( "[Features %s]", implode( ', ', $test_run['features'] ) );
 	}
 
 	$task_id = implode( ' ', $task_id_parts ) . ": ";
@@ -329,7 +329,12 @@ function run_test_runs( array $test_runs ) {
 			}
 
 			if ( ! empty( $t['features'] ) ) {
-				$args[] = "--optional_features={$t['features']}";
+				if ( ! is_array( $t['features'] ) ) {
+					throw new \LogicException( 'Features must be an array.' );
+				}
+				foreach ( $t['features'] as $f ) {
+					$args[] = "--optional_features=$f";
+				}
 			}
 
 			if ( ! empty( $t['params'] ) ) {
