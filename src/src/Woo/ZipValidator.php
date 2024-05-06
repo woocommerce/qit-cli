@@ -1,15 +1,15 @@
 <?php
 
-namespace QIT_CLI;
+namespace QIT_CLI\Woo;
 
 use ZipArchive;
 
-class Zip {
+class ZipValidator {
 
 	/**
 	 * @var string[]
 	 */
-	protected static $system_files = [
+	protected $system_files = [
 		// https://github.com/github/gitignore/blob/main/Global/Windows.gitignore.
 		'Thumbs.db',
 		'Thumbs.db:encryptable',
@@ -36,7 +36,7 @@ class Zip {
 	 * @return \ZipArchive
 	 * @throws \RuntimeException If the file is not a valid zip file.
 	 */
-	private static function open_file( string $filepath ) {
+	private function open_file( string $filepath ) {
 		$zip    = new ZipArchive();
 		$opened = $zip->open( $filepath, ZipArchive::CHECKCONS );
 
@@ -53,11 +53,11 @@ class Zip {
 	 * @return void
 	 * @throws \Exception If the zip file is invalid.
 	 */
-	public static function validate_zip( string $filepath ) {
-		$zip = self::open_file( $filepath );
+	public function validate_zip( string $filepath ) {
+		$zip = $this->open_file( $filepath );
 
 		// Example (foo => foo/).
-		$plugin_slug = self::extract_slug_from_filepath( $filepath );
+		$plugin_slug = $this->extract_slug_from_filepath( $filepath );
 		$parent_dir  = strtolower( trim( trim( $plugin_slug ), '/' ) . '/' );
 
 		$found_parent_directory = false;
@@ -77,7 +77,7 @@ class Zip {
 					continue;
 				}
 
-				if ( self::is_file_invalid( $info['name'] ) ) {
+				if ( $this->is_file_invalid( $info['name'] ) ) {
 					throw new \RuntimeException( sprintf( 'Invalid (%s) file/folder inside zip file', $info['name'] ), 400 );
 				}
 
@@ -98,7 +98,7 @@ class Zip {
 	 *
 	 * @return string
 	 */
-	private static function extract_slug_from_filepath( string $filepath ): string {
+	private function extract_slug_from_filepath( string $filepath ): string {
 		$filename = basename( $filepath );
 
 		return substr( $filename, 0, strpos( $filename, '.' ) );
@@ -109,8 +109,8 @@ class Zip {
 	 *
 	 * @return bool
 	 */
-	protected static function is_file_invalid( string $name ): bool {
-		foreach ( self::$system_files as $system_file ) {
+	protected function is_file_invalid( string $name ): bool {
+		foreach ( $this->system_files as $system_file ) {
 			if ( str_ends_with( $name, $system_file ) ) {
 				return true;
 			}

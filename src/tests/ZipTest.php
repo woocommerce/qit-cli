@@ -3,8 +3,7 @@
 namespace QIT_CLI_Tests;
 
 use QIT_CLI\App;
-use QIT_CLI\Zip;
-
+use QIT_CLI\Woo\ZipValidator;
 use QIT_CLI_Tests\ZipBuilderHelper as ZipBuilder;
 
 class ZipTest extends QITTestCase {
@@ -38,7 +37,7 @@ class ZipTest extends QITTestCase {
 		$file_name = 'valid-zip.zip';
 		$slug      = 'valid-zip';
 
-		$zip      = App::make( Zip::class );
+		$zip      = App::make( ZipValidator::class );
 		$zip_file = ( new ZipBuilder( $file_name ) )
 			->with_file( __DIR__ . '/plugin-entrypoint.php', $slug . '/plugin-entrypoint.php' )
 			->build();
@@ -58,7 +57,7 @@ class ZipTest extends QITTestCase {
 		$file_name = 'zip-with-invalid-file.zip';
 		$slug      = 'zip-with-invalid-file';
 
-		$zip      = App::make( Zip::class );
+		$zip      = App::make( ZipValidator::class );
 		$zip_file = ( new ZipBuilder( $file_name ) )
 			->with_file( __DIR__ . '/plugin-entrypoint.php', $slug . '/plugin-entrypoint.php' )
 			->with_file( __DIR__ . '/Thumbs.db', $slug . '/Thumbs.db' )
@@ -76,7 +75,7 @@ class ZipTest extends QITTestCase {
 		$file_name = 'zip-with-invalid-file-inside-folder.zip';
 		$slug      = 'zip-with-invalid-file-inside-folder';
 
-		$zip      = App::make( Zip::class );
+		$zip      = App::make( ZipValidator::class );
 		$zip_file = ( new ZipBuilder( $file_name ) )
 			->with_file( __DIR__ . '/plugin-entrypoint.php', $slug . '/plugin-entrypoint.php' )
 			->with_file( __DIR__ . '/Thumbs.db', $slug . '/foo/Thumbs.db' )
@@ -94,7 +93,7 @@ class ZipTest extends QITTestCase {
 		$file_name = 'zip-with-invalid-file-inside-vendor-folder.zip';
 		$slug      = 'zip-with-invalid-file-inside-vendor-folder';
 
-		$zip      = App::make( Zip::class );
+		$zip      = App::make( ZipValidator::class );
 		$zip_file = ( new ZipBuilder( $file_name ) )
 			->with_file( __DIR__ . '/plugin-entrypoint.php', $slug . '/plugin-entrypoint.php' )
 			->with_file( __DIR__ . '/Thumbs.db', $slug . '/vendor/Thumbs.db' )
