@@ -13,20 +13,20 @@ class WooValidateZipCommand extends Command {
 
 	protected function configure() {
 		$this
-			->setDescription( 'Run the validate-zip command.' )
-			->setHelp( 'Run the validate-zip command.' )
-			->addArgument( 'zip', InputArgument::REQUIRED, 'The path to the zip file.' );
+			->setDescription( 'Validate a local ZIP file\'s content.' )
+			->setHelp( 'If invalid content or wrong format is found in ZIP file, an error will be shown.' )
+			->addArgument( 'path', InputArgument::REQUIRED, 'The ZIP file path' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		try {
-			$zip_file = $input->getArgument( 'zip' );
+			$zip_file = $input->getArgument( 'path' );
 
 			ZIP::validate_zip( $zip_file );
 
-			$output->writeln( 'Zip file is valid.' );
+			$output->writeln( '<info>Zip file content is valid.</info>' );
 		} catch ( \Exception $e ) {
-			$output->writeln( 'Error: ' . $e->getMessage() );
+			$output->writeln( sprintf( '<error>An error occurred while validating the ZIP file. Error: %s</error>', $e->getMessage() ) );
 
 			return Command::FAILURE;
 		}
