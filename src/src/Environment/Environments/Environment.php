@@ -249,6 +249,9 @@ abstract class Environment {
 		$pull_process->setTimeout( 600 );
 		$pull_process->setIdleTimeout( 600 );
 		$pull_process->setPty( use_tty() );
+		$pull_process->setEnv( [
+			'DOCKER_CLI_HINTS' => 'false',
+		]);
 		$pull_process->run( function ( $type, $buffer ) {
 			if ( $this->output->isVerbose() ) {
 				$this->output->write( $buffer );

@@ -98,6 +98,9 @@ class Zipper {
 			$this->output->writeln( 'Pulling Docker ZIP image.' );
 		}
 		$pull_process = new Process( [ $this->docker->find_docker(), 'pull', 'automattic/qit-runner-zip:latest' ] );
+		$pull_process->setEnv([
+			'DOCKER_CLI_HINTS' => 'false',
+		]);
 		$pull_process->run( function ( $type, $out ) {
 			if ( $this->output->isVeryVerbose() ) {
 				$this->output->write( 'Docker ZIP Pull: ' . $out );
