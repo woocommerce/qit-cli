@@ -12,8 +12,8 @@ class ScaffoldTest extends \PHPUnit\Framework\TestCase {
 		$this->assertDirectoryExists( $scaffolded_dir );
 
 		$normalize_path = function ( $path ) {
-			// "/tmp/qit_scaffolded_e2e-662bcfc1a99ed/bootstrap/bootstrap.sh" => "/tmp/qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/bootstrap.sh"
-			$path = preg_replace( '/\/tmp\/qit_scaffolded_e2e-\w+/', '/tmp/qit_scaffolded_e2e-NORMALIZED_ID', $path );
+			// "qit_scaffolded_e2e-662bcfc1a99ed/bootstrap/bootstrap.sh" => "qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/bootstrap.sh"
+			$path = preg_replace( '#qit_scaffolded_e2e-\w+#', 'qit_scaffolded_e2e-NORMALIZED_ID', $path );
 			$path = str_replace( sys_get_temp_dir(), '/tmp-normalized', $path );
 
 			return $path;
