@@ -67,5 +67,6 @@
     "nginx_port": null,
     "domain": "localhost",
     "woocommerce_version": null,
-    "tests": []
+    "tests": [],
+    "playwright_config": []
 }
