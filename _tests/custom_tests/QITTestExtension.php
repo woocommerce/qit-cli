@@ -74,7 +74,19 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				unlink( sys_get_temp_dir() . '/qit-semaphore' );
 			}
 			// Delete all directories in the current dir that matches the pattern "tmp_qit_config-*"
-			$fs->remove( __DIR__ . '/tmp/' );
+			if ( file_exists( __DIR__ . '/tmp/' ) ) {
+				try {
+					$fs->remove( __DIR__ . '/tmp/' );
+				} catch ( \Exception $e ) {
+					/**
+					 * Try to delete twice, waiting a bit before the second retry, as during
+					 * code review an issue popped up on Mac when deleting resource fork files.
+					 * @link https://github.com/woocommerce/qit-cli/pull/148#issuecomment-2096920576
+					 */
+					sleep( 5 );
+					$fs->remove( __DIR__ . '/tmp/' );
+				}
+			}
 
 			if ( ! mkdir( __DIR__ . '/tmp', 0755, true ) ) {
 				throw new \RuntimeException( 'Failed to create the tmp directory.' );
