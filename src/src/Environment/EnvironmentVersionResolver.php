@@ -15,7 +15,7 @@ class EnvironmentVersionResolver {
 				'source' => 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip',
 			];
 		} elseif ( $woo === 'rc' ) {
-			throw new \InvalidArgumentException( 'Using "nightly" instead. If you want a specific RC, please use the GitHub tag, eg: "1.2.3-rc.1"' );
+			throw new \InvalidArgumentException( 'Please specify a RC version, such as "1.2.3-rc.1", or use "nightly".' );
 		} elseif ( $woo === 'stable' ) {
 			$woo = 'woocommerce';
 		} else {
@@ -40,7 +40,7 @@ class EnvironmentVersionResolver {
 		if ( $wp === 'stable' ) {
 			$wp = 'latest';
 		} elseif ( $wp === 'rc' ) {
-			throw new \InvalidArgumentException( 'Using "nightly" instead. If you want a specific RC, please use the GitHub tag, eg: "1.2.3-RC1"' );
+			throw new \InvalidArgumentException( 'Please specify a RC version, such as "1.2.3-rc.1", or use "nightly".' );
 		}
 
 		return $wp;
