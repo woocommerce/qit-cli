@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 1 failed, 89 passed, 90 total | Tests: 25 skipped, 1 failed, 304 passed, 330 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 90 passed, 90 total | Tests: 25 skipped, 0 failed, 305 passed, 330 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,12 +43,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 89,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 90,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 90,
-                "numFailedTests": 1,
-                "numPassedTests": 304,
+                "numFailedTests": 0,
+                "numPassedTests": 305,
                 "numPendingTests": 25,
                 "numTotalTests": 330,
                 "testResults": [
@@ -1234,14 +1234,14 @@
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/create-variable-product-block-editor.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Variations tab": [],
                             "Variations tab > Create variable product": [
                                 {
                                     "title": "can create a variation option and publish the product",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can edit a variation",
@@ -2210,7 +2210,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 89 passed, 90 total | Tests: 25 skipped, 1 failed, 304 passed, 330 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 90 passed, 90 total | Tests: 25 skipped, 0 failed, 305 passed, 330 total."
             }
         },
         {
