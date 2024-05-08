@@ -154,11 +154,15 @@ class Zipper {
 
 		$zip_process = new Process( $args );
 
-		$zip_process->mustRun( function ( $type, $out ) {
+		$zip_process->run( function ( $type, $out ) {
 			if ( $this->output->isVeryVerbose() ) {
 				$this->output->write( 'Docker ZIP Validation: ' . $out );
 			}
 		} );
+
+		if ( ! $zip_process->isSuccessful() ) {
+			throw new \RuntimeException( sprintf( 'The zip file "%s" appears to be invalid. For details, re-run the command with the --verbose flag.' ) );
+		}
 
 		if ( $this->output->isVeryVerbose() ) {
 			$this->output->writeln( sprintf( 'Docker ZIP validation of %s successful (%f seconds).', basename( $zip_file ), microtime( true ) - $start ) );

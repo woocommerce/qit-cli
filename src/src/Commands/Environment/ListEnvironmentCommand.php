@@ -71,7 +71,9 @@ class ListEnvironmentCommand extends Command {
 					$v = $elapsed;
 				}
 				if ( is_array( $v ) ) {
-					$v = implode( ', ', $v );
+					// "implode" only works on flat arrays, otherwise we need "print_r".
+					$is_flat = count( array_filter( $v, 'is_array' ) ) === 0;
+					$v       = $is_flat ? implode( ', ', $v ) : print_r( $v, true );
 				}
 				// Check if "field" option is set, and only add if matches.
 				if ( $input->getOption( 'field' ) && $input->getOption( 'field' ) !== $k ) {

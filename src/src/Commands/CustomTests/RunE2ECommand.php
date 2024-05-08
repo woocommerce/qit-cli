@@ -127,7 +127,7 @@ class RunE2ECommand extends DynamicCommand {
 			$test_mode = E2ETestManager::$test_modes['headless'];
 		}
 
-		$wait             = $input->getOption( 'up_only' ) || $test_mode === 'codegen';
+		$wait             = $input->getOption( 'up_only' ) || $test_mode === E2ETestManager::$test_modes['codegen'];
 		$woo_extension    = $input->getArgument( 'woo_extension' );
 		$test             = $input->getArgument( 'test' );
 		$shard            = $input->getOption( 'shard' );
@@ -267,7 +267,7 @@ class RunE2ECommand extends DynamicCommand {
 		if ( $exit_status_code === Command::SUCCESS ) {
 			return Command::SUCCESS;
 		} else {
-			if ( ! $wait ) {
+			if ( $test_mode === E2ETestManager::$test_modes['headless'] ) {
 				$this->output->writeln( sprintf( '<error>Tests failed. Exit status code: %s</error>', $exit_status_code ) );
 			}
 
@@ -276,6 +276,14 @@ class RunE2ECommand extends DynamicCommand {
 	}
 
 	public static function shutdown_test_run(): void {
+		static $did_shutdown = false;
+
+		if ( $did_shutdown ) {
+			return;
+		} else {
+			$did_shutdown = true;
+		}
+
 		echo "\nShutting down environment...\n";
 		// Env not up or could not parse the "up" JSON.
 		if ( empty( $GLOBALS['env_to_shutdown'] ) || ! $GLOBALS['env_to_shutdown'] instanceof EnvInfo ) {

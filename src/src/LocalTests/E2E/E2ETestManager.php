@@ -103,7 +103,7 @@ class E2ETestManager {
 		if ( $bootstrap_only ) {
 			if ( $test_mode === 'codegen' ) {
 				$io = new SymfonyStyle( App::make( InputInterface::class ), $this->output );
-				$io->success( "Open the site URL above on Playwright Codegen and start generating tests.\nLearn More: https://qit.woo.com/docs/codegen" );
+				$io->success( "Open the site URL above on Playwright Codegen and start generating tests.\nLearn More: https://qit.woo.com/docs/custom-tests/generating-tests#codegen" );
 
 				$this->playwright_codegen->open_codegen( $env_info );
 
