@@ -80,7 +80,7 @@ class ScaffoldE2ECommand extends Command {
 		$output->writeln( "You can now run your first test with <comment>qit run:e2e <your_slug> \"$path_to_generate\" --ui</comment>" );
 		$output->writeln( 'You can start writing your tests with codegen: <comment>qit run:e2e --codegen</comment>' );
 		$output->writeln( 'And when you are ready, you can publish your tests with <comment>qit test-tags:upload <your_slug> <path_to_test></comment>' );
-		$output->writeln( 'Read more about it on our documentation: https://qit.woo.com/docs/' );
+		$output->writeln( 'Read more about it on our documentation: https://qit.woo.com/docs/custom-tests/generating-tests' );
 
 		return Command::SUCCESS;
 	}
@@ -101,7 +101,7 @@ class ScaffoldE2ECommand extends Command {
 #
 # Note: Delete this file if it's not required for your setup.
 #
-# Documentation: Detailed instructions available at https://qit.woo.com/docs/
+# Documentation: Detailed instructions available at https://qit.woo.com/docs/custom-tests/generating-tests
 SHELL;
 	}
 
@@ -110,7 +110,7 @@ SHELL;
 /*
  * This is an example E2E test. You can write your own tests, or generate them with Codegen.
  * 
- * Read more about it on our documentation: https://qit.woo.com/docs/
+ * Read more about it on our documentation: https://qit.woo.com/docs/custom-tests/generating-tests
  */
 import { test, expect } from '@playwright/test';
 import qit from '/qitHelpers';

@@ -7,5 +7,5 @@
  * Notes:
  * - If this file is not needed for your setup, feel free to delete it.
  *
- * Documentation: For more information, please visit https://qit.woo.com/docs/
+ * Documentation: For more information, please visit https://qit.woo.com/docs/custom-tests/bootstrap-and-test-phases
  */

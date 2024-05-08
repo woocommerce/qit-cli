@@ -10,5 +10,5 @@
  * - To include WordPress, add: require '/var/www/html/wp-load.php';
  * - For scripts that need to run on every request, consider using 'mu-plugin.php' instead.
  *
- * Documentation: For detailed usage instructions, visit https://qit.woo.com/docs/
+ * Documentation: For detailed usage instructions, visit https://qit.woo.com/docs/custom-tests/bootstrap-and-test-phases/
  */

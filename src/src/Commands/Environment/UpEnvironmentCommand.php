@@ -179,7 +179,7 @@ HELP
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		if ( is_windows() ) {
-			$output->writeln( '<comment>To use QIT Environments on Window, please use WSL. Check our guide here: https://qit.woo.com/docs/windows.</comment>' );
+			$output->writeln( '<comment>To use QIT Environments on Window, please use WSL. Check our guide here: https://qit.woo.com/docs/environment/getting-started#getting-started---windows</comment>' );
 
 			return Command::FAILURE;
 		}
