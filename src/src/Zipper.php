@@ -161,7 +161,7 @@ class Zipper {
 		} );
 
 		if ( ! $zip_process->isSuccessful() ) {
-			throw new \RuntimeException( sprintf( 'The zip file "%s" appears to be invalid. For details, re-run the command with the --verbose flag.' ) );
+			throw new \RuntimeException( sprintf( 'The zip file "%s" appears to be invalid. For details, re-run the command with the --verbose flag.', $zip_file ) );
 		}
 
 		if ( $this->output->isVeryVerbose() ) {

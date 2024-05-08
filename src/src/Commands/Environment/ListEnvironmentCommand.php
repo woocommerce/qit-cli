@@ -59,10 +59,11 @@ class ListEnvironmentCommand extends Command {
 
 		$terminal_width = App::make( Terminal::class )->getWidth();
 		$longest_header = 0;
-		$definitions = [];
+		$definitions    = [];
 
 		foreach ( $running as $environment ) {
-			foreach ( $environment as $k => $v ) {
+			// @phpstan-ignore-next-line
+			foreach ( $environment as $k => $v ) { // @phan-suppress-current-line PhanTypeSuspiciousNonTraversableForeach
 				if ( strlen( $k ) > $longest_header ) {
 					$longest_header = strlen( $k );
 				}
@@ -85,7 +86,7 @@ class ListEnvironmentCommand extends Command {
 				if ( is_array( $v ) ) {
 					// "implode" only works on flat arrays, otherwise we need "print_r".
 					$is_flat = count( array_filter( $v, 'is_array' ) ) === 0;
-					$v = $is_flat ? implode( "\n", $v ) : json_encode( $v, JSON_UNESCAPED_SLASHES );
+					$v       = $is_flat ? implode( "\n", $v ) : json_encode( $v, JSON_UNESCAPED_SLASHES );
 				}
 				// Check if "field" option is set, and only add if matches.
 				if ( $input->getOption( 'field' ) && $input->getOption( 'field' ) !== $k ) {
