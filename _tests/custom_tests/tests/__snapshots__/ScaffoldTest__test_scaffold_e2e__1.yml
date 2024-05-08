@@ -11,7 +11,7 @@
      * - To include WordPress, add: require '/var/www/html/wp-load.php';
      * - For scripts that need to run on every request, consider using 'mu-plugin.php' instead.
      *
-     * Documentation: For detailed usage instructions, visit https://qit.woo.com/docs/
+     * Documentation: For detailed usage instructions, visit https://qit.woo.com/docs/custom-tests/bootstrap-and-test-phases/
      */
 /tmp-normalized/qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/bootstrap.sh: |-
     #!/bin/bash
@@ -28,7 +28,7 @@
     #
     # Note: Delete this file if it's not required for your setup.
     #
-    # Documentation: Detailed instructions available at https://qit.woo.com/docs/
+    # Documentation: Detailed instructions available at https://qit.woo.com/docs/custom-tests/generating-tests
 /tmp-normalized/qit_scaffolded_e2e-NORMALIZED_ID/bootstrap/mu-plugin.php: |
     <?php
     /*
@@ -39,13 +39,13 @@
      * Notes:
      * - If this file is not needed for your setup, feel free to delete it.
      *
-     * Documentation: For more information, please visit https://qit.woo.com/docs/
+     * Documentation: For more information, please visit https://qit.woo.com/docs/custom-tests/bootstrap-and-test-phases
      */
 /tmp-normalized/qit_scaffolded_e2e-NORMALIZED_ID/example.spec.js: |-
     /*
      * This is an example E2E test. You can write your own tests, or generate them with Codegen.
      * 
-     * Read more about it on our documentation: https://qit.woo.com/docs/
+     * Read more about it on our documentation: https://qit.woo.com/docs/custom-tests/generating-tests
      */
     import { test, expect } from '@playwright/test';
     import qit from '/qitHelpers';
