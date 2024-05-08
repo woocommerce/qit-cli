@@ -17,13 +17,13 @@ QIT is a testing platform for WordPress Plugins and Themes developed by WooComme
 
 Run tests out-of-the box with zero configuration.
 
-- [Woo E2E Test](https://qit.woo.com/docs/test-types/woo-e2e) - Runs WooCommerce End-to-End tests alongside your extension.
-- [Woo API Test](https://qit.woo.com/docs/test-types/woo-api) - Runs WooCommerce API tests with your extension.
-- [Activation Test](https://qit.woo.com/docs/test-types/activation) - Activates your plugin and logs any PHP notice, warning, and error.
-- [Security Test](https://qit.woo.com/docs/test-types/security) - Scan your plugin for adherence to best practices in writing secure code.
-- [PHPStan Test](https://qit.woo.com/docs/test-types/phpstan) - Run PHPStan checks to catch issues early.
-- [PHP Compatibility Test](https://qit.woo.com/docs/test-types/phpcompatibility) - Run PHPCompatibility tests to detect issues with different PHP versions.
-- [Malware Test](https://qit.woo.com/docs/test-types/malware) - Scan your code with the Malware check.
+- [Woo E2E Test](https://qit.woo.com/docs/managed-tests/woo-e2e) - Runs WooCommerce End-to-End tests alongside your extension.
+- [Woo API Test](https://qit.woo.com/docs/managed-tests/woo-api) - Runs WooCommerce API tests with your extension.
+- [Activation Test](https://qit.woo.com/docs/managed-tests/activation) - Activates your plugin and logs any PHP notice, warning, and error.
+- [Security Test](https://qit.woo.com/docs/managed-tests/security) - Scan your plugin for adherence to best practices in writing secure code.
+- [PHPStan Test](https://qit.woo.com/docs/managed-tests/phpstan) - Run PHPStan checks to catch issues early.
+- [PHP Compatibility Test](https://qit.woo.com/docs/managed-tests/phpcompatibility) - Run PHPCompatibility tests to detect issues with different PHP versions.
+- [Malware Test](https://qit.woo.com/docs/managed-tests/malware) - Scan your code with the Malware check.
 - _Performance Tests (Work-in-progress)_
 
 #### **Custom E2E Tests** _(Coming Soon)_
