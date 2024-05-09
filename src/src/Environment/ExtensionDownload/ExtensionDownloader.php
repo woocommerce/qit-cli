@@ -171,7 +171,7 @@ class ExtensionDownloader {
 						if ( static::is_valid_plugin_slug( $ext->source ) ) {
 							$ext->handler = QITHandler::class;
 						} else {
-							throw new \InvalidArgumentException( 'The provided string could not be parsed as any of the valid formats: WP.org/Woo.com Slugs, Woo.com product ID, Local path, or Zip URLs.' );
+							throw new \InvalidArgumentException( sprintf( "Invalid extension \"%s\".\n\nExpected format: extension:action:tests\n\nValid extensions are WP.org/Woo.com Slugs, Woo.com product ID, Local path, or Zip URLs.\nValid actions are \"activate\", \"bootstrap\" and \"test\".\nValid tests are comma-separated list of test tags or local test directories.", $ext->source ) );
 						}
 					}
 				}
