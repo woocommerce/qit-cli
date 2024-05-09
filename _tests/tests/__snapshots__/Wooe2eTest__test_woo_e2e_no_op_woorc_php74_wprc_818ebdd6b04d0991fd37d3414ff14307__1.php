@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 96 passed, 96 total | Tests: 41 skipped, 0 failed, 286 passed, 327 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 96 passed, 96 total | Tests: 42 skipped, 0 failed, 285 passed, 327 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -48,8 +48,8 @@
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 96,
                 "numFailedTests": 0,
-                "numPassedTests": 286,
-                "numPendingTests": 41,
+                "numPassedTests": 285,
+                "numPendingTests": 42,
                 "numTotalTests": 327,
                 "testResults": [
                     {
@@ -1235,7 +1235,7 @@
                                 },
                                 {
                                     "title": "can edit a variation",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete a variationt",
@@ -2241,7 +2241,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 96 passed, 96 total | Tests: 41 skipped, 0 failed, 286 passed, 327 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 96 passed, 96 total | Tests: 42 skipped, 0 failed, 285 passed, 327 total."
             }
         },
         {
