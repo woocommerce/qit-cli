@@ -8,12 +8,17 @@ use ZipArchive;
 class ZipBuilderHelper {
 	private $filename;
 	private $files = array();
+	/**
+	 * @var string
+	 */
+	private $filepath;
 
 	/**
 	 * @param string $filename The name of the zip file to be created.
 	 */
 	public function __construct( $filename ) {
 		$this->filename = $filename;
+		$this->filepath = __DIR__ . "/$this->filename";
 	}
 
 	/**
@@ -43,7 +48,7 @@ class ZipBuilderHelper {
 	public function build(): string {
 		$zip = new ZipArchive();
 
-		if ( $zip->open( __DIR__ . "/$this->filename", ZipArchive::CREATE ) !== true ) {
+		if ( $zip->open( $this->get_file_path(), ZipArchive::CREATE ) !== true ) {
 			throw new RuntimeException( 'Could not create zip file.' );
 		}
 
@@ -57,10 +62,25 @@ class ZipBuilderHelper {
 
 		clearstatcache();
 
-		if ( ! file_exists( __DIR__ . "/$this->filename" ) ) {
+		if ( ! file_exists( $this->get_file_path() ) ) {
 			throw new RuntimeException( 'Zip file was not created.' );
 		}
 
-		return __DIR__ . "/$this->filename";
+		return $this->get_file_path();
+	}
+
+	function corrupt() {
+		$data = file_get_contents( $this->get_file_path() );
+		if ( ! $data ) {
+			throw new \RuntimeException( 'Could not read zip file.' );
+		}
+
+		$data = substr_replace( $data, "", 20, 4 ); // Removing 4 bytes from offset 20
+
+		file_put_contents( $this->get_file_path(), $data );
+	}
+
+	public function get_file_path(): string {
+		return $this->filepath;
 	}
 }
