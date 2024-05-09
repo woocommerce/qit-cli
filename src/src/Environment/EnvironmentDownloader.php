@@ -77,7 +77,7 @@ class EnvironmentDownloader {
 		$res = $zip->open( $temp_zip_path, ZipArchive::CHECKCONS );
 		if ( $res === true ) {
 			if ( ! rename( $temp_zip_path, $final_zip_path ) ) {
-				throw new \RuntimeException( 'Could not rename temp zip to final zip.' );
+				throw new \RuntimeException( 'Could not rename temp ZIP to final ZIP.' );
 			}
 
 			// Delete old environment extracted files.
@@ -87,7 +87,7 @@ class EnvironmentDownloader {
 			}
 
 			if ( ! $zip->extractTo( $environments_dir . '/' . $env_name ) ) {
-				throw new \RuntimeException( 'Could not extract environment zip.' );
+				throw new \RuntimeException( 'Could not extract environment ZIP.' );
 			}
 
 			// Ensure .sh files in the extracted directory are executable, just in case.
@@ -104,7 +104,7 @@ class EnvironmentDownloader {
 			unlink( $temp_zip_path );
 			switch ( $res ) {
 				case ZipArchive::ER_NOZIP:
-					$error = 'Not a zip archive.';
+					$error = 'Not a ZIP archive.';
 					break;
 				case ZipArchive::ER_INCONS:
 					$error = 'Consistency check failed.';

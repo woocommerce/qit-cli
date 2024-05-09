@@ -133,7 +133,7 @@ class ExtensionDownloaderTest extends TestCase {
 		$plugins = [ 'special_plugin@1.0', 'another-plugin#version' ];
 		$themes  = [ 'theme with spaces', 'theme_special*chars' ];
 		$this->expectException( InvalidArgumentException::class );
-		$this->expectExceptionMessage( 'The provided string could not be parsed as any of the valid formats: WP.org/Woo.com Slugs, Woo.com product ID, Local path, or Zip URLs.' );
+		$this->expectExceptionMessage( 'The provided string could not be parsed as any of the valid formats: WP.org/Woo.com Slugs, Woo.com product ID, Local path, or ZIP URLs.' );
 		$this->assertMatchesJsonSnapshot( $this->sut->categorize_extensions( $plugins, $themes, '/tmp/cache/' ) );
 	}
 

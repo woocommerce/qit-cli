@@ -49,7 +49,7 @@ class ZipBuilderHelper {
 		$zip = new ZipArchive();
 
 		if ( $zip->open( $this->get_file_path(), ZipArchive::CREATE ) !== true ) {
-			throw new RuntimeException( 'Could not create zip file.' );
+			throw new RuntimeException( 'Could not create ZIP file.' );
 		}
 
 		foreach ( $this->files as $file ) {
@@ -63,7 +63,7 @@ class ZipBuilderHelper {
 		clearstatcache();
 
 		if ( ! file_exists( $this->get_file_path() ) ) {
-			throw new RuntimeException( 'Zip file was not created.' );
+			throw new RuntimeException( 'ZIP file was not created.' );
 		}
 
 		return $this->get_file_path();
@@ -72,7 +72,7 @@ class ZipBuilderHelper {
 	function corrupt() {
 		$data = file_get_contents( $this->get_file_path() );
 		if ( ! $data ) {
-			throw new \RuntimeException( 'Could not read zip file.' );
+			throw new \RuntimeException( 'Could not read ZIP file.' );
 		}
 
 		$data = substr_replace( $data, "", 20, 4 ); // Removing 4 bytes from offset 20

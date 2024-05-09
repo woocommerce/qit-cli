@@ -34,7 +34,7 @@ class FileHandler extends Handler {
 			} elseif ( is_file( $e->extension_identifier ) ) {
 				// Must be a ".zip" file.
 				if ( substr( $e->extension_identifier, - 4 ) !== '.zip' ) {
-					throw new \RuntimeException( sprintf( 'When passing a local path, it must be either a directory or a zip file. Found: %s', $e->extension_identifier ) );
+					throw new \RuntimeException( sprintf( 'When passing a local path, it must be either a directory or a ZIP file. Found: %s', $e->extension_identifier ) );
 				}
 				$this->find_type_in_zip( $e );
 			} else {

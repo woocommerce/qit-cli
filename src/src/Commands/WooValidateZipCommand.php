@@ -32,7 +32,7 @@ class WooValidateZipCommand extends Command {
 
 			$this->zip_validator->validate_zip( $zip_file );
 
-			$output->writeln( '<info>Zip file content is valid.</info>' );
+			$output->writeln( '<info>ZIP file content is valid.</info>' );
 		} catch ( \UnexpectedValueException $e ) {
 			$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 

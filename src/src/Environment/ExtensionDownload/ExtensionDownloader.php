@@ -153,7 +153,7 @@ class ExtensionDownloader {
 						if ( static::is_valid_plugin_slug( $extension_id ) ) {
 							$ext->handler = QITHandler::class;
 						} else {
-							throw new \InvalidArgumentException( 'The provided string could not be parsed as any of the valid formats: WP.org/Woo.com Slugs, Woo.com product ID, Local path, or Zip URLs.' );
+							throw new \InvalidArgumentException( 'The provided string could not be parsed as any of the valid formats: WP.org/Woo.com Slugs, Woo.com product ID, Local path, or ZIP URLs.' );
 						}
 					}
 				}

@@ -25,7 +25,7 @@ class ExtensionZip {
 
 	public function extract_zip( string $zip_file, string $extract_to ): void {
 		if ( ! file_exists( $zip_file ) ) {
-			throw new \InvalidArgumentException( 'Zip file does not exist.' );
+			throw new \InvalidArgumentException( 'ZIP file does not exist.' );
 		}
 
 		if ( ! file_exists( $extract_to ) ) {

@@ -72,7 +72,7 @@ class UploadTest extends QITTestCase {
 		$zip_archive = new ZipArchive();
 
 		if ( ! $zip_archive->open( $zip_file_path ) ) {
-			throw new RuntimeException( 'Could not open zip file.' );
+			throw new RuntimeException( 'Could not open ZIP file.' );
 		}
 
 		$index = [ 'contents' => [] ];
@@ -102,7 +102,7 @@ class UploadTest extends QITTestCase {
 		$this->to_delete[] = __DIR__ . '/foo.zip';
 
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( 'This is not a valid zip file.' );
+		$this->expectExceptionMessage( 'This is not a valid ZIP file.' );
 		$upload->upload_build( 123, 'foo', __DIR__ . '/foo.zip', new NullOutput() );
 	}
 
