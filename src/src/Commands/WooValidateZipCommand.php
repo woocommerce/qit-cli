@@ -38,7 +38,7 @@ class WooValidateZipCommand extends Command {
 
 			return Command::FAILURE;
 		} catch ( \Exception $e ) {
-			$output->writeln( sprintf( '<error>An error occurred while validating the ZIP file. Error: %s</error>', $e->getMessage() ) );
+			$output->writeln( sprintf( '<error>An error occurred while validating the provided file. Error: %s</error>', $e->getMessage() ) );
 
 			return Command::FAILURE;
 		}
