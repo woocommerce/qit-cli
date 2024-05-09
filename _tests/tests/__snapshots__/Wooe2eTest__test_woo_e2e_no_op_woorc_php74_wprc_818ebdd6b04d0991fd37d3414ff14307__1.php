@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 1 failed, 95 passed, 96 total | Tests: 39 skipped, 1 failed, 287 passed, 327 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 96 passed, 96 total | Tests: 41 skipped, 0 failed, 286 passed, 327 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,13 +43,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 95,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 96,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 96,
-                "numFailedTests": 1,
-                "numPassedTests": 287,
-                "numPendingTests": 39,
+                "numFailedTests": 0,
+                "numPassedTests": 286,
+                "numPendingTests": 41,
                 "numTotalTests": 327,
                 "testResults": [
                     {
@@ -1491,7 +1491,7 @@
                                 },
                                 {
                                     "title": "should show correct total cart block price with 2 different products and flat rate\\/local pickup",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1899,13 +1899,13 @@
                     },
                     {
                         "file": "shopper\\/checkout-login.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Shopper Checkout Login Account": [
                                 {
                                     "title": "can login to an existing account during checkout",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2241,7 +2241,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 95 passed, 96 total | Tests: 39 skipped, 1 failed, 287 passed, 327 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 96 passed, 96 total | Tests: 41 skipped, 0 failed, 286 passed, 327 total."
             }
         },
         {
