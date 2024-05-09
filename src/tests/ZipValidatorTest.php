@@ -6,7 +6,7 @@ use QIT_CLI\App;
 use QIT_CLI\Woo\ZipValidator;
 use QIT_CLI_Tests\ZipBuilderHelper as ZipBuilder;
 
-class ZipTest extends QITTestCase {
+class ZipValidatorTest extends QITTestCase {
 	use InjectRequestBuilderMockTrait;
 
 	protected $to_delete = [];
