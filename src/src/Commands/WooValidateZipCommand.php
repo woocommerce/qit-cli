@@ -33,9 +33,12 @@ class WooValidateZipCommand extends Command {
 			$this->zip_validator->validate_zip( $zip_file );
 
 			$output->writeln( '<info>Zip file content is valid.</info>' );
+		} catch ( \UnexpectedValueException $e ) {
+			$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
+
+			return Command::FAILURE;
 		} catch ( \Exception $e ) {
-			$output->writeln( sprintf( '<error>An error occurred while validating the ZIP file. Error: %s</error>',
-			$e->getMessage() ) );
+			$output->writeln( sprintf( '<error>An error occurred while validating the ZIP file. Error: %s</error>', $e->getMessage() ) );
 
 			return Command::FAILURE;
 		}
