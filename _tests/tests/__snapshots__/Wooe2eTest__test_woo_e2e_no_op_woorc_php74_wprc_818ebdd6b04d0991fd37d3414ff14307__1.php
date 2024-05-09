@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 5 failed, 91 passed, 96 total | Tests: 28 skipped, 8 failed, 291 passed, 327 total.",
+            "test_summary": "Test Suites: 0 skipped, 1 failed, 95 passed, 96 total | Tests: 39 skipped, 1 failed, 287 passed, 327 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,13 +43,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 5,
-                "numPassedTestSuites": 91,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 95,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 96,
-                "numFailedTests": 8,
-                "numPassedTests": 291,
-                "numPendingTests": 28,
+                "numFailedTests": 1,
+                "numPassedTests": 287,
+                "numPendingTests": 39,
                 "numTotalTests": 327,
                 "testResults": [
                     {
@@ -1224,7 +1224,7 @@
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/create-variable-product-block-editor.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Variations tab": [],
@@ -1238,8 +1238,8 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "can delete a variation",
-                                    "status": "failed"
+                                    "title": "can delete a variationt",
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can see variations warning and click the CTA",
@@ -1247,7 +1247,7 @@
                                 },
                                 {
                                     "title": "can see single variation warning and click the CTA",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1446,31 +1446,31 @@
                     },
                     {
                         "file": "shopper\\/account-email-receiving.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Shopper Account Email Receiving": [
                                 {
                                     "title": "should receive an email when creating an account",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should receive an email when password reset initiated from admin",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "Shopper Password Reset Email Receiving": [
                                 {
                                     "title": "should receive an email when initiating a password reset",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "shopper\\/cart-block-calculate-shipping.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Cart Block Calculate Shipping": [
                                 {
@@ -1483,7 +1483,7 @@
                                 },
                                 {
                                     "title": "allows customer to calculate Flat rate and Local pickup in cart block if in Portugal",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should show correct total cart block price after updating quantity",
@@ -1842,7 +1842,7 @@
                     {
                         "file": "shopper\\/checkout-block.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Checkout Block page": [
                                 {
@@ -1867,19 +1867,19 @@
                                 },
                                 {
                                     "title": "can choose different shipping types in the checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows existing customer to place an order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can create an account during checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2026,13 +2026,13 @@
                     },
                     {
                         "file": "shopper\\/my-account-pay-order.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Customer can pay for their order through My Account": [
                                 {
                                     "title": "allows customer to pay for their order in My Account",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2241,7 +2241,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 5 failed, 91 passed, 96 total | Tests: 28 skipped, 8 failed, 291 passed, 327 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 95 passed, 96 total | Tests: 39 skipped, 1 failed, 287 passed, 327 total."
             }
         },
         {
