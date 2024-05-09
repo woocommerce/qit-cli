@@ -207,7 +207,7 @@ class ExtensionDownloaderTest extends TestCase {
 			$this->make_extension( 'theme', source: 'theme_special*chars' ),
 		];
 		$this->expectException( InvalidArgumentException::class );
-		$this->expectExceptionMessage( 'The provided string could not be parsed as any of the valid formats: WP.org/Woo.com Slugs, Woo.com product ID, Local path, or Zip URLs.' );
+		$this->expectExceptionMessage( 'Invalid extension' );
 		$this->assertMatchesJsonSnapshot( $this->sut->categorize_extensions( $plugins, $themes, '/tmp/cache/' ) );
 	}
 
