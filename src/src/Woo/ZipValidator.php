@@ -82,7 +82,7 @@ class ZipValidator {
 				}
 
 				if ( $this->is_file_invalid( $info['name'] ) ) {
-					throw new \RuntimeException( sprintf( 'Invalid (%s) file/folder inside zip file', $info['name'] ), 400 );
+					throw new \RuntimeException( sprintf( 'Invalid (%s) file/folder inside the provided ZIP file', $info['name'] ), 400 );
 				}
 
 				if ( ! $found_parent_directory && str_starts_with( strtolower( $info['name'] ), $parent_dir ) ) {
