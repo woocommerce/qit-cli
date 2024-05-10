@@ -1,4 +1,9 @@
+#### QIT CLI
+
 [![QIT CLI Code tests](https://github.com/woocommerce/qit-cli/actions/workflows/code-tests.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/code-tests.yml)
+
+#### Managed Tests
+
 [![QIT Self-Tests - Activation](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-activation.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-activation.yml)
 [![QIT Self-Tests - API](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-woo-api.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-woo-api.yml)
 [![QIT Self-Tests - E2E](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-woo-e2e.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-woo-e2e.yml)
@@ -6,6 +11,12 @@
 [![QIT Self-Tests - Security](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-security.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-security.yml)
 [![QIT Self-Tests - PHPCompatibilityWP](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-phpcompatibility.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-phpcompatibility.yml)
 [![QIT Self-Tests - Malware](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-malware.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-malware.yml)
+
+#### Test Environment
+
+[![QIT Environment Test - Linux](https://github.com/woocommerce/qit-cli/actions/workflows/qit-environment-test-linux.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-environment-test-linux.yml)
+[![QIT Environment Test - Mac (non M1)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-environment-test-mac.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-environment-test-mac.yml)
+[![QIT Environment Dangling Test](https://github.com/woocommerce/qit-cli/actions/workflows/qit-environment-dangling-test.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-environment-dangling-test.yml)
 
 <p align="center"><img src="https://woocommerce.com/wp-content/themes/woo/images/logo-woocommerce-bubble.svg" alt="WooCommerce" style="width:100px;height:auto;"></p>
 
