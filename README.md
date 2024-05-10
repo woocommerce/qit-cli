@@ -37,13 +37,13 @@ Run tests out-of-the box with zero configuration.
 - [Malware Test](https://qit.woo.com/docs/managed-tests/malware) - Scan your code with the Malware check.
 - _Performance Tests (Work-in-progress)_
 
-#### **Custom E2E Tests** _(Coming Soon)_
+#### **Custom E2E Tests** _(Early Access)_
 
 Write your own E2E tests using frameworks such as [Playwright](https://playwright.dev/), or leverage pre-built tests to effortlessly increase your test coverage.
 
 [Read more about Custom E2E Tests](https://qit.woo.com/docs/custom-tests/introduction).
 
-#### Local Test Environment _(Coming Soon)_
+#### Local Test Environment _(Early Access)_
 
 Fast, disposable and configurable test environment designed to do one thing well: **Run tests.**
 
