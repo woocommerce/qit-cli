@@ -1,0 +1,26 @@
+[
+    {
+        "action": "install",
+        "slug": "foo-extension",
+        "source": "https:\/\/github.com\/qitbeaver\/foo-extension.zip",
+        "test_tags": [
+            "default"
+        ]
+    },
+    {
+        "action": "install",
+        "slug": "bar-extension",
+        "source": "\/path\/to\/file\/bar-extension.zip",
+        "test_tags": [
+            "default"
+        ]
+    },
+    {
+        "action": "install",
+        "slug": "baz-extension",
+        "source": "\/path\/to\/file\/baz-extension",
+        "test_tags": [
+            "default"
+        ]
+    }
+]

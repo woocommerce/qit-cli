@@ -125,7 +125,15 @@ TEXT
 
 		// Validate credentials.
 		$output->writeln( sprintf( 'Validating your QIT Token with %s...', get_wccom_url() ) );
-		validate_authentication( $user, $qit_token );
+		$output->writeln( 'Please wait patiently, depending on how many extensions you have, this can take a while.' );
+		try {
+			validate_authentication( $user, $qit_token );
+		} catch ( \Exception $e ) {
+			$output->writeln( sprintf( '<error>Could not authenticate to %s using the provided username and QIT Token.</error>', get_wccom_url() ) );
+			$output->writeln( 'Having trouble pasting? You can also run this command with the --qit_token=<your-token-here>.' );
+			$output->writeln( 'More info: https://woocommerce.github.io/qit-documentation/#/authenticating' );
+			return Command::FAILURE;
+		}
 		$output->writeln( '<fg=green>Validated successfully.</>' );
 
 		$easter_egg = <<<TEXT

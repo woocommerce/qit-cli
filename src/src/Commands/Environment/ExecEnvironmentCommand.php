@@ -42,6 +42,7 @@ class ExecEnvironmentCommand extends Command {
 				InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
 				'Environment variable in key=value format'
 			)
+			->addOption( 'env_id', null, InputOption::VALUE_OPTIONAL, 'The environment ID to use' )
 			->addOption( 'user', null, InputOption::VALUE_OPTIONAL, 'The user to run the command as' )
 			->addOption( 'timeout', null, InputOption::VALUE_OPTIONAL, 'Timeout for the command', 300 )
 			->addOption( 'image', null, InputOption::VALUE_OPTIONAL, 'The Docker image to use', 'php' );
@@ -54,6 +55,12 @@ class ExecEnvironmentCommand extends Command {
 			$output->writeln( '<info>No environments running.</info>' );
 
 			return Command::SUCCESS;
+		}
+
+		if ( ! empty( $input->getOption( 'env_id' ) ) ) {
+			$running_environments = array_filter( $running_environments, function ( EnvInfo $env ) use ( $input ) {
+				return $env->env_id === $input->getOption( 'env_id' );
+			} );
 		}
 
 		if ( count( $running_environments ) === 1 ) {

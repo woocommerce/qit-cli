@@ -1,4 +1,4 @@
-name: QIT Environment Test - Linux and Mac
+name: QIT Environment Test - Linux
 
 on:
   # Every day at 11pm UTC (6pm ET)
@@ -8,19 +8,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  environment_tests:
+  linux_environment_test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-20.04, macos-13 ]
+        os: [ ubuntu-20.04 ]
         php: [ '7.4' ]
         wordpress: [ 'rc' ]
-        woocommerce: [ 'rc' ]
         include:
           - os: ubuntu-20.04
             php: '8.3'
             wordpress: 'rc'
-            woocommerce: 'rc'
       fail-fast: false
     env:
       NO_COLOR: 1
@@ -34,26 +32,13 @@ jobs:
         with:
           php-version: '8.3'
 
-      - name: Enable dev mode (Cross-platform)
+      - name: Enable dev mode
         run: ./qit dev
 
-      - name: Connect to Staging QIT (Cross-platform)
+      - name: Connect to Staging QIT
         run: ./qit backend:add --environment="staging" --qit_secret="${{ secrets.QIT_STAGING_SECRET }}" --manager_url="https://stagingcompatibilitydashboard.wpcomstaging.com"
 
-      - name: Add "qit.test" to hosts file (Linux)
-        if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
-        run: sudo echo "127.0.0.1 qit.test" | sudo tee -a /etc/hosts
-
-      - name: Setup Docker on macOS (Mac)
-        if: matrix.os == 'macos-13'
-        uses: douglascamata/setup-docker-macos-action@v1-alpha
-
-      - name: Check Colima Status (Mac)
-        if: matrix.os == 'macos-13'
-        run: colima status
-
-      - name: Debug Docker and Docker Compose (Unix)
-        if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
+      - name: Debug Docker and Docker Compose
         run: |
           echo "Checking Docker version..."
           docker --version || echo "Docker is not installed"
@@ -64,24 +49,19 @@ jobs:
           echo "Checking Docker Compose (standalone) version..."
           docker-compose --version || echo "Docker Compose (standalone) is not installed"
 
-      - name: Benchmark Docker (Unix)
-        if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
+      - name: Benchmark Docker
         working-directory: scripts
         run: docker run -v $GITHUB_WORKSPACE/scripts:/scripts -w /scripts alpine sh -c "apk add --no-cache bash wget tar; chmod +x benchmark.sh; ./benchmark.sh"
 
-      - name: Composer install (Unix)
-        if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
+      - name: Composer install
         working-directory: src
         run: composer install
 
-      - name: Start environment (Unix)
-        if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
+      - name: Start environment
         working-directory: src
-        env:
-          QIT_DOCKER_RUN_TIMEOUT: ${{ (matrix.os == 'ubuntu-20.04') && '300' || '1800' }}
-        run: php qit-cli.php env:up --wordpress_version ${{ matrix.wordpress }} --woocommerce_version ${{ matrix.woocommerce }} --php_version ${{ matrix.php }}
+        run: php qit-cli.php env:up --wordpress_version ${{ matrix.wordpress }} --php_version ${{ matrix.php }}
 
-      - name: Get URL (Cross-platform)
+      - name: Get URL
         working-directory: src
         run: |
           siteUrl=$(php -r "echo exec(PHP_BINARY . ' qit-cli.php env:list --field=site_url');");
@@ -91,7 +71,7 @@ jobs:
         run: |
           php -r "echo 'Site URL: ' . getenv('SITE_URL');"
 
-      - name: Test Site Up (Cross-platform)
+      - name: Test Site Up
         run: |
           php -r "
           \$url = '${{ env.SITE_URL }}';
@@ -105,17 +85,15 @@ jobs:
             exit(1);
           }"
 
-      - name: Query WP JSON (Cross-platform)
+      - name: Query WP JSON
         run: php -r "echo file_get_contents('${{ env.SITE_URL }}/wp-json');"
 
-      - name: Verify PHP Version (Unix)
-        if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
+      - name: Verify PHP Version
         working-directory: src
         run: |
           actual_major_minor=$(docker exec $(php qit-cli.php env:list --field=docker_images | grep php) php -r 'echo PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION;')
           [[ "$actual_major_minor" == "${{ matrix.php }}" ]] || { echo "PHP Major.Minor version mismatch. Expected: ${{ matrix.php }}, Actual: $actual_major_minor"; exit 1; }
 
-      - name: Print WordPress Version (Unix)
-        if: matrix.os == 'ubuntu-20.04' || matrix.os == 'macos-13'
+      - name: Print WordPress Version
         working-directory: src
         run: php qit-cli.php env:exec "wp core version"

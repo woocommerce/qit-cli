@@ -43,16 +43,17 @@ abstract class DynamicCommandCreator {
 				}
 
 				if ( isset( $property_schema['required'] ) && $property_schema['required'] ) {
-					$required = InputOption::VALUE_REQUIRED;
+					$flags = InputOption::VALUE_REQUIRED;
 				} else {
-					$required = InputOption::VALUE_OPTIONAL;
+					$flags = InputOption::VALUE_OPTIONAL;
 				}
 
 				$description = $property_schema['description'] ?? '';
 				$default     = $property_schema['default'] ?? null;
 
-				$items = $property_schema['items'] ?? '';
-				$enum  = $property_schema['enum'] ?? '';
+				$items       = $property_schema['items'] ?? '';
+				$enum        = $property_schema['enum'] ?? '';
+				$option_type = $property_schema['type'] ?? '';
 
 				if ( empty( $enum ) && ! empty( $items ) ) {
 					if ( is_array( $items ) ) {
@@ -70,8 +71,12 @@ abstract class DynamicCommandCreator {
 					}
 				}
 
-				if ( $required === InputOption::VALUE_OPTIONAL && ! empty( $description ) ) {
+				if ( $flags === InputOption::VALUE_OPTIONAL && ! empty( $description ) ) {
 					$description = '(Optional) ' . $description;
+				}
+
+				if ( $option_type === 'array' ) {
+					$flags |= InputOption::VALUE_IS_ARRAY;
 				}
 
 				if ( ! empty( $enum ) ) {
@@ -101,7 +106,7 @@ abstract class DynamicCommandCreator {
 					->addOption(
 						$property_name,
 						null,
-						$required,
+						$flags,
 						$description,
 						$default
 					);

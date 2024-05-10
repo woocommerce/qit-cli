@@ -21,3 +21,4 @@ jobs:
     secrets:
       QIT_USER: ${{ secrets.QIT_USER }}
       QIT_ACCESS_TOKEN: ${{ secrets.QIT_ACCESS_TOKEN }}
+      QIT_STAGING_SECRET: ${{ secrets.QIT_STAGING_SECRET }}

@@ -4,17 +4,19 @@ namespace QIT_CLI\Environment\ExtensionDownload;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\EnvInfo;
+use QIT_CLI\Environment\Extension;
 use QIT_CLI\Environment\ExtensionDownload\Handlers\CustomHandler;
 use QIT_CLI\Environment\ExtensionDownload\Handlers\FileHandler;
 use QIT_CLI\Environment\ExtensionDownload\Handlers\QITHandler;
 use QIT_CLI\Environment\ExtensionDownload\Handlers\URLHandler;
+use QIT_CLI\Zipper;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ExtensionDownloader {
 	/** @var OutputInterface $output */
 	protected $output;
 
-	/** @var ExtensionZip $extension_zip */
+	/** @var Zipper $extension_zip */
 	protected $extension_zip;
 
 	/** @var QITHandler $qit_handler */
@@ -28,7 +30,7 @@ class ExtensionDownloader {
 
 	public function __construct(
 		OutputInterface $output,
-		ExtensionZip $extension_zip,
+		Zipper $extension_zip,
 		QITHandler $qit_handler,
 		URLHandler $url_handler,
 		FileHandler $file_handler
@@ -41,10 +43,10 @@ class ExtensionDownloader {
 	}
 
 	/**
-	 * @param EnvInfo           $env_info
-	 * @param string            $cache_dir
-	 * @param array<string|int> $plugins Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
-	 * @param array<string|int> $themes Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
+	 * @param EnvInfo          $env_info
+	 * @param string           $cache_dir
+	 * @param array<Extension> $plugins Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
+	 * @param array<Extension> $themes Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.
 	 *
 	 * @return void
 	 */
@@ -66,25 +68,29 @@ class ExtensionDownloader {
 		}
 
 		foreach ( $extensions as $e ) {
-			if ( ! file_exists( $e->path ) ) {
+			if ( ! file_exists( $e->downloaded_source ) ) {
 				throw new \RuntimeException( 'Download failed.' );
 			}
 
-			clearstatcache( true, $e->path );
+			clearstatcache( true, $e->downloaded_source );
 
-			if ( is_file( $e->path ) ) {
-				$this->extension_zip->extract_zip( $e->path, "$env_info->temporary_env/html/wp-content/{$e->type}s" );
-			} elseif ( is_dir( $e->path ) ) {
+			if ( is_file( $e->downloaded_source ) ) {
+				// Extract zip to temp environment.
+				$this->extension_zip->extract_zip( $e->downloaded_source, "$env_info->temporary_env/html/wp-content/{$e->type}s" );
+				// Add a volume bind.
+				$env_info->volumes[ "/var/www/html/wp-content/{$e->type}s/{$e->slug}" ] = "$env_info->temporary_env/html/wp-content/{$e->type}s/{$e->slug}";
+			} elseif ( is_dir( $e->downloaded_source ) ) {
 				if ( ! getenv( 'QIT_ALLOW_WRITE' ) ) {
 					// Set it as read-only to prevent dev messing up their local copy inadvertently (default behavior).
 
 					// Inform the user about the read-only mapping.
-					$this->output->writeln( "Notice: Mapping '{$e->type}s/{$e->extension_identifier}' as read-only to protect your local copy." );
+					$this->output->writeln( "Info: Mapping '{$e->type}s/{$e->slug}' as read-only to protect your local copy." );
 
-					// Set it as read-only.
-					$env_info->volumes[ "/app/wp-content/{$e->type}s/{$e->extension_identifier}:ro" ] = $e->path;
+					// Add a read-only volume bind.
+					$env_info->volumes[ "/var/www/html/wp-content/{$e->type}s/{$e->slug}:ro,cached" ] = $e->downloaded_source;
 				} else {
-					$env_info->volumes[ "/app/wp-content/{$e->type}s/{$e->extension_identifier}" ] = $e->path;
+					// Add a volume bind.
+					$env_info->volumes[ "/var/www/html/wp-content/{$e->type}s/{$e->slug}" ] = $e->downloaded_source;
 				}
 			} else {
 				throw new \RuntimeException( 'Download failed.' );
@@ -93,28 +99,40 @@ class ExtensionDownloader {
 	}
 
 	/**
-	 * @param array<string|int> $plugins
-	 * @param array<string|int> $themes
+	 * @param array<Extension> $plugins
+	 * @param array<Extension> $themes
 	 *
 	 * @return array<Extension>
 	 */
 	public function categorize_extensions( array $plugins, array $themes ): array {
 		/**
-		 * @param array<int, Extension> $extensions
+		 * @param array<int, Extension> $categorized_extensions
 		 */
-		$extensions = [];
+		$categorized_extensions = [];
 
-		foreach ( [
-			'plugin' => $plugins,
-			'theme'  => $themes,
-		] as $type => $extension_ids ) {
-			foreach ( $extension_ids as $extension_id ) {
-				$ext                       = new Extension();
-				$ext->extension_identifier = $extension_id;
-				$ext->type                 = $type;
-				$ext->path                 = '';
+		foreach (
+			[
+				'plugin' => $plugins,
+				'theme'  => $themes,
+			] as $type => $extensions
+		) {
+			foreach ( $extensions as $ext ) {
+				if ( ! $ext instanceof Extension ) {
+					throw new \LogicException( 'Invalid extension object.' );
+				}
 
-				if ( array_key_exists( $extension_id, $extensions ) ) {
+				// At this point, source for all extensions should be set.
+				if ( empty( $ext->source ) ) {
+					throw new \LogicException( 'Extension source is required.' );
+				}
+
+				// At this point, slug should already be inferred from the source.
+				if ( empty( $ext->slug ) ) {
+					throw new \LogicException( 'Extension slug should be defined at this point.' );
+				}
+
+				// @phan-suppress-next-line PhanPossiblyUndeclaredVariable
+				if ( array_key_exists( $ext->slug, $categorized_extensions ) ) {
 					throw new \InvalidArgumentException( 'Duplicate extension found.' );
 				}
 
@@ -127,45 +145,42 @@ class ExtensionDownloader {
 					if ( is_subclass_of( $class, CustomHandler::class ) ) {
 						$handler = App::make( $class );
 						if ( $handler->should_handle( $ext ) ) {
-							$this->output->writeln( "Custom handler '$class' is handling '{$ext->extension_identifier}'." );
+							$this->output->writeln( "Custom handler '$class' is handling '{$ext->slug}'." );
 							$ext->handler = $class;
 						}
 					}
 				}
 
 				if ( empty( $ext->handler ) ) {
-					if ( is_numeric( $extension_id ) ) {
+					if ( is_numeric( $ext->source ) ) {
 						// Woo.com product ID.
 						$ext->handler = QITHandler::class;
-					} elseif ( preg_match( '#^https?://#i', $extension_id ) ) {
+					} elseif ( preg_match( '#^https?://#i', $ext->source ) ) {
 						$ext->handler = URLHandler::class;
-					} elseif ( preg_match( '#^[\w-]+/[\w-]+(?:\#[\w-]+)?$#', $extension_id ) ) {
+					} elseif ( preg_match( '#^[\w-]+/[\w-]+(?:\#[\w-]+)?$#', $ext->source ) ) {
 						// GitHub Repo, similar to wp-env.
 						throw new \InvalidArgumentException( 'Installing from GitHub repositories is not supported yet.' );
-					} elseif ( preg_match( '#^ssh://#i', $extension_id ) ) {
+					} elseif ( preg_match( '#^ssh://#i', $ext->source ) ) {
 						// SSH URLs, similar to wp-env.
 						throw new \InvalidArgumentException( 'SSH URLs are currently not supported.' );
-					} elseif ( file_exists( $extension_id ) ) {
+					} elseif ( file_exists( $ext->source ) ) {
 						// Local path.
 						$ext->handler = FileHandler::class;
 					} else {
 						// If it's none of the above, it's a slug.
-						if ( static::is_valid_plugin_slug( $extension_id ) ) {
+						if ( static::is_valid_plugin_slug( $ext->source ) ) {
 							$ext->handler = QITHandler::class;
 						} else {
-							throw new \InvalidArgumentException( 'The provided string could not be parsed as any of the valid formats: WP.org/Woo.com Slugs, Woo.com product ID, Local path, or Zip URLs.' );
+							throw new \InvalidArgumentException( sprintf( "Invalid extension \"%s\".\n\nExpected format: extension:action:tests\n\nValid extensions are WP.org/Woo.com Slugs, Woo.com product ID, Local path, or Zip URLs.\nValid actions are \"activate\", \"bootstrap\" and \"test\".\nValid tests are comma-separated list of test tags or local test directories.", $ext->source ) );
 						}
 					}
 				}
 
-				// Call this callback so that handlers can set up some extension properties early on if needed.
-				App::make( $ext->handler )->assign_handler_to_extension( $extension_id, $ext );
-
-				$extensions[ $extension_id ] = $ext;
+				$categorized_extensions[ $ext->slug ] = $ext;
 			}
 		}
 
-		return $extensions;
+		return $categorized_extensions;
 	}
 
 	/**

@@ -1,0 +1,2 @@
+Success: Plugin already updated.
+

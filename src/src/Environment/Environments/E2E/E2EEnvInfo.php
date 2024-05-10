@@ -12,7 +12,7 @@ class E2EEnvInfo extends EnvInfo {
 	public $site_url;
 
 	/** @var string */
-	public $wordpress_version = '';
+	public $wp = '';
 
 	/** @var bool */
 	public $object_cache = false;
@@ -20,9 +20,27 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var string */
 	public $php_version;
 
+	/** @var string */
+	public $nginx_port;
+
 	/** @var string The domain being used. */
 	public $domain;
 
 	/** @var string */
 	public $woocommerce_version;
+
+	/** @var array<int,array{
+	 *     slug:string,
+	 *     test_tag:string,
+	 *     type:string,
+	 *     action:string,
+	 *     path_in_php_container:string,
+	 *     path_in_playwright_container:string,
+	 *     path_in_host:string
+	 * }> $tests
+	 */
+	public $tests = [];
+
+	/** @var array<mixed>> */
+	public $playwright_config = [];
 }

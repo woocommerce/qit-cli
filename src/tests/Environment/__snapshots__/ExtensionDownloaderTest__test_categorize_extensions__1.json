@@ -1,34 +1,42 @@
 {
     "plugin1": {
-        "extension_identifier": "plugin1",
+        "slug": "plugin1",
+        "source": "plugin1",
+        "downloaded_source": null,
         "type": "plugin",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
-        "path": "",
         "version": "undefined",
-        "download_url": null
+        "action": null,
+        "test_tags": null
     },
     "plugin2": {
-        "extension_identifier": "plugin2",
+        "slug": "plugin2",
+        "source": "plugin2",
+        "downloaded_source": null,
         "type": "plugin",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
-        "path": "",
         "version": "undefined",
-        "download_url": null
+        "action": null,
+        "test_tags": null
     },
     "theme1": {
-        "extension_identifier": "theme1",
+        "slug": "theme1",
+        "source": "theme1",
+        "downloaded_source": null,
         "type": "theme",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
-        "path": "",
         "version": "undefined",
-        "download_url": null
+        "action": null,
+        "test_tags": null
     },
     "theme2": {
-        "extension_identifier": "theme2",
+        "slug": "theme2",
+        "source": "theme2",
+        "downloaded_source": null,
         "type": "theme",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
-        "path": "",
         "version": "undefined",
-        "download_url": null
+        "action": null,
+        "test_tags": null
     }
 }

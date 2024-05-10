@@ -1,0 +1,4 @@
+plugins:
+  automatewoo:
+    test_tags:
+      - default

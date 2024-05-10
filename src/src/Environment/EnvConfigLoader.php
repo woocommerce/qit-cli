@@ -18,10 +18,14 @@ class EnvConfigLoader {
 	/** @var OutputInterface */
 	protected $output;
 
-	public function __construct( Serializer $serializer, Cache $cache, OutputInterface $output ) {
-		$this->serializer = $serializer;
-		$this->cache      = $cache;
-		$this->output     = $output;
+	/** @var PluginsAndThemesParser */
+	protected $plugins_and_themes_parser;
+
+	public function __construct( Serializer $serializer, Cache $cache, OutputInterface $output, PluginsAndThemesParser $plugins_and_themes_parser ) {
+		$this->serializer                = $serializer;
+		$this->cache                     = $cache;
+		$this->output                    = $output;
+		$this->plugins_and_themes_parser = $plugins_and_themes_parser;
 	}
 
 	/**
@@ -29,10 +33,12 @@ class EnvConfigLoader {
 	 *
 	 * @return EnvInfo Returns an EnvInfo object.
 	 */
-	public function init_env_info( array $options = [
-		'defaults'  => [],
-		'overrides' => [],
-	] ): EnvInfo {
+	public function init_env_info(
+		array $options = [
+			'defaults'  => [],
+			'overrides' => [],
+		]
+	): EnvInfo {
 		// Load the environment config file..
 		$env_config = $this->load_config();
 
@@ -51,7 +57,13 @@ class EnvConfigLoader {
 					throw new \RuntimeException( "Disallowed key '$d' found in options" );
 				}
 			}
-			$env_config[ $key ] = $value;
+
+			// If it's an array, append, otherwise replace.
+			if ( is_array( $value ) && array_key_exists( $key, $env_config ) && is_array( $env_config[ $key ] ) ) {
+				$env_config[ $key ] = array_merge( $env_config[ $key ], $value );
+			} else {
+				$env_config[ $key ] = $value;
+			}
 		}
 
 		// Set the defaults.
@@ -61,24 +73,23 @@ class EnvConfigLoader {
 			}
 		}
 
-		// Plugins.
-		foreach ( $env_config['plugins'] ?? [] as $plugin ) {
-			// If it doesn't exist, we download it.
-			if ( file_exists( $plugin ) ) {
-				$env_config['volumes'][] = $plugin . ':/var/www/html/wp-content/plugins/' . basename( $plugin );
-			}
-		}
+		$this->normalize_plural_to_singular( $env_config );
 
-		// Themes.
-		foreach ( $env_config['themes'] ?? [] as $theme ) {
-			// If it doesn't exist, we download it.
-			if ( file_exists( $theme ) ) {
-				$env_config['volumes'][] = $theme . ':/var/www/html/wp-content/themes/' . basename( $theme );
-			}
-		}
+		// Plugins and Themes.
+		$env_config['plugin'] = $this->plugins_and_themes_parser->parse_extensions(
+			$env_config['plugin'] ?? [],
+			Extension::TYPES['plugin'],
+			getenv( 'QIT_UP_AND_TEST' ) ? Extension::ACTIONS['bootstrap'] : Extension::ACTIONS['activate']
+		);
+
+		$env_config['theme'] = $this->plugins_and_themes_parser->parse_extensions(
+			$env_config['theme'] ?? [],
+			Extension::TYPES['theme'],
+			getenv( 'QIT_UP_AND_TEST' ) ? Extension::ACTIONS['bootstrap'] : Extension::ACTIONS['activate']
+		);
 
 		// Requires.
-		foreach ( $env_config['requires'] ?? [] as $file ) {
+		foreach ( $env_config['require'] ?? [] as $file ) {
 			if ( file_exists( $file ) ) {
 				if ( $this->output->isVerbose() ) {
 					$this->output->writeln( sprintf( 'Loading file %s', $file ) );
@@ -133,10 +144,10 @@ class EnvConfigLoader {
 		}
 
 		// No more need for this from now on.
-		unset( $env_config['requires'] );
+		unset( $env_config['require'] );
 
 		// Volumes can be mapped automatically depending on the working directory.
-		$env_config['volumes'] = App::make( EnvVolumeParser::class )->parse_volumes( $env_config['volumes'] ?? [] );
+		$env_config['volume'] = App::make( EnvVolumeParser::class )->parse_volumes( $env_config['volume'] ?? [] );
 
 		// Parse and Validate.
 		foreach ( $env_config as $key => &$value ) {
@@ -152,18 +163,16 @@ class EnvConfigLoader {
 						}
 					}
 					break;
-				case 'wordpress_version':
-					if ( in_array( $value, [ 'stable', 'rc' ], true ) ) {
-						$value = $this->cache->get_manager_sync_data( 'versions' )['wordpress'][ $value ];
-					}
+				case 'wp':
+					$value = EnvironmentVersionResolver::resolve_wp( $value );
 					break;
-				case 'woocommerce_version':
-					if ( in_array( $value, [ 'stable', 'rc' ], true ) ) {
-						$value = $this->cache->get_manager_sync_data( 'versions' )['woocommerce'][ $value ];
-					}
+				case 'woo':
+					$value = EnvironmentVersionResolver::resolve_woo( $value );
 					break;
 			}
 		}
+
+		$this->normalize_singular_to_plural( $env_config );
 
 		$env_info = EnvInfo::from_array( $env_config );
 
@@ -174,6 +183,29 @@ class EnvConfigLoader {
 	 * @return array<mixed> Multidimensional array of scalars.
 	 */
 	public function load_config(): array {
+		// If it's an override (user passed --config) parameter, load it and return.
+		if ( ! empty( App::getVar( 'QIT_CONFIG_OVERRIDE' ) ) ) {
+			$config_override = App::getVar( 'QIT_CONFIG_OVERRIDE' );
+
+			if ( ! file_exists( $config_override ) ) {
+				throw new \RuntimeException( "Config file '$config_override' does not exist." );
+			}
+
+			$this->output->writeln( 'Loading environment config from override parameter ' . $config_override . '...' );
+
+			try {
+				$env_config = $this->serializer->decode( file_get_contents( $config_override ), pathinfo( $config_override, PATHINFO_EXTENSION ) );
+
+				if ( ! is_array( $env_config ) ) {
+					throw new \Exception( 'Invalid config file' );
+				}
+
+				return $env_config;
+			} catch ( \Exception $e ) {
+				throw new \RuntimeException( 'Failed to load environment config: ' . $e->getMessage() );
+			}
+		}
+
 		/*
 		 * Rules:
 		 * - Directory is working-directory gwtcwd();
@@ -290,6 +322,73 @@ class EnvConfigLoader {
 		}
 
 		return $config_1;
+	}
+
+	/**
+	 * @param array<string, mixed> $config
+	 *
+	 * @return void
+	 */
+	protected function normalize_plural_to_singular( array &$config ): void {
+		/*
+		 * These values make sense to be plural in config, but we want to normalize them to singular.
+		 * This way the user can do:
+		 * plugins:
+		 *  - foo
+		 *  - bar
+		 * On the config file, and --plugin foo --plugin bar in the CLI parameters.
+		 */
+		$plurals = [ 'plugins', 'themes', 'volumes', 'php_extensions' ];
+
+		// Convert scalars to arrays.
+		foreach ( $plurals as $plural ) {
+			if ( array_key_exists( $plural, $config ) && ! is_array( $config[ $plural ] ) ) {
+				$config[ $plural ] = [ $config[ $plural ] ];
+			}
+		}
+
+		// Normalize plural to singular. If it already exists, throw.
+		foreach ( $plurals as $plural ) {
+			$singular = rtrim( $plural, 's' );
+			if ( array_key_exists( $plural, $config ) && ! array_key_exists( $singular, $config ) ) {
+				$config[ $singular ] = $config[ $plural ];
+				unset( $config[ $plural ] );
+			} elseif ( array_key_exists( $plural, $config ) && array_key_exists( $singular, $config ) ) {
+				// If both exist, both should be array and should be merged.
+				if ( ! is_array( $config[ $plural ] ) || ! is_array( $config[ $singular ] ) ) {
+					throw new \RuntimeException( "Both '$singular' and '$plural' keys exist in the environment config, but one of them is not an array." );
+				}
+
+				$config[ $singular ] = array_merge( $config[ $plural ], $config[ $singular ] );
+				unset( $config[ $plural ] );
+			}
+		}
+	}
+
+	/**
+	 * @param array<string, mixed> $config
+	 *
+	 * @return void
+	 */
+	protected function normalize_singular_to_plural( array &$config ): void {
+		/*
+		 * These values make sense to be singular in config, but we want to normalize them to plural.
+		 * This way the user can do:
+		 * plugin: foo
+		 * On the config file, and --plugins foo in the CLI parameters.
+		 */
+		$singulars = [ 'plugin', 'theme', 'volume', 'php_extension' ];
+
+		// Normalize singular to plural. If it already exists, throw.
+		foreach ( $singulars as $singular ) {
+			$plural = $singular . 's';
+			if ( array_key_exists( $singular, $config ) && ! array_key_exists( $plural, $config ) ) {
+				$config[ $plural ] = $config[ $singular ];
+				unset( $config[ $singular ] );
+			} elseif ( array_key_exists( $singular, $config ) && array_key_exists( $plural, $config ) ) {
+				throw new \RuntimeException( "Both '$singular' and '$plural' keys exist in the environment config." );
+			}
+		}
 	}
 
 	/**

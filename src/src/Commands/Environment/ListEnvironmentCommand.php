@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands\Environment;
 
+use QIT_CLI\App;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableSeparator;
@@ -9,6 +10,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Terminal;
 use function QIT_CLI\format_elapsed_time;
 
 class ListEnvironmentCommand extends Command {
@@ -55,7 +57,18 @@ class ListEnvironmentCommand extends Command {
 
 		$output->writeln( '<info>Running environments:</info>' );
 
-		$definitions = [];
+		$terminal_width = App::make( Terminal::class )->getWidth();
+		$longest_header = 0;
+		$definitions    = [];
+
+		foreach ( $running as $environment ) {
+			// @phpstan-ignore-next-line
+			foreach ( $environment as $k => $v ) { // @phan-suppress-current-line PhanTypeSuspiciousNonTraversableForeach
+				if ( strlen( $k ) > $longest_header ) {
+					$longest_header = strlen( $k );
+				}
+			}
+		}
 
 		foreach ( $running as $environment ) {
 			$elapsed = format_elapsed_time( time() - $environment->created_at );
@@ -71,12 +84,18 @@ class ListEnvironmentCommand extends Command {
 					$v = $elapsed;
 				}
 				if ( is_array( $v ) ) {
-					$v = implode( ', ', $v );
+					// "implode" only works on flat arrays, otherwise we need "print_r".
+					$is_flat = count( array_filter( $v, 'is_array' ) ) === 0;
+					$v       = $is_flat ? implode( "\n", $v ) : json_encode( $v, JSON_UNESCAPED_SLASHES );
 				}
 				// Check if "field" option is set, and only add if matches.
 				if ( $input->getOption( 'field' ) && $input->getOption( 'field' ) !== $k ) {
 					continue;
 				}
+
+				// Wrap "$v" by terminal width - longest header - 10 (for padding).
+				$v = wordwrap( $v, $terminal_width - $longest_header - 10, "\n", true );
+
 				$definitions[] = [ ucwords( $k ) => $v ];
 			}
 

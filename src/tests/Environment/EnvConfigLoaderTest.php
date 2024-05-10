@@ -3,6 +3,7 @@
 use PHPUnit\Framework\TestCase;
 use QIT_CLI\App;
 use QIT_CLI\Environment\EnvConfigLoader;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -41,12 +42,10 @@ class EnvConfigLoaderTest extends TestCase {
 		if ( ! file_put_contents( $this->configDir . $filename, $content ) ) {
 			throw new RuntimeException( 'Could not create file.' );
 		}
-
 	}
 
 	public function test_env_config_loader_no_file() {
 		$this->assertEquals( [], $this->sut->load_config() );
-
 	}
 
 	public function test_env_config_loader_from_json() {
@@ -213,5 +212,146 @@ class EnvConfigLoaderTest extends TestCase {
 
 		$this->expectException( \RuntimeException::class );
 		$this->sut->load_config();
+	}
+
+	public function test_env_config_loader_plugins_array() {
+		$complexStructure = [
+			'plugins' => [
+				'qit-beaver' => [
+					'test_tags' => [ 'bar' ],
+				],
+			],
+		];
+		$this->create_config_file( 'qit-env.json', json_encode( $complexStructure ) );
+
+		$this->assertMatchesJsonSnapshot( json_encode( $this->normalized_env_info( $this->sut->load_config() ) ) );
+	}
+
+	public function test_env_config_loader_plugins_string() {
+		$complexStructure = [
+			'plugins' => [
+				'qit-beaver',
+			],
+		];
+		$this->create_config_file( 'qit-env.json', json_encode( $complexStructure ) );
+
+		$this->assertMatchesJsonSnapshot( json_encode( $this->normalized_env_info( $this->sut->load_config() ) ) );
+	}
+
+	public function test_env_config_loader_plugins_mixed() {
+		$complexStructure = [
+			'plugins' => [
+				'qit-cat' => [
+					'test_tags' => [ 'bar' ],
+				],
+				'qit-beaver',
+			],
+			'themes'  => [
+				'qit-dog',
+				'foo-extension' => [
+					'test_tags' => [ 'foo' ],
+				],
+			],
+		];
+		$this->create_config_file( 'qit-env.json', json_encode( $complexStructure ) );
+
+		$this->assertMatchesJsonSnapshot( json_encode( $this->normalized_env_info( $this->sut->load_config() ) ) );
+	}
+
+	public function test_env_config_loader_plugins_override() {
+		$override_structure = [
+			'plugins' => [
+				'qit-beaver'    => [
+					'test_tags' => [ 'array_override' ],
+				],
+				'qit-dog'       => [
+					'source' => 'source_from_value',
+				],
+				'https://woo.com/qit-beaver',
+				'foo-extension' => [
+					'source'    => 'https://woo.com/foo-extension',
+					'test_tags' => [ 'test_tag_array' ],
+				],
+				// 'https://woo.com/qit-dog:bar', <!-- Forbidden because we can't infer the "slug" to get the "bar" test tag. -->
+				'{"source": "https://woo.com/qit-dog", "slug": "qit-dog", "test_tags": ["bar"]}',
+				'C:\\Users\\user\\Desktop\\qit-beaver',
+				'C:\\Users\\user\\Desktop\\qit-beaver:activate',
+			],
+			'themes'  => [
+				'qit-beaver:test',
+			],
+		];
+		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
+
+		$this->assertMatchesJsonSnapshot( json_encode( $this->normalized_env_info( $this->sut->load_config(), $override_structure ) ) );
+	}
+
+	public function test_env_config_loader_plugins_url_with_source() {
+		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
+		$this->assertMatchesJsonSnapshot(
+			json_encode(
+				$this->normalized_env_info( $this->sut->load_config(), [
+					'plugins' => [
+						'qit-beaver' => [
+							'source' => 'https://woo.com/qit-beaver',
+						],
+					],
+				] )
+			)
+		);
+	}
+
+	public function test_env_config_loader_plugins_url_with_source_and_tags() {
+		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
+		$this->assertMatchesJsonSnapshot(
+			json_encode(
+				$this->normalized_env_info( $this->sut->load_config(), [
+					'plugins' => [
+						'qit-beaver' => [
+							'source'    => 'https://woo.com/qit-beaver',
+							'test_tags' => [ 'rc' ],
+						],
+					],
+				] )
+			)
+		);
+	}
+
+	public function test_env_config_loader_plugins_url_with_source_json() {
+		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
+		$this->assertMatchesJsonSnapshot(
+			json_encode(
+				$this->normalized_env_info( $this->sut->load_config(), [
+					'plugins' => [
+						'{"source":"https://woo.com/qit-beaver", "slug":"qit-beaver"}',
+					],
+				] )
+			)
+		);
+	}
+
+	public function test_env_config_loader_plugins_url_with_source_and_tags_json() {
+		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
+		$this->assertMatchesJsonSnapshot(
+			json_encode(
+				$this->normalized_env_info( $this->sut->load_config(), [
+					'plugins' => [
+						'{"source":"https://woo.com/qit-beaver", "slug":"qit-beaver", "test_tags": ["rc"]}',
+					],
+				] )
+			)
+		);
+	}
+
+	protected function normalized_env_info( array $defaults, array $overrides = [] ): EnvInfo {
+		$env_info = App::make( EnvConfigLoader::class )->init_env_info( [ 'defaults' => $defaults, 'overrides' => $overrides ] );
+
+		$original_env_id         = $env_info->env_id;
+		$normalized_env_id       = '123456';
+		$env_info->env_id        = $normalized_env_id;
+		$env_info->temporary_env = str_replace( $original_env_id, $normalized_env_id, $env_info->temporary_env );
+		$env_info->created_at    = 1711651749;
+
+		return $env_info;
 	}
 }

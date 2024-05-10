@@ -14,15 +14,19 @@ project.properties
 .sublimelinterrc
 
 vendor/
-!_tests/phpstan/with_vendor/woocommerce-product-feeds/vendor
+!_tests/managed_tests/phpstan/with_vendor/woocommerce-product-feeds/vendor
 .idea/
 src-tmp/
 .cache
 .phpunit.result.cache
 ./qit
-_tests/**/*.zip
-_tests/**/*.txt
+_tests/managed_tests/**/*.zip
+_tests/managed_tests/**/*.txt
 dev/
 _build/docker/php83/xdebug/*
 !_build/docker/php83/xdebug/.gitkeep
 !_build/docker/php83/xdebug/README.md
+_tests/custom_tests/.env
+_tests/custom_tests/tmp_qit_config*
+_tests/custom_tests/cache
+_tests/custom_tests/tmp/
