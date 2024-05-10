@@ -69,7 +69,7 @@ jobs:
         working-directory: src
         env:
           QIT_DOCKER_RUN_TIMEOUT: 1800
-        run: php qit-cli.php env:up --wordpress_version ${{ matrix.wordpress }} --php_version ${{ matrix.php }}
+        run: php qit-cli.php env:up --wp ${{ matrix.wordpress }} --php_version ${{ matrix.php }}
 
       - name: Get URL
         working-directory: src
