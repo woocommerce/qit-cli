@@ -6,6 +6,8 @@
     "KevinGH\\Box\\Compactor\\Php",
     "KevinGH\\Box\\Compactor\\PhpScoper"
   ],
-  "git-tag": "QIT_CLI_VERSION",
-  "php-scoper": "./../_build/scoper.inc.php"
+  "php-scoper": "./../_build/scoper.inc.php",
+  "replacements": {
+    "QIT_CLI_VERSION": "QIT_VERSION_REPLACE"
+  }
 }
