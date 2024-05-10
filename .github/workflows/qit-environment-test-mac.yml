@@ -18,7 +18,7 @@ jobs:
       matrix:
         os: [ macos-13 ]
         php: [ '7.4' ]
-        wordpress: [ 'rc' ]
+        wordpress: [ 'nightly' ]
       fail-fast: false
     env:
       NO_COLOR: 1
