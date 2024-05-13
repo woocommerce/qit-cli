@@ -102,7 +102,7 @@ class UploadTest extends QITTestCase {
 		$this->to_delete[] = __DIR__ . '/foo.zip';
 
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( 'This is not a valid zip file.' );
+		$this->expectExceptionMessage( 'This is not a valid ZIP file.' );
 		$upload->upload_build( 'build', 123, __DIR__ . '/foo.zip', new NullOutput() );
 	}
 
