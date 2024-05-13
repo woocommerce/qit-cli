@@ -4,11 +4,9 @@ namespace QIT_CLI_Tests;
 
 use QIT_CLI\App;
 use QIT_CLI\Woo\ZipValidator;
-use QIT_CLI_Tests\ZipBuilderHelper as ZipBuilder;
+use QIT_CLI_Tests\Helpers\ZipBuilderHelper as ZipBuilder;
 
 class ZipValidatorTest extends QITTestCase {
-	use InjectRequestBuilderMockTrait;
-
 	protected $to_delete = [];
 
 	public function setUp(): void {
@@ -32,8 +30,6 @@ class ZipValidatorTest extends QITTestCase {
 	}
 
 	public function test_valid_zip() {
-		$this->inject_request_builder_mock();
-
 		$file_name = 'valid-zip.zip';
 		$slug      = 'valid-zip';
 
@@ -54,8 +50,6 @@ class ZipValidatorTest extends QITTestCase {
 	}
 
 	public function test_zip_with_invalid_file() {
-		$this->inject_request_builder_mock();
-
 		$file_name = 'zip-with-invalid-file.zip';
 		$slug      = 'zip-with-invalid-file';
 
@@ -74,8 +68,6 @@ class ZipValidatorTest extends QITTestCase {
 	}
 
 	function test_zip_with_invalid_file_inside_folder() {
-		$this->inject_request_builder_mock();
-
 		$file_name = 'zip-with-invalid-file-inside-folder.zip';
 		$slug      = 'zip-with-invalid-file-inside-folder';
 
@@ -94,8 +86,6 @@ class ZipValidatorTest extends QITTestCase {
 	}
 
 	function test_zip_with_invalid_file_inside_vendor_folder() {
-		$this->inject_request_builder_mock();
-
 		$file_name = 'zip-with-invalid-file-inside-vendor-folder.zip';
 		$slug      = 'zip-with-invalid-file-inside-vendor-folder';
 
@@ -117,8 +107,6 @@ class ZipValidatorTest extends QITTestCase {
 	}
 
 	function test_zip_created_by_Archive_Utility_OSX_is_invalid() {
-		$this->inject_request_builder_mock();
-
 		$file_name = 'zip-created-by-archive-utility-osx.zip';
 		$slug      = 'zip-created-by-archive-utility-osx';
 

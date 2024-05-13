@@ -3,8 +3,9 @@
 namespace QIT_CLI_Tests;
 
 use QIT_CLI\App;
+use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
-use QIT_CLI_Tests\ZipBuilderHelper as ZipBuilder;
+use QIT_CLI_Tests\Helpers\ZipBuilderHelper as ZipBuilder;
 use RuntimeException;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Console\Output\NullOutput;
@@ -12,7 +13,6 @@ use ZipArchive;
 
 class UploadTest extends QITTestCase {
 	use MatchesSnapshots;
-	use InjectRequestBuilderMockTrait;
 
 	protected $to_delete = [];
 
@@ -206,5 +206,26 @@ class UploadTest extends QITTestCase {
 		$this->assertEquals( $file_string, file_get_contents( __DIR__ . '/foo.zip' ) );
 
 		App::offsetUnset( 'UPLOAD_CHUNK_KB' );
+	}
+
+	public function inject_request_builder_mock() {
+		/**
+		 * What we do here is that we replace "RequestBuilder" with this
+		 * mock class, which will just:
+		 * - Log all "would-be" POST requests
+		 * - Return a dummy response
+		 * This allows us to log all the POST requests that would be made,
+		 * without actually making them.
+		 */
+		$mock = new class() extends RequestBuilder {
+			public function request(): string {
+				global $_test_post_bodies;
+				$_test_post_bodies[] = $this->post_body;
+
+				return json_encode( [ 'upload_id' => 123 ] );
+			}
+		};
+
+		App::singleton( RequestBuilder::class, $mock );
 	}
 }

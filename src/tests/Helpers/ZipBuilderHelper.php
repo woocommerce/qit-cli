@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI_Tests;
+namespace QIT_CLI_Tests\Helpers;
 
 use RuntimeException;
 use ZipArchive;
@@ -18,7 +18,7 @@ class ZipBuilderHelper {
 	 */
 	public function __construct( $filename ) {
 		$this->filename = $filename;
-		$this->filepath = __DIR__ . "/$this->filename";
+		$this->filepath = __DIR__ . "/../$this->filename";
 	}
 
 	/**
