@@ -20,20 +20,29 @@ class Upload {
 	}
 
 	/**
+	 * @param string          $upload_type Either 'build' or 'custom-test'.
 	 * @param int             $woo_extension_id The Woo extension ID that this development build is associated to.
-	 * @param string          $extension_slug The Woo Extension slug.
 	 * @param string          $zip_path The local Zip file path.
 	 * @param OutputInterface $output The output instance.
+	 * @param string          $test_type The test type, if a 'custom-test'.
 	 *
-	 * @return string The Upload ID.
+	 * @return string The Upload ID or empty, if a custom test type.
 	 */
-	public function upload_build( int $woo_extension_id, string $extension_slug, string $zip_path, OutputInterface $output ): string {
+	public function upload_build( string $upload_type, int $woo_extension_id, string $zip_path, OutputInterface $output, string $test_type = '', string $test_tag = '' ): string {
 		if ( ! file_exists( $zip_path ) ) {
 			throw new \RuntimeException( sprintf( 'File %s does not exist.', $zip_path ) );
 		}
 
 		if ( ! is_readable( $zip_path ) ) {
 			throw new \RuntimeException( sprintf( 'File %s is not readable.', $zip_path ) );
+		}
+
+		if ( $upload_type === 'build' ) {
+			$endpoint = '/wp-json/cd/v1/upload-build';
+		} elseif ( $upload_type === 'custom-test' ) {
+			$endpoint = '/wp-json/cd/v1/cli/upload-test';
+		} else {
+			throw new \InvalidArgumentException( 'Invalid upload type.' );
 		}
 
 		$this->check_zip_consistency( $zip_path, $output );
@@ -53,19 +62,29 @@ class Upload {
 		while ( ! feof( $file ) ) {
 			++$current_chunk;
 
+			$data = [
+				'cd_upload_id'     => $cd_upload_id,
+				'woo_extension_id' => $woo_extension_id,
+				'current_chunk'    => $current_chunk,
+				'md5_sum'          => md5_file( $zip_path ),
+				'total_chunks'     => $total_chunks,
+				'chunk'            => base64_encode( fread( $file, $chunk_size_kb * 1024 ) ),
+			];
+
+			if ( ! empty( $test_type ) ) {
+				$data['test_type'] = $test_type;
+			}
+
+			if ( ! empty( $test_tag ) ) {
+				$data['test_tag'] = $test_tag;
+			}
+
 			$r = $this->request_builder
-					->with_url( get_manager_url() . '/wp-json/cd/v1/upload-build' )
+					->with_url( get_manager_url() . $endpoint )
 					->with_method( 'POST' )
 					->with_expected_status_codes( [ 200, 206 ] )
 					->with_timeout_in_seconds( 60 )
-					->with_post_body( [
-						'cd_upload_id'     => $cd_upload_id,
-						'woo_extension_id' => $woo_extension_id,
-						'current_chunk'    => $current_chunk,
-						'md5_sum'          => md5_file( $zip_path ),
-						'total_chunks'     => $total_chunks,
-						'chunk'            => base64_encode( fread( $file, $chunk_size_kb * 1024 ) ),
-					] )
+					->with_post_body( $data )
 					->request();
 
 			if ( defined( 'UNIT_TESTS' ) && UNIT_TESTS ) {

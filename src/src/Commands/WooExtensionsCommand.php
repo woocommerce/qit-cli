@@ -30,7 +30,7 @@ class WooExtensionsCommand extends Command {
 		if ( $input->getOption( 'refresh' ) === true ) {
 			$this->woo_extensions_list->fetch_woo_extensions_available();
 
-			$output->writeln( 'Woo Extensions list reloaded.' );
+			$output->writeln( 'Woo Extensions list updated.' );
 
 			return Command::SUCCESS;
 		}

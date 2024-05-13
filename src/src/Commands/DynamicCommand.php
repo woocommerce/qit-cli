@@ -38,11 +38,15 @@ abstract class DynamicCommand extends Command {
 	 *
 	 * @return array<string,scalar|array<scalar>> The keys are option names, the values are the option values. It can be boolean if option is boolean, scalar if it's a value, or array if option is an array.
 	 */
-	protected function parse_options( InputInterface $input ): array {
+	protected function parse_options( InputInterface $input, bool $filter_to_send = true ): array {
 		$this->validate_required_options( $input );
 
 		// Filter from the available options, those that we want to send.
-		$options = array_intersect_key( $input->getOptions(), $this->options_to_send );
+		if ( $filter_to_send ) {
+			$options = array_intersect_key( $input->getOptions(), $this->options_to_send );
+		} else {
+			$options = $input->getOptions();
+		}
 
 		// Filter empty options without a default.
 		$options = array_filter( $options, static function ( $v ) {

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<phpunit
+        bootstrap="./bootstrap.php"
+        backupGlobals="false"
+        colors="true"
+        stopOnWarning="true"
+>
+    <extensions>
+        <bootstrap class="QITTestExtension"/>
+    </extensions>
+    <testsuites>
+        <testsuite name="QIT_Custom_Tests">
+            <directory suffix="Test.php">tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

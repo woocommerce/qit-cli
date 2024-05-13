@@ -1,4 +1,9 @@
+#### QIT CLI
+
 [![QIT CLI Code tests](https://github.com/woocommerce/qit-cli/actions/workflows/code-tests.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/code-tests.yml)
+
+#### Managed Tests
+
 [![QIT Self-Tests - Activation](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-activation.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-activation.yml)
 [![QIT Self-Tests - API](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-woo-api.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-woo-api.yml)
 [![QIT Self-Tests - E2E](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-woo-e2e.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-woo-e2e.yml)
@@ -6,6 +11,12 @@
 [![QIT Self-Tests - Security](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-security.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-security.yml)
 [![QIT Self-Tests - PHPCompatibilityWP](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-phpcompatibility.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-phpcompatibility.yml)
 [![QIT Self-Tests - Malware](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-malware.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-malware.yml)
+
+#### Test Environment
+
+[![QIT Environment Test - Linux](https://github.com/woocommerce/qit-cli/actions/workflows/qit-environment-test-linux.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-environment-test-linux.yml)
+[![QIT Environment Test - Mac (non M1)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-environment-test-mac.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-environment-test-mac.yml)
+[![QIT Environment Dangling Test](https://github.com/woocommerce/qit-cli/actions/workflows/qit-environment-dangling-test.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-environment-dangling-test.yml)
 
 <p align="center"><img src="https://woocommerce.com/wp-content/themes/woo/images/logo-woocommerce-bubble.svg" alt="WooCommerce" style="width:100px;height:auto;"></p>
 
@@ -17,22 +28,22 @@ QIT is a testing platform for WordPress Plugins and Themes developed by WooComme
 
 Run tests out-of-the box with zero configuration.
 
-- [Woo E2E Test](https://qit.woo.com/docs/test-types/woo-e2e) - Runs WooCommerce End-to-End tests alongside your extension.
-- [Woo API Test](https://qit.woo.com/docs/test-types/woo-api) - Runs WooCommerce API tests with your extension.
-- [Activation Test](https://qit.woo.com/docs/test-types/activation) - Activates your plugin and logs any PHP notice, warning, and error.
-- [Security Test](https://qit.woo.com/docs/test-types/security) - Scan your plugin for adherence to best practices in writing secure code.
-- [PHPStan Test](https://qit.woo.com/docs/test-types/phpstan) - Run PHPStan checks to catch issues early.
-- [PHP Compatibility Test](https://qit.woo.com/docs/test-types/phpcompatibility) - Run PHPCompatibility tests to detect issues with different PHP versions.
-- [Malware Test](https://qit.woo.com/docs/test-types/malware) - Scan your code with the Malware check.
+- [Woo E2E Test](https://qit.woo.com/docs/managed-tests/woo-e2e) - Runs WooCommerce End-to-End tests alongside your extension.
+- [Woo API Test](https://qit.woo.com/docs/managed-tests/woo-api) - Runs WooCommerce API tests with your extension.
+- [Activation Test](https://qit.woo.com/docs/managed-tests/activation) - Activates your plugin and logs any PHP notice, warning, and error.
+- [Security Test](https://qit.woo.com/docs/managed-tests/security) - Scan your plugin for adherence to best practices in writing secure code.
+- [PHPStan Test](https://qit.woo.com/docs/managed-tests/phpstan) - Run PHPStan checks to catch issues early.
+- [PHP Compatibility Test](https://qit.woo.com/docs/managed-tests/phpcompatibility) - Run PHPCompatibility tests to detect issues with different PHP versions.
+- [Malware Test](https://qit.woo.com/docs/managed-tests/malware) - Scan your code with the Malware check.
 - _Performance Tests (Work-in-progress)_
 
-#### **Custom E2E Tests** _(Coming Soon)_
+#### **Custom E2E Tests** _(Early Access)_
 
 Write your own E2E tests using frameworks such as [Playwright](https://playwright.dev/), or leverage pre-built tests to effortlessly increase your test coverage.
 
 [Read more about Custom E2E Tests](https://qit.woo.com/docs/custom-tests/introduction).
 
-#### Local Test Environment _(Coming Soon)_
+#### Local Test Environment _(Early Access)_
 
 Fast, disposable and configurable test environment designed to do one thing well: **Run tests.**
 

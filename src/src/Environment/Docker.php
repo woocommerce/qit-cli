@@ -45,7 +45,7 @@ class Docker {
 			$command[] = 'PAGER=more';
 		}
 
-		if ( ! empty( $user ) ) {
+		if ( ! empty( $user ) && static::should_set_user() ) {
 			$command[] = '--user';
 			$command[] = $user;
 		}
@@ -110,8 +110,8 @@ class Docker {
 	 * @return void
 	 */
 	public function run_inside_docker( EnvInfo $env_info, array $command, array $env_vars = [], ?string $user = null, int $timeout = 300, string $image = 'php', bool $force_output = false ): void {
-		$docker_image   = $env_info->get_docker_container( $image );
-		$docker_command = [ $this->find_docker(), 'exec' ];
+		$docker_container = $env_info->get_docker_container( $image );
+		$docker_command   = [ $this->find_docker(), 'exec' ];
 
 		if ( $this->output->isVerbose() && use_tty() ) {
 			$docker_command = array_merge( $docker_command, [ '-it' ] );
@@ -129,7 +129,7 @@ class Docker {
 			}
 		}
 
-		if ( ! is_null( $user ) ) {
+		if ( ! is_null( $user ) && static::should_set_user() ) {
 			$docker_command[] = '--user';
 			$docker_command[] = $user;
 
@@ -149,7 +149,7 @@ class Docker {
 			$docker_command[] = "$key=$value";
 		}
 
-		$docker_command[] = $docker_image;
+		$docker_command[] = $docker_container;
 		$docker_command   = array_merge( $docker_command, $command );
 
 		if ( getenv( 'QIT_DOCKER_RUN_TIMEOUT' ) !== false && is_numeric( getenv( 'QIT_DOCKER_RUN_TIMEOUT' ) ) ) {
@@ -173,10 +173,11 @@ class Docker {
 		} );
 
 		if ( ! $process->isSuccessful() ) {
+			$exit_code    = $process->getExitCode();
 			$output       = $process->getOutput();
 			$error_output = $process->getErrorOutput();
 
-			$message = 'Command not successul.';
+			$message = "Command not successul (Container $docker_container exited with $exit_code).";
 
 			// If $force_output is true, we already printed this.
 			if ( ! $force_output ) {
@@ -195,6 +196,13 @@ class Docker {
 
 			throw new \RuntimeException( $message );
 		}
+	}
+
+	/**
+	 * @return bool Whether the user should be set in the docker command.
+	 */
+	public static function should_set_user(): bool {
+		return ! is_windows();
 	}
 
 	/**

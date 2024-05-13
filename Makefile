@@ -6,6 +6,7 @@
 ROOT ?= 0
 DEBUG ?= 0
 ARGS ?=
+VERSION ?= qit_dev_build
 
 ifeq (1, $(ROOT))
 DOCKER_USER ?= "0:0"
@@ -42,9 +43,17 @@ build:
 			--user "$(shell id -u):$(shell id -g)" \
 			composer \
 			install --no-dev --quiet --optimize-autoloader --ignore-platform-reqs
+
+	# Create a temporary configuration file with the specified VERSION
+	@sed "s/QIT_VERSION_REPLACE/$(VERSION)/g" ./_build/box.json.dist > ./_build/box.json
+
+	# Ensure the Docker image is built and run Box with the temporary configuration file
 	@docker images -q | grep qit-cli-box || docker build -t qit-cli-box ./_build/docker/box
-	@docker run --rm -v ${PWD}:${PWD} -w ${PWD} -u "$(shell id -u):$(shell id -g)" qit-cli-box ./_build/box.phar compile -c ./_build/box.json.dist --no-parallel || rm -rf src-tmp
+	@docker run --rm -v ${PWD}:${PWD} -w ${PWD} -u "$(shell id -u):$(shell id -g)" qit-cli-box ./_build/box.phar compile -c ./_build/box.json --no-parallel || rm -rf src-tmp
+
+	# Clean up the temporary directory and configuration file
 	@rm -rf src-tmp
+	@rm -f ./_build/box.json
 
 tests:
 	$(MAKE) phpcs
@@ -56,7 +65,7 @@ phpcbf:
 	$(call execPhpAlpine,/app/src/vendor/bin/phpcbf /app/src/qit-cli.php /app/src/src -s --standard=/app/src/.phpcs.xml.dist)
 
 phpcs:
-	$(MAKE) phpcbf
+	$(MAKE) phpcbf || true
 	$(call execPhpAlpine,/app/src/vendor/bin/phpcs /app/src/qit-cli.php /app/src/src -s --standard=/app/src/.phpcs.xml.dist)
 
 phpstan:

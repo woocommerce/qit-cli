@@ -1,0 +1,63 @@
+[
+    {
+        "slug": "qit-beaver",
+        "source": "\\\\network-share\\plugins\\qit-beaver.zip",
+        "downloaded_source": null,
+        "type": "plugin",
+        "handler": null,
+        "version": "undefined",
+        "action": "activate",
+        "test_tags": [
+            "default"
+        ]
+    },
+    {
+        "slug": "qit-cat",
+        "source": "qit-cat",
+        "downloaded_source": null,
+        "type": "plugin",
+        "handler": null,
+        "version": "undefined",
+        "action": "test",
+        "test_tags": [
+            "rc",
+            "\/tmp\/test-tag-local-zip.zip"
+        ]
+    },
+    {
+        "slug": "foo-extension",
+        "source": "https:\/\/github.com\/qitbeaver\/foo-extension.zip",
+        "downloaded_source": null,
+        "type": "plugin",
+        "handler": null,
+        "version": "undefined",
+        "action": "activate",
+        "test_tags": [
+            "default"
+        ]
+    },
+    {
+        "slug": "bar-extension",
+        "source": "\/path\/to\/file\/bar-extension.zip",
+        "downloaded_source": null,
+        "type": "plugin",
+        "handler": null,
+        "version": "undefined",
+        "action": "activate",
+        "test_tags": [
+            "default"
+        ]
+    },
+    {
+        "slug": "baz-extension",
+        "source": "\/path\/to\/file\/baz-extension",
+        "downloaded_source": null,
+        "type": "plugin",
+        "handler": null,
+        "version": "undefined",
+        "action": "activate",
+        "test_tags": [
+            "default"
+        ]
+    }
+]

@@ -2,7 +2,7 @@
 
 namespace QIT_CLI\Environment\ExtensionDownload\Handlers;
 
-use QIT_CLI\Environment\ExtensionDownload\Extension;
+use QIT_CLI\Environment\Extension;
 
 /**
  * Extend this class and include it with "--require=my-custom-handler.php"
@@ -10,7 +10,7 @@ use QIT_CLI\Environment\ExtensionDownload\Extension;
  */
 abstract class CustomHandler extends Handler {
 	/**
-	 * @param Extension $extension
+	 * @param \QIT_CLI\Environment\Extension $extension
 	 *
 	 * @return bool True if this handler should handle this ID, false if not.
 	 */

@@ -1,0 +1,8 @@
+Field	Value
+name	Storefront
+status	inactive
+
+Field	Value
+name	Twenty Seventeen
+status	inactive
+

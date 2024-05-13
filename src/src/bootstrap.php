@@ -2,39 +2,44 @@
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
-use QIT_CLI\Commands\CacheCommand;
-use QIT_CLI\Commands\ConfigDirCommand;
-use QIT_CLI\Commands\CreateMassTestCommands;
-use QIT_CLI\Commands\CreateRunCommands;
-use QIT_CLI\Commands\DevModeCommand;
 use QIT_CLI\Commands\Backend\AddBackend;
 use QIT_CLI\Commands\Backend\CurrentBackend;
 use QIT_CLI\Commands\Backend\RemoveBackend;
 use QIT_CLI\Commands\Backend\SwitchBackend;
-use QIT_CLI\Commands\Environment\ExecEnvironmentCommand;
+use QIT_CLI\Commands\CacheCommand;
+use QIT_CLI\Commands\ConfigDirCommand;
+use QIT_CLI\Commands\ConnectCommand;
+use QIT_CLI\Commands\CreateMassTestCommands;
+use QIT_CLI\Commands\CreateRunCommands;
+use QIT_CLI\Commands\CustomTests\ScaffoldE2ECommand;
+use QIT_CLI\Commands\CustomTests\ShowReportCommand;
+use QIT_CLI\Commands\DevModeCommand;
 use QIT_CLI\Commands\Environment\DownEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
+use QIT_CLI\Commands\Environment\ExecEnvironmentCommand;
 use QIT_CLI\Commands\Environment\ListEnvironmentCommand;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\ListCommand;
-use QIT_CLI\Commands\ConnectCommand;
 use QIT_CLI\Commands\OpenCommand;
 use QIT_CLI\Commands\Partner\AddPartner;
 use QIT_CLI\Commands\Partner\RemovePartner;
 use QIT_CLI\Commands\Partner\SwitchPartner;
 use QIT_CLI\Commands\SetProxyCommand;
 use QIT_CLI\Commands\SyncCommand;
+use QIT_CLI\Commands\Tags\DeleteTestTagsCommand;
+use QIT_CLI\Commands\Tags\ListTestTagsCommand;
+use QIT_CLI\Commands\Tags\UploadTestTagsCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Commands\WooValidateZipCommand;
 use QIT_CLI\Config;
 use QIT_CLI\Diagnosis;
 use QIT_CLI\Environment\EnvironmentDanglingCleanup;
-use QIT_CLI\ManagerBackend;
 use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\Exceptions\UpdateRequiredException;
 use QIT_CLI\IO\Input;
 use QIT_CLI\IO\Output;
+use QIT_CLI\ManagerBackend;
 use QIT_CLI\ManagerSync;
 use Stecman\Component\Symfony\Console\BashCompletion\CompletionCommand;
 use Symfony\Component\Console\Application;
@@ -232,6 +237,13 @@ if ( $is_connected_to_backend ) {
 
 	// List the Woo Extensions the user can run tests against.
 	$application->add( $container->make( WooExtensionsCommand::class ) );
+
+	$application->add( $container->make( ListTestTagsCommand::class ) );
+	$application->add( $container->make( UploadTestTagsCommand::class ) );
+	$application->add( $container->make( DeleteTestTagsCommand::class ) );
+
+	$application->add( $container->make( ShowReportCommand::class ) );
+	$application->add( $container->make( ScaffoldE2ECommand::class ) );
 
 	if ( Config::is_development_mode() ) {
 		// Dynamically crete Mass Test run command.

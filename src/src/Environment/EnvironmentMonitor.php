@@ -63,6 +63,10 @@ class EnvironmentMonitor {
 	public function environment_stopped( EnvInfo $env_info ): bool {
 		// Filter out the stopped environment.
 		$environments = array_filter( $this->get(), function ( $key ) use ( $env_info ) {
+			// Handle any kind of string type junggling while still using strict comparison.
+			if ( is_numeric( $key ) && is_numeric( $env_info->env_id ) ) {
+				return (int) $key !== (int) $env_info->env_id;
+			}
 			return $key !== $env_info->env_id;
 		}, ARRAY_FILTER_USE_KEY );
 

@@ -24,8 +24,14 @@ jobs:
         with:
           tools: none
           php-version: '7.2'
-      - name: Build
-        run: make build
+      - name: Version Validation
+        run: |
+          if ./qit --version | grep -q "qit_dev_build"; then
+            echo "Development build detected. Exiting with failure."
+            exit 1
+          else
+            echo "Valid build version. Proceeding."
+          fi
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "qit"

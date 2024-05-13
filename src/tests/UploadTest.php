@@ -21,7 +21,7 @@ class UploadTest extends QITTestCase {
 		$_test_post_bodies = [];
 
 		// Pre-create the entrypoint file as we use it on various tests.
-		file_put_contents(__DIR__ . '/plugin-entrypoint.php', '<?php Plugin Name: Foo');
+		file_put_contents( __DIR__ . '/plugin-entrypoint.php', '<?php Plugin Name: Foo' );
 		$this->to_delete[] = __DIR__ . '/plugin-entrypoint.php';
 
 		parent::setUp();
@@ -91,7 +91,7 @@ class UploadTest extends QITTestCase {
 		$upload = App::make( Upload::class );
 
 		$this->expectException( RuntimeException::class );
-		$upload->upload_build( 123, 'foo', __DIR__ . '/foo.zip', new NullOutput() );
+		$upload->upload_build( 'build', 123, __DIR__ . '/foo.zip', new NullOutput() );
 	}
 
 	public function test_upload_file_not_zip() {
@@ -102,8 +102,8 @@ class UploadTest extends QITTestCase {
 		$this->to_delete[] = __DIR__ . '/foo.zip';
 
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( 'This is not a valid ZIP file.' );
-		$upload->upload_build( 123, 'foo', __DIR__ . '/foo.zip', new NullOutput() );
+		$this->expectExceptionMessage( 'This is not a valid zip file.' );
+		$upload->upload_build( 'build', 123, __DIR__ . '/foo.zip', new NullOutput() );
 	}
 
 	/**
@@ -137,9 +137,9 @@ class UploadTest extends QITTestCase {
 
 		$this->assertMatchesSnapshot( $this->list_zip_contents( $zip, true ) );
 
-		$upload->upload_build( 123, $sut_slug, __DIR__ . "/$zip_file", new NullOutput() );
+		$upload->upload_build( 'build', 123, __DIR__ . "/$zip_file", new NullOutput() );
 
-		[ $content_size_sent, $data ] =  $this->get_requests_from_upload( $upload );
+		[ $content_size_sent, $data ] = $this->get_requests_from_upload( $upload );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $data ) );
 		$this->assert_sent_chunks_matches_original_file( __DIR__ . "/$zip_file", $content_size_sent );
@@ -164,9 +164,9 @@ class UploadTest extends QITTestCase {
 
 		$this->assertMatchesSnapshot( $this->list_zip_contents( $zip, true ) );
 
-		$upload->upload_build( 123, $sut_slug, __DIR__ . "/$zip_file", new NullOutput() );
+		$upload->upload_build( 'build', 123, __DIR__ . "/$zip_file", new NullOutput() );
 
-		[ $content_size_sent, $data ] =  $this->get_requests_from_upload( $upload );
+		[ $content_size_sent, $data ] = $this->get_requests_from_upload( $upload );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $data ) );
 		$this->assert_sent_chunks_matches_original_file( __DIR__ . "/$zip_file", $content_size_sent );
@@ -194,7 +194,7 @@ class UploadTest extends QITTestCase {
 
 		$this->assertMatchesSnapshot( $this->list_zip_contents( $zip, true ) );
 
-		$upload->upload_build( 123, $sut_slug, __DIR__ . "/$zip_file", new NullOutput() );
+		$upload->upload_build( 'build', 123, __DIR__ . "/$zip_file", new NullOutput() );
 
 		// Hydrate the chunks and validate it's the same as the source.
 		$file_string = '';

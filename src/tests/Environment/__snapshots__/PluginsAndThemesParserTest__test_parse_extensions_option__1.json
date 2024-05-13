@@ -1,0 +1,39 @@
+[
+    {
+        "slug": "qit-beaver",
+        "source": "https:\/\/github.com\/qitbeaver\/qit-beaver",
+        "downloaded_source": null,
+        "type": "plugin",
+        "handler": null,
+        "version": "undefined",
+        "action": "bootstrap",
+        "test_tags": [
+            "stable",
+            "\/tmp\/test-tag-local-zip.zip"
+        ]
+    },
+    {
+        "slug": "qit-cat",
+        "source": "https:\/\/github.com\/cat\/pictures",
+        "downloaded_source": null,
+        "type": "plugin",
+        "handler": null,
+        "version": "undefined",
+        "action": "test",
+        "test_tags": [
+            "default"
+        ]
+    },
+    {
+        "slug": "dog-pictures",
+        "source": "https:\/\/github.com\/cat\/pictures",
+        "downloaded_source": null,
+        "type": "plugin",
+        "handler": null,
+        "version": "undefined",
+        "action": "activate",
+        "test_tags": [
+            "default"
+        ]
+    }
+]

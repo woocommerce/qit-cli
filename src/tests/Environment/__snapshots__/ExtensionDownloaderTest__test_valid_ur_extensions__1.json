@@ -1,18 +1,22 @@
 {
-    "http:\/\/example.com\/plugin.zip": {
-        "extension_identifier": "1a0542ad87fe4c3f2b949ff7fcebdd02",
+    "1a0542ad87fe4c3f2b949ff7fcebdd02": {
+        "slug": "1a0542ad87fe4c3f2b949ff7fcebdd02",
+        "source": "http:\/\/example.com\/plugin.zip",
+        "downloaded_source": null,
         "type": "plugin",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\URLHandler",
-        "path": "",
         "version": "undefined",
-        "download_url": "http:\/\/example.com\/plugin.zip"
+        "action": null,
+        "test_tags": null
     },
-    "https:\/\/example.com\/plugin2.zip": {
-        "extension_identifier": "414dd101454aa1fdae474005c0824121",
+    "414dd101454aa1fdae474005c0824121": {
+        "slug": "414dd101454aa1fdae474005c0824121",
+        "source": "https:\/\/example.com\/plugin2.zip",
+        "downloaded_source": null,
         "type": "plugin",
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\URLHandler",
-        "path": "",
         "version": "undefined",
-        "download_url": "https:\/\/example.com\/plugin2.zip"
+        "action": null,
+        "test_tags": null
     }
 }

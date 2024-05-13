@@ -3,12 +3,14 @@
 namespace QIT_CLI\Environment\Environments\E2E;
 
 use QIT_CLI\App;
+use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\EnvUpChecker;
 use QIT_CLI\Environment\PluginActivationReportRenderer;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Process\Process;
 
 class E2EEnvironment extends Environment {
 	/** @var string */
@@ -45,7 +47,20 @@ class E2EEnvironment extends Environment {
 	}
 
 	protected function post_up(): void {
-		$this->env_info->site_url = sprintf( 'http://%s:%s', $this->env_info->domain, $this->get_nginx_port() );
+		if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
+			// Inside docker, the port is always 80 (that's what Nginx is listening to).
+			$this->env_info->nginx_port = '80';
+
+			// Site URL without explicit port.
+			$this->env_info->site_url = sprintf( 'http://%s', $this->env_info->domain );
+		} else {
+			// Host port.
+			$this->env_info->nginx_port = (string) $this->get_nginx_port();
+
+			// Site URL with explicit port.
+			$this->env_info->site_url = sprintf( 'http://%s:%s', $this->env_info->domain, $this->env_info->nginx_port );
+		}
+
 		$this->environment_monitor->environment_added_or_updated( $this->env_info );
 
 		/**
@@ -54,21 +69,20 @@ class E2EEnvironment extends Environment {
 		if ( ! empty( $this->env_info->php_extensions ) ) {
 			$this->output->writeln( '<info>Installing PHP extensions...</info>' );
 			// Install PHP extensions, if needed.
-			$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '/qit/bin/php-extensions.sh' ], [
+			$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/php-extensions.sh' ], [
 				'PHP_EXTENSIONS' => implode( ' ', $this->env_info->php_extensions ), // Space-separated list of PHP extensions.
 			], '0:0' );
 		}
 
+		// Copy mu-plugins.
+		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'mkdir -p /var/www/html/wp-content/mu-plugins && cp /qit/mu-plugins/* /var/www/html/wp-content/mu-plugins 2>&1' ] );
+
 		// Setup WordPress.
 		$this->output->writeln( '<info>Setting up WordPress...</info>' );
-		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', '/qit/bin/wordpress-setup.sh 2>&1' ], [
-			'WORDPRESS_VERSION'   => $this->env_info->wordpress_version,
-			'WOOCOMMERCE_VERSION' => $this->env_info->woocommerce_version,
-			'PLUGINS_TO_INSTALL'  => json_encode( $this->env_info->plugins ),
-			'THEMES_TO_INSTALL'   => json_encode( $this->env_info->themes ),
-			'SUT_SLUG'            => 'automatewoo', // @todo: Set this.
-			'SITE_URL'            => $this->env_info->site_url,
-			'QIT_DOCKER_REDIS'    => $this->env_info->object_cache ? 'yes' : 'no',
+		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/wordpress-setup.sh 2>&1' ], [
+			'WORDPRESS_VERSION' => $this->env_info->wp,
+			'SITE_URL'          => $this->env_info->site_url,
+			'QIT_DOCKER_REDIS'  => $this->env_info->object_cache ? 'yes' : 'no',
 		] );
 
 		// Activate plugins.
@@ -111,26 +125,34 @@ class E2EEnvironment extends Environment {
 			$this->docker->run_inside_docker( $this->env_info, [ 'bash', '-c', 'wp theme list --skip-plugins --skip-themes' ] );
 		}
 
-		$io->success( 'Temporary test environment created. (' . $this->env_info->env_id . ')' );
+		if ( $this->output->isVerbose() || ! getenv( 'QIT_HIDE_SITE_INFO' ) ) {
+			if ( ! getenv( 'QIT_CODEGEN' ) ) {
+				$io->success( 'Temporary test environment created. (' . $this->env_info->env_id . ')' );
+			}
 
-		$listing = [
-			sprintf( 'URL: %s', $this->env_info->site_url ),
-			sprintf( 'Admin URL: %s/wp-admin', $this->env_info->site_url ),
-			'Admin Credentials: admin/password',
-			sprintf( 'PHP Version: %s', $this->env_info->php_version ),
-			sprintf( 'WordPress Version: %s', $this->env_info->wordpress_version ),
-			sprintf( 'Redis Object Cache? %s', $this->env_info->object_cache ? 'Yes' : 'No' ),
-			sprintf( 'Path: %s', $this->env_info->temporary_env ),
-		];
+			$listing = [
+				sprintf( 'URL: %s', $this->env_info->site_url ),
+				sprintf( 'Admin URL: %s/wp-admin', $this->env_info->site_url ),
+				'Admin Credentials: admin/password',
+				sprintf( 'PHP Version: %s', $this->env_info->php_version ),
+				sprintf( 'WordPress Version: %s', $this->env_info->wp ),
+				sprintf( 'Redis Object Cache? %s', $this->env_info->object_cache ? 'Yes' : 'No' ),
+				sprintf( 'Path: %s', $this->env_info->temporary_env ),
+			];
 
-		$io->listing( $listing );
+			$io->listing( $listing );
 
-		if ( ! $this->output->isVerbose() ) {
-			$io->writeln( sprintf( 'To see additional info, run with the "--verbose" flag.' ) );
+			if ( ! $this->output->isVerbose() ) {
+				$io->writeln( sprintf( 'To see additional info, run with the "--verbose" flag.' ) );
+			}
+		} else {
+			$this->output->writeln( '<info>Environment ready.</info>' );
 		}
 
-		// Try to connect to the website.
-		App::make( EnvUpChecker::class )->check_and_render( $this->env_info );
+		// Try to connect to the website if we are exposing this environment to host.
+		if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) !== 'DOCKER' ) {
+			App::make( EnvUpChecker::class )->check_and_render( $this->env_info );
+		}
 
 		$io->writeln( '' );
 	}
@@ -152,7 +174,50 @@ class E2EEnvironment extends Environment {
 	 * @return array<string,string>
 	 */
 	protected function additional_default_volumes( array $default_volumes ): array {
-		$default_volumes['/var/www/html'] = "{$this->env_info->temporary_env}/html";
+		// Create a named docker volume.
+		$named_volume = sprintf( 'qit_env_volume_%s', $this->env_info->env_id );
+		$process      = new Process( [
+			App::make( Docker::class )->find_docker(),
+			'volume',
+			'create',
+			'--driver',
+			'local',
+			$named_volume,
+		] );
+		if ( $this->output->isVerbose() ) {
+			$this->output->writeln( $process->getCommandLine() );
+		}
+		$process->mustRun( function ( $type, $buffer ) {
+			if ( $this->output->isVerbose() ) {
+				$this->output->write( $buffer );
+			}
+		} );
+
+		$args = [
+			App::make( Docker::class )->find_docker(),
+			'run',
+			'--rm',
+			'--mount',
+			'src=' . $named_volume . ',dst=/var/www/html',
+			'busybox',
+			'sh',
+			'-c',
+			'mkdir -p /var/www/html/wp-content/plugins && mkdir -p /var/www/html/wp-content/themes && chown -R 82:82 /var/www/html',
+		];
+
+		/*
+		 * Create "wp-content/plugins" and "wp-content/themes" directories mount binds have correct parent directory permissions.
+		 * We make them owned by 82:82, which is the UID of "www-data" in our alpine PHP images.
+		 * Once the container starts and the entrypoint is triggered, FixUID will map these to the runtime UID.
+		 */
+		$dirs_process = new Process( $args );
+		$dirs_process->mustRun( function ( $type, $buffer ) {
+			if ( $this->output->isVerbose() ) {
+				$this->output->write( $buffer );
+			}
+		} );
+
+		$default_volumes['/var/www/html'] = $named_volume;
 
 		return $default_volumes;
 	}
