@@ -12,6 +12,10 @@
 [![QIT Self-Tests - PHPCompatibilityWP](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-phpcompatibility.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-phpcompatibility.yml)
 [![QIT Self-Tests - Malware](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-malware.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-malware.yml)
 
+#### Custom Tests
+
+[![QIT Self-Tests - Custom Tests](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-custom-test.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-custom-test.yml)
+
 #### Test Environment
 
 [![QIT Environment Test - Linux](https://github.com/woocommerce/qit-cli/actions/workflows/qit-environment-test-linux.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-environment-test-linux.yml)
