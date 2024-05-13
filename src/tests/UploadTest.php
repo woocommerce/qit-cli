@@ -38,6 +38,26 @@ class UploadTest extends QITTestCase {
 	}
 
 	/**
+	 * We mock the "RequestBuilder" class, which will just:
+	 * - Log all "would-be" POST requests
+	 * - Return a dummy response
+	 * This allows us to log all the POST requests that would be made,
+	 * without actually making them.
+	 */
+	protected function inject_request_builder_mock() {
+		$mock = new class() extends RequestBuilder {
+			public function request(): string {
+				global $_test_post_bodies;
+				$_test_post_bodies[] = $this->post_body;
+
+				return json_encode( [ 'upload_id' => 123 ] );
+			}
+		};
+
+		App::singleton( RequestBuilder::class, $mock );
+	}
+
+	/**
 	 * @param Upload $upload The Upload instance to get the requests.
 	 *
 	 * @return array An array with the requests and the size of the chunks sent.
@@ -206,26 +226,5 @@ class UploadTest extends QITTestCase {
 		$this->assertEquals( $file_string, file_get_contents( __DIR__ . '/foo.zip' ) );
 
 		App::offsetUnset( 'UPLOAD_CHUNK_KB' );
-	}
-
-	public function inject_request_builder_mock() {
-		/**
-		 * What we do here is that we replace "RequestBuilder" with this
-		 * mock class, which will just:
-		 * - Log all "would-be" POST requests
-		 * - Return a dummy response
-		 * This allows us to log all the POST requests that would be made,
-		 * without actually making them.
-		 */
-		$mock = new class() extends RequestBuilder {
-			public function request(): string {
-				global $_test_post_bodies;
-				$_test_post_bodies[] = $this->post_body;
-
-				return json_encode( [ 'upload_id' => 123 ] );
-			}
-		};
-
-		App::singleton( RequestBuilder::class, $mock );
 	}
 }
