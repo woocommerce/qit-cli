@@ -46,6 +46,7 @@ jobs:
         run: ./vendor/bin/phpunit
 
       - name: Debug tmp dir
+        if: always()
         run: ./qit e2e-report --dir-only || true
 
       - name: Upload results
