@@ -44,3 +44,14 @@ jobs:
       - name: Run tests in parallel
         working-directory: _tests/custom_tests
         run: ./vendor/bin/phpunit
+
+      - name: Get results directory
+        run: |
+          export QIT_RESULTS_DIR=$(./vendor/bin/qit e2e-report --dir_only)
+          echo "QIT_RESULTS_DIR=$QIT_RESULTS_DIR" >> $GITHUB_ENV
+
+      - name: Upload results
+        uses: actions/upload-artifact@v2
+        with:
+          name: qit-results
+          path: ${{ env.QIT_RESULTS_DIR }}
