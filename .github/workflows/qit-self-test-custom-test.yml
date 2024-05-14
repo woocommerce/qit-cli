@@ -47,7 +47,7 @@ jobs:
 
       - name: Debug tmp dir
         if: always()
-        run: ./qit e2e-report --dir-only || true
+        run: ./qit e2e-report --dir_only || true
 
       - name: Upload results
         uses: actions/upload-artifact@v4
