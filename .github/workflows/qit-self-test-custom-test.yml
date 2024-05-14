@@ -54,4 +54,6 @@ jobs:
         if: always()
         with:
           name: qit-results
-          path: ${{ runner.temp }}/qit-results-*
+          path: |
+            ${{ runner.temp }}/qit-results-*
+            /tmp/qit-results-*
