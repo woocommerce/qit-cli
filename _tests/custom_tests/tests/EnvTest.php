@@ -101,34 +101,16 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 			'env:exec',
 			'--env_id',
 			$json['env_id'],
-			'wp plugin list',
+			'wp plugin list --fields=name,status',
 		] );
 
 		/**
-		 * name    status    update    version    update_version    auto_update
-		 * automatewoo    active    none    6.0.20        off
-		 * woocommerce    active    available    8.7.0.20    8.8.2    off
-		 * qit-wp-cli    must-use    none            off
-		 * wp-cli-github-cache    must-use    none            off
+		 * name    status
+		 * automatewoo    active
+		 * woocommerce    active
+		 * qit-wp-cli    must-use
+		 * wp-cli-github-cache    must-use
 		 */
-
-		// Iterate over each line, for the "automatewoo" and "woocommerce", normalize the version.
-		$lines                = explode( "\n", $output );
-		$headers              = preg_split( '/\s+/', trim( $lines[0] ) );  // Split the header to find the index of 'version'
-		$version_index        = array_search( 'version', $headers );  // Locate the index of the 'version' column
-		$update_version_index = array_search( 'update_version', $headers );  // Locate the index of the 'update_version' column
-		$update_index         = array_search( 'update', $headers );  // Locate the index of the 'update' column
-
-		foreach ( $lines as $key => $line ) {
-			if ( strpos( $line, 'automatewoo' ) !== false || strpos( $line, 'woocommerce' ) !== false ) {
-				$parts                          = preg_split( '/\s+/', trim( $line ) );
-				$parts[ $version_index ]        = 'NORMALIZED_VERSION';
-				$parts[ $update_version_index ] = 'NORMALIZED_VERSION';
-				$parts[ $update_index ]         = 'NORMALIZED';
-				$lines[ $key ]                  = implode( '    ', $parts );
-			}
-		}
-		$output = implode( "\n", $lines );
 
 		$this->assertMatchesNormalizedSnapshot( $output );
 	}

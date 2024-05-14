@@ -175,8 +175,6 @@ $application->add( $container->make( DevModeCommand::class ) );
 $application->add( $container->make( ConfigDirCommand::class ) );
 $application->add( $container->make( ConnectCommand::class ) );
 
-$application->add( $container->make( ShowReportCommand::class ) );
-
 // Environment commands.
 try {
 	$application->add( $container->make( UpEnvironmentCommand::class ) );
@@ -242,6 +240,7 @@ if ( $is_connected_to_backend ) {
 	$application->add( $container->make( UploadTestTagsCommand::class ) );
 	$application->add( $container->make( DeleteTestTagsCommand::class ) );
 
+	$application->add( $container->make( ShowReportCommand::class ) );
 	$application->add( $container->make( ScaffoldE2ECommand::class ) );
 
 	if ( Config::is_development_mode() ) {

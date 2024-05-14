@@ -45,15 +45,9 @@ jobs:
         working-directory: _tests/custom_tests
         run: ./vendor/bin/phpunit
 
-      - name: Debug tmp dir
-        if: always()
-        run: ./qit e2e-report --dir_only || true
-
       - name: Upload results
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: qit-results
-          path: |
-            ${{ runner.temp }}/qit-results-*
-            /tmp/qit-results-*
+          path: ${{ github.workspace }}/tmp/qit-results-*
