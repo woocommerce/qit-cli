@@ -46,7 +46,7 @@ jobs:
         run: ./vendor/bin/phpunit
 
       - name: Debug tmp dir
-        run: qit e2e-report --dir-only || true
+        run: ./qit e2e-report --dir-only || true
 
       - name: Upload results
         uses: actions/upload-artifact@v4
