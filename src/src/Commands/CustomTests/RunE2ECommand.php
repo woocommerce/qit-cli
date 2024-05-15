@@ -134,6 +134,13 @@ class RunE2ECommand extends DynamicCommand {
 		$update_snapshots = $input->getOption( 'update_snapshots' );
 		$pw_options       = $input->getOption( 'pw_options' ) ?? '';
 
+		if ( ! empty( $pw_options ) ) {
+			// Remove wrapping double quotes if they exist.
+			if ( substr( $pw_options, 0, 1 ) === '"' && substr( $pw_options, - 1 ) === '"' ) {
+				$pw_options = substr( $pw_options, 1, - 1 );
+			}
+		}
+
 		if ( ! empty( $update_snapshots ) ) {
 			$pw_options .= ' --update-snapshots';
 		}
