@@ -26,9 +26,6 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var string The domain being used. */
 	public $domain;
 
-	/** @var string */
-	public $woocommerce_version;
-
 	/** @var array<int,array{
 	 *     slug:string,
 	 *     test_tag:string,

@@ -37,7 +37,11 @@ class E2ETestManager {
 	/** @var bool */
 	public static $has_report = false;
 
-	public function __construct( Docker $docker, PlaywrightCodegen $playwright_codegen, OutputInterface $output ) {
+	public function __construct(
+		Docker $docker,
+		PlaywrightCodegen $playwright_codegen,
+		OutputInterface $output
+	) {
 		$this->docker             = $docker;
 		$this->output             = $output;
 		$this->playwright_codegen = $playwright_codegen;

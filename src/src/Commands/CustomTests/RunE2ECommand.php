@@ -16,8 +16,8 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
-use QIT_CLI\Environment\Extension;
 use QIT_CLI\LocalTests\E2E\E2ETestManager;
+use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -45,6 +45,9 @@ class RunE2ECommand extends DynamicCommand {
 	/** @var WooExtensionsList */
 	protected $woo_extensions_list;
 
+	/** @var LocalTestRunNotifier */
+	protected $test_run_notifier;
+
 	protected static $defaultName = 'run:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	public function __construct(
@@ -52,13 +55,15 @@ class RunE2ECommand extends DynamicCommand {
 		Cache $cache,
 		OutputInterface $output,
 		E2ETestManager $e2e_test_manager,
-		WooExtensionsList $woo_extensions_list
+		WooExtensionsList $woo_extensions_list,
+		LocalTestRunNotifier $test_run_notifier
 	) {
 		$this->e2e_environment     = $e2e_environment;
 		$this->cache               = $cache;
 		$this->output              = $output;
 		$this->e2e_test_manager    = $e2e_test_manager;
 		$this->woo_extensions_list = $woo_extensions_list;
+		$this->test_run_notifier   = $test_run_notifier;
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
@@ -74,8 +79,9 @@ class RunE2ECommand extends DynamicCommand {
 		] );
 
 		$this
-			->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'A QIT plugin-syntax as defined in the documentation: source:action:test-tags:slug. Only "source" is required, and it can be a slug, a file, a URL. Action can be "activate", "bootstrap", and "test", and test-tags are a comme-separated list of tests. Slug is usually not required. Read the docs.' )
+			->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'The slug or WooCommerce ID of the main extension under test.' )
 			->addArgument( 'test', InputArgument::OPTIONAL, '(Optional) The tests for the main extension under test. Accepts test tags, or a test directory. If not set, will use the "default" test tag of this extension.' )
+			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'The source of the main extension under test. Accepts a slug, a file, a URL. If not provided, the source will be the slug.' )
 			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'The WordPress version. Accepts "stable", "nightly", or a version number.', 'stable' )
 			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "stable", "nightly", or a GitHub Tag (eg: 8.6.1).' )
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
@@ -85,6 +91,7 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'require', 'r', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load PHP file before running the command (may be used more than once).' )
 			->addOption( 'config', null, InputOption::VALUE_OPTIONAL, '(Optional) QIT config file to use.' )
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Whether to enable Object Cache (Redis) in the environment.' )
+			->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to use for the main extension under test. Accepts "activate", "install" and "test". Default to "test"', 'test' )
 			->addOption( 'no_activate', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright Sharding argument.' )
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
@@ -127,12 +134,15 @@ class RunE2ECommand extends DynamicCommand {
 			$test_mode = E2ETestManager::$test_modes['headless'];
 		}
 
-		$wait             = $input->getOption( 'up_only' ) || $test_mode === E2ETestManager::$test_modes['codegen'];
-		$woo_extension    = $input->getArgument( 'woo_extension' );
-		$test             = $input->getArgument( 'test' );
-		$shard            = $input->getOption( 'shard' );
-		$update_snapshots = $input->getOption( 'update_snapshots' );
-		$pw_options       = $input->getOption( 'pw_options' ) ?? '';
+		$wait                = $input->getOption( 'up_only' ) || $test_mode === E2ETestManager::$test_modes['codegen'];
+		$woo_extension       = $input->getArgument( 'woo_extension' );
+		$test                = $input->getArgument( 'test' );
+		$woocommerce_version = $input->getOption( 'woo' );
+		$shard               = $input->getOption( 'shard' );
+		$update_snapshots    = $input->getOption( 'update_snapshots' );
+		$pw_options          = $input->getOption( 'pw_options' ) ?? '';
+		$source              = $input->getOption( 'source' ) ?? $woo_extension;
+		$sut_action          = $input->getOption( 'sut_action' );
 
 		if ( ! empty( $pw_options ) ) {
 			// Remove wrapping double quotes if they exist.
@@ -148,39 +158,59 @@ class RunE2ECommand extends DynamicCommand {
 		App::setVar( 'pw_options', $pw_options );
 
 		// Validate the extension is set if needed.
-		if ( empty( $woo_extension ) && ! $wait ) {
-			$output->writeln( '<error>The extension parameter is only optional in --up_only or --codegen modes.</error>' );
+		if ( empty( $woo_extension ) ) {
+			if ( ! empty( $source ) ) {
+				$output->writeln( '<error>The extension parameter is required when the source parameter is set.</error>' );
 
-			return Command::INVALID;
+				return Command::INVALID;
+			}
+			if ( ! empty( $sut_action ) ) {
+				$output->writeln( '<error>The extension parameter is required when the sut_action parameter is set.</error>' );
+
+				return Command::INVALID;
+			}
+			if ( ! $wait ) {
+				$output->writeln( '<error>The extension parameter is only optional in --up_only or --codegen modes.</error>' );
+
+				return Command::INVALID;
+			}
 		}
 
 		if ( ! empty( $woo_extension ) ) {
+			// Validate WooExtension.
+			try {
+				if ( is_numeric( $woo_extension ) ) {
+					$woo_extension    = $this->woo_extensions_list->get_woo_extension_slug_by_id( $woo_extension );
+					$woo_extension_id = $woo_extension;
+				} else {
+					$woo_extension_id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $woo_extension );
+				}
+			} catch ( \Exception $e ) {
+				$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+
+				return Command::INVALID;
+			}
+
 			if ( ! empty( $test ) ) {
 				if ( ! file_exists( $test ) ) {
 					$output->writeln( "<error>Test file '$test' does not exist.</error>" );
 
 					return Command::INVALID;
 				}
-				$woo_extension = sprintf( '%s:test:%s', $woo_extension, realpath( $test ) );
+				// Prefer realpath if possible.
+				if ( file_exists( realpath( $test ) ) ) {
+					$test = realpath( $test );
+				}
+
+				$woo_extension_extension_syntax = sprintf( '%s:%s:%s', $woo_extension, $sut_action, $test );
 			} else {
-				$has_action = false;
-
-				foreach ( Extension::ACTIONS as $action ) {
-					if ( strpos( $woo_extension, ":$action" ) !== false ) {
-						$has_action = true;
-						break;
-					}
-				}
-
-				if ( ! $has_action ) {
-					$woo_extension = "$woo_extension:test";
-				}
+				$woo_extension_extension_syntax = sprintf( '%s:%s', $woo_extension, $sut_action );
 			}
 
 			if ( $input->getOption( 'testing_theme' ) ) {
-				$env_up_options['--theme'][] = $woo_extension;
+				$env_up_options['--theme'][] = $woo_extension_extension_syntax;
 			} else {
-				$env_up_options['--plugin'][] = $woo_extension;
+				$env_up_options['--plugin'][] = $woo_extension_extension_syntax;
 			}
 		}
 
@@ -258,6 +288,10 @@ class RunE2ECommand extends DynamicCommand {
 
 		/** @var E2EEnvInfo $env_info */
 		$env_info = E2EEnvInfo::from_array( $env_json );
+
+		if ( ! empty( $woo_extension_id ) ) {
+			$this->test_run_notifier->notify_test_started( $woo_extension_id, $woocommerce_version ?? 'none', $env_info );
+		}
 
 		// Store in $GLOBALS so that's available in the shutdown function.
 		$GLOBALS['env_to_shutdown'] = $env_info;
@@ -367,7 +401,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
+				$parsed_options['env_up']["--$option_name"] = $option_value;
 			}
 		}
 
