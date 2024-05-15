@@ -115,7 +115,11 @@ try {
 
 	run_test_runs( generate_test_runs( $test_types ) );
 } catch ( \Exception $e ) {
-	$GLOBALS['parallelOutput']->addRawOutput( $e->getMessage() );
+	if ( isset( $GLOBALS['parallelOutput'] ) && $GLOBALS['parallelOutput'] instanceof ParallelOutput ) {
+		$GLOBALS['parallelOutput']->addRawOutput( $e->getMessage() );
+	} else {
+		echo $e->getMessage();
+	}
 	die( 1 );
 }
 
