@@ -105,11 +105,11 @@ class CreateRunCommands extends DynamicCommandCreator {
 					 */
 					if ( ! file_exists( $options['zip'] ) ) {
 						$output->writeln( sprintf(
-							"<error>Error: The specified zip file '%s' does not exist.</error>" .
+							"<error>Error: The specified ZIP file '%s' does not exist.</error>" .
 							"<info>\nTo run the command, use one of the following options:" .
-							"\n1. Provide the zip file name without an argument to infer from the slug or ID:" .
+							"\n1. Provide the ZIP file name without an argument to infer from the slug or ID:" .
 							"\n   run:security my-extension --zip" .
-							"\n\n2. Provide the zip path as a parameter:" .
+							"\n\n2. Provide the ZIP path as a parameter:" .
 							"\n   run:security my-extension --zip=/some/path/my-extension.zip</info>",
 							$options['zip']
 						) );
@@ -266,7 +266,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 			'zip',
 			null,
 			InputOption::VALUE_OPTIONAL,
-			'(Optional) Run the test using a local zip file of the plugin. Useful for running the tests before publishing it to the Marketplace.'
+			'(Optional) Run the test using a local ZIP file of the plugin. Useful for running the tests before publishing it to the Marketplace.'
 		);
 
 		// JSON Response.

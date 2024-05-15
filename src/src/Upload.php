@@ -127,13 +127,13 @@ class Upload {
 
 		// Early bail: Tolerable inconsistency.
 		if ( $opened === 21 ) {
-			$output->writeln( '<comment>Zip file failed consistency check. We will proceed with the upload, as macOS Archive Utility is known to generate zip files that are non-compliant with the Zip specification.</comment>' );
+			$output->writeln( '<comment>ZIP file failed consistency check. We will proceed with the upload, as macOS Archive Utility is known to generate ZIP files that are non-compliant with the ZIP specification.</comment>' );
 
 			return;
 		}
 
 		if ( $opened !== true ) {
-			throw new \RuntimeException( 'This is not a valid zip file.' );
+			throw new \RuntimeException( 'This is not a valid ZIP file.' );
 		}
 	}
 }

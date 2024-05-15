@@ -86,7 +86,7 @@ class EnvironmentDownloader {
 			unlink( $temp_zip_path );
 			switch ( $res ) {
 				case ZipArchive::ER_NOZIP:
-					$error = 'Not a zip archive.';
+					$error = 'Not a ZIP archive.';
 					break;
 				case ZipArchive::ER_INCONS:
 					$error = 'Consistency check failed.';

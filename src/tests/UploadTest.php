@@ -5,71 +5,11 @@ namespace QIT_CLI_Tests;
 use QIT_CLI\App;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
+use QIT_CLI_Tests\Helpers\ZipBuilderHelper as ZipBuilder;
 use RuntimeException;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Console\Output\NullOutput;
 use ZipArchive;
-
-class ZipBuilder {
-	private $filename;
-	private $files = array();
-
-	/**
-	 * @param string $filename The name of the zip file to be created.
-	 */
-	public function __construct( $filename ) {
-		$this->filename = $filename;
-	}
-
-	/**
-	 * Adds a new file to the archive.
-	 *
-	 * @param string $source The file to be added.
-	 * @param string $target The target path in the archive.
-	 *
-	 * @return ZipBuilder The current ZipBuilder instance.
-	 */
-	public function with_file( $source, $target ): self {
-		$this->files[] = array(
-			'source' => $source,
-			'target' => $target,
-		);
-
-		return $this;
-	}
-
-	/**
-	 * Builds the zip archive.
-	 *
-	 * @return string The zip file path.
-	 * @throws RuntimeException If the zip file could not be created.
-	 *
-	 */
-	public function build(): string {
-		$zip = new ZipArchive();
-
-		if ( $zip->open( __DIR__ . "/$this->filename", ZipArchive::CREATE ) !== true ) {
-			throw new RuntimeException( 'Could not create zip file.' );
-		}
-
-		foreach ( $this->files as $file ) {
-			if ( ! $zip->addFile( $file['source'], $file['target'] ) ) {
-				throw new RuntimeException( 'Could not add file to zip: ' . $file['source'] );
-			}
-		}
-
-		$zip->close();
-
-		clearstatcache();
-
-		if ( ! file_exists( __DIR__ . "/$this->filename" ) ) {
-			throw new RuntimeException( 'Zip file was not created.' );
-		}
-
-		return __DIR__ . "/$this->filename";
-	}
-}
-
 
 class UploadTest extends QITTestCase {
 	use MatchesSnapshots;
@@ -97,6 +37,13 @@ class UploadTest extends QITTestCase {
 		$this->to_delete = [];
 	}
 
+	/**
+	 * We mock the "RequestBuilder" class, which will just:
+	 * - Log all "would-be" POST requests
+	 * - Return a dummy response
+	 * This allows us to log all the POST requests that would be made,
+	 * without actually making them.
+	 */
 	protected function inject_request_builder_mock() {
 		$mock = new class() extends RequestBuilder {
 			public function request(): string {
@@ -145,7 +92,7 @@ class UploadTest extends QITTestCase {
 		$zip_archive = new ZipArchive();
 
 		if ( ! $zip_archive->open( $zip_file_path ) ) {
-			throw new RuntimeException( 'Could not open zip file.' );
+			throw new RuntimeException( 'Could not open ZIP file.' );
 		}
 
 		$index = [ 'contents' => [] ];
@@ -175,7 +122,7 @@ class UploadTest extends QITTestCase {
 		$this->to_delete[] = __DIR__ . '/foo.zip';
 
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( 'This is not a valid zip file.' );
+		$this->expectExceptionMessage( 'This is not a valid ZIP file.' );
 		$upload->upload_build( 'build', 123, __DIR__ . '/foo.zip', new NullOutput() );
 	}
 
