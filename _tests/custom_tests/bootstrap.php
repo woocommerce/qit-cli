@@ -31,7 +31,7 @@ function qit( array $command, array $qit_env_json = [], int $expected_exit_code 
 	 *
 	 * If we receive another command like the previous one while it's locked, wait.
 	 */
-	if ( 'tag:upload' === $command[0] ) {
+	if ( $command[0] === 'tag:upload' ) {
 		$lock_name = $command[1];
 		$lock_file = sprintf( '%s/qit-test-tag-lock-%s', sys_get_temp_dir(), md5( $lock_name ) );
 		$max_wait  = 60;
@@ -44,7 +44,7 @@ function qit( array $command, array $qit_env_json = [], int $expected_exit_code 
 			}
 		}
 		touch( $lock_file );
-	} elseif ( 'tag:delete' === $command[0] ) {
+	} elseif ( $command[0] === 'tag:delete' ) {
 		$lock_name = $command[1];
 		$lock_file = sprintf( '%s/qit-test-tag-lock-%s', sys_get_temp_dir(), md5( $lock_name ) );
 		if ( file_exists( $lock_file ) ) {
@@ -57,6 +57,10 @@ function qit( array $command, array $qit_env_json = [], int $expected_exit_code 
 	if ( ! empty( $qit_env_json ) ) {
 		$args[] = '--config';
 		$args[] = $qit_config_filename;
+	}
+	if ( $command[0] === 'run:e2e' ) {
+		$args[] = '--pw_options';
+		$args[] = '"--trace on"';
 	}
 	$qit = new Process( $args );
 	$qit->setTimeout( 300 );
