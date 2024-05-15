@@ -18,15 +18,15 @@
             "is_development": true,
             "send_notifications": false,
             "woo_extension": {
-                "id": 1822936,
+                "id": 18619,
                 "host": "wccom",
-                "name": "Bistro",
-                "type": "theme"
+                "name": "Google Product Feed",
+                "type": "plugin"
             },
             "client": "qit_cli",
             "event": "cli_development_extension_test",
             "optional_features": {
-                "hpos": false,
+                "hpos": true,
                 "new_product_editor": false
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
