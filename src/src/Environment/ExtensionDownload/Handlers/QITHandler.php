@@ -102,7 +102,7 @@ class QITHandler extends Handler {
 				continue;
 			}
 
-			$cache_file = $this->make_cache_path( $cache_dir, $e->type, $e->slug, $e->version );
+			$cache_file = $this->make_cache_path( $cache_dir, $e->type, $e->slug, $e->version, $e->source );
 
 			// Cache hit?
 			if ( file_exists( $cache_file ) ) {
