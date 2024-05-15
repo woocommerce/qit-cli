@@ -56,8 +56,9 @@ trait ScaffoldHelpers {
 		 * Shutting down environment...
 		 */
 
-		// Normalize "1 passed (5.7s)" => "1 passed (TIME)"
-		$output = preg_replace( '/passed \(\d+\.\ds\)/', 'passed (TIME)', $output );
+		// Normalize "1 passed (5.7s)" => "passed (TIME)"
+		// Normalize "1 passed (1.0m)" => "passed (TIME)"
+		$output = preg_replace( '/passed \(\d+\.\d+[sm]\)/', 'passed (TIME)', $output );
 
 		// Normalize npm version, "10.2.4 -> 10.6.0" => "VERSION_1 -> VERSION_2"
 		$output = preg_replace( '/New minor version of npm available! \d+\.\d+\.\d+ -> \d+\.\d+\.\d+/', 'New minor version of npm available! VERSION_1 -> VERSION_2', $output );

@@ -37,7 +37,7 @@ class URLHandler extends Handler {
 			// As version is "undefined", cache burst is shorter: Hour of the day (0-24).
 			$cache_burst = gmdate( 'G' );
 
-			$cache_file = $this->make_cache_path( $cache_dir, $e->type, $e->slug, $e->version, $cache_burst );
+			$cache_file = $this->make_cache_path( $cache_dir, $e->type, $e->slug, $e->version, $e->source, $cache_burst );
 
 			// Cache hit?
 			if ( file_exists( $cache_file ) ) {

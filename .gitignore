@@ -30,3 +30,7 @@ _tests/custom_tests/.env
 _tests/custom_tests/tmp_qit_config*
 _tests/custom_tests/cache
 _tests/custom_tests/tmp/
+
+_tests/custom_tests/.env.staging
+
+_tests/custom_tests/.env.local

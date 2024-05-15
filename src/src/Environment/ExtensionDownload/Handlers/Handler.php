@@ -46,15 +46,26 @@ abstract class Handler {
 	 * @param string $type The type of the extension to make a path for.
 	 * @param string $extension_identifier The extension identifier.
 	 * @param string $extension_version The extension version.
+	 * @param string $extension_source The source of the extension, eg: a URL, etc.
 	 * @param string $cache_burst A cache burst string, defaults to the week of the year.
 	 * @param string $file_format The file format.
 	 *
 	 * @return string The cache path.
 	 */
-	protected function make_cache_path( string $cache_dir, string $type, string $extension_identifier, string $extension_version, string $cache_burst = '', string $file_format = 'zip' ): string {
+	protected function make_cache_path( string $cache_dir, string $type, string $extension_identifier, string $extension_version, string $extension_source, string $cache_burst = '', string $file_format = 'zip' ): string {
 		if ( empty( $cache_burst ) ) {
-			// Get the number of the day, from 1 to 365 - basically means the cache is busted every day or so.
-			$cache_burst = gmdate( 'z' );
+			// If we have a version, cache it for one day.
+			if ( $extension_version !== 'undefined' ) {
+				// Get the number of the day, from 1 to 365 - basically means the cache is busted every day or so.
+				$cache_burst = gmdate( 'z' );
+			} else {
+				/*
+				 * Otherwise, cache it for 1 minute.
+				 * This is because we don't know what version we should be fetching, so we can't cache burst it with confidence.
+				 * We cache it for 1 minute which is just enough to throttle requests.
+				 */
+				$cache_burst = gmdate( 'YmdHi' );
+			}
 		}
 
 		// Make sure $type is as expected.
@@ -72,7 +83,9 @@ abstract class Handler {
 			throw new \InvalidArgumentException( sprintf( 'Invalid extension identifier "%s", should be a valid plugin slug.', $extension_identifier ) );
 		}
 
-		$cache_path = "$cache_dir/$type/$extension_identifier-$extension_version-$cache_burst.$file_format";
+		$source_hash = md5( $extension_source );
+
+		$cache_path = "$cache_dir/$type/$extension_identifier-$source_hash-$extension_version-$cache_burst.$file_format";
 
 		if ( ! file_exists( dirname( $cache_path ) ) ) {
 			if ( ! mkdir( dirname( $cache_path ), 0755, true ) ) {

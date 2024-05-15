@@ -10,6 +10,7 @@ trait SnapshotHelpers {
 	public function assertMatchesNormalizedSnapshot( string $actual, ?\Spatie\Snapshots\Driver $driver = null ): void {
 		$actual = str_replace( sys_get_temp_dir(), '/tmp-normalized', $actual );
 		$actual = str_replace( '/tmp/', '/tmp-normalized/', $actual );
+		$actual = preg_replace( '/qit-results-[a-z0-9]+/', 'qit-results-normalizedid', $actual );
 
 		/*
 		 * "paratest" sets the "TEST_TOKEN" env var.

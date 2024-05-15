@@ -44,3 +44,10 @@ jobs:
       - name: Run tests in parallel
         working-directory: _tests/custom_tests
         run: ./vendor/bin/phpunit
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qit-results
+          path: ${{ github.workspace }}/tmp/qit-results-*

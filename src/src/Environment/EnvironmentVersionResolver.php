@@ -17,7 +17,10 @@ class EnvironmentVersionResolver {
 		} elseif ( $woo === 'rc' ) {
 			throw new \InvalidArgumentException( 'Please specify a RC version, such as "1.2.3-rc.1", or use "nightly".' );
 		} elseif ( $woo === 'stable' ) {
-			$woo = 'woocommerce';
+			$woo = [
+				'slug'   => 'woocommerce',
+				'source' => 'https://downloads.wordpress.org/plugin/woocommerce.latest-stable.zip',
+			];
 		} else {
 			$woo = "https://github.com/woocommerce/woocommerce/releases/download/$woo/woocommerce.zip";
 		}
