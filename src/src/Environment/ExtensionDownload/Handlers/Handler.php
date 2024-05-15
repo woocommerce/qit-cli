@@ -46,6 +46,7 @@ abstract class Handler {
 	 * @param string $type The type of the extension to make a path for.
 	 * @param string $extension_identifier The extension identifier.
 	 * @param string $extension_version The extension version.
+	 * @param string $extension_source The source of the extension, eg: a URL, etc.
 	 * @param string $cache_burst A cache burst string, defaults to the week of the year.
 	 * @param string $file_format The file format.
 	 *
