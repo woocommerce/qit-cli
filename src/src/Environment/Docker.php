@@ -199,6 +199,74 @@ class Docker {
 	}
 
 	/**
+	 * Copy a file from inside a Docker container to a local path in the filesystem.
+	 *
+	 * @param EnvInfo $env_info
+	 * @param string $container_path The file path inside the Docker container.
+	 * @param string $local_path The destination path on the local filesystem.
+	 * @param string $image The Docker image to use.
+	 *
+	 * @return void
+	 * @throws \RuntimeException If the file does not exist inside the Docker container.
+	 */
+	public function copy_from_docker( EnvInfo $env_info, string $container_path, string $local_path, string $image = 'php' ): void {
+		$docker_container = $env_info->get_docker_container( $image );
+		$docker_command   = [ $this->find_docker(), 'exec', $docker_container, 'test', '-f', $container_path ];
+
+		$process = new Process( $docker_command );
+		$process->setTimeout( 30 );
+		$process->setIdleTimeout( 30 );
+
+		if ( $this->output->isVeryVerbose() ) {
+			$this->output->writeln( $process->getCommandLine() );
+		}
+
+		$process->run();
+
+		if ( ! $process->isSuccessful() ) {
+			throw new \RuntimeException( "File $container_path does not exist in container $docker_container." );
+		}
+
+		$docker_command = [ $this->find_docker(), 'cp', "$docker_container:$container_path", $local_path ];
+
+		$process = new Process( $docker_command );
+		$process->setTimeout( 30 );
+		$process->setIdleTimeout( 30 );
+
+		if ( $this->output->isVeryVerbose() ) {
+			$this->output->writeln( $process->getCommandLine() );
+		}
+
+		$process->run( function ( $type, $buffer ) {
+			if ( $this->output->isVerbose() ) {
+				$this->output->write( $buffer );
+			}
+		} );
+
+		if ( ! $process->isSuccessful() ) {
+			$exit_code    = $process->getExitCode();
+			$output       = $process->getOutput();
+			$error_output = $process->getErrorOutput();
+
+			$message = "Failed to copy file from Docker container (Container $docker_container exited with $exit_code).";
+
+			if ( ! empty( $output ) ) {
+				$message .= "\n" . $output;
+			}
+
+			if ( ! empty( $error_output ) ) {
+				$message .= "\n" . $error_output;
+			}
+
+			if ( $this->output->isVerbose() ) {
+				$message .= "\n" . 'Command that was executed: ' . $process->getCommandLine();
+			}
+
+			throw new \RuntimeException( $message );
+		}
+	}
+
+	/**
 	 * @return bool Whether the user should be set in the docker command.
 	 */
 	public static function should_set_user(): bool {
