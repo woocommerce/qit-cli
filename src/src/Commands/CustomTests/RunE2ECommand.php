@@ -270,6 +270,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		putenv( 'QIT_UP_AND_TEST=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		putenv( sprintf( 'QIT_SUT=%s', $woo_extension ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		App::setVar( 'QIT_SUT', (int) $woo_extension_id );
 
 		$up_exit_status_code = $env_up_command->run(
 			new ArrayInput( $env_up_options ),

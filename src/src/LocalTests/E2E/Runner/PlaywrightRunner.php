@@ -64,6 +64,7 @@ class PlaywrightRunner extends E2ERunner {
 			'SAVE_AS'          => $env_info->temporary_env . 'qit-playwright.config.js',
 			'TEST_RESULT_PATH' => $results_dir,
 			'CONFIG_OVERRIDES' => json_encode( $env_info->playwright_config ),
+			'ATTACHMENT_BASE_URL' => App::getVar( 'attachment_base_url' ) . '/data/',
 		] );
 
 		if ( $this->output->isVeryVerbose() ) {

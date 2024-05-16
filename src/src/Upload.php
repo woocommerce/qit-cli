@@ -39,6 +39,8 @@ class Upload {
 
 		if ( $upload_type === 'build' ) {
 			$endpoint = '/wp-json/cd/v1/upload-build';
+		} elseif( $upload_type === 'test-report' ) {
+			$endpoint = '/wp-json/cd/v1/upload-test-report';
 		} elseif ( $upload_type === 'custom-test' ) {
 			$endpoint = '/wp-json/cd/v1/cli/upload-test';
 		} else {
