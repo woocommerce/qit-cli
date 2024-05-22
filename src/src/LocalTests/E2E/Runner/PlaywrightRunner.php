@@ -147,7 +147,8 @@ class PlaywrightRunner extends E2ERunner {
 		}
 
 		if ( ! empty( $dependencies_to_install ) ) {
-			$dependencies_command = '&& npm install ' . implode( ' ', $dependencies_to_install ) . ' && ';
+			$dependencies_to_install = array_unique( $dependencies_to_install );
+			$dependencies_command    = '&& npm install ' . implode( ' ', $dependencies_to_install ) . ' && ';
 		}
 
 		$options = App::getVar( 'pw_options', '' );
