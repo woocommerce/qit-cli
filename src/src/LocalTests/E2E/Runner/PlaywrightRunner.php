@@ -59,11 +59,11 @@ class PlaywrightRunner extends E2ERunner {
 		// Generate playwright-config.
 		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright/playwright-config-generator.php' ] );
 		$process->setEnv( [
-			'BASE_URL'         => $env_info->site_url,
-			'PROJECTS'         => json_encode( $this->make_projects( $test_infos ), JSON_UNESCAPED_SLASHES ),
-			'SAVE_AS'          => $env_info->temporary_env . 'qit-playwright.config.js',
-			'TEST_RESULT_PATH' => $results_dir,
-			'CONFIG_OVERRIDES' => json_encode( $env_info->playwright_config ),
+			'BASE_URL'            => $env_info->site_url,
+			'PROJECTS'            => json_encode( $this->make_projects( $test_infos ), JSON_UNESCAPED_SLASHES ),
+			'SAVE_AS'             => $env_info->temporary_env . 'qit-playwright.config.js',
+			'TEST_RESULT_PATH'    => $results_dir,
+			'CONFIG_OVERRIDES'    => json_encode( $env_info->playwright_config ),
 			'ATTACHMENT_BASE_URL' => App::getVar( 'attachment_base_url' ) . '/data/',
 		] );
 

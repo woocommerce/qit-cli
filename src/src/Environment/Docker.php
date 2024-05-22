@@ -202,9 +202,9 @@ class Docker {
 	 * Copy a file from inside a Docker container to a local path in the filesystem.
 	 *
 	 * @param EnvInfo $env_info
-	 * @param string $container_path The file path inside the Docker container.
-	 * @param string $local_path The destination path on the local filesystem.
-	 * @param string $image The Docker image to use.
+	 * @param string  $container_path The file path inside the Docker container.
+	 * @param string  $local_path The destination path on the local filesystem.
+	 * @param string  $image The Docker image to use.
 	 *
 	 * @return void
 	 * @throws \RuntimeException If the file does not exist inside the Docker container.

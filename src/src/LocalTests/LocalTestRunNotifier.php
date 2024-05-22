@@ -34,19 +34,19 @@ class LocalTestRunNotifier {
 
 	public function notify_test_started( string $woo_extension_id, string $woocommerce_version, E2EEnvInfo $env_info ): void {
 		$r = App::make( RequestBuilder::class )
-		        ->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-started' )
-		        ->with_method( 'POST' )
-		        ->with_expected_status_codes( [ 200 ] )
-		        ->with_timeout_in_seconds( 60 )
-		        ->with_post_body( [
-			        'woo_id'              => $woo_extension_id,
-			        'woocommerce_version' => $woocommerce_version,
-			        'wordpress_version'   => $env_info->wp,
-			        'php_version'         => $env_info->php_version,
-			        'test_type'           => 'e2e',
-			        'event'               => 'e2e_local_run',
-		        ] )
-		        ->request();
+				->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-started' )
+				->with_method( 'POST' )
+				->with_expected_status_codes( [ 200 ] )
+				->with_timeout_in_seconds( 60 )
+				->with_post_body( [
+					'woo_id'              => $woo_extension_id,
+					'woocommerce_version' => $woocommerce_version,
+					'wordpress_version'   => $env_info->wp,
+					'php_version'         => $env_info->php_version,
+					'test_type'           => 'e2e',
+					'event'               => 'e2e_local_run',
+				] )
+				->request();
 
 		// Decode response as JSON.
 		$response = json_decode( $r, true );
@@ -109,11 +109,11 @@ class LocalTestRunNotifier {
 		}
 
 		$r = App::make( RequestBuilder::class )
-		        ->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-finished' )
-		        ->with_method( 'POST' )
-		        ->with_expected_status_codes( [ 200 ] )
-		        ->with_timeout_in_seconds( 60 )
-		        ->with_post_body( $data )
-		        ->request();
+				->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-finished' )
+				->with_method( 'POST' )
+				->with_expected_status_codes( [ 200 ] )
+				->with_timeout_in_seconds( 60 )
+				->with_post_body( $data )
+				->request();
 	}
 }

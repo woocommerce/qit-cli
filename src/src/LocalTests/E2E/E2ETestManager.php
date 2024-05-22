@@ -88,7 +88,7 @@ class E2ETestManager {
 				try {
 					$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "php {$test_info['path_in_php_container']}/bootstrap/bootstrap.php" ], $env_vars );
 					$test_result->register_bootstrap( $plugin_slug, 'bootstrap.php', 'success' );
-				} catch(\Exception $e) {
+				} catch ( \Exception $e ) {
 					$test_result->register_bootstrap( $plugin_slug, 'bootstrap.php', 'failed' );
 				}
 			} else {
@@ -200,7 +200,7 @@ class E2ETestManager {
 		// Copy debug.log to results dir, if present.
 		try {
 			$this->docker->copy_from_docker( $env_info, '/var/www/html/wp-content/debug.log', $test_result->get_results_dir() . '/debug.log' );
-		} catch ( \Exception $e ) {
+		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// No-op, a debug.log was not present.
 		}
 

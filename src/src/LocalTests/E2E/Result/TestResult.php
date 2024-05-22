@@ -34,7 +34,6 @@ class TestResult {
 			throw new \RuntimeException( sprintf( 'Could not create the results directory: %s', $instance->results_dir ) );
 		}
 
-
 		return $instance;
 	}
 
