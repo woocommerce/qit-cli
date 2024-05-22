@@ -168,7 +168,7 @@ class PlaywrightRunner extends E2ERunner {
 			// Allow to override the Playwright version from the Manager.
 			$playwright_version_to_use = App::make( Cache::class )->get_manager_sync_data( 'playwright_version' );
 		} catch ( \Exception $e ) {
-			$playwright_version_to_use = '1.42.1';
+			$playwright_version_to_use = '1.44.0';
 		}
 
 		$playwright_args = array_merge( $playwright_args, [
