@@ -92,32 +92,34 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				throw new \RuntimeException( 'Failed to create the tmp directory.' );
 			}
 
-			// Enable dev mode.
-			$dev = new Process( [ $GLOBALS['qit'], 'dev' ] );
-			$dev->setEnv( [
-				'QIT_HOME' => $GLOBALS['QIT_HOME'],
-			] );
-			$dev->setTimeout( 30 );
-			$dev->setIdleTimeout( 30 );
-			$dev->mustRun( function ( $type, $buffer ) {
-				echo $buffer;
-			} );
+			if ( $_ENV['QIT_CUSTOM_TESTS_ENV'] !== 'production' ) {
+				// Enable dev mode.
+				$dev = new Process( [ $GLOBALS['qit'], 'dev' ] );
+				$dev->setEnv( [
+					'QIT_HOME' => $GLOBALS['QIT_HOME'],
+				] );
+				$dev->setTimeout( 30 );
+				$dev->setIdleTimeout( 30 );
+				$dev->mustRun( function ( $type, $buffer ) {
+					echo $buffer;
+				} );
 
-			// Add the environment.
-			$add_environment = new Process( [
-				$GLOBALS['qit'],
-				'backend:add',
-				'--manager_url',
-				$_ENV['QIT_CUSTOM_TESTS_URL'],
-				'--qit_secret',
-				$_ENV['QIT_CUSTOM_TESTS_SECRET'],
-				'--environment',
-				$_ENV['QIT_CUSTOM_TESTS_ENV'],
-			] );
-			$add_environment->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
-			$add_environment->mustRun( function ( $type, $buffer ) {
-				echo $buffer;
-			} );
+				// Add the environment.
+				$add_environment = new Process( [
+					$GLOBALS['qit'],
+					'backend:add',
+					'--manager_url',
+					$_ENV['QIT_CUSTOM_TESTS_URL'],
+					'--qit_secret',
+					$_ENV['QIT_CUSTOM_TESTS_SECRET'],
+					'--environment',
+					$_ENV['QIT_CUSTOM_TESTS_ENV'],
+				] );
+				$add_environment->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
+				$add_environment->mustRun( function ( $type, $buffer ) {
+					echo $buffer;
+				} );
+			}
 
 			if ( $_ENV['QIT_CUSTOM_TESTS_ENV'] !== 'staging' ) {
 				// Add the partner account that will be used.
