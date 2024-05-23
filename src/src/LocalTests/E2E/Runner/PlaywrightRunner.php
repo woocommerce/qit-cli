@@ -318,6 +318,8 @@ class PlaywrightRunner extends E2ERunner {
 				App::make( Docker::class )->find_docker(),
 				'run',
 				'--rm',
+				'--env',
+				'NO_ANALYTICS=1', // Disable Allure telemetry.
 				'-v',
 				$allure_results_dir . ':/allure-results',
 				'-v',
