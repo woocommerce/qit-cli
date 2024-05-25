@@ -305,36 +305,6 @@ class PlaywrightRunner extends E2ERunner {
 			}
 		}
 
-		// If Allure Report exists, generate the report using a PW container.
-		$allure_results_dir = $results_dir . '/allure-playwright';
-		if ( file_exists( $allure_results_dir ) ) {
-			$allure_report_dir  = $results_dir . '/allure-report';
-
-			if ( ! mkdir( $allure_report_dir, 0755, false ) ) {
-				throw new \RuntimeException( 'Could not create the Allure results directory: ' . $allure_results_dir );
-			}
-
-			$allure_report_process = new Process( [
-				App::make( Docker::class )->find_docker(),
-				'run',
-				'--rm',
-				'--env',
-				'NO_ANALYTICS=1', // Disable Allure telemetry.
-				'-v',
-				$allure_results_dir . ':/allure-results',
-				'-v',
-				$allure_report_dir . ':/allure-report',
-				"automattic/qit-runner-playwright:$playwright_version_to_use",
-				'sh',
-				'-c',
-				'cd /qit/tests/e2e && npm install allure-commandline && npx allure generate /allure-results -o /allure-report --clean',
-			] );
-			$allure_report_process->run();
-			if ( ! $allure_report_process->isSuccessful() ) {
-				throw new \RuntimeException( sprintf( 'Could not generate the Allure report. Output: %s', $allure_report_process->getOutput() . "\n" . $allure_report_process->getErrorOutput() ) );
-			}
-		}
-
 		return $playwright_process->getExitCode();
 	}
 

@@ -22,14 +22,19 @@ class LocalTestRunNotifier {
 	/** @var Upload */
 	protected $uploader;
 
+	/** @var PrepareDebugLog */
+	protected $prepare_debug_log;
+
 	public function __construct(
 		Zipper $zipper,
 		OutputInterface $output,
-		Upload $uploader
+		Upload $uploader,
+		PrepareDebugLog $prepare_debug_log
 	) {
 		$this->zipper   = $zipper;
 		$this->output   = $output;
 		$this->uploader = $uploader;
+		$this->prepare_debug_log = $prepare_debug_log;
 	}
 
 	public function notify_test_started( string $woo_extension_id, string $woocommerce_version, E2EEnvInfo $env_info ): void {
@@ -88,13 +93,19 @@ class LocalTestRunNotifier {
 		$test_log = '';
 
 		if ( file_exists( $results_dir . '/debug.log' ) ) {
-			$test_log = substr( file_get_contents( $results_dir . '/debug.log' ), 0, 1e6 );
+			$prepared_debug_log_path = $results_dir . '/debug-prepared.log';
+			$this->prepare_debug_log->prepare_debug_log( $results_dir . '/debug.log', $prepared_debug_log_path, App::getVar( E2EEnvInfo::class ) );
+			$test_log = file_get_contents( $prepared_debug_log_path, false, null, 0, 1 * 1024 * 1024 ); // First 1mb of debug.log
 		}
 
-		if ( file_exists( $results_dir . '/report-remote' ) ) {
-			$this->zipper->zip_directory( $results_dir . '/report-remote', $results_dir . '/report-remote.zip' );
-			$extension_id = App::getVar( 'QIT_SUT' );
-			$upload_id    = $this->uploader->upload_build( 'test-report', $extension_id, $results_dir . '/report-remote.zip', $this->output, 'e2e' );
+		if ( file_exists( $results_dir . '/allure-playwright' ) ) {
+			$this->zipper->zip_directory( $results_dir . '/allure-playwright', $results_dir . '/allure-playwright.zip' );
+			if ( filesize( $results_dir . '/allure-playwright.zip' ) > 200 * 1024 * 1024 ) {
+				$this->output->writeln( '<error>Report is too large to upload. Skipping...</error>' );
+			} else {
+				$extension_id = App::getVar( 'QIT_SUT' );
+				$upload_id    = $this->uploader->upload_build( 'test-report', $extension_id, $results_dir . '/allure-playwright.zip', $this->output, 'e2e' );
+			}
 		}
 
 		$data = [

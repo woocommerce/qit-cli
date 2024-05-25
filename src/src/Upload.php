@@ -52,9 +52,10 @@ class Upload {
 		$file = fopen( $zip_path, 'rb' );
 		$stat = fstat( $file );
 
-		$chunk_size_kb = App::getVar( 'UPLOAD_CHUNK_KB', 1024 * 4 );
+		$chunk_size_kb = App::getVar( 'UPLOAD_CHUNK_KB', 4096 ); // 4mb.
+		$chunk_size_kb = $chunk_size_kb * 1024; // Converts KB to bytes.
 		$current_chunk = 0;
-		$total_chunks  = intval( ceil( $stat['size'] / ( $chunk_size_kb * 1024 ) ) );
+		$total_chunks  = intval( ceil( $stat['size'] / ( $chunk_size_kb ) ) );
 		$cd_upload_id  = generate_uuid4();
 
 		$progress_bar = new ProgressBar( $output, $total_chunks );
@@ -70,7 +71,7 @@ class Upload {
 				'current_chunk'    => $current_chunk,
 				'md5_sum'          => md5_file( $zip_path ),
 				'total_chunks'     => $total_chunks,
-				'chunk'            => base64_encode( fread( $file, $chunk_size_kb * 1024 ) ),
+				'chunk'            => base64_encode( fread( $file, $chunk_size_kb) ),
 			];
 
 			if ( ! empty( $test_type ) ) {

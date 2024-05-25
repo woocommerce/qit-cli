@@ -23,6 +23,12 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var string */
 	public $nginx_port;
 
+	/** @var string The slug of the extension under test. */
+	public $sut_slug;
+
+	/** @var int The Woo ID of the extension under test. */
+	public $sut_id;
+
 	/** @var string The domain being used. */
 	public $domain;
 

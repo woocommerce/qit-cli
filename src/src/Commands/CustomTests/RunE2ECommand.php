@@ -288,7 +288,11 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		/** @var E2EEnvInfo $env_info */
-		$env_info = E2EEnvInfo::from_array( $env_json );
+		$env_info           = E2EEnvInfo::from_array( $env_json );
+		$env_info->sut_slug = $woo_extension;
+		$env_info->sut_id   = $woo_extension_id;
+
+		App::singleton( E2EEnvInfo::class, $env_info );
 
 		if ( ! empty( $woo_extension_id ) ) {
 			$this->test_run_notifier->notify_test_started( $woo_extension_id, $woocommerce_version ?? 'none', $env_info );
