@@ -103,8 +103,7 @@ class LocalTestRunNotifier {
 			if ( filesize( $results_dir . '/allure-playwright.zip' ) > 200 * 1024 * 1024 ) {
 				$this->output->writeln( '<error>Report is too large to upload. Skipping...</error>' );
 			} else {
-				$extension_id = App::getVar( 'QIT_SUT' );
-				$upload_id    = $this->uploader->upload_build( 'test-report', $extension_id, $results_dir . '/allure-playwright.zip', $this->output, 'e2e' );
+				$upload_id    = $this->uploader->upload_build( 'test-report', $test_run_id, $results_dir . '/allure-playwright.zip', $this->output, 'e2e' );
 			}
 		}
 
