@@ -3,6 +3,10 @@
 namespace QIT_CLI\LocalTests;
 
 class PlaywrightToPuppeteerConverter {
+	public function has_failed( array $pw_results ): bool {
+		return $pw_results['numFailedTests'] > 0 || $pw_results['numFailedTestSuites'] > 0;
+	}
+
 	/**
 	 * @param array<mixed> $results The Playwright result JSON decoded.
 	 *

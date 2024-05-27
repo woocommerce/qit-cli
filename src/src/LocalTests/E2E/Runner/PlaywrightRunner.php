@@ -260,11 +260,6 @@ class PlaywrightRunner extends E2ERunner {
 
 		$playwright_process->run( $output_callback );
 
-		if ( file_exists( $results_dir . '/report/index.html' ) ) {
-			App::make( Cache::class )->set( 'last_e2e_report', $results_dir . '/report', MONTH_IN_SECONDS );
-			E2ETestManager::$has_report = true;
-		}
-
 		// Copy snapshots from Container to Host if needed.
 		if ( strpos( $options, '--update-snapshots' ) !== false ) {
 			$php_container_name = $env_info->get_docker_container( 'php' );

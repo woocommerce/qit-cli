@@ -71,10 +71,18 @@ class LocalTestRunNotifier {
 		}
 
 		App::setVar( 'test_run_id', $response['test_run_id'] );
-		App::setVar( 'attachment_base_url', $response['report_url'] );
+		App::setVar( 'attachment_base_url', $response['allure_report_url'] );
 	}
 
-	public function notify_test_finished( TestResult $test_result ): void {
+	/**
+	 * @param TestResult $test_result
+	 *
+	 * @return string The Report URL in QIT.
+	 * @throws \QIT_CLI\Exceptions\DoingAutocompleteException
+	 * @throws \QIT_CLI\Exceptions\NetworkErrorException
+	 * @throws \lucatume\DI52\ContainerException
+	 */
+	public function notify_test_finished( TestResult $test_result ): string {
 		$test_run_id = App::getVar( 'test_run_id' );
 
 		if ( empty( $test_run_id ) ) {
@@ -105,13 +113,32 @@ class LocalTestRunNotifier {
 			$debug_log = file_get_contents( $prepared_debug_log_path, false, null, 0, 8 * 1024 * 1024 ); // First 8mb of debug.log.
 		}
 
-		if ( file_exists( $results_dir . '/allure-playwright' ) ) {
+		if ( file_exists( $results_dir . '/allure-playwright' ) && ! $test_result->no_upload_report ) {
 			$this->zipper->zip_directory( $results_dir . '/allure-playwright', $results_dir . '/allure-playwright.zip' );
 			if ( filesize( $results_dir . '/allure-playwright.zip' ) > 200 * 1024 * 1024 ) {
 				$this->output->writeln( '<error>Report is too large to upload. Skipping...</error>' );
 			} else {
-				$upload_id = $this->uploader->upload_build( 'test-report', $test_run_id, $results_dir . '/allure-playwright.zip', $this->output, 'e2e' );
+				$this->uploader->upload_build( 'test-report', $test_run_id, $results_dir . '/allure-playwright.zip', $this->output, 'e2e' );
 			}
+		}
+
+		/**
+		 * Allowed status:
+		 * - success
+		 * - failed
+		 * - warning
+		 * - cancelled
+		 */
+		$status = 'success';
+
+		// If there's anything on debug.log, it's a warning.
+		if ( ! empty( $debug_log ) ) {
+			$status = 'warning';
+		}
+
+		// If it has failed any assertion, it's a failure.
+		if ( $this->playwright_to_puppeteer_converter->has_failed( $result_json ) ) {
+			$status = 'failed';
 		}
 
 		$data = [
@@ -119,11 +146,8 @@ class LocalTestRunNotifier {
 			'test_result_json' => $result_json,
 			'bootstrap_log'    => json_encode( $test_result->bootstrap ),
 			'debug_log'        => $debug_log,
+			'status'           => $status,
 		];
-
-		if ( isset( $upload_id ) ) {
-			$data['upload_id'] = $upload_id;
-		}
 
 		$r = App::make( RequestBuilder::class )
 		        ->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-finished' )
@@ -132,5 +156,15 @@ class LocalTestRunNotifier {
 		        ->with_timeout_in_seconds( 60 )
 		        ->with_post_body( $data )
 		        ->request();
+
+		// Decode response as JSON.
+		$response = json_decode( $r, true );
+
+		// Expected "success" true, and "test_run_id" to be set.
+		if ( ! is_array( $response ) || ! ( $response['success'] ) ) {
+			throw new \UnexpectedValueException( "Couldn't communicate with QIT Manager servers to record test run." );
+		}
+
+		return $response['report_url'];
 	}
 }

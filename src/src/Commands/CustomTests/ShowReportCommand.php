@@ -28,36 +28,53 @@ class ShowReportCommand extends Command {
 	protected function configure() {
 		$this
 			->addArgument( 'report_dir', InputArgument::OPTIONAL, '(Optional) The report directory. If not set, will show the last report.' )
+			->addOption( 'local', null, null, 'Force showing the local report instead of the remote one.' )
 			->addOption( 'dir_only', null, null, 'Only show the report directory.' )
 			->setDescription( 'Shows a test report.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		if ( ! is_null( $input->getArgument( 'report_dir' ) ) ) {
-			$report_dir = $input->getArgument( 'report_dir' );
+			$local_report = $input->getArgument( 'report_dir' );
 		} else {
-			$report_dir = $this->cache->get( 'last_e2e_report' );
+			$report_dir = json_decode( $this->cache->get( 'last_e2e_report' ) ?: '', true );
+
+			if ( empty( $report_dir ) ) {
+				$output->writeln( 'No report found.' );
+
+				return Command::FAILURE;
+			}
+
+			$local_report  = $report_dir['local_playwright'];
+			$remote_report = $report_dir['remote_qit'];
 		}
 
-		if ( ! file_exists( $report_dir ) ) {
-			throw new \RuntimeException( sprintf( 'Could not find the report directory: %s', $report_dir ) );
+		// If it has both local and remote, show the remote, unless "force-local" is true.
+		if ( ! $input->getOption( 'local' ) && ! empty( $remote_report ) ) {
+			open_in_browser( $remote_report );
+
+			return Command::SUCCESS;
 		}
 
-		if ( ! file_exists( $report_dir . '/index.html' ) ) {
-			throw new \RuntimeException( sprintf( 'Could not find the report file: %s', $report_dir . '/index.html' ) );
+		if ( ! file_exists( $local_report ) ) {
+			throw new \RuntimeException( sprintf( 'Could not find the report directory: %s', $local_report ) );
+		}
+
+		if ( ! file_exists( $local_report . '/index.html' ) ) {
+			throw new \RuntimeException( sprintf( 'Could not find the report file: %s', $local_report . '/index.html' ) );
 		}
 
 		if ( $input->getOption( 'dir_only' ) ) {
 			// We usually want the "HTML" report, but here print the general result directory.
-			$report_dir = dirname( $report_dir );
+			$local_report = dirname( $local_report );
 
-			$output->writeln( $report_dir );
+			$output->writeln( $local_report );
 
 			return Command::SUCCESS;
 		}
 
 		try {
-			$port = $this->start_server( $report_dir );
+			$port = $this->start_server( $local_report );
 			echo "Server started on port: $port\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		} catch ( \RuntimeException $e ) {
 			echo 'Error: ' . $e->getMessage() . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped

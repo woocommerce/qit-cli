@@ -3,6 +3,7 @@
 namespace QIT_CLI\LocalTests\E2E;
 
 use QIT_CLI\App;
+use QIT_CLI\Cache;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Extension;
@@ -59,10 +60,11 @@ class E2ETestManager {
 	 * @param bool        $bootstrap_only If true, will only bootstrap.
 	 * @param string|null $shard
 	 *
-	 * @return int The exit status code.
+	 * @return array{int,int|string} The exit status code and the report URL.
 	 */
-	public function run_tests( E2EEnvInfo $env_info, string $test_mode, bool $bootstrap_only, ?string $shard = null ): int {
+	public function run_tests( E2EEnvInfo $env_info, string $test_mode, bool $bootstrap_only, ?string $shard = null, bool $no_upload_report = false ): array {
 		$test_result = TestResult::init_from( $env_info );
+		$test_result->no_upload_report = $no_upload_report;
 
 		$this->output->writeln( '<info>Bootstrapping Plugins</info>' );
 
@@ -204,8 +206,19 @@ class E2ETestManager {
 			// No-op, a debug.log was not present.
 		}
 
-		$this->notifier->notify_test_finished( $test_result );
+		$report_url = $this->notifier->notify_test_finished( $test_result );
 
-		return $exit_status_code;
+		if ( file_exists( $test_result->get_results_dir() . '/report/index.html' ) ) {
+			App::make( Cache::class )->set( 'last_e2e_report', json_encode( [
+				'local_playwright' => $test_result->get_results_dir() . '/report',
+				'remote_qit'       => $report_url,
+			] ), MONTH_IN_SECONDS );
+			E2ETestManager::$has_report = true;
+		}
+
+		return [
+			$exit_status_code,
+			$report_url,
+		];
 	}
 }

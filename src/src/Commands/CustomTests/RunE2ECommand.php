@@ -27,6 +27,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use function QIT_CLI\is_windows;
 
 class RunE2ECommand extends DynamicCommand {
@@ -94,6 +95,7 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to use for the main extension under test. Accepts "activate", "install" and "test". Default to "test"', 'test' )
 			->addOption( 'no_activate', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright Sharding argument.' )
+			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
 			->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional options and parameters to pass to Playwright.' )
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode. In this mode, you can start and view the tests running.' )
@@ -143,6 +145,7 @@ class RunE2ECommand extends DynamicCommand {
 		$pw_options          = $input->getOption( 'pw_options' ) ?? '';
 		$source              = $input->getOption( 'source' ) ?? $woo_extension;
 		$sut_action          = $input->getOption( 'sut_action' );
+		$no_upload_report    = $input->getOption( 'no_upload_report' );
 
 		if ( ! empty( $pw_options ) ) {
 			// Remove wrapping double quotes if they exist.
@@ -310,13 +313,17 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::FAILURE;
 		}
 
-		$exit_status_code = $this->e2e_test_manager->run_tests( $env_info, $test_mode, $wait, $shard );
+		[ $exit_status_code, $report_url ] = $this->e2e_test_manager->run_tests( $env_info, $test_mode, $wait, $shard, $no_upload_report );
+
+		$io = new SymfonyStyle( $input, $output );
 
 		if ( $exit_status_code === Command::SUCCESS ) {
+			$io->success( "Tests passed. Run 'qit e2e-report' to view the report." );
+
 			return Command::SUCCESS;
 		} else {
 			if ( $test_mode === E2ETestManager::$test_modes['headless'] ) {
-				$this->output->writeln( sprintf( '<error>Tests failed. Exit status code: %s</error>', $exit_status_code ) );
+				$io->error( "Tests failed. Run 'qit e2e-report' to view the report." );
 			}
 
 			return Command::FAILURE;
@@ -408,7 +415,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
+				$parsed_options['env_up']["--$option_name"] = $option_value;
 			}
 		}
 
