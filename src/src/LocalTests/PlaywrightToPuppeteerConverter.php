@@ -34,19 +34,17 @@ class PlaywrightToPuppeteerConverter {
 					'file'        => $suite['file'],
 					'status'      => 'passed',
 					'has_pending' => false,
-					'tests'       => []
+					'tests'       => [],
 				];
 
-				foreach ( $suite['suites'] as $test ) {
-					$key                     = $test['title'];
-					$result['tests'][ $key ] = [];
+				$key                     = $suite['title'];
+				$result['tests'][ $key ] = [];
 
-					foreach ( $test['specs'] as $spec ) {
-						$this->parse_specs( $spec, $result, $formatted_result, $key );
-					}
-
-					$this->parse_possible_suite( $test, $result, $formatted_result, $key );
+				foreach ( $suite['specs'] as $spec ) {
+					$this->parse_specs( $spec, $result, $formatted_result, $key );
 				}
+
+				$this->parse_possible_suite( $suite, $result, $formatted_result, $key );
 
 				if ( $result['status'] === 'failed' ) {
 					$formatted_result['numFailedTestSuites'] += 1;
