@@ -62,9 +62,8 @@ class E2ETestManager {
 	 *
 	 * @return array{int,int|string} The exit status code and the report URL.
 	 */
-	public function run_tests( E2EEnvInfo $env_info, string $test_mode, bool $bootstrap_only, ?string $shard = null, bool $no_upload_report = false ): array {
+	public function run_tests( E2EEnvInfo $env_info, string $test_mode, bool $bootstrap_only, ?string $shard = null ): array {
 		$test_result = TestResult::init_from( $env_info );
-		$test_result->no_upload_report = $no_upload_report;
 
 		$this->output->writeln( '<info>Bootstrapping Plugins</info>' );
 

@@ -145,7 +145,6 @@ class RunE2ECommand extends DynamicCommand {
 		$pw_options          = $input->getOption( 'pw_options' ) ?? '';
 		$source              = $input->getOption( 'source' ) ?? $woo_extension;
 		$sut_action          = $input->getOption( 'sut_action' );
-		$no_upload_report    = $input->getOption( 'no_upload_report' );
 
 		if ( ! empty( $pw_options ) ) {
 			// Remove wrapping double quotes if they exist.
@@ -277,6 +276,8 @@ class RunE2ECommand extends DynamicCommand {
 			App::setVar( 'QIT_SUT', (int) $woo_extension_id );
 		}
 
+		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
+
 		$up_exit_status_code = $env_up_command->run(
 			new ArrayInput( $env_up_options ),
 			new StreamOutput( $resource_stream )
@@ -313,7 +314,7 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::FAILURE;
 		}
 
-		[ $exit_status_code, $report_url ] = $this->e2e_test_manager->run_tests( $env_info, $test_mode, $wait, $shard, $no_upload_report );
+		[ $exit_status_code, $report_url ] = $this->e2e_test_manager->run_tests( $env_info, $test_mode, $wait, $shard );
 
 		$io = new SymfonyStyle( $input, $output );
 

@@ -57,13 +57,14 @@ class LocalTestRunNotifier {
 		        ->with_expected_status_codes( [ 200 ] )
 		        ->with_timeout_in_seconds( 60 )
 		        ->with_post_body( [
-			        'woo_id'              => $woo_extension_id,
-			        'woocommerce_version' => $woocommerce_version,
-			        'wordpress_version'   => $env_info->wp,
-			        'php_version'         => $env_info->php_version,
-			        'additional_plugins' => $additional_plugins,
-			        'test_type'           => 'e2e',
-			        'event'               => 'e2e_local_run',
+			        'woo_id'                  => $woo_extension_id,
+			        'woocommerce_version'     => $woocommerce_version,
+			        'wordpress_version'       => $env_info->wp,
+			        'php_version'             => $env_info->php_version,
+			        'additional_plugins'      => $additional_plugins,
+			        'will_have_allure_report' => App::getVar( 'should_upload_report' ) ? 'true' : 'false',
+			        'test_type'               => 'e2e',
+			        'event'                   => 'e2e_local_run',
 		        ] )
 		        ->request();
 
@@ -122,7 +123,7 @@ class LocalTestRunNotifier {
 			$debug_log = file_get_contents( $prepared_debug_log_path, false, null, 0, 8 * 1024 * 1024 ); // First 8mb of debug.log.
 		}
 
-		if ( file_exists( $results_dir . '/allure-playwright' ) && ! $test_result->no_upload_report ) {
+		if ( file_exists( $results_dir . '/allure-playwright' ) && App::getVar( 'should_upload_report' ) ) {
 			$this->zipper->zip_directory( $results_dir . '/allure-playwright', $results_dir . '/allure-playwright.zip' );
 			if ( filesize( $results_dir . '/allure-playwright.zip' ) > 200 * 1024 * 1024 ) {
 				$this->output->writeln( '<error>Report is too large to upload. Skipping...</error>' );
@@ -151,11 +152,11 @@ class LocalTestRunNotifier {
 		}
 
 		$data = [
-			'test_run_id'        => $test_run_id,
-			'test_result_json'   => $result_json,
-			'bootstrap_log'      => json_encode( $test_result->bootstrap ),
-			'debug_log'          => $debug_log,
-			'status'             => $status,
+			'test_run_id'      => $test_run_id,
+			'test_result_json' => $result_json,
+			'bootstrap_log'    => json_encode( $test_result->bootstrap ),
+			'debug_log'        => $debug_log,
+			'status'           => $status,
 		];
 
 		$r = App::make( RequestBuilder::class )
