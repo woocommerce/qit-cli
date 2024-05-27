@@ -28,7 +28,7 @@ class PlaywrightToPuppeteerConverter {
 			'summary'              => '',
 		];
 
-		if ( ! empty( $results['suites'] ) ) {
+		$parse_suite = function ( $results ) use ( &$parse_suite, &$formatted_result ): void {
 			foreach ( $results['suites'] as $suite ) {
 				$result = [
 					'file'        => $suite['file'],
@@ -45,6 +45,10 @@ class PlaywrightToPuppeteerConverter {
 				}
 
 				$this->parse_possible_suite( $suite, $result, $formatted_result, $key );
+
+				if ( array_key_exists( 'suites', $suite ) && is_array( $suite['suites'] ) && ! empty( $suite['suites'] ) ) {
+					$parse_suite( $suite );
+				}
 
 				if ( $result['status'] === 'failed' ) {
 					$formatted_result['numFailedTestSuites'] += 1;
@@ -64,6 +68,10 @@ class PlaywrightToPuppeteerConverter {
 
 				$formatted_result['testResults'][] = $result;
 			}
+		};
+
+		if ( ! empty( $results['suites'] ) ) {
+			$parse_suite( $results );
 		}
 
 		$formatted_result['summary'] = sprintf(

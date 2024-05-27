@@ -1,0 +1,66 @@
+{
+    "numFailedTestSuites": 2,
+    "numPassedTestSuites": 2,
+    "numPendingTestSuites": 0,
+    "numTotalTestSuites": 3,
+    "numFailedTests": 2,
+    "numPassedTests": 2,
+    "numPendingTests": 0,
+    "numTotalTests": 4,
+    "testResults": [
+        {
+            "file": "woocommerce\/local\/example.spec.js",
+            "status": "passed",
+            "has_pending": false,
+            "tests": {
+                "woocommerce\/local\/example.spec.js": [
+                    {
+                        "title": "I can see my plugin menu",
+                        "status": "passed"
+                    }
+                ]
+            }
+        },
+        {
+            "file": "db-import.js",
+            "status": "passed",
+            "has_pending": false,
+            "tests": {
+                "db-import.js": [
+                    {
+                        "title": "Database Import",
+                        "status": "passed"
+                    }
+                ]
+            }
+        },
+        {
+            "file": "deli\/local\/example.spec.js",
+            "status": "failed",
+            "has_pending": false,
+            "tests": {
+                "My Plugin Tests": [
+                    {
+                        "title": "I can see my plugin menu",
+                        "status": "failed"
+                    }
+                ]
+            }
+        },
+        {
+            "file": "deli\/local\/example.spec.js",
+            "status": "failed",
+            "has_pending": false,
+            "tests": {
+                "deli\/local\/example.spec.js": [],
+                "deli\/local\/example.spec.js > My Plugin Tests": [
+                    {
+                        "title": "I can see my plugin menu",
+                        "status": "failed"
+                    }
+                ]
+            }
+        }
+    ],
+    "summary": "Test Suites: 0 skipped, 2 failed, 2 passed, 3 total | Tests: 0 skipped, 2 failed, 2 passed, 4 total."
+}

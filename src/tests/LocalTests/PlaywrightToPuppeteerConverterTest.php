@@ -22,4 +22,10 @@ class PlaywrightToPuppeteerConverterTest extends QITTestCase {
 
 		$this->assertMatchesJsonSnapshot( App::make( PlaywrightToPuppeteerConverter::class )->convert_pw_to_puppeteer( $playwright_report ) );
 	}
+
+	public function test_convert_playwright_suites_to_puppeteer() {
+		$playwright_report = json_decode( file_get_contents( __DIR__ . '/../data/playwright-result-suites.json' ), true );
+
+		$this->assertMatchesJsonSnapshot( App::make( PlaywrightToPuppeteerConverter::class )->convert_pw_to_puppeteer( $playwright_report ) );
+	}
 }
