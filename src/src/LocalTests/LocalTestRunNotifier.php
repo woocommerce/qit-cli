@@ -43,6 +43,14 @@ class LocalTestRunNotifier {
 	}
 
 	public function notify_test_started( string $woo_extension_id, string $woocommerce_version, E2EEnvInfo $env_info ): void {
+		$additional_plugins = [];
+
+		foreach ( $env_info->plugins as $plugin ) {
+			if ( $plugin['type'] === 'plugin' && $plugin['slug'] !== $env_info->sut_slug ) {
+				$additional_plugins[] = $plugin['slug'];
+			}
+		}
+
 		$r = App::make( RequestBuilder::class )
 		        ->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-started' )
 		        ->with_method( 'POST' )
@@ -53,6 +61,7 @@ class LocalTestRunNotifier {
 			        'woocommerce_version' => $woocommerce_version,
 			        'wordpress_version'   => $env_info->wp,
 			        'php_version'         => $env_info->php_version,
+			        'additional_plugins' => $additional_plugins,
 			        'test_type'           => 'e2e',
 			        'event'               => 'e2e_local_run',
 		        ] )
@@ -142,11 +151,11 @@ class LocalTestRunNotifier {
 		}
 
 		$data = [
-			'test_run_id'      => $test_run_id,
-			'test_result_json' => $result_json,
-			'bootstrap_log'    => json_encode( $test_result->bootstrap ),
-			'debug_log'        => $debug_log,
-			'status'           => $status,
+			'test_run_id'        => $test_run_id,
+			'test_result_json'   => $result_json,
+			'bootstrap_log'      => json_encode( $test_result->bootstrap ),
+			'debug_log'          => $debug_log,
+			'status'             => $status,
 		];
 
 		$r = App::make( RequestBuilder::class )
