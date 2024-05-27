@@ -1,12 +1,12 @@
 {
-    "numFailedTestSuites": 2,
+    "numFailedTestSuites": 1,
     "numPassedTestSuites": 2,
     "numPendingTestSuites": 0,
     "numTotalTestSuites": 3,
-    "numFailedTests": 2,
+    "numFailedTests": 1,
     "numPassedTests": 2,
     "numPendingTests": 0,
-    "numTotalTests": 4,
+    "numTotalTests": 3,
     "testResults": [
         {
             "file": "woocommerce\/local\/example.spec.js",
@@ -39,20 +39,6 @@
             "status": "failed",
             "has_pending": false,
             "tests": {
-                "My Plugin Tests": [
-                    {
-                        "title": "I can see my plugin menu",
-                        "status": "failed"
-                    }
-                ]
-            }
-        },
-        {
-            "file": "deli\/local\/example.spec.js",
-            "status": "failed",
-            "has_pending": false,
-            "tests": {
-                "deli\/local\/example.spec.js": [],
                 "deli\/local\/example.spec.js > My Plugin Tests": [
                     {
                         "title": "I can see my plugin menu",
@@ -62,5 +48,5 @@
             }
         }
     ],
-    "summary": "Test Suites: 0 skipped, 2 failed, 2 passed, 3 total | Tests: 0 skipped, 2 failed, 2 passed, 4 total."
+    "summary": "Test Suites: 0 skipped, 1 failed, 2 passed, 3 total | Tests: 0 skipped, 1 failed, 2 passed, 3 total."
 }

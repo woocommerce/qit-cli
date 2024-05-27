@@ -9,17 +9,11 @@ class PlaywrightToPuppeteerConverter {
 	 * @return array<mixed> The converted result to Puppeteer format.
 	 */
 	public function convert_pw_to_puppeteer( array $results ): array {
-		if ( array_key_exists( 'config', $results ) && array_key_exists( '_testGroupsCount', $results['config'] ) ) {
-			$num_total_suites = $results['config']['_testGroupsCount'];
-		} elseif ( array_key_exists( 'suites', $results ) ) {
-			$num_total_suites = count( $results['suites'] );
-		}
-
 		$formatted_result = [
 			'numFailedTestSuites'  => 0,
 			'numPassedTestSuites'  => 0,
 			'numPendingTestSuites' => 0,
-			'numTotalTestSuites'   => $num_total_suites ?? 0,
+			'numTotalTestSuites'   => 0,
 			'numFailedTests'       => 0,
 			'numPassedTests'       => 0,
 			'numPendingTests'      => 0,
@@ -28,50 +22,66 @@ class PlaywrightToPuppeteerConverter {
 			'summary'              => '',
 		];
 
-		$parse_suite = function ( $results ) use ( &$parse_suite, &$formatted_result ): void {
-			foreach ( $results['suites'] as $suite ) {
-				$result = [
-					'file'        => $suite['file'],
-					'status'      => 'passed',
-					'has_pending' => false,
-					'tests'       => [],
-				];
+		$parse_suite = function ( $suite, $parent_title = '' ) use ( &$parse_suite, &$formatted_result ): array {
+			$suite_title = $parent_title ? "$parent_title > {$suite['title']}" : $suite['title'];
 
-				$key                     = $suite['title'];
-				$result['tests'][ $key ] = [];
+			$result = [
+				'file'        => $suite['file'],
+				'status'      => 'passed',
+				'has_pending' => false,
+				'tests'       => [],
+			];
 
+			$is_container_suite = true;
+
+			if ( array_key_exists( 'specs', $suite ) ) {
 				foreach ( $suite['specs'] as $spec ) {
-					$this->parse_specs( $spec, $result, $formatted_result, $key );
+					$this->parse_specs( $spec, $result, $formatted_result, $suite_title );
+					$is_container_suite = false;
 				}
+			}
 
-				$this->parse_possible_suite( $suite, $result, $formatted_result, $key );
-
-				if ( array_key_exists( 'suites', $suite ) && is_array( $suite['suites'] ) && ! empty( $suite['suites'] ) ) {
-					$parse_suite( $suite );
+			$child_suite_statuses = [];
+			if ( array_key_exists( 'suites', $suite ) && is_array( $suite['suites'] ) && ! empty( $suite['suites'] ) ) {
+				foreach ( $suite['suites'] as $nested_suite ) {
+					$child_result           = $parse_suite( $nested_suite, $suite_title );
+					$child_suite_statuses[] = $child_result['status'];
 				}
+			}
+
+			// Determine the suite's status based on its children
+			if ( ! empty( $child_suite_statuses ) ) {
+				if ( in_array( 'failed', $child_suite_statuses ) ) {
+					$result['status'] = 'failed';
+				} elseif ( in_array( 'pending', $child_suite_statuses ) ) {
+					$result['status'] = 'pending';
+				} else {
+					$result['status'] = 'passed';
+				}
+			}
+
+			// Only include non-container suites in the final results
+			if ( ! $is_container_suite ) {
+				$formatted_result['numTotalTestSuites'] += 1;
 
 				if ( $result['status'] === 'failed' ) {
 					$formatted_result['numFailedTestSuites'] += 1;
-				}
-
-				if ( $result['status'] === 'passed' ) {
+				} elseif ( $result['status'] === 'passed' ) {
 					$formatted_result['numPassedTestSuites'] += 1;
-				}
-
-				if ( $result['status'] === 'flaky' ) {
-					$formatted_result['numPassedTestSuites'] += 1;
-				}
-
-				if ( array_key_exists( 'is_pending', $result ) && $result['has_pending'] ) {
+				} elseif ( $result['status'] === 'pending' ) {
 					$formatted_result['numPendingTestSuites'] += 1;
 				}
 
 				$formatted_result['testResults'][] = $result;
 			}
+
+			return $result;
 		};
 
 		if ( ! empty( $results['suites'] ) ) {
-			$parse_suite( $results );
+			foreach ( $results['suites'] as $suite ) {
+				$parse_suite( $suite );
+			}
 		}
 
 		$formatted_result['summary'] = sprintf(
@@ -95,36 +105,27 @@ class PlaywrightToPuppeteerConverter {
 	 * @return string
 	 */
 	protected function get_status( array $spec ): string {
-		if ( array_key_exists( 'status', $spec['tests'][0] ) ) {
-			$status = $spec['tests'][0]['status'];
-		} else {
-			$status = end( $spec['tests'][0]['results'] );
-		}
+		$status = $spec['tests'][0]['status'] ?? end( $spec['tests'][0]['results'] )['status'];
 
-		if ( $status === 'skipped' ) {
-			$status = 'pending';
+		switch ( $status ) {
+			case 'skipped':
+				return 'pending';
+			case 'expected':
+				return 'passed';
+			case 'unexpected':
+				return 'failed';
+			case 'flaky':
+				return 'passed';
+			default:
+				return $status;
 		}
-
-		if ( $status === 'expected' ) {
-			$status = 'passed';
-		}
-
-		if ( $status === 'unexpected' ) {
-			$status = 'failed';
-		}
-
-		if ( $status === 'flaky' ) {
-			$status = 'passed';
-		}
-
-		return $status;
 	}
 
 	/**
 	 * @param array<mixed> $spec
 	 * @param array<mixed> $result
 	 * @param array<mixed> $formatted_result
-	 * @param string       $key
+	 * @param string $key
 	 *
 	 * @return void
 	 */
@@ -139,50 +140,18 @@ class PlaywrightToPuppeteerConverter {
 
 		switch ( $status ) {
 			case 'failed':
-				$result['status'] = 'failed';
-				// increment failed test count.
+				$result['status']                   = 'failed';
 				$formatted_result['numFailedTests'] += 1;
 				break;
 			case 'passed':
-				// increment passed test count.
 				$formatted_result['numPassedTests'] += 1;
 				break;
-			case 'skipped':
 			case 'pending':
-				$result['has_pending'] = true;
-				// increment skipped/pending test count.
+				$result['has_pending']               = true;
 				$formatted_result['numPendingTests'] += 1;
-				break;
-			default:
-				$result['status'] = 'failed';
-				// increment failed test count.
-				$formatted_result['numFailedTests'] += 1;
 				break;
 		}
 
 		$formatted_result['numTotalTests'] += 1;
-	}
-
-	/**
-	 * @param array<mixed> $suite
-	 * @param array<mixed> $result
-	 * @param array<mixed> $formatted_result
-	 * @param string       $parent_key
-	 *
-	 * @return void
-	 */
-	protected function parse_possible_suite( array $suite, array &$result, array &$formatted_result, string $parent_key ): void {
-		if ( array_key_exists( 'suites', $suite ) ) {
-			foreach ( $suite['suites'] as $suite ) {
-				$suite_key                     = $parent_key . ' > ' . $suite['title'];
-				$result['tests'][ $suite_key ] = [];
-
-				foreach ( $suite['specs'] as $spec ) {
-					$this->parse_specs( $spec, $result, $formatted_result, $suite_key );
-				}
-
-				$this->parse_possible_suite( $suite, $result, $formatted_result, $suite_key );
-			}
-		}
 	}
 }
