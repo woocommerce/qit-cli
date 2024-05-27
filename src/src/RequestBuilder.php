@@ -63,7 +63,7 @@ class RequestBuilder {
 	}
 
 	/**
-	 * @param array<scalar> $post_body Optionally set curl's post_body.
+	 * @param array<scalar|array<mixed>> $post_body Optionally set curl's post_body.
 	 *
 	 * @return $this
 	 */

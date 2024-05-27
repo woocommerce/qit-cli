@@ -64,7 +64,7 @@ class LocalTestRunNotifier {
 					'woocommerce_version'     => $woocommerce_version,
 					'wordpress_version'       => $env_info->wp,
 					'php_version'             => $env_info->php_version,
-					'additional_plugins'      => json_encode( $additional_plugins ),
+					'additional_plugins'      => $additional_plugins,
 					'will_have_allure_report' => App::getVar( 'should_upload_report' ) ? 'true' : 'false',
 					'test_type'               => 'e2e',
 					'event'                   => 'e2e_local_run',
@@ -153,7 +153,7 @@ class LocalTestRunNotifier {
 
 		$data = [
 			'test_run_id'      => $test_run_id,
-			'test_result_json' => json_encode( $result_json ),
+			'test_result_json' => $result_json,
 			'bootstrap_log'    => json_encode( $test_result->bootstrap ),
 			'debug_log'        => $debug_log,
 			'status'           => $status,
