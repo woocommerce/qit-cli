@@ -6,7 +6,7 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use SplFileObject;
 
 class PrepareDebugLog {
-	public function prepare_debug_log( string $debug_log_file, string $new_debug_log_file, E2EEnvInfo $env_info): void {
+	public function prepare_debug_log( string $debug_log_file, string $new_debug_log_file, E2EEnvInfo $env_info ): void {
 		$sut_slug = $env_info->sut_slug;
 
 		if ( file_exists( $debug_log_file ) ) {
@@ -45,15 +45,15 @@ class PrepareDebugLog {
 				}
 
 				// Ignore deprecated usage of "wc_get_min_max_price_meta_query" that comes from Woo Core if not testing Woo.
-				// Open bug report: https://github.com/woocommerce/woocommerce/issues/39380
+				// Open bug report: https://github.com/woocommerce/woocommerce/issues/39380.
 				$is_deprecated_wc_get_min_max = stripos( $line, 'The wc_get_min_max_price_meta_query() function is deprecated since version 3.6' ) !== false;
 
 				// Ignore deprecations coming from Woo Core if not testing Woo.
-				// Bug report: https://github.com/woocommerce/woocommerce/issues/37592#issuecomment-1824643133
+				// Bug report: https://github.com/woocommerce/woocommerce/issues/37592#issuecomment-1824643133.
 				$is_deprecated_admin_options = stripos( $line, 'Options::get_options function is deprecated since version' ) !== false;
 
 				// Ignore deprecations coming from Woo Core if not testing Woo.
-				// Bug report: https://github.com/woocommerce/woocommerce/pull/41434
+				// Bug report: https://github.com/woocommerce/woocommerce/pull/41434.
 				$is_deprecated_compatible_plugins = stripos( $line, 'Function FeaturesController::get_compatible_plugins_for_feature was called incorrectly' ) !== false;
 
 				if (
@@ -118,7 +118,7 @@ class PrepareDebugLog {
 					$current_entry = '';
 				}
 
-				$log_entries[ $hash ]['count'] ++;
+				++$log_entries[ $hash ]['count'];
 			}
 
 			// Log the last entry.
@@ -130,20 +130,20 @@ class PrepareDebugLog {
 						'message' => $current_entry,
 					];
 				} else {
-					$log_entries[ $hash ]['count'] ++;
+					++$log_entries[ $hash ]['count'];
 				}
 			}
 
-			$written    = file_put_contents( $new_debug_log_file, json_encode( $log_entries ) );
+			$written = file_put_contents( $new_debug_log_file, json_encode( $log_entries ) );
 
 			if ( ! $written ) {
-				echo "Failed to write $new_debug_log_file";
+				echo "Failed to write $new_debug_log_file"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				die( 1 );
 			} else {
-				echo "Wrote debug contents to: $new_debug_log_file";
+				echo "Wrote debug contents to: $new_debug_log_file"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		} else {
-			echo "$debug_log_file does not exist for prepare.";
+			echo "$debug_log_file does not exist for prepare."; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 	}
 }

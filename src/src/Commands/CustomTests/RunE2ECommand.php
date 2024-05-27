@@ -270,7 +270,9 @@ class RunE2ECommand extends DynamicCommand {
 
 		putenv( 'QIT_UP_AND_TEST=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		putenv( sprintf( 'QIT_SUT=%s', $woo_extension ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-		App::setVar( 'QIT_SUT', (int) $woo_extension_id );
+		if ( ! empty( $woo_extension_id ) ) {
+			App::setVar( 'QIT_SUT', (int) $woo_extension_id );
+		}
 
 		$up_exit_status_code = $env_up_command->run(
 			new ArrayInput( $env_up_options ),
@@ -288,13 +290,13 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		/** @var E2EEnvInfo $env_info */
-		$env_info           = E2EEnvInfo::from_array( $env_json );
-		$env_info->sut_slug = $woo_extension;
-		$env_info->sut_id   = $woo_extension_id;
+		$env_info = E2EEnvInfo::from_array( $env_json );
 
 		App::singleton( E2EEnvInfo::class, $env_info );
 
 		if ( ! empty( $woo_extension_id ) ) {
+			$env_info->sut_slug = $woo_extension;
+			$env_info->sut_id   = $woo_extension_id;
 			$this->test_run_notifier->notify_test_started( $woo_extension_id, $woocommerce_version ?? 'none', $env_info );
 		}
 

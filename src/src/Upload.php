@@ -71,7 +71,7 @@ class Upload {
 				'current_chunk'    => $current_chunk,
 				'md5_sum'          => md5_file( $zip_path ),
 				'total_chunks'     => $total_chunks,
-				'chunk'            => base64_encode( fread( $file, $chunk_size_kb) ),
+				'chunk'            => base64_encode( fread( $file, $chunk_size_kb ) ),
 			];
 
 			if ( ! empty( $test_type ) ) {

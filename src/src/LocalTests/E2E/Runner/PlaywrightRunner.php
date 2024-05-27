@@ -54,8 +54,6 @@ class PlaywrightRunner extends E2ERunner {
 			}
 		}
 
-		$this->output->writeln( sprintf( 'Test artifacts being saved to: %s', $results_dir ) );
-
 		// Generate playwright-config.
 		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright/playwright-config-generator.php' ] );
 		$process->setEnv( [
@@ -304,6 +302,8 @@ class PlaywrightRunner extends E2ERunner {
 				}
 			}
 		}
+
+		$this->output->writeln( sprintf( 'Test artifacts being saved to: %s', $results_dir ) );
 
 		return $playwright_process->getExitCode();
 	}

@@ -1,0 +1,317 @@
+{
+  "config": {
+    "configFile": "/qit/tests/e2e/qit-playwright.config.js",
+    "rootDir": "/qit/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": "/qit/tests/e2e/global-setup.js",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 100,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "open": "never",
+          "outputFolder": "/qit/results/report"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/qit/results/result.json"
+        }
+      ],
+      [
+        "blob",
+        {
+          "outputDir": "/qit/results/blob"
+        }
+      ],
+      [
+        "/qit/tests/e2e/node_modules/allure-playwright/dist/index.js",
+        {
+          "outputFolder": "/qit/results/allure-playwright"
+        }
+      ],
+      [
+        "html",
+        {
+          "open": "never",
+          "outputFolder": "/qit/results/report-remote"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 15000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/qit/results/playwright",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {},
+        "id": "woocommerce-local",
+        "name": "woocommerce-local",
+        "testDir": "/qit/tests/e2e/woocommerce/local",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 120000
+      },
+      {
+        "outputDir": "/qit/results/playwright",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {},
+        "id": "db-import",
+        "name": "db-import",
+        "testDir": "/qit/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "/qit/tests/e2e/db-import.js"
+        ],
+        "timeout": 120000
+      },
+      {
+        "outputDir": "/qit/results/playwright",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {},
+        "id": "deli-local",
+        "name": "deli-local",
+        "testDir": "/qit/tests/e2e/deli/local",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 120000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "version": "1.44.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "woocommerce/local/example.spec.js",
+      "file": "woocommerce/local/example.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "I can see my plugin menu",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "woocommerce-local",
+              "projectName": "woocommerce-local",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "status": "passed",
+                  "duration": 7383,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2024-05-27T14:25:09.871Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "dd9b2edffe9b7501040c-7063e69cf678ea428eea",
+          "file": "woocommerce/local/example.spec.js",
+          "line": 9,
+          "column": 5
+        }
+      ]
+    },
+    {
+      "title": "db-import.js",
+      "file": "db-import.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Database Import",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "db-import",
+              "projectName": "db-import",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "status": "passed",
+                  "duration": 648,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "Success: Imported from '/tmp/qit-bootstrap.sql'.\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2024-05-27T14:25:17.753Z",
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "2b3edda1f02b6465161e-fbeff1abfb7aeb704b46",
+          "file": "db-import.js",
+          "line": 5,
+          "column": 5
+        }
+      ]
+    },
+    {
+      "title": "deli/local/example.spec.js",
+      "file": "deli/local/example.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "I can see my plugin menu",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 120000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "deli-local",
+              "projectName": "deli-local",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "status": "failed",
+                  "duration": 26459,
+                  "error": {
+                    "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\nCall log:\n  \u001b[2m- waiting for getByRole('link', { name: 'My Plugin Menu', exact: true })\u001b[22m\n",
+                    "stack": "TimeoutError: locator.click: Timeout 20000ms exceeded.\nCall log:\n  \u001b[2m- waiting for getByRole('link', { name: 'My Plugin Menu', exact: true })\u001b[22m\n\n    at /qit/tests/e2e/deli/local/example.spec.js:15:75",
+                    "location": {
+                      "file": "/qit/tests/e2e/deli/local/example.spec.js",
+                      "column": 75,
+                      "line": 15
+                    },
+                    "snippet": "  13 |     await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();\n  14 |     // Click on my menu on the sidebar.\n> 15 |     await page.getByRole('link', { name: 'My Plugin Menu', exact: true }).click();\n     |                                                                           ^\n  16 |     // await page.waitForLoadState('networkidle');\n  17 |     // Assert I see my welcome message when I click it.\n  18 |     // await expect(page.locator('h3')).toContainText('Welcome to My Plugin!');"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/qit/tests/e2e/deli/local/example.spec.js",
+                        "column": 75,
+                        "line": 15
+                      },
+                      "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\nCall log:\n  \u001b[2m- waiting for getByRole('link', { name: 'My Plugin Menu', exact: true })\u001b[22m\n\n\n  13 |     await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();\n  14 |     // Click on my menu on the sidebar.\n> 15 |     await page.getByRole('link', { name: 'My Plugin Menu', exact: true }).click();\n     |                                                                           ^\n  16 |     // await page.waitForLoadState('networkidle');\n  17 |     // Assert I see my welcome message when I click it.\n  18 |     // await expect(page.locator('h3')).toContainText('Welcome to My Plugin!');\n\n    at /qit/tests/e2e/deli/local/example.spec.js:15:75"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2024-05-27T14:25:18.603Z",
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/qit/results/playwright/example-I-can-see-my-plugin-menu-deli-local/test-failed-1.png"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/qit/tests/e2e/deli/local/example.spec.js",
+                    "column": 75,
+                    "line": 15
+                  }
+                },
+                {
+                  "workerIndex": 3,
+                  "status": "failed",
+                  "duration": 22612,
+                  "error": {
+                    "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\nCall log:\n  \u001b[2m- waiting for getByRole('link', { name: 'My Plugin Menu', exact: true })\u001b[22m\n",
+                    "stack": "TimeoutError: locator.click: Timeout 20000ms exceeded.\nCall log:\n  \u001b[2m- waiting for getByRole('link', { name: 'My Plugin Menu', exact: true })\u001b[22m\n\n    at /qit/tests/e2e/deli/local/example.spec.js:15:75",
+                    "location": {
+                      "file": "/qit/tests/e2e/deli/local/example.spec.js",
+                      "column": 75,
+                      "line": 15
+                    },
+                    "snippet": "  13 |     await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();\n  14 |     // Click on my menu on the sidebar.\n> 15 |     await page.getByRole('link', { name: 'My Plugin Menu', exact: true }).click();\n     |                                                                           ^\n  16 |     // await page.waitForLoadState('networkidle');\n  17 |     // Assert I see my welcome message when I click it.\n  18 |     // await expect(page.locator('h3')).toContainText('Welcome to My Plugin!');"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/qit/tests/e2e/deli/local/example.spec.js",
+                        "column": 75,
+                        "line": 15
+                      },
+                      "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\nCall log:\n  \u001b[2m- waiting for getByRole('link', { name: 'My Plugin Menu', exact: true })\u001b[22m\n\n\n  13 |     await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();\n  14 |     // Click on my menu on the sidebar.\n> 15 |     await page.getByRole('link', { name: 'My Plugin Menu', exact: true }).click();\n     |                                                                           ^\n  16 |     // await page.waitForLoadState('networkidle');\n  17 |     // Assert I see my welcome message when I click it.\n  18 |     // await expect(page.locator('h3')).toContainText('Welcome to My Plugin!');\n\n    at /qit/tests/e2e/deli/local/example.spec.js:15:75"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 1,
+                  "startTime": "2024-05-27T14:25:45.358Z",
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/qit/results/playwright/example-I-can-see-my-plugin-menu-deli-local-retry1/test-failed-1.png"
+                    },
+                    {
+                      "name": "video",
+                      "contentType": "video/webm",
+                      "path": "/qit/results/playwright/example-I-can-see-my-plugin-menu-deli-local-retry1/video.webm"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/qit/tests/e2e/deli/local/example.spec.js",
+                    "column": 75,
+                    "line": 15
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "dd9b2edffe9b7501040c-83bce9c7c494581c7155",
+          "file": "deli/local/example.spec.js",
+          "line": 9,
+          "column": 5
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2024-05-27T14:25:09.641Z",
+    "duration": 58420.652,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

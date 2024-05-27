@@ -25,33 +25,38 @@ class LocalTestRunNotifier {
 	/** @var PrepareDebugLog */
 	protected $prepare_debug_log;
 
+	/** PlaywrightToPuppeteerConverter */
+	protected $playwright_to_puppeteer_converter;
+
 	public function __construct(
 		Zipper $zipper,
 		OutputInterface $output,
 		Upload $uploader,
-		PrepareDebugLog $prepare_debug_log
+		PrepareDebugLog $prepare_debug_log,
+		PlaywrightToPuppeteerConverter $playwright_to_puppeteer_converter
 	) {
-		$this->zipper   = $zipper;
-		$this->output   = $output;
-		$this->uploader = $uploader;
-		$this->prepare_debug_log = $prepare_debug_log;
+		$this->zipper                            = $zipper;
+		$this->output                            = $output;
+		$this->uploader                          = $uploader;
+		$this->prepare_debug_log                 = $prepare_debug_log;
+		$this->playwright_to_puppeteer_converter = $playwright_to_puppeteer_converter;
 	}
 
 	public function notify_test_started( string $woo_extension_id, string $woocommerce_version, E2EEnvInfo $env_info ): void {
 		$r = App::make( RequestBuilder::class )
-				->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-started' )
-				->with_method( 'POST' )
-				->with_expected_status_codes( [ 200 ] )
-				->with_timeout_in_seconds( 60 )
-				->with_post_body( [
-					'woo_id'              => $woo_extension_id,
-					'woocommerce_version' => $woocommerce_version,
-					'wordpress_version'   => $env_info->wp,
-					'php_version'         => $env_info->php_version,
-					'test_type'           => 'e2e',
-					'event'               => 'e2e_local_run',
-				] )
-				->request();
+		        ->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-started' )
+		        ->with_method( 'POST' )
+		        ->with_expected_status_codes( [ 200 ] )
+		        ->with_timeout_in_seconds( 60 )
+		        ->with_post_body( [
+			        'woo_id'              => $woo_extension_id,
+			        'woocommerce_version' => $woocommerce_version,
+			        'wordpress_version'   => $env_info->wp,
+			        'php_version'         => $env_info->php_version,
+			        'test_type'           => 'e2e',
+			        'event'               => 'e2e_local_run',
+		        ] )
+		        ->request();
 
 		// Decode response as JSON.
 		$response = json_decode( $r, true );
@@ -90,12 +95,14 @@ class LocalTestRunNotifier {
 			throw new \RuntimeException( 'Result file not a JSON.' );
 		}
 
-		$test_log = '';
+		$result_json = $this->playwright_to_puppeteer_converter->convert_pw_to_puppeteer( json_decode( $result_json, true ) );
+
+		$debug_log = '';
 
 		if ( file_exists( $results_dir . '/debug.log' ) ) {
 			$prepared_debug_log_path = $results_dir . '/debug-prepared.log';
 			$this->prepare_debug_log->prepare_debug_log( $results_dir . '/debug.log', $prepared_debug_log_path, App::getVar( E2EEnvInfo::class ) );
-			$test_log = file_get_contents( $prepared_debug_log_path, false, null, 0, 1 * 1024 * 1024 ); // First 1mb of debug.log
+			$debug_log = file_get_contents( $prepared_debug_log_path, false, null, 0, 8 * 1024 * 1024 ); // First 8mb of debug.log.
 		}
 
 		if ( file_exists( $results_dir . '/allure-playwright' ) ) {
@@ -103,7 +110,7 @@ class LocalTestRunNotifier {
 			if ( filesize( $results_dir . '/allure-playwright.zip' ) > 200 * 1024 * 1024 ) {
 				$this->output->writeln( '<error>Report is too large to upload. Skipping...</error>' );
 			} else {
-				$upload_id    = $this->uploader->upload_build( 'test-report', $test_run_id, $results_dir . '/allure-playwright.zip', $this->output, 'e2e' );
+				$upload_id = $this->uploader->upload_build( 'test-report', $test_run_id, $results_dir . '/allure-playwright.zip', $this->output, 'e2e' );
 			}
 		}
 
@@ -111,7 +118,7 @@ class LocalTestRunNotifier {
 			'test_run_id'      => $test_run_id,
 			'test_result_json' => $result_json,
 			'bootstrap_log'    => json_encode( $test_result->bootstrap ),
-			'test_log'         => $test_log,
+			'debug_log'        => $debug_log,
 		];
 
 		if ( isset( $upload_id ) ) {
@@ -119,11 +126,11 @@ class LocalTestRunNotifier {
 		}
 
 		$r = App::make( RequestBuilder::class )
-				->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-finished' )
-				->with_method( 'POST' )
-				->with_expected_status_codes( [ 200 ] )
-				->with_timeout_in_seconds( 60 )
-				->with_post_body( $data )
-				->request();
+		        ->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-finished' )
+		        ->with_method( 'POST' )
+		        ->with_expected_status_codes( [ 200 ] )
+		        ->with_timeout_in_seconds( 60 )
+		        ->with_post_body( $data )
+		        ->request();
 	}
 }
