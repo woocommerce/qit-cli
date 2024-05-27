@@ -3,6 +3,11 @@
 namespace QIT_CLI\LocalTests;
 
 class PlaywrightToPuppeteerConverter {
+	/**
+	 * @param array<mixed> $pw_results
+	 *
+	 * @return bool Whether the results represent a failed test run.
+	 */
 	public function has_failed( array $pw_results ): bool {
 		return $pw_results['numFailedTests'] > 0 || $pw_results['numFailedTestSuites'] > 0;
 	}
@@ -53,18 +58,18 @@ class PlaywrightToPuppeteerConverter {
 				}
 			}
 
-			// Determine the suite's status based on its children
+			// Determine the suite's status based on its children.
 			if ( ! empty( $child_suite_statuses ) ) {
-				if ( in_array( 'failed', $child_suite_statuses ) ) {
+				if ( in_array( 'failed', $child_suite_statuses, true ) ) {
 					$result['status'] = 'failed';
-				} elseif ( in_array( 'pending', $child_suite_statuses ) ) {
+				} elseif ( in_array( 'pending', $child_suite_statuses, true ) ) {
 					$result['status'] = 'pending';
 				} else {
 					$result['status'] = 'passed';
 				}
 			}
 
-			// Only include non-container suites in the final results
+			// Only include non-container suites in the final results.
 			if ( ! $is_container_suite ) {
 				$formatted_result['numTotalTestSuites'] += 1;
 
@@ -129,7 +134,7 @@ class PlaywrightToPuppeteerConverter {
 	 * @param array<mixed> $spec
 	 * @param array<mixed> $result
 	 * @param array<mixed> $formatted_result
-	 * @param string $key
+	 * @param string       $key
 	 *
 	 * @return void
 	 */
@@ -144,14 +149,14 @@ class PlaywrightToPuppeteerConverter {
 
 		switch ( $status ) {
 			case 'failed':
-				$result['status']                   = 'failed';
+				$result['status']                    = 'failed';
 				$formatted_result['numFailedTests'] += 1;
 				break;
 			case 'passed':
 				$formatted_result['numPassedTests'] += 1;
 				break;
 			case 'pending':
-				$result['has_pending']               = true;
+				$result['has_pending']                = true;
 				$formatted_result['numPendingTests'] += 1;
 				break;
 		}

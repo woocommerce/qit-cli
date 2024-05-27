@@ -25,7 +25,7 @@ class LocalTestRunNotifier {
 	/** @var PrepareDebugLog */
 	protected $prepare_debug_log;
 
-	/** PlaywrightToPuppeteerConverter */
+	/** @var PlaywrightToPuppeteerConverter */
 	protected $playwright_to_puppeteer_converter;
 
 	public function __construct(
@@ -42,6 +42,9 @@ class LocalTestRunNotifier {
 		$this->playwright_to_puppeteer_converter = $playwright_to_puppeteer_converter;
 	}
 
+	/**
+	 * @suppress PhanTypeArraySuspicious
+	 */
 	public function notify_test_started( string $woo_extension_id, string $woocommerce_version, E2EEnvInfo $env_info ): void {
 		$additional_plugins = [];
 
@@ -52,21 +55,21 @@ class LocalTestRunNotifier {
 		}
 
 		$r = App::make( RequestBuilder::class )
-		        ->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-started' )
-		        ->with_method( 'POST' )
-		        ->with_expected_status_codes( [ 200 ] )
-		        ->with_timeout_in_seconds( 60 )
-		        ->with_post_body( [
-			        'woo_id'                  => $woo_extension_id,
-			        'woocommerce_version'     => $woocommerce_version,
-			        'wordpress_version'       => $env_info->wp,
-			        'php_version'             => $env_info->php_version,
-			        'additional_plugins'      => $additional_plugins,
-			        'will_have_allure_report' => App::getVar( 'should_upload_report' ) ? 'true' : 'false',
-			        'test_type'               => 'e2e',
-			        'event'                   => 'e2e_local_run',
-		        ] )
-		        ->request();
+				->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-started' )
+				->with_method( 'POST' )
+				->with_expected_status_codes( [ 200 ] )
+				->with_timeout_in_seconds( 60 )
+				->with_post_body( [
+					'woo_id'                  => $woo_extension_id,
+					'woocommerce_version'     => $woocommerce_version,
+					'wordpress_version'       => $env_info->wp,
+					'php_version'             => $env_info->php_version,
+					'additional_plugins'      => json_encode( $additional_plugins ),
+					'will_have_allure_report' => App::getVar( 'should_upload_report' ) ? 'true' : 'false',
+					'test_type'               => 'e2e',
+					'event'                   => 'e2e_local_run',
+				] )
+				->request();
 
 		// Decode response as JSON.
 		$response = json_decode( $r, true );
@@ -88,9 +91,6 @@ class LocalTestRunNotifier {
 	 * @param TestResult $test_result
 	 *
 	 * @return string The Report URL in QIT.
-	 * @throws \QIT_CLI\Exceptions\DoingAutocompleteException
-	 * @throws \QIT_CLI\Exceptions\NetworkErrorException
-	 * @throws \lucatume\DI52\ContainerException
 	 */
 	public function notify_test_finished( TestResult $test_result ): string {
 		$test_run_id = App::getVar( 'test_run_id' );
@@ -153,19 +153,19 @@ class LocalTestRunNotifier {
 
 		$data = [
 			'test_run_id'      => $test_run_id,
-			'test_result_json' => $result_json,
+			'test_result_json' => json_encode( $result_json ),
 			'bootstrap_log'    => json_encode( $test_result->bootstrap ),
 			'debug_log'        => $debug_log,
 			'status'           => $status,
 		];
 
 		$r = App::make( RequestBuilder::class )
-		        ->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-finished' )
-		        ->with_method( 'POST' )
-		        ->with_expected_status_codes( [ 200 ] )
-		        ->with_timeout_in_seconds( 60 )
-		        ->with_post_body( $data )
-		        ->request();
+				->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-finished' )
+				->with_method( 'POST' )
+				->with_expected_status_codes( [ 200 ] )
+				->with_timeout_in_seconds( 60 )
+				->with_post_body( $data )
+				->request();
 
 		// Decode response as JSON.
 		$response = json_decode( $r, true );

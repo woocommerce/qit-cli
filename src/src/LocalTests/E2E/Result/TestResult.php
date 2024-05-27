@@ -21,8 +21,6 @@ class TestResult {
 	/** @var E2EEnvInfo */
 	protected $env_info;
 
-	public $no_upload_report = false;
-
 	protected function __construct() {
 	}
 

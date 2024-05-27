@@ -7,7 +7,6 @@ use QIT_CLI\Cache;
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
-use QIT_CLI\LocalTests\E2E\E2ETestManager;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Terminal;

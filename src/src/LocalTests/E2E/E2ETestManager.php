@@ -60,9 +60,9 @@ class E2ETestManager {
 	 * @param bool        $bootstrap_only If true, will only bootstrap.
 	 * @param string|null $shard
 	 *
-	 * @return array{int,int|string} The exit status code and the report URL.
+	 * @return int The exit status code.
 	 */
-	public function run_tests( E2EEnvInfo $env_info, string $test_mode, bool $bootstrap_only, ?string $shard = null ): array {
+	public function run_tests( E2EEnvInfo $env_info, string $test_mode, bool $bootstrap_only, ?string $shard = null ): int {
 		$test_result = TestResult::init_from( $env_info );
 
 		$this->output->writeln( '<info>Bootstrapping Plugins</info>' );
@@ -212,12 +212,9 @@ class E2ETestManager {
 				'local_playwright' => $test_result->get_results_dir() . '/report',
 				'remote_qit'       => $report_url,
 			] ), MONTH_IN_SECONDS );
-			E2ETestManager::$has_report = true;
+			self::$has_report = true;
 		}
 
-		return [
-			$exit_status_code,
-			$report_url,
-		];
+		return $exit_status_code;
 	}
 }
