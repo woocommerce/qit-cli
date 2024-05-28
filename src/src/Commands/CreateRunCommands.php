@@ -173,8 +173,18 @@ class CreateRunCommands extends DynamicCommandCreator {
 						} );
 					}
 
+					$timeout = $input->getOption( 'timeout' );
+
+					if ( is_null( $timeout ) ) {
+						if ( $this->test_type === 'woo-e2e' ) {
+							$timeout = 3600 * 2; // 2 hours.
+						} else {
+							$timeout = 1800; // 30 minutes.
+						}
+					}
+
 					// Minimum timeout is 10 seconds.
-					$timeout = max( 10, $input->getOption( 'timeout' ) );
+					$timeout = max( 10, $timeout );
 
 					// Maximum timeout is 2 hours.
 					$timeout = min( 3600 * 2, $timeout );
@@ -293,7 +303,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 			't',
 			InputOption::VALUE_OPTIONAL,
 			'(Optional) Seconds to wait for a test to finish before failing the command. Default is 60 minutes. Min 10 seconds. Max 2 hours. (requires "--wait")',
-			3600
+			null
 		);
 
 		// If set, exit status code will be zero even if test fails.
