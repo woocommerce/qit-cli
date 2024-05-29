@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 1 failed, 107 passed, 108 total | Tests: 17 skipped, 1 failed, 369 passed, 387 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 108 passed, 108 total | Tests: 18 skipped, 0 failed, 369 passed, 387 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,13 +43,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 107,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 108,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 1,
+                "numFailedTests": 0,
                 "numPassedTests": 369,
-                "numPendingTests": 17,
+                "numPendingTests": 18,
                 "numTotalTests": 387,
                 "testResults": [
                     {
@@ -2172,13 +2172,13 @@
                     },
                     {
                         "file": "shopper\\/checkout-block.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Checkout Block page": [
                                 {
                                     "title": "can see empty checkout block page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to choose available payment methods",
@@ -2589,7 +2589,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 107 passed, 108 total | Tests: 17 skipped, 1 failed, 369 passed, 387 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 108 passed, 108 total | Tests: 18 skipped, 0 failed, 369 passed, 387 total."
             }
         },
         {
