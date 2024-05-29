@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 108 passed, 108 total | Tests: 17 skipped, 0 failed, 370 passed, 387 total.",
+            "test_summary": "Test Suites: 0 skipped, 1 failed, 107 passed, 108 total | Tests: 17 skipped, 2 failed, 368 passed, 387 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,12 +43,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 108,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 107,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 0,
-                "numPassedTests": 370,
+                "numFailedTests": 2,
+                "numPassedTests": 368,
                 "numPendingTests": 17,
                 "numTotalTests": 387,
                 "testResults": [
@@ -441,17 +441,17 @@
                     },
                     {
                         "file": "customize-store\\/assembler\\/homepage.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Assembler -> Homepage": [
                                 {
                                     "title": "Available homepage should be displayed",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "The selected homepage should be focused when is clicked",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "The selected homepage should be visible on the site preview",
@@ -2589,7 +2589,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 108 passed, 108 total | Tests: 17 skipped, 0 failed, 370 passed, 387 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 107 passed, 108 total | Tests: 17 skipped, 2 failed, 368 passed, 387 total."
             }
         },
         {
