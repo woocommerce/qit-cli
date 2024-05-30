@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 96 passed, 96 total | Tests: 42 skipped, 0 failed, 285 passed, 327 total.",
+            "test_summary": "Test Suites: 0 skipped, 1 failed, 95 passed, 96 total | Tests: 42 skipped, 1 failed, 284 passed, 327 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,12 +43,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 96,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 95,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 96,
-                "numFailedTests": 0,
-                "numPassedTests": 285,
+                "numFailedTests": 1,
+                "numPassedTests": 284,
                 "numPendingTests": 42,
                 "numTotalTests": 327,
                 "testResults": [
@@ -725,7 +725,7 @@
                     },
                     {
                         "file": "merchant\\/order-refund.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
@@ -735,7 +735,7 @@
                                 },
                                 {
                                     "title": "can delete an issued refund",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
@@ -2241,7 +2241,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 96 passed, 96 total | Tests: 42 skipped, 0 failed, 285 passed, 327 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 95 passed, 96 total | Tests: 42 skipped, 1 failed, 284 passed, 327 total."
             }
         },
         {

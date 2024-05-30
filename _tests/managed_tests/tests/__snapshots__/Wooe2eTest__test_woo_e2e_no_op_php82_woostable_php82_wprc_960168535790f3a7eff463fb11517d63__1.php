@@ -725,7 +725,7 @@
                     },
                     {
                         "file": "merchant\\/order-refund.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
@@ -735,7 +735,7 @@
                                 },
                                 {
                                     "title": "can delete an issued refund",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
@@ -2193,13 +2193,13 @@
                     },
                     {
                         "file": "shopper\\/shop-title-after-deletion.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Check the title of the shop page after the page has been deleted": [
                                 {
                                     "title": "Check the title of the shop page after the page has been deleted",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
