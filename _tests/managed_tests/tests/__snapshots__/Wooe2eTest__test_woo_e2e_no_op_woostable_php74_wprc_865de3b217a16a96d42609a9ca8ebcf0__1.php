@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 1 failed, 95 passed, 96 total | Tests: 42 skipped, 1 failed, 284 passed, 327 total.",
+            "test_summary": "Test Suites: 0 skipped, 3 failed, 93 passed, 96 total | Tests: 42 skipped, 3 failed, 282 passed, 327 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,12 +43,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 95,
+                "numFailedTestSuites": 3,
+                "numPassedTestSuites": 93,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 96,
-                "numFailedTests": 1,
-                "numPassedTests": 284,
+                "numFailedTests": 3,
+                "numPassedTests": 282,
                 "numPendingTests": 42,
                 "numTotalTests": 327,
                 "testResults": [
@@ -1841,13 +1841,13 @@
                     },
                     {
                         "file": "shopper\\/checkout-block.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "Checkout Block page": [
                                 {
                                     "title": "can see empty checkout block page",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "allows customer to choose available payment methods",
@@ -2193,13 +2193,13 @@
                     },
                     {
                         "file": "shopper\\/shop-title-after-deletion.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Check the title of the shop page after the page has been deleted": [
                                 {
                                     "title": "Check the title of the shop page after the page has been deleted",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2241,7 +2241,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 95 passed, 96 total | Tests: 42 skipped, 1 failed, 284 passed, 327 total."
+                "summary": "Test Suites: 0 skipped, 3 failed, 93 passed, 96 total | Tests: 42 skipped, 3 failed, 282 passed, 327 total."
             }
         },
         {
