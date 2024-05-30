@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 1 failed, 107 passed, 108 total | Tests: 18 skipped, 1 failed, 368 passed, 387 total.",
+            "test_summary": "Test Suites: 0 skipped, 2 failed, 106 passed, 108 total | Tests: 18 skipped, 2 failed, 367 passed, 387 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,12 +43,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 107,
+                "numFailedTestSuites": 2,
+                "numPassedTestSuites": 106,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 1,
-                "numPassedTests": 368,
+                "numFailedTests": 2,
+                "numPassedTests": 367,
                 "numPendingTests": 18,
                 "numTotalTests": 387,
                 "testResults": [
@@ -553,7 +553,7 @@
                     },
                     {
                         "file": "customize-store\\/loading-screen\\/loading-screen.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Assembler - Loading Page": [
@@ -567,7 +567,7 @@
                                 },
                                 {
                                     "title": "should hide loading screen and steps on subsequent runs",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2589,7 +2589,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 107 passed, 108 total | Tests: 18 skipped, 1 failed, 368 passed, 387 total."
+                "summary": "Test Suites: 0 skipped, 2 failed, 106 passed, 108 total | Tests: 18 skipped, 2 failed, 367 passed, 387 total."
             }
         },
         {
