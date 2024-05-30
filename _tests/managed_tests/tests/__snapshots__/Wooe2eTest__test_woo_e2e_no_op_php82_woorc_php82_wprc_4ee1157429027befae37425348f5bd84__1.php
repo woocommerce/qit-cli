@@ -2593,16 +2593,7 @@
             }
         },
         {
-            "debug_log": [
-                {
-                    "count": "2",
-                    "message": "PHP Deprecated: Creation of dynamic property WP_CLI\\\\Profile\\\\Logger::$callback is deprecated in \\/root\\/.wp-cli\\/packages\\/vendor\\/wp-cli\\/profile-command\\/src\\/Logger.php on line 31"
-                },
-                {
-                    "count": "2",
-                    "message": "PHP Deprecated: Creation of dynamic property WP_CLI\\\\Profile\\\\Logger::$location is deprecated in \\/root\\/.wp-cli\\/packages\\/vendor\\/wp-cli\\/profile-command\\/src\\/Profiler.php on line 68"
-                }
-            ]
+            "debug_log": []
         }
     ]
 ]';
