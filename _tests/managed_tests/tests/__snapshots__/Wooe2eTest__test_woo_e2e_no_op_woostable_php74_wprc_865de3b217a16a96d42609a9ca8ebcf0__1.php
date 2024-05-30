@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 3 failed, 93 passed, 96 total | Tests: 42 skipped, 3 failed, 282 passed, 327 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 96 passed, 96 total | Tests: 42 skipped, 0 failed, 285 passed, 327 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -725,7 +725,7 @@
                     },
                     {
                         "file": "merchant\\/order-refund.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
@@ -735,7 +735,7 @@
                                 },
                                 {
                                     "title": "can delete an issued refund",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
@@ -1841,13 +1841,13 @@
                     },
                     {
                         "file": "shopper\\/checkout-block.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Checkout Block page": [
                                 {
                                     "title": "can see empty checkout block page",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "allows customer to choose available payment methods",
@@ -2193,13 +2193,13 @@
                     },
                     {
                         "file": "shopper\\/shop-title-after-deletion.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Check the title of the shop page after the page has been deleted": [
                                 {
                                     "title": "Check the title of the shop page after the page has been deleted",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2241,7 +2241,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 3 failed, 93 passed, 96 total | Tests: 42 skipped, 3 failed, 282 passed, 327 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 96 passed, 96 total | Tests: 42 skipped, 0 failed, 285 passed, 327 total."
             }
         },
         {
