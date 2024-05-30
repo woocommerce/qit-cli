@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 2 failed, 106 passed, 108 total | Tests: 18 skipped, 2 failed, 367 passed, 387 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 108 passed, 108 total | Tests: 21 skipped, 0 failed, 366 passed, 387 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,13 +43,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 2,
-                "numPassedTestSuites": 106,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 108,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 2,
-                "numPassedTests": 367,
-                "numPendingTests": 18,
+                "numFailedTests": 0,
+                "numPassedTests": 366,
+                "numPendingTests": 21,
                 "numTotalTests": 387,
                 "testResults": [
                     {
@@ -553,7 +553,7 @@
                     },
                     {
                         "file": "customize-store\\/loading-screen\\/loading-screen.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Assembler - Loading Page": [
@@ -567,7 +567,7 @@
                                 },
                                 {
                                     "title": "should hide loading screen and steps on subsequent runs",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -1068,23 +1068,23 @@
                     },
                     {
                         "file": "merchant\\/order-refund.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
                                     "title": "can issue a refund by quantity",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete an issued refund",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
                                 {
                                     "title": "can update order after refunding item without automatic stock adjustment",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2589,7 +2589,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 2 failed, 106 passed, 108 total | Tests: 18 skipped, 2 failed, 367 passed, 387 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 108 passed, 108 total | Tests: 21 skipped, 0 failed, 366 passed, 387 total."
             }
         },
         {
