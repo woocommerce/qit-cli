@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 2 failed, 94 passed, 96 total | Tests: 42 skipped, 2 failed, 283 passed, 327 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 96 passed, 96 total | Tests: 42 skipped, 0 failed, 285 passed, 327 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,12 +43,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 2,
-                "numPassedTestSuites": 94,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 96,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 96,
-                "numFailedTests": 2,
-                "numPassedTests": 283,
+                "numFailedTests": 0,
+                "numPassedTests": 285,
                 "numPendingTests": 42,
                 "numTotalTests": 327,
                 "testResults": [
@@ -725,7 +725,7 @@
                     },
                     {
                         "file": "merchant\\/order-refund.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
@@ -735,7 +735,7 @@
                                 },
                                 {
                                     "title": "can delete an issued refund",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
@@ -2193,13 +2193,13 @@
                     },
                     {
                         "file": "shopper\\/shop-title-after-deletion.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Check the title of the shop page after the page has been deleted": [
                                 {
                                     "title": "Check the title of the shop page after the page has been deleted",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2241,20 +2241,11 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 2 failed, 94 passed, 96 total | Tests: 42 skipped, 2 failed, 283 passed, 327 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 96 passed, 96 total | Tests: 42 skipped, 0 failed, 285 passed, 327 total."
             }
         },
         {
-            "debug_log": [
-                {
-                    "count": "3",
-                    "message": "PHP Deprecated: Creation of dynamic property WP_CLI\\\\Profile\\\\Logger::$callback is deprecated in \\/root\\/.wp-cli\\/packages\\/vendor\\/wp-cli\\/profile-command\\/src\\/Logger.php on line 31"
-                },
-                {
-                    "count": "2",
-                    "message": "PHP Deprecated: Creation of dynamic property WP_CLI\\\\Profile\\\\Logger::$location is deprecated in \\/root\\/.wp-cli\\/packages\\/vendor\\/wp-cli\\/profile-command\\/src\\/Profiler.php on line 68"
-                }
-            ]
+            "debug_log": []
         }
     ]
 ]';
