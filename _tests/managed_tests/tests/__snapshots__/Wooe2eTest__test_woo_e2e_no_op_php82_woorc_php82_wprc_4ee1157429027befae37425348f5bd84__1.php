@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 108 passed, 108 total | Tests: 18 skipped, 0 failed, 369 passed, 387 total.",
+            "test_summary": "Test Suites: 0 skipped, 1 failed, 107 passed, 108 total | Tests: 18 skipped, 1 failed, 368 passed, 387 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,12 +43,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 108,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 107,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 0,
-                "numPassedTests": 369,
+                "numFailedTests": 1,
+                "numPassedTests": 368,
                 "numPendingTests": 18,
                 "numTotalTests": 387,
                 "testResults": [
@@ -1567,7 +1567,7 @@
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/create-variable-product-block-editor.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "Variations tab": [],
@@ -1578,7 +1578,7 @@
                                 },
                                 {
                                     "title": "can edit a variation",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can delete a variation",
@@ -2589,11 +2589,20 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 108 passed, 108 total | Tests: 18 skipped, 0 failed, 369 passed, 387 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 107 passed, 108 total | Tests: 18 skipped, 1 failed, 368 passed, 387 total."
             }
         },
         {
-            "debug_log": []
+            "debug_log": [
+                {
+                    "count": "2",
+                    "message": "PHP Deprecated: Creation of dynamic property WP_CLI\\\\Profile\\\\Logger::$callback is deprecated in \\/root\\/.wp-cli\\/packages\\/vendor\\/wp-cli\\/profile-command\\/src\\/Logger.php on line 31"
+                },
+                {
+                    "count": "2",
+                    "message": "PHP Deprecated: Creation of dynamic property WP_CLI\\\\Profile\\\\Logger::$location is deprecated in \\/root\\/.wp-cli\\/packages\\/vendor\\/wp-cli\\/profile-command\\/src\\/Profiler.php on line 68"
+                }
+            ]
         }
     ]
 ]';

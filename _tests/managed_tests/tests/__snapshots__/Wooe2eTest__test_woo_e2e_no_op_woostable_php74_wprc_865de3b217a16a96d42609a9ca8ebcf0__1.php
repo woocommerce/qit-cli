@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 96 passed, 96 total | Tests: 42 skipped, 0 failed, 285 passed, 327 total.",
+            "test_summary": "Test Suites: 0 skipped, 2 failed, 94 passed, 96 total | Tests: 42 skipped, 2 failed, 283 passed, 327 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,12 +43,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 96,
+                "numFailedTestSuites": 2,
+                "numPassedTestSuites": 94,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 96,
-                "numFailedTests": 0,
-                "numPassedTests": 285,
+                "numFailedTests": 2,
+                "numPassedTests": 283,
                 "numPendingTests": 42,
                 "numTotalTests": 327,
                 "testResults": [
@@ -1469,7 +1469,7 @@
                     },
                     {
                         "file": "shopper\\/cart-block-calculate-shipping.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "Cart Block Calculate Shipping": [
@@ -1487,7 +1487,7 @@
                                 },
                                 {
                                     "title": "should show correct total cart block price after updating quantity",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "should show correct total cart block price with 2 different products and flat rate\\/local pickup",
@@ -2193,13 +2193,13 @@
                     },
                     {
                         "file": "shopper\\/shop-title-after-deletion.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Check the title of the shop page after the page has been deleted": [
                                 {
                                     "title": "Check the title of the shop page after the page has been deleted",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2241,7 +2241,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 96 passed, 96 total | Tests: 42 skipped, 0 failed, 285 passed, 327 total."
+                "summary": "Test Suites: 0 skipped, 2 failed, 94 passed, 96 total | Tests: 42 skipped, 2 failed, 283 passed, 327 total."
             }
         },
         {
