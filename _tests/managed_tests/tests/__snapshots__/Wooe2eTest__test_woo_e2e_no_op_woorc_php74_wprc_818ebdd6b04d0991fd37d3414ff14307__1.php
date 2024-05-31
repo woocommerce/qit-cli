@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 108 passed, 108 total | Tests: 21 skipped, 0 failed, 366 passed, 387 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 107 passed, 107 total | Tests: 21 skipped, 0 failed, 356 passed, 377 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -44,13 +44,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 108,
+                "numPassedTestSuites": 107,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 108,
+                "numTotalTestSuites": 107,
                 "numFailedTests": 0,
-                "numPassedTests": 366,
+                "numPassedTests": 356,
                 "numPendingTests": 21,
-                "numTotalTests": 387,
+                "numTotalTests": 377,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -592,57 +592,6 @@
                                 },
                                 {
                                     "title": "Clicking on \\"Share feedback\\" should open the survey modal",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "js-file-monitor\\/monitor-js-file-number.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Keeps track of the number of JS files included on key shopper pages": [
-                                {
-                                    "title": "Check that Shop page has 50 JS files",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Check that Cart has 54 JS files",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Check that Checkout has 54 JS files",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Keeps track of the number of JS files on key admin pages": [
-                                {
-                                    "title": "Check that WC Dashboard has 50 JS files",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Check that Reports has 150 JS files",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Check that Orders page has 150 JS files",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Check that Products page has 150 JS files",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Check that Add new product has 150 JS files",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Check that Analytics page has 120 JS files",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Check that Marketing Overview has 120 JS files",
                                     "status": "passed"
                                 }
                             ]
@@ -2589,7 +2538,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 108 passed, 108 total | Tests: 21 skipped, 0 failed, 366 passed, 387 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 107 passed, 107 total | Tests: 21 skipped, 0 failed, 356 passed, 377 total."
             }
         },
         {
