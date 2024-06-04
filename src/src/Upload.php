@@ -103,8 +103,12 @@ class Upload {
 
 		$parsed_response = json_decode( $r, true );
 
-		if ( ! is_array( $parsed_response ) || empty( $parsed_response['upload_id'] ) ) {
-			throw new \UnexpectedValueException( "The upload wasn't successful." );
+		if ( ! is_array( $parsed_response ) ) {
+			throw new \UnexpectedValueException( "The upload wasn't successful. Expected a JSON response, got: " . $r );
+		}
+
+		if ( empty( $parsed_response['upload_id'] ) ) {
+			throw new \UnexpectedValueException( "The upload wasn't successful. Expected 'upload_id' key not found in response." );
 		}
 
 		$progress_bar->finish();
