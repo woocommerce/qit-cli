@@ -194,17 +194,7 @@ class RunE2ECommand extends DynamicCommand {
 			}
 
 			if ( ! empty( $test ) ) {
-				if ( ! file_exists( $test ) ) {
-					$output->writeln( "<error>Test file '$test' does not exist.</error>" );
-
-					return Command::INVALID;
-				}
-				// Prefer realpath if possible.
-				if ( file_exists( realpath( $test ) ) ) {
-					$test = realpath( $test );
-				}
-
-				$woo_extension_extension_syntax = sprintf( '%s:%s:%s', $woo_extension, $sut_action, $test );
+				$woo_extension_extension_syntax = sprintf( '%s:%s:base64%s', $woo_extension, $sut_action, base64_encode( $test ) );
 			} else {
 				$woo_extension_extension_syntax = sprintf( '%s:%s', $woo_extension, $sut_action );
 			}
