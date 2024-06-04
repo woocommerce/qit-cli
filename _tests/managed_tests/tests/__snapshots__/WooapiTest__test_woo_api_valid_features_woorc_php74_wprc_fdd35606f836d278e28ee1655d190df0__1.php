@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 20 passed, 20 total | Tests: 2 skipped, 0 failed, 255 passed, 257 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 20 passed, 20 total | Tests: 2 skipped, 0 failed, 256 passed, 258 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -48,9 +48,9 @@
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 20,
                 "numFailedTests": 0,
-                "numPassedTests": 255,
+                "numPassedTests": 256,
                 "numPendingTests": 2,
-                "numTotalTests": 257,
+                "numTotalTests": 258,
                 "testResults": [
                     {
                         "file": "coupons\\/coupons.test.js",
@@ -931,6 +931,10 @@
                                     "status": "passed"
                                 },
                                 {
+                                    "title": "can retrieve refund info from refund endpoint",
+                                    "status": "passed"
+                                },
+                                {
                                     "title": "can list all refunds",
                                     "status": "passed"
                                 },
@@ -1378,7 +1382,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 20 passed, 20 total | Tests: 2 skipped, 0 failed, 255 passed, 257 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 20 passed, 20 total | Tests: 2 skipped, 0 failed, 256 passed, 258 total."
             }
         },
         {

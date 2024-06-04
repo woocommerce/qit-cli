@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 96 passed, 96 total | Tests: 42 skipped, 0 failed, 285 passed, 327 total.",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 107 passed, 107 total | Tests: 21 skipped, 0 failed, 356 passed, 377 total.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -44,13 +44,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 96,
+                "numPassedTestSuites": 107,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 96,
+                "numTotalTestSuites": 107,
                 "numFailedTests": 0,
-                "numPassedTests": 285,
-                "numPendingTests": 42,
-                "numTotalTests": 327,
+                "numPassedTests": 356,
+                "numPendingTests": 21,
+                "numTotalTests": 377,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -272,51 +272,326 @@
                         "tests": []
                     },
                     {
-                        "file": "js-file-monitor\\/monitor-js-file-number.spec.js",
+                        "file": "customize-store\\/assembler\\/color-picker.spec.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
-                            "Keeps track of the number of JS files included on key shopper pages": [
+                            "Assembler -> Color Pickers": [
                                 {
-                                    "title": "Check that Shop page has 50 JS files",
+                                    "title": "Color pickers should be displayed",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Check that Cart has 54 JS files",
+                                    "title": "Color palette Blueberry Sorbet should be applied",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Check that Checkout has 54 JS files",
+                                    "title": "Color palette Ancient Bronze should be applied",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Color palette Crimson Tide should be applied",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Color palette Purple Twilight should be applied",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Color palette Green Thumb should be applied",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Color palette Golden Haze should be applied",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Color palette Golden Indigo should be applied",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Color palette Arctic Dawn should be applied",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Color palette Raspberry Chocolate should be applied",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Color palette Canary should be applied",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Color palette Ice should be applied",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Color palette Rustic Rosewood should be applied",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Color palette Cinnamon Latte should be applied",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Color palette Lightning should be applied",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Color palette Aquamarine Night should be applied",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Color palette Charcoal should be applied",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Color palette Slate should be applied",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Color picker should be focused when a color is picked",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Selected color palette should be applied on the frontend",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Create \\"your own\\" pickers should be visible",
                                     "status": "passed"
                                 }
-                            ],
-                            "Keeps track of the number of JS files on key admin pages": [
+                            ]
+                        }
+                    },
+                    {
+                        "file": "customize-store\\/assembler\\/font-picker.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Assembler -> Font Picker": [
                                 {
-                                    "title": "Check that WC Dashboard has 50 JS files",
+                                    "title": "Font pickers should be displayed",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Check that Reports has 150 JS files",
+                                    "title": "Picking a font should trigger an update of fonts on the site preview",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Check that Orders page has 150 JS files",
+                                    "title": "Font pickers should be focused when a font is picked",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Check that Products page has 150 JS files",
+                                    "title": "Selected font palette should be applied on the frontend",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "customize-store\\/assembler\\/footer.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Assembler -> Footers": [
+                                {
+                                    "title": "Available footers should be displayed",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Check that Add new product has 150 JS files",
+                                    "title": "The selected footer should be focused when is clicked",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Check that Analytics page has 120 JS files",
+                                    "title": "The selected footer should be applied on the frontend",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Check that Marketing Overview has 120 JS files",
+                                    "title": "Picking a footer should trigger an update on the site preview",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "customize-store\\/assembler\\/header.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Assembler -> headers": [
+                                {
+                                    "title": "Available headers should be displayed",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "The selected header should be focused when is clicked",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "The selected header should be applied on the frontend",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Picking a header should trigger an update on the site preview",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "customize-store\\/assembler\\/homepage.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Assembler -> Homepage": [
+                                {
+                                    "title": "Available homepage should be displayed",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "The selected homepage should be focused when is clicked",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "The selected homepage should be visible on the site preview",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Selected homepage should be applied on the frontend",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Assembler -> Logo Picker": [
+                                {
+                                    "title": "Logo Picker should be empty initially",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Selecting an image should update the site preview",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Changing the image width should update the site preview and the frontend",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Clicking the Delete button should remove the selected image",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Clicking the replace image should open the media gallery",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Enabling the \\"use as site icon\\" option should set the image as the site icon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "The selected image should be visible on the frontend",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "customize-store\\/assembler-hub.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Store owner can view Assembler Hub for store customization": [
+                                {
+                                    "title": "Can not access the Assembler Hub page when the theme is not customized",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Can view the Assembler Hub page when the theme is already customized",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Visiting change header should show a list of block patterns to choose from",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "customize-store\\/intro.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Store owner can view the Intro page": [
+                                {
+                                    "title": "it shows the \\"offline banner\\" when the network is offline",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "it shows the \\"no AI\\" banner on Core when the task is not completed",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "it shows the \\"no AI customize theme\\" banner when the task is completed",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "it shows the \\"no AI\\" banner when the task is completed and the theme is not the default",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "it shows the \\"no AI\\" banner, when the task is completed and the theme is not the default",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "customize-store\\/loading-screen\\/loading-screen.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Assembler - Loading Page": [
+                                {
+                                    "title": "should display loading screen and steps on first run",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should redirect to intro page in case of errors",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should hide loading screen and steps on subsequent runs",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "customize-store\\/transitional.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Store owner can view the Transitional page": [
+                                {
+                                    "title": "Accessing the transitional page when the CYS flow is not completed should redirect to the Intro page",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Clicking on \\"Save\\" in the assembler should go to the transitional page",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Clicking on \\"View store\\" should go to the store home page in a new page",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Clicking on \\"Share feedback\\" should open the survey modal",
                                     "status": "passed"
                                 }
                             ]
@@ -338,12 +613,12 @@
                     {
                         "file": "merchant\\/create-checkout-block.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Transform Classic Checkout To Checkout Block": [
                                 {
                                     "title": "can transform classic checkout to checkout block",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -431,52 +706,52 @@
                     {
                         "file": "merchant\\/create-restricted-coupons.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Restricted coupon management": [
                                 {
                                     "title": "can create new minimumSpend coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new maximumSpend coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new individualUse coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new excludeSaleItems coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new productCategories coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new excludeProductCategories coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new products coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new excludeProducts coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new allowedEmails coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new usageLimitPerCoupon coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new usageLimitPerUser coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -497,7 +772,7 @@
                     {
                         "file": "merchant\\/create-shipping-zones.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
@@ -524,15 +799,15 @@
                             "Verifies shipping options from customer perspective": [
                                 {
                                     "title": "allows customer to benefit from a free Local pickup if on Mayne Island",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "allows customer to benefit from a free Free shipping if in BC",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "allows customer to pay for a Flat rate shipping method",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -542,7 +817,7 @@
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
-                            "Insert All WooCommerce Blocks Into Page": [
+                            "Add WooCommerce Blocks Into Page": [
                                 {
                                     "title": "can insert all WooCommerce blocks into page",
                                     "status": "passed"
@@ -555,7 +830,7 @@
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
-                            "Insert WooCommerce Patterns Into Page": [
+                            "Add WooCommerce Patterns Into Page": [
                                 {
                                     "title": "can insert WooCommerce patterns into page",
                                     "status": "passed"
@@ -587,12 +862,12 @@
                     {
                         "file": "merchant\\/customer-payment-page.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Merchant Flow: Orders > Customer Payment Page": [
                                 {
                                     "title": "should show the customer payment page link on a pending order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should load the customer payment page",
@@ -600,6 +875,23 @@
                                 },
                                 {
                                     "title": "can pay for the order through the customer payment page",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/launch-your-store.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Launch Your Store front end - logged in": [
+                                {
+                                    "title": "Entire site coming soon mode",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Store only coming soon mode",
                                     "status": "passed"
                                 }
                             ]
@@ -638,7 +930,7 @@
                     {
                         "file": "merchant\\/order-edit.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Edit order": [
                                 {
@@ -669,7 +961,7 @@
                             "Edit order > Downloadable product permissions": [
                                 {
                                     "title": "can add downloadable product permissions to order without product",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can add downloadable product permissions to order with product",
@@ -726,22 +1018,22 @@
                     {
                         "file": "merchant\\/order-refund.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
                                     "title": "can issue a refund by quantity",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete an issued refund",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
                                 {
                                     "title": "can update order after refunding item without automatic stock adjustment",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1235,10 +1527,10 @@
                                 },
                                 {
                                     "title": "can edit a variation",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
-                                    "title": "can delete a variationt",
+                                    "title": "can delete a variation",
                                     "status": "pending"
                                 },
                                 {
@@ -1294,13 +1586,13 @@
                     {
                         "file": "merchant\\/products\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "General tab": [],
                             "General tab > Linked product": [
                                 {
                                     "title": "can create a product with linked products",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1470,20 +1762,16 @@
                     {
                         "file": "shopper\\/cart-block-calculate-shipping.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Cart Block Calculate Shipping": [
-                                {
-                                    "title": "create Cart Block page",
-                                    "status": "passed"
-                                },
                                 {
                                     "title": "allows customer to calculate Free Shipping in cart block if in Netherlands",
                                     "status": "passed"
                                 },
                                 {
                                     "title": "allows customer to calculate Flat rate and Local pickup in cart block if in Portugal",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should show correct total cart block price after updating quantity",
@@ -1491,7 +1779,7 @@
                                 },
                                 {
                                     "title": "should show correct total cart block price with 2 different products and flat rate\\/local pickup",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -1502,10 +1790,6 @@
                         "has_pending": false,
                         "tests": {
                             "Cart Block Applying Coupons": [
-                                {
-                                    "title": "can create Cart Block page",
-                                    "status": "passed"
-                                },
                                 {
                                     "title": "allows cart block to apply coupon of any type",
                                     "status": "passed"
@@ -1817,10 +2101,6 @@
                         "tests": {
                             "Checkout Block Applying Coupons": [
                                 {
-                                    "title": "can create checkout block page",
-                                    "status": "passed"
-                                },
-                                {
                                     "title": "allows checkout block to apply coupon of any type",
                                     "status": "passed"
                                 },
@@ -1847,7 +2127,7 @@
                             "Checkout Block page": [
                                 {
                                     "title": "can see empty checkout block page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to choose available payment methods",
@@ -1867,19 +2147,19 @@
                                 },
                                 {
                                     "title": "can choose different shipping types in the checkout",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "allows existing customer to place an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create an account during checkout",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -1900,12 +2180,12 @@
                     {
                         "file": "shopper\\/checkout-login.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Shopper Checkout Login Account": [
                                 {
                                     "title": "can login to an existing account during checkout",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -1963,6 +2243,23 @@
                                 },
                                 {
                                     "title": "Customer is redirected from WP Admin using ajax query param back to the My Account page.",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "shopper\\/launch-your-store.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Launch Your Store front end - logged out": [
+                                {
+                                    "title": "Entire site coming soon mode",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Store only coming soon mode",
                                     "status": "passed"
                                 }
                             ]
@@ -2027,12 +2324,12 @@
                     {
                         "file": "shopper\\/my-account-pay-order.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Customer can pay for their order through My Account": [
                                 {
                                     "title": "allows customer to pay for their order in My Account",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2241,7 +2538,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 96 passed, 96 total | Tests: 42 skipped, 0 failed, 285 passed, 327 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 107 passed, 107 total | Tests: 21 skipped, 0 failed, 356 passed, 377 total."
             }
         },
         {
