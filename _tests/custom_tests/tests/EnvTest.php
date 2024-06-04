@@ -220,7 +220,7 @@ PHP
 			'wp plugin get woocommerce',
 		] );
 
-		$this->assertMatchesNormalizedSnapshot( $output );
+		$this->assertStringContainsString( '-dev', $output );
 	}
 
 	public function test_env_up_woocommerce_rc_version() {

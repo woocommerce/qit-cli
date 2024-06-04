@@ -213,8 +213,15 @@ class Zipper {
 			'automattic/qit-runner-zip:latest',
 			'sh',
 			'-c',
-			"cd /home/docker/source && zip -r /home/docker/dest/output.zip . -x $exclude_string",
 		];
+
+		$zip_command = 'cd /home/docker/source && zip -r /home/docker/dest/output.zip .';
+
+		if ( ! empty( $exclude_string ) ) {
+			$zip_command .= " -x $exclude_string";
+		}
+
+		$docker_command[] = $zip_command;
 
 		if ( Docker::should_set_user() ) {
 			// After --rm.

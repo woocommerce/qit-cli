@@ -18,8 +18,9 @@
     "object_cache": false,
     "php_version": null,
     "nginx_port": null,
+    "sut_slug": null,
+    "sut_id": null,
     "domain": "localhost",
-    "woocommerce_version": null,
     "tests": [],
     "playwright_config": []
 }

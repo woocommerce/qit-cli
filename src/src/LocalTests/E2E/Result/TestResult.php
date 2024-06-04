@@ -18,12 +18,16 @@ class TestResult {
 	/** @var string */
 	protected $results_dir;
 
+	/** @var E2EEnvInfo */
+	protected $env_info;
+
 	protected function __construct() {
 	}
 
 	public static function init_from( E2EEnvInfo $env_info ): TestResult {
 		$instance              = new self();
 		$instance->status      = 'pending';
+		$instance->env_info    = $env_info;
 		$instance->results_dir = normalize_path( sys_get_temp_dir() ) . "qit-results-{$env_info->env_id}";
 
 		if ( ! mkdir( $instance->results_dir, 0755, false ) ) {
@@ -41,11 +45,11 @@ class TestResult {
 		$this->bootstrap[ $plugin_slug ][ $bootstrap_type ] = $status;
 	}
 
-	public function register_test_results( string $plugin_slug, string $results_dir ): void {
-		$this->results[ $plugin_slug ] = $results_dir;
-	}
-
 	public function set_status( string $status ): void {
 		$this->status = $status;
+	}
+
+	public function get_env_info(): E2EEnvInfo {
+		return $this->env_info;
 	}
 }

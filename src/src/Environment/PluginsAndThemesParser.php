@@ -219,6 +219,11 @@ class PluginsAndThemesParser {
 			$test_tag_str = substr( $extension, $action_pos + strlen( $action_pattern ) + 1 );
 
 			if ( ! empty( $test_tag_str ) ) {
+				// Starts with "base64", remove it and base64_decode the rest.
+				if ( strpos( $test_tag_str, 'base64' ) === 0 ) {
+					$test_tag_str = base64_decode( substr( $test_tag_str, 6 ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
+				}
+
 				// Left of ":" is the test_tag_str, right is the slug.
 				if ( strpos( $test_tag_str, ':' ) !== false ) {
 					[ $test_tag_str, $parsed_short_syntax['slug'] ] = explode( ':', $test_tag_str, 2 );

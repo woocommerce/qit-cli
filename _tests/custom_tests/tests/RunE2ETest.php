@@ -46,7 +46,8 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 
 		$output = qit( [
 			'run:e2e',
-			'automatewoo:test:self-test-tag-and-run',
+			'automatewoo',
+			'self-test-tag-and-run',
 			'--plugin',
 			'woocommerce:activate',
 		] );
@@ -73,7 +74,8 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 
 		$output = qit( [
 			'run:e2e',
-			'automatewoo:test:self-test-multiple-test-tags,self-test-multiple-test-tags-another',
+			'automatewoo',
+			'self-test-multiple-test-tags,self-test-multiple-test-tags-another',
 			'--plugin',
 			'woocommerce:activate',
 		] );

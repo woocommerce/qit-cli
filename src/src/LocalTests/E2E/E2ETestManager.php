@@ -3,12 +3,14 @@
 namespace QIT_CLI\LocalTests\E2E;
 
 use QIT_CLI\App;
+use QIT_CLI\Cache;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Extension;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\LocalTests\E2E\Runner\E2ERunner;
 use QIT_CLI\LocalTests\E2E\Runner\PlaywrightRunner;
+use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,6 +27,9 @@ class E2ETestManager {
 	/** @var PlaywrightCodegen */
 	protected $playwright_codegen;
 
+	/** @var LocalTestRunNotifier */
+	protected $notifier;
+
 	/**
 	 * @var array<string, string>
 	 */
@@ -37,10 +42,16 @@ class E2ETestManager {
 	/** @var bool */
 	public static $has_report = false;
 
-	public function __construct( Docker $docker, PlaywrightCodegen $playwright_codegen, OutputInterface $output ) {
+	public function __construct(
+		Docker $docker,
+		PlaywrightCodegen $playwright_codegen,
+		OutputInterface $output,
+		LocalTestRunNotifier $notifier
+	) {
 		$this->docker             = $docker;
 		$this->output             = $output;
 		$this->playwright_codegen = $playwright_codegen;
+		$this->notifier           = $notifier;
 	}
 
 	/**
@@ -75,8 +86,12 @@ class E2ETestManager {
 			// bootstrap.php.
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/bootstrap.php' ) ) {
 				$this->output->writeln( sprintf( 'Bootstrapping %s %s', $plugin_slug, $test_info['path_in_php_container'] . '/bootstrap/bootstrap.php' ) );
-				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "php {$test_info['path_in_php_container']}/bootstrap/bootstrap.php" ], $env_vars );
-				$test_result->register_bootstrap( $plugin_slug, 'bootstrap.php', 'processed' );
+				try {
+					$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "php {$test_info['path_in_php_container']}/bootstrap/bootstrap.php" ], $env_vars );
+					$test_result->register_bootstrap( $plugin_slug, 'bootstrap.php', 'success' );
+				} catch ( \Exception $e ) {
+					$test_result->register_bootstrap( $plugin_slug, 'bootstrap.php', 'failed' );
+				}
 			} else {
 				$test_result->register_bootstrap( $plugin_slug, 'bootstrap.php', 'not_present' );
 			}
@@ -84,8 +99,12 @@ class E2ETestManager {
 			// bootstrap.sh.
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/bootstrap.sh' ) ) {
 				$this->output->writeln( sprintf( 'Bootstrapping %s %s', $plugin_slug, $test_info['path_in_php_container'] . '/bootstrap/bootstrap.sh' ) );
-				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "bash {$test_info['path_in_php_container']}/bootstrap/bootstrap.sh" ], $env_vars );
-				$test_result->register_bootstrap( $plugin_slug, 'bootstrap.sh', 'processed' );
+				try {
+					$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "bash {$test_info['path_in_php_container']}/bootstrap/bootstrap.sh" ], $env_vars );
+					$test_result->register_bootstrap( $plugin_slug, 'bootstrap.sh', 'success' );
+				} catch ( \Exception $e ) {
+					$test_result->register_bootstrap( $plugin_slug, 'bootstrap.sh', 'failed' );
+				}
 			} else {
 				$test_result->register_bootstrap( $plugin_slug, 'bootstrap.sh', 'not_present' );
 			}
@@ -93,8 +112,12 @@ class E2ETestManager {
 			// must-use-plugin.php.
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/must-use-plugin.php' ) ) {
 				$this->output->writeln( sprintf( 'Moving must-use plugin of %s %s', $plugin_slug, $test_info['path_in_php_container'] . '/bootstrap/must-use-plugin.php' ) );
-				$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "mv {$test_info['path_in_php_container']}/bootstrap/must-use-plugin.php /var/www/html/wp-content/mu-plugins/qit-mu-$plugin_slug.php" ], $env_vars );
-				$test_result->register_bootstrap( $plugin_slug, 'must-use-plugin.php', 'processed' );
+				try {
+					$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "mv {$test_info['path_in_php_container']}/bootstrap/must-use-plugin.php /var/www/html/wp-content/mu-plugins/qit-mu-$plugin_slug.php" ], $env_vars );
+					$test_result->register_bootstrap( $plugin_slug, 'must-use-plugin.php', 'success' );
+				} catch ( \Exception $e ) {
+					$test_result->register_bootstrap( $plugin_slug, 'must-use-plugin.php', 'failed' );
+				}
 			} else {
 				$test_result->register_bootstrap( $plugin_slug, 'must-use-plugin.php', 'not_present' );
 			}
@@ -173,6 +196,23 @@ class E2ETestManager {
 
 		if ( $this->output->isVeryVerbose() ) {
 			$this->output->writeln( sprintf( '[Verbose] Test artifacts directory: %s', $test_result->get_results_dir() ) );
+		}
+
+		// Copy debug.log to results dir, if present.
+		try {
+			$this->docker->copy_from_docker( $env_info, '/var/www/html/wp-content/debug.log', $test_result->get_results_dir() . '/debug.log' );
+		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// No-op, a debug.log was not present.
+		}
+
+		$report_url = $this->notifier->notify_test_finished( $test_result );
+
+		if ( file_exists( $test_result->get_results_dir() . '/report/index.html' ) ) {
+			App::make( Cache::class )->set( 'last_e2e_report', json_encode( [
+				'local_playwright' => $test_result->get_results_dir() . '/report',
+				'remote_qit'       => $report_url,
+			] ), MONTH_IN_SECONDS );
+			self::$has_report = true;
 		}
 
 		return $exit_status_code;

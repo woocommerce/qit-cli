@@ -7,7 +7,6 @@ use QIT_CLI\Cache;
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
-use QIT_CLI\LocalTests\E2E\E2ETestManager;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Terminal;
@@ -54,16 +53,15 @@ class PlaywrightRunner extends E2ERunner {
 			}
 		}
 
-		$this->output->writeln( sprintf( 'Test artifacts being saved to: %s', $results_dir ) );
-
 		// Generate playwright-config.
 		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright/playwright-config-generator.php' ] );
 		$process->setEnv( [
-			'BASE_URL'         => $env_info->site_url,
-			'PROJECTS'         => json_encode( $this->make_projects( $test_infos ), JSON_UNESCAPED_SLASHES ),
-			'SAVE_AS'          => $env_info->temporary_env . 'qit-playwright.config.js',
-			'TEST_RESULT_PATH' => $results_dir,
-			'CONFIG_OVERRIDES' => json_encode( $env_info->playwright_config ),
+			'BASE_URL'            => $env_info->site_url,
+			'PROJECTS'            => json_encode( $this->make_projects( $test_infos ), JSON_UNESCAPED_SLASHES ),
+			'SAVE_AS'             => $env_info->temporary_env . 'qit-playwright.config.js',
+			'TEST_RESULT_PATH'    => $results_dir,
+			'CONFIG_OVERRIDES'    => json_encode( $env_info->playwright_config ),
+			'ATTACHMENT_BASE_URL' => App::getVar( 'attachment_base_url' ) . '/data/',
 		] );
 
 		if ( $this->output->isVeryVerbose() ) {
@@ -146,7 +144,8 @@ class PlaywrightRunner extends E2ERunner {
 		}
 
 		if ( ! empty( $dependencies_to_install ) ) {
-			$dependencies_command = '&& npm install ' . implode( ' ', $dependencies_to_install ) . ' && ';
+			$dependencies_to_install = array_unique( $dependencies_to_install );
+			$dependencies_command    = '&& npm install ' . implode( ' ', $dependencies_to_install ) . ' && ';
 		}
 
 		$options = App::getVar( 'pw_options', '' );
@@ -166,7 +165,7 @@ class PlaywrightRunner extends E2ERunner {
 			// Allow to override the Playwright version from the Manager.
 			$playwright_version_to_use = App::make( Cache::class )->get_manager_sync_data( 'playwright_version' );
 		} catch ( \Exception $e ) {
-			$playwright_version_to_use = '1.42.1';
+			$playwright_version_to_use = '1.44.0';
 		}
 
 		$playwright_args = array_merge( $playwright_args, [
@@ -260,11 +259,6 @@ class PlaywrightRunner extends E2ERunner {
 
 		$playwright_process->run( $output_callback );
 
-		if ( file_exists( $results_dir . '/report/index.html' ) ) {
-			App::make( Cache::class )->set( 'last_e2e_report', $results_dir . '/report', MONTH_IN_SECONDS );
-			E2ETestManager::$has_report = true;
-		}
-
 		// Copy snapshots from Container to Host if needed.
 		if ( strpos( $options, '--update-snapshots' ) !== false ) {
 			$php_container_name = $env_info->get_docker_container( 'php' );
@@ -302,6 +296,8 @@ class PlaywrightRunner extends E2ERunner {
 				}
 			}
 		}
+
+		$this->output->writeln( sprintf( 'Test artifacts being saved to: %s', $results_dir ) );
 
 		return $playwright_process->getExitCode();
 	}

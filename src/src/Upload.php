@@ -39,6 +39,8 @@ class Upload {
 
 		if ( $upload_type === 'build' ) {
 			$endpoint = '/wp-json/cd/v1/upload-build';
+		} elseif ( $upload_type === 'test-report' ) {
+			$endpoint = '/wp-json/cd/v1/upload-test-report';
 		} elseif ( $upload_type === 'custom-test' ) {
 			$endpoint = '/wp-json/cd/v1/cli/upload-test';
 		} else {
@@ -50,9 +52,10 @@ class Upload {
 		$file = fopen( $zip_path, 'rb' );
 		$stat = fstat( $file );
 
-		$chunk_size_kb = App::getVar( 'UPLOAD_CHUNK_KB', 1024 * 4 );
+		$chunk_size_kb = App::getVar( 'UPLOAD_CHUNK_KB', 4096 ); // 4mb.
+		$chunk_size_kb = $chunk_size_kb * 1024; // Converts KB to bytes.
 		$current_chunk = 0;
-		$total_chunks  = intval( ceil( $stat['size'] / ( $chunk_size_kb * 1024 ) ) );
+		$total_chunks  = intval( ceil( $stat['size'] / ( $chunk_size_kb ) ) );
 		$cd_upload_id  = generate_uuid4();
 
 		$progress_bar = new ProgressBar( $output, $total_chunks );
@@ -68,7 +71,7 @@ class Upload {
 				'current_chunk'    => $current_chunk,
 				'md5_sum'          => md5_file( $zip_path ),
 				'total_chunks'     => $total_chunks,
-				'chunk'            => base64_encode( fread( $file, $chunk_size_kb * 1024 ) ),
+				'chunk'            => base64_encode( fread( $file, $chunk_size_kb ) ),
 			];
 
 			if ( ! empty( $test_type ) ) {
@@ -100,8 +103,12 @@ class Upload {
 
 		$parsed_response = json_decode( $r, true );
 
-		if ( ! is_array( $parsed_response ) || empty( $parsed_response['upload_id'] ) ) {
-			throw new \UnexpectedValueException( "The upload wasn't successful." );
+		if ( ! is_array( $parsed_response ) ) {
+			throw new \UnexpectedValueException( "The upload wasn't successful. Expected a JSON response, got: " . $r );
+		}
+
+		if ( empty( $parsed_response['upload_id'] ) ) {
+			throw new \UnexpectedValueException( "The upload wasn't successful. Expected 'upload_id' key not found in response." );
 		}
 
 		$progress_bar->finish();
