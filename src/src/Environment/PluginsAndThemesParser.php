@@ -221,7 +221,7 @@ class PluginsAndThemesParser {
 			if ( ! empty( $test_tag_str ) ) {
 				// Starts with "base64", remove it and base64_decode the rest.
 				if ( strpos( $test_tag_str, 'base64' ) === 0 ) {
-					$test_tag_str = base64_decode( substr( $test_tag_str, 6 ) );
+					$test_tag_str = base64_decode( substr( $test_tag_str, 6 ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 				}
 
 				// Left of ":" is the test_tag_str, right is the slug.
