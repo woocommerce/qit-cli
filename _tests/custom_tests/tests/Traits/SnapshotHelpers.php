@@ -24,6 +24,7 @@ trait SnapshotHelpers {
 
 		$lines_to_remove = [
 			'First-time setup is pulling Docker images',
+			'Wrote debug contents to',
 			'npm',
 		];
 
