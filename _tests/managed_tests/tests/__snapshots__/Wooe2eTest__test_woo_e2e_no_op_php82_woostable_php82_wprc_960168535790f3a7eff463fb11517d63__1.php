@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "352 total, 297 passed, 2 failed, 53 skipped.",
+            "test_summary": "352 total, 296 passed, 1 failed, 55 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,13 +43,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 2,
-                "numPassedTestSuites": 70,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 69,
                 "numPendingTestSuites": 26,
                 "numTotalTestSuites": 96,
-                "numFailedTests": 2,
-                "numPassedTests": 297,
-                "numPendingTests": 53,
+                "numFailedTests": 1,
+                "numPassedTests": 296,
+                "numPendingTests": 55,
                 "numTotalTests": 352,
                 "testResults": [
                     {
@@ -208,7 +208,7 @@
                     },
                     {
                         "file": "admin-marketing\\/overview.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Marketing page": [
@@ -226,7 +226,7 @@
                                 },
                                 {
                                     "title": "Learning section can be expanded",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -1245,7 +1245,7 @@
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "General tab": [],
@@ -1258,7 +1258,7 @@
                             "General tab > Create product": [
                                 {
                                     "title": "can create a simple product",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can not create a product with duplicated SKU",
@@ -2009,13 +2009,13 @@
                     },
                     {
                         "file": "shopper\\/checkout-block.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Checkout Block page": [
                                 {
                                     "title": "can see empty checkout block page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to choose available payment methods",
@@ -2416,7 +2416,7 @@
                         }
                     }
                 ],
-                "summary": "352 total, 297 passed, 2 failed, 53 skipped."
+                "summary": "352 total, 296 passed, 1 failed, 55 skipped."
             }
         },
         {

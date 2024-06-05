@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "352 total, 301 passed, 0 failed, 51 skipped.",
+            "test_summary": "352 total, 297 passed, 0 failed, 55 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -44,12 +44,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 71,
-                "numPendingTestSuites": 25,
+                "numPassedTestSuites": 70,
+                "numPendingTestSuites": 26,
                 "numTotalTestSuites": 96,
                 "numFailedTests": 0,
-                "numPassedTests": 301,
-                "numPendingTests": 51,
+                "numPassedTests": 297,
+                "numPendingTests": 55,
                 "numTotalTests": 352,
                 "testResults": [
                     {
@@ -1246,7 +1246,7 @@
                     {
                         "file": "merchant\\/products\\/block-editor\\/create-simple-product-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "General tab": [],
                             "General tab > Simple product form": [
@@ -1258,15 +1258,15 @@
                             "General tab > Create product": [
                                 {
                                     "title": "can create a simple product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can not create a product with duplicated SKU",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can a shopper add the simple product to the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2015,7 +2015,7 @@
                             "Checkout Block page": [
                                 {
                                     "title": "can see empty checkout block page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to choose available payment methods",
@@ -2416,7 +2416,7 @@
                         }
                     }
                 ],
-                "summary": "352 total, 301 passed, 0 failed, 51 skipped."
+                "summary": "352 total, 297 passed, 0 failed, 55 skipped."
             }
         },
         {
