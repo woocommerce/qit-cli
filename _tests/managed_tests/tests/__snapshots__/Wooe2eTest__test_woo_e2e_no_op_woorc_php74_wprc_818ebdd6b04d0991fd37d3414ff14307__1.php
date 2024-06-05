@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "412 total, 378 passed, 7 failed, 27 skipped.",
+            "test_summary": "412 total, 378 passed, 1 failed, 33 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,13 +43,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 7,
+                "numFailedTestSuites": 1,
                 "numPassedTestSuites": 87,
-                "numPendingTestSuites": 15,
+                "numPendingTestSuites": 21,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 7,
+                "numFailedTests": 1,
                 "numPassedTests": 378,
-                "numPendingTests": 27,
+                "numPendingTests": 33,
                 "numTotalTests": 412,
                 "testResults": [
                     {
@@ -292,8 +292,8 @@
                     },
                     {
                         "file": "customize-store\\/assembler\\/color-picker.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Assembler -> Color Pickers": [
                                 {
@@ -378,7 +378,7 @@
                                 },
                                 {
                                     "title": "Create \\"your own\\" pickers should be visible",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -882,26 +882,26 @@
                     },
                     {
                         "file": "merchant\\/create-woocommerce-blocks.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Add WooCommerce Blocks Into Page": [
                                 {
                                     "title": "can insert all WooCommerce blocks into page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/create-woocommerce-patterns.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Add WooCommerce Patterns Into Page": [
                                 {
                                     "title": "can insert WooCommerce patterns into page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1601,11 +1601,11 @@
                             "General tab > Create product": [
                                 {
                                     "title": "can create a simple product",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can not create a product with duplicated SKU",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can a shopper add the simple product to the cart",
@@ -1699,14 +1699,14 @@
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/organization-tab-product-block-editor.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "General tab": [],
                             "General tab > Create product - Organization tab": [
                                 {
                                     "title": "can create a simple product with categories, tags and with password required",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2615,8 +2615,8 @@
                     },
                     {
                         "file": "shopper\\/product-tags-attributes.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Browse product tags and attributes from the product page": [
                                 {
@@ -2633,7 +2633,7 @@
                                 },
                                 {
                                     "title": "can see products showcase",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2675,13 +2675,13 @@
                     },
                     {
                         "file": "shopper\\/shop-products-filter-by-price.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Filter items in the shop by product price": [
                                 {
                                     "title": "filter products by prices on the created page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2764,7 +2764,7 @@
                         }
                     }
                 ],
-                "summary": "412 total, 378 passed, 7 failed, 27 skipped."
+                "summary": "412 total, 378 passed, 1 failed, 33 skipped."
             }
         },
         {
