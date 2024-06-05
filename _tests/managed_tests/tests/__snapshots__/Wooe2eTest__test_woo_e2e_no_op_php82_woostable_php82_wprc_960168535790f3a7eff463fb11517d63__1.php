@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "352 total, 301 passed, 4 failed, 47 skipped.",
+            "test_summary": "352 total, 301 passed, 0 failed, 51 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,13 +43,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 4,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 71,
-                "numPendingTestSuites": 21,
+                "numPendingTestSuites": 25,
                 "numTotalTestSuites": 96,
-                "numFailedTests": 4,
+                "numFailedTests": 0,
                 "numPassedTests": 301,
-                "numPendingTests": 47,
+                "numPendingTests": 51,
                 "numTotalTests": 352,
                 "testResults": [
                     {
@@ -556,26 +556,26 @@
                     },
                     {
                         "file": "merchant\\/create-woocommerce-blocks.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Insert All WooCommerce Blocks Into Page": [
                                 {
                                     "title": "can insert all WooCommerce blocks into page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/create-woocommerce-patterns.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Insert WooCommerce Patterns Into Page": [
                                 {
                                     "title": "can insert WooCommerce patterns into page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2267,8 +2267,8 @@
                     },
                     {
                         "file": "shopper\\/product-tags-attributes.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Browse product tags and attributes from the product page": [
                                 {
@@ -2285,7 +2285,7 @@
                                 },
                                 {
                                     "title": "can see products showcase",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2327,13 +2327,13 @@
                     },
                     {
                         "file": "shopper\\/shop-products-filter-by-price.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Filter items in the shop by product price": [
                                 {
                                     "title": "filter products by prices on the created page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2416,7 +2416,7 @@
                         }
                     }
                 ],
-                "summary": "352 total, 301 passed, 4 failed, 47 skipped."
+                "summary": "352 total, 301 passed, 0 failed, 51 skipped."
             }
         },
         {
