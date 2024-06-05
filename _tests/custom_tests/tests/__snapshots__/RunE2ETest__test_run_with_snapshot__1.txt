@@ -8,15 +8,18 @@ Bootstrapping Plugins
 Bootstrapping deli /qit/tests/e2e/deli/local/bootstrap/bootstrap.php
 Bootstrapping deli /qit/tests/e2e/deli/local/bootstrap/bootstrap.sh
 Running E2E Tests
-Test artifacts being saved to: /tmp-normalized/qit-results-normalizedid
 Running 2 tests using 1 worker
 [1/2] [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli
 [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli
 A snapshot doesn't exist at /qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png, writing actual.
 [2/2] [deli-local] › deli/local/example.spec.js:9:5 › I can see my plugin menu
 2 passed (TIME)
+Test artifacts being saved to: /tmp-normalized/qit-results-normalizedid
+Uploading zip...
 
-To open last HTML report run: qit e2e-report
+
+[OK] Tests passed. Run 'qit e2e-report' to view the report.
+
 
 Shutting down environment...
 
