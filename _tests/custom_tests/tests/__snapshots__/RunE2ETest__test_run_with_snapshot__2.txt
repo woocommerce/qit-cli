@@ -13,7 +13,7 @@ Running 2 tests using 1 worker
 [2/2] [deli-local] › deli/local/example.spec.js:9:5 › I can see my plugin menu
 2 passed (TIME)
 Test artifacts being saved to: /tmp-normalized/qit-results-normalizedid
-Wrote debug contents to: /tmp-normalized/qit-results-normalizedid/debug-prepared.logUploading zip...
+Uploading zip...
 
 
 [OK] Tests passed. Run 'qit e2e-report' to view the report.
