@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "352 total, 296 passed, 1 failed, 55 skipped.",
+            "test_summary": "352 total, 297 passed, 0 failed, 55 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,12 +43,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 69,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 70,
                 "numPendingTestSuites": 26,
                 "numTotalTestSuites": 96,
-                "numFailedTests": 1,
-                "numPassedTests": 296,
+                "numFailedTests": 0,
+                "numPassedTests": 297,
                 "numPendingTests": 55,
                 "numTotalTests": 352,
                 "testResults": [
@@ -208,7 +208,7 @@
                     },
                     {
                         "file": "admin-marketing\\/overview.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Marketing page": [
@@ -226,7 +226,7 @@
                                 },
                                 {
                                     "title": "Learning section can be expanded",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2416,7 +2416,7 @@
                         }
                     }
                 ],
-                "summary": "352 total, 296 passed, 1 failed, 55 skipped."
+                "summary": "352 total, 297 passed, 0 failed, 55 skipped."
             }
         },
         {
