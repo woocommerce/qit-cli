@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 20 passed, 20 total | Tests: 2 skipped, 0 failed, 255 passed, 257 total.",
+            "test_summary": "257 total, 255 passed, 0 failed, 2 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -44,8 +44,8 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 20,
-                "numPendingTestSuites": 0,
+                "numPassedTestSuites": 19,
+                "numPendingTestSuites": 1,
                 "numTotalTestSuites": 20,
                 "numFailedTests": 0,
                 "numPassedTests": 255,
@@ -1378,7 +1378,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 20 passed, 20 total | Tests: 2 skipped, 0 failed, 255 passed, 257 total."
+                "summary": "257 total, 255 passed, 0 failed, 2 skipped."
             }
         },
         {
