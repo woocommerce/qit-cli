@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "412 total, 378 passed, 1 failed, 33 skipped.",
+            "test_summary": "412 total, 378 passed, 0 failed, 34 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,13 +43,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 87,
                 "numPendingTestSuites": 21,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 1,
+                "numFailedTests": 0,
                 "numPassedTests": 378,
-                "numPendingTests": 33,
+                "numPendingTests": 34,
                 "numTotalTests": 412,
                 "testResults": [
                     {
@@ -1588,7 +1588,7 @@
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "General tab": [],
@@ -1605,7 +1605,7 @@
                                 },
                                 {
                                     "title": "can not create a product with duplicated SKU",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can a shopper add the simple product to the cart",
@@ -2764,7 +2764,7 @@
                         }
                     }
                 ],
-                "summary": "412 total, 378 passed, 1 failed, 33 skipped."
+                "summary": "412 total, 378 passed, 0 failed, 34 skipped."
             }
         },
         {
