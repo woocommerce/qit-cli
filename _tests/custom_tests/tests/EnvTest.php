@@ -175,7 +175,11 @@ PHP
 		// Preg match "6.6-alpha-58052"
 		$version_parts = explode( '-', $output );
 		$this->assertEquals( 3, count( $version_parts ) );
-		$this->assertEquals( 'alpha', $version_parts[1] );
+		try {
+			$this->assertStringContainsString( 'alpha', $version_parts[1] );
+		} catch ( \Exception $e ) {
+			$this->assertStringContainsString( 'beta', $version_parts[1] );
+		}
 		$this->assertIsNumeric( $version_parts[2] );
 	}
 

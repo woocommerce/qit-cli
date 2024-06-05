@@ -11,7 +11,6 @@ Bootstrapping automatewoo /qit/tests/e2e/automatewoo/local/bootstrap/bootstrap.p
 Bootstrapping automatewoo /qit/tests/e2e/automatewoo/local/bootstrap/bootstrap.sh
 Exporting DB
 Running E2E Tests
-Test artifacts being saved to: /tmp-normalized/qit-results-normalizedid
 Running 3 tests using 1 worker
 [1/3] [woocommerce-self-test-sut-and-test-additional] › woocommerce/self-test-sut-and-test-additional/example.spec.js:9:5 › I can see my plugin menu
 [2/3] [db-import] › db-import.js:5:5 › Database Import
@@ -19,8 +18,12 @@ Running 3 tests using 1 worker
 Success: Imported from '/tmp-normalized/qit-bootstrap.sql'.
 [3/3] [automatewoo-local] › automatewoo/local/example.spec.js:9:5 › I can see my plugin menu
 3 passed (TIME)
+Test artifacts being saved to: /tmp-normalized/qit-results-normalizedid
+Uploading zip...
 
-To open last HTML report run: qit e2e-report
+
+[OK] Tests passed. Run 'qit e2e-report' to view the report.
+
 
 Shutting down environment...
 

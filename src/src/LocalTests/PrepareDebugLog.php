@@ -137,10 +137,10 @@ class PrepareDebugLog {
 			$written = file_put_contents( $new_debug_log_file, json_encode( $log_entries ) );
 
 			if ( ! $written ) {
-				echo "Failed to write $new_debug_log_file"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo "Failed to write $new_debug_log_file\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				die( 1 );
 			} else {
-				echo "Wrote debug contents to: $new_debug_log_file"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo "Wrote debug contents to: $new_debug_log_file\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 		} else {
 			echo "$debug_log_file does not exist for prepare."; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
