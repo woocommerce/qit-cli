@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 107 passed, 107 total | Tests: 21 skipped, 0 failed, 356 passed, 377 total.",
+            "test_summary": "412 total, 378 passed, 0 failed, 34 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -44,13 +44,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 107,
-                "numPendingTestSuites": 0,
-                "numTotalTestSuites": 107,
+                "numPassedTestSuites": 87,
+                "numPendingTestSuites": 21,
+                "numTotalTestSuites": 108,
                 "numFailedTests": 0,
-                "numPassedTests": 356,
-                "numPendingTests": 21,
-                "numTotalTests": 377,
+                "numPassedTests": 378,
+                "numPendingTests": 34,
+                "numTotalTests": 412,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -268,13 +268,32 @@
                     {
                         "file": "basic.spec.js",
                         "status": "passed",
-                        "has_pending": false,
-                        "tests": []
+                        "has_pending": true,
+                        "tests": {
+                            "Load the home page": [
+                                {
+                                    "title": "Load the home page",
+                                    "status": "pending"
+                                }
+                            ],
+                            "Load wp-admin as admin": [
+                                {
+                                    "title": "Load wp-admin as admin",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Load my account page as customer": [
+                                {
+                                    "title": "Load my account page as customer",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
                     },
                     {
                         "file": "customize-store\\/assembler\\/color-picker.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Assembler -> Color Pickers": [
                                 {
@@ -359,7 +378,7 @@
                                 },
                                 {
                                     "title": "Create \\"your own\\" pickers should be visible",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -598,6 +617,55 @@
                         }
                     },
                     {
+                        "file": "merchant\\/command-palette.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "can use the \\"Add new product\\" command": [
+                                {
+                                    "title": "can use the \\"Add new product\\" command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use the \\"Add new order\\" command": [
+                                {
+                                    "title": "can use the \\"Add new order\\" command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use the \\"Products\\" command": [
+                                {
+                                    "title": "can use the \\"Products\\" command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use the \\"Orders\\" command": [
+                                {
+                                    "title": "can use the \\"Orders\\" command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use the product search command": [
+                                {
+                                    "title": "can use the product search command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use a settings command": [
+                                {
+                                    "title": "can use a settings command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use an analytics command": [
+                                {
+                                    "title": "can use an analytics command",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/create-cart-block.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -815,12 +883,12 @@
                     {
                         "file": "merchant\\/create-woocommerce-blocks.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Add WooCommerce Blocks Into Page": [
                                 {
                                     "title": "can insert all WooCommerce blocks into page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -828,12 +896,12 @@
                     {
                         "file": "merchant\\/create-woocommerce-patterns.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Add WooCommerce Patterns Into Page": [
                                 {
                                     "title": "can insert WooCommerce patterns into page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1229,7 +1297,26 @@
                         "file": "merchant\\/product-create-simple.spec.js",
                         "status": "passed",
                         "has_pending": false,
-                        "tests": []
+                        "tests": {
+                            "can create a simple virtual product": [
+                                {
+                                    "title": "can create a simple virtual product",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can create a simple non virtual product": [
+                                {
+                                    "title": "can create a simple non virtual product",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can create a simple downloadable product": [
+                                {
+                                    "title": "can create a simple downloadable product",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
                     },
                     {
                         "file": "merchant\\/product-delete.spec.js",
@@ -1256,7 +1343,20 @@
                         "file": "merchant\\/product-edit.spec.js",
                         "status": "passed",
                         "has_pending": false,
-                        "tests": []
+                        "tests": {
+                            "can edit a product and save the changes": [
+                                {
+                                    "title": "can edit a product and save the changes",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can bulk edit products": [
+                                {
+                                    "title": "can bulk edit products",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
                     },
                     {
                         "file": "merchant\\/product-images.spec.js",
@@ -1489,7 +1589,7 @@
                     {
                         "file": "merchant\\/products\\/block-editor\\/create-simple-product-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "General tab": [],
                             "General tab > Simple product form": [
@@ -1501,15 +1601,15 @@
                             "General tab > Create product": [
                                 {
                                     "title": "can create a simple product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can not create a product with duplicated SKU",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can a shopper add the simple product to the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1600,13 +1700,13 @@
                     {
                         "file": "merchant\\/products\\/block-editor\\/organization-tab-product-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "General tab": [],
                             "General tab > Create product - Organization tab": [
                                 {
                                     "title": "can create a simple product with categories, tags and with password required",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1614,8 +1714,33 @@
                     {
                         "file": "merchant\\/products\\/block-editor\\/product-attributes-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
-                        "tests": []
+                        "has_pending": true,
+                        "tests": {
+                            "can create and add attributes": [
+                                {
+                                    "title": "can create and add attributes",
+                                    "status": "pending"
+                                }
+                            ],
+                            "can add existing attributes": [
+                                {
+                                    "title": "can add existing attributes",
+                                    "status": "pending"
+                                }
+                            ],
+                            "can update product attributes": [
+                                {
+                                    "title": "can update product attributes",
+                                    "status": "pending"
+                                }
+                            ],
+                            "can remove product attributes": [
+                                {
+                                    "title": "can remove product attributes",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/product-edit-block-editor.spec.js",
@@ -1635,6 +1760,12 @@
                                     "title": "can delete a product",
                                     "status": "passed"
                                 }
+                            ],
+                            "can update the general information of a product": [
+                                {
+                                    "title": "can update the general information of a product",
+                                    "status": "passed"
+                                }
                             ]
                         }
                     },
@@ -1642,13 +1773,63 @@
                         "file": "merchant\\/products\\/block-editor\\/product-images-block-editor.spec.js",
                         "status": "passed",
                         "has_pending": false,
-                        "tests": []
+                        "tests": {
+                            "can add images": [
+                                {
+                                    "title": "can add images",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can replace an image": [
+                                {
+                                    "title": "can replace an image",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can remove an image": [
+                                {
+                                    "title": "can remove an image",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can set an image as cover": [
+                                {
+                                    "title": "can set an image as cover",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/product-inventory-block-editor.spec.js",
                         "status": "passed",
                         "has_pending": false,
-                        "tests": []
+                        "tests": {
+                            "can update sku": [
+                                {
+                                    "title": "can update sku",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can update stock status": [
+                                {
+                                    "title": "can update stock status",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can track stock quantity": [
+                                {
+                                    "title": "can track stock quantity",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can limit purchases": [
+                                {
+                                    "title": "can limit purchases",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
                     },
                     {
                         "file": "merchant\\/settings-general.spec.js",
@@ -1728,13 +1909,51 @@
                         "file": "merchant\\/users-create.spec.js",
                         "status": "passed",
                         "has_pending": false,
-                        "tests": []
+                        "tests": {
+                            "can create a new Customer": [
+                                {
+                                    "title": "can create a new Customer",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can create a new Shop manager": [
+                                {
+                                    "title": "can create a new Shop manager",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
                     },
                     {
                         "file": "merchant\\/users-manage.spec.js",
                         "status": "passed",
                         "has_pending": false,
-                        "tests": []
+                        "tests": {
+                            "can update customer data": [
+                                {
+                                    "title": "can update customer data",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can update shop manager data": [
+                                {
+                                    "title": "can update shop manager data",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can delete a customer": [
+                                {
+                                    "title": "can delete a customer",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can delete a shop manager": [
+                                {
+                                    "title": "can delete a shop manager",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
                     },
                     {
                         "file": "shopper\\/account-email-receiving.spec.js",
@@ -2397,7 +2616,7 @@
                     {
                         "file": "shopper\\/product-tags-attributes.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Browse product tags and attributes from the product page": [
                                 {
@@ -2414,7 +2633,7 @@
                                 },
                                 {
                                     "title": "can see products showcase",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2457,12 +2676,12 @@
                     {
                         "file": "shopper\\/shop-products-filter-by-price.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Filter items in the shop by product price": [
                                 {
                                     "title": "filter products by prices on the created page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2505,7 +2724,14 @@
                         "file": "shopper\\/wordpress-post.spec.js",
                         "status": "passed",
                         "has_pending": false,
-                        "tests": []
+                        "tests": {
+                            "logged-in customer can comment on a post": [
+                                {
+                                    "title": "logged-in customer can comment on a post",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
                     },
                     {
                         "file": "smoke-tests\\/update-woocommerce.spec.js",
@@ -2538,7 +2764,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 107 passed, 107 total | Tests: 21 skipped, 0 failed, 356 passed, 377 total."
+                "summary": "412 total, 378 passed, 0 failed, 34 skipped."
             }
         },
         {
