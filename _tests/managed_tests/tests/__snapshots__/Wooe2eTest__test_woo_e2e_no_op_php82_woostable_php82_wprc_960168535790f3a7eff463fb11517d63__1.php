@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "352 total, 301 passed, 0 failed, 51 skipped.",
+            "test_summary": "352 total, 297 passed, 2 failed, 53 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,13 +43,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 71,
-                "numPendingTestSuites": 25,
+                "numFailedTestSuites": 2,
+                "numPassedTestSuites": 70,
+                "numPendingTestSuites": 26,
                 "numTotalTestSuites": 96,
-                "numFailedTests": 0,
-                "numPassedTests": 301,
-                "numPendingTests": 51,
+                "numFailedTests": 2,
+                "numPassedTests": 297,
+                "numPendingTests": 53,
                 "numTotalTests": 352,
                 "testResults": [
                     {
@@ -1245,8 +1245,8 @@
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
+                        "status": "failed",
+                        "has_pending": true,
                         "tests": {
                             "General tab": [],
                             "General tab > Simple product form": [
@@ -1258,15 +1258,15 @@
                             "General tab > Create product": [
                                 {
                                     "title": "can create a simple product",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can not create a product with duplicated SKU",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can a shopper add the simple product to the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2009,13 +2009,13 @@
                     },
                     {
                         "file": "shopper\\/checkout-block.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "Checkout Block page": [
                                 {
                                     "title": "can see empty checkout block page",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "allows customer to choose available payment methods",
@@ -2416,7 +2416,7 @@
                         }
                     }
                 ],
-                "summary": "352 total, 301 passed, 0 failed, 51 skipped."
+                "summary": "352 total, 297 passed, 2 failed, 53 skipped."
             }
         },
         {
