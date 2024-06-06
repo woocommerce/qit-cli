@@ -36,11 +36,12 @@ class CreateMassTestCommands extends DynamicCommandCreator {
 				try {
 					$options = $this->parse_options( $input );
 
-					$output->writeln( sprintf( 'Running mass test...' ) );
+					$output->writeln( sprintf( 'Enqueueing mass test... This might take up a couple minutes depending on how many extensions are included.' ) );
 
 					$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/mass-enqueue' ) )
 						->with_method( 'POST' )
 						->with_post_body( $options )
+						->with_timeout_in_seconds( 300 )
 						->request();
 
 					$json = json_decode( $json, true );
