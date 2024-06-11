@@ -51,6 +51,14 @@ if ( isset( $params[2] ) ) {
 # Comma-separated list of scenarios to run, eg: no_op,no_op_php82,delete_products
 if ( isset( $params[3] ) ) {
 	Context::$scenarios = array_map( 'trim', explode( ',', $params[3] ) );
+	// Filter any values that start with "--".
+	Context::$scenarios = array_filter( Context::$scenarios, static function ( $v ) {
+		return strpos( $v, "--" ) !== 0;
+	} );
+
+	if ( empty( Context::$scenarios ) ) {
+		Context::$scenarios = null;
+	}
 } else {
 	Context::$scenarios = null;
 }
@@ -120,6 +128,7 @@ try {
 	} else {
 		echo $e->getMessage();
 	}
+	echo "Exiting by exception\n";
 	die( 1 );
 }
 
