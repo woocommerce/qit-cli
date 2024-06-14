@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "352 total, 297 passed, 0 failed, 55 skipped.",
+            "test_summary": "352 total, 296 passed, 0 failed, 56 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -44,12 +44,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 70,
-                "numPendingTestSuites": 26,
+                "numPassedTestSuites": 69,
+                "numPendingTestSuites": 27,
                 "numTotalTestSuites": 96,
                 "numFailedTests": 0,
-                "numPassedTests": 297,
-                "numPendingTests": 55,
+                "numPassedTests": 296,
+                "numPendingTests": 56,
                 "numTotalTests": 352,
                 "testResults": [
                     {
@@ -209,7 +209,7 @@
                     {
                         "file": "admin-marketing\\/overview.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Marketing page": [
                                 {
@@ -226,7 +226,7 @@
                                 },
                                 {
                                     "title": "Learning section can be expanded",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2416,7 +2416,7 @@
                         }
                     }
                 ],
-                "summary": "352 total, 297 passed, 0 failed, 55 skipped."
+                "summary": "352 total, 296 passed, 0 failed, 56 skipped."
             }
         },
         {
