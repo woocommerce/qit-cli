@@ -150,7 +150,7 @@ class RunE2ECommand extends DynamicCommand {
 		if ( ! empty( $woocommerce_version ) && ! empty( $input->getOption( 'plugin' ) ) ) {
 			foreach ( $input->getOption( 'plugin' ) as $p ) {
 				if ( $p === 'woocommerce' ) {
-					$output->writeln( '<error>Cannot use "--woo" and "--plugin woocommerce" at the same time. Use one or another.</error>' );
+					$output->writeln( '<error>Both "--woo" and "--plugin woocommerce" cannot be used at the same time. Please use one or another when running the test.</error>' );
 
 					return Command::INVALID;
 				}
