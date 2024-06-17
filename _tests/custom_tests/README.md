@@ -7,6 +7,14 @@
 
 1. Append "UPDATE_SNAPSHOTS" env var, eg: `UPDATE_SNAPSHOTS=true ./vendor/bin/paratest`
 
+### Running a single file
+
+1. `./vendor/bin/phpunit tests/RunE2ETest.php`
+
+### Running a single test
+
+1. `./vendor/bin/phpunit tests/RunE2ETest.php --filter=test_cannot_use_woo_and_plugin_woocommerce`
+
 ### How it works
 
 1. The tests are regular PHPUnit tests

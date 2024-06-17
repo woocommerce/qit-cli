@@ -1,0 +1,2 @@
+Cannot use "--woo" and "--plugin woocommerce" at the same time. Use one or another.
+

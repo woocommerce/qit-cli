@@ -146,6 +146,17 @@ class RunE2ECommand extends DynamicCommand {
 		$source              = $input->getOption( 'source' ) ?? $woo_extension;
 		$sut_action          = $input->getOption( 'sut_action' );
 
+		// Prevent usage of "--woo" and "--plugin woocommerce" together.
+		if ( ! empty( $woocommerce_version ) && ! empty( $input->getOption( 'plugin' ) ) ) {
+			foreach ( $input->getOption( 'plugin' ) as $p ) {
+				if ( $p === 'woocommerce' ) {
+					$output->writeln( '<error>Both "--woo" and "--plugin woocommerce" cannot be used at the same time. Please use one or another when running the test.</error>' );
+
+					return Command::INVALID;
+				}
+			}
+		}
+
 		if ( ! empty( $pw_options ) ) {
 			// Remove wrapping double quotes if they exist.
 			if ( substr( $pw_options, 0, 1 ) === '"' && substr( $pw_options, - 1 ) === '"' ) {

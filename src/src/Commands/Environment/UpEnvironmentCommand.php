@@ -257,7 +257,13 @@ HELP
 			$found_override = false;
 
 			foreach ( $GLOBALS['argv'] as $arg ) {
+				// Remove leading dashes.
+				// Example: --woo=8.6.1 => woo=8.6.1.
 				$normalized_arg = ltrim( $arg, '-' );
+
+				// Extract the part before the equals sign if it exists.
+				// Example: woo=8.6.1 => woo.
+				$normalized_arg = preg_match( '/^([a-zA-Z0-9_]+)=/', $normalized_arg, $matches ) ? $matches[1] : $normalized_arg;
 
 				if ( $normalized_arg === $key || ( isset( $shortcuts[ $normalized_arg ] ) && $shortcuts[ $normalized_arg ] === $key ) ) {
 					$options_to_env_info['overrides'][ $key ] = $value;

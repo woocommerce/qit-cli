@@ -1,0 +1,23 @@
+Downloading plugins and themes...
+No test tag "default" found for extension "woocommerce".
+Setting up Docker...
+Setting up WordPress...
+Activating plugins...
+Environment ready.
+
+Bootstrapping Plugins
+Bootstrapping automatewoo /qit/tests/e2e/automatewoo/local/bootstrap/bootstrap.php
+Bootstrapping automatewoo /qit/tests/e2e/automatewoo/local/bootstrap/bootstrap.sh
+Running E2E Tests
+Running 1 test using 1 worker
+[1/1] [automatewoo-local] › automatewoo/local/example.spec.js:9:5 › I can see my plugin menu
+1 passed (TIME)
+Test artifacts being saved to: /tmp-normalized/qit-results-normalizedid
+Uploading zip...
+
+
+[OK] Tests passed. Run 'qit e2e-report' to view the report.
+
+
+Shutting down environment...
+
