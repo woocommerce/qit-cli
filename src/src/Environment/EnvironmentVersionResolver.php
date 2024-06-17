@@ -13,6 +13,7 @@ class EnvironmentVersionResolver {
 			$woo = [
 				'slug'   => 'woocommerce',
 				'source' => 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip',
+				'action' => 'activate',
 			];
 		} elseif ( $woo === 'rc' ) {
 			throw new \InvalidArgumentException( 'Please specify a RC version, such as "1.2.3-rc.1", or use "nightly".' );
@@ -20,9 +21,10 @@ class EnvironmentVersionResolver {
 			$woo = [
 				'slug'   => 'woocommerce',
 				'source' => 'https://downloads.wordpress.org/plugin/woocommerce.latest-stable.zip',
+				'action' => 'activate',
 			];
 		} else {
-			$woo = "https://github.com/woocommerce/woocommerce/releases/download/$woo/woocommerce.zip";
+			$woo = "https://github.com/woocommerce/woocommerce/releases/download/$woo/woocommerce.zip:activate";
 		}
 
 		return $woo;
