@@ -36,7 +36,7 @@ class URLHandler extends Handler {
 
 			// Cache burst: Day of the year (0-365), hour of the day (0-23), and current 5-minute interval of the hour (0-11).
 			// Effectively, this will cache-bust every 5 minutes.
-			$cache_burst = gmdate( 'z-G-' ) . floor( gmdate( 'i' ) / 5 );
+			$cache_burst = gmdate( 'z-G-' ) . floor( (int) gmdate( 'i' ) / 5 );
 
 			$cache_file = $this->make_cache_path( $cache_dir, $e->type, $e->slug, $e->version, $e->source, $cache_burst );
 
