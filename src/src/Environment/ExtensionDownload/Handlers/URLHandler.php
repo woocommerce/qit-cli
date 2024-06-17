@@ -34,16 +34,16 @@ class URLHandler extends Handler {
 				throw new \InvalidArgumentException( 'We currently only support .zip URLs' );
 			}
 
-			// As version is "undefined", cache burst is shorter: Hour of the day (0-24).
-			$cache_burst = gmdate( 'G' );
+			// Cache burst: Day of the year (0-365), hour of the day (0-23), and current 5-minute interval of the hour (0-11).
+			// Effectively, this will cache-bust every 5 minutes.
+			$cache_burst = gmdate( 'z-G-' ) . floor( gmdate( 'i' ) / 5 );
 
 			$cache_file = $this->make_cache_path( $cache_dir, $e->type, $e->slug, $e->version, $e->source, $cache_burst );
 
 			// Cache hit?
 			if ( file_exists( $cache_file ) ) {
-				if ( $output->isVeryVerbose() ) {
-					$output->writeln( "Using cached {$e->type} {$e->slug}." );
-				}
+				$output->writeln( "Using cached {$e->type} {$e->slug}." );
+
 				$e->downloaded_source = $cache_file;
 
 				continue;

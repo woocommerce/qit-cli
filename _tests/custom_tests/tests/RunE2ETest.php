@@ -206,4 +206,36 @@ JS;
 
 		$this->assertMatchesNormalizedSnapshot( $output );
 	}
+
+	public function test_cannot_use_woo_and_plugin_woocommerce() {
+		$output = qit( [
+			'run:e2e',
+			'automatewoo',
+			$this->scaffold_test(),
+			'--woo',
+			'8.6.2',
+			'--plugin',
+			'woocommerce',
+		],
+			[],
+			2
+		);
+
+		$output = $this->normalize_scaffolded_test_run_output( $output );
+
+		$this->assertMatchesNormalizedSnapshot( $output );
+	}
+
+	public function test_can_use_equal_signs() {
+		$output = qit( [
+			'run:e2e',
+			'automatewoo',
+			$this->scaffold_test(),
+			'--plugin=woocommerce',
+		] );
+
+		$output = $this->normalize_scaffolded_test_run_output( $output );
+
+		$this->assertMatchesNormalizedSnapshot( $output );
+	}
 }

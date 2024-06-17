@@ -39,6 +39,9 @@ trait SnapshotHelpers {
 				continue;
 			}
 
+			// Normalize "woocommerce.8.8.5.zip" or "woocommerce.8.8.5-RC1.zip", etc to "woocommerce.VERSION.zip"
+			$line = preg_replace( '/woocommerce\.[^ ]+\.zip/', 'woocommerce.VERSION.zip', $line );
+
 			// Normalize lines.
 			$normalized_spaces .= trim( $line ) . "\n";
 		}
