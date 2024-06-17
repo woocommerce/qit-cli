@@ -244,6 +244,22 @@ HELP
 			$shortcuts[ $o->getShortcut() ] = $o->getName();
 		}
 
+		if ( ! empty( App::getVar( 'QIT_ENV_UP_OPTIONS' ) ) ) {
+			$user_input = [];
+			foreach ( App::getVar( 'QIT_ENV_UP_OPTIONS' ) as $k => $v ) {
+				if ( array_key_exists( ltrim( $k, '-' ), $this->getDefinition()->getOptions() ) ) {
+					$o = $this->getDefinition()->getOption( ltrim( $k, '-' ) );
+					if ( $o->getDefault() === $v ) {
+						continue;
+					}
+				}
+
+				$user_input[] = $k;
+			}
+		} else {
+			$user_input = $GLOBALS['argv'];
+		}
+
 		/*
 		 * Options can be explicitly set by the user or be a default value.
 		 *
@@ -256,7 +272,7 @@ HELP
 		foreach ( $options as $key => $value ) {
 			$found_override = false;
 
-			foreach ( $GLOBALS['argv'] as $arg ) {
+			foreach ( $user_input as $arg ) {
 				// Remove leading dashes.
 				// Example: --woo=8.6.1 => woo=8.6.1.
 				$normalized_arg = ltrim( $arg, '-' );

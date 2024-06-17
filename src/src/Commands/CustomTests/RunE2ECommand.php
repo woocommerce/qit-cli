@@ -279,6 +279,8 @@ class RunE2ECommand extends DynamicCommand {
 
 		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
 
+		App::setVar( 'QIT_ENV_UP_OPTIONS', $env_up_options );
+
 		$up_exit_status_code = $env_up_command->run(
 			new ArrayInput( $env_up_options ),
 			new StreamOutput( $resource_stream )
