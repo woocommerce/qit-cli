@@ -46,13 +46,13 @@
                 "tool": {
                     "phpcs": {
                         "totals": {
-                            "errors": 304,
+                            "errors": 308,
                             "warnings": 40,
                             "fixable": 0
                         },
                         "files": {
                             "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                                "errors": 304,
+                                "errors": 308,
                                 "warnings": 40,
                                 "messages": [
                                     {
@@ -3491,9 +3491,49 @@
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
-                                        "codeFragment": "$callback = $wpdb->prepare( ... ); \\/\\/ OK.",
+                                        "codeFragment": "$callback = $wpdb->prepare( ... ); \\/\\/ OK.\\n",
                                         "line": 684,
                                         "column": 29
+                                    },
+                                    {
+                                        "message": "The %i modifier is only supported in WP 6.2 or higher. Found: \\"%i\\".",
+                                        "source": "WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "codeFragment": "$sql = $wpdb->query( $wpdb->prepare( \'SELECT COUNT(*) FROM %i WHERE meta_key=%s AND %i NOT IN ( SELECT %i FROM %i WHERE meta_key=%s )\', $a, $b, $c, $d, $e, $f ) );",
+                                        "line": 687,
+                                        "column": 38
+                                    },
+                                    {
+                                        "message": "The %i modifier is only supported in WP 6.2 or higher. Found: \\"%i\\".",
+                                        "source": "WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "codeFragment": "$sql = $wpdb->query( $wpdb->prepare( \'SELECT COUNT(*) FROM %i WHERE meta_key=%s AND %i NOT IN ( SELECT %i FROM %i WHERE meta_key=%s )\', $a, $b, $c, $d, $e, $f ) );",
+                                        "line": 687,
+                                        "column": 38
+                                    },
+                                    {
+                                        "message": "The %i modifier is only supported in WP 6.2 or higher. Found: \\"%i\\".",
+                                        "source": "WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "codeFragment": "$sql = $wpdb->query( $wpdb->prepare( \'SELECT COUNT(*) FROM %i WHERE meta_key=%s AND %i NOT IN ( SELECT %i FROM %i WHERE meta_key=%s )\', $a, $b, $c, $d, $e, $f ) );",
+                                        "line": 687,
+                                        "column": 38
+                                    },
+                                    {
+                                        "message": "The %i modifier is only supported in WP 6.2 or higher. Found: \\"%i\\".",
+                                        "source": "WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "codeFragment": "$sql = $wpdb->query( $wpdb->prepare( \'SELECT COUNT(*) FROM %i WHERE meta_key=%s AND %i NOT IN ( SELECT %i FROM %i WHERE meta_key=%s )\', $a, $b, $c, $d, $e, $f ) );",
+                                        "line": 687,
+                                        "column": 38
                                     }
                                 ]
                             }

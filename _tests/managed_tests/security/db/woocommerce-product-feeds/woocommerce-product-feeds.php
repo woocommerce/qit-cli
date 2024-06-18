@@ -682,3 +682,6 @@ $where = $wpdb->prepare(
  * Safeguard handling of $wpdb->prepare as PHP 8.1+ first class callable.
  */
 $callback = $wpdb->prepare( ... ); // OK.
+
+// Only flagged on WordPress 6.1 or less.
+$sql = $wpdb->query( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE meta_key=%s AND %i NOT IN ( SELECT %i FROM %i WHERE meta_key=%s )', $a, $b, $c, $d, $e, $f ) );
