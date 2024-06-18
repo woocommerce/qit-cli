@@ -46,13 +46,13 @@
                 "tool": {
                     "phpcs": {
                         "totals": {
-                            "errors": 308,
+                            "errors": 300,
                             "warnings": 40,
                             "fixable": 0
                         },
                         "files": {
                             "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                                "errors": 308,
+                                "errors": 300,
                                 "warnings": 40,
                                 "messages": [
                                     {
@@ -2616,26 +2616,6 @@
                                         "column": 66
                                     },
                                     {
-                                        "message": "The %i modifier is only supported in WP 6.2 or higher. Found: \\"%1$+10.3i\\".",
-                                        "source": "WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "ERROR",
-                                        "codeFragment": "$wpdb->prepare( \'WHERE %1$+10.3i = %s\', $field, $value ); \\/\\/ UnsupportedIdentifierPlaceholder.\\n",
-                                        "line": 443,
-                                        "column": 17
-                                    },
-                                    {
-                                        "message": "The %i modifier is only supported in WP 6.2 or higher. Found: \\"%10i\\".",
-                                        "source": "WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "ERROR",
-                                        "codeFragment": "$wpdb->prepare( \\"WHERE \'%10i\' IS NULL\\", $field ); \\/\\/ UnsupportedIdentifierPlaceholder + QuotedIdentifierPlaceholder.\\n",
-                                        "line": 444,
-                                        "column": 17
-                                    },
-                                    {
                                         "message": "Placeholders used for identifiers (%i) in the query string in $wpdb->prepare() are always quoted automagically. Please remove the surrounding quotes. Found: \'%10i\'",
                                         "source": "WordPress.DB.PreparedSQLPlaceholders.QuotedIdentifierPlaceholder",
                                         "severity": 5,
@@ -2648,16 +2628,6 @@
                                     {
                                         "message": "The %i placeholder cannot be used within SQL `IN()` clauses.",
                                         "source": "WordPress.DB.PreparedSQLPlaceholders.IdentifierWithinIN",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "ERROR",
-                                        "codeFragment": "$wpdb->prepare( \'xxx IN ( \' . implode( \',\', array_fill( 0, count( $post_types ), \'%i\' ) ) . \' )\', $fields ); \\/\\/ UnsupportedIdentifierPlaceholder + IdentifierWithinIN.\\n",
-                                        "line": 445,
-                                        "column": 82
-                                    },
-                                    {
-                                        "message": "The %i modifier is only supported in WP 6.2 or higher. Found: \\"%i\\".",
-                                        "source": "WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder",
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
@@ -2758,16 +2728,6 @@
                                     {
                                         "message": "The %i placeholder cannot be used within SQL `IN()` clauses.",
                                         "source": "WordPress.DB.PreparedSQLPlaceholders.IdentifierWithinIN",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "ERROR",
-                                        "codeFragment": "\\txxx IN ( \' . implode( \',\', array_fill( 0, count( $post_types ), \'%i\' \\/*comment*\\/ ) ) . \' )\',\\n",
-                                        "line": 512,
-                                        "column": 66
-                                    },
-                                    {
-                                        "message": "The %i modifier is only supported in WP 6.2 or higher. Found: \\"%i\\".",
-                                        "source": "WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder",
                                         "severity": 5,
                                         "fixable": false,
                                         "type": "ERROR",
@@ -3494,46 +3454,6 @@
                                         "codeFragment": "$callback = $wpdb->prepare( ... ); \\/\\/ OK.\\n",
                                         "line": 684,
                                         "column": 29
-                                    },
-                                    {
-                                        "message": "The %i modifier is only supported in WP 6.2 or higher. Found: \\"%i\\".",
-                                        "source": "WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "ERROR",
-                                        "codeFragment": "$sql = $wpdb->query( $wpdb->prepare( \'SELECT COUNT(*) FROM %i WHERE meta_key=%s AND %i NOT IN ( SELECT %i FROM %i WHERE meta_key=%s )\', $a, $b, $c, $d, $e, $f ) );",
-                                        "line": 687,
-                                        "column": 38
-                                    },
-                                    {
-                                        "message": "The %i modifier is only supported in WP 6.2 or higher. Found: \\"%i\\".",
-                                        "source": "WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "ERROR",
-                                        "codeFragment": "$sql = $wpdb->query( $wpdb->prepare( \'SELECT COUNT(*) FROM %i WHERE meta_key=%s AND %i NOT IN ( SELECT %i FROM %i WHERE meta_key=%s )\', $a, $b, $c, $d, $e, $f ) );",
-                                        "line": 687,
-                                        "column": 38
-                                    },
-                                    {
-                                        "message": "The %i modifier is only supported in WP 6.2 or higher. Found: \\"%i\\".",
-                                        "source": "WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "ERROR",
-                                        "codeFragment": "$sql = $wpdb->query( $wpdb->prepare( \'SELECT COUNT(*) FROM %i WHERE meta_key=%s AND %i NOT IN ( SELECT %i FROM %i WHERE meta_key=%s )\', $a, $b, $c, $d, $e, $f ) );",
-                                        "line": 687,
-                                        "column": 38
-                                    },
-                                    {
-                                        "message": "The %i modifier is only supported in WP 6.2 or higher. Found: \\"%i\\".",
-                                        "source": "WordPress.DB.PreparedSQLPlaceholders.UnsupportedIdentifierPlaceholder",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "ERROR",
-                                        "codeFragment": "$sql = $wpdb->query( $wpdb->prepare( \'SELECT COUNT(*) FROM %i WHERE meta_key=%s AND %i NOT IN ( SELECT %i FROM %i WHERE meta_key=%s )\', $a, $b, $c, $d, $e, $f ) );",
-                                        "line": 687,
-                                        "column": 38
                                     }
                                 ]
                             }
