@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "353 total, 315 passed, 5 failed, 33 skipped.",
+            "test_summary": "353 total, 315 passed, 0 failed, 38 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,13 +43,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 3,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 76,
-                "numPendingTestSuites": 20,
+                "numPendingTestSuites": 22,
                 "numTotalTestSuites": 98,
-                "numFailedTests": 5,
+                "numFailedTests": 0,
                 "numPassedTests": 315,
-                "numPendingTests": 33,
+                "numPendingTests": 38,
                 "numTotalTests": 353,
                 "testResults": [
                     {
@@ -624,17 +624,17 @@
                     },
                     {
                         "file": "merchant\\/launch-your-store.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Launch Your Store front end - logged in": [
                                 {
                                     "title": "Entire site coming soon mode",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Store only coming soon mode",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2014,7 +2014,7 @@
                     },
                     {
                         "file": "shopper\\/checkout-block.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Checkout Block page": [
@@ -2044,7 +2044,7 @@
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows existing customer to place an order",
@@ -2143,17 +2143,17 @@
                     },
                     {
                         "file": "shopper\\/launch-your-store.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Launch Your Store front end - logged out": [
                                 {
                                     "title": "Entire site coming soon mode",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Store only coming soon mode",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2438,7 +2438,7 @@
                         }
                     }
                 ],
-                "summary": "353 total, 315 passed, 5 failed, 33 skipped."
+                "summary": "353 total, 315 passed, 0 failed, 38 skipped."
             }
         },
         {
