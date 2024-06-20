@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "412 total, 378 passed, 0 failed, 34 skipped.",
+            "test_summary": "353 total, 315 passed, 0 failed, 38 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -44,13 +44,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 87,
-                "numPendingTestSuites": 21,
-                "numTotalTestSuites": 108,
+                "numPassedTestSuites": 76,
+                "numPendingTestSuites": 22,
+                "numTotalTestSuites": 98,
                 "numFailedTests": 0,
-                "numPassedTests": 378,
-                "numPendingTests": 34,
-                "numTotalTests": 412,
+                "numPassedTests": 315,
+                "numPendingTests": 38,
+                "numTotalTests": 353,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -285,332 +285,6 @@
                             "Load my account page as customer": [
                                 {
                                     "title": "Load my account page as customer",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/assembler\\/color-picker.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Assembler -> Color Pickers": [
-                                {
-                                    "title": "Color pickers should be displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Blueberry Sorbet should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Ancient Bronze should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Crimson Tide should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Purple Twilight should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Green Thumb should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Golden Haze should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Golden Indigo should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Arctic Dawn should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Raspberry Chocolate should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Canary should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Ice should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Rustic Rosewood should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Cinnamon Latte should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Lightning should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Aquamarine Night should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Charcoal should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Slate should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color picker should be focused when a color is picked",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Selected color palette should be applied on the frontend",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Create \\"your own\\" pickers should be visible",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/assembler\\/font-picker.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Assembler -> Font Picker": [
-                                {
-                                    "title": "Font pickers should be displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Picking a font should trigger an update of fonts on the site preview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Font pickers should be focused when a font is picked",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Selected font palette should be applied on the frontend",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/assembler\\/footer.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Assembler -> Footers": [
-                                {
-                                    "title": "Available footers should be displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "The selected footer should be focused when is clicked",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "The selected footer should be applied on the frontend",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Picking a footer should trigger an update on the site preview",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/assembler\\/header.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Assembler -> headers": [
-                                {
-                                    "title": "Available headers should be displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "The selected header should be focused when is clicked",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "The selected header should be applied on the frontend",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Picking a header should trigger an update on the site preview",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/assembler\\/homepage.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Assembler -> Homepage": [
-                                {
-                                    "title": "Available homepage should be displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "The selected homepage should be focused when is clicked",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "The selected homepage should be visible on the site preview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Selected homepage should be applied on the frontend",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Assembler -> Logo Picker": [
-                                {
-                                    "title": "Logo Picker should be empty initially",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Selecting an image should update the site preview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Changing the image width should update the site preview and the frontend",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking the Delete button should remove the selected image",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking the replace image should open the media gallery",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Enabling the \\"use as site icon\\" option should set the image as the site icon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "The selected image should be visible on the frontend",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/assembler-hub.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Store owner can view Assembler Hub for store customization": [
-                                {
-                                    "title": "Can not access the Assembler Hub page when the theme is not customized",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Can view the Assembler Hub page when the theme is already customized",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Visiting change header should show a list of block patterns to choose from",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/intro.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Store owner can view the Intro page": [
-                                {
-                                    "title": "it shows the \\"offline banner\\" when the network is offline",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "it shows the \\"no AI\\" banner on Core when the task is not completed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "it shows the \\"no AI customize theme\\" banner when the task is completed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "it shows the \\"no AI\\" banner when the task is completed and the theme is not the default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "it shows the \\"no AI\\" banner, when the task is completed and the theme is not the default",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/loading-screen\\/loading-screen.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Assembler - Loading Page": [
-                                {
-                                    "title": "should display loading screen and steps on first run",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should redirect to intro page in case of errors",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should hide loading screen and steps on subsequent runs",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/transitional.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Store owner can view the Transitional page": [
-                                {
-                                    "title": "Accessing the transitional page when the CYS flow is not completed should redirect to the Intro page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking on \\"Save\\" in the assembler should go to the transitional page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking on \\"View store\\" should go to the store home page in a new page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking on \\"Share feedback\\" should open the survey modal",
                                     "status": "passed"
                                 }
                             ]
@@ -951,16 +625,16 @@
                     {
                         "file": "merchant\\/launch-your-store.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Launch Your Store front end - logged in": [
                                 {
                                     "title": "Entire site coming soon mode",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Store only coming soon mode",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2370,7 +2044,7 @@
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows existing customer to place an order",
@@ -2470,16 +2144,16 @@
                     {
                         "file": "shopper\\/launch-your-store.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Launch Your Store front end - logged out": [
                                 {
                                     "title": "Entire site coming soon mode",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Store only coming soon mode",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2764,7 +2438,7 @@
                         }
                     }
                 ],
-                "summary": "412 total, 378 passed, 0 failed, 34 skipped."
+                "summary": "353 total, 315 passed, 0 failed, 38 skipped."
             }
         },
         {
