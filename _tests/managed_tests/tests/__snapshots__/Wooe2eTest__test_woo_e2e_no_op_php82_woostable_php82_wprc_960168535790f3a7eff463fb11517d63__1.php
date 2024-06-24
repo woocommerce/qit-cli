@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "352 total, 296 passed, 0 failed, 56 skipped.",
+            "test_summary": "353 total, 315 passed, 0 failed, 38 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -44,13 +44,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 69,
-                "numPendingTestSuites": 27,
-                "numTotalTestSuites": 96,
+                "numPassedTestSuites": 76,
+                "numPendingTestSuites": 22,
+                "numTotalTestSuites": 98,
                 "numFailedTests": 0,
-                "numPassedTests": 296,
-                "numPendingTests": 56,
-                "numTotalTests": 352,
+                "numPassedTests": 315,
+                "numPendingTests": 38,
+                "numTotalTests": 353,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -209,7 +209,7 @@
                     {
                         "file": "admin-marketing\\/overview.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Marketing page": [
                                 {
@@ -226,7 +226,7 @@
                                 },
                                 {
                                     "title": "Learning section can be expanded",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -355,12 +355,12 @@
                     {
                         "file": "merchant\\/create-checkout-block.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Transform Classic Checkout To Checkout Block": [
                                 {
                                     "title": "can transform classic checkout to checkout block",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -448,52 +448,52 @@
                     {
                         "file": "merchant\\/create-restricted-coupons.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Restricted coupon management": [
                                 {
                                     "title": "can create new minimumSpend coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new maximumSpend coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new individualUse coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new excludeSaleItems coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new productCategories coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new excludeProductCategories coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new products coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new excludeProducts coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new allowedEmails coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new usageLimitPerCoupon coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create new usageLimitPerUser coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -514,7 +514,7 @@
                     {
                         "file": "merchant\\/create-shipping-zones.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
@@ -541,15 +541,15 @@
                             "Verifies shipping options from customer perspective": [
                                 {
                                     "title": "allows customer to benefit from a free Local pickup if on Mayne Island",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "allows customer to benefit from a free Free shipping if in BC",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "allows customer to pay for a Flat rate shipping method",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -559,7 +559,7 @@
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
-                            "Insert All WooCommerce Blocks Into Page": [
+                            "Add WooCommerce Blocks Into Page": [
                                 {
                                     "title": "can insert all WooCommerce blocks into page",
                                     "status": "pending"
@@ -572,7 +572,7 @@
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
-                            "Insert WooCommerce Patterns Into Page": [
+                            "Add WooCommerce Patterns Into Page": [
                                 {
                                     "title": "can insert WooCommerce patterns into page",
                                     "status": "pending"
@@ -604,12 +604,12 @@
                     {
                         "file": "merchant\\/customer-payment-page.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Merchant Flow: Orders > Customer Payment Page": [
                                 {
                                     "title": "should show the customer payment page link on a pending order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should load the customer payment page",
@@ -618,6 +618,23 @@
                                 {
                                     "title": "can pay for the order through the customer payment page",
                                     "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/launch-your-store.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Launch Your Store front end - logged in": [
+                                {
+                                    "title": "Entire site coming soon mode",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "Store only coming soon mode",
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -655,7 +672,7 @@
                     {
                         "file": "merchant\\/order-edit.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Edit order": [
                                 {
@@ -686,7 +703,7 @@
                             "Edit order > Downloadable product permissions": [
                                 {
                                     "title": "can add downloadable product permissions to order without product",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can add downloadable product permissions to order with product",
@@ -1284,10 +1301,10 @@
                                 },
                                 {
                                     "title": "can edit a variation",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
-                                    "title": "can delete a variationt",
+                                    "title": "can delete a variation",
                                     "status": "pending"
                                 },
                                 {
@@ -1343,13 +1360,13 @@
                     {
                         "file": "merchant\\/products\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "General tab": [],
                             "General tab > Linked product": [
                                 {
                                     "title": "can create a product with linked products",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1357,13 +1374,13 @@
                     {
                         "file": "merchant\\/products\\/block-editor\\/organization-tab-product-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "General tab": [],
                             "General tab > Create product - Organization tab": [
                                 {
                                     "title": "can create a simple product with categories, tags and with password required",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1376,13 +1393,13 @@
                             "can create and add attributes": [
                                 {
                                     "title": "can create and add attributes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can add existing attributes": [
                                 {
                                     "title": "can add existing attributes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can update product attributes": [
@@ -1638,20 +1655,16 @@
                     {
                         "file": "shopper\\/cart-block-calculate-shipping.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Cart Block Calculate Shipping": [
-                                {
-                                    "title": "create Cart Block page",
-                                    "status": "passed"
-                                },
                                 {
                                     "title": "allows customer to calculate Free Shipping in cart block if in Netherlands",
                                     "status": "passed"
                                 },
                                 {
                                     "title": "allows customer to calculate Flat rate and Local pickup in cart block if in Portugal",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should show correct total cart block price after updating quantity",
@@ -1659,7 +1672,7 @@
                                 },
                                 {
                                     "title": "should show correct total cart block price with 2 different products and flat rate\\/local pickup",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -1670,10 +1683,6 @@
                         "has_pending": false,
                         "tests": {
                             "Cart Block Applying Coupons": [
-                                {
-                                    "title": "can create Cart Block page",
-                                    "status": "passed"
-                                },
                                 {
                                     "title": "allows cart block to apply coupon of any type",
                                     "status": "passed"
@@ -1985,10 +1994,6 @@
                         "tests": {
                             "Checkout Block Applying Coupons": [
                                 {
-                                    "title": "can create checkout block page",
-                                    "status": "passed"
-                                },
-                                {
                                     "title": "allows checkout block to apply coupon of any type",
                                     "status": "passed"
                                 },
@@ -2035,7 +2040,7 @@
                                 },
                                 {
                                     "title": "can choose different shipping types in the checkout",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
@@ -2043,11 +2048,11 @@
                                 },
                                 {
                                     "title": "allows existing customer to place an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create an account during checkout",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2068,12 +2073,12 @@
                     {
                         "file": "shopper\\/checkout-login.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Shopper Checkout Login Account": [
                                 {
                                     "title": "can login to an existing account during checkout",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2137,6 +2142,23 @@
                         }
                     },
                     {
+                        "file": "shopper\\/launch-your-store.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Launch Your Store front end - logged out": [
+                                {
+                                    "title": "Entire site coming soon mode",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "Store only coming soon mode",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "shopper\\/mini-cart.spec.js",
                         "status": "passed",
                         "has_pending": true,
@@ -2195,12 +2217,12 @@
                     {
                         "file": "shopper\\/my-account-pay-order.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Customer can pay for their order through My Account": [
                                 {
                                     "title": "allows customer to pay for their order in My Account",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2416,7 +2438,7 @@
                         }
                     }
                 ],
-                "summary": "352 total, 296 passed, 0 failed, 56 skipped."
+                "summary": "353 total, 315 passed, 0 failed, 38 skipped."
             }
         },
         {
