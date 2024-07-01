@@ -205,67 +205,61 @@ function generate_test_runs( array $test_types ): array {
 
 			$env = require $test . '/env.php';
 
-			$wp_versions = isset( $env['wp'] ) ? explode( ',', $env['wp'] ) : [ '' ];  // default to empty string if no versions.
 			$woo_versions = isset( $env['woo'] ) ? explode( ',', $env['woo'] ) : [ '' ];  // default to empty string if no versions.
 			$php_versions = isset( $env['php'] ) ? explode( ',', $env['php'] ) : [ '' ];  // default to empty string if no versions.
 
-			foreach ( $wp_versions as $wp_version ) {
-				foreach ( $woo_versions as $woo_version ) {
-					foreach ( $php_versions as $php_version ) {
+			foreach ( $woo_versions as $woo_version ) {
+				foreach ( $php_versions as $php_version ) {
 
-						if ( file_exists( $test . '/' . Context::$extension_slug ) ) {
-							$sut_slug = Context::$extension_slug;
-						} else {
-							$sut_slug = Context::$theme_slug;
-						}
+					if ( file_exists( $test . '/' . Context::$extension_slug ) ) {
+						$sut_slug = Context::$extension_slug;
+					} else {
+						$sut_slug = Context::$theme_slug;
+					}
 
-						if ( ! empty( Context::$env_filters ) ) {
-							$env_matches = true;
-							foreach ( Context::$env_filters as $key => $value ) {
-								if ( ! isset( $env[ $key ] ) ) {
-									$env_matches = false;
+					if ( ! empty( Context::$env_filters ) ) {
+						$env_matches = true;
+						foreach ( Context::$env_filters as $key => $value ) {
+							if ( ! isset( $env[ $key ] ) ) {
+								$env_matches = false;
+								break;
+							}
+
+							switch ( $key ) {
+								case 'woo':
+									$env_matches = $value === $woo_version;
 									break;
-								}
-
-								switch ( $key ) {
-									case 'wp':
-										$env_matches = $value === $wp_version;
-										break;
-									case 'woo':
-										$env_matches = $value === $woo_version;
-										break;
-									case 'php':
-										$env_matches = $value === $php_version;
-										break;
-									default:
-										$env_matches = $value === $env[ $key ];
-										break;
-								}
-
-								if ( ! $env_matches ) {
+								case 'php':
+									$env_matches = $value === $php_version;
 									break;
-								}
+								default:
+									$env_matches = $value === $env[ $key ];
+									break;
 							}
 
 							if ( ! $env_matches ) {
-								$GLOBALS['parallelOutput']->addRawOutput( sprintf( "Skipping %s, does not match env filters\n", basename( $test ) ) );
-								continue;
+								break;
 							}
 						}
 
-						$tests_to_run[ basename( $test_type ) ][] = [
-							'type'                 => basename( $test_type ),
-							'slug'                 => basename( $test ),
-							'php'                  => $php_version,
-							'wp'                   => $wp_version,
-							'woo'                  => $woo_version,
-							'features'             => $env['features'] ?? '',
-							'remove_from_snapshot' => $env['remove_from_snapshot'] ?? '',
-							'params'               => $env['params'] ?? [],
-							'path'                 => $test,
-							'sut_slug'             => $sut_slug,
-						];
+						if ( ! $env_matches ) {
+							$GLOBALS['parallelOutput']->addRawOutput( sprintf( "Skipping %s, does not match env filters\n", basename( $test ) ) );
+							continue;
+						}
 					}
+
+					$tests_to_run[ basename( $test_type ) ][] = [
+						'type'                 => basename( $test_type ),
+						'slug'                 => basename( $test ),
+						'php'                  => $php_version,
+						'wp'                   => $env['wp'] ?? '',
+						'woo'                  => $woo_version,
+						'features'             => $env['features'] ?? '',
+						'remove_from_snapshot' => $env['remove_from_snapshot'] ?? '',
+						'params'               => $env['params'] ?? [],
+						'path'                 => $test,
+						'sut_slug'             => $sut_slug,
+					];
 				}
 			}
 		}
@@ -365,8 +359,6 @@ function run_test_runs( array $test_runs ) {
 			$args[] = $sut_slug;
 
 			$qit_process = new Process( $args );
-			$GLOBALS['parallelOutput']->addRawOutput( sprintf( "\nRunning command: %s", $qit_process->getCommandLine() ) );
-
 			$qit_process->setTimeout( null ); // Let QIT CLI handle the timeouts.
 
 			$normalized_t = $t;
