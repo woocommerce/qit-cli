@@ -12,7 +12,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "431 total, 408 passed, 2 failed, 21 skipped.",
+            "test_summary": "431 total, 408 passed, 0 failed, 23 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,13 +43,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 2,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 94,
-                "numPendingTestSuites": 13,
+                "numPendingTestSuites": 15,
                 "numTotalTestSuites": 109,
-                "numFailedTests": 2,
+                "numFailedTests": 0,
                 "numPassedTests": 408,
-                "numPendingTests": 21,
+                "numPendingTests": 23,
                 "numTotalTests": 431,
                 "testResults": [
                     {
@@ -2719,8 +2719,8 @@
                     },
                     {
                         "file": "shopper\\/product-tags-attributes.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Browse product tags and attributes from the product page": [
                                 {
@@ -2737,7 +2737,7 @@
                                 },
                                 {
                                     "title": "can see products showcase",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2779,13 +2779,13 @@
                     },
                     {
                         "file": "shopper\\/shop-products-filter-by-price.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Filter items in the shop by product price": [
                                 {
                                     "title": "filter products by prices on the created page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2855,7 +2855,7 @@
                         }
                     }
                 ],
-                "summary": "431 total, 408 passed, 2 failed, 21 skipped."
+                "summary": "431 total, 408 passed, 0 failed, 23 skipped."
             }
         },
         {
