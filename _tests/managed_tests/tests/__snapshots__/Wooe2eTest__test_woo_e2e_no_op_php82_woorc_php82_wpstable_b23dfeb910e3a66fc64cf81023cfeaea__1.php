@@ -6,7 +6,7 @@
             "test_type": "woo-e2e",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
-            "php_version": "7.4",
+            "php_version": "8.2",
             "max_php_version": "",
             "min_php_version": "",
             "additional_woo_plugins": [],
@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "431 total, 408 passed, 0 failed, 23 skipped.",
+            "test_summary": "424 total, 401 passed, 0 failed, 23 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -44,13 +44,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 94,
+                "numPassedTestSuites": 93,
                 "numPendingTestSuites": 15,
-                "numTotalTestSuites": 109,
+                "numTotalTestSuites": 108,
                 "numFailedTests": 0,
-                "numPassedTests": 408,
+                "numPassedTests": 401,
                 "numPendingTests": 23,
-                "numTotalTests": 431,
+                "numTotalTests": 424,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -686,55 +686,6 @@
                                 },
                                 {
                                     "title": "Check that Marketing Overview has 120 JS files",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "merchant\\/command-palette.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "can use the \\"Add new product\\" command": [
-                                {
-                                    "title": "can use the \\"Add new product\\" command",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can use the \\"Add new order\\" command": [
-                                {
-                                    "title": "can use the \\"Add new order\\" command",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can use the \\"Products\\" command": [
-                                {
-                                    "title": "can use the \\"Products\\" command",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can use the \\"Orders\\" command": [
-                                {
-                                    "title": "can use the \\"Orders\\" command",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can use the product search command": [
-                                {
-                                    "title": "can use the product search command",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can use a settings command": [
-                                {
-                                    "title": "can use a settings command",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can use an analytics command": [
-                                {
-                                    "title": "can use an analytics command",
                                     "status": "passed"
                                 }
                             ]
@@ -2855,7 +2806,7 @@
                         }
                     }
                 ],
-                "summary": "431 total, 408 passed, 0 failed, 23 skipped."
+                "summary": "424 total, 401 passed, 0 failed, 23 skipped."
             }
         },
         {
