@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "346 total, 308 passed, 0 failed, 38 skipped.",
+            "test_summary": "353 total, 315 passed, 0 failed, 38 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -44,13 +44,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 75,
+                "numPassedTestSuites": 76,
                 "numPendingTestSuites": 22,
-                "numTotalTestSuites": 97,
+                "numTotalTestSuites": 98,
                 "numFailedTests": 0,
-                "numPassedTests": 308,
+                "numPassedTests": 315,
                 "numPendingTests": 38,
-                "numTotalTests": 346,
+                "numTotalTests": 353,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -285,6 +285,55 @@
                             "Load my account page as customer": [
                                 {
                                     "title": "Load my account page as customer",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/command-palette.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "can use the \\"Add new product\\" command": [
+                                {
+                                    "title": "can use the \\"Add new product\\" command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use the \\"Add new order\\" command": [
+                                {
+                                    "title": "can use the \\"Add new order\\" command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use the \\"Products\\" command": [
+                                {
+                                    "title": "can use the \\"Products\\" command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use the \\"Orders\\" command": [
+                                {
+                                    "title": "can use the \\"Orders\\" command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use the product search command": [
+                                {
+                                    "title": "can use the product search command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use a settings command": [
+                                {
+                                    "title": "can use a settings command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use an analytics command": [
+                                {
+                                    "title": "can use an analytics command",
                                     "status": "passed"
                                 }
                             ]
@@ -2389,7 +2438,7 @@
                         }
                     }
                 ],
-                "summary": "346 total, 308 passed, 0 failed, 38 skipped."
+                "summary": "353 total, 315 passed, 0 failed, 38 skipped."
             }
         },
         {

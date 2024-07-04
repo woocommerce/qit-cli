@@ -31,7 +31,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "424 total, 402 passed, 1 failed, 21 skipped.",
+            "test_summary": "431 total, 408 passed, 2 failed, 21 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -43,14 +43,14 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 95,
+                "numFailedTestSuites": 2,
+                "numPassedTestSuites": 94,
                 "numPendingTestSuites": 13,
-                "numTotalTestSuites": 108,
-                "numFailedTests": 1,
-                "numPassedTests": 402,
+                "numTotalTestSuites": 109,
+                "numFailedTests": 2,
+                "numPassedTests": 408,
                 "numPendingTests": 21,
-                "numTotalTests": 424,
+                "numTotalTests": 431,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -686,6 +686,55 @@
                                 },
                                 {
                                     "title": "Check that Marketing Overview has 120 JS files",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/command-palette.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "can use the \\"Add new product\\" command": [
+                                {
+                                    "title": "can use the \\"Add new product\\" command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use the \\"Add new order\\" command": [
+                                {
+                                    "title": "can use the \\"Add new order\\" command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use the \\"Products\\" command": [
+                                {
+                                    "title": "can use the \\"Products\\" command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use the \\"Orders\\" command": [
+                                {
+                                    "title": "can use the \\"Orders\\" command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use the product search command": [
+                                {
+                                    "title": "can use the product search command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use a settings command": [
+                                {
+                                    "title": "can use a settings command",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can use an analytics command": [
+                                {
+                                    "title": "can use an analytics command",
                                     "status": "passed"
                                 }
                             ]
@@ -2395,7 +2444,7 @@
                     },
                     {
                         "file": "shopper\\/checkout-block.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Checkout Block page": [
@@ -2433,7 +2482,7 @@
                                 },
                                 {
                                     "title": "can create an account during checkout",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2670,7 +2719,7 @@
                     },
                     {
                         "file": "shopper\\/product-tags-attributes.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Browse product tags and attributes from the product page": [
@@ -2688,7 +2737,7 @@
                                 },
                                 {
                                     "title": "can see products showcase",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2730,13 +2779,13 @@
                     },
                     {
                         "file": "shopper\\/shop-products-filter-by-price.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Filter items in the shop by product price": [
                                 {
                                     "title": "filter products by prices on the created page",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2806,7 +2855,7 @@
                         }
                     }
                 ],
-                "summary": "424 total, 402 passed, 1 failed, 21 skipped."
+                "summary": "431 total, 408 passed, 2 failed, 21 skipped."
             }
         },
         {
