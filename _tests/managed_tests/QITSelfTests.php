@@ -15,6 +15,8 @@ use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Pipes\PipesInterface;
 use Symfony\Component\Process\Process;
 
+require_once __DIR__ . '/ProcessManagerFork.php';
+
 class Context {
 	public static $action;
 	public static $test_types;
@@ -413,7 +415,7 @@ function run_test_runs( array $test_runs ) {
 		generate_phpunit_files( $test_type, $test_type_test_runs );
 	}
 
-	$qit_run_processes_manager = new ProcessManager();
+	$qit_run_processes_manager = new ProcessManagerFork();
 
 	$GLOBALS['parallelOutput']->addRawOutput( sprintf( "\nRunning %d tests in parallel...\n", count( $qit_run_processes ) ) );
 
@@ -461,7 +463,7 @@ function run_test_runs( array $test_runs ) {
 			// Scenario 3: Full JSON that fits the chunk.
 			handle_qit_response( $process, $out, $failed_tests );
 		}
-	} );
+	}, 10 );
 
 	$did_not_run = [];
 
