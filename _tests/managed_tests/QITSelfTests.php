@@ -392,6 +392,12 @@ function run_test_runs( array $test_runs ) {
 			
 			$t['non_json_output_file'] = tempnam( sys_get_temp_dir(), 'qit_non_json_' );
 
+			$poll_interval = rand( 20, 40 );
+
+			if ( strpos( $normalized_t['type'], 'e2e' ) !== false ) {
+				$poll_interval = rand( 60, 90 );
+			}
+
 			$env = [
 				'QIT_TEST_PATH'            => $t['path'],
 				'QIT_TEST_TYPE'            => $test_type,
@@ -399,6 +405,7 @@ function run_test_runs( array $test_runs ) {
 				'QIT_RAN_TEST'             => false,
 				'QIT_REMOVE_FROM_SNAPSHOT' => $t['remove_from_snapshot'],
 				'QIT_NON_JSON_OUTPUT'      => $t['non_json_output_file'],
+				'QIT_POLL_INTERVAL'        => $poll_interval,
 			];
 
 			$qit_process->setEnv( $env );
