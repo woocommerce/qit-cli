@@ -191,6 +191,16 @@ class CreateRunCommands extends DynamicCommandCreator {
 
 					$start = time();
 					do {
+						$poll_interval = rand( 5, 15 );
+
+						// Search for wait time in "QIT_POLL_INTERVAL" env var if set.
+						if ( getenv( 'QIT_POLL_INTERVAL' ) && is_numeric( getenv( 'QIT_POLL_INTERVAL' ) ) ) {
+							// It must be between 5 and 300.
+							$poll_interval = min( 300, max( 5, getenv( 'QIT_POLL_INTERVAL' ) ) );
+						}
+
+						sleep( $poll_interval );
+
 						$command = $this->getApplication()->find( GetCommand::getDefaultName() );
 
 						// When checking for finished status, return status code is 0 if finished, 1 if not.
@@ -210,8 +220,6 @@ class CreateRunCommands extends DynamicCommandCreator {
 							// Timeout.
 							return 124;
 						}
-
-						sleep( rand( 5, 15 ) );
 					} while ( true );
 
 					$output->writeln( sprintf( '<info>Test run completed.</info>' ) );
