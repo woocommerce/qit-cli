@@ -240,7 +240,7 @@ class RequestBuilder {
 				}
 			}
 
-			App::make( Output::class )->writeln( sprintf( '[QIT DEBUG] Running external request (%s): %s', gmdate( 'y-m-s h:i:s' ), json_encode( $request_in_logs, JSON_PRETTY_PRINT ) ) );
+			App::make( Output::class )->writeln( sprintf( '[QIT DEBUG] Running external request (%s): %s', gmdate( 'y-m-d H:i:s' ), json_encode( $request_in_logs, JSON_PRETTY_PRINT ) ) );
 		}
 
 		$result     = curl_exec( $curl );
