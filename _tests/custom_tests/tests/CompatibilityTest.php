@@ -14,6 +14,7 @@ class CompatibilityTest extends \PHPUnit\Framework\TestCase {
 				$this->scaffold_test(),
 				'--plugin',
 				'woocommerce:activate',
+				'-vvv'
 			]
 		);
 
