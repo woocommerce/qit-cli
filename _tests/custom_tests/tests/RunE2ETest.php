@@ -10,7 +10,7 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 	public function test_fails_if_dependency_unmet() {
 		$output = qit( [
 			'run:e2e',
-			'automatewoo',
+			'qit-test-plugin',
 			$this->scaffold_test(),
 		],
 			[],
@@ -25,7 +25,7 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 	public function test_runs_scaffolded_e2e() {
 		$output = qit( [
 				'run:e2e',
-				'automatewoo',
+				'qit-test-plugin',
 				$this->scaffold_test(),
 				'--plugin',
 				'woocommerce:activate',
@@ -40,19 +40,19 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 	public function test_tag_and_run_test() {
 		qit( [
 			'tag:upload',
-			'automatewoo:self-test-tag-and-run',
+			'qit-test-plugin:self-test-tag-and-run',
 			$this->scaffold_test(),
 		] );
 
 		$output = qit( [
 			'run:e2e',
-			'automatewoo',
+			'qit-test-plugin',
 			'self-test-tag-and-run',
 			'--plugin',
 			'woocommerce:activate',
 		] );
 
-		qit( [ 'tag:delete', 'automatewoo:self-test-tag-and-run' ] );
+		qit( [ 'tag:delete', 'qit-test-plugin:self-test-tag-and-run' ] );
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
@@ -62,26 +62,26 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 	public function test_multiple_tags_and_run_tests() {
 		qit( [
 			'tag:upload',
-			'automatewoo:self-test-multiple-test-tags',
+			'qit-test-plugin:self-test-multiple-test-tags',
 			$this->scaffold_test(),
 		] );
 
 		qit( [
 			'tag:upload',
-			'automatewoo:self-test-multiple-test-tags-another',
+			'qit-test-plugin:self-test-multiple-test-tags-another',
 			$this->scaffold_test( 'another-tag' ),
 		] );
 
 		$output = qit( [
 			'run:e2e',
-			'automatewoo',
+			'qit-test-plugin',
 			'self-test-multiple-test-tags,self-test-multiple-test-tags-another',
 			'--plugin',
 			'woocommerce:activate',
 		] );
 
-		qit( [ 'tag:delete', 'automatewoo:self-test-multiple-test-tags' ] );
-		qit( [ 'tag:delete', 'automatewoo:self-test-multiple-test-tags-another' ] );
+		qit( [ 'tag:delete', 'qit-test-plugin:self-test-multiple-test-tags' ] );
+		qit( [ 'tag:delete', 'qit-test-plugin:self-test-multiple-test-tags-another' ] );
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
@@ -179,7 +179,7 @@ JS;
 	public function test_playwright_config_override() {
 		$output = qit( [
 			'run:e2e',
-			'automatewoo',
+			'qit-test-plugin',
 			$this->scaffold_test(),
 			'--plugin',
 			'woocommerce:activate',
@@ -198,7 +198,7 @@ JS;
 		// "Loading environment config from override parameter /tmp/qit-env-97d237784cddc7ec1341113ca364110d.json..." Normalize "97d237784cddc7ec1341113ca364110d".
 		$output = preg_replace( '/qit-env-[a-f0-9]{32}/', 'qit-env-<hash>', $output );
 
-		// "Slow test file: [automatewoo-local] › automatewoo/local/example.spec.js (7.1s)" Normalize "7.1s".
+		// "Slow test file: [qit-test-plugin-local] › qit-test-plugin/local/example.spec.js (7.1s)" Normalize "7.1s".
 		$output = preg_replace( '/\d+\.\d+s/', '<time>s', $output );
 
 		// Sometimes, for some reason, this has some spaces. "Consider splitting slow test files to speed up parallel execution"
@@ -210,7 +210,7 @@ JS;
 	public function test_cannot_use_woo_and_plugin_woocommerce() {
 		$output = qit( [
 			'run:e2e',
-			'automatewoo',
+			'qit-test-plugin',
 			$this->scaffold_test(),
 			'--woo',
 			'8.6.2',
@@ -229,7 +229,7 @@ JS;
 	public function test_can_use_equal_signs() {
 		$output = qit( [
 			'run:e2e',
-			'automatewoo',
+			'qit-test-plugin',
 			$this->scaffold_test(),
 			'--plugin=woocommerce',
 		] );
