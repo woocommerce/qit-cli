@@ -372,6 +372,17 @@ class RequestBuilder {
 			unlink( $file_path );
 			throw new \RuntimeException( 'Curl error: ' . $curl_error );
 		}
+
+		// If URL points to a .zip file:
+		if ( pathinfo( $url, PATHINFO_EXTENSION ) === 'zip' ) {
+			try {
+				App::make( Zipper::class )->validate_zip( $file_path );
+			} catch ( \Exception $e ) {
+				// Delete the potentially partially written file.
+				unlink( $file_path );
+				throw new \RuntimeException( 'Downloaded file is not a valid zip file.' );
+			}
+		}
 	}
 
 	protected function wait_after_429( string $headers, int $max_wait = 60 ): int {
