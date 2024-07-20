@@ -367,6 +367,8 @@ class RequestBuilder {
 		curl_close( $curl );
 		fclose( $fp );
 
+		$status_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
+
 		if ( $curl_error ) {
 			// Delete the potentially partially written file.
 			unlink( $file_path );
@@ -374,13 +376,13 @@ class RequestBuilder {
 		}
 
 		// If URL points to a .zip file:
-		if ( pathinfo( $url, PATHINFO_EXTENSION ) === 'zip' ) {
+		if ( pathinfo( $file_path, PATHINFO_EXTENSION ) === 'zip' ) {
 			try {
 				App::make( Zipper::class )->validate_zip( $file_path );
 			} catch ( \Exception $e ) {
 				// Delete the potentially partially written file.
 				unlink( $file_path );
-				throw new \RuntimeException( 'Downloaded file is not a valid zip file.' );
+				throw new \RuntimeException( "Downloaded file is not a valid zip file. Download info:\nHTTP Response: %d\nHTTP Body: %s", $status_code, file_get_contents( $file_path ) );
 			}
 		}
 	}

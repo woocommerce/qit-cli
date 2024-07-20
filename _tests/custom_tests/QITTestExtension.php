@@ -92,34 +92,35 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				throw new \RuntimeException( 'Failed to create the tmp directory.' );
 			}
 
-			// Enable dev mode.
-			$dev = new Process( [ $GLOBALS['qit'], 'dev' ] );
-			$dev->setEnv( [
-				'QIT_HOME' => $GLOBALS['QIT_HOME'],
-			] );
-			$dev->setTimeout( 30 );
-			$dev->setIdleTimeout( 30 );
-			$dev->mustRun( function ( $type, $buffer ) {
-				echo $buffer;
-			} );
+			if ( $_ENV['QIT_CUSTOM_TESTS_ENV'] === 'staging' ) {
+				// Enable dev mode.
+				$dev = new Process( [ $GLOBALS['qit'], 'dev' ] );
+				$dev->setEnv( [
+					'QIT_HOME' => $GLOBALS['QIT_HOME'],
+				] );
+				$dev->setTimeout( 30 );
+				$dev->setIdleTimeout( 30 );
+				$dev->mustRun( function ( $type, $buffer ) {
+					echo $buffer;
+				} );
 
-			// Add the environment.
-			$add_environment = new Process( [
-				$GLOBALS['qit'],
-				'backend:add',
-				'--manager_url',
-				$_ENV['QIT_CUSTOM_TESTS_URL'],
-				'--qit_secret',
-				$_ENV['QIT_CUSTOM_TESTS_SECRET'],
-				'--environment',
-				$_ENV['QIT_CUSTOM_TESTS_ENV'],
-			] );
-			$add_environment->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
-			$add_environment->mustRun( function ( $type, $buffer ) {
-				echo $buffer;
-			} );
-
-			if ( $_ENV['QIT_CUSTOM_TESTS_ENV'] !== 'staging' ) {
+				// Add the environment.
+				$add_environment = new Process( [
+					$GLOBALS['qit'],
+					'backend:add',
+					'--manager_url',
+					$_ENV['QIT_CUSTOM_TESTS_URL'],
+					'--qit_secret',
+					$_ENV['QIT_CUSTOM_TESTS_SECRET'],
+					'--environment',
+					$_ENV['QIT_CUSTOM_TESTS_ENV'],
+				] );
+				$add_environment->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
+				$add_environment->mustRun( function ( $type, $buffer ) {
+					echo $buffer;
+				} );
+			} else {
+				$output = [];
 				// Add the partner account that will be used.
 				$add_partner = new Process( [
 					$GLOBALS['qit'],
@@ -130,11 +131,10 @@ class QITTestStart implements ExecutionStartedSubscriber {
 					$_ENV['QIT_CUSTOM_TESTS_USER_QIT_TOKEN'],
 				] );
 				$add_partner->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
-				$add_partner->mustRun( function ( $type, $buffer ) {
+				$add_partner->mustRun( function ( $type, $buffer ) use ($output) {
+					$output[] = $buffer;
 					echo $buffer;
 				} );
-			} else {
-				echo "Skipping partner add for staging environment\n";
 			}
 
 			// Validate connection. Run "qit extensions" and assert "18734003134382" is present, which is the ID of the "woocommerce" extension.
@@ -144,8 +144,8 @@ class QITTestStart implements ExecutionStartedSubscriber {
 
 			$woocommerce_ids_per_environment = [
 				'staging'    => 18734003134382,
-				'local'      => 18734002449992,
-				'production' => 18734002449992,
+				'local'      => 18734001206047,
+				'production' => 18734001206047,
 			];
 
 			$woocommerce_id = $woocommerce_ids_per_environment[ $_ENV['QIT_CUSTOM_TESTS_ENV'] ];
