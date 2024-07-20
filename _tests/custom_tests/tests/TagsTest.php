@@ -10,14 +10,14 @@ class TagsTest extends \PHPUnit\Framework\TestCase {
 	public function test_runs_scaffolded_e2e() {
 		// Make sure we start from a clean state.
 		try {
-			qit( [ 'tag:delete', 'qit-test-plugin:self-test-scaffolded' ] );
+			qit( [ 'tag:delete', 'automatewoo:self-test-scaffolded' ] );
 		} catch ( \Exception $e ) {
 			// No-op.
 		}
 
 		$output = qit( [
 				'tag:upload',
-				'qit-test-plugin:self-test-scaffolded',
+				'automatewoo:self-test-scaffolded',
 				$this->scaffold_test(),
 			]
 		);
@@ -27,24 +27,24 @@ class TagsTest extends \PHPUnit\Framework\TestCase {
 		$output = qit( [ 'tag:list', ] );
 		$this->assertStringContainsString( 'self-test-scaffolded', $output );
 
-		// Just tags of "qit-test-plugin", which should include this one.
-		$output = qit( [ 'tag:list', 'qit-test-plugin', ]
+		// Just tags of "automatewoo", which should include this one.
+		$output = qit( [ 'tag:list', 'automatewoo', ]
 		);
 		$this->assertStringContainsString( 'self-test-scaffolded', $output );
 
-		// Just tags of "qit-test-plugin-birthdays", which should not include.
-		$output = qit( [ 'tag:list', 'qit-test-plugin-birthdays', ] );
+		// Just tags of "automatewoo-birthdays", which should not include.
+		$output = qit( [ 'tag:list', 'automatewoo-birthdays', ] );
 		$this->assertStringNotContainsString( 'self-test-scaffolded', $output );
 
 		// Delete the tag and re-run the fetch.
-		qit( [ 'tag:delete', 'qit-test-plugin:self-test-scaffolded' ] );
+		qit( [ 'tag:delete', 'automatewoo:self-test-scaffolded' ] );
 
 		// Assert the tag is no longer found in the overall list.
 		$output = qit( [ 'tag:list', ] );
 		$this->assertStringNotContainsString( 'self-test-scaffolded', $output );
 
 		// Assert the tag is no longer found when querying that single extension.
-		$output = qit( [ 'tag:list', 'qit-test-plugin', ] );
+		$output = qit( [ 'tag:list', 'automatewoo', ] );
 		$this->assertStringNotContainsString( 'self-test-scaffolded', $output );
 	}
 }
