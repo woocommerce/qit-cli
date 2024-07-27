@@ -4,6 +4,7 @@
             "test_run_id": 123456,
             "run_id": 123456,
             "test_type": "phpcompatibility",
+            "test_type_display": "PHPCompatibility",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "7.4",
