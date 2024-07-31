@@ -59,6 +59,16 @@ class EnvVolumeParser {
 					'Please ensure the path is correct and accessible.'
 				);
 			}
+
+			// If the source path is relative, expand it to be an absolute path, using as reference the current working directory.
+			if ( substr( $v[0], 0, 1 ) !== '/' ) {
+				if ( file_exists( realpath( $v[0] ) ) ) {
+					$v[0] = realpath( $v[0] );
+				} else {
+					$this->output->writeln( sprintf( '<comment>Warning: The relative source path "%s" for the volume could not be expanded to absolute path using realpath. You might be lacking permissions, or the directory does not exist. This can cause issues, as the relative path will be relative from the directory of the temporary environment.</comment>', $v[0] ) );
+				}
+			}
+
 			if ( substr( $v[1], 0, 1 ) !== '/' ) {
 				throw new \RuntimeException(
 					'The destination path must be an absolute Unix path, starting with "/". ' .
@@ -79,7 +89,10 @@ class EnvVolumeParser {
 
 			// Add "read-only" flag to all local volumes outside of $config_dir.
 			if ( strpos( normalize_path( $v[0] ), Config::get_qit_dir() ) !== 0 ) {
-				$v[2] = 'ro';
+				// Only add the ro flag if the user has not set one explicitly.
+				if ( count( $v ) !== 3 ) {
+					$v[2] = 'ro';
+				}
 			}
 
 			$allowed_flags = [ 'ro', 'rw', 'delegated', 'cached', 'nocopy', 'z', 'Z' ];
