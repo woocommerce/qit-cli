@@ -79,7 +79,10 @@ class EnvVolumeParser {
 
 			// Add "read-only" flag to all local volumes outside of $config_dir.
 			if ( strpos( normalize_path( $v[0] ), Config::get_qit_dir() ) !== 0 ) {
-				$v[2] = 'ro';
+				// Only add the ro flag if the user has not set one explicitly.
+				if ( count( $v ) !== 3 ) {
+					$v[2] = 'ro';
+				}
 			}
 
 			$allowed_flags = [ 'ro', 'rw', 'delegated', 'cached', 'nocopy', 'z', 'Z' ];
