@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "418 total, 399 passed, 10 failed, 9 skipped.",
+            "test_summary": "418 total, 392 passed, 10 failed, 16 skipped.",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -44,13 +44,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 10,
-                "numPassedTestSuites": 93,
-                "numPendingTestSuites": 6,
+                "numFailedTestSuites": 7,
+                "numPassedTestSuites": 89,
+                "numPendingTestSuites": 13,
                 "numTotalTestSuites": 108,
                 "numFailedTests": 10,
-                "numPassedTests": 399,
-                "numPendingTests": 9,
+                "numPassedTests": 392,
+                "numPendingTests": 16,
                 "numTotalTests": 418,
                 "testResults": [
                     {
@@ -297,13 +297,13 @@
                     },
                     {
                         "file": "customize-store\\/assembler\\/color-picker.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Assembler -> Color Pickers": [
                                 {
                                     "title": "Color pickers should be displayed",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Blueberry Sorbet should be applied",
@@ -725,13 +725,13 @@
                     },
                     {
                         "file": "merchant\\/create-order.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Add new order": [
                                 {
                                     "title": "can create a simple guest order",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can create an order for an existing customer",
@@ -1104,8 +1104,8 @@
                     },
                     {
                         "file": "merchant\\/order-refund.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
@@ -1114,7 +1114,7 @@
                                 },
                                 {
                                     "title": "can delete an issued refund",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
@@ -1620,11 +1620,11 @@
                             "General tab > Create product": [
                                 {
                                     "title": "can create a simple product",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can not create a product with duplicated SKU",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can a shopper add the simple product to the cart",
@@ -1704,28 +1704,28 @@
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "General tab": [],
                             "General tab > Linked product": [
                                 {
                                     "title": "can create a product with linked products",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/organization-tab-product-block-editor.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "General tab": [],
                             "General tab > Create product - Organization tab": [
                                 {
                                     "title": "can create a simple product with categories, tags and with password required",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1869,13 +1869,13 @@
                     },
                     {
                         "file": "merchant\\/settings-shipping.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Shipping Settings": [
                                 {
                                     "title": "can add shipping methods (free, local, flat rate)",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2016,25 +2016,25 @@
                     },
                     {
                         "file": "shopper\\/cart-block-calculate-shipping.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Cart Block Calculate Shipping": [
                                 {
                                     "title": "allows customer to calculate Free Shipping in cart block if in Netherlands",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "allows customer to calculate Flat rate and Local pickup in cart block if in Portugal",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "should show correct total cart block price after updating quantity",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "should show correct total cart block price with 2 different products and flat rate\\/local pickup",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2108,7 +2108,7 @@
                     },
                     {
                         "file": "shopper\\/cart-checkout-block-calculate-tax.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Shopper Cart & Checkout Block Tax Display": [
@@ -2152,14 +2152,14 @@
                             "Shipping Cart & Checkout Block Tax": [
                                 {
                                     "title": "that tax is applied in Cart Block to shipping as well as order",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "shopper\\/cart-checkout-calculate-tax.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Tax rates in the cart and checkout": [],
@@ -2200,7 +2200,7 @@
                             "Tax rates in the cart and checkout > Shipping Tax": [
                                 {
                                     "title": "checks that tax is applied to shipping as well as order",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2376,7 +2376,7 @@
                     },
                     {
                         "file": "shopper\\/checkout-block.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Checkout Block page": [
@@ -2402,7 +2402,7 @@
                                 },
                                 {
                                     "title": "can choose different shipping types in the checkout",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
@@ -2680,13 +2680,13 @@
                     },
                     {
                         "file": "shopper\\/product-variable.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Variable Product Page": [
                                 {
                                     "title": "should be able to add variation products to the cart",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should be able to remove variation products from the cart",
@@ -2791,7 +2791,7 @@
                         }
                     }
                 ],
-                "summary": "418 total, 399 passed, 10 failed, 9 skipped."
+                "summary": "418 total, 392 passed, 10 failed, 16 skipped."
             }
         }
     ]
