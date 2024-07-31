@@ -76,7 +76,7 @@ class E2EEnvironment extends Environment {
 
 		// Check if mu-plugins directory exists. Assume it might exist and be owned by root. If so, change ownership to www-data. If not, create it.
 		$this->docker->run_inside_docker( $this->env_info,
-			[ '/bin/bash', '-c', 'mkdir -p /var/www/html/wp-content/mu-plugins && chown -R www-data:www-data /var/www/html/wp-content/mu-plugins' ],
+			[ '/bin/bash', '-c', 'mkdir -p /var/www/html/wp-content/mu-plugins && chown 82:82 /var/www/html/wp-content/mu-plugins' ],
 			[],
 			'0:0'
 		);
