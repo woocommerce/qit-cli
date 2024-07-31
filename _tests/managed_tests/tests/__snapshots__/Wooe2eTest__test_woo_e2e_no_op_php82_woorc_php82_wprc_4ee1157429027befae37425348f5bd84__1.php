@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "421 total, 398 passed, 0 failed, 23 skipped.",
+            "test_summary": "418 total, 401 passed, 8 failed, 9 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -44,14 +44,14 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 93,
-                "numPendingTestSuites": 15,
+                "numFailedTestSuites": 8,
+                "numPassedTestSuites": 95,
+                "numPendingTestSuites": 6,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 0,
-                "numPassedTests": 398,
-                "numPendingTests": 23,
-                "numTotalTests": 421,
+                "numFailedTests": 8,
+                "numPassedTests": 401,
+                "numPendingTests": 9,
+                "numTotalTests": 418,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -297,13 +297,13 @@
                     },
                     {
                         "file": "customize-store\\/assembler\\/color-picker.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
+                        "status": "failed",
+                        "has_pending": false,
                         "tests": {
                             "Assembler -> Color Pickers": [
                                 {
                                     "title": "Color pickers should be displayed",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "Color palette Blueberry Sorbet should be applied",
@@ -383,7 +383,7 @@
                                 },
                                 {
                                     "title": "Create \\"your own\\" pickers should be visible",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -466,44 +466,18 @@
                     {
                         "file": "customize-store\\/assembler\\/homepage.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
-                            "Assembler -> Homepage": [
-                                {
-                                    "title": "Available homepage should be displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "The selected homepage should be focused when is clicked",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "The selected homepage should be visible on the site preview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Selected homepage should be applied on the frontend",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Assembler -> Homepage > Homepage tracking banner": [
-                                {
-                                    "title": "Should show the \\"Want more patterns?\\" banner with the Opt-in message when tracking is not allowed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Should show the \\"Want more patterns?\\" banner with the offline message when the user is offline and tracking is not allowed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Should not show the \\"Want more patterns?\\" banner when tracking is allowed",
-                                    "status": "passed"
-                                }
-                            ],
                             "Assembler -> Homepage -> PTK API is down": [
                                 {
                                     "title": "Should show the \\"Want more patterns?\\" banner with the PTK API unavailable message",
                                     "status": "passed"
+                                }
+                            ],
+                            "Assembler -> Homepage": [
+                                {
+                                    "title": "Assembler -> Homepage",
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -532,6 +506,10 @@
                                 },
                                 {
                                     "title": "Clicking the replace image should open the media gallery",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Logo should be visible after header update",
                                     "status": "passed"
                                 },
                                 {
@@ -585,11 +563,11 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Clicking on \\"Customize your theme\\" with a block theme should go to the assembler",
+                                    "title": "it shows the \\"non default block theme\\" banner when the theme is a block theme different than TT4",
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "clicking on \\"Customize your theme\\" with a classic theme should go to the customizer",
+                                    "title": "clicking on \\"Go to the Customizer\\" with a classic theme should go to the customizer",
                                     "status": "passed"
                                 }
                             ]
@@ -747,13 +725,13 @@
                     },
                     {
                         "file": "merchant\\/create-order.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "WooCommerce Orders > Add new order": [
                                 {
                                     "title": "can create a simple guest order",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can create an order for an existing customer",
@@ -907,13 +885,13 @@
                     },
                     {
                         "file": "merchant\\/create-woocommerce-blocks.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
+                        "status": "failed",
+                        "has_pending": false,
                         "tests": {
                             "Add WooCommerce Blocks Into Page": [
                                 {
                                     "title": "can insert all WooCommerce blocks into page",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -921,12 +899,12 @@
                     {
                         "file": "merchant\\/create-woocommerce-patterns.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Add WooCommerce Patterns Into Page": [
                                 {
                                     "title": "can insert WooCommerce patterns into page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -1126,8 +1104,8 @@
                     },
                     {
                         "file": "merchant\\/order-refund.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
+                        "status": "failed",
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
@@ -1136,7 +1114,7 @@
                                 },
                                 {
                                     "title": "can delete an issued refund",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
@@ -1629,7 +1607,7 @@
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "General tab": [],
@@ -1642,7 +1620,7 @@
                             "General tab > Create product": [
                                 {
                                     "title": "can create a simple product",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can not create a product with duplicated SKU",
@@ -1658,21 +1636,21 @@
                     {
                         "file": "merchant\\/products\\/block-editor\\/create-variable-product-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Variations tab": [],
-                            "Variations tab > Create variable product": [
+                            "Variations tab > Create variable products": [
                                 {
                                     "title": "can create a variation option and publish the product",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can edit a variation",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can delete a variation",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can see variations warning and click the CTA",
@@ -1680,7 +1658,7 @@
                                 },
                                 {
                                     "title": "can see single variation warning and click the CTA",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -1726,28 +1704,28 @@
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
+                        "status": "failed",
+                        "has_pending": false,
                         "tests": {
                             "General tab": [],
                             "General tab > Linked product": [
                                 {
                                     "title": "can create a product with linked products",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/organization-tab-product-block-editor.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
+                        "status": "failed",
+                        "has_pending": false,
                         "tests": {
                             "General tab": [],
                             "General tab > Create product - Organization tab": [
                                 {
                                     "title": "can create a simple product with categories, tags and with password required",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -1757,10 +1735,10 @@
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
-                            "can create and add attributes": [
+                            "add local attribute (with terms) to the Product": [
                                 {
-                                    "title": "can create and add attributes",
-                                    "status": "pending"
+                                    "title": "add local attribute (with terms) to the Product",
+                                    "status": "passed"
                                 }
                             ],
                             "can add existing attributes": [
@@ -1879,6 +1857,10 @@
                         "tests": {
                             "WooCommerce General Settings": [
                                 {
+                                    "title": "Save Changes button is disabled by default and enabled only after changes.",
+                                    "status": "passed"
+                                },
+                                {
                                     "title": "can update settings",
                                     "status": "passed"
                                 }
@@ -1887,13 +1869,13 @@
                     },
                     {
                         "file": "merchant\\/settings-shipping.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "WooCommerce Shipping Settings": [
                                 {
                                     "title": "can add shipping methods (free, local, flat rate)",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2395,7 +2377,7 @@
                     {
                         "file": "shopper\\/checkout-block.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Checkout Block page": [
                                 {
@@ -2428,10 +2410,14 @@
                                 },
                                 {
                                     "title": "allows existing customer to place an order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create an account during checkout",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create an account during checkout with custom password",
                                     "status": "passed"
                                 }
                             ]
@@ -2670,7 +2656,7 @@
                     {
                         "file": "shopper\\/product-tags-attributes.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Browse product tags and attributes from the product page": [
                                 {
@@ -2687,7 +2673,7 @@
                                 },
                                 {
                                     "title": "can see products showcase",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2730,12 +2716,12 @@
                     {
                         "file": "shopper\\/shop-products-filter-by-price.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Filter items in the shop by product price": [
                                 {
                                     "title": "filter products by prices on the created page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2805,7 +2791,7 @@
                         }
                     }
                 ],
-                "summary": "421 total, 398 passed, 0 failed, 23 skipped."
+                "summary": "418 total, 401 passed, 8 failed, 9 skipped."
             }
         },
         {
