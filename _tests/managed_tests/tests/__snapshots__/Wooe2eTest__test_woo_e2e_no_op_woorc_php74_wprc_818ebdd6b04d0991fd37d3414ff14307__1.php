@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "418 total, 394 passed, 0 failed, 24 skipped.",
+            "test_summary": "418 total, 392 passed, 0 failed, 26 skipped.",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -45,12 +45,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 91,
-                "numPendingTestSuites": 17,
+                "numPassedTestSuites": 90,
+                "numPendingTestSuites": 18,
                 "numTotalTestSuites": 108,
                 "numFailedTests": 0,
-                "numPassedTests": 394,
-                "numPendingTests": 24,
+                "numPassedTests": 392,
+                "numPendingTests": 26,
                 "numTotalTests": 418,
                 "testResults": [
                     {
@@ -485,7 +485,7 @@
                     {
                         "file": "customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Assembler -> Logo Picker": [
                                 {
@@ -518,7 +518,7 @@
                                 },
                                 {
                                     "title": "The selected image should be visible on the frontend",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2690,7 +2690,7 @@
                                 },
                                 {
                                     "title": "should be able to remove variation products from the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Shopper > Update variable product": [
@@ -2791,7 +2791,7 @@
                         }
                     }
                 ],
-                "summary": "418 total, 394 passed, 0 failed, 24 skipped."
+                "summary": "418 total, 392 passed, 0 failed, 26 skipped."
             }
         }
     ]
