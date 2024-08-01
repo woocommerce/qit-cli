@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "421 total, 398 passed, 0 failed, 23 skipped.",
+            "test_summary": "421 total, 397 passed, 1 failed, 23 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -44,12 +44,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 93,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 92,
                 "numPendingTestSuites": 15,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 0,
-                "numPassedTests": 398,
+                "numFailedTests": 1,
+                "numPassedTests": 397,
                 "numPendingTests": 23,
                 "numTotalTests": 421,
                 "testResults": [
@@ -510,7 +510,7 @@
                     },
                     {
                         "file": "customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Assembler -> Logo Picker": [
@@ -540,7 +540,7 @@
                                 },
                                 {
                                     "title": "The selected image should be visible on the frontend",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2805,7 +2805,7 @@
                         }
                     }
                 ],
-                "summary": "421 total, 398 passed, 0 failed, 23 skipped."
+                "summary": "421 total, 397 passed, 1 failed, 23 skipped."
             }
         },
         {

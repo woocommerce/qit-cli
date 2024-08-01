@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "418 total, 394 passed, 3 failed, 21 skipped.",
+            "test_summary": "418 total, 393 passed, 1 failed, 24 skipped.",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -44,13 +44,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 3,
+                "numFailedTestSuites": 1,
                 "numPassedTestSuites": 91,
-                "numPendingTestSuites": 16,
+                "numPendingTestSuites": 17,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 3,
-                "numPassedTests": 394,
-                "numPendingTests": 21,
+                "numFailedTests": 1,
+                "numPassedTests": 393,
+                "numPendingTests": 24,
                 "numTotalTests": 418,
                 "testResults": [
                     {
@@ -1607,7 +1607,7 @@
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "General tab": [],
@@ -1628,7 +1628,7 @@
                                 },
                                 {
                                     "title": "can a shopper add the simple product to the cart",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2016,7 +2016,7 @@
                     },
                     {
                         "file": "shopper\\/cart-block-calculate-shipping.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Cart Block Calculate Shipping": [
@@ -2034,7 +2034,7 @@
                                 },
                                 {
                                     "title": "should show correct total cart block price with 2 different products and flat rate\\/local pickup",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2159,8 +2159,8 @@
                     },
                     {
                         "file": "shopper\\/cart-checkout-calculate-tax.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Tax rates in the cart and checkout": [],
                             "Tax rates in the cart and checkout > Shopper Tax Display Tests": [
@@ -2200,7 +2200,7 @@
                             "Tax rates in the cart and checkout > Shipping Tax": [
                                 {
                                     "title": "checks that tax is applied to shipping as well as order",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2680,7 +2680,7 @@
                     },
                     {
                         "file": "shopper\\/product-variable.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "Variable Product Page": [
@@ -2690,7 +2690,7 @@
                                 },
                                 {
                                     "title": "should be able to remove variation products from the cart",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "Shopper > Update variable product": [
@@ -2791,7 +2791,7 @@
                         }
                     }
                 ],
-                "summary": "418 total, 394 passed, 3 failed, 21 skipped."
+                "summary": "418 total, 393 passed, 1 failed, 24 skipped."
             }
         }
     ]
