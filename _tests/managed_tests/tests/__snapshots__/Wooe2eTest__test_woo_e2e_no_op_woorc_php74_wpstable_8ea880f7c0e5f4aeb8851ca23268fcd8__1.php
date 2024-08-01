@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "418 total, 394 passed, 8 failed, 16 skipped.",
+            "test_summary": "418 total, 394 passed, 3 failed, 21 skipped.",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -44,13 +44,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 5,
+                "numFailedTestSuites": 3,
                 "numPassedTestSuites": 91,
-                "numPendingTestSuites": 13,
+                "numPendingTestSuites": 16,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 8,
+                "numFailedTests": 3,
                 "numPassedTests": 394,
-                "numPendingTests": 16,
+                "numPendingTests": 21,
                 "numTotalTests": 418,
                 "testResults": [
                     {
@@ -1624,11 +1624,11 @@
                                 },
                                 {
                                     "title": "can not create a product with duplicated SKU",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can a shopper add the simple product to the cart",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2017,20 +2017,20 @@
                     {
                         "file": "shopper\\/cart-block-calculate-shipping.spec.js",
                         "status": "failed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Cart Block Calculate Shipping": [
                                 {
                                     "title": "allows customer to calculate Free Shipping in cart block if in Netherlands",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to calculate Flat rate and Local pickup in cart block if in Portugal",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should show correct total cart block price after updating quantity",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should show correct total cart block price with 2 different products and flat rate\\/local pickup",
@@ -2108,8 +2108,8 @@
                     },
                     {
                         "file": "shopper\\/cart-checkout-block-calculate-tax.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Shopper Cart & Checkout Block Tax Display": [
                                 {
@@ -2152,7 +2152,7 @@
                             "Shipping Cart & Checkout Block Tax": [
                                 {
                                     "title": "that tax is applied in Cart Block to shipping as well as order",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2376,8 +2376,8 @@
                     },
                     {
                         "file": "shopper\\/checkout-block.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Checkout Block page": [
                                 {
@@ -2402,7 +2402,7 @@
                                 },
                                 {
                                     "title": "can choose different shipping types in the checkout",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
@@ -2791,7 +2791,7 @@
                         }
                     }
                 ],
-                "summary": "418 total, 394 passed, 8 failed, 16 skipped."
+                "summary": "418 total, 394 passed, 3 failed, 21 skipped."
             }
         }
     ]
