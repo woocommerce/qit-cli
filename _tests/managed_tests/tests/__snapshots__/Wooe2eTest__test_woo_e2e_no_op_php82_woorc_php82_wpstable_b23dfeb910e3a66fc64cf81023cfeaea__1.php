@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "418 total, 392 passed, 0 failed, 26 skipped.",
+            "test_summary": "418 total, 391 passed, 0 failed, 27 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,12 +45,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 90,
-                "numPendingTestSuites": 18,
+                "numPassedTestSuites": 89,
+                "numPendingTestSuites": 19,
                 "numTotalTestSuites": 108,
                 "numFailedTests": 0,
-                "numPassedTests": 392,
-                "numPendingTests": 26,
+                "numPassedTests": 391,
+                "numPendingTests": 27,
                 "numTotalTests": 418,
                 "testResults": [
                     {
@@ -214,7 +214,7 @@
                     {
                         "file": "admin-marketing\\/overview.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Marketing page": [
                                 {
@@ -231,7 +231,7 @@
                                 },
                                 {
                                     "title": "Learning section can be expanded",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2791,7 +2791,7 @@
                         }
                     }
                 ],
-                "summary": "418 total, 392 passed, 0 failed, 26 skipped."
+                "summary": "418 total, 391 passed, 0 failed, 27 skipped."
             }
         },
         {
