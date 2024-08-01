@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "418 total, 392 passed, 10 failed, 16 skipped.",
+            "test_summary": "418 total, 394 passed, 8 failed, 16 skipped.",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -44,12 +44,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 7,
-                "numPassedTestSuites": 89,
+                "numFailedTestSuites": 5,
+                "numPassedTestSuites": 91,
                 "numPendingTestSuites": 13,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 10,
-                "numPassedTests": 392,
+                "numFailedTests": 8,
+                "numPassedTests": 394,
                 "numPendingTests": 16,
                 "numTotalTests": 418,
                 "testResults": [
@@ -885,13 +885,13 @@
                     },
                     {
                         "file": "merchant\\/create-woocommerce-blocks.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Add WooCommerce Blocks Into Page": [
                                 {
                                     "title": "can insert all WooCommerce blocks into page",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -1635,7 +1635,7 @@
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/create-variable-product-block-editor.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Variations tab": [],
@@ -1646,7 +1646,7 @@
                                 },
                                 {
                                     "title": "can edit a variation",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can delete a variation",
@@ -2791,7 +2791,7 @@
                         }
                     }
                 ],
-                "summary": "418 total, 392 passed, 10 failed, 16 skipped."
+                "summary": "418 total, 394 passed, 8 failed, 16 skipped."
             }
         }
     ]

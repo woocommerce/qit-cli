@@ -33,14 +33,14 @@
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
             "test_summary": "418 total, 394 passed, 8 failed, 16 skipped.",
+            "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
             "workflow_id": "1234567890",
             "runner": "normalized",
-            "test_result_json_extracted": "{EXTRACTED}",
-            "debug_log_extracted": "{EXTRACTED}"
+            "test_result_json_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
@@ -2793,9 +2793,6 @@
                 ],
                 "summary": "418 total, 394 passed, 8 failed, 16 skipped."
             }
-        },
-        {
-            "debug_log": []
         }
     ]
 ]';
