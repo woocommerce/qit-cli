@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "421 total, 398 passed, 0 failed, 23 skipped.",
+            "test_summary": "421 total, 395 passed, 0 failed, 26 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,12 +45,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 93,
-                "numPendingTestSuites": 15,
+                "numPassedTestSuites": 90,
+                "numPendingTestSuites": 18,
                 "numTotalTestSuites": 108,
                 "numFailedTests": 0,
-                "numPassedTests": 398,
-                "numPendingTests": 23,
+                "numPassedTests": 395,
+                "numPendingTests": 26,
                 "numTotalTests": 421,
                 "testResults": [
                     {
@@ -214,7 +214,7 @@
                     {
                         "file": "admin-marketing\\/overview.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Marketing page": [
                                 {
@@ -231,7 +231,7 @@
                                 },
                                 {
                                     "title": "Learning section can be expanded",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -511,7 +511,7 @@
                     {
                         "file": "customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Assembler -> Logo Picker": [
                                 {
@@ -540,7 +540,7 @@
                                 },
                                 {
                                     "title": "The selected image should be visible on the frontend",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2695,7 +2695,7 @@
                     {
                         "file": "shopper\\/product-variable.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Variable Product Page": [
                                 {
@@ -2704,7 +2704,7 @@
                                 },
                                 {
                                     "title": "should be able to remove variation products from the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Shopper > Update variable product": [
@@ -2805,7 +2805,7 @@
                         }
                     }
                 ],
-                "summary": "421 total, 398 passed, 0 failed, 23 skipped."
+                "summary": "421 total, 395 passed, 0 failed, 26 skipped."
             }
         },
         {
