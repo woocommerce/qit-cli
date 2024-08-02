@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "418 total, 391 passed, 0 failed, 27 skipped.",
+            "test_summary": "418 total, 388 passed, 0 failed, 30 skipped.",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -45,12 +45,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 89,
-                "numPendingTestSuites": 19,
+                "numPassedTestSuites": 88,
+                "numPendingTestSuites": 20,
                 "numTotalTestSuites": 108,
                 "numFailedTests": 0,
-                "numPassedTests": 391,
-                "numPendingTests": 27,
+                "numPassedTests": 388,
+                "numPendingTests": 30,
                 "numTotalTests": 418,
                 "testResults": [
                     {
@@ -1981,22 +1981,22 @@
                     {
                         "file": "shopper\\/account-email-receiving.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Shopper Account Email Receiving": [
                                 {
                                     "title": "should receive an email when creating an account",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should receive an email when password reset initiated from admin",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Shopper Password Reset Email Receiving": [
                                 {
                                     "title": "should receive an email when initiating a password reset",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2791,7 +2791,7 @@
                         }
                     }
                 ],
-                "summary": "418 total, 391 passed, 0 failed, 27 skipped."
+                "summary": "418 total, 388 passed, 0 failed, 30 skipped."
             }
         }
     ]
