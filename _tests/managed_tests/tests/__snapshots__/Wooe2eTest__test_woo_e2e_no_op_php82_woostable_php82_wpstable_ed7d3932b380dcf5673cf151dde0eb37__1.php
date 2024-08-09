@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "421 total, 395 passed, 0 failed, 26 skipped.",
+            "test_summary": "421 total, 394 passed, 1 failed, 26 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -44,12 +44,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
+                "numFailedTestSuites": 1,
                 "numPassedTestSuites": 90,
                 "numPendingTestSuites": 18,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 0,
-                "numPassedTests": 395,
+                "numFailedTests": 1,
+                "numPassedTests": 394,
                 "numPendingTests": 26,
                 "numTotalTests": 421,
                 "testResults": [
@@ -510,7 +510,7 @@
                     },
                     {
                         "file": "customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "Assembler -> Logo Picker": [
@@ -536,7 +536,7 @@
                                 },
                                 {
                                     "title": "Enabling the \\"use as site icon\\" option should set the image as the site icon",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "The selected image should be visible on the frontend",
@@ -2805,7 +2805,7 @@
                         }
                     }
                 ],
-                "summary": "421 total, 395 passed, 0 failed, 26 skipped."
+                "summary": "421 total, 394 passed, 1 failed, 26 skipped."
             }
         },
         {
