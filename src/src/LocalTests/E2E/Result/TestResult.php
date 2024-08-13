@@ -25,15 +25,15 @@ class TestResult {
 	}
 
 	public static function init_from( E2EEnvInfo $env_info ): TestResult {
-		$instance              = new self();
-		$instance->status      = 'pending';
-		$instance->env_info    = $env_info;
+		$instance           = new self();
+		$instance->status   = 'pending';
+		$instance->env_info = $env_info;
 
-        if ( ! empty( getenv( 'RESULTS_DIR' ) ) ) {
-            $instance->results_dir = normalize_path( getenv( 'RESULTS_DIR' ) );
-        } else {
-            $instance->results_dir = normalize_path( sys_get_temp_dir() ) . "qit-results-{$env_info->env_id}";
-        }
+		if ( ! empty( getenv( 'RESULTS_DIR' ) ) ) {
+			$instance->results_dir = normalize_path( getenv( 'RESULTS_DIR' ) );
+		} else {
+			$instance->results_dir = normalize_path( sys_get_temp_dir() ) . "qit-results-{$env_info->env_id}";
+		}
 
 		if ( ! mkdir( $instance->results_dir, 0755, false ) ) {
 			throw new \RuntimeException( sprintf( 'Could not create the results directory: %s', $instance->results_dir ) );
