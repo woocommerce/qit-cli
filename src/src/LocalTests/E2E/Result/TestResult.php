@@ -29,8 +29,8 @@ class TestResult {
 		$instance->status   = 'pending';
 		$instance->env_info = $env_info;
 
-		if ( ! empty( getenv( 'RESULTS_DIR' ) ) ) {
-			$instance->results_dir = normalize_path( getenv( 'RESULTS_DIR' ) );
+		if ( ! empty( getenv( 'QIT_RESULTS_DIR' ) ) ) {
+			$instance->results_dir = normalize_path( getenv( 'QIT_RESULTS_DIR' ) );
 		} else {
 			$instance->results_dir = normalize_path( sys_get_temp_dir() ) . "qit-results-{$env_info->env_id}";
 		}
