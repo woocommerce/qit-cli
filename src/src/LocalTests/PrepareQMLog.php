@@ -8,7 +8,7 @@ class PrepareQMLog {
 	 * Reads all JSON files in a directory and returns the data.
 	 *
 	 * @param string $directory
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public function read_json_data( string $directory ): array {
 		$data = [];
@@ -52,8 +52,8 @@ class PrepareQMLog {
 	/**
 	 * Returns a summary of the trace data.
 	 *
-	 * @param array $traces
-	 * @return array
+	 * @param array<mixed> $traces
+	 * @return array<int, array<string,mixed>>
 	 */
 	public function get_trace_summary( array $traces ): array {
 		$summary = [];
@@ -76,7 +76,7 @@ class PrepareQMLog {
 	 * Extracts fatal errors from the debug.log file.
 	 *
 	 * @param string $file_path
-	 * @return array
+	 * @return array<string>
 	 */
 	public function extract_fatal_errors_from_debug_file( string $file_path ): array {
 		$lines  = [];
@@ -100,8 +100,8 @@ class PrepareQMLog {
 	/**
 	 * Formats the fatal error array.
 	 *
-	 * @param array $lines
-	 * @return array
+	 * @param array<string> $lines
+	 * @return array<int,array<string,string>>
 	 */
 	public function extract_error_info( array $lines ): array {
 		$fatal_errors = [];
@@ -148,7 +148,7 @@ class PrepareQMLog {
 	 * Reads every json file in  the QM logs directory and summarizes the data.
 	 *
 	 * @param string $directory
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public function summarize_qm_logs( string $directory ): array {
 		$data            = $this->read_json_data( $directory );
@@ -188,7 +188,7 @@ class PrepareQMLog {
 	 * Returns only the fatal errors from the debug.log file.
 	 *
 	 * @param string $file_path
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public function summarize_debug_logs( string $file_path ): array {
 		if ( ! file_exists( $file_path ) ) {
@@ -224,7 +224,7 @@ class PrepareQMLog {
 	 * Returns a summary of the QM logs and debug logs.
 	 *
 	 * @param string $results_dir
-	 * @return array[]
+	 * @return array<string,mixed>
 	 */
 	public function prepare_qm_logs( string $results_dir ): array {
 		$qm_logs_path = $results_dir . '/logs';
