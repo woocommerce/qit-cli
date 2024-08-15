@@ -205,6 +205,12 @@ class E2ETestManager {
 			// No-op, a debug.log was not present.
 		}
 
+		try {
+			$this->docker->copy_from_docker( $env_info, '/var/www/html/wp-content/plugins/logs', $test_result->get_results_dir() . '/logs' );
+		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// No-op, a debug.log was not present.
+		}
+
 		$report_url = $this->notifier->notify_test_finished( $test_result );
 
 		if ( file_exists( $test_result->get_results_dir() . '/report/index.html' ) ) {

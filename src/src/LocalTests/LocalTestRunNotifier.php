@@ -25,6 +25,9 @@ class LocalTestRunNotifier {
 	/** @var PrepareDebugLog */
 	protected $prepare_debug_log;
 
+	/** @var PrepareQMLog */
+	protected $prepare_qm_log;
+
 	/** @var PlaywrightToPuppeteerConverter */
 	protected $playwright_to_puppeteer_converter;
 
@@ -33,12 +36,14 @@ class LocalTestRunNotifier {
 		OutputInterface $output,
 		Upload $uploader,
 		PrepareDebugLog $prepare_debug_log,
+		PrepareQMLog $prepare_qm_log,
 		PlaywrightToPuppeteerConverter $playwright_to_puppeteer_converter
 	) {
 		$this->zipper                            = $zipper;
 		$this->output                            = $output;
 		$this->uploader                          = $uploader;
 		$this->prepare_debug_log                 = $prepare_debug_log;
+		$this->prepare_qm_log                    = $prepare_qm_log;
 		$this->playwright_to_puppeteer_converter = $playwright_to_puppeteer_converter;
 	}
 
@@ -54,21 +59,30 @@ class LocalTestRunNotifier {
 			}
 		}
 
+		$body = [
+			'woo_id'                  => $woo_extension_id,
+			'woocommerce_version'     => $woocommerce_version,
+			'wordpress_version'       => $env_info->wp,
+			'php_version'             => $env_info->php_version,
+			'additional_plugins'      => $additional_plugins,
+			'will_have_allure_report' => App::getVar( 'should_upload_report' ) ? 'true' : 'false',
+			'test_type'               => 'e2e',
+			'event'                   => 'e2e_local_run',
+		];
+
+		/**
+		 * If specified, a test run will be updated instead of created.
+		 */
+		if ( getenv( 'QIT_TEST_RUN_ID' ) ) {
+			$body['test_run_id'] = getenv( 'QIT_TEST_RUN_ID' );
+		}
+
 		$r = App::make( RequestBuilder::class )
 				->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-started' )
 				->with_method( 'POST' )
 				->with_expected_status_codes( [ 200 ] )
 				->with_timeout_in_seconds( 60 )
-				->with_post_body( [
-					'woo_id'                  => $woo_extension_id,
-					'woocommerce_version'     => $woocommerce_version,
-					'wordpress_version'       => $env_info->wp,
-					'php_version'             => $env_info->php_version,
-					'additional_plugins'      => $additional_plugins,
-					'will_have_allure_report' => App::getVar( 'should_upload_report' ) ? 'true' : 'false',
-					'test_type'               => 'e2e',
-					'event'                   => 'e2e_local_run',
-				] )
+				->with_post_body( $body )
 				->request();
 
 		// Decode response as JSON.
@@ -101,7 +115,14 @@ class LocalTestRunNotifier {
 
 		$results_dir = $test_result->get_results_dir();
 
-		$result_file = $results_dir . '/result.json';
+		$result_file  = $results_dir . '/result.json';
+		$qm_logs_path = $results_dir . '/logs';
+
+		/**
+		 * If the logs directory exists, we will send the Query Monitor logs as well.
+		 */
+		$use_query_monitor_logs = is_dir( $qm_logs_path );
+		$debug_log              = '';
 
 		if ( ! file_exists( $result_file ) ) {
 			throw new \RuntimeException( 'Result file not found.' );
@@ -114,8 +135,6 @@ class LocalTestRunNotifier {
 		}
 
 		$result_json = $this->playwright_to_puppeteer_converter->convert_pw_to_puppeteer( json_decode( $result_json, true ) );
-
-		$debug_log = '';
 
 		if ( file_exists( $results_dir . '/debug.log' ) ) {
 			$prepared_debug_log_path = $results_dir . '/debug-prepared.log';
@@ -149,6 +168,12 @@ class LocalTestRunNotifier {
 		// If it has failed any assertion, it's a failure.
 		if ( $this->playwright_to_puppeteer_converter->has_failed( $result_json ) ) {
 			$status = 'failed';
+		}
+
+		if ( $use_query_monitor_logs ) {
+			$qm_logs              = $this->prepare_qm_log->prepare_qm_logs( $results_dir );
+			$qm_logs['debug_log'] = $debug_log;
+			$debug_log            = json_encode( $qm_logs );
 		}
 
 		$data = [
