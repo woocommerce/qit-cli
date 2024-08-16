@@ -18,33 +18,31 @@ class PrepareQMLog {
 			$directory .= DIRECTORY_SEPARATOR;
 		}
 
-		// Check if the directory exists.
-		if ( is_dir( $directory ) ) {
-			$dh = opendir( $directory );
+        if ( is_dir( $directory ) ) {
 
-			if ( $dh ) {
+            if ( $dh = opendir( $directory ) ) {
 
-				$file = readdir( $dh );
+                while ( ( $file = readdir( $dh ) ) !== false) {
 
-				while ( $file !== false ) {
-					if ( pathinfo( $file, PATHINFO_EXTENSION ) === 'json' ) {
-						$file_path = $directory . $file;
+                    $file_path = $directory . $file;
+                    echo "file: $file_path\n";
 
-						$json_content = file_get_contents( $file_path );
+                    if ( pathinfo( $file, PATHINFO_EXTENSION ) === 'json' ) {
 
-						if ( $json_content ) {
-							$data[ $file ] = json_decode( $json_content, true );
-						}
-					}
-				}
+                        // Read the JSON file and decode its content
+                        if ( $json_content = file_get_contents( $file_path ) ) {
+                            $data[ $file ] = json_decode( $json_content, true );
+                        }
+                    }
+                }
 
-				closedir( $dh );
-			} else {
-				echo "Could not open directory: $directory"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			}
-		} else {
-			echo "Directory does not exist: $directory"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		}
+                closedir( $dh );
+            } else {
+                echo "Could not open directory: $directory";
+            }
+        } else {
+            echo "Directory does not exist: $directory";
+        }
 
 		return $data;
 	}
@@ -79,22 +77,20 @@ class PrepareQMLog {
 	 * @return array<string>
 	 */
 	public function extract_fatal_errors_from_debug_file( string $file_path ): array {
-		$lines  = [];
-		$handle = fopen( $file_path, 'r' );
-		if ( $handle ) {
-			$line = fgets( $handle );
+        $lines  = [];
+        $handle = fopen( $file_path, 'r' );
+        if ( $handle ) {
+            while ( ( $line = fgets( $handle ) ) !== false ) {
+                if ( str_contains( $line, 'PHP Fatal error:' ) ) {
+                    $lines[] = $line;
+                }
+            }
+            fclose( $handle );
+        } else {
+            echo 'Error opening the file.';
+        }
 
-			while ( $line !== false ) {
-				if ( str_contains( $line, 'PHP Fatal error:' ) ) {
-					$lines[] = $line;
-				}
-			}
-			fclose( $handle );
-		} else {
-			echo 'Error opening the file.';
-		}
-
-		return $lines;
+        return $lines;
 	}
 
 	/**
@@ -195,7 +191,10 @@ class PrepareQMLog {
 			return [];
 		}
 
+        echo 'Reading fatal errors from debug.log...'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		$fatal_error_lines = $this->extract_fatal_errors_from_debug_file( $file_path );
+
+        echo 'Extracting error info...'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		$fatal_errors      = $this->extract_error_info( $fatal_error_lines );
 		$summarized_errors = [];
 
@@ -227,12 +226,12 @@ class PrepareQMLog {
 	 * @return array<string,mixed>
 	 */
 	public function prepare_qm_logs( string $results_dir ): array {
-		$qm_logs_path = $results_dir . '/logs';
-		$debug_log    = $results_dir . '/debug.log';
-		$debug_log    = $this->summarize_debug_logs( $debug_log );
-		$qm_log       = $this->summarize_qm_logs( $qm_logs_path );
+		$qm_logs_path   = $results_dir . '/logs';
+		$debug_log_path = $results_dir . '/debug.log';
+		$debug_log      = $this->summarize_debug_logs( $debug_log_path );
+		$qm_log         = $this->summarize_qm_logs( $qm_logs_path );
 
-		if ( ! empty( $debug_log ) && ! empty( $qm_log ) ) {
+		if ( empty( $debug_log ) && empty( $qm_log ) ) {
 			return [];
 		}
 
