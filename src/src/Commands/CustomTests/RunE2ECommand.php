@@ -143,8 +143,17 @@ class RunE2ECommand extends DynamicCommand {
 		$shard               = $input->getOption( 'shard' );
 		$update_snapshots    = $input->getOption( 'update_snapshots' );
 		$pw_options          = $input->getOption( 'pw_options' ) ?? '';
-		$source              = $input->getOption( 'source' ) ?? $woo_extension;
 		$sut_action          = $input->getOption( 'sut_action' );
+
+		if ( empty( $input->getOption( 'source' ) ) ) {
+			$source = $woo_extension;
+		} else {
+			if ( file_exists( realpath( $input->getOption( 'source' ) ) ) ) {
+				$source = realpath( $input->getOption( 'source' ) );
+			} else {
+				$source = $input->getOption( 'source' );
+			}
+		}
 
 		// Prevent usage of "--woo" and "--plugin woocommerce" together.
 		if ( ! empty( $woocommerce_version ) && ! empty( $input->getOption( 'plugin' ) ) ) {
@@ -193,8 +202,8 @@ class RunE2ECommand extends DynamicCommand {
 			// Validate WooExtension.
 			try {
 				if ( is_numeric( $woo_extension ) ) {
-					$woo_extension    = $this->woo_extensions_list->get_woo_extension_slug_by_id( $woo_extension );
 					$woo_extension_id = $woo_extension;
+					$woo_extension    = $this->woo_extensions_list->get_woo_extension_slug_by_id( $woo_extension );
 				} else {
 					$woo_extension_id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $woo_extension );
 				}
@@ -273,6 +282,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		putenv( 'QIT_UP_AND_TEST=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		putenv( sprintf( 'QIT_SUT=%s', $woo_extension ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		putenv( sprintf( 'QIT_SUT_SOURCE=%s', $source ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		if ( ! empty( $woo_extension_id ) ) {
 			App::setVar( 'QIT_SUT', (int) $woo_extension_id );
 		}
