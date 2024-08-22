@@ -125,7 +125,10 @@ class PluginsAndThemesParser {
 						) {
 							$parent_theme = $this->maybe_fetch_parent_theme( $source );
 
-							if ( ! empty( $parent_theme ) ) {
+							if (
+                                ! empty( $parent_theme ) &&
+                                ! in_array( $parent_theme, $plugins_or_themes )
+                            ) {
 								$theme               = $this->parse_extensions( [ $parent_theme ], $type )[0];
 								$parsed_extensions[] = $theme;
 							}
