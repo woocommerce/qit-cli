@@ -98,7 +98,7 @@ class PluginsAndThemesParser {
 			}
 
 			if ( ! empty( getenv( 'QIT_SUT' ) ) && ! empty( getenv( 'QIT_SUT_SOURCE' ) ) ) {
-				if ( $extension['slug'] === getenv( 'QIT_SUT' ) ) {
+				if ( ! empty( $extension['slug'] ) && $extension['slug'] === getenv( 'QIT_SUT' ) ) {
 					$extension['source'] = getenv( 'QIT_SUT_SOURCE' );
 				}
 			}
