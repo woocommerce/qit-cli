@@ -143,8 +143,17 @@ class RunE2ECommand extends DynamicCommand {
 		$shard               = $input->getOption( 'shard' );
 		$update_snapshots    = $input->getOption( 'update_snapshots' );
 		$pw_options          = $input->getOption( 'pw_options' ) ?? '';
-		$source              = $input->getOption( 'source' ) ?? $woo_extension;
 		$sut_action          = $input->getOption( 'sut_action' );
+
+		if ( empty( $input->getOption( 'source' ) ) ) {
+			$source = $woo_extension;
+		} else {
+			if ( file_exists( realpath( $input->getOption( 'source' ) ) ) ) {
+				$source = realpath( $input->getOption( 'source' ) );
+			} else {
+				$source = $input->getOption( 'source' );
+			}
+		}
 
 		// Prevent usage of "--woo" and "--plugin woocommerce" together.
 		if ( ! empty( $woocommerce_version ) && ! empty( $input->getOption( 'plugin' ) ) ) {
