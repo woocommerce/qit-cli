@@ -97,6 +97,12 @@ class PluginsAndThemesParser {
 				}
 			}
 
+			if ( ! empty( getenv( 'QIT_SUT' ) ) && ! empty( getenv( 'QIT_SUT_SOURCE' ) ) ) {
+				if ( ! empty( $extension['slug'] ) && $extension['slug'] === getenv( 'QIT_SUT' ) ) {
+					$extension['source'] = getenv( 'QIT_SUT_SOURCE' );
+				}
+			}
+
 			// If "source" is empty, use slug as the source.
 			if ( ! isset( $extension['source'] ) ) {
 				// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
