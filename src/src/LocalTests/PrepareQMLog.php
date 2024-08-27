@@ -20,17 +20,18 @@ class PrepareQMLog {
 
 		if ( is_dir( $directory ) ) {
 
+            // phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
 			if ( $dh = opendir( $directory ) ) {
 
 				while ( ( $file = readdir( $dh ) ) !== false ) {
 
 					$file_path = $directory . $file;
-					echo "file: $file_path\n";
 
 					if ( pathinfo( $file, PATHINFO_EXTENSION ) === 'json' ) {
 
-						// Read the JSON file and decode its content
-						if ( $json_content = file_get_contents( $file_path ) ) {
+						$json_content = file_get_contents( $file_path );
+
+						if ( $json_content ) {
 							$data[ $file ] = json_decode( $json_content, true );
 						}
 					}
@@ -38,9 +39,11 @@ class PrepareQMLog {
 
 				closedir( $dh );
 			} else {
+                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				echo "Could not open directory: $directory";
 			}
 		} else {
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo "Directory does not exist: $directory";
 		}
 
@@ -79,12 +82,15 @@ class PrepareQMLog {
 	public function extract_fatal_errors_from_debug_file( string $file_path ): array {
 		$lines  = [];
 		$handle = fopen( $file_path, 'r' );
+
 		if ( $handle ) {
+
 			while ( ( $line = fgets( $handle ) ) !== false ) {
 				if ( str_contains( $line, 'PHP Fatal error:' ) ) {
 					$lines[] = $line;
 				}
 			}
+
 			fclose( $handle );
 		} else {
 			echo 'Error opening the file.';
