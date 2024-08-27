@@ -211,7 +211,7 @@ class Docker {
 	 */
 	public function copy_from_docker( EnvInfo $env_info, string $container_path, string $local_path, string $image = 'php' ): void {
 		$docker_container = $env_info->get_docker_container( $image );
-		$docker_command   = [ $this->find_docker(), 'exec', $docker_container, 'test', '-f', $container_path ];
+		$docker_command   = [ $this->find_docker(), 'exec', $docker_container, 'test', '-e', $container_path ];
 
 		$process = new Process( $docker_command );
 		$process->setTimeout( 30 );
