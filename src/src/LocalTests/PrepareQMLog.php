@@ -18,31 +18,31 @@ class PrepareQMLog {
 			$directory .= DIRECTORY_SEPARATOR;
 		}
 
-        if ( is_dir( $directory ) ) {
+		if ( is_dir( $directory ) ) {
 
-            if ( $dh = opendir( $directory ) ) {
+			if ( $dh = opendir( $directory ) ) {
 
-                while ( ( $file = readdir( $dh ) ) !== false) {
+				while ( ( $file = readdir( $dh ) ) !== false ) {
 
-                    $file_path = $directory . $file;
-                    echo "file: $file_path\n";
+					$file_path = $directory . $file;
+					echo "file: $file_path\n";
 
-                    if ( pathinfo( $file, PATHINFO_EXTENSION ) === 'json' ) {
+					if ( pathinfo( $file, PATHINFO_EXTENSION ) === 'json' ) {
 
-                        // Read the JSON file and decode its content
-                        if ( $json_content = file_get_contents( $file_path ) ) {
-                            $data[ $file ] = json_decode( $json_content, true );
-                        }
-                    }
-                }
+						// Read the JSON file and decode its content
+						if ( $json_content = file_get_contents( $file_path ) ) {
+							$data[ $file ] = json_decode( $json_content, true );
+						}
+					}
+				}
 
-                closedir( $dh );
-            } else {
-                echo "Could not open directory: $directory";
-            }
-        } else {
-            echo "Directory does not exist: $directory";
-        }
+				closedir( $dh );
+			} else {
+				echo "Could not open directory: $directory";
+			}
+		} else {
+			echo "Directory does not exist: $directory";
+		}
 
 		return $data;
 	}
@@ -77,20 +77,20 @@ class PrepareQMLog {
 	 * @return array<string>
 	 */
 	public function extract_fatal_errors_from_debug_file( string $file_path ): array {
-        $lines  = [];
-        $handle = fopen( $file_path, 'r' );
-        if ( $handle ) {
-            while ( ( $line = fgets( $handle ) ) !== false ) {
-                if ( str_contains( $line, 'PHP Fatal error:' ) ) {
-                    $lines[] = $line;
-                }
-            }
-            fclose( $handle );
-        } else {
-            echo 'Error opening the file.';
-        }
+		$lines  = [];
+		$handle = fopen( $file_path, 'r' );
+		if ( $handle ) {
+			while ( ( $line = fgets( $handle ) ) !== false ) {
+				if ( str_contains( $line, 'PHP Fatal error:' ) ) {
+					$lines[] = $line;
+				}
+			}
+			fclose( $handle );
+		} else {
+			echo 'Error opening the file.';
+		}
 
-        return $lines;
+		return $lines;
 	}
 
 	/**
@@ -191,10 +191,10 @@ class PrepareQMLog {
 			return [];
 		}
 
-        echo 'Reading fatal errors from debug.log...'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo 'Reading fatal errors from debug.log...'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		$fatal_error_lines = $this->extract_fatal_errors_from_debug_file( $file_path );
 
-        echo 'Extracting error info...'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo 'Extracting error info...'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		$fatal_errors      = $this->extract_error_info( $fatal_error_lines );
 		$summarized_errors = [];
 

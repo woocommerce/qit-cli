@@ -115,7 +115,7 @@ class LocalTestRunNotifier {
 
 		$results_dir = $test_result->get_results_dir();
 
-		$result_file   = $results_dir . '/result.json';
+		$result_file  = $results_dir . '/result.json';
 		$qm_logs_path = $results_dir . '/logs';
 
 		/**
@@ -171,7 +171,7 @@ class LocalTestRunNotifier {
 		}
 
 		if ( $use_query_monitor_logs ) {
-            $this->output->writeln( 'Parsing Query Monitor Logs' );
+			$this->output->writeln( 'Parsing Query Monitor Logs' );
 
 			$qm_logs              = $this->prepare_qm_log->prepare_qm_logs( $results_dir );
 			$qm_logs['debug_log'] = $debug_log;
