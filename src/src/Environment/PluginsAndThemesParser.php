@@ -370,7 +370,7 @@ class PluginsAndThemesParser {
 		return $extension;
 	}
 
-	public function maybe_fetch_parent_theme( string $theme_dir ) {
+	public function maybe_fetch_parent_theme( string $theme_dir ): string {
 		if ( ! is_dir( $theme_dir ) ) {
 			return '';
 		}
