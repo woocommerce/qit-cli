@@ -197,8 +197,38 @@ HELP
 			return Command::FAILURE;
 		}
 
+		/*
+		 * Process the "--woo" command line option to determine the appropriate WooCommerce plugin version or build.
+		 * This includes resolving specific versions like "8.6.1" or special tags like "nightly".
+		 * Example inputs:
+		 * - "--woo nightly" targets the latest nightly build.
+		 * - "--woo 8.6.1" targets a specific GitHub release.
+		 *
+		 * The code also handles complex scenarios, such as:
+		 * "--woo nightly --plugin woocommerce:test:activation"
+		 * where it configures the environment to use the nightly build of WooCommerce and run a specific 'activation' test suite.
+		 */
 		if ( ! empty( $woo ) ) {
-			$options_to_env_info['overrides']['plugin'][] = EnvironmentVersionResolver::resolve_woo( $woo );
+			// Resolve the WooCommerce version or build based on the "--woo" option.
+			// Example of 'plugin' option before resolution: ["woocommerce:test:activation"]
+			$options_to_env_info['overrides']['plugin'][] = EnvironmentVersionResolver::resolve_woo( $woo, $input->getOption( 'plugin' ) );
+
+			// In the case a Woo Test tag was also requested, remove duplicated WooCommerce plugin entries in the environment settings.
+			// At this point, we have this: ["woocommerce:test:activation", {"slug":"woocommerce", "source":"https:\/\/downloads.wordpress.org\/plugin\/woocommerce.latest-stable.zip", "action":"test", "test_tags":["activation"]}]
+			// And we will remove the first entry.
+			foreach ( $options_to_env_info['overrides']['plugin'] as $k => $p ) {
+				// Check if $p starts with "woocommerce:"
+				if ( is_string( $p ) && strpos( $p, 'woocommerce:' ) === 0 ) {
+					// If it does, check if there is already a parsed version of Woo.
+					foreach ( $options_to_env_info['overrides']['plugin'] as $k2 => $p2 ) {
+						if ( ! is_array( $p2 ) || empty( $p2['slug'] ) || $p2['slug'] !== 'woocommerce' ) {
+							continue;
+						}
+						// Here we found a parsed version of Woo, so we remove the original entry.
+						unset( $options_to_env_info['overrides']['plugin'][ $k ] );
+					}
+				}
+			}
 		}
 
 		if ( $skip_activating_plugins ) {
