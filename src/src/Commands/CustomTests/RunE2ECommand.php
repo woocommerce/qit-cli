@@ -61,8 +61,7 @@ class RunE2ECommand extends DynamicCommand {
 		OutputInterface $output,
 		E2ETestManager $e2e_test_manager,
 		WooExtensionsList $woo_extensions_list,
-		LocalTestRunNotifier $test_run_notifier,
-		WPORGDependencies $wporg_dependencies
+		LocalTestRunNotifier $test_run_notifier
 	) {
 		$this->e2e_environment     = $e2e_environment;
 		$this->cache               = $cache;
@@ -70,7 +69,6 @@ class RunE2ECommand extends DynamicCommand {
 		$this->e2e_test_manager    = $e2e_test_manager;
 		$this->woo_extensions_list = $woo_extensions_list;
 		$this->test_run_notifier   = $test_run_notifier;
-		$this->wporg_dependencies  = $wporg_dependencies;
 
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
