@@ -45,7 +45,11 @@ class CreateRunCommands extends DynamicCommandCreator {
 	}
 
 	public function register_commands( Application $application ): void {
+		$ignored_test_types = [ 'activation' ];
 		foreach ( $this->cache->get_manager_sync_data( 'test_types' ) as $test_type ) {
+			if ( in_array( $test_type, $ignored_test_types, true ) ) {
+				continue;
+			}
 			$this->register_command_by_schema( $application, $test_type, $this->cache->get_manager_sync_data( 'schemas' )[ $test_type ] );
 		}
 	}
