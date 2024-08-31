@@ -26,15 +26,18 @@ class RequiresPluginsResolverTest extends TestCase {
 			'extensions' => [
 				[
 					'id'           => 1,
-					'slug'         => 'woo-extension-1',
-					'dependencies' => [],
+					'slug'         => 'automatewoo-referrals',
+					'dependencies' => [
+						'wporg' => [],
+						'woo'   => [],
+					],
 				],
 			],
 		], - 1 );
 
 		$d = App::make( RequiresPluginsResolver::class )->resolve_dependencies( 1 );
 
-		$this->assertEquals( [], $d );
+		$this->assertEquals( [ 'woo' => [], 'wporg' => [] ], $d );
 	}
 
 	public function test_resolve_woo_dependency() {
@@ -42,11 +45,12 @@ class RequiresPluginsResolverTest extends TestCase {
 			'extensions' => [
 				[
 					'id'           => 1,
-					'slug'         => 'woo-extension-1',
+					'slug'         => 'automatewoo-referrals',
 					'dependencies' => [
-						'woo' => [
+						'woo'   => [
 							123,
 						],
+						'wporg' => [],
 					],
 				],
 			],
@@ -54,7 +58,10 @@ class RequiresPluginsResolverTest extends TestCase {
 
 		$d = App::make( RequiresPluginsResolver::class )->resolve_dependencies( 1 );
 
-		$this->assertEquals( [ 'woo' => [ 123 ] ], $d );
+		$this->assertEquals( [
+			'woo'   => [ 123 ],
+			'wporg' => [],
+		], $d );
 	}
 
 	public function test_resolve_wporg_dependency() {
@@ -62,23 +69,27 @@ class RequiresPluginsResolverTest extends TestCase {
 			'extensions' => [
 				[
 					'id'           => 1,
-					'slug'         => 'woo-extension-1',
+					'slug'         => 'automatewoo-referrals',
 					'dependencies' => [
 						'wporg' => [
-							'bar',
+							'automatewoo',
 						],
+						'woo'   => [],
 					],
 				],
 			],
 		], - 1 );
 
-		App::setVar( 'MOCKED_WPORG_REQUIRES_PLUGINS_RESPONSE', json_encode( [
+		App::setVar( 'MOCKED_WPORG_REQUIRES_PLUGINS_RESPONSE_automatewoo', json_encode( [
 			'requires_plugins' => [],
 		] ) );
 
 		$d = App::make( RequiresPluginsResolver::class )->resolve_dependencies( 1 );
 
-		$this->assertEquals( [ 'wporg' => [ 'bar' ] ], $d );
+		$this->assertEquals( [
+			'woo'   => [],
+			'wporg' => [ 'automatewoo' ],
+		], $d );
 	}
 
 	public function test_resolve_wporg_dependency_with_dependencies() {
@@ -86,22 +97,122 @@ class RequiresPluginsResolverTest extends TestCase {
 			'extensions' => [
 				[
 					'id'           => 1,
-					'slug'         => 'woo-extension-1',
+					'slug'         => 'automatewoo-referrals',
 					'dependencies' => [
 						'wporg' => [
-							'bar',
+							'automatewoo',
+						],
+						'woo'   => [],
+					],
+				],
+			],
+		], - 1 );
+
+		App::setVar( 'MOCKED_WPORG_REQUIRES_PLUGINS_RESPONSE_automatewoo', json_encode( [
+			'requires_plugins' => [ 'woocommerce-payments' ],
+		] ) );
+
+		App::setVar( 'MOCKED_WPORG_REQUIRES_PLUGINS_RESPONSE_woocommerce-payments', json_encode( [
+			'requires_plugins' => [],
+		] ) );
+
+		$d = App::make( RequiresPluginsResolver::class )->resolve_dependencies( 1 );
+
+		$this->assertEquals( [
+			'woo'   => [],
+			'wporg' => [ 'woocommerce-payments', 'automatewoo' ],
+		], $d );
+	}
+
+	public function test_resolve_wporg_dependency_as_itself() {
+		App::make( Cache::class )->set( App::make( ManagerSync::class )->sync_cache_key, [
+			'extensions' => [
+				[
+					'id'           => 1,
+					'slug'         => 'automatewoo-referrals',
+					'dependencies' => [
+						'wporg' => [
+							'automatewoo-referrals',
+						],
+						'woo'   => [],
+					],
+				],
+			],
+		], - 1 );
+
+		App::setVar( 'MOCKED_WPORG_REQUIRES_PLUGINS_RESPONSE_automatewoo-referrals', json_encode( [
+			'requires_plugins' => [ '' ],
+		] ) );
+
+		$d = App::make( RequiresPluginsResolver::class )->resolve_dependencies( 1 );
+
+		$this->assertEquals( [
+			'woo'   => [],
+			'wporg' => [ 'automatewoo-referrals' ],
+		], $d );
+	}
+
+	public function test_resolve_woo_dependency_as_itself() {
+		App::make( Cache::class )->set( App::make( ManagerSync::class )->sync_cache_key, [
+			'extensions' => [
+				[
+					'id'           => 1,
+					'slug'         => 'automatewoo-referrals',
+					'dependencies' => [
+						'wporg' => [],
+						'woo'   => [
+							1,
 						],
 					],
 				],
 			],
 		], - 1 );
 
-		App::setVar( 'MOCKED_WPORG_REQUIRES_PLUGINS_RESPONSE', json_encode( [
-			'requires_plugins' => [ 'foo' ],
+		App::setVar( 'MOCKED_WPORG_REQUIRES_PLUGINS_RESPONSE_automatewoo-referrals', json_encode( [
+			'requires_plugins' => [ '' ],
 		] ) );
 
 		$d = App::make( RequiresPluginsResolver::class )->resolve_dependencies( 1 );
 
-		$this->assertEquals( [ 'wporg' => [ 'foo', 'bar' ] ], $d );
+		$this->assertEquals( [
+			'woo'   => [ 1 ],
+			'wporg' => [],
+		], $d );
+	}
+
+	public function test_resolve_wporg_dependencies_of_woo_dependency() {
+		App::make( Cache::class )->set( App::make( ManagerSync::class )->sync_cache_key, [
+			'extensions' => [
+				[
+					'id'           => 1,
+					'slug'         => 'automatewoo-referrals',
+					'dependencies' => [
+						'wporg' => [],
+						'woo' => [ 2 ],
+					],
+				],
+				[
+					'id'           => 2,
+					'slug'         => 'automatewoo-birthdays',
+					'dependencies' => [
+						'wporg' => [
+							'woocommerce-payments',
+						],
+						'woo'   => [],
+					],
+				],
+			],
+		], - 1 );
+
+		App::setVar( 'MOCKED_WPORG_REQUIRES_PLUGINS_RESPONSE_woocommerce-payments', json_encode( [
+			'requires_plugins' => [ 'woocommerce' ],
+		] ) );
+
+		$d = App::make( RequiresPluginsResolver::class )->resolve_dependencies( 1 );
+
+		$this->assertEquals( [
+			'woo'   => [ 2 ],
+			'wporg' => [ 'woocommerce', 'woocommerce-payments' ],
+		], $d );
 	}
 }

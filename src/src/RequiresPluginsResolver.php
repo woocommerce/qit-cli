@@ -15,7 +15,7 @@ class RequiresPluginsResolver {
 		Cache $cache,
 		WooExtensionsList $woo_extensions_list
 	) {
-		$this->cache = $cache;
+		$this->cache               = $cache;
 		$this->woo_extensions_list = $woo_extensions_list;
 	}
 
@@ -31,16 +31,41 @@ class RequiresPluginsResolver {
 	}
 
 	public function resolve_dependencies( int $woo_extension_id ): array {
-		$dependencies = $this->resolve_wporg_dependencies( $woo_extension_id );
-		$dependencies = array_merge( $dependencies, $this->resolve_woocom_dependencies( $woo_extension_id ) );
+		$resolved_dependencies = [
+			'woo'   => [],
+			'wporg' => [],
+		];
 
-		return $dependencies;
+		$dependencies = $this->woo_extensions_list->get_woo_extension_dependencies( $woo_extension_id );
+
+		foreach ( $dependencies['woo'] ?? [] as $woo_dependency ) {
+			foreach ( $this->resolve_woocom_dependencies( $woo_dependency ) as $resolved_woo_dependency ) {
+				$resolved_dependencies['woo'][] = $resolved_woo_dependency;
+			}
+			$resolved_dependencies['woo'][] = $woo_dependency;
+		}
+
+		foreach ( $dependencies['wporg'] ?? [] as $wporg_dependency ) {
+			$dependencies_of_this_dependency = $this->resolve_wporg_dependencies( $wporg_dependency );
+			foreach ( $dependencies_of_this_dependency as $resolved_wporg_dependency ) {
+				$resolved_dependencies['wporg'][] = $resolved_wporg_dependency;
+			}
+			$resolved_dependencies['wporg'][] = $wporg_dependency;
+		}
+
+		$resolved_dependencies['woo']   = array_unique( $resolved_dependencies['woo'] );
+		$resolved_dependencies['wporg'] = array_unique( $resolved_dependencies['wporg'] );
+
+		return $resolved_dependencies;
 	}
 
 	protected function resolve_woocom_dependencies( int $woo_extension_id ): array {
-		$dependencies = $this->woo_extensions_list->get_woo_extension_dependencies( $woo_extension_id );
-
-		return $dependencies;
+		try {
+			return $this->woo_extensions_list->get_woo_extension_dependencies( $woo_extension_id )['woo'] ?? [];
+		} catch ( \Exception $e ) {
+			// This can happen if the plugin has a Woo dependency that the user does not have access to.
+			return [];
+		}
 	}
 
 	/**
@@ -64,14 +89,25 @@ class RequiresPluginsResolver {
 			return $cached;
 		}
 
+		// Initialize an empty array for dependencies if not already set.
 		$dependencies = [];
 
-		if ( ! empty( App::getVar( 'MOCKED_WPORG_REQUIRES_PLUGINS_RESPONSE' ) ) ) {
-			$data = json_decode( App::getVar( 'MOCKED_WPORG_REQUIRES_PLUGINS_RESPONSE' ), true );
+		// Check if the plugin has already been processed to avoid infinite recursion.
+		if ( in_array( $slug, $this->resolved_tree ) ) {
+			return [];
+		}
+
+		// Add the current plugin to the resolved tree to mark it as processed.
+		$this->resolved_tree[] = $slug;
+
+		if ( ! empty( App::getVar( "MOCKED_WPORG_REQUIRES_PLUGINS_RESPONSE_$slug" ) ) ) {
+			$data = json_decode( App::getVar( "MOCKED_WPORG_REQUIRES_PLUGINS_RESPONSE_$slug" ), true );
 		} else {
-			// Account for the possibility of the request failing. If it's a 429, wait and retry up to 2 times.
-			$retries = 0;
-			$curl    = curl_init();
+			if ( defined( 'UNIT_TESTS' ) ) {
+				throw new \LogicException( 'This method should not be called in unit tests without a mocked response. Expected: ' . "MOCKED_WPORG_REQUIRES_PLUGINS_RESPONSE_$slug" );
+			}
+
+			$curl = curl_init();
 			curl_setopt_array( $curl, [
 				CURLOPT_URL            => "https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&slug=$slug",
 				CURLOPT_RETURNTRANSFER => true,
@@ -80,15 +116,10 @@ class RequiresPluginsResolver {
 					'Accept: application/json',
 				],
 			] );
-			retry:
-			$response  = curl_exec( $curl );
+
+			$response  = $this->maybe_mock_curl_response( $curl );
 			$http_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
 			curl_close( $curl );
-			if ( $http_code === 429 && $retries < 2 ) {
-				sleep( 5 );
-				$retries ++;
-				goto retry;
-			}
 
 			if ( $http_code !== 200 ) {
 				return [];
@@ -97,17 +128,20 @@ class RequiresPluginsResolver {
 			$data = json_decode( $response, true );
 		}
 
-		if ( ! isset( $data['requires_plugins'] ) ) {
+		if ( empty( $data['requires_plugins'] ) ) {
 			return [];
 		}
 
 		foreach ( $data['requires_plugins'] as $required_plugin ) {
+			if ( empty( $required_plugin ) ) {
+				continue;
+			}
 			$dependencies   = array_merge( $dependencies, $this->resolve_wporg_dependencies( $required_plugin ) );
 			$dependencies[] = $required_plugin;
 		}
 
 		$this->cache->set( "wporg_dependencies_$slug", $dependencies, HOUR_IN_SECONDS );
 
-		return [ 'wporg' => $dependencies ];
+		return $dependencies;
 	}
 }
