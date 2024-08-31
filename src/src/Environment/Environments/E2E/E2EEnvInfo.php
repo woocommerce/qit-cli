@@ -26,6 +26,9 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var string The slug of the extension under test. */
 	public $sut_slug;
 
+	/** @var string The type of the SUT, either "plugin" or "theme". */
+	public $sut_type;
+
 	/** @var int The Woo ID of the extension under test. */
 	public $sut_id;
 

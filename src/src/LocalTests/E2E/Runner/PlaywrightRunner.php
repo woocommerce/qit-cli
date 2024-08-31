@@ -80,6 +80,11 @@ class PlaywrightRunner extends E2ERunner {
 
 		$ci = ! empty( getenv( 'CI' ) );
 
+		file_put_contents( $env_info->temporary_env . 'playwright/test-info.json', json_encode( [
+			'SUT_SLUG' => $env_info->sut_slug,
+			'SUT_TYPE' => $env_info->sut_type,
+		] ) );
+
 		$playwright_args = [
 			App::make( Docker::class )->find_docker(),
 			'run',
@@ -108,6 +113,8 @@ class PlaywrightRunner extends E2ERunner {
 			$env_info->temporary_env . '/playwright/db-import.js:/qit/tests/e2e/db-import.js',
 			'-v',
 			$env_info->temporary_env . '/playwright/qitHelpers.js:/qitHelpers/qitHelpers.js',
+			'-v',
+			$env_info->temporary_env . '/playwright/test-info.json:/qitHelpers/test-info.json', // Contains information about the test, such as the SUT slug, type, etc.
 			'-v',
 			$env_info->temporary_env . '/playwright/qitHelpers-package.json:/qitHelpers/package.json',
 			'-v',
