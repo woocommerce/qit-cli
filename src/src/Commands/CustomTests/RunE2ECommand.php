@@ -16,10 +16,11 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
+use QIT_CLI\Environment\Extension;
 use QIT_CLI\LocalTests\E2E\E2ETestManager;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
+use QIT_CLI\PluginDependencies;
 use QIT_CLI\WooExtensionsList;
-use QIT_CLI\WPORGDependencies;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -50,8 +51,8 @@ class RunE2ECommand extends DynamicCommand {
 	/** @var LocalTestRunNotifier */
 	protected $test_run_notifier;
 
-	/** @var WPORGDependencies */
-	protected $wporg_dependencies;
+	/** @var PluginDependencies */
+	protected $dependencies;
 
 	protected static $defaultName = 'run:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
@@ -61,7 +62,8 @@ class RunE2ECommand extends DynamicCommand {
 		OutputInterface $output,
 		E2ETestManager $e2e_test_manager,
 		WooExtensionsList $woo_extensions_list,
-		LocalTestRunNotifier $test_run_notifier
+		LocalTestRunNotifier $test_run_notifier,
+		PluginDependencies $dependencies
 	) {
 		$this->e2e_environment     = $e2e_environment;
 		$this->cache               = $cache;
@@ -69,6 +71,7 @@ class RunE2ECommand extends DynamicCommand {
 		$this->e2e_test_manager    = $e2e_test_manager;
 		$this->woo_extensions_list = $woo_extensions_list;
 		$this->test_run_notifier   = $test_run_notifier;
+		$this->dependencies        = $dependencies;
 
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
@@ -103,7 +106,7 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
 			->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional options and parameters to pass to Playwright.' )
-			->addOption( 'dependencies', null, InputOption::VALUE_OPTIONAL, 'How to handle SUT dependencies. Possible values are: "activate", "bootstrap", or "none"' )
+			->addOption( 'dependencies', null, InputOption::VALUE_OPTIONAL, 'How to handle SUT dependencies. Possible values are: "activate", "bootstrap", "test", or "none"', Extension::ACTIONS['bootstrap'] )
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode. In this mode, you can start and view the tests running.' )
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run the environment for Codegen. In this mode, you can generate your test files.' )
 			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it up until you shut it down.' );
@@ -235,24 +238,26 @@ class RunE2ECommand extends DynamicCommand {
 			if ( $input->getOption( 'dependencies' ) !== 'none' ) {
 				$dependencies_action = $input->getOption( 'dependencies' );
 
-				$dependencies = [];
+				if (!in_array($dependencies_action, Extension::ACTIONS, true)) {
+					$output->writeln( sprintf( '<error>Invalid dependencies action. Possible values are: none, %s.</error>', implode( ', ', Extension::ACTIONS ) ) );
 
-				$get_dependencies = function ( int $woo_extension_id, array &$dependencies ) {
-					$d = $this->woo_extensions_list->get_woo_extension_dependencies( $woo_extension_id );
+					return Command::INVALID;
+				}
 
-					// Add WPORG Dependencies.
-					foreach ( $d['wporg'] as $wporg_dependency ) {
-						$dependencies   = array_merge( $dependencies, $this->wporg_dependencies->get_wporg_dependencies( $wporg_dependency ) );
-						$dependencies[] = $wporg_dependency;
-					}
+				/*
+				 * Todo: Also handle dependencies of additional WCCOM plugins passed as "--plugin".
+				 * For this, we need to parse the "--plugin" option array and see if we can resolve them as WCCOM IDs.
+				 * This is not needed for now for the Activation Test.
+				 */
+				$dependencies = $this->dependencies->get_plugin_and_php_ext_dependencies( $woo_extension_id, [] );
 
-					// Add WCCOM Dependencies.
-					$dependencies = array_merge( $dependencies, $d['woo'] );
+				foreach ( $dependencies['php_extensions'] as $php_extension ) {
+					$env_up_options['--php_extension'][] = $php_extension;
+				}
 
-					return $dependencies;
-				};
-
-				$sut_dependencies = $get_dependencies( $woo_extension_id, $dependencies );
+				foreach ( $dependencies['plugins'] as $plugin ) {
+					$env_up_options['--plugin'][] = "$plugin:$dependencies_action";
+				}
 			}
 		}
 
