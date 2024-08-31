@@ -107,6 +107,7 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
 			->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional options and parameters to pass to Playwright.' )
 			->addOption( 'dependencies', null, InputOption::VALUE_OPTIONAL, 'How to handle SUT dependencies. Possible values are: "activate", "bootstrap", "test", or "none"', Extension::ACTIONS['bootstrap'] )
+			->addOption( 'skip_activating_plugins', null, InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode. In this mode, you can start and view the tests running.' )
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run the environment for Codegen. In this mode, you can generate your test files.' )
 			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it up until you shut it down.' );
@@ -256,6 +257,12 @@ class RunE2ECommand extends DynamicCommand {
 				}
 
 				foreach ( $dependencies['plugins'] as $plugin ) {
+					foreach ( $env_up_options['--plugin'] as $p ) {
+						// If the plugin is already in the list, skip it.
+						if ( strpos( $p, $plugin ) !== false ) {
+							continue 2;
+						}
+					}
 					$env_up_options['--plugin'][] = "$plugin:$dependencies_action";
 				}
 			}
