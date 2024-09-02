@@ -29,7 +29,7 @@ class EnvironmentVersionResolver {
 				'slug'      => 'woocommerce',
 				'source'    => 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip',
 				'action'    => $action,
-				'test_tags' => [ $test_tags ],
+				'test_tags' => $test_tags,
 			];
 		} elseif ( $woo === 'rc' ) {
 			throw new \InvalidArgumentException( 'Please specify a RC version, such as "1.2.3-rc.1", or use "nightly".' );
@@ -38,15 +38,21 @@ class EnvironmentVersionResolver {
 				'slug'      => 'woocommerce',
 				'source'    => 'https://downloads.wordpress.org/plugin/woocommerce.latest-stable.zip',
 				'action'    => $action,
-				'test_tags' => [ $test_tags ],
+				'test_tags' => $test_tags,
 			];
 		} else {
 			$woo = [
 				'slug'      => 'woocommerce',
 				'source'    => "https://github.com/woocommerce/woocommerce/releases/download/$woo/woocommerce.zip",
 				'action'    => $action,
-				'test_tags' => [ $test_tags ],
+				'test_tags' => $test_tags,
 			];
+		}
+
+		// On the lines above, "$test_tags" is a string, whereas "$plugin->test_tags" might return an array.
+		// If it's already an array, keep it like that. If it's a string, make it an array with that string as the only value.
+		if ( is_string( $woo['test_tags'] ) ) {
+			$woo['test_tags'] = [ $woo['test_tags'] ];
 		}
 
 		return $woo;
