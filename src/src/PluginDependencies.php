@@ -47,12 +47,16 @@ class PluginDependencies {
 				throw new \UnexpectedValueException( 'Invalid response from the server when attempting to get Plugin Dependencies. JSON array does not contain "plugins" key.' );
 			}
 
+			if ( ! isset( $response['php_extensions'] ) ) {
+				throw new \UnexpectedValueException( 'Invalid response from the server when attempting to get Plugin Dependencies. JSON array does not contain "php_extensions" key.' );
+			}
+
 			$this->cache->set( $cache_key, $json, HOUR_IN_SECONDS );
 		}
 
 		return [
-			'plugins'        => $response['plugins'],
-			'php_extensions' => $response['php_extensions'],
+			'plugins'        => $response['plugins'], // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
+			'php_extensions' => $response['php_extensions'], // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
 		];
 	}
 }
