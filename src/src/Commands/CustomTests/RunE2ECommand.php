@@ -238,7 +238,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( $input->getOption( 'dependencies' ) !== 'none' ) {
 				$dependencies_action = $input->getOption( 'dependencies' );
 
-				if (!in_array($dependencies_action, Extension::ACTIONS, true)) {
+				if ( ! in_array( $dependencies_action, Extension::ACTIONS, true ) ) {
 					$output->writeln( sprintf( '<error>Invalid dependencies action. Possible values are: none, %s.</error>', implode( ', ', Extension::ACTIONS ) ) );
 
 					return Command::INVALID;

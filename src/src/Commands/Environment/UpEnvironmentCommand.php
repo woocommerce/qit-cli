@@ -210,14 +210,14 @@ HELP
 		 */
 		if ( ! empty( $woo ) ) {
 			// Resolve the WooCommerce version or build based on the "--woo" option.
-			// Example of 'plugin' option before resolution: ["woocommerce:test:activation"]
+			// Example of 'plugin' option before resolution: ["woocommerce:test:activation"].
 			$options_to_env_info['overrides']['plugin'][] = EnvironmentVersionResolver::resolve_woo( $woo, $input->getOption( 'plugin' ) );
 
 			// In the case a Woo Test tag was also requested, remove duplicated WooCommerce plugin entries in the environment settings.
 			// At this point, we have this: ["woocommerce:test:activation", {"slug":"woocommerce", "source":"https:\/\/downloads.wordpress.org\/plugin\/woocommerce.latest-stable.zip", "action":"test", "test_tags":["activation"]}]
 			// And we will remove the first entry.
 			foreach ( $options_to_env_info['overrides']['plugin'] as $k => $p ) {
-				// Check if $p starts with "woocommerce:"
+				// Check if $p starts with "woocommerce:".
 				if ( is_string( $p ) && strpos( $p, 'woocommerce:' ) === 0 ) {
 					// If it does, check if there is already a parsed version of Woo.
 					foreach ( $options_to_env_info['overrides']['plugin'] as $k2 => $p2 ) {

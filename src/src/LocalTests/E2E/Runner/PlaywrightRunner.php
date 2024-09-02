@@ -85,8 +85,8 @@ class PlaywrightRunner extends E2ERunner {
 		}, array_reverse( $env_info->plugins ) );
 
 		file_put_contents( $env_info->temporary_env . 'playwright/test-info.json', json_encode( [
-			'SUT_SLUG' => $env_info->sut_slug,
-			'SUT_TYPE' => $env_info->sut_type,
+			'SUT_SLUG'                => $env_info->sut_slug,
+			'SUT_TYPE'                => $env_info->sut_type,
 			'PLUGIN_ACTIVATION_STACK' => $plugin_activation_stack,
 		] ) );
 

@@ -11,7 +11,7 @@ class PluginDependencies {
 	}
 
 	/**
-	 * @param int $woo_id
+	 * @param int        $woo_id
 	 * @param array<int> $additional_woo_extension_ids
 	 *
 	 * @return array{
@@ -27,7 +27,7 @@ class PluginDependencies {
 		if ( $cached ) {
 			$response = json_decode( $cached, true );
 		} else {
-			// Example response: "{\"plugins\":[\"woocommerce-payments\",\"automatewoo-birthdays\"],\"themes\":[],\"php_extensions\":[]}"
+			// Example response: "{\"plugins\":[\"woocommerce-payments\",\"automatewoo-birthdays\"],\"themes\":[],\"php_extensions\":[]}".
 			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' ) )
 				->with_method( 'POST' )
 				->with_post_body( [

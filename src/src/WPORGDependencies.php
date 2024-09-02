@@ -9,6 +9,4 @@ class WPORGDependencies {
 	public function __construct( Cache $cache ) {
 		$this->cache = $cache;
 	}
-
-
 }
