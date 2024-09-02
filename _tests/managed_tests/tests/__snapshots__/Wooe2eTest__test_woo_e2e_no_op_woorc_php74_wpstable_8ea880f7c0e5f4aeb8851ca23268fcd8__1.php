@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "442 total, 419 passed, 1 failed, 22 skipped.",
+            "test_summary": "442 total, 419 passed, 0 failed, 23 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -44,13 +44,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 95,
                 "numPendingTestSuites": 15,
                 "numTotalTestSuites": 110,
-                "numFailedTests": 1,
+                "numFailedTests": 0,
                 "numPassedTests": 419,
-                "numPendingTests": 22,
+                "numPendingTests": 23,
                 "numTotalTests": 442,
                 "testResults": [
                     {
@@ -1713,7 +1713,7 @@
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "General tab": [],
@@ -1734,7 +1734,7 @@
                                 },
                                 {
                                     "title": "can a shopper add the simple product to the cart",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2908,7 +2908,7 @@
                         }
                     }
                 ],
-                "summary": "442 total, 419 passed, 1 failed, 22 skipped."
+                "summary": "442 total, 419 passed, 0 failed, 23 skipped."
             }
         },
         {
