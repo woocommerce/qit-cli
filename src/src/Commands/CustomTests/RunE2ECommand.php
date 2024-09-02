@@ -355,7 +355,7 @@ class RunE2ECommand extends DynamicCommand {
 		if ( ! empty( $woo_extension_id ) ) {
 			$env_info->sut_slug = $woo_extension;
 			$env_info->sut_id   = $woo_extension_id;
-			$env_info->sut_type = $sut_type;
+			$env_info->sut_type = $sut_type; // @phpstan-ignore-line
 			$this->test_run_notifier->notify_test_started( $woo_extension_id, $woocommerce_version ?? 'none', $env_info );
 		}
 

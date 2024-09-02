@@ -167,7 +167,7 @@ class EnvConfigLoader {
 					$value = EnvironmentVersionResolver::resolve_wp( $value );
 					break;
 				case 'woo':
-					$value = EnvironmentVersionResolver::resolve_woo( $value );
+					$value = EnvironmentVersionResolver::resolve_woo( $value, $env_config['plugin'] );
 					break;
 			}
 		}
