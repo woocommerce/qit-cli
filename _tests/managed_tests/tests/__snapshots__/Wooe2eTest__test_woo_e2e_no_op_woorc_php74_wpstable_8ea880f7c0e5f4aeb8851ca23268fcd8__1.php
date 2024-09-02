@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "442 total, 419 passed, 7 failed, 16 skipped.",
+            "test_summary": "442 total, 419 passed, 1 failed, 22 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -44,13 +44,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 5,
+                "numFailedTestSuites": 1,
                 "numPassedTestSuites": 95,
-                "numPendingTestSuites": 11,
+                "numPendingTestSuites": 15,
                 "numTotalTestSuites": 110,
-                "numFailedTests": 7,
+                "numFailedTests": 1,
                 "numPassedTests": 419,
-                "numPendingTests": 16,
+                "numPendingTests": 22,
                 "numTotalTests": 442,
                 "testResults": [
                     {
@@ -919,8 +919,8 @@
                     },
                     {
                         "file": "merchant\\/create-shipping-zones.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
@@ -947,15 +947,15 @@
                             "Verifies shipping options from customer perspective": [
                                 {
                                     "title": "allows customer to benefit from a free Local pickup if on Mayne Island",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to benefit from a free Free shipping if in BC",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to pay for a Flat rate shipping method",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1730,11 +1730,11 @@
                                 },
                                 {
                                     "title": "can not create a product with duplicated SKU",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can a shopper add the simple product to the cart",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2019,13 +2019,13 @@
                     },
                     {
                         "file": "merchant\\/settings-woo-com.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce woo.com Settings": [
                                 {
                                     "title": "can enable analytics tracking",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can enable marketplace suggestions",
@@ -2643,13 +2643,13 @@
                     },
                     {
                         "file": "shopper\\/mini-cart.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Mini Cart block page": [
                                 {
                                     "title": "can see empty customized mini cart, add and remove product, increase to max quantity, calculate tax and see redirection",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2845,8 +2845,8 @@
                     },
                     {
                         "file": "shopper\\/shop-search-browse-sort.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Search, browse by categories and sort items in the shop": [
                                 {
@@ -2859,7 +2859,7 @@
                                 },
                                 {
                                     "title": "should let user sort the products in the shop",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2908,7 +2908,7 @@
                         }
                     }
                 ],
-                "summary": "442 total, 419 passed, 7 failed, 16 skipped."
+                "summary": "442 total, 419 passed, 1 failed, 22 skipped."
             }
         },
         {
