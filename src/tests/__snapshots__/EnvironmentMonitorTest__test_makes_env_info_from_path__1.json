@@ -16,6 +16,7 @@
     "php_version": null,
     "nginx_port": null,
     "sut_slug": null,
+    "sut_type": null,
     "sut_id": null,
     "domain": "localhost",
     "tests": [],

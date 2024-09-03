@@ -16,8 +16,10 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
+use QIT_CLI\Environment\Extension;
 use QIT_CLI\LocalTests\E2E\E2ETestManager;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
+use QIT_CLI\PluginDependencies;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -49,6 +51,9 @@ class RunE2ECommand extends DynamicCommand {
 	/** @var LocalTestRunNotifier */
 	protected $test_run_notifier;
 
+	/** @var PluginDependencies */
+	protected $dependencies;
+
 	protected static $defaultName = 'run:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	public function __construct(
@@ -57,7 +62,8 @@ class RunE2ECommand extends DynamicCommand {
 		OutputInterface $output,
 		E2ETestManager $e2e_test_manager,
 		WooExtensionsList $woo_extensions_list,
-		LocalTestRunNotifier $test_run_notifier
+		LocalTestRunNotifier $test_run_notifier,
+		PluginDependencies $dependencies
 	) {
 		$this->e2e_environment     = $e2e_environment;
 		$this->cache               = $cache;
@@ -65,6 +71,8 @@ class RunE2ECommand extends DynamicCommand {
 		$this->e2e_test_manager    = $e2e_test_manager;
 		$this->woo_extensions_list = $woo_extensions_list;
 		$this->test_run_notifier   = $test_run_notifier;
+		$this->dependencies        = $dependencies;
+
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
@@ -83,8 +91,9 @@ class RunE2ECommand extends DynamicCommand {
 			->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'The slug or WooCommerce ID of the main extension under test.' )
 			->addArgument( 'test', InputArgument::OPTIONAL, '(Optional) The tests for the main extension under test. Accepts test tags, or a test directory. If not set, will use the "default" test tag of this extension.' )
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'The source of the main extension under test. Accepts a slug, a file, a URL. If not provided, the source will be the slug.' )
+			->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to take on the SUT. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['test'] )
 			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'The WordPress version. Accepts "stable", "nightly", or a version number.', 'stable' )
-			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "stable", "nightly", or a GitHub Tag (eg: 8.6.1).' )
+			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "stable", "nightly", or a GitHub Tag (eg: 8.6.1).', 'stable' )
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Theme install, if multiple provided activates the last. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
 			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
@@ -92,15 +101,14 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'require', 'r', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load PHP file before running the command (may be used more than once).' )
 			->addOption( 'config', null, InputOption::VALUE_OPTIONAL, '(Optional) QIT config file to use.' )
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Whether to enable Object Cache (Redis) in the environment.' )
-			->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to use for the main extension under test. Accepts "activate", "install" and "test". Default to "test"', 'test' )
-			->addOption( 'no_activate', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright Sharding argument.' )
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
 			->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional options and parameters to pass to Playwright.' )
+			->addOption( 'dependencies', null, InputOption::VALUE_OPTIONAL, 'How to handle SUT dependencies. Possible values are: "activate", "bootstrap", "test", or "none"', Extension::ACTIONS['bootstrap'] )
+			->addOption( 'skip_activating_plugins', null, InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode. In this mode, you can start and view the tests running.' )
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run the environment for Codegen. In this mode, you can generate your test files.' )
-			->addOption( 'testing_theme', null, InputOption::VALUE_NONE, 'If the "woo_extension" is a theme, set this flag.' )
 			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it up until you shut it down.' );
 	}
 
@@ -213,16 +221,49 @@ class RunE2ECommand extends DynamicCommand {
 				return Command::INVALID;
 			}
 
+			$sut_type = $this->woo_extensions_list->get_woo_extension_type( $woo_extension_id );
+
 			if ( ! empty( $test ) ) {
 				$woo_extension_extension_syntax = sprintf( '%s:%s:base64%s', $woo_extension, $sut_action, base64_encode( $test ) );
 			} else {
 				$woo_extension_extension_syntax = sprintf( '%s:%s', $woo_extension, $sut_action );
 			}
 
-			if ( $input->getOption( 'testing_theme' ) ) {
+			if ( $sut_type === 'theme' ) {
 				$env_up_options['--theme'][] = $woo_extension_extension_syntax;
 			} else {
 				$env_up_options['--plugin'][] = $woo_extension_extension_syntax;
+			}
+
+			if ( $input->getOption( 'dependencies' ) !== 'none' ) {
+				$dependencies_action = $input->getOption( 'dependencies' );
+
+				if ( ! in_array( $dependencies_action, Extension::ACTIONS, true ) ) {
+					$output->writeln( sprintf( '<error>Invalid dependencies action. Possible values are: none, %s.</error>', implode( ', ', Extension::ACTIONS ) ) );
+
+					return Command::INVALID;
+				}
+
+				/*
+				 * Todo: Also handle dependencies of additional WCCOM plugins passed as "--plugin".
+				 * For this, we need to parse the "--plugin" option array and see if we can resolve them as WCCOM IDs.
+				 * This is not needed for now for the Activation Test.
+				 */
+				$dependencies = $this->dependencies->get_plugin_and_php_ext_dependencies( $woo_extension_id, [] );
+
+				foreach ( $dependencies['php_extensions'] as $php_extension ) {
+					$env_up_options['--php_extension'][] = $php_extension;
+				}
+
+				foreach ( $dependencies['plugins'] as $plugin ) {
+					foreach ( $env_up_options['--plugin'] as $p ) {
+						// If the plugin is already in the list, skip it.
+						if ( strpos( $p, $plugin ) !== false ) {
+							continue 2;
+						}
+					}
+					$env_up_options['--plugin'][] = "$plugin:$dependencies_action";
+				}
 			}
 		}
 
@@ -314,6 +355,8 @@ class RunE2ECommand extends DynamicCommand {
 		if ( ! empty( $woo_extension_id ) ) {
 			$env_info->sut_slug = $woo_extension;
 			$env_info->sut_id   = $woo_extension_id;
+			// @phan-suppress-next-line PhanPossiblyUndeclaredVariable
+			$env_info->sut_type = $sut_type; // @phpstan-ignore-line
 			$this->test_run_notifier->notify_test_started( $woo_extension_id, $woocommerce_version ?? 'none', $env_info );
 		}
 

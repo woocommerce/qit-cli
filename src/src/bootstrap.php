@@ -25,6 +25,7 @@ use QIT_CLI\Commands\OpenCommand;
 use QIT_CLI\Commands\Partner\AddPartner;
 use QIT_CLI\Commands\Partner\RemovePartner;
 use QIT_CLI\Commands\Partner\SwitchPartner;
+use QIT_CLI\Commands\RunActivationTestCommand;
 use QIT_CLI\Commands\SetProxyCommand;
 use QIT_CLI\Commands\SyncCommand;
 use QIT_CLI\Commands\Tags\DeleteTestTagsCommand;
@@ -225,6 +226,8 @@ if ( Config::is_development_mode() ) {
 if ( $is_connected_to_backend ) {
 	// Dynamically create commands to run tests, based on Schema fetched from Manager REST API.
 	$container->make( CreateRunCommands::class )->register_commands( $application );
+
+	$application->add( $container->make( RunActivationTestCommand::class ) );
 
 	// List tests runs.
 	$application->add( $container->make( ListCommand::class ) );

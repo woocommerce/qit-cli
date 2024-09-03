@@ -74,4 +74,36 @@ class WooExtensionsList {
 
 		throw new \UnexpectedValueException( "Could not find Woo Extension with id $woo_extension_id." );
 	}
+
+	public function get_woo_extension_type( int $woo_extension_id ): string {
+		$extensions = $this->get_woo_extension_list();
+
+		foreach ( $extensions as $e ) {
+			if ( $e['id'] === $woo_extension_id ) {
+				return $e['type'];
+			}
+		}
+
+		throw new \UnexpectedValueException( "Could not find Woo Extension with id $woo_extension_id." );
+	}
+
+	/**
+	 * @param int $woo_extension_id
+	 *
+	 * @return array{
+	 *     wporg:array<string>,
+	 *     woo:array<int>
+	 * } Array of WPORG Slugs and Woo IDs that the given Woo Extension depends on.
+	 */
+	public function get_woo_extension_dependencies( int $woo_extension_id ): array {
+		$extensions = $this->get_woo_extension_list();
+
+		foreach ( $extensions as $e ) {
+			if ( $e['id'] === $woo_extension_id ) {
+				return $e['dependencies'];
+			}
+		}
+
+		throw new \UnexpectedValueException( "Could not find Woo Extension with id $woo_extension_id." );
+	}
 }

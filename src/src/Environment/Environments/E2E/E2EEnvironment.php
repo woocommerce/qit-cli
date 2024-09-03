@@ -88,8 +88,8 @@ class E2EEnvironment extends Environment {
 		// Activate plugins.
 		if ( ! $this->skip_activating_plugins ) {
 			$this->output->writeln( '<info>Activating plugins...</info>' );
-			$this->docker->run_inside_docker( $this->env_info, [ 'php', '/qit/bin/plugins-activate.php' ] );
-			App::make( PluginActivationReportRenderer::class )->render_php_activation_report( $this->env_info );
+			$activation_output = $this->docker->run_inside_docker( $this->env_info, [ 'php', '/qit/bin/plugins-activate.php' ] );
+			App::make( PluginActivationReportRenderer::class )->render_php_activation_report( $this->env_info, $activation_output );
 		}
 	}
 
