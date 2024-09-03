@@ -3,17 +3,17 @@
         {
             "test_run_id": 123456,
             "run_id": 123456,
-            "test_type": "phpcompatibility",
-            "test_type_display": "PHP Compatibility",
+            "test_type": "validation",
+            "test_type_display": "Validation",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "7.4",
-            "max_php_version": "8.4",
-            "min_php_version": "7.2",
+            "max_php_version": "",
+            "min_php_version": "",
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "warning",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 0 Warnings: 0",
+            "test_summary": "Errors: 0 Warnings: 1",
             "debug_log": "",
             "version": "1.0.15",
             "update_complete": true,
@@ -44,21 +44,8 @@
         },
         {
             "test_result_json": {
-                "tool": {
-                    "phpcs": {
-                        "totals": {
-                            "errors": 0,
-                            "warnings": 0,
-                            "fixable": 0
-                        },
-                        "files": {
-                            "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/themes\\/bistro\\/index.php": {
-                                "errors": 0,
-                                "warnings": 0,
-                                "messages": []
-                            }
-                        }
-                    }
+                "headers": {
+                    "Requires PHP": false
                 }
             }
         }

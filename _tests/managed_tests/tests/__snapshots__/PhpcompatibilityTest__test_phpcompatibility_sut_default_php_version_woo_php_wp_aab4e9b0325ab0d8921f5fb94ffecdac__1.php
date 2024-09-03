@@ -8,7 +8,7 @@
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "7.4",
-            "max_php_version": "8.3",
+            "max_php_version": "8.4",
             "min_php_version": "7.4",
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],

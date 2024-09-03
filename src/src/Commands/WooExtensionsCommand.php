@@ -23,7 +23,8 @@ class WooExtensionsCommand extends Command {
 	protected function configure() {
 		$this
 			->setDescription( 'List the WooExtensions you have access to test.' )
-			->addOption( 'refresh', 'r', InputOption::VALUE_NONE, '(Optional) Manually refresh the list of available Woo Extensions to test (This happens automatically once a day).' );
+			->addOption( 'refresh', 'r', InputOption::VALUE_NONE, '(Optional) Manually refresh the list of available Woo Extensions to test (This happens automatically once a day).' )
+			->addOption( 'deps', 'd', InputOption::VALUE_NONE, '(Optional) Include dependencies in the list.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -37,9 +38,27 @@ class WooExtensionsCommand extends Command {
 
 		$woo_extensions = $this->woo_extensions_list->get_woo_extension_list();
 
+		if ( $input->getOption( 'deps' ) ) {
+			$headers        = [ 'ID', 'Slug', 'Type', 'WPOrg Dependencies', 'Woo Dependencies' ];
+			$woo_extensions = array_map( function ( $extension ) {
+				$extension[] = implode( ', ', $extension['dependencies']['wporg'] );
+				$extension[] = implode( ', ', $extension['dependencies']['woo'] );
+				unset( $extension['dependencies'] );
+
+				return $extension;
+			}, $woo_extensions );
+		} else {
+			$headers        = [ 'ID', 'Slug', 'Type' ];
+			$woo_extensions = array_map( function ( $extension ) {
+				unset( $extension['dependencies'] );
+
+				return $extension;
+			}, $woo_extensions );
+		}
+
 		$table = new Table( $output );
 		$table
-			->setHeaders( [ 'ID', 'Slug' ] )
+			->setHeaders( $headers )
 			->setRows( $woo_extensions );
 		$table->render();
 

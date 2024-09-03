@@ -14,7 +14,7 @@ class PluginActivationReportRenderer {
 		$this->output = $output;
 	}
 
-	public function render_php_activation_report( EnvInfo $env_info ): void {
+	public function render_php_activation_report( EnvInfo $env_info, string $activation_output ): void {
 		$activation_report_file = $env_info->temporary_env . 'bin/plugin-activation-report.json';
 
 		if ( ! file_exists( $activation_report_file ) ) {
@@ -28,6 +28,7 @@ class PluginActivationReportRenderer {
 
 		if ( ! is_array( $activation_report ) ) {
 			$this->output->writeln( '<error>Invalid plugin activation report generated.</error>' );
+			$this->output->writeln( $activation_output );
 
 			return;
 		}
@@ -51,6 +52,7 @@ class PluginActivationReportRenderer {
 			foreach ( $expected_schema as $key => $type ) {
 				if ( ! array_key_exists( $key, $r ) || gettype( $r[ $key ] ) !== $type ) {
 					$this->output->writeln( '<error>Invalid plugin activation report generated.</error>' );
+					$this->output->writeln( $activation_output );
 
 					return;
 				}
@@ -58,6 +60,7 @@ class PluginActivationReportRenderer {
 
 			if ( ! $r['activated'] ) {
 				$this->output->writeln( sprintf( '<error>Plugin %s failed to activate.</error>', $r['plugin'] ) );
+				$this->output->writeln( $activation_output );
 
 				throw new \RuntimeException( sprintf( 'Plugin %s failed to activate.', $r['plugin'] ) );
 			}
