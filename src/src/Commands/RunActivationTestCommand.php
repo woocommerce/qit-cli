@@ -22,7 +22,8 @@ class RunActivationTestCommand extends Command {
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'The source of the main extension under test. Accepts a slug, a file, a URL. If not provided, the source will be the slug.' )
 			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'The WordPress version. Accepts "stable", "nightly", or a version number.', 'stable' )
 			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "stable", "nightly", or a GitHub Tag (eg: 8.6.1).', 'stable' )
-			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] );
+			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
+            ->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode. In this mode, you can start and view the tests running.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -43,6 +44,7 @@ class RunActivationTestCommand extends Command {
 		}
 		$run_e2e_options['--wp']  = $input->getOption( 'wp' );
 		$run_e2e_options['--woo'] = $input->getOption( 'woo' );
+        $run_e2e_options['--ui']  = $input->getOption( 'ui' );
 
 		foreach ( $input->getOption( 'plugin' ) as $plugin ) {
 			$run_e2e_options['--plugin'][] = $plugin;
