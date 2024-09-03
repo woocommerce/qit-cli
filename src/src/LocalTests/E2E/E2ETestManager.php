@@ -110,10 +110,10 @@ class E2ETestManager {
 			}
 
 			// must-use-plugin.php.
-			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/must-use-plugin.php' ) ) {
-				$this->output->writeln( sprintf( 'Moving must-use plugin of %s %s', $plugin_slug, $test_info['path_in_php_container'] . '/bootstrap/must-use-plugin.php' ) );
+			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/mu-plugin.php' ) ) {
+				$this->output->writeln( sprintf( 'Moving must-use plugin of %s %s', $plugin_slug, $test_info['path_in_php_container'] . '/bootstrap/mu-plugin.php' ) );
 				try {
-					$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "mv {$test_info['path_in_php_container']}/bootstrap/must-use-plugin.php /var/www/html/wp-content/mu-plugins/qit-mu-$plugin_slug.php" ], $env_vars );
+					$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "mv {$test_info['path_in_php_container']}/bootstrap/mu-plugin.php /var/www/html/wp-content/mu-plugins/qit-mu-$plugin_slug.php" ], $env_vars );
 					$test_result->register_bootstrap( $plugin_slug, 'must-use-plugin.php', 'success' );
 				} catch ( \Exception $e ) {
 					$test_result->register_bootstrap( $plugin_slug, 'must-use-plugin.php', 'failed' );

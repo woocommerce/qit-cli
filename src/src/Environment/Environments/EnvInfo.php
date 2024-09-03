@@ -113,7 +113,7 @@ abstract class EnvInfo implements \JsonSerializable {
 		if ( $env_info instanceof E2EEnvInfo ) {
 			if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
 				// Environment accessible from inside Docker containers.
-				$env_info->domain = "qit_env_nginx_{$env_info->env_id}";
+				$env_info->domain = "qitenvnginx{$env_info->env_id}";
 			} else {
 				// Environment accessible from host.
 				$env_info->domain = getenv( 'QIT_DOMAIN' ) ?: 'localhost';
