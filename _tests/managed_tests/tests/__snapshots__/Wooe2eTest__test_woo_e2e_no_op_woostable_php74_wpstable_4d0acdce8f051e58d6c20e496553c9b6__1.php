@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "442 total, 419 passed, 0 failed, 23 skipped.",
+            "test_summary": "442 total, 417 passed, 0 failed, 25 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,12 +45,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 95,
-                "numPendingTestSuites": 15,
+                "numPassedTestSuites": 93,
+                "numPendingTestSuites": 17,
                 "numTotalTestSuites": 110,
                 "numFailedTests": 0,
-                "numPassedTests": 419,
-                "numPendingTests": 23,
+                "numPassedTests": 417,
+                "numPendingTests": 25,
                 "numTotalTests": 442,
                 "testResults": [
                     {
@@ -2739,7 +2739,7 @@
                     {
                         "file": "shopper\\/product-grouped.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Grouped Product Page": [
                                 {
@@ -2748,7 +2748,7 @@
                                 },
                                 {
                                     "title": "should be able to remove grouped products from the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2798,7 +2798,7 @@
                     {
                         "file": "shopper\\/product-variable.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Variable Product Page": [
                                 {
@@ -2807,7 +2807,7 @@
                                 },
                                 {
                                     "title": "should be able to remove variation products from the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Shopper > Update variable product": [
@@ -2908,7 +2908,7 @@
                         }
                     }
                 ],
-                "summary": "442 total, 419 passed, 0 failed, 23 skipped."
+                "summary": "442 total, 417 passed, 0 failed, 25 skipped."
             }
         },
         {

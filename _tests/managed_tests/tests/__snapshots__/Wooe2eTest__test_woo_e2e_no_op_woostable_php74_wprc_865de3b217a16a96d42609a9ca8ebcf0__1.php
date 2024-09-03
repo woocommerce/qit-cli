@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "442 total, 418 passed, 1 failed, 23 skipped.",
+            "test_summary": "442 total, 417 passed, 0 failed, 25 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -44,13 +44,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 94,
-                "numPendingTestSuites": 15,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 93,
+                "numPendingTestSuites": 17,
                 "numTotalTestSuites": 110,
-                "numFailedTests": 1,
-                "numPassedTests": 418,
-                "numPendingTests": 23,
+                "numFailedTests": 0,
+                "numPassedTests": 417,
+                "numPendingTests": 25,
                 "numTotalTests": 442,
                 "testResults": [
                     {
@@ -2738,8 +2738,8 @@
                     },
                     {
                         "file": "shopper\\/product-grouped.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Grouped Product Page": [
                                 {
@@ -2748,7 +2748,7 @@
                                 },
                                 {
                                     "title": "should be able to remove grouped products from the cart",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2798,7 +2798,7 @@
                     {
                         "file": "shopper\\/product-variable.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Variable Product Page": [
                                 {
@@ -2807,7 +2807,7 @@
                                 },
                                 {
                                     "title": "should be able to remove variation products from the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Shopper > Update variable product": [
@@ -2908,7 +2908,7 @@
                         }
                     }
                 ],
-                "summary": "442 total, 418 passed, 1 failed, 23 skipped."
+                "summary": "442 total, 417 passed, 0 failed, 25 skipped."
             }
         },
         {
