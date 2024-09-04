@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "442 total, 416 passed, 0 failed, 26 skipped.",
+            "test_summary": "442 total, 399 passed, 0 failed, 43 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,12 +45,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 92,
-                "numPendingTestSuites": 18,
+                "numPassedTestSuites": 91,
+                "numPendingTestSuites": 19,
                 "numTotalTestSuites": 110,
                 "numFailedTests": 0,
-                "numPassedTests": 416,
-                "numPendingTests": 26,
+                "numPassedTests": 399,
+                "numPendingTests": 43,
                 "numTotalTests": 442,
                 "testResults": [
                     {
@@ -298,7 +298,7 @@
                     {
                         "file": "customize-store\\/assembler\\/color-picker.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Assembler -> Color Pickers": [
                                 {
@@ -307,71 +307,71 @@
                                 },
                                 {
                                     "title": "Color palette Blueberry Sorbet should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Ancient Bronze should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Crimson Tide should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Purple Twilight should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Green Thumb should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Golden Haze should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Golden Indigo should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Arctic Dawn should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Raspberry Chocolate should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Canary should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Ice should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Rustic Rosewood should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Cinnamon Latte should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Lightning should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Aquamarine Night should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Charcoal should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Slate should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color picker should be focused when a color is picked",
@@ -2908,33 +2908,33 @@
                         }
                     }
                 ],
-                "summary": "442 total, 416 passed, 0 failed, 26 skipped."
+                "summary": "442 total, 399 passed, 0 failed, 43 skipped."
             }
         },
         {
             "debug_log": [
                 {
-                    "count": "1",
+                    "count": "2",
                     "message": "PHP Warning: exif_read_data(album-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
                 },
                 {
-                    "count": "1",
+                    "count": "2",
                     "message": "PHP Warning: exif_read_data(hoodie-blue-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
                 },
                 {
-                    "count": "1",
+                    "count": "2",
                     "message": "PHP Warning: exif_read_data(hoodie-green-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
                 },
                 {
-                    "count": "1",
+                    "count": "2",
                     "message": "PHP Warning: exif_read_data(single-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
                 },
                 {
-                    "count": "1",
+                    "count": "2",
                     "message": "PHP Warning: exif_read_data(vnech-tee-blue-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
                 },
                 {
-                    "count": "1",
+                    "count": "2",
                     "message": "PHP Warning: exif_read_data(vnech-tee-green-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
                 }
             ]
