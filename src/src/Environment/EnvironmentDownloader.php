@@ -32,7 +32,7 @@ class EnvironmentDownloader {
 			$this->output->writeln( json_encode( $manager_hashes, JSON_PRETTY_PRINT ) );
 		}
 
-		if ( ! isset( $manager_hashes[ $env_name ]['checksum'] ) || ! isset( $manager_hashes[ $env_name ]['url'] ) ) {
+		if ( ! isset( $manager_hashes[ $env_name ]['zip_checksum'] ) || ! isset( $manager_hashes[ $env_name ]['url'] ) ) {
 			throw new \RuntimeException( 'E2E environment not set or incomplete.' );
 		}
 
@@ -51,7 +51,7 @@ class EnvironmentDownloader {
 		}
 
 		// Early bail: The local environment matches the last-known checksum that the Manager informed us, so no need to query it.
-		if ( $local_hash === $manager_hashes[ $env_name ]['checksum'] ) {
+		if ( $local_hash === $manager_hashes[ $env_name ]['zip_checksum'] ) {
 			return;
 		}
 
