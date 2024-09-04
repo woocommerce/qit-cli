@@ -80,7 +80,7 @@ class WooExtensionsList {
 
 		foreach ( $extensions as $e ) {
 			if ( $e['id'] === $woo_extension_id ) {
-				return $e['type'];
+				return $e['type'] ?? 'plugin'; // Todo: Remove "??" when we merge the Improved Activation PR.
 			}
 		}
 
@@ -100,7 +100,7 @@ class WooExtensionsList {
 
 		foreach ( $extensions as $e ) {
 			if ( $e['id'] === $woo_extension_id ) {
-				return $e['dependencies'];
+				return $e['dependencies'] ?? []; // Todo: Remove "??" when we merge the Improved Activation PR.
 			}
 		}
 
