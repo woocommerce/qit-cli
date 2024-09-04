@@ -54,7 +54,7 @@
                 "numTotalTests": 258,
                 "testResults": [
                     {
-                        "file": "coupons\\/coupons.test.js",
+                        "file": "api-tests\\/coupons\\/coupons.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -117,7 +117,7 @@
                         }
                     },
                     {
-                        "file": "customers\\/customers-crud.test.js",
+                        "file": "api-tests\\/customers\\/customers-crud.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -156,7 +156,7 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "can retrieve all customers",
+                                    "title": "can retrieve all customers after create",
                                     "status": "passed"
                                 }
                             ],
@@ -209,7 +209,7 @@
                         }
                     },
                     {
-                        "file": "data\\/data-crud.test.js",
+                        "file": "api-tests\\/data\\/data-crud.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -234,7 +234,7 @@
                         }
                     },
                     {
-                        "file": "hello\\/hello.test.js",
+                        "file": "api-tests\\/hello\\/hello.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -251,7 +251,7 @@
                         }
                     },
                     {
-                        "file": "orders\\/order-complex.test.js",
+                        "file": "api-tests\\/orders\\/order-complex.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -264,7 +264,7 @@
                         }
                     },
                     {
-                        "file": "orders\\/order-search.test.js",
+                        "file": "api-tests\\/orders\\/order-search.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -333,7 +333,7 @@
                         }
                     },
                     {
-                        "file": "orders\\/orders-crud.test.js",
+                        "file": "api-tests\\/orders\\/orders-crud.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -451,7 +451,7 @@
                         }
                     },
                     {
-                        "file": "orders\\/orders.test.js",
+                        "file": "api-tests\\/orders\\/orders.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -528,7 +528,7 @@
                         }
                     },
                     {
-                        "file": "payment-gateways\\/payment-gateways-crud.test.js",
+                        "file": "api-tests\\/payment-gateways\\/payment-gateways-crud.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -549,7 +549,7 @@
                         }
                     },
                     {
-                        "file": "products\\/product-list.test.js",
+                        "file": "api-tests\\/products\\/product-list.test.js",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -681,7 +681,7 @@
                         }
                     },
                     {
-                        "file": "products\\/products-crud.test.js",
+                        "file": "api-tests\\/products\\/products-crud.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -777,7 +777,7 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "can permanently delete a product tag",
+                                    "title": "can permanently delete a product category",
                                     "status": "passed"
                                 },
                                 {
@@ -918,7 +918,7 @@
                         }
                     },
                     {
-                        "file": "refunds\\/refunds.test.js",
+                        "file": "api-tests\\/refunds\\/refunds.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -947,7 +947,7 @@
                         }
                     },
                     {
-                        "file": "reports\\/reports-crud.test.js",
+                        "file": "api-tests\\/reports\\/reports-crud.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -988,7 +988,7 @@
                         }
                     },
                     {
-                        "file": "settings\\/settings-crud.test.js",
+                        "file": "api-tests\\/settings\\/settings-crud.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1128,7 +1128,7 @@
                         }
                     },
                     {
-                        "file": "shipping\\/shipping-method.test.js",
+                        "file": "api-tests\\/shipping\\/shipping-method.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1169,7 +1169,7 @@
                         }
                     },
                     {
-                        "file": "shipping\\/shipping-zones.test.js",
+                        "file": "api-tests\\/shipping\\/shipping-zones.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1218,7 +1218,7 @@
                         }
                     },
                     {
-                        "file": "system-status\\/system-status-crud.test.js",
+                        "file": "api-tests\\/system-status\\/system-status-crud.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1239,7 +1239,7 @@
                         }
                     },
                     {
-                        "file": "taxes\\/tax-classes-crud.test.js",
+                        "file": "api-tests\\/taxes\\/tax-classes-crud.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1279,7 +1279,7 @@
                         }
                     },
                     {
-                        "file": "taxes\\/tax-rates-crud.test.js",
+                        "file": "api-tests\\/taxes\\/tax-rates-crud.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1333,7 +1333,7 @@
                         }
                     },
                     {
-                        "file": "webhooks\\/webhooks-crud.test.js",
+                        "file": "api-tests\\/webhooks\\/webhooks-crud.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
