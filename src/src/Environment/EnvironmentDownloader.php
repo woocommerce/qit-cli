@@ -32,19 +32,8 @@ class EnvironmentDownloader {
 			$this->output->writeln( json_encode( $manager_hashes, JSON_PRETTY_PRINT ) );
 		}
 
-		if ( ! isset( $manager_hashes[ $env_name ]['checksum'] ) || ! isset( $manager_hashes[ $env_name ]['url'] ) ) {
+		if ( ! isset( $manager_hashes[ $env_name ]['zip_checksum'] ) || ! isset( $manager_hashes[ $env_name ]['url'] ) ) {
 			throw new \RuntimeException( 'E2E environment not set or incomplete.' );
-		}
-
-		$local_hash = $this->cache->get( "{$env_name}_environment_hash" );
-
-		if ( $this->output->isVeryVerbose() ) {
-			$this->output->writeln( 'Local environment hash: ' . $local_hash );
-		}
-
-		// Early bail: The local environment matches the last-known checksum that the Manager informed us, so no need to query it.
-		if ( $local_hash === $manager_hashes[ $env_name ]['checksum'] ) {
-			return;
 		}
 
 		$environments_dir = Config::get_qit_dir() . '/environments';
@@ -54,6 +43,17 @@ class EnvironmentDownloader {
 
 		$temp_zip_path  = $environments_dir . '/temp_' . $env_name . '.zip';
 		$final_zip_path = $environments_dir . '/' . $env_name . '.zip';
+
+		$local_hash = file_exists( $final_zip_path ) ? md5_file( $final_zip_path ) : 'Not found.';
+
+		if ( $this->output->isVeryVerbose() ) {
+			$this->output->writeln( 'Local environment hash: ' . $local_hash );
+		}
+
+		// Early bail: The local environment matches the last-known checksum that the Manager informed us, so no need to query it.
+		if ( $local_hash === $manager_hashes[ $env_name ]['zip_checksum'] ) {
+			return;
+		}
 
 		if ( file_exists( $final_zip_path ) ) {
 			unlink( $final_zip_path );
@@ -124,6 +124,5 @@ class EnvironmentDownloader {
 		}
 
 		$zip->close();
-		$this->cache->set( "{$env_name}_environment_hash", $manager_hashes[ $env_name ]['checksum'], MONTH_IN_SECONDS );
 	}
 }
