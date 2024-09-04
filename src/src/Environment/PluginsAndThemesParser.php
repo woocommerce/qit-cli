@@ -2,9 +2,7 @@
 
 namespace QIT_CLI\Environment;
 
-use QIT_CLI\App;
 use QIT_CLI\WooExtensionsList;
-use QIT_CLI\Zipper;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\normalize_path;
 
@@ -102,38 +100,6 @@ class PluginsAndThemesParser {
 			if ( ! empty( getenv( 'QIT_SUT' ) ) && ! empty( getenv( 'QIT_SUT_SOURCE' ) ) ) {
 				if ( ! empty( $extension['slug'] ) && $extension['slug'] === getenv( 'QIT_SUT' ) ) {
 					$extension['source'] = getenv( 'QIT_SUT_SOURCE' );
-
-					/**
-					 * If it's a theme, check if it has a parent theme and add it to the list of themes to install.
-					 */
-					if ( $type === Extension::TYPES['theme'] ) {
-						$source = $extension['source'];
-
-						/**
-						 * If the source is a zip file, extract it to a temp dir.
-						 */
-						if ( is_file( $source ) ) {
-							$zipper    = App::make( Zipper::class );
-							$theme_dir = normalize_path( sys_get_temp_dir() . '/qit-cli-themes/' );
-							$zipper->extract_zip( $source, $theme_dir );
-							$source = normalize_path( sys_get_temp_dir() . '/qit-cli-themes/' . $extension['slug'] );
-						}
-
-						if (
-							is_dir( $source ) &&
-							is_file( $source . '/style.css' )
-						) {
-							$parent_theme = $this->maybe_fetch_parent_theme( $source );
-
-							if (
-								! empty( $parent_theme ) &&
-								! in_array( $parent_theme, $plugins_or_themes )
-							) {
-								$theme               = $this->parse_extensions( [ $parent_theme ], $type )[0];
-								$parsed_extensions[] = $theme;
-							}
-						}
-					}
 				}
 			}
 
@@ -368,24 +334,5 @@ class PluginsAndThemesParser {
 		}
 
 		return $extension;
-	}
-
-	public function maybe_fetch_parent_theme( string $theme_dir ): string {
-		if ( ! is_dir( $theme_dir ) ) {
-			return '';
-		}
-
-		if ( ! is_file( $theme_dir . '/style.css' ) ) {
-			return '';
-		}
-
-		$contents = file_get_contents( $theme_dir . '/style.css' );
-		$pattern  = '/Template:\s+(.*)/i';
-
-		if ( preg_match( $pattern, $contents, $matches ) ) {
-			return isset( $matches[1] ) ? trim( $matches[1] ) : '';
-		} else {
-			return '';
-		}
 	}
 }
