@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "442 total, 417 passed, 0 failed, 25 skipped.",
+            "test_summary": "442 total, 416 passed, 0 failed, 26 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,12 +45,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 93,
-                "numPendingTestSuites": 17,
+                "numPassedTestSuites": 92,
+                "numPendingTestSuites": 18,
                 "numTotalTestSuites": 110,
                 "numFailedTests": 0,
-                "numPassedTests": 417,
-                "numPendingTests": 25,
+                "numPassedTests": 416,
+                "numPendingTests": 26,
                 "numTotalTests": 442,
                 "testResults": [
                     {
@@ -2087,7 +2087,7 @@
                     {
                         "file": "shopper\\/account-email-receiving.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Shopper Account Email Receiving": [
                                 {
@@ -2102,7 +2102,7 @@
                             "Shopper Password Reset Email Receiving": [
                                 {
                                     "title": "should receive an email when initiating a password reset",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2908,33 +2908,33 @@
                         }
                     }
                 ],
-                "summary": "442 total, 417 passed, 0 failed, 25 skipped."
+                "summary": "442 total, 416 passed, 0 failed, 26 skipped."
             }
         },
         {
             "debug_log": [
                 {
-                    "count": "1",
+                    "count": "2",
                     "message": "PHP Warning: exif_read_data(album-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
                 },
                 {
-                    "count": "1",
+                    "count": "2",
                     "message": "PHP Warning: exif_read_data(hoodie-blue-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
                 },
                 {
-                    "count": "1",
+                    "count": "2",
                     "message": "PHP Warning: exif_read_data(hoodie-green-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
                 },
                 {
-                    "count": "1",
+                    "count": "2",
                     "message": "PHP Warning: exif_read_data(single-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
                 },
                 {
-                    "count": "1",
+                    "count": "2",
                     "message": "PHP Warning: exif_read_data(vnech-tee-blue-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
                 },
                 {
-                    "count": "1",
+                    "count": "2",
                     "message": "PHP Warning: exif_read_data(vnech-tee-green-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
                 }
             ]
