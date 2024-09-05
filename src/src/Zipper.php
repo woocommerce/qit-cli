@@ -94,6 +94,13 @@ class Zipper {
 	}
 
 	protected function pull_zip(): void {
+		// Do this once a day max.
+		if ( ! is_null( App::make( Cache::class )->get( 'zip_pulled' ) ) ) {
+			return;
+		} else {
+			App::make( Cache::class )->set( 'zip_pulled', '1', DAY_IN_SECONDS );
+		}
+
 		if ( $this->output->isVerbose() ) {
 			$this->output->writeln( 'Pulling Docker ZIP image.' );
 		}
@@ -229,7 +236,11 @@ class Zipper {
 		}
 
 		$zip_process = new Process( $docker_command );
-		$zip_process->mustRun();
+		$zip_process->mustRun(function( $type, $out ) {
+			if ( $this->output->isVeryVerbose() ) {
+				$this->output->write( 'Docker ZIP: ' . $out );
+			}
+		});
 
 		// Move the zipped file from the temp directory to the desired output location.
 		rename( "$temp_dir/output.zip", $output_zip_file );
