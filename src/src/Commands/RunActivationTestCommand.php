@@ -42,7 +42,7 @@ class RunActivationTestCommand extends Command {
 			'wait',
 			'w',
 			InputOption::VALUE_NEGATABLE,
-			'(Deprecated) Wait for the test to finish before finishing command execution.',
+			'(Deprecated)',
 			false
 		);
 
@@ -50,7 +50,7 @@ class RunActivationTestCommand extends Command {
 			'ignore-fail',
 			'i',
 			InputOption::VALUE_NEGATABLE,
-			'(Deprecated) If set, exit status code will be zero even if test fails. (requires "--wait")',
+			'(Deprecated)',
 			false
 		);
 
@@ -58,7 +58,7 @@ class RunActivationTestCommand extends Command {
 			'zip',
 			null,
 			InputOption::VALUE_OPTIONAL,
-			'(Deprecated) Run the test using a local ZIP file of the plugin. Useful for running the tests before publishing it to the Marketplace.'
+			'Deprecated. Use --source instead.'
 		);
 	}
 
@@ -111,7 +111,7 @@ class RunActivationTestCommand extends Command {
 			new StreamOutput( $resource_stream )
 		);
 
-		if ( $input->getOption( 'json' ) ) {
+		if ( ! $input->getOption( 'json' ) ) {
 			$run_e2e_output = stream_get_contents( $resource_stream, - 1, 0 );
 			$output->writeln( $run_e2e_output );
 		} else {

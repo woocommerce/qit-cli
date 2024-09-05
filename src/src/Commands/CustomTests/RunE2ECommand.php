@@ -396,7 +396,10 @@ class RunE2ECommand extends DynamicCommand {
 			$did_shutdown = true;
 		}
 
-		echo "\nShutting down environment...\n";
+		if ( App::make( 'QIT_JSON_MODE' ) !== true ) {
+			echo "\nShutting down environment...\n";
+		}
+		
 		// Env not up or could not parse the "up" JSON.
 		if ( empty( $GLOBALS['env_to_shutdown'] ) || ! $GLOBALS['env_to_shutdown'] instanceof EnvInfo ) {
 			return;
