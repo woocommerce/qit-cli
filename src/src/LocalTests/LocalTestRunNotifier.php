@@ -3,6 +3,7 @@
 namespace QIT_CLI\LocalTests;
 
 use QIT_CLI\App;
+use QIT_CLI\Cache;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\IO\Output;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
@@ -201,6 +202,8 @@ class LocalTestRunNotifier {
 		if ( ! is_array( $response ) || ! ( $response['success'] ) ) {
 			throw new \UnexpectedValueException( "Couldn't communicate with QIT Manager servers to record test run." );
 		}
+
+		App::make( Cache::class )->set( 'QIT_LAST_LOCAL_TEST_FINISHED', $test_run_id, DAY_IN_SECONDS );
 
 		return $response['report_url'];
 	}
