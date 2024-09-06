@@ -7,7 +7,7 @@ use QIT_CLI\Cache;
 
 class EnvironmentVersionResolver {
 	/**
-	 * @param string $woo
+	 * @param string       $woo
 	 * @param array<mixed> $plugins
 	 *
 	 * @return string|array{slug: string, source: string} A plugin syntax, can be a string or an array.

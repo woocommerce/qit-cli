@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\InputOption;
  * It allows to reuse options declared in other commands.
  */
 trait OptionReuseTrait {
+	/** @var array<string> */
 	protected $reused_options = [];
 
 	protected function reuseOption( string $command_name, string $option_name ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Use camelCase for consistency with the context where this is used.
