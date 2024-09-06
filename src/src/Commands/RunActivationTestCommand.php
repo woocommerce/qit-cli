@@ -4,6 +4,7 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\CommandReuseTrait;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Command\Command;
@@ -16,18 +17,21 @@ use Symfony\Component\Console\Output\StreamOutput;
 use function QIT_CLI\get_manager_url;
 
 class RunActivationTestCommand extends Command {
+	use CommandReuseTrait;
+
 	protected static $defaultName = 'run:activation'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	protected function configure() {
 		$this
 			->setDescription( 'Run Activation tests.' )
 			->setHelp( 'Run the Woo activation test against a given extension.' )
-			->addArgument( 'woo_extension', InputArgument::REQUIRED, 'A WooCommerce Extension Slug or Marketplace ID.' )
-			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'The source of the main extension under test. Accepts a slug, a file, a URL. If not provided, the source will be the slug.' )
-			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'The WordPress version. Accepts "stable", "nightly", or a version number.', 'stable' )
-			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "stable", "nightly", or a GitHub Tag (eg: 8.6.1).', 'stable' )
-			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
-			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode. In this mode, you can start and view the tests running.' );
+			->addArgument( 'woo_extension', InputArgument::REQUIRED, 'A WooCommerce Extension Slug or Marketplace ID.' );
+
+		$this->add_option_from_command( RunE2ECommand::getDefaultName(), 'source' );
+		$this->add_option_from_command( RunE2ECommand::getDefaultName(), 'wp' );
+		$this->add_option_from_command( RunE2ECommand::getDefaultName(), 'woo' );
+		$this->add_option_from_command( RunE2ECommand::getDefaultName(), 'plugin' );
+		$this->add_option_from_command( RunE2ECommand::getDefaultName(), 'ui' );
 
 		$this->addOption(
 			'json',
