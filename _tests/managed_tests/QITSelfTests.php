@@ -17,9 +17,13 @@ use Symfony\Component\Process\Process;
 
 require_once __DIR__ . '/ProcessManagerFork.php';
 
+// These test types cannot run in parallel.
+$tests_based_on_custom_tests = [ 'activation' ];
+
 class Context {
 	public static $action;
 	public static $test_types;
+	public static $running_test_based_on_custom_test;
 	public static $scenarios;
 	public static $env_filters;
 	public static $debug_mode;
@@ -46,9 +50,20 @@ Context::$action = $params[1] ?? 'run';
 # Comma-separated list of test-types to run, eg: woo-e2e,woo-api
 if ( isset( $params[2] ) ) {
 	Context::$test_types = array_map( 'trim', explode( ',', $params[2] ) );
+
+	if ( count( Context::$test_types ) > 1 ) {
+		foreach ( $tests_based_on_custom_tests as $custom_test ) {
+			if ( in_array( $custom_test, Context::$test_types, true ) ) {
+				echo "Cannot run tests based on custom tests in parallel with other tests.\n";
+				die( 1 );
+			}
+		}
+	}
 } else {
 	Context::$test_types = null;
 }
+
+Context::$running_test_based_on_custom_test = ! is_null( Context::$test_types ) && count( array_intersect( Context::$test_types, $tests_based_on_custom_tests ) ) > 0;
 
 # Comma-separated list of scenarios to run, eg: no_op,no_op_php82,delete_products
 if ( isset( $params[3] ) ) {
@@ -111,6 +126,16 @@ try {
 		$test_types = array_filter( $test_types, function ( $test_type_path ) {
 			return in_array( basename( $test_type_path ), Context::$test_types, true );
 		} );
+	} else {
+		// Remove tests based on custom tests if no specific test type is defined.
+		$test_types = array_filter( $test_types, function ( $test_type_path ) use ( $tests_based_on_custom_tests ) {
+			return ! in_array( basename( $test_type_path ), $tests_based_on_custom_tests, true );
+		} );
+
+		// If anything is removed, print what was removed.
+		if ( count( $test_types ) !== count( get_test_types() ) ) {
+			$GLOBALS['parallelOutput']->addRawOutput( sprintf( "Skipping tests based on custom tests, which must run in a dedicated process: \n - %s", implode( "\n - ", array_map( 'basename', array_diff( get_test_types(), $test_types ) ) ) ) );
+		}
 	}
 
 	if ( getenv( 'QIT_SKIP_E2E' ) === 'yes' ) {
@@ -123,7 +148,7 @@ try {
 		throw new Exception( 'No test types found.' );
 	}
 
-	run_test_runs( generate_test_runs( $test_types ) );
+	run_test_runs( generate_test_runs( $test_types ), $tests_based_on_custom_tests );
 } catch ( \Exception $e ) {
 	if ( isset( $GLOBALS['parallelOutput'] ) && $GLOBALS['parallelOutput'] instanceof ParallelOutput ) {
 		$GLOBALS['parallelOutput']->addRawOutput( $e->getMessage() );
@@ -304,7 +329,7 @@ function copy_task_id_to_process( Process $process_with_task_id, Process $proces
 	$process_without_task_id->setEnv( array_merge( $process_without_task_id->getEnv(), [ 'qit_task_id' => $process_with_task_id->getEnv()['qit_task_id'] ] ) );
 }
 
-function run_test_runs( array $test_runs ) {
+function run_test_runs( array $test_runs, $tests_based_on_custom_tests ) {
 	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
 		generate_zips( $test_type_test_runs );
 	}
@@ -328,8 +353,6 @@ function run_test_runs( array $test_runs ) {
 				'--ignore-fail',
 				"--zip={$t['path']}/sut.zip"
 			];
-
-			$tests_based_on_custom_tests = [ 'activation' ];
 
 			Context::$to_delete[] = "{$t['path']}/sut.zip";
 
@@ -441,7 +464,9 @@ function run_test_runs( array $test_runs ) {
 	$json_buffer  = [];
 	$failed_tests = [];
 
-	$qit_run_processes_manager->runParallel( $qit_run_processes, 20, 10000, function ( string $type, string $out, Process $process ) use ( &$failed_tests, &$json_buffer ) {
+	$max_parallel = Context::$running_test_based_on_custom_test ? 1 : 20;
+
+	$qit_run_processes_manager->runParallel( $qit_run_processes, $max_parallel, 10000, function ( string $type, string $out, Process $process ) use ( &$failed_tests, &$json_buffer ) {
 		/*
 		 * Callback function for handling process output.
 		 * Outputs are chunked to 16kb, requiring special handling for large JSON outputs.
