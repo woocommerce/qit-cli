@@ -5,7 +5,6 @@ namespace QIT_CLI\Commands;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
-use QIT_CLI\IO\Input;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -123,7 +122,7 @@ class RunActivationTestCommand extends Command {
 				return Command::FAILURE;
 			}
 
-			$json = ( new RequestBuilder( get_manager_url() . "/wp-json/cd/v1/get-single" ) )
+			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get-single' ) )
 				->with_method( 'POST' )
 				->with_post_body( [
 					'test_run_id' => $test_run_id,

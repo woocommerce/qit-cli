@@ -28,10 +28,10 @@ class PrepareQMLog {
 
 		if ( is_dir( $directory ) ) {
 
-            // phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
+            // phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure, Generic.CodeAnalysis.AssignmentInCondition.Found
 			if ( $dh = opendir( $directory ) ) {
 
-				while ( ( $file = readdir( $dh ) ) !== false ) {
+				while ( ( $file = readdir( $dh ) ) !== false ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 
 					$file_path = $directory . $file;
 
@@ -91,7 +91,7 @@ class PrepareQMLog {
 
 		if ( $handle ) {
 
-			while ( ( $line = fgets( $handle ) ) !== false ) {
+			while ( ( $line = fgets( $handle ) ) !== false ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 				if ( str_contains( $line, 'PHP Fatal error:' ) ) {
 					$lines[] = $line;
 				}

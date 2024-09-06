@@ -236,7 +236,7 @@ class Zipper {
 		}
 
 		$zip_process = new Process( $docker_command );
-		$zip_process->mustRun(function( $type, $out ) {
+		$zip_process->mustRun(function ( $type, $out ) {
 			if ( $this->output->isVeryVerbose() ) {
 				$this->output->write( 'Docker ZIP: ' . $out );
 			}
