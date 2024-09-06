@@ -149,8 +149,7 @@ class EnvironmentDownloader {
 		}
 
 		$checksums = [];
-        // phpcs:ignore
-		for ( $i = 0; $i < $zip->numFiles; $i++ ) {
+		for ( $i = 0; $i < $zip->numFiles; $i++ ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$stat = $zip->statIndex( $i );
 			if ( $stat ) {
 				$crc         = $stat['crc']; // Get the CRC32 hash of the file.
