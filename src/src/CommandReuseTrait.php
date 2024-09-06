@@ -12,7 +12,7 @@ use Symfony\Component\Console\Input\InputOption;
  * It allows to reuse options declared in other commands.
  */
 trait CommandReuseTrait {
-	protected function add_option_from_command( string $command_name, string $option_name ): void {
+	protected function add_option_from_command( string $command_name, string $option_name ): self {
 		/**
 		 * @var \Symfony\Component\Console\Command\Command $this The command to add options.
 		 */
@@ -39,5 +39,7 @@ trait CommandReuseTrait {
 			$option->getDescription(),
 			$default
 		);
+
+		return $this;
 	}
 }

@@ -9,6 +9,7 @@ namespace QIT_CLI\Commands\CustomTests;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\CommandReuseTrait;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
@@ -33,6 +34,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use function QIT_CLI\is_windows;
 
 class RunE2ECommand extends DynamicCommand {
+	use CommandReuseTrait;
+
 	/** @var E2EEnvironment */
 	protected $e2e_environment;
 
@@ -92,21 +95,21 @@ class RunE2ECommand extends DynamicCommand {
 			->addArgument( 'test', InputArgument::OPTIONAL, '(Optional) The tests for the main extension under test. Accepts test tags, or a test directory. If not set, will use the "default" test tag of this extension.' )
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'The source of the main extension under test. Accepts a slug, a file, a URL. If not provided, the source will be the slug.' )
 			->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to take on the SUT. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['test'] )
-			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'The WordPress version. Accepts "stable", "nightly", or a version number.', 'stable' )
-			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "stable", "nightly", or a GitHub Tag (eg: 8.6.1).', 'stable' )
-			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
-			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Theme install, if multiple provided activates the last. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
-			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
-			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions to install in the environment.', [] )
-			->addOption( 'require', 'r', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load PHP file before running the command (may be used more than once).' )
-			->addOption( 'config', null, InputOption::VALUE_OPTIONAL, '(Optional) QIT config file to use.' )
-			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Whether to enable Object Cache (Redis) in the environment.' )
+			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'wp' )
+			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'woo' )
+			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'plugin' )
+			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'theme' )
+			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'volume' )
+			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'php_extension' )
+			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'require' )
+			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'config' )
+			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'object_cache' )
+			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'skip_activating_plugins' )
 			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright Sharding argument.' )
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
 			->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional options and parameters to pass to Playwright.' )
 			->addOption( 'dependencies', null, InputOption::VALUE_OPTIONAL, 'How to handle SUT dependencies. Possible values are: "activate", "bootstrap", "test", or "none"', Extension::ACTIONS['bootstrap'] )
-			->addOption( 'skip_activating_plugins', null, InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode. In this mode, you can start and view the tests running.' )
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run the environment for Codegen. In this mode, you can generate your test files.' )
 			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it up until you shut it down.' );
