@@ -88,7 +88,7 @@ class EnvironmentVersionResolver {
 			$versions = App::make( Cache::class )->get_manager_sync_data( 'versions' );
 
 			if ( ! empty( $versions['wordpress']['rc'] ) ) {
-				$wp = "https://wordpress.org/wordpress-{$versions['wordpress']['rc']}.zip";
+				$wp = $versions['wordpress']['rc'];
 			} else {
 				throw new \InvalidArgumentException( 'No RC version available. Please specify a RC version, such as "1.2.3-rc.1".' );
 			}
