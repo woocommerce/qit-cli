@@ -85,7 +85,13 @@ class EnvironmentVersionResolver {
 		if ( $wp === 'stable' ) {
 			$wp = 'latest';
 		} elseif ( $wp === 'rc' ) {
-			throw new \InvalidArgumentException( 'Please specify a RC version, such as "1.2.3-rc.1", or use "nightly".' );
+			$versions = App::make( Cache::class )->get_manager_sync_data( 'versions' );
+
+			if ( ! empty( $versions['wordpress']['rc'] ) ) {
+				$wp = "https://wordpress.org/wordpress-{$versions['wordpress']['rc']}.zip";
+			} else {
+				throw new \InvalidArgumentException( 'No RC version available. Please specify a RC version, such as "1.2.3-rc.1".' );
+			}
 		}
 
 		return $wp;
