@@ -18,8 +18,8 @@
             "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
-            "is_development": false,
-            "send_notifications": true,
+            "is_development": true,
+            "send_notifications": false,
             "woo_extension": {
                 "id": 18619,
                 "host": "wccom",
@@ -114,13 +114,13 @@
                     "message": "This is test notice!",
                     "type": "notice",
                     "file_line": "wp-content\\/mu-plugins\\/qit-mu-woocommerce.php:105",
-                    "count": 97
+                    "count": 98
                 },
                 {
                     "message": "Notice on all requests",
                     "type": "notice",
                     "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:16",
-                    "count": 79
+                    "count": 80
                 },
                 {
                     "message": " Uncaught Error: Call to undefined function call_to_undefined_function()",

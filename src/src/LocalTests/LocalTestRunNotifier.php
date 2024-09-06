@@ -70,7 +70,7 @@ class LocalTestRunNotifier {
 			'test_type'               => 'e2e',
 			'event'                   => 'e2e_local_run',
 			'is_development_build'    => $is_development ? 'true' : 'false',
-			'send_notification'       => $notify ? 'false' : 'true',
+			'send_notification'       => $notify ? 'true' : 'false',
 		];
 
 		/**
