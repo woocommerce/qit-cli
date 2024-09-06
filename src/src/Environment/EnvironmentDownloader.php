@@ -139,7 +139,7 @@ class EnvironmentDownloader {
 	 * @param string $zip_file_path The path to the zip file.
 	 *
 	 * @return string A checksum of the zip contents.
-	 * @throws \Exception
+	 * @throws \Exception If the zip file cannot be opened.
 	 */
 	private function calculate_zip_content_checksum( string $zip_file_path ) {
 		$zip = new \ZipArchive();
@@ -149,10 +149,10 @@ class EnvironmentDownloader {
 		}
 
 		$checksums = [];
-		for ( $i = 0; $i < $zip->numFiles; $i ++ ) {
+		for ( $i = 0; $i < $zip->numFiles; $i++ ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$stat = $zip->statIndex( $i );
 			if ( $stat ) {
-				$crc         = $stat['crc']; // Get the CRC32 hash of the file
+				$crc         = $stat['crc']; // Get the CRC32 hash of the file.
 				$checksums[] = $crc;
 			}
 		}
