@@ -32,7 +32,8 @@ class RunActivationTestCommand extends Command {
 			->reuseOption( RunE2ECommand::getDefaultName(), 'php_version' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'object_cache' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'plugin' )
-			->reuseOption( RunE2ECommand::getDefaultName(), 'ui' );
+			->reuseOption( RunE2ECommand::getDefaultName(), 'ui' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'no_upload_report' );
 
 		$this->addOption(
 			'json',
@@ -79,6 +80,10 @@ class RunActivationTestCommand extends Command {
 		$run_e2e_options['--sut_action']              = 'activate';
 		$run_e2e_options['--skip_activating_plugins'] = true;
 
+		foreach ( $this->reused_options as $reused_option ) {
+			$run_e2e_options[ "--$reused_option" ] = $input->getOption( $reused_option );
+		}
+
 		// --zip deprecated option.
 		if ( ! empty( $input->getOption( 'zip' ) ) ) {
 			if ( ! empty( $input->getOption( 'source' ) ) ) {
@@ -88,17 +93,6 @@ class RunActivationTestCommand extends Command {
 			}
 
 			$input->setOption( 'source', $input->getOption( 'zip' ) );
-		}
-
-		if ( ! empty( $input->getOption( 'source' ) ) ) {
-			$run_e2e_options['--source'] = $input->getOption( 'source' );
-		}
-		$run_e2e_options['--wp']  = $input->getOption( 'wp' );
-		$run_e2e_options['--woo'] = $input->getOption( 'woo' );
-		$run_e2e_options['--ui']  = $input->getOption( 'ui' );
-
-		foreach ( $input->getOption( 'plugin' ) as $plugin ) {
-			$run_e2e_options['--plugin'][] = $plugin;
 		}
 
 		// Set the test.
