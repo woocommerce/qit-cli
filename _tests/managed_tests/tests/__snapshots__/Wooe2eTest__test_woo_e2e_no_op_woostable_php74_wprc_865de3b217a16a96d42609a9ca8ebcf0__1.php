@@ -2912,32 +2912,7 @@
             }
         },
         {
-            "debug_log": [
-                {
-                    "count": "2",
-                    "message": "PHP Warning: exif_read_data(album-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
-                },
-                {
-                    "count": "2",
-                    "message": "PHP Warning: exif_read_data(hoodie-blue-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
-                },
-                {
-                    "count": "2",
-                    "message": "PHP Warning: exif_read_data(hoodie-green-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
-                },
-                {
-                    "count": "2",
-                    "message": "PHP Warning: exif_read_data(single-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
-                },
-                {
-                    "count": "2",
-                    "message": "PHP Warning: exif_read_data(vnech-tee-blue-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
-                },
-                {
-                    "count": "2",
-                    "message": "PHP Warning: exif_read_data(vnech-tee-green-1.jpg): Incorrect APP1 Exif Identifier Code in \\/var\\/www\\/html\\/wp-admin\\/includes\\/image.php on line 912"
-                }
-            ]
+            "debug_log": []
         }
     ]
 ]';
