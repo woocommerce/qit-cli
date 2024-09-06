@@ -171,6 +171,11 @@ class ExtensionDownloader {
 						if ( static::is_valid_plugin_slug( $ext->source ) ) {
 							$ext->handler = QITHandler::class;
 						} else {
+							// Does it look like a path?
+							if ( substr( $ext->source, 0, 1 ) === '/' ) {
+								throw new \InvalidArgumentException( 'ZIP file does not exist: ' . $ext->source );
+							}
+
 							throw new \InvalidArgumentException( sprintf( "Invalid extension \"%s\".\n\nExpected format: extension:action:tests\n\nValid extensions are WP.org/Woo.com Slugs, Woo.com product ID, Local path, or Zip URLs.\nValid actions are \"activate\", \"bootstrap\" and \"test\".\nValid tests are comma-separated list of test tags or local test directories.", $ext->source ) );
 						}
 					}
