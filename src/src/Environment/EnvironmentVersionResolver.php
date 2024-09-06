@@ -3,16 +3,19 @@
 namespace QIT_CLI\Environment;
 
 use QIT_CLI\App;
+use QIT_CLI\Cache;
 
 class EnvironmentVersionResolver {
 	/**
-	 * @param string       $woo
+	 * @param string $woo
 	 * @param array<mixed> $plugins
 	 *
 	 * @return string|array{slug: string, source: string} A plugin syntax, can be a string or an array.
 	 */
 	public static function resolve_woo( string $woo, array $plugins ) {
 		$plugins = App::make( PluginsAndThemesParser::class )->parse_extensions( $plugins, Extension::TYPES['plugin'] );
+
+		$versions = App::make( Cache::class )->get_manager_sync_data( 'versions' );
 
 		$action    = 'activate';
 		$test_tags = 'default';
@@ -32,7 +35,16 @@ class EnvironmentVersionResolver {
 				'test_tags' => $test_tags,
 			];
 		} elseif ( $woo === 'rc' ) {
-			throw new \InvalidArgumentException( 'Please specify a RC version, such as "1.2.3-rc.1", or use "nightly".' );
+			if ( empty( $versions['woocommerce']['rc_unsynced'] ) ) {
+				throw new \InvalidArgumentException( 'No unsynced RC version available. Please specify a RC version, such as "1.2.3-rc.1".' );
+			}
+
+			$woo = [
+				'slug'      => 'woocommerce',
+				'source'    => "https://github.com/woocommerce/woocommerce/releases/download/{$versions['woocommerce']['rc_unsynced']}/woocommerce.zip",
+				'action'    => $action,
+				'test_tags' => $test_tags,
+			];
 		} elseif ( $woo === 'stable' ) {
 			$woo = [
 				'slug'      => 'woocommerce',
