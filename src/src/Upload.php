@@ -59,7 +59,7 @@ class Upload {
 		$total_chunks  = intval( ceil( $stat['size'] / ( $chunk_size_kb ) ) );
 		$cd_upload_id  = generate_uuid4();
 
-		$progress_bar_output = App::make( 'QIT_JSON_MODE' ) ? new NullOutput() : $output;
+		$progress_bar_output = App::getVar( 'QIT_JSON_MODE' ) ? new NullOutput() : $output;
 
 		$progress_bar = new ProgressBar( $progress_bar_output, $total_chunks );
 		$output->writeln( 'Uploading zip...' );
