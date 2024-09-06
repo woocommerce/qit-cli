@@ -84,7 +84,7 @@ $application->setAutoExit( true );
 $application->setCatchExceptions( true );
 $application->find( 'completion' )->setHidden( true );
 $application->find( 'list' )->setHidden( true );
-$container->setVar( 'app', $application );
+$container->singleton( Application::class, $application );
 
 // Define a global input/output for convenience.
 $container->singleton( Input::class, function () {

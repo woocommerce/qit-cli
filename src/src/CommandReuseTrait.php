@@ -3,8 +3,7 @@
 namespace QIT_CLI;
 
 use ReflectionProperty;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Exception\CommandNotFoundException;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputOption;
 
 /**
@@ -13,27 +12,18 @@ use Symfony\Component\Console\Input\InputOption;
  * It allows to reuse options declared in other commands.
  */
 trait CommandReuseTrait {
-	protected function add_option_from_command( string $command_name, string $option_name ) {
+	protected function add_option_from_command( string $command_name, string $option_name ): void {
 		/**
-		 * @var Command $this
+		 * @var \Symfony\Component\Console\Command\Command $this The command to add options.
 		 */
-		$command = App::make( 'app' )->find( $command_name );
+		$command = App::make( Application::class )->find( $command_name );
 
-		if ( ! $command ) {
-			throw new CommandNotFoundException( "Command {$command_name} not found." );
-		}
-
-		/** @var InputOption $option */
 		$option = $command->getDefinition()->getOption( $option_name );
 
-		if ( ! $option ) {
-			throw new \InvalidArgumentException( "Option {$option_name} not found in command {$command_name}." );
-		}
-
-		// Using reflection to access the 'mode' private property of the option
-		$reflectedOption = new ReflectionProperty( InputOption::class, 'mode' );
-		$reflectedOption->setAccessible( true );
-		$mode = $reflectedOption->getValue( $option );
+		// Using reflection to access the 'mode' private property of the option.
+		$reflected_option = new ReflectionProperty( InputOption::class, 'mode' );
+		$reflected_option->setAccessible( true );
+		$mode = $reflected_option->getValue( $option );
 
 		if ( $mode === InputOption::VALUE_NONE ) {
 			$default = null;
@@ -41,6 +31,7 @@ trait CommandReuseTrait {
 			$default = $option->getDefault();
 		}
 
+		// @phan-suppress-next-line PhanUndeclaredMethod
 		$this->addOption(
 			$option->getName(),
 			$option->getShortcut(),
