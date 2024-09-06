@@ -331,6 +331,8 @@ function run_test_runs( array $test_runs ) {
 				"--zip={$t['path']}/sut.zip"
 			];
 
+			$tests_based_on_custom_tests = [ 'activation' ];
+
 			Context::$to_delete[] = "{$t['path']}/sut.zip";
 
 			if ( Context::$debug_mode ) {
@@ -342,11 +344,19 @@ function run_test_runs( array $test_runs ) {
 			}
 
 			if ( ! empty( $t['wp'] ) ) {
-				$args[] = "--wordpress_version={$t['wp']}";
+				if ( in_array( $test_type, $tests_based_on_custom_tests ) ) {
+					$args[] = "--wp={$t['wp']}";
+				} else {
+					$args[] = "--wordpress_version={$t['wp']}";
+				}
 			}
 
 			if ( ! empty( $t['woo'] ) ) {
-				$args[] = "--woocommerce_version={$t['woo']}";
+				if ( in_array( $test_type, $tests_based_on_custom_tests ) ) {
+					$args[] = "--woo={$t['woo']}";
+				} else {
+					$args[] = "--woocommerce_version={$t['woo']}";
+				}
 			}
 
 			if ( ! empty( $t['features'] ) ) {
