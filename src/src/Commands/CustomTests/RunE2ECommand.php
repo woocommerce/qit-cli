@@ -108,6 +108,7 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright Sharding argument.' )
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
+			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT.' )
 			->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional options and parameters to pass to Playwright.' )
 			->addOption( 'dependencies', null, InputOption::VALUE_OPTIONAL, 'How to handle SUT dependencies. Possible values are: "activate", "bootstrap", "test", or "none"', Extension::ACTIONS['bootstrap'] )
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode. In this mode, you can start and view the tests running.' )
@@ -360,7 +361,20 @@ class RunE2ECommand extends DynamicCommand {
 			$env_info->sut_id   = $woo_extension_id;
 			// @phan-suppress-next-line PhanPossiblyUndeclaredVariable
 			$env_info->sut_type = $sut_type; // @phpstan-ignore-line
-			$this->test_run_notifier->notify_test_started( $woo_extension_id, $woocommerce_version ?? 'none', $env_info );
+
+			if ( file_exists( $source ) ) {
+				$is_development = true;
+			} else {
+				$is_development = false;
+			}
+
+			$this->test_run_notifier->notify_test_started(
+				$woo_extension_id,
+				$woocommerce_version ?? 'none',
+				$env_info,
+				$is_development,
+				$input->getOption( 'notify' )
+			);
 		}
 
 		// Store in $GLOBALS so that's available in the shutdown function.

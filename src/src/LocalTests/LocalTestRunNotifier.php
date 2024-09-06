@@ -51,7 +51,7 @@ class LocalTestRunNotifier {
 	/**
 	 * @suppress PhanTypeArraySuspicious
 	 */
-	public function notify_test_started( string $woo_extension_id, string $woocommerce_version, E2EEnvInfo $env_info ): void {
+	public function notify_test_started( string $woo_extension_id, string $woocommerce_version, E2EEnvInfo $env_info, bool $is_development, bool $notify ): void {
 		$additional_plugins = [];
 
 		foreach ( $env_info->plugins as $plugin ) {
@@ -69,6 +69,8 @@ class LocalTestRunNotifier {
 			'will_have_allure_report' => App::getVar( 'should_upload_report' ) ? 'true' : 'false',
 			'test_type'               => 'e2e',
 			'event'                   => 'e2e_local_run',
+			'is_development_build'    => $is_development ? 'true' : 'false',
+			'send_notification'       => $notify ? 'false' : 'true',
 		];
 
 		/**
