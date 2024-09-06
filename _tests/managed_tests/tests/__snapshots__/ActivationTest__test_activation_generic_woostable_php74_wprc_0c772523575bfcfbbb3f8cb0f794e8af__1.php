@@ -15,7 +15,7 @@
                 "woocommerce"
             ],
             "test_log": "",
-            "status": "warning",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": false,
@@ -46,18 +46,18 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 1,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 0,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 1,
-                "numFailedTests": 0,
-                "numPassedTests": 10,
+                "numFailedTests": 1,
+                "numPassedTests": 9,
                 "numPendingTests": 0,
                 "numTotalTests": 10,
                 "testResults": [
                     {
                         "file": "woocommerce\\/activation\\/activation.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "woocommerce\\/activation\\/activation.spec.js": [
@@ -87,7 +87,7 @@
                                 },
                                 {
                                     "title": "Add Product Cart",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "Can Place Order",
@@ -105,7 +105,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 1 passed, 1 total | Tests: 0 skipped, 0 failed, 10 passed, 10 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 0 passed, 1 total | Tests: 0 skipped, 1 failed, 9 passed, 10 total."
             }
         },
         {
@@ -114,7 +114,19 @@
                     "message": "This is test notice!",
                     "type": "notice",
                     "file_line": "wp-content\\/mu-plugins\\/qit-mu-woocommerce.php:105",
-                    "count": 98
+                    "count": 97
+                },
+                {
+                    "message": "Notice on all requests",
+                    "type": "notice",
+                    "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:16",
+                    "count": 79
+                },
+                {
+                    "message": " Uncaught Error: Call to undefined function call_to_undefined_function()",
+                    "type": "PHP Fatal",
+                    "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:9",
+                    "count": 2
                 }
             ]
         }
