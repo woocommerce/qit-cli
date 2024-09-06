@@ -4,7 +4,7 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
-use QIT_CLI\CommandReuseTrait;
+use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Command\Command;
@@ -17,7 +17,7 @@ use Symfony\Component\Console\Output\StreamOutput;
 use function QIT_CLI\get_manager_url;
 
 class RunActivationTestCommand extends Command {
-	use CommandReuseTrait;
+	use OptionReuseTrait;
 
 	protected static $defaultName = 'run:activation'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
@@ -27,11 +27,11 @@ class RunActivationTestCommand extends Command {
 			->setHelp( 'Run the Woo activation test against a given extension.' )
 			->addArgument( 'woo_extension', InputArgument::REQUIRED, 'A WooCommerce Extension Slug or Marketplace ID.' );
 
-		$this->add_option_from_command( RunE2ECommand::getDefaultName(), 'source' );
-		$this->add_option_from_command( RunE2ECommand::getDefaultName(), 'wp' );
-		$this->add_option_from_command( RunE2ECommand::getDefaultName(), 'woo' );
-		$this->add_option_from_command( RunE2ECommand::getDefaultName(), 'plugin' );
-		$this->add_option_from_command( RunE2ECommand::getDefaultName(), 'ui' );
+		$this->reuseOption( RunE2ECommand::getDefaultName(), 'source' );
+		$this->reuseOption( RunE2ECommand::getDefaultName(), 'wp' );
+		$this->reuseOption( RunE2ECommand::getDefaultName(), 'woo' );
+		$this->reuseOption( RunE2ECommand::getDefaultName(), 'plugin' );
+		$this->reuseOption( RunE2ECommand::getDefaultName(), 'ui' );
 
 		$this->addOption(
 			'json',

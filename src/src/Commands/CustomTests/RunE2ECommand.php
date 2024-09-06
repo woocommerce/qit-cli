@@ -9,7 +9,7 @@ namespace QIT_CLI\Commands\CustomTests;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
-use QIT_CLI\CommandReuseTrait;
+use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
@@ -34,7 +34,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use function QIT_CLI\is_windows;
 
 class RunE2ECommand extends DynamicCommand {
-	use CommandReuseTrait;
+	use OptionReuseTrait;
 
 	/** @var E2EEnvironment */
 	protected $e2e_environment;
@@ -95,16 +95,16 @@ class RunE2ECommand extends DynamicCommand {
 			->addArgument( 'test', InputArgument::OPTIONAL, '(Optional) The tests for the main extension under test. Accepts test tags, or a test directory. If not set, will use the "default" test tag of this extension.' )
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'The source of the main extension under test. Accepts a slug, a file, a URL. If not provided, the source will be the slug.' )
 			->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to take on the SUT. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['test'] )
-			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'wp' )
-			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'woo' )
-			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'plugin' )
-			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'theme' )
-			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'volume' )
-			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'php_extension' )
-			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'require' )
-			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'config' )
-			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'object_cache' )
-			->add_option_from_command( UpEnvironmentCommand::getDefaultName(), 'skip_activating_plugins' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'wp' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'woo' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'plugin' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'theme' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'volume' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_extension' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'require' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'config' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'object_cache' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'skip_activating_plugins' )
 			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright Sharding argument.' )
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )

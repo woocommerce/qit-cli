@@ -11,11 +11,8 @@ use Symfony\Component\Console\Input\InputOption;
  *
  * It allows to reuse options declared in other commands.
  */
-trait CommandReuseTrait {
-	protected function add_option_from_command( string $command_name, string $option_name ): self {
-		/**
-		 * @var \Symfony\Component\Console\Command\Command $this The command to add options.
-		 */
+trait OptionReuseTrait {
+	protected function reuseOption( string $command_name, string $option_name ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Use camelCase for consistency with the context where this is used.
 		$command = App::make( Application::class )->find( $command_name );
 
 		$option = $command->getDefinition()->getOption( $option_name );
