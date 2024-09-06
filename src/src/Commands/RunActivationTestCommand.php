@@ -92,7 +92,7 @@ class RunActivationTestCommand extends Command {
 				return Command::FAILURE;
 			}
 
-			$input->setOption( 'source', $input->getOption( 'zip' ) );
+			$run_e2e_options['--source'] = $input->getOption( 'zip' );
 		}
 
 		// Set the test.
