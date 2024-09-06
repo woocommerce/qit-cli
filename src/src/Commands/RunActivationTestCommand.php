@@ -25,13 +25,14 @@ class RunActivationTestCommand extends Command {
 		$this
 			->setDescription( 'Run Activation tests.' )
 			->setHelp( 'Run the Woo activation test against a given extension.' )
-			->addArgument( 'woo_extension', InputArgument::REQUIRED, 'A WooCommerce Extension Slug or Marketplace ID.' );
-
-		$this->reuseOption( RunE2ECommand::getDefaultName(), 'source' );
-		$this->reuseOption( RunE2ECommand::getDefaultName(), 'wp' );
-		$this->reuseOption( RunE2ECommand::getDefaultName(), 'woo' );
-		$this->reuseOption( RunE2ECommand::getDefaultName(), 'plugin' );
-		$this->reuseOption( RunE2ECommand::getDefaultName(), 'ui' );
+			->addArgument( 'woo_extension', InputArgument::REQUIRED, 'A WooCommerce Extension Slug or Marketplace ID.' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'source' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'wp' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'woo' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'php_version' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'object_cache' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'plugin' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'ui' );
 
 		$this->addOption(
 			'json',
