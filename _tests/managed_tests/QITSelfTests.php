@@ -315,13 +315,11 @@ function run_test_runs( array $test_runs ) {
 	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
 		foreach ( $test_type_test_runs as &$t ) {
 			$php      = ( new PhpExecutableFinder() )->find( false );
-			$qit      = realpath( __DIR__ . '/../../qit' );
+			$qit      = realpath( __DIR__ . '/../../src/qit-cli.php' );
 			$sut_slug = $t['sut_slug'];
 
 			$args = [
 				$php,
-				'-d',
-				'xdebug.mode=off',
 				// Run QIT with Xdebug disabled to avoid "Max concurrent settings" on PHPStorm from bottlenecking parallelism.
 				$qit,
 				"run:$test_type",
@@ -357,6 +355,10 @@ function run_test_runs( array $test_runs ) {
 				} else {
 					$args[] = "--woocommerce_version={$t['woo']}";
 				}
+			}
+
+			if ( in_array( $test_type, $tests_based_on_custom_tests ) ) {
+				$args[] = "--no_upload_report";
 			}
 
 			if ( ! empty( $t['features'] ) ) {
@@ -571,6 +573,9 @@ function handle_qit_response( Process $qit_process, string $out, array &$failed_
 	}
 
 	$phpunit_process = new Process( $args );
+	$phpunit_process->setTimeout(1200);
+	$phpunit_process->setIdleTimeout(1200);
+
 
 	copy_task_id_to_process( $qit_process, $phpunit_process );
 
@@ -581,6 +586,7 @@ function handle_qit_response( Process $qit_process, string $out, array &$failed_
 		$GLOBALS['parallelOutput']->processOutputCallback( $phpunit_process->getOutput(), $phpunit_process );
 	} catch ( ProcessFailedException $e ) {
 		$failed_tests[] = $e;
+		$GLOBALS['parallelOutput']->processOutputCallback( $phpunit_process->getOutput(), $phpunit_process );
 	} finally {
 		$qit_process->setEnv( array_merge( $qit_process->getEnv(), [ 'QIT_RAN_TEST' => true, ] ) );
 	}

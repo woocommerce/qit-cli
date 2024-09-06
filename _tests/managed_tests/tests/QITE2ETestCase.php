@@ -38,57 +38,59 @@ class QITE2ETestCase extends TestCase {
 		}
 
 		$rules = [
-			'test_run_id'                          => [
+			'test_run_id'                     => [
 				'normalize' => 123456,
 				'validate'  => static function ( $value ) {
 					return preg_match( '/^\d+$/', $value );
-				}
+				},
 			],
 			'run_id'                          => [
 				'normalize' => 123456,
 				'validate'  => static function ( $value ) {
 					return preg_match( '/^\d+$/', $value );
-				}
+				},
 			],
 			'wordpress_version'               => [
 				'normalize' => '6.0.0-normalized',
 				'validate'  => static function ( $value ) {
 					return ! empty( $value ) && strlen( $value ) > 1 && strlen( $value ) < 60;
-				}
+				},
 			],
 			'woocommerce_version'             => [
 				'normalize' => '6.0.0-normalized',
 				'validate'  => static function ( $value ) {
 					return ! empty( $value ) && strlen( $value ) > 1 && strlen( $value ) < 60;
-				}
+				},
 			],
 			'test_results_manager_url'        => [
 				'normalize' => 'https://test-results-manager.com',
 				'validate'  => static function ( $value ) {
 					return filter_var( $value, FILTER_VALIDATE_URL );
-				}
+				},
 			],
 			'test_results_manager_expiration' => [
 				'normalize' => 1234567890,
 				'validate'  => static function ( $value ) {
 					return preg_match( '/^\d+$/', $value );
-				}
+				},
 			],
-			'runner' => [
+			'runner'                          => [
+				'optional'  => true,
 				'normalize' => 'normalized',
 				'validate'  => static function ( $value ) {
 					return ! empty( $value );
 				},
 			],
-			'workflow_id' => [
+			'workflow_id'                     => [
+				'optional'  => true,
 				'normalize' => '1234567890',
 				'validate'  => static function ( $value ) {
 					return ! empty( $value );
 				},
 			],
-			'test_summary' => [
+			'test_summary'                    => [
 				'normalize' => static function ( $value ) use ( $file_path ) {
-					if ( stripos( $file_path, 'delete_products' ) !== false  ) {
+					if ( stripos( $file_path, 'delete_products' ) !== false ) {
 						// We don't really care how it fails, we just want to make sure it fails.
 						return 'Delete_Products Normalized Summary';
 					}
@@ -99,8 +101,8 @@ class QITE2ETestCase extends TestCase {
 					return true;
 				},
 			],
-			'test_result_json' => [
-				'normalize' => static function( $value ) use ( $file_path ) {
+			'test_result_json'                => [
+				'normalize' => static function ( $value ) use ( $file_path ) {
 					// Encode as JSON if needed.
 					$array = false;
 					if ( is_array( $value ) ) {
@@ -129,15 +131,15 @@ class QITE2ETestCase extends TestCase {
 
 					return $value;
 				},
-				'validate' => static function( $value ) {
+				'validate'  => static function ( $value ) {
 					if ( is_array( $value ) ) {
 						$value = json_encode( $value );
 					}
 
 					return ! is_null( json_decode( $value ) );
-				}
+				},
 			],
-			'debug_log' => [
+			'debug_log'                       => [
 				'normalize' => static function ( $value ) use ( $file_path ) {
 					if ( ! is_array( $value ) ) {
 						return $value;
@@ -152,127 +154,163 @@ class QITE2ETestCase extends TestCase {
 						];
 					}
 
-					$normalized_debug_log = [];
+					$normalize_custom_tests_debug_log = static function ( $debug_log ) {
+						$normalized = [];
+						foreach ( $debug_log as $fatal_or_not => $logs ) {
+							/**
+							 * Example structure:
+							 * array (
+							 * 'message' => 'This is test notice!',
+							 * 'type' => 'notice',
+							 * 'file_line' => 'wp-content/mu-plugins/qit-mu-woocommerce.php:105',
+							 * 'traces' =>
+							 * array (
+							 * ),
+							 * 'count' => 98,
+							 * )
+							 */
+							foreach ( $logs as $hash => $log ) {
+								$message = $log['message'];
 
-                    /*
-                     * $debug_log is an array with the following structure:
-                     *
-                     * [
-                     *   'count' => <int>,
-                     *   'message' => <string>,
-                     * ]
-                     */
-					foreach ( $value as $k => $debug_log ) {
-						// Normalize timestamps such as [01-Mar-2023 10:55:12 UTC] to [TIMESTAMP]
-						$debug_log['message'] = preg_replace( '/\[\d{2}-\w{3}-\d{4} \d{2}:\d{2}:\d{2} UTC\]/', '[TIMESTAMP]', $debug_log['message'] );
+								$normalized[] = [
+									'message'   => $message,
+									'type'      => $log['type'],
+									'file_line' => $log['file_line'],
+									'count'     => $log['count'],
+								];
+							}
+						}
 
-						// Normalize tests running on staging-compatibility to compatibility.
-						$debug_log['message'] = str_replace( 'staging-compatibility', 'compatibility', $debug_log['message'] );
+						return $normalized;
+					};
 
-						$debug_log['message'] = str_replace( 'compatibility-dashboard', 'qit-runner', $debug_log['message'] );
+					$normalize_debug_log = static function ( $value ) use ( $file_path ) {
+						/*
+						 * $debug_log is an array with the following structure:
+						 *
+						 * [
+						 *   'count' => <int>,
+						 *   'message' => <string>,
+						 * ]
+						 */
+						foreach ( $value as $k => $debug_log ) {
+							// Normalize timestamps such as [01-Mar-2023 10:55:12 UTC] to [TIMESTAMP]
+							$debug_log['message'] = preg_replace( '/\[\d{2}-\w{3}-\d{4} \d{2}:\d{2}:\d{2} UTC\]/', '[TIMESTAMP]', $debug_log['message'] );
 
-						// Sometimes the test site might fail to contact WP.org, this is beyond our control.
-						if ( stripos( $debug_log['message'], 'Something may be wrong with WordPress.org' ) !== false ) {
-							// If it happens only a few times, ignore it.
-							if ( $debug_log['count'] <= 3 ) {
-								echo "Removing 'Something may be wrong with WordPress.org' from debug_log.message\n";
+							// Normalize tests running on staging-compatibility to compatibility.
+							$debug_log['message'] = str_replace( 'staging-compatibility', 'compatibility', $debug_log['message'] );
+
+							$debug_log['message'] = str_replace( 'compatibility-dashboard', 'qit-runner', $debug_log['message'] );
+
+							// Sometimes the test site might fail to contact WP.org, this is beyond our control.
+							if ( stripos( $debug_log['message'], 'Something may be wrong with WordPress.org' ) !== false ) {
+								// If it happens only a few times, ignore it.
+								if ( $debug_log['count'] <= 3 ) {
+									echo "Removing 'Something may be wrong with WordPress.org' from debug_log.message\n";
+									unset( $value[ $k ] );
+									continue;
+								}
+							}
+
+							// There seems to be a bug on WP 6.5 RC releases around PHP statcache.
+							// @see https://wordpress.slack.com/archives/C02RQBWTW/p1709330758080609
+							if ( stripos( $debug_log['message'], 'No such file or directory in /var/www/html/wp-admin/includes/class-wp-filesystem-direct.php on line 636' ) !== false ) {
+								echo "Removing '{$debug_log['message']}' from debug_log.message\n";
 								unset( $value[ $k ] );
 								continue;
 							}
-						}
 
-						// There seems to be a bug on WP 6.5 RC releases around PHP statcache.
-						// @see https://wordpress.slack.com/archives/C02RQBWTW/p1709330758080609
-						if ( stripos( $debug_log['message'], 'No such file or directory in /var/www/html/wp-admin/includes/class-wp-filesystem-direct.php on line 636' ) !== false ) {
-							echo "Removing '{$debug_log['message']}' from debug_log.message\n";
-							unset( $value[ $k ] );
-							continue;
-						}
+							// Ignore errors containing "WP_Block_Patterns_Registry::register was called incorrectly.", this can show up erratically on WP 6.5+.
+							if ( stripos( $debug_log['message'], 'WP_Block_Patterns_Registry::register was called incorrectly.' ) !== false ) {
+								echo "Removing 'WP_Block_Patterns_Registry::register was called incorrectly.' from debug_log.message\n";
+								unset( $value[ $k ] );
+								continue;
+							}
 
-						// Ignore errors containing "WP_Block_Patterns_Registry::register was called incorrectly.", this can show up erratically on WP 6.5+.
-						if ( stripos( $debug_log['message'], 'WP_Block_Patterns_Registry::register was called incorrectly.' ) !== false ) {
-							echo "Removing 'WP_Block_Patterns_Registry::register was called incorrectly.' from debug_log.message\n";
-							unset( $value[ $k ] );
-							continue;
-						}
+							// Ignore containing "Maximum execution time of 30 seconds exceeded in" in E2E.
+							if ( stripos( $file_path, 'woo-e2e/' ) !== false && stripos( $debug_log['message'], 'Maximum execution time of 30 seconds exceeded in' ) !== false ) {
+								echo "Removing 'Maximum execution time of 30 seconds exceeded in' from debug_log.message\n";
+								unset( $value[ $k ] );
+								continue;
+							}
 
-						// Ignore containing "Maximum execution time of 30 seconds exceeded in" in E2E.
-						if ( stripos( $file_path, 'woo-e2e/' ) !== false && stripos( $debug_log['message'], 'Maximum execution time of 30 seconds exceeded in' ) !== false ) {
-							echo "Removing 'Maximum execution time of 30 seconds exceeded in' from debug_log.message\n";
-							unset( $value[ $k ] );
-							continue;
-						}
-
-						/*
-						 * Normalize PHP debug logs captured during test runs.
-						 *
-						 * The normalization process is focused on the 'count' key within the debug logs.
-						 * This allows for some flexibility in test runs where slight variations in log counts
-						 * might occur due to uncontrollable conditions like AJAX requests firing or not firing.
-						 *
-						 * Normalization rules for 'count':
-						 * - Exact values are retained for counts below 50.
-						 * - Counts between 50 and 100 are rounded to the nearest 5.
-						 * - Counts between 100 and 200 are rounded to the nearest 10.
-						 * - Counts above 200 are rounded to the nearest 25.
-						 * - Counts above 1000 are rounded to the nearest 100.
-						 * - Counts above 10000 are rounded to the nearest 1000.
-						 *
-						 * Additionally, certain known failure messages (e.g., WordPress.org connectivity issues)
-						 * are conditionally removed from the logs.
-						 */
-						if ( $debug_log['count'] < 50 ) {
-							// No-op. Exact match for counts below 50.
-						} elseif ( $debug_log['count'] < 100 ) {
-							// Existing code for rounding to nearest 5.
-						} elseif ( $debug_log['count'] < 200 ) {
-							// Existing code for rounding to nearest 10.
-						} elseif ( $debug_log['count'] < 1000 ) {
-							if ( $debug_log['count'] % 25 === 0 ) {
-								echo "Skipping normalization as it's already divisible by 25\n";
+							/*
+							 * Normalize PHP debug logs captured during test runs.
+							 *
+							 * The normalization process is focused on the 'count' key within the debug logs.
+							 * This allows for some flexibility in test runs where slight variations in log counts
+							 * might occur due to uncontrollable conditions like AJAX requests firing or not firing.
+							 *
+							 * Normalization rules for 'count':
+							 * - Exact values are retained for counts below 50.
+							 * - Counts between 50 and 100 are rounded to the nearest 5.
+							 * - Counts between 100 and 200 are rounded to the nearest 10.
+							 * - Counts above 200 are rounded to the nearest 25.
+							 * - Counts above 1000 are rounded to the nearest 100.
+							 * - Counts above 10000 are rounded to the nearest 1000.
+							 *
+							 * Additionally, certain known failure messages (e.g., WordPress.org connectivity issues)
+							 * are conditionally removed from the logs.
+							 */
+							if ( $debug_log['count'] < 50 ) {
+								// No-op. Exact match for counts below 50.
+							} elseif ( $debug_log['count'] < 100 ) {
+								// Existing code for rounding to nearest 5.
+							} elseif ( $debug_log['count'] < 200 ) {
+								// Existing code for rounding to nearest 10.
+							} elseif ( $debug_log['count'] < 1000 ) {
+								if ( $debug_log['count'] % 25 === 0 ) {
+									echo "Skipping normalization as it's already divisible by 25\n";
+								} else {
+									echo "Normalizing debug_log.count from {$debug_log['count']} to ";
+									$debug_log['count'] = round( $debug_log['count'] / 25 ) * 25;  // Round to the closest 25.
+									echo "{$debug_log['count']}\n";
+								}
+							} elseif ( $debug_log['count'] < 10000 ) {
+								if ( $debug_log['count'] % 100 === 0 ) {
+									echo "Skipping normalization as it's already divisible by 100\n";
+								} else {
+									echo "Normalizing debug_log.count from {$debug_log['count']} to ";
+									$debug_log['count'] = round( $debug_log['count'] / 100 ) * 100;  // Round to the closest 100.
+									echo "{$debug_log['count']}\n";
+								}
 							} else {
-								echo "Normalizing debug_log.count from {$debug_log['count']} to ";
-								$debug_log['count'] = round( $debug_log['count'] / 25 ) * 25;  // Round to the closest 25.
-								echo "{$debug_log['count']}\n";
+								if ( $debug_log['count'] % 1000 === 0 ) {
+									echo "Skipping normalization as it's already divisible by 1000\n";
+								} else {
+									echo "Normalizing debug_log.count from {$debug_log['count']} to ";
+									$debug_log['count'] = round( $debug_log['count'] / 1000 ) * 1000;  // Round to the closest 1000.
+									echo "{$debug_log['count']}\n";
+								}
 							}
-						} elseif ( $debug_log['count'] < 10000 ) {
-							if ( $debug_log['count'] % 100 === 0 ) {
-								echo "Skipping normalization as it's already divisible by 100\n";
-							} else {
-								echo "Normalizing debug_log.count from {$debug_log['count']} to ";
-								$debug_log['count'] = round( $debug_log['count'] / 100 ) * 100;  // Round to the closest 100.
-								echo "{$debug_log['count']}\n";
+
+
+							// Handle Woo E2E Delete Products tests with more wiggle room.
+							if ( stripos( $file_path, 'woo-e2e/delete_products' ) !== false ) {
+								if ( $debug_log['count'] <= 10 ) {
+									$debug_log['count'] = 'Less than 10';
+								}
 							}
-						} else {
-							if ( $debug_log['count'] % 1000 === 0 ) {
-								echo "Skipping normalization as it's already divisible by 1000\n";
-							} else {
-								echo "Normalizing debug_log.count from {$debug_log['count']} to ";
-								$debug_log['count'] = round( $debug_log['count'] / 1000 ) * 1000;  // Round to the closest 1000.
-								echo "{$debug_log['count']}\n";
-							}
+
+							// todo: regenerate snapshots and remove strval later.
+							$normalized_debug_log[] = array_map( 'strval', $debug_log );
 						}
 
+						// Sort alphabetically by message.
+						usort( $normalized_debug_log, function ( $a, $b ) {
+							return strcmp( $a['message'], $b['message'] );
+						} );
 
-						// Handle Woo E2E Delete Products tests with more wiggle room.
-						if ( stripos( $file_path, 'woo-e2e/delete_products' ) !== false ) {
-							if ( $debug_log['count'] <= 10 ) {
-								$debug_log['count'] = 'Less than 10';
-							}
-						}
+						return $normalized_debug_log;
+					};
 
-						// todo: regenerate snapshots and remove strval later.
-						$normalized_debug_log[] = array_map( 'strval', $debug_log );
+					if ( array_key_exists( 'qm_logs', $value ) ) {
+						return $normalize_custom_tests_debug_log( $value['qm_logs'] );
+					} else {
+						return $normalize_debug_log( $value );
 					}
-
-					// Sort alphabetically by message.
-					usort( $normalized_debug_log, function ( $a, $b ) {
-						return strcmp( $a['message'], $b['message'] );
-					} );
-
-					return $normalized_debug_log;
 				},
-				'validate' => static function( $value ) {
+				'validate'  => static function ( $value ) {
 					if ( empty( $value ) ) {
 						return true;
 					}
@@ -282,19 +320,19 @@ class QITE2ETestCase extends TestCase {
 					}
 
 					return ! is_null( json_decode( $value ) );
-				}
+				},
 			],
-			'test_result_aws_expiration' => [
+			'test_result_aws_expiration'      => [
 				'normalize' => 1234567890,
 				'validate'  => static function ( $value ) {
 					return empty( $value ) || preg_match( '/^\d+$/', $value );
-				}
+				},
 			],
-			'test_result_aws_url' => [
+			'test_result_aws_url'             => [
 				'normalize' => 'https://test-results-aws.com',
 				'validate'  => static function ( $value ) {
 					return empty( $value ) || filter_var( $value, FILTER_VALIDATE_URL );
-				}
+				},
 			],
 		];
 
@@ -315,6 +353,10 @@ class QITE2ETestCase extends TestCase {
 							$v = $rules[ $k ]['normalize'];
 						}
 					} else {
+						if ( isset( $rules[ $k ]['optional'] ) && $rules[ $k ]['optional'] ) {
+							// Some things are fine to fail, we just normalize if needed.
+							continue;
+						}
 						$this->fail( 'Invalid value for key: ' . $k );
 					}
 				}
