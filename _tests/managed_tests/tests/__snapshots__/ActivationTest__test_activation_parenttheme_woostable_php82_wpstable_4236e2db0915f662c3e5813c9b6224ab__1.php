@@ -3,15 +3,17 @@
         {
             "test_run_id": 123456,
             "run_id": 123456,
-            "test_type": "activation",
-            "test_type_display": "Activation",
+            "test_type": "e2e",
+            "test_type_display": "E2E",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "8.2",
             "max_php_version": "",
             "min_php_version": "",
             "additional_woo_plugins": [],
-            "additional_wp_plugins": [],
+            "additional_wp_plugins": [
+                "woocommerce"
+            ],
             "test_log": "",
             "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
@@ -25,339 +27,108 @@
                 "type": "theme"
             },
             "client": "qit_cli",
-            "event": "cli_development_extension_test",
+            "event": "e2e_local_run",
             "optional_features": {
                 "hpos": false,
                 "new_product_editor": false
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "6 Errors Detected. (1 Fatal, 2 Warnings, 3 Notices)",
-            "debug_log": "",
-            "version": "1.0.15",
-            "update_complete": true,
+            "test_summary": "",
+            "version": "",
+            "update_complete": false,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
-            "workflow_id": "1234567890",
-            "runner": "normalized",
-            "test_result_json_extracted": "{EXTRACTED}"
+            "workflow_id": "",
+            "runner": "",
+            "test_result_json_extracted": "{EXTRACTED}",
+            "debug_log_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
-                "results_overview": {
-                    "total_extensions": "1",
-                    "extensions_with_errors": {
-                        "": {
-                            "\\/": 2,
-                            "\\/cart\\/": 2,
-                            "\\/my-account\\/": 2
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 0,
+                "numPendingTestSuites": 0,
+                "numTotalTestSuites": 1,
+                "numFailedTests": 1,
+                "numPassedTests": 9,
+                "numPendingTests": 0,
+                "numTotalTests": 10,
+                "testResults": [
+                    {
+                        "file": "woocommerce\\/activation\\/activation.spec.js",
+                        "status": "failed",
+                        "has_pending": false,
+                        "tests": {
+                            "woocommerce\\/activation\\/activation.spec.js": [
+                                {
+                                    "title": "Activate Plugins",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Activate Theme",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Setup Local Pickup",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Set up Cash On Delivery Payment Method",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Create a Product",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Create a Simple Order",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Add Product Cart",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "Can Place Order",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Deactivate Plugin",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Activate Other Theme",
+                                    "status": "passed"
+                                }
+                            ]
                         }
-                    },
-                    "error_totals": {
-                        "fatal": 1,
-                        "notice": 3,
-                        "warning": 2,
-                        "E_USER_NOTICE": 3,
-                        "E_USER_WARNING": 2,
-                        "E_ERROR": 1
-                    },
-                    "summary": "6 Errors Detected. (1 Fatal, 2 Warnings, 3 Notices)",
-                    "error_count": 6,
-                    "count_extensions_with_errors": 1
-                },
-                "0": {
-                    "activated_alongside": "",
-                    "context": "\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_USER_NOTICE",
-                    "error_message": "Notice on all requests - Parent Theme",
-                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
-                    "error_line": 17,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
-                            "line": 17,
-                            "function": "trigger_error"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 324,
-                            "function": "{closure}"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 348,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 517,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 700,
-                            "function": "do_action"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-config.php",
-                            "line": 108,
-                            "args": [
-                                "\\/var\\/www\\/html\\/wp-settings.php"
-                            ],
-                            "function": "require_once"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-load.php",
-                            "line": 50,
-                            "args": [
-                                "\\/var\\/www\\/html\\/wp-config.php"
-                            ],
-                            "function": "require_once"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "1": {
-                    "activated_alongside": "",
-                    "context": "\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_USER_WARNING",
-                    "error_message": "Warning on all requests - Parent Theme",
-                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
-                    "error_line": 13,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
-                            "line": 13,
-                            "function": "trigger_error"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 324,
-                            "function": "{closure}"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 348,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 565,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp.php",
-                            "line": 830,
-                            "function": "do_action_ref_array"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1336,
-                            "function": "main",
-                            "class": "WP",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-blog-header.php",
-                            "line": 16,
-                            "function": "wp"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "2": {
-                    "activated_alongside": "",
-                    "context": "\\/cart\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_USER_NOTICE",
-                    "error_message": "Notice on all requests - Parent Theme",
-                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
-                    "error_line": 17,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
-                            "line": 17,
-                            "function": "trigger_error"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 324,
-                            "function": "{closure}"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 348,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 517,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 700,
-                            "function": "do_action"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-config.php",
-                            "line": 108,
-                            "args": [
-                                "\\/var\\/www\\/html\\/wp-settings.php"
-                            ],
-                            "function": "require_once"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-load.php",
-                            "line": 50,
-                            "args": [
-                                "\\/var\\/www\\/html\\/wp-config.php"
-                            ],
-                            "function": "require_once"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "3": {
-                    "activated_alongside": "",
-                    "context": "\\/cart\\/",
-                    "is_fatal": "Yes",
-                    "error_type": "E_ERROR",
-                    "error_message": "Call to undefined function call_to_undefined_function()",
-                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
-                    "error_line": 10,
-                    "backtrace": [
-                        {
-                            "function": "cd_php_exception_handler"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "4": {
-                    "activated_alongside": "",
-                    "context": "\\/my-account\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_USER_NOTICE",
-                    "error_message": "Notice on all requests - Parent Theme",
-                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
-                    "error_line": 17,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
-                            "line": 17,
-                            "function": "trigger_error"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 324,
-                            "function": "{closure}"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 348,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 517,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 700,
-                            "function": "do_action"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-config.php",
-                            "line": 108,
-                            "args": [
-                                "\\/var\\/www\\/html\\/wp-settings.php"
-                            ],
-                            "function": "require_once"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-load.php",
-                            "line": 50,
-                            "args": [
-                                "\\/var\\/www\\/html\\/wp-config.php"
-                            ],
-                            "function": "require_once"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "5": {
-                    "activated_alongside": "",
-                    "context": "\\/my-account\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_USER_WARNING",
-                    "error_message": "Warning on all requests - Parent Theme",
-                    "error_file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
-                    "error_line": 13,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php",
-                            "line": 13,
-                            "function": "trigger_error"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 324,
-                            "function": "{closure}"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 348,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 565,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp.php",
-                            "line": 830,
-                            "function": "do_action_ref_array"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1336,
-                            "function": "main",
-                            "class": "WP",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-blog-header.php",
-                            "line": 16,
-                            "function": "wp"
-                        }
-                    ],
-                    "db_error": ""
-                }
+                    }
+                ],
+                "summary": "Test Suites: 0 skipped, 1 failed, 0 passed, 1 total | Tests: 0 skipped, 1 failed, 9 passed, 10 total."
             }
+        },
+        {
+            "debug_log": [
+                {
+                    "message": "This is test notice!",
+                    "type": "notice",
+                    "file_line": "wp-content\\/mu-plugins\\/qit-mu-woocommerce.php:105",
+                    "count": 95
+                },
+                {
+                    "message": "Notice on all requests - Parent Theme",
+                    "type": "notice",
+                    "file_line": "wp-content\\/themes\\/bistro\\/functions.php:17",
+                    "count": 75
+                },
+                {
+                    "message": " Uncaught Error: Call to undefined function call_to_undefined_function()",
+                    "type": "PHP Fatal",
+                    "file_line": "wp-content\\/themes\\/bistro\\/functions.php:10",
+                    "count": 2
+                }
+            ]
         }
     ]
 ]';

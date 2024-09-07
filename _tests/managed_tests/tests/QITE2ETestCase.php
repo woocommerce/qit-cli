@@ -140,7 +140,7 @@ class QITE2ETestCase extends TestCase {
 				},
 			],
 			'debug_log'                       => [
-				'normalize' => static function ( $value ) use ( $file_path ) {
+				'normalize' => function ( $value ) use ( $file_path ) {
 					if ( ! is_array( $value ) ) {
 						return $value;
 					}
@@ -154,7 +154,7 @@ class QITE2ETestCase extends TestCase {
 						];
 					}
 
-					$normalize_custom_tests_debug_log = static function ( $debug_log ) {
+					$normalize_custom_tests_debug_log = function ( $debug_log ) {
 						$normalized = [];
 						foreach ( $debug_log as $fatal_or_not => $logs ) {
 							/**
@@ -176,7 +176,7 @@ class QITE2ETestCase extends TestCase {
 									'message'   => $message,
 									'type'      => $log['type'],
 									'file_line' => $log['file_line'],
-									'count'     => $log['count'],
+									'count'     => $this->normalize_count( $log['count'] ),
 								];
 							}
 						}
@@ -184,7 +184,7 @@ class QITE2ETestCase extends TestCase {
 						return $normalized;
 					};
 
-					$normalize_debug_log = static function ( $value ) use ( $file_path ) {
+					$normalize_debug_log = function ( $value ) use ( $file_path ) {
 						/*
 						 * $debug_log is an array with the following structure:
 						 *
@@ -234,63 +234,7 @@ class QITE2ETestCase extends TestCase {
 								continue;
 							}
 
-							/*
-							 * Normalize PHP debug logs captured during test runs.
-							 *
-							 * The normalization process is focused on the 'count' key within the debug logs.
-							 * This allows for some flexibility in test runs where slight variations in log counts
-							 * might occur due to uncontrollable conditions like AJAX requests firing or not firing.
-							 *
-							 * Normalization rules for 'count':
-							 * - Exact values are retained for counts below 50.
-							 * - Counts between 50 and 100 are rounded to the nearest 5.
-							 * - Counts between 100 and 200 are rounded to the nearest 10.
-							 * - Counts above 200 are rounded to the nearest 25.
-							 * - Counts above 1000 are rounded to the nearest 100.
-							 * - Counts above 10000 are rounded to the nearest 1000.
-							 *
-							 * Additionally, certain known failure messages (e.g., WordPress.org connectivity issues)
-							 * are conditionally removed from the logs.
-							 */
-							if ( $debug_log['count'] < 50 ) {
-								// No-op. Exact match for counts below 50.
-							} elseif ( $debug_log['count'] < 100 ) {
-								// Existing code for rounding to nearest 5.
-							} elseif ( $debug_log['count'] < 200 ) {
-								// Existing code for rounding to nearest 10.
-							} elseif ( $debug_log['count'] < 1000 ) {
-								if ( $debug_log['count'] % 25 === 0 ) {
-									echo "Skipping normalization as it's already divisible by 25\n";
-								} else {
-									echo "Normalizing debug_log.count from {$debug_log['count']} to ";
-									$debug_log['count'] = round( $debug_log['count'] / 25 ) * 25;  // Round to the closest 25.
-									echo "{$debug_log['count']}\n";
-								}
-							} elseif ( $debug_log['count'] < 10000 ) {
-								if ( $debug_log['count'] % 100 === 0 ) {
-									echo "Skipping normalization as it's already divisible by 100\n";
-								} else {
-									echo "Normalizing debug_log.count from {$debug_log['count']} to ";
-									$debug_log['count'] = round( $debug_log['count'] / 100 ) * 100;  // Round to the closest 100.
-									echo "{$debug_log['count']}\n";
-								}
-							} else {
-								if ( $debug_log['count'] % 1000 === 0 ) {
-									echo "Skipping normalization as it's already divisible by 1000\n";
-								} else {
-									echo "Normalizing debug_log.count from {$debug_log['count']} to ";
-									$debug_log['count'] = round( $debug_log['count'] / 1000 ) * 1000;  // Round to the closest 1000.
-									echo "{$debug_log['count']}\n";
-								}
-							}
-
-
-							// Handle Woo E2E Delete Products tests with more wiggle room.
-							if ( stripos( $file_path, 'woo-e2e/delete_products' ) !== false ) {
-								if ( $debug_log['count'] <= 10 ) {
-									$debug_log['count'] = 'Less than 10';
-								}
-							}
+							$debug_log['count'] = $this->normalize_count( $debug_log['count'] );
 
 							// todo: regenerate snapshots and remove strval later.
 							$normalized_debug_log[] = array_map( 'strval', $debug_log );
@@ -366,5 +310,71 @@ class QITE2ETestCase extends TestCase {
 		$json = json_encode( $json, JSON_PRETTY_PRINT );
 
 		return test_result_parser( $json );
+	}
+	
+	/*
+	 * Normalize PHP debug logs captured during test runs.
+	 *
+	 * The normalization process is focused on the 'count' key within the debug logs.
+	 * This allows for some flexibility in test runs where slight variations in log counts
+	 * might occur due to uncontrollable conditions like AJAX requests firing or not firing.
+	 *
+	 * Normalization rules for 'count':
+	 * - Exact values are retained for counts below 50.
+	 * - Counts between 50 and 100 are rounded to the nearest 5.
+	 * - Counts between 100 and 200 are rounded to the nearest 10.
+	 * - Counts above 200 are rounded to the nearest 25.
+	 * - Counts above 1000 are rounded to the nearest 100.
+	 * - Counts above 10000 are rounded to the nearest 1000.
+	 *
+	 * Additionally, certain known failure messages (e.g., WordPress.org connectivity issues)
+	 * are conditionally removed from the logs.
+	 */
+	protected function normalize_count( int $count ): int {
+		if ( $count < 25 ) {
+			// No-op. Exact match for counts below 50.
+		} elseif ( $count < 100 ) {
+			if ( $count % 5 === 0 ) {
+				echo "Skipping normalization as it's already divisible by 5\n";
+			} else {
+				echo "Normalizing debug_log.count from {$count} to ";
+				$count = round( $count / 5 ) * 5;  // Round to the closest 5.
+				echo "{$count}\n";
+			}
+		} elseif ( $count < 200 ) {
+			if ( $count % 10 === 0 ) {
+				echo "Skipping normalization as it's already divisible by 10\n";
+			} else {
+				echo "Normalizing debug_log.count from {$count} to ";
+				$count = round( $count / 10 ) * 10;  // Round to the closest 10.
+				echo "{$count}\n";
+			}
+		} elseif ( $count < 1000 ) {
+			if ( $count % 25 === 0 ) {
+				echo "Skipping normalization as it's already divisible by 25\n";
+			} else {
+				echo "Normalizing debug_log.count from {$count} to ";
+				$count = round( $count / 25 ) * 25;  // Round to the closest 25.
+				echo "{$count}\n";
+			}
+		} elseif ( $count < 10000 ) {
+			if ( $count % 100 === 0 ) {
+				echo "Skipping normalization as it's already divisible by 100\n";
+			} else {
+				echo "Normalizing debug_log.count from {$count} to ";
+				$count = round( $count / 100 ) * 100;  // Round to the closest 100.
+				echo "{$count}\n";
+			}
+		} else {
+			if ( $count % 1000 === 0 ) {
+				echo "Skipping normalization as it's already divisible by 1000\n";
+			} else {
+				echo "Normalizing debug_log.count from {$count} to ";
+				$count = round( $count / 1000 ) * 1000;  // Round to the closest 1000.
+				echo "{$count}\n";
+			}
+		}
+
+		return $count;
 	}
 }

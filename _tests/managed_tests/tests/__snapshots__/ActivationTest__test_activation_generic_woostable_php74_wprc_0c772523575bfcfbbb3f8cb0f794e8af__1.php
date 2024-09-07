@@ -114,7 +114,7 @@
                     "message": "This is test notice!",
                     "type": "notice",
                     "file_line": "wp-content\\/mu-plugins\\/qit-mu-woocommerce.php:105",
-                    "count": 98
+                    "count": 95
                 },
                 {
                     "message": "Notice on all requests",

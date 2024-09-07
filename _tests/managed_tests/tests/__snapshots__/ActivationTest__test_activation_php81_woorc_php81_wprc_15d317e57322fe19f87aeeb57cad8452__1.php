@@ -3,15 +3,17 @@
         {
             "test_run_id": 123456,
             "run_id": 123456,
-            "test_type": "activation",
-            "test_type_display": "Activation",
+            "test_type": "e2e",
+            "test_type_display": "E2E",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "8.1",
             "max_php_version": "",
             "min_php_version": "",
             "additional_woo_plugins": [],
-            "additional_wp_plugins": [],
+            "additional_wp_plugins": [
+                "woocommerce"
+            ],
             "test_log": "",
             "status": "warning",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
@@ -25,384 +27,102 @@
                 "type": "plugin"
             },
             "client": "qit_cli",
-            "event": "cli_development_extension_test",
+            "event": "e2e_local_run",
             "optional_features": {
                 "hpos": false,
                 "new_product_editor": false
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "6 Errors Detected. (0 Fatal, 0 Warnings, 6 Notices)",
-            "debug_log": "",
-            "version": "Undefined",
-            "update_complete": true,
+            "test_summary": "",
+            "version": "",
+            "update_complete": false,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
-            "workflow_id": "1234567890",
-            "runner": "normalized",
-            "test_result_json_extracted": "{EXTRACTED}"
+            "workflow_id": "",
+            "runner": "",
+            "test_result_json_extracted": "{EXTRACTED}",
+            "debug_log_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
-                "results_overview": {
-                    "total_extensions": "1",
-                    "extensions_with_errors": {
-                        "": {
-                            "\\/": 2,
-                            "\\/cart\\/": 2,
-                            "\\/my-account\\/": 2
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 1,
+                "numPendingTestSuites": 0,
+                "numTotalTestSuites": 1,
+                "numFailedTests": 0,
+                "numPassedTests": 10,
+                "numPendingTests": 0,
+                "numTotalTests": 10,
+                "testResults": [
+                    {
+                        "file": "woocommerce\\/activation\\/activation.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "woocommerce\\/activation\\/activation.spec.js": [
+                                {
+                                    "title": "Activate Plugins",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Activate Theme",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Setup Local Pickup",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Set up Cash On Delivery Payment Method",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Create a Product",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Create a Simple Order",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Add Product Cart",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Can Place Order",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Deactivate Plugin",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Activate Other Theme",
+                                    "status": "passed"
+                                }
+                            ]
                         }
-                    },
-                    "error_totals": {
-                        "fatal": 0,
-                        "notice": 6,
-                        "warning": 0,
-                        "E_DEPRECATED": 6
-                    },
-                    "summary": "6 Errors Detected. (0 Fatal, 0 Warnings, 6 Notices)",
-                    "error_count": 6,
-                    "count_extensions_with_errors": 1
-                },
-                "0": {
-                    "activated_alongside": "",
-                    "context": "\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_DEPRECATED",
-                    "error_message": "SUT\\\\BarUser implements the Serializable interface, which is deprecated. Implement __serialize() and __unserialize() instead (or in addition, if support for old PHP versions is necessary)",
-                    "error_file": "woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                    "error_line": 19,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 324,
-                            "function": "SUT\\\\{closure}"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 348,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 517,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 700,
-                            "function": "do_action"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-config.php",
-                            "line": 108,
-                            "args": [
-                                "\\/var\\/www\\/html\\/wp-settings.php"
-                            ],
-                            "function": "require_once"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-load.php",
-                            "line": 50,
-                            "args": [
-                                "\\/var\\/www\\/html\\/wp-config.php"
-                            ],
-                            "function": "require_once"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-blog-header.php",
-                            "line": 13,
-                            "args": [
-                                "\\/var\\/www\\/html\\/wp-load.php"
-                            ],
-                            "function": "require_once"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "1": {
-                    "activated_alongside": "",
-                    "context": "\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_DEPRECATED",
-                    "error_message": "strlen(): Passing null to parameter #1 ($string) of type string is deprecated",
-                    "error_file": "woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                    "error_line": 43,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                            "line": 43,
-                            "function": "strlen"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 324,
-                            "function": "SUT\\\\{closure}"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 348,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 565,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp.php",
-                            "line": 830,
-                            "function": "do_action_ref_array"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1336,
-                            "function": "main",
-                            "class": "WP",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-blog-header.php",
-                            "line": 16,
-                            "function": "wp"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "2": {
-                    "activated_alongside": "",
-                    "context": "\\/cart\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_DEPRECATED",
-                    "error_message": "SUT\\\\BarUser implements the Serializable interface, which is deprecated. Implement __serialize() and __unserialize() instead (or in addition, if support for old PHP versions is necessary)",
-                    "error_file": "woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                    "error_line": 19,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 324,
-                            "function": "SUT\\\\{closure}"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 348,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 517,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 700,
-                            "function": "do_action"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-config.php",
-                            "line": 108,
-                            "args": [
-                                "\\/var\\/www\\/html\\/wp-settings.php"
-                            ],
-                            "function": "require_once"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-load.php",
-                            "line": 50,
-                            "args": [
-                                "\\/var\\/www\\/html\\/wp-config.php"
-                            ],
-                            "function": "require_once"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-blog-header.php",
-                            "line": 13,
-                            "args": [
-                                "\\/var\\/www\\/html\\/wp-load.php"
-                            ],
-                            "function": "require_once"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "3": {
-                    "activated_alongside": "",
-                    "context": "\\/cart\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_DEPRECATED",
-                    "error_message": "strlen(): Passing null to parameter #1 ($string) of type string is deprecated",
-                    "error_file": "woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                    "error_line": 43,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                            "line": 43,
-                            "function": "strlen"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 324,
-                            "function": "SUT\\\\{closure}"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 348,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 565,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp.php",
-                            "line": 830,
-                            "function": "do_action_ref_array"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1336,
-                            "function": "main",
-                            "class": "WP",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-blog-header.php",
-                            "line": 16,
-                            "function": "wp"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "4": {
-                    "activated_alongside": "",
-                    "context": "\\/my-account\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_DEPRECATED",
-                    "error_message": "SUT\\\\BarUser implements the Serializable interface, which is deprecated. Implement __serialize() and __unserialize() instead (or in addition, if support for old PHP versions is necessary)",
-                    "error_file": "woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                    "error_line": 19,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 324,
-                            "function": "SUT\\\\{closure}"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 348,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 517,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-settings.php",
-                            "line": 700,
-                            "function": "do_action"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-config.php",
-                            "line": 108,
-                            "args": [
-                                "\\/var\\/www\\/html\\/wp-settings.php"
-                            ],
-                            "function": "require_once"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-load.php",
-                            "line": 50,
-                            "args": [
-                                "\\/var\\/www\\/html\\/wp-config.php"
-                            ],
-                            "function": "require_once"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-blog-header.php",
-                            "line": 13,
-                            "args": [
-                                "\\/var\\/www\\/html\\/wp-load.php"
-                            ],
-                            "function": "require_once"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "5": {
-                    "activated_alongside": "",
-                    "context": "\\/my-account\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_DEPRECATED",
-                    "error_message": "strlen(): Passing null to parameter #1 ($string) of type string is deprecated",
-                    "error_file": "woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                    "error_line": 43,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                            "line": 43,
-                            "function": "strlen"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 324,
-                            "function": "SUT\\\\{closure}"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 348,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 565,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp.php",
-                            "line": 830,
-                            "function": "do_action_ref_array"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1336,
-                            "function": "main",
-                            "class": "WP",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-blog-header.php",
-                            "line": 16,
-                            "function": "wp"
-                        }
-                    ],
-                    "db_error": ""
-                }
+                    }
+                ],
+                "summary": "Test Suites: 0 skipped, 0 failed, 1 passed, 1 total | Tests: 0 skipped, 0 failed, 10 passed, 10 total."
             }
+        },
+        {
+            "debug_log": [
+                {
+                    "message": "This is test notice!",
+                    "type": "notice",
+                    "file_line": "wp-content\\/mu-plugins\\/qit-mu-woocommerce.php:105",
+                    "count": 95
+                },
+                {
+                    "message": "SUT\\\\BarUser implements the Serializable interface, which is deprecated. Implement __serialize() and __unserialize() instead (or in addition, if support for old PHP versions is necessary)",
+                    "type": "deprecated",
+                    "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:19",
+                    "count": 80
+                }
+            ]
         }
     ]
 ]';
