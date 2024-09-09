@@ -19,6 +19,9 @@ class Extension {
 	/** @var string */
 	public $slug;
 
+	/** @var string The entrypoint of the extension, the main PHP file if a plugin or style.css if a theme. */
+	public $entrypoint;
+
 	/** @var string|int The "source" can be a slug, a URL, a directory or a zip file. */
 	public $source;
 
