@@ -248,11 +248,22 @@ class QITE2ETestCase extends TestCase {
 						return $normalized_debug_log;
 					};
 
+					$logs = [];
+
 					if ( array_key_exists( 'qm_logs', $value ) ) {
-						return $normalize_custom_tests_debug_log( $value['qm_logs'] );
+						$logs['qm_logs'] = $normalize_custom_tests_debug_log( $value['qm_logs'] );
 					} else {
-						return $normalize_debug_log( $value );
+						$logs['generic'] = $normalize_debug_log( $value );
 					}
+
+					if ( array_key_exists( 'debug_log', $value ) ) {
+						if ( is_string( $value['debug_log'] ) ) {
+							$value['debug_log'] = json_decode( $value['debug_log'], true );
+						}
+						$logs['debug_log'] = $normalize_debug_log( $value['debug_log'] );
+					}
+
+					return $logs;
 				},
 				'validate'  => static function ( $value ) {
 					if ( empty( $value ) ) {

@@ -109,20 +109,32 @@
             }
         },
         {
-            "debug_log": [
-                {
-                    "message": "This is test notice!",
-                    "type": "notice",
-                    "file_line": "wp-content\\/mu-plugins\\/qit-mu-woocommerce.php:105",
-                    "count": 95
-                },
-                {
-                    "message": "SUT\\\\BarUser implements the Serializable interface, which is deprecated. Implement __serialize() and __unserialize() instead (or in addition, if support for old PHP versions is necessary)",
-                    "type": "deprecated",
-                    "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:19",
-                    "count": 80
-                }
-            ]
+            "debug_log": {
+                "qm_logs": [
+                    {
+                        "message": "This is test notice!",
+                        "type": "notice",
+                        "file_line": "wp-content\\/mu-plugins\\/qit-mu-woocommerce.php:105",
+                        "count": 95
+                    },
+                    {
+                        "message": "SUT\\\\BarUser implements the Serializable interface, which is deprecated. Implement __serialize() and __unserialize() instead (or in addition, if support for old PHP versions is necessary)",
+                        "type": "deprecated",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:19",
+                        "count": 80
+                    }
+                ],
+                "debug_log": [
+                    {
+                        "count": "110",
+                        "message": "PHP Deprecated: SUT\\\\BarUser implements the Serializable interface, which is deprecated. Implement __serialize() and __unserialize() instead (or in addition, if support for old PHP versions is necessary) in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 19"
+                    },
+                    {
+                        "count": "13",
+                        "message": "PHP Deprecated: strlen(): Passing null to parameter #1 ($string) of type string is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 43"
+                    }
+                ]
+            }
         }
     ]
 ]';

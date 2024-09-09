@@ -109,14 +109,26 @@
             }
         },
         {
-            "debug_log": [
-                {
-                    "message": "This is test notice!",
-                    "type": "notice",
-                    "file_line": "wp-content\\/mu-plugins\\/qit-mu-woocommerce.php:105",
-                    "count": 100
-                }
-            ]
+            "debug_log": {
+                "qm_logs": [
+                    {
+                        "message": "This is test notice!",
+                        "type": "notice",
+                        "file_line": "wp-content\\/mu-plugins\\/qit-mu-woocommerce.php:105",
+                        "count": 95
+                    }
+                ],
+                "debug_log": [
+                    {
+                        "count": "14",
+                        "message": "PHP Notice: Loopback error: cURL error 60: SSL certificate problem: unable to get local issuer certificate in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
+                    },
+                    {
+                        "count": "13",
+                        "message": "PHP Notice: Site URL: http:\\/\\/qitenvnginx66def7dfa22ae in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 8"
+                    }
+                ]
+            }
         }
     ]
 ]';

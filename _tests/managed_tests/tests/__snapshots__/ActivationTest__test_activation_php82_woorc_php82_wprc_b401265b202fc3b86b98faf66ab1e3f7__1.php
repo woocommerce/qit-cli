@@ -109,20 +109,32 @@
             }
         },
         {
-            "debug_log": [
-                {
-                    "message": "This is test notice!",
-                    "type": "notice",
-                    "file_line": "wp-content\\/mu-plugins\\/qit-mu-woocommerce.php:105",
-                    "count": 100
-                },
-                {
-                    "message": "Creation of dynamic property SUT\\\\BarUser::$bar is deprecated",
-                    "type": "deprecated",
-                    "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:28",
-                    "count": 80
-                }
-            ]
+            "debug_log": {
+                "qm_logs": [
+                    {
+                        "message": "This is test notice!",
+                        "type": "notice",
+                        "file_line": "wp-content\\/mu-plugins\\/qit-mu-woocommerce.php:105",
+                        "count": 100
+                    },
+                    {
+                        "message": "Creation of dynamic property SUT\\\\BarUser::$bar is deprecated",
+                        "type": "deprecated",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:28",
+                        "count": 80
+                    }
+                ],
+                "debug_log": [
+                    {
+                        "count": "110",
+                        "message": "PHP Deprecated: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 28"
+                    },
+                    {
+                        "count": "13",
+                        "message": "PHP Deprecated: Function utf8_encode() is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 37"
+                    }
+                ]
+            }
         }
     ]
 ]';
