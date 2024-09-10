@@ -131,7 +131,7 @@ TEXT
 		} catch ( \Exception $e ) {
 			$output->writeln( sprintf( '<error>Could not authenticate to %s using the provided username and QIT Token.</error>', get_wccom_url() ) );
 			$output->writeln( 'Having trouble pasting? You can also run this command with the --qit_token=<your-token-here>.' );
-			$output->writeln( 'More info: https://woocommerce.github.io/qit-documentation/#/authenticating' );
+			$output->writeln( 'More info: https://qit.woo.com/docs/support/authenticating' );
 			return Command::FAILURE;
 		}
 		$output->writeln( '<fg=green>Validated successfully.</>' );
