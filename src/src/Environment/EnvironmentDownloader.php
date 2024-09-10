@@ -33,7 +33,8 @@ class EnvironmentDownloader {
 		}
 
 		if ( ! isset( $manager_hashes[ $env_name ]['zip_checksum'] ) || ! isset( $manager_hashes[ $env_name ]['url'] ) ) {
-			throw new \RuntimeException( 'E2E environment not set or incomplete.' );
+			$manager_hashes[ $env_name ]['zip_checksum'] = '';
+			$this->output->writeln( '<comment>Environment checksum not found in the Manager. Downloading the environment again as we don\'t have a checksum to compare.</comment>' );
 		}
 
 		$environments_dir = Config::get_qit_dir() . '/environments';
