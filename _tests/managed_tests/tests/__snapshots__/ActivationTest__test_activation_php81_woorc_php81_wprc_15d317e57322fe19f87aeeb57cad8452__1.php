@@ -112,16 +112,16 @@
             "debug_log": {
                 "qm_logs": [
                     {
-                        "message": "This is test notice!",
-                        "type": "notice",
-                        "file_line": "wp-content\\/mu-plugins\\/qit-mu-woocommerce.php:105",
-                        "count": 95
-                    },
-                    {
                         "message": "SUT\\\\BarUser implements the Serializable interface, which is deprecated. Implement __serialize() and __unserialize() instead (or in addition, if support for old PHP versions is necessary)",
                         "type": "deprecated",
                         "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:19",
-                        "count": 80
+                        "count": 90
+                    },
+                    {
+                        "message": "strlen(): Passing null to parameter #1 ($string) of type string is deprecated",
+                        "type": "deprecated",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:43",
+                        "count": 13
                     }
                 ],
                 "debug_log": [

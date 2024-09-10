@@ -112,16 +112,16 @@
             "debug_log": {
                 "qm_logs": [
                     {
-                        "message": "This is test notice!",
-                        "type": "notice",
-                        "file_line": "wp-content\\/mu-plugins\\/qit-mu-woocommerce.php:105",
-                        "count": 95
-                    },
-                    {
                         "message": "Notice on all requests - Parent Theme",
                         "type": "notice",
                         "file_line": "wp-content\\/themes\\/bistro\\/functions.php:17",
-                        "count": 75
+                        "count": 110
+                    },
+                    {
+                        "message": "Warning on all requests - Parent Theme",
+                        "type": "warning",
+                        "file_line": "wp-content\\/themes\\/bistro\\/functions.php:13",
+                        "count": 22
                     },
                     {
                         "message": " Uncaught Error: Call to undefined function call_to_undefined_function()",

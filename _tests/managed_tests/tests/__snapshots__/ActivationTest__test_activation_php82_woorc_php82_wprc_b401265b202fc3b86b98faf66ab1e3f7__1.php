@@ -112,16 +112,16 @@
             "debug_log": {
                 "qm_logs": [
                     {
-                        "message": "This is test notice!",
-                        "type": "notice",
-                        "file_line": "wp-content\\/mu-plugins\\/qit-mu-woocommerce.php:105",
-                        "count": 100
+                        "message": "Function utf8_encode() is deprecated",
+                        "type": "deprecated",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:37",
+                        "count": 13
                     },
                     {
                         "message": "Creation of dynamic property SUT\\\\BarUser::$bar is deprecated",
                         "type": "deprecated",
                         "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:28",
-                        "count": 80
+                        "count": 90
                     }
                 ],
                 "debug_log": [

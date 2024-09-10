@@ -112,20 +112,26 @@
             "debug_log": {
                 "qm_logs": [
                     {
-                        "message": "This is test notice!",
+                        "message": "Site URL: http:\\/\\/qitenvnginx66e076ba2333f",
                         "type": "notice",
-                        "file_line": "wp-content\\/mu-plugins\\/qit-mu-woocommerce.php:105",
-                        "count": 95
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:8",
+                        "count": 13
+                    },
+                    {
+                        "message": "Loopback error: cURL error 7: Failed to connect to qitenvnginx66e076ba2333f port 80 after 0 ms: Connection refused",
+                        "type": "notice",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:12",
+                        "count": 13
                     }
                 ],
                 "debug_log": [
                     {
-                        "count": "14",
-                        "message": "PHP Notice: Loopback error: cURL error 60: SSL certificate problem: unable to get local issuer certificate in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
+                        "count": "13",
+                        "message": "PHP Notice: Loopback error: cURL error 7: Failed to connect to qitenvnginx66e076ba2333f port 80 after 0 ms: Connection refused in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                     },
                     {
                         "count": "13",
-                        "message": "PHP Notice: Site URL: http:\\/\\/qitenvnginx66def7dfa22ae in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 8"
+                        "message": "PHP Notice: Site URL: http:\\/\\/qitenvnginx66e076ba2333f in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 8"
                     }
                 ]
             }

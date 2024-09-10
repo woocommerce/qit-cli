@@ -112,16 +112,16 @@
             "debug_log": {
                 "qm_logs": [
                     {
-                        "message": "This is test notice!",
-                        "type": "notice",
-                        "file_line": "wp-content\\/mu-plugins\\/qit-mu-woocommerce.php:105",
-                        "count": 95
-                    },
-                    {
                         "message": "Notice on all requests",
                         "type": "notice",
                         "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:16",
-                        "count": 80
+                        "count": 90
+                    },
+                    {
+                        "message": "Warning on all requests",
+                        "type": "warning",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:12",
+                        "count": 15
                     },
                     {
                         "message": " Uncaught Error: Call to undefined function call_to_undefined_function()",
