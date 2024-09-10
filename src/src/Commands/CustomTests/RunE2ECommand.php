@@ -267,6 +267,7 @@ class RunE2ECommand extends DynamicCommand {
 						}
 					}
 					$env_up_options['--plugin'][] = "$plugin:$dependencies_action";
+					$this->output->writeln( sprintf( 'Adding dependency: %s', $plugin ) );
 				}
 			}
 		}
