@@ -22,6 +22,7 @@ src-tmp/
 ./qit
 _tests/managed_tests/**/*.zip
 _tests/managed_tests/**/*.txt
+!_tests/managed_tests/**/readme.txt
 dev/
 _build/docker/php83/xdebug/*
 !_build/docker/php83/xdebug/.gitkeep
