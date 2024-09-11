@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 0 Warnings: 1",
+            "test_summary": "Errors: 0 Warnings: 5",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -45,7 +45,12 @@
         {
             "test_result_json": {
                 "headers": {
-                    "Requires PHP": false
+                    "Requires PHP": false,
+                    "Requires at least": false,
+                    "Tested up to": false,
+                    "WC requires at least": false,
+                    "WC tested up to": false,
+                    "Woo": false
                 }
             }
         }
