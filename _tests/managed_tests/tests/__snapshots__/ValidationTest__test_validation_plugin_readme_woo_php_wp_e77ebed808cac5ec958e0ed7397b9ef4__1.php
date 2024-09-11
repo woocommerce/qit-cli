@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "warning",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 0 Warnings: 5",
+            "test_summary": "Errors: 0 Warnings: 0",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -45,11 +45,11 @@
         {
             "test_result_json": {
                 "headers": {
-                    "Requires PHP": false,
-                    "Requires at least": false,
-                    "Tested up to": false,
-                    "WC requires at least": false,
-                    "WC tested up to": false,
+                    "Requires PHP": "7.4",
+                    "Requires at least": "5.8",
+                    "Tested up to": "5.8",
+                    "WC requires at least": "5.8",
+                    "WC tested up to": "5.8",
                     "Woo": false
                 }
             }
