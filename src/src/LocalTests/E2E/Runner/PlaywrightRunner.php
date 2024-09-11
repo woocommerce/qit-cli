@@ -8,9 +8,14 @@ use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
+use QIT_CLI\RequestBuilder;
+use QIT_CLI\Upload;
+use QIT_CLI\Zipper;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Terminal;
 use Symfony\Component\Process\Process;
+use function QIT_CLI\get_manager_url;
 use function QIT_CLI\normalize_path;
 use function QIT_CLI\open_in_browser;
 
@@ -39,6 +44,14 @@ class PlaywrightRunner extends E2ERunner {
 		if ( ! file_exists( $results_dir ) ) {
 			if ( ! mkdir( $results_dir, 0755, true ) ) {
 				throw new \RuntimeException( sprintf( 'Could not create the results directory: %s', $results_dir ) );
+			}
+		}
+
+		$test_media_dir = $env_info->temporary_env . '/test-media';
+
+		if ( ! file_exists( $test_media_dir ) ) {
+			if ( ! mkdir( $test_media_dir, 0755, true ) ) {
+				throw new \RuntimeException( sprintf( 'Could not create the test media directory: %s', $test_media_dir ) );
 			}
 		}
 
@@ -117,6 +130,8 @@ class PlaywrightRunner extends E2ERunner {
 			$env_info->temporary_env . 'qit-playwright.config.js:/qit/tests/e2e/qit-playwright.config.js',
 			'-v',
 			$env_info->temporary_env . '/playwright/db-import.js:/qit/tests/e2e/db-import.js',
+			'-v',
+			$env_info->temporary_env . '/test-media:/qit/tests/e2e/test-media',
 			'-v',
 			$env_info->temporary_env . '/playwright/qitHelpers.js:/qitHelpers/qitHelpers.js',
 			'-v',
@@ -307,6 +322,28 @@ class PlaywrightRunner extends E2ERunner {
 						throw new \RuntimeException( 'Could not copy snapshots from the PHP container.' );
 					}
 				}
+			}
+		}
+
+		/*
+		 * Upload test media.
+		 */
+		if ( file_exists( $env_info->temporary_env . '/test-media' ) ) {
+			$allowed_extensions = [ 'jpg', 'webm', 'json' ];
+
+			foreach ( new \DirectoryIterator( $env_info->temporary_env . '/test-media' ) as $file ) {
+				if ( $file->isFile() && ! in_array( $file->getExtension(), $allowed_extensions, true ) ) {
+					throw new \RuntimeException( sprintf( 'Screenshots directory contains file disallowed file type: %s', $file->getFilename() ) );
+				}
+			}
+
+			App::make( Zipper::class )->zip_directory( $env_info->temporary_env . '/test-media', $results_dir . '/test-media.zip' );
+
+			// If it got bigger than 50mb, bail.
+			if ( filesize( $results_dir . '/test-media.zip' ) > 50 * 1024 * 1024 ) {
+				$this->output->writeln( '<error>Test medias are too large to upload. Skipping...</error>' );
+			} else {
+				App::make( Upload::class )->upload_build( 'test-media', App::getVar( 'test_run_id' ), $results_dir . '/test-media.zip', $this->output );
 			}
 		}
 

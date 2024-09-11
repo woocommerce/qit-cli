@@ -44,6 +44,8 @@ class Upload {
 			$endpoint = '/wp-json/cd/v1/upload-test-report';
 		} elseif ( $upload_type === 'custom-test' ) {
 			$endpoint = '/wp-json/cd/v1/cli/upload-test';
+		} elseif ( $upload_type === 'test-media' ) {
+			$endpoint = '/wp-json/cd/v1/upload-test-media';
 		} else {
 			throw new \InvalidArgumentException( 'Invalid upload type.' );
 		}
