@@ -1,6 +1,7 @@
 {
     "this-is-a-very-long-plugin-name-that-might-exceed-typical-limits": {
         "slug": "this-is-a-very-long-plugin-name-that-might-exceed-typical-limits",
+        "entrypoint": null,
         "source": "this-is-a-very-long-plugin-name-that-might-exceed-typical-limits",
         "downloaded_source": null,
         "type": "plugin",
@@ -11,6 +12,7 @@
     },
     "this-is-a-very-long-theme-name-that-might-exceed-typical-limits": {
         "slug": "this-is-a-very-long-theme-name-that-might-exceed-typical-limits",
+        "entrypoint": null,
         "source": "this-is-a-very-long-theme-name-that-might-exceed-typical-limits",
         "downloaded_source": null,
         "type": "theme",

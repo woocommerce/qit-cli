@@ -1,6 +1,7 @@
 {
     "foo-custom-1": {
         "slug": "foo-custom-1",
+        "entrypoint": null,
         "source": "foo-custom-1",
         "downloaded_source": null,
         "type": "plugin",
@@ -11,6 +12,7 @@
     },
     "foo-custom-2": {
         "slug": "foo-custom-2",
+        "entrypoint": null,
         "source": "foo-custom-2",
         "downloaded_source": null,
         "type": "plugin",
@@ -21,6 +23,7 @@
     },
     "foo-custom-theme-1": {
         "slug": "foo-custom-theme-1",
+        "entrypoint": null,
         "source": "foo-custom-theme-1",
         "downloaded_source": null,
         "type": "theme",
@@ -31,6 +34,7 @@
     },
     "foo-custom-theme-2": {
         "slug": "foo-custom-theme-2",
+        "entrypoint": null,
         "source": "foo-custom-theme-2",
         "downloaded_source": null,
         "type": "theme",

@@ -1,6 +1,7 @@
 [
     {
         "slug": "qit-beaver",
+        "entrypoint": null,
         "source": "https:\/\/github.com\/qitbeaver\/qit-beaver",
         "downloaded_source": null,
         "type": "plugin",
@@ -14,6 +15,7 @@
     },
     {
         "slug": "qit-cat",
+        "entrypoint": null,
         "source": "https:\/\/github.com\/cat\/pictures",
         "downloaded_source": null,
         "type": "plugin",
@@ -26,6 +28,7 @@
     },
     {
         "slug": "dog-pictures",
+        "entrypoint": null,
         "source": "https:\/\/github.com\/cat\/pictures",
         "downloaded_source": null,
         "type": "plugin",

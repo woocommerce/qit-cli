@@ -1,6 +1,7 @@
 {
     "1a0542ad87fe4c3f2b949ff7fcebdd02": {
         "slug": "1a0542ad87fe4c3f2b949ff7fcebdd02",
+        "entrypoint": null,
         "source": "http:\/\/example.com\/plugin.zip",
         "downloaded_source": null,
         "type": "plugin",
@@ -11,6 +12,7 @@
     },
     "414dd101454aa1fdae474005c0824121": {
         "slug": "414dd101454aa1fdae474005c0824121",
+        "entrypoint": null,
         "source": "https:\/\/example.com\/plugin2.zip",
         "downloaded_source": null,
         "type": "plugin",

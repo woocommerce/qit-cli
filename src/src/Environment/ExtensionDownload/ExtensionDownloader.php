@@ -68,7 +68,7 @@ class ExtensionDownloader {
 			App::make( $handler_type )->maybe_download_extensions( $e, $cache_dir );
 		}
 
-		$find_entrypoint = function(Extension $e, string $base_dir) {
+		$find_entrypoint = function ( Extension $e, string $base_dir ) {
 			// Set the entrypoint of the extension.
 			if ( $e->type === Extension::TYPES['theme'] ) {
 				if ( ! file_exists( "$base_dir/style.css" ) ) {
@@ -117,11 +117,12 @@ class ExtensionDownloader {
 
 				$find_entrypoint( $e, "$env_info->temporary_env/html/wp-content/{$e->type}s/{$e->slug}" );
 
+				// @phpstan-ignore-next-line
 				if ( ! isset( $e->entrypoint ) ) {
 					throw new \RuntimeException( "We could not find a valid entrypoint for the zip extracted at '{$e->downloaded_source}'." );
 				}
 
-				if ( getenv( 'QIT_SUT' ) === $e->slug ) {
+				if ( getenv( 'QIT_SUT' ) === $e->slug && $env_info instanceof E2EEnvInfo ) {
 					$env_info->sut_entrypoint = $e->entrypoint;
 					$env_info->sut_path       = "/var/www/html/wp-content/{$e->type}s/{$e->slug}/{$e->entrypoint}";
 				}
@@ -144,11 +145,12 @@ class ExtensionDownloader {
 
 				$find_entrypoint( $e, $e->downloaded_source );
 
+				// @phpstan-ignore-next-line
 				if ( ! isset( $e->entrypoint ) ) {
 					throw new \RuntimeException( "We could not find a valid entrypoint for the directory '{$e->downloaded_source}'." );
 				}
 
-				if ( getenv( 'QIT_SUT' ) === $e->slug ) {
+				if ( getenv( 'QIT_SUT' ) === $e->slug && $env_info instanceof E2EEnvInfo ) {
 					$env_info->sut_entrypoint = $e->entrypoint;
 					$env_info->sut_path       = $e->downloaded_source;
 				}

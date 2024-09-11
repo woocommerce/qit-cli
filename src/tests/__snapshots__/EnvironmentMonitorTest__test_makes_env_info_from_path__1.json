@@ -17,6 +17,8 @@
     "nginx_port": null,
     "sut_slug": null,
     "sut_type": null,
+    "sut_entrypoint": null,
+    "sut_path": null,
     "sut_id": null,
     "domain": "localhost",
     "tests": [],

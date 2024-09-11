@@ -1,6 +1,7 @@
 {
     "plugin-v1.2.3": {
         "slug": "plugin-v1.2.3",
+        "entrypoint": null,
         "source": "plugin-v1.2.3",
         "downloaded_source": null,
         "type": "plugin",
@@ -11,6 +12,7 @@
     },
     "plugin-v4.5.6": {
         "slug": "plugin-v4.5.6",
+        "entrypoint": null,
         "source": "plugin-v4.5.6",
         "downloaded_source": null,
         "type": "plugin",
@@ -21,6 +23,7 @@
     },
     "theme-v7.8.9": {
         "slug": "theme-v7.8.9",
+        "entrypoint": null,
         "source": "theme-v7.8.9",
         "downloaded_source": null,
         "type": "theme",

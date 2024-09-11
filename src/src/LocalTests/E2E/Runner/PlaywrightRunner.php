@@ -8,14 +8,11 @@ use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
-use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
 use QIT_CLI\Zipper;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Cursor;
 use Symfony\Component\Console\Terminal;
 use Symfony\Component\Process\Process;
-use function QIT_CLI\get_manager_url;
 use function QIT_CLI\normalize_path;
 use function QIT_CLI\open_in_browser;
 
@@ -97,7 +94,7 @@ class PlaywrightRunner extends E2ERunner {
 			return $plugin['slug'];
 		}, array_reverse( $env_info->plugins ) );
 
-		$sut_qit_config       = [];
+		$sut_qit_config = [];
 
 		if ( file_exists( "$env_info->sut_path/qit.json" ) ) {
 			$sut_qit_config = json_decode( file_get_contents( "$env_info->sut_path/qit.json" ), true );
@@ -352,7 +349,7 @@ class PlaywrightRunner extends E2ERunner {
 				if ( $file->isFile() && ! in_array( $file->getExtension(), $allowed_extensions, true ) ) {
 					throw new \RuntimeException( sprintf( 'Screenshots directory contains file disallowed file type: %s', $file->getFilename() ) );
 				} else {
-					$count_of_allowed_files++;
+					++$count_of_allowed_files;
 				}
 			}
 
