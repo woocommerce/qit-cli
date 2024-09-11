@@ -325,31 +325,39 @@ class PlaywrightRunner extends E2ERunner {
 			}
 		}
 
+		$exit_status_code = $playwright_process->getExitCode();
+
 		/*
-		 * Upload test media.
+		 * Upload test media if test not aborted.
 		 */
-		if ( file_exists( $env_info->temporary_env . '/test-media' ) ) {
+		if ( $exit_status_code !== 143 && file_exists( $env_info->temporary_env . '/test-media' ) ) {
 			$allowed_extensions = [ 'jpg', 'webm', 'json' ];
+
+			$count_of_allowed_files = 0;
 
 			foreach ( new \DirectoryIterator( $env_info->temporary_env . '/test-media' ) as $file ) {
 				if ( $file->isFile() && ! in_array( $file->getExtension(), $allowed_extensions, true ) ) {
 					throw new \RuntimeException( sprintf( 'Screenshots directory contains file disallowed file type: %s', $file->getFilename() ) );
+				} else {
+					$count_of_allowed_files++;
 				}
 			}
 
-			App::make( Zipper::class )->zip_directory( $env_info->temporary_env . '/test-media', $results_dir . '/test-media.zip' );
+			if ( $count_of_allowed_files > 0 ) {
+				App::make( Zipper::class )->zip_directory( $env_info->temporary_env . '/test-media', $results_dir . '/test-media.zip' );
 
-			// If it got bigger than 50mb, bail.
-			if ( filesize( $results_dir . '/test-media.zip' ) > 50 * 1024 * 1024 ) {
-				$this->output->writeln( '<error>Test medias are too large to upload. Skipping...</error>' );
-			} else {
-				App::make( Upload::class )->upload_build( 'test-media', App::getVar( 'test_run_id' ), $results_dir . '/test-media.zip', $this->output );
+				// If it got bigger than 50mb, bail.
+				if ( filesize( $results_dir . '/test-media.zip' ) > 50 * 1024 * 1024 ) {
+					$this->output->writeln( '<error>Test medias are too large to upload. Skipping...</error>' );
+				} else {
+					App::make( Upload::class )->upload_build( 'test-media', App::getVar( 'test_run_id' ), $results_dir . '/test-media.zip', $this->output );
+				}
 			}
 		}
 
 		$this->output->writeln( sprintf( 'Test artifacts being saved to: %s', $results_dir ) );
 
-		return $playwright_process->getExitCode();
+		return $exit_status_code;
 	}
 
 	/**
