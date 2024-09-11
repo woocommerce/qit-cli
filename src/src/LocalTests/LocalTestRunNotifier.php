@@ -127,17 +127,17 @@ class LocalTestRunNotifier {
 		$use_query_monitor_logs = is_dir( $qm_logs_path );
 		$debug_log              = '';
 
-		if ( ! file_exists( $result_file ) ) {
-			throw new \RuntimeException( 'Result file not found.' );
+		if ( file_exists( $result_file ) ) {
+			$result_json = file_get_contents( $result_file );
+
+			if ( empty( json_decode( $result_json, true ) ) ) {
+				throw new \RuntimeException( 'Result file not a JSON.' );
+			}
+
+			$result_json = $this->playwright_to_puppeteer_converter->convert_pw_to_puppeteer( json_decode( $result_json, true ) );
+		} else {
+			$result_json = [];
 		}
-
-		$result_json = file_get_contents( $result_file );
-
-		if ( empty( json_decode( $result_json, true ) ) ) {
-			throw new \RuntimeException( 'Result file not a JSON.' );
-		}
-
-		$result_json = $this->playwright_to_puppeteer_converter->convert_pw_to_puppeteer( json_decode( $result_json, true ) );
 
 		if ( file_exists( $results_dir . '/debug.log' ) ) {
 			$prepared_debug_log_path = $results_dir . '/debug-prepared.log';
@@ -161,15 +161,19 @@ class LocalTestRunNotifier {
 		 * - warning
 		 * - cancelled
 		 */
-		$status = 'success';
+		$status = null;
+
+		if ( $test_result->status === 'cancelled' ) {
+			$status = 'cancelled';
+		}
 
 		// If there's anything on debug.log, it's a warning.
-		if ( ! empty( $debug_log ) ) {
+		if ( is_null( $status ) && ! empty( $debug_log ) ) {
 			$status = 'warning';
 		}
 
 		// If it has failed any assertion, it's a failure.
-		if ( $this->playwright_to_puppeteer_converter->has_failed( $result_json ) ) {
+		if ( is_null( $status ) && $this->playwright_to_puppeteer_converter->has_failed( $result_json ) ) {
 			$status = 'failed';
 		}
 
