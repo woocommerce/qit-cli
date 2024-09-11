@@ -97,10 +97,23 @@ class PlaywrightRunner extends E2ERunner {
 			return $plugin['slug'];
 		}, array_reverse( $env_info->plugins ) );
 
+		$sut_qit_config       = [];
+
+		if ( file_exists( "$env_info->sut_path/qit.json" ) ) {
+			$sut_qit_config = json_decode( file_get_contents( "$env_info->sut_path/qit.json" ), true );
+
+			if ( is_null( $sut_qit_config ) ) {
+				$this->output->writeln( '<comment>qit.json is not a valid JSON file. Skipping...</comment>' );
+			} else {
+				$this->output->writeln( "<info>qit.json found for {$env_info->sut_slug}.</info>" );
+			}
+		}
+
 		file_put_contents( $env_info->temporary_env . 'playwright/test-info.json', json_encode( [
 			'SUT_SLUG'                => $env_info->sut_slug,
 			'SUT_TYPE'                => $env_info->sut_type,
 			'SUT_ENTRYPOINT'          => $env_info->sut_entrypoint,
+			'SUT_QIT_CONFIG'          => $sut_qit_config,
 			'PLUGIN_ACTIVATION_STACK' => $plugin_activation_stack,
 		] ) );
 
