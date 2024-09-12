@@ -248,10 +248,8 @@ class PrepareQMLog {
 		}
 
 		return [
-			'qm_logs' => [
-				'non_fatal' => $qm_log,
-				'fatal'     => $debug_log,
-			],
+			'non_fatal' => $qm_log,
+			'fatal'     => $debug_log,
 		];
 	}
 }

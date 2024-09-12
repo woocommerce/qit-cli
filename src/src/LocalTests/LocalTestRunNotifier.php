@@ -200,7 +200,7 @@ class LocalTestRunNotifier {
 			'test_run_id'      => $test_run_id,
 			'test_result_json' => $result_json,
 			'bootstrap_log'    => json_encode( $test_result->bootstrap ),
-			'debug_log'        => $debug_log,
+			'debug_log'        => json_encode( $debug_log ),
 			'status'           => $status,
 		];
 
