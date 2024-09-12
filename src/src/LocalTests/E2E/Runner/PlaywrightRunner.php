@@ -346,10 +346,20 @@ class PlaywrightRunner extends E2ERunner {
 			$count_of_allowed_files = 0;
 
 			foreach ( new \DirectoryIterator( $env_info->temporary_env . '/test-media' ) as $file ) {
-				if ( $file->isFile() && ! in_array( $file->getExtension(), $allowed_extensions, true ) ) {
-					throw new \RuntimeException( sprintf( 'Screenshots directory contains file disallowed file type: %s', $file->getFilename() ) );
-				} else {
+				if ( $file->isDot() ) {
+					continue;
+				}
+				if ( $file->isDir() ) {
+					throw new \RuntimeException( sprintf( 'Screenshots directory contains a directory: %s', $file->getFilename() ) );
+				}
+				if ( ! $file->isFile() ) {
+					throw new \RuntimeException( sprintf( 'Screenshots directory contains a non-file: %s', $file->getFilename() ) );
+				}
+
+				if ( in_array( $file->getExtension(), $allowed_extensions, true ) ) {
 					++$count_of_allowed_files;
+				} else {
+					throw new \RuntimeException( sprintf( 'Screenshots directory contains file disallowed file type: %s', $file->getFilename() ) );
 				}
 			}
 

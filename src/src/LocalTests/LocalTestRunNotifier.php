@@ -177,6 +177,11 @@ class LocalTestRunNotifier {
 			$status = 'failed';
 		}
 
+		// If nothing above matched, it's a success.
+		if ( is_null( $status ) ) {
+			$status = 'success';
+		}
+
 		if ( $use_query_monitor_logs ) {
 			$this->output->writeln( 'Parsing Query Monitor Logs' );
 
