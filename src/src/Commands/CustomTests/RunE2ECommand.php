@@ -142,6 +142,8 @@ class RunE2ECommand extends DynamicCommand {
 					return;
 				}
 
+				echo 'Cancelling test run...';
+
 				App::make( RequestBuilder::class )
 				   ->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-cancelled' )
 				   ->with_method( 'POST' )
@@ -149,6 +151,8 @@ class RunE2ECommand extends DynamicCommand {
 				   ->with_timeout_in_seconds( 60 )
 				   ->with_post_body( [ 'test_run_id' => getenv( 'QIT_TEST_RUN_ID' ) ] )
 				   ->request();
+
+				echo 'done.';
 			} );
 		}
 
