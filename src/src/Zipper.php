@@ -94,6 +94,10 @@ class Zipper {
 	}
 
 	protected function pull_zip(): void {
+		if ( getenv( 'QIT_NO_PULL' ) ) {
+			return;
+		}
+
 		// Do this once a day max.
 		if ( ! is_null( App::make( Cache::class )->get( 'zip_pulled' ) ) ) {
 			return;

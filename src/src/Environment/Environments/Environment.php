@@ -245,18 +245,20 @@ abstract class Environment {
 		}
 
 		// Do a docker compose pull first, to make sure images are updated.
-		$pull_process = new Process( array_merge( $this->docker->find_docker_compose(), [ '-f', $this->env_info->temporary_env . '/docker-compose.yml', 'pull' ] ) );
-		$pull_process->setTimeout( 600 );
-		$pull_process->setIdleTimeout( 600 );
-		$pull_process->setPty( use_tty() );
-		$pull_process->setEnv( [
-			'DOCKER_CLI_HINTS' => 'false',
-		]);
-		$pull_process->run( function ( $type, $buffer ) {
-			if ( $this->output->isVerbose() ) {
-				$this->output->write( $buffer );
-			}
-		} );
+		if ( ! getenv( 'QIT_NO_PULL' ) ) {
+			$pull_process = new Process( array_merge( $this->docker->find_docker_compose(), [ '-f', $this->env_info->temporary_env . '/docker-compose.yml', 'pull' ] ) );
+			$pull_process->setTimeout( 600 );
+			$pull_process->setIdleTimeout( 600 );
+			$pull_process->setPty( use_tty() );
+			$pull_process->setEnv( [
+				'DOCKER_CLI_HINTS' => 'false',
+			]);
+			$pull_process->run( function ( $type, $buffer ) {
+				if ( $this->output->isVerbose() ) {
+					$this->output->write( $buffer );
+				}
+			} );
+		}
 
 		$args = array_merge( $this->docker->find_docker_compose(), [ '-f', $this->env_info->temporary_env . '/docker-compose.yml', 'up', '-d' ] );
 

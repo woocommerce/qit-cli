@@ -215,19 +215,21 @@ class PlaywrightRunner extends E2ERunner {
 		] );
 
 		// Pull the image.
-		$pull_process = new Process( [ App::make( Docker::class )->find_docker(), 'pull', "automattic/qit-runner-playwright:$playwright_version_to_use" ] );
-		$pull_process->setTimeout( 300 );
-		$pull_process->setIdleTimeout( 300 );
-		$pull_process->setEnv( [
-			'DOCKER_CLI_HINTS' => 'false',
-		] );
-		$pull_process->run( function ( $type, $buffer ) {
-			if ( $this->output->isVerbose() || $type === Process::ERR ) {
-				$this->output->write( $buffer );
+		if ( ! getenv( 'QIT_NO_PULL' ) ) {
+			$pull_process = new Process( [ App::make( Docker::class )->find_docker(), 'pull', "automattic/qit-runner-playwright:$playwright_version_to_use" ] );
+			$pull_process->setTimeout( 300 );
+			$pull_process->setIdleTimeout( 300 );
+			$pull_process->setEnv( [
+				'DOCKER_CLI_HINTS' => 'false',
+			] );
+			$pull_process->run( function ( $type, $buffer ) {
+				if ( $this->output->isVerbose() || $type === Process::ERR ) {
+					$this->output->write( $buffer );
+				}
+			} );
+			if ( ! $pull_process->isSuccessful() ) {
+				throw new \RuntimeException( 'Could not pull the Playwright image.' );
 			}
-		} );
-		if ( ! $pull_process->isSuccessful() ) {
-			throw new \RuntimeException( 'Could not pull the Playwright image.' );
 		}
 
 		// Run the tests.
