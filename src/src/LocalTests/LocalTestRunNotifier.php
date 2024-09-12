@@ -127,7 +127,13 @@ class LocalTestRunNotifier {
 		 * If the logs directory exists, we will send the Query Monitor logs as well.
 		 */
 		$use_query_monitor_logs = is_dir( $qm_logs_path );
-		$debug_log              = '';
+		$debug_log = [
+			'debug_log' => '',
+			'qm_logs'   => [
+				'non_fatal' => [],
+				'fatal'     => [],
+			],
+		];
 
 		if ( file_exists( $result_file ) ) {
 			$result_json = file_get_contents( $result_file );
@@ -144,7 +150,7 @@ class LocalTestRunNotifier {
 		if ( file_exists( $results_dir . '/debug.log' ) ) {
 			$prepared_debug_log_path = $results_dir . '/debug-prepared.log';
 			$this->prepare_debug_log->prepare_debug_log( $results_dir . '/debug.log', $prepared_debug_log_path, App::getVar( E2EEnvInfo::class ) );
-			$debug_log = file_get_contents( $prepared_debug_log_path, false, null, 0, 8 * 1024 * 1024 ); // First 8mb of debug.log.
+			$debug_log['debug_log'] = file_get_contents( $prepared_debug_log_path, false, null, 0, 8 * 1024 * 1024 ); // First 8mb of debug.log.
 		}
 
 		if ( file_exists( $results_dir . '/allure-playwright' ) && App::getVar( 'should_upload_report' ) ) {
@@ -187,9 +193,7 @@ class LocalTestRunNotifier {
 		if ( $use_query_monitor_logs ) {
 			$this->output->writeln( 'Parsing Query Monitor Logs' );
 
-			$qm_logs              = $this->prepare_qm_log->prepare_qm_logs( $results_dir );
-			$qm_logs['debug_log'] = $debug_log;
-			$debug_log            = json_encode( $qm_logs );
+			$debug_log['qm_logs'] = $this->prepare_qm_log->prepare_qm_logs( $results_dir );
 		}
 
 		$data = [
