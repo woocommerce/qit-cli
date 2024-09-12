@@ -79,6 +79,7 @@ class RunActivationTestCommand extends Command {
 		$run_e2e_options['woo_extension'] = $input->getArgument( 'woo_extension' );
 
 		$run_e2e_options['--sut_action']              = 'activate';
+		$run_e2e_options['--pw_options']              = '--retries=0';
 		$run_e2e_options['--skip_activating_plugins'] = true;
 
 		foreach ( $this->reused_options as $reused_option ) {
