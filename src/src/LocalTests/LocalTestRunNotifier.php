@@ -181,7 +181,7 @@ class LocalTestRunNotifier {
 		}
 
 		// If there's anything on debug.log, it's a warning.
-		if ( is_null( $status ) && ! empty( $debug_log ) ) {
+		if ( is_null( $status ) && ! empty( $debug_log['debug_log'] ) ) {
 			$status = 'warning';
 		}
 
