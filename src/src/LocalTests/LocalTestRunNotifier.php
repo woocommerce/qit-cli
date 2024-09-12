@@ -169,14 +169,14 @@ class LocalTestRunNotifier {
 			$status = 'cancelled';
 		}
 
-		// If there's anything on debug.log, it's a warning.
-		if ( is_null( $status ) && ! empty( $debug_log ) ) {
-			$status = 'warning';
-		}
-
 		// If it has failed any assertion, it's a failure.
 		if ( is_null( $status ) && $this->playwright_to_puppeteer_converter->has_failed( $result_json ) ) {
 			$status = 'failed';
+		}
+
+		// If there's anything on debug.log, it's a warning.
+		if ( is_null( $status ) && ! empty( $debug_log ) ) {
+			$status = 'warning';
 		}
 
 		// If nothing above matched, it's a success.
