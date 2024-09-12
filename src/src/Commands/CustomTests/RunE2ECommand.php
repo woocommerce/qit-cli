@@ -138,6 +138,10 @@ class RunE2ECommand extends DynamicCommand {
 			 * On non mass-tests, this is not necessary, as the process would bail before creating the test run instance.
 			 */
 			register_shutdown_function( static function () {
+				if ( App::getVar( 'NOTIFY_TEST_STARTED_RAN' ) ) {
+					return;
+				}
+
 				App::make( RequestBuilder::class )
 				   ->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-cancelled' )
 				   ->with_method( 'POST' )
