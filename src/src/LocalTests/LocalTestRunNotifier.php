@@ -226,6 +226,12 @@ class LocalTestRunNotifier {
 
 		App::make( Cache::class )->set( 'QIT_LAST_LOCAL_TEST_FINISHED', $test_run_id, DAY_IN_SECONDS );
 
+		if ( ! empty( getenv( 'QIT_WRITE_MANAGER_NOTIFIED' ) ) ) {
+			if ( ! touch( getenv( 'QIT_WRITE_MANAGER_NOTIFIED' ) ) ) {
+				throw new \RuntimeException( 'Could not write to file ' . getenv( 'QIT_WRITE_MANAGER_NOTIFIED' ) );
+			}
+		}
+
 		return $response['report_url'];
 	}
 }
