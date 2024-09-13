@@ -162,6 +162,12 @@ class LocalTestRunNotifier {
 			}
 		}
 
+		if ( $use_query_monitor_logs ) {
+			$this->output->writeln( 'Parsing Query Monitor Logs' );
+
+			$debug_log['qm_logs'] = $this->prepare_qm_log->prepare_qm_logs( $results_dir );
+		}
+
 		/**
 		 * Allowed status:
 		 * - success
@@ -192,12 +198,6 @@ class LocalTestRunNotifier {
 		// If nothing above matched, it's a success.
 		if ( is_null( $status ) ) {
 			$status = 'success';
-		}
-
-		if ( $use_query_monitor_logs ) {
-			$this->output->writeln( 'Parsing Query Monitor Logs' );
-
-			$debug_log['qm_logs'] = $this->prepare_qm_log->prepare_qm_logs( $results_dir );
 		}
 
 		$data = [
