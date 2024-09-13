@@ -45,7 +45,9 @@ class EnvironmentDownloader {
 		$temp_zip_path  = $environments_dir . '/temp_' . $env_name . '.zip';
 		$final_zip_path = $environments_dir . '/' . $env_name . '.zip';
 
-		$local_hash = file_exists( $final_zip_path ) ? $this->calculate_zip_content_checksum( $final_zip_path ) : 'Not found.';
+		clearstatcache();
+
+		$local_hash = file_exists( $final_zip_path ) ? filesize( $final_zip_path ) : 'Not found.';
 
 		if ( $this->output->isVeryVerbose() ) {
 			$this->output->writeln( 'Local environment hash: ' . $local_hash );
@@ -125,41 +127,5 @@ class EnvironmentDownloader {
 		}
 
 		$zip->close();
-	}
-
-	/**
-	 * Calculates the checksum of the contents of the zip. This is needed because
-	 * every time we create a zip, it changes some metadata inside the zip file,
-	 * such as modification date, etc. So if we call md5_file() on the zip file,
-	 * it will always be different, even if the contents are the same.
-	 *
-	 * This function calculates the checksum of the contents of the zip file instead.
-	 *
-	 * This same function is also present in the Manager.
-	 *
-	 * @param string $zip_file_path The path to the zip file.
-	 *
-	 * @return string A checksum of the zip contents.
-	 * @throws \Exception If the zip file cannot be opened.
-	 */
-	private function calculate_zip_content_checksum( string $zip_file_path ) {
-		$zip = new \ZipArchive();
-
-		if ( $zip->open( $zip_file_path ) !== true ) {
-			throw new \Exception( "Cannot open ZIP file: {$zip_file_path}" );
-		}
-
-		$checksums = [];
-		for ( $i = 0; $i < $zip->numFiles; $i++ ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-			$stat = $zip->statIndex( $i );
-			if ( $stat ) {
-				$crc         = $stat['crc']; // Get the CRC32 hash of the file.
-				$checksums[] = $crc;
-			}
-		}
-
-		$zip->close();
-
-		return md5( implode( '', $checksums ) );
 	}
 }
