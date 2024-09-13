@@ -119,43 +119,6 @@ class RunE2ECommand extends DynamicCommand {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
-		if ( getenv( 'QIT_TEST_RUN_ID' ) ) {
-			/*
-			 * A custom test will usually create the test run instance after the environment is up:
-			 *
-			 * - Setup:
-			 *   - Validate SUT and dependencies
-			 *   - Get download URLs
-			 *   - Up environment
-			 * - Test:
-			 *   - Create test run in QIT
-			 *   - Run the test
-			 *   - Send the results
-			 *
-			 * However, on mass tests, the test run will be created already with a status of "pending", "running", "dispatched", etc.
-			 * If "QIT_TEST_RUN_ID" is set, it means we are starting this run with a test instance pre-created.
-			 * So if anything goes wrong in the setup phase, we should set the test run as cancelled.
-			 * On non mass-tests, this is not necessary, as the process would bail before creating the test run instance.
-			 */
-			register_shutdown_function( static function () {
-				if ( App::getVar( 'NOTIFY_TEST_STARTED_RAN' ) ) {
-					return;
-				}
-
-				echo 'Cancelling test run...';
-
-				App::make( RequestBuilder::class )
-					->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-cancelled' )
-					->with_method( 'POST' )
-					->with_expected_status_codes( [ 200 ] )
-					->with_timeout_in_seconds( 60 )
-					->with_post_body( [ 'test_run_id' => getenv( 'QIT_TEST_RUN_ID' ) ] )
-					->request();
-
-				echo 'done.';
-			} );
-		}
-
 		if ( is_windows() ) {
 			$output->writeln( '<comment>To use run E2E Tests on Window, please use WSL. Check our guide here: https://qit.woo.com/docs/environment/getting-started#getting-started---windows</comment>' );
 
