@@ -127,7 +127,7 @@ class LocalTestRunNotifier {
 		 * If the logs directory exists, we will send the Query Monitor logs as well.
 		 */
 		$use_query_monitor_logs = is_dir( $qm_logs_path );
-		$debug_log = [
+		$debug_log              = [
 			'debug_log' => '',
 			'qm_logs'   => [
 				'non_fatal' => [],
