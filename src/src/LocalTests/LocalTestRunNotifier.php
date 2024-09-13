@@ -181,8 +181,12 @@ class LocalTestRunNotifier {
 		}
 
 		// If there's anything on debug.log, it's a warning.
-		if ( is_null( $status ) && ! empty( $debug_log['debug_log'] ) ) {
-			$status = 'warning';
+		if ( is_null( $status ) ) {
+			if ( ! empty( $debug_log['qm_logs']['fatal'] ) ) {
+				$status = 'failed';
+			} elseif ( ! empty( $debug_log['qm_logs']['non_fatal'] ) ) {
+				$status = 'warning';
+			}
 		}
 
 		// If nothing above matched, it's a success.
