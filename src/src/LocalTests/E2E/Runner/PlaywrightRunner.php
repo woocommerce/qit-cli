@@ -131,6 +131,8 @@ class PlaywrightRunner extends E2ERunner {
 			sprintf( 'BASE_URL=%s', $env_info->site_url ),
 			'-e',
 			sprintf( 'QIT_DOMAIN=%s', $env_info->domain ),
+			'-e',
+			'DEBUG=pw:api',
 			'-v',
 			Config::get_qit_dir() . 'cache:/qit/cache',
 			// Map the named volume so that PW can share data with the PHP container and vice-versa.
@@ -415,7 +417,8 @@ class PlaywrightRunner extends E2ERunner {
 					'name'      => 'db-import',
 					'testMatch' => '/qit/tests/e2e/db-import.js',
 					'use'       => [
-						'browserName' => 'chromium',
+						'browserName' => 'firefox',
+						'devices'     => [ 'Desktop Firefox' ],
 					],
 				];
 			}
@@ -427,7 +430,8 @@ class PlaywrightRunner extends E2ERunner {
 					'testDir'   => "$base_dir/bootstrap",
 					'testMatch' => 'entrypoint.js',
 					'use'       => [
-						'browserName' => 'chromium',
+						'browserName' => 'firefox',
+						'devices'     => [ 'Desktop Firefox' ],
 						'stateDir'    => $base_dir . '/.state',
 						'qitTestTag'  => $t['test_tag'],
 						'qitTestSlug' => $t['slug'],
@@ -440,7 +444,8 @@ class PlaywrightRunner extends E2ERunner {
 				'name'    => sprintf( '%s-%s', $t['slug'], $t['test_tag'] ),
 				'testDir' => $base_dir,
 				'use'     => [
-					'browserName' => 'chromium',
+					'browserName' => 'firefox',
+					'devices'     => [ 'Desktop Firefox' ],
 					'stateDir'    => $base_dir . '/.state',
 					'qitTestTag'  => $t['test_tag'],
 					'qitTestSlug' => $t['slug'],
