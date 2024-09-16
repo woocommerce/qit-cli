@@ -177,7 +177,7 @@ class LocalTestRunNotifier {
 		 * - warning
 		 * - cancelled
 		 */
-		$status = null;
+		$status                    = null;
 		$exit_status_code_override = null;
 
 		if ( $test_result->status === 'cancelled' ) {
@@ -194,11 +194,11 @@ class LocalTestRunNotifier {
 			if ( ! empty( $debug_log['qm_logs']['fatal'] ) ) {
 				// We exit with a 1 if it has fatal errors. If Playwright has failed an assertion from a user-perspective, the exit status code is already 1.
 				$exit_status_code_override = Command::FAILURE;
-				$status = 'failed';
+				$status                    = 'failed';
 			} elseif ( ! empty( $debug_log['qm_logs']['non_fatal'] ) ) {
 				// We exit with a 2 if it has non-fatal errors.
 				$exit_status_code_override = RunE2ECommand::WARNING;
-				$status = 'warning';
+				$status                    = 'warning';
 			}
 		}
 

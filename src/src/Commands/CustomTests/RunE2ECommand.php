@@ -406,12 +406,12 @@ class RunE2ECommand extends DynamicCommand {
 			$io->success( "Tests passed. Run 'qit e2e-report' to view the report." );
 
 			return Command::SUCCESS;
-		} elseif ( $exit_status_code === RunE2ECommand::WARNING ) {
+		} elseif ( $exit_status_code === self::WARNING ) {
 			if ( $test_mode === E2ETestManager::$test_modes['headless'] ) {
 				$io->error( "Tests passed with a warning. Run 'qit e2e-report' to view the report." );
 			}
 
-			return RunE2ECommand::WARNING;
+			return self::WARNING;
 		} else {
 			if ( $test_mode === E2ETestManager::$test_modes['headless'] ) {
 				$io->error( "Tests failed. Run 'qit e2e-report' to view the report." );
