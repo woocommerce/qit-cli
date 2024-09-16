@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Environment\ExtensionDownload\Handlers;
 
+use lucatume\DI52\ContainerException;
 use QIT_CLI\App;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
@@ -20,6 +21,7 @@ class URLHandler extends Handler {
 	 * @param string                                $cache_dir
 	 *
 	 * @throws \RuntimeException If an error occurs during downloading or file handling.
+	 * @throws ContainerException If an error occurs during dependency resolution.
 	 */
 	public function maybe_download_extensions( array $extensions, string $cache_dir ): void {
 		$output = App::make( Output::class );

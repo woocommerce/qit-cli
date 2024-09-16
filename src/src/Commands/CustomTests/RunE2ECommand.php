@@ -21,7 +21,6 @@ use QIT_CLI\Environment\Extension;
 use QIT_CLI\LocalTests\E2E\E2ETestManager;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\PluginDependencies;
-use QIT_CLI\RequestBuilder;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -32,7 +31,6 @@ use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use function QIT_CLI\get_manager_url;
 use function QIT_CLI\is_windows;
 
 class RunE2ECommand extends DynamicCommand {
