@@ -1,6 +1,7 @@
 {
     "plugin1": {
         "slug": "plugin1",
+        "entrypoint": null,
         "source": "plugin1",
         "downloaded_source": null,
         "type": "plugin",
@@ -11,6 +12,7 @@
     },
     "plugin2": {
         "slug": "plugin2",
+        "entrypoint": null,
         "source": "plugin2",
         "downloaded_source": null,
         "type": "plugin",
@@ -21,6 +23,7 @@
     },
     "theme1": {
         "slug": "theme1",
+        "entrypoint": null,
         "source": "theme1",
         "downloaded_source": null,
         "type": "theme",
@@ -31,6 +34,7 @@
     },
     "theme2": {
         "slug": "theme2",
+        "entrypoint": null,
         "source": "theme2",
         "downloaded_source": null,
         "type": "theme",

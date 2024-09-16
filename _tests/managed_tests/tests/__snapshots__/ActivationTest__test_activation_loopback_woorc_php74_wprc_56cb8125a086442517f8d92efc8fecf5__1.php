@@ -3,15 +3,17 @@
         {
             "test_run_id": 123456,
             "run_id": 123456,
-            "test_type": "activation",
-            "test_type_display": "Activation",
+            "test_type": "e2e",
+            "test_type_display": "E2E",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "7.4",
             "max_php_version": "",
             "min_php_version": "",
             "additional_woo_plugins": [],
-            "additional_wp_plugins": [],
+            "additional_wp_plugins": [
+                "woocommerce"
+            ],
             "test_log": "",
             "status": "warning",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
@@ -25,362 +27,113 @@
                 "type": "plugin"
             },
             "client": "qit_cli",
-            "event": "cli_development_extension_test",
+            "event": "e2e_local_run",
             "optional_features": {
                 "hpos": false,
                 "new_product_editor": false
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "6 Errors Detected. (0 Fatal, 0 Warnings, 6 Notices)",
-            "debug_log": "",
-            "version": "Undefined",
-            "update_complete": true,
+            "test_summary": "",
+            "version": "",
+            "update_complete": false,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
-            "workflow_id": "1234567890",
-            "runner": "normalized",
-            "test_result_json_extracted": "{EXTRACTED}"
+            "workflow_id": "",
+            "runner": "",
+            "test_result_json_extracted": "{EXTRACTED}",
+            "debug_log_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
-                "results_overview": {
-                    "total_extensions": "1",
-                    "extensions_with_errors": {
-                        "": {
-                            "\\/": 2,
-                            "\\/cart\\/": 2,
-                            "\\/my-account\\/": 2
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 1,
+                "numPendingTestSuites": 0,
+                "numTotalTestSuites": 1,
+                "numFailedTests": 0,
+                "numPassedTests": 10,
+                "numPendingTests": 0,
+                "numTotalTests": 10,
+                "testResults": [
+                    {
+                        "file": "woocommerce\\/activation\\/activation.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "woocommerce\\/activation\\/activation.spec.js": [
+                                {
+                                    "title": "Activate Plugins",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Activate Theme",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Setup Local Pickup",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Set up Cash On Delivery Payment Method",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Create a Product",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Create a Simple Order",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Add Product Cart",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Can Place Order",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Deactivate Plugin",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Activate Other Theme",
+                                    "status": "passed"
+                                }
+                            ]
                         }
+                    }
+                ],
+                "summary": "Test Suites: 0 skipped, 0 failed, 1 passed, 1 total | Tests: 0 skipped, 0 failed, 10 passed, 10 total."
+            }
+        },
+        {
+            "debug_log": {
+                "qm_logs": [
+                    {
+                        "message": "Site URL: http:\\/\\/qitenvnginx66e076ba2333f",
+                        "type": "notice",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:8",
+                        "count": 13
                     },
-                    "error_totals": {
-                        "fatal": 0,
-                        "notice": 6,
-                        "warning": 0,
-                        "E_USER_NOTICE": 6
+                    {
+                        "message": "Loopback error: cURL error 7: Failed to connect to qitenvnginx66e076ba2333f port 80 after 0 ms: Connection refused",
+                        "type": "notice",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:12",
+                        "count": 13
+                    }
+                ],
+                "debug_log": [
+                    {
+                        "count": "13",
+                        "message": "PHP Notice: Loopback error: cURL error 7: Failed to connect to qitenvnginx66e076ba2333f port 80 after 0 ms: Connection refused in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                     },
-                    "summary": "6 Errors Detected. (0 Fatal, 0 Warnings, 6 Notices)",
-                    "error_count": 6,
-                    "count_extensions_with_errors": 1
-                },
-                "0": {
-                    "activated_alongside": "",
-                    "context": "\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_USER_NOTICE",
-                    "error_message": "Site URL: http:\\/\\/qit-runner.test",
-                    "error_file": "woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                    "error_line": 8,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                            "line": 8,
-                            "function": "trigger_error"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 324,
-                            "function": "{closure}"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 348,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 565,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp.php",
-                            "line": 830,
-                            "function": "do_action_ref_array"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1336,
-                            "function": "main",
-                            "class": "WP",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-blog-header.php",
-                            "line": 16,
-                            "function": "wp"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "1": {
-                    "activated_alongside": "",
-                    "context": "\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_USER_NOTICE",
-                    "error_message": "Site name from wp-json: WooCommerce Core E2E Test Suite",
-                    "error_file": "woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                    "error_line": 17,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                            "line": 17,
-                            "function": "trigger_error"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 324,
-                            "function": "{closure}"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 348,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 565,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp.php",
-                            "line": 830,
-                            "function": "do_action_ref_array"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1336,
-                            "function": "main",
-                            "class": "WP",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-blog-header.php",
-                            "line": 16,
-                            "function": "wp"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "2": {
-                    "activated_alongside": "",
-                    "context": "\\/cart\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_USER_NOTICE",
-                    "error_message": "Site URL: http:\\/\\/qit-runner.test",
-                    "error_file": "woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                    "error_line": 8,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                            "line": 8,
-                            "function": "trigger_error"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 324,
-                            "function": "{closure}"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 348,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 565,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp.php",
-                            "line": 830,
-                            "function": "do_action_ref_array"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1336,
-                            "function": "main",
-                            "class": "WP",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-blog-header.php",
-                            "line": 16,
-                            "function": "wp"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "3": {
-                    "activated_alongside": "",
-                    "context": "\\/cart\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_USER_NOTICE",
-                    "error_message": "Site name from wp-json: WooCommerce Core E2E Test Suite",
-                    "error_file": "woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                    "error_line": 17,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                            "line": 17,
-                            "function": "trigger_error"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 324,
-                            "function": "{closure}"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 348,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 565,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp.php",
-                            "line": 830,
-                            "function": "do_action_ref_array"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1336,
-                            "function": "main",
-                            "class": "WP",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-blog-header.php",
-                            "line": 16,
-                            "function": "wp"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "4": {
-                    "activated_alongside": "",
-                    "context": "\\/my-account\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_USER_NOTICE",
-                    "error_message": "Site URL: http:\\/\\/qit-runner.test",
-                    "error_file": "woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                    "error_line": 8,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                            "line": 8,
-                            "function": "trigger_error"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 324,
-                            "function": "{closure}"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 348,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 565,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp.php",
-                            "line": 830,
-                            "function": "do_action_ref_array"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1336,
-                            "function": "main",
-                            "class": "WP",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-blog-header.php",
-                            "line": 16,
-                            "function": "wp"
-                        }
-                    ],
-                    "db_error": ""
-                },
-                "5": {
-                    "activated_alongside": "",
-                    "context": "\\/my-account\\/",
-                    "is_fatal": "No",
-                    "error_type": "E_USER_NOTICE",
-                    "error_message": "Site name from wp-json: WooCommerce Core E2E Test Suite",
-                    "error_file": "woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                    "error_line": 17,
-                    "backtrace": [
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php",
-                            "line": 17,
-                            "function": "trigger_error"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 324,
-                            "function": "{closure}"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php",
-                            "line": 348,
-                            "function": "apply_filters",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/plugin.php",
-                            "line": 565,
-                            "function": "do_action",
-                            "class": "WP_Hook",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/class-wp.php",
-                            "line": 830,
-                            "function": "do_action_ref_array"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-includes\\/functions.php",
-                            "line": 1336,
-                            "function": "main",
-                            "class": "WP",
-                            "type": "->"
-                        },
-                        {
-                            "file": "\\/var\\/www\\/html\\/wp-blog-header.php",
-                            "line": 16,
-                            "function": "wp"
-                        }
-                    ],
-                    "db_error": ""
-                }
+                    {
+                        "count": "13",
+                        "message": "PHP Notice: Site URL: http:\\/\\/qitenvnginx66e076ba2333f in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 8"
+                    }
+                ]
             }
         }
     ]

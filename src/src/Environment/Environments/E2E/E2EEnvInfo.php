@@ -29,6 +29,12 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var string The type of the SUT, either "plugin" or "theme". */
 	public $sut_type;
 
+	/** @var string The entrypoint of the extension under test. */
+	public $sut_entrypoint;
+
+	/** @var string The path to the SUT on the host. */
+	public $sut_path;
+
 	/** @var int The Woo ID of the extension under test. */
 	public $sut_id;
 

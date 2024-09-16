@@ -1,6 +1,7 @@
 {
     "b1e11c1fb5a6645067d2725427d8ee70": {
         "slug": "b1e11c1fb5a6645067d2725427d8ee70",
+        "entrypoint": null,
         "source": "\/tmp\/plugin",
         "downloaded_source": null,
         "type": "plugin",
@@ -11,6 +12,7 @@
     },
     "9629d5fe1854eae2a590ec1923c54d87": {
         "slug": "9629d5fe1854eae2a590ec1923c54d87",
+        "entrypoint": null,
         "source": "\/tmp\/plugin2.zip",
         "downloaded_source": null,
         "type": "plugin",
@@ -21,6 +23,7 @@
     },
     "77ee9bc47105a874f85e814cf072729d": {
         "slug": "77ee9bc47105a874f85e814cf072729d",
+        "entrypoint": null,
         "source": "\/tmp\/theme",
         "downloaded_source": null,
         "type": "theme",
@@ -31,6 +34,7 @@
     },
     "36d755f331b385dbd16b552001f819fb": {
         "slug": "36d755f331b385dbd16b552001f819fb",
+        "entrypoint": null,
         "source": "\/tmp\/theme2.zip",
         "downloaded_source": null,
         "type": "theme",

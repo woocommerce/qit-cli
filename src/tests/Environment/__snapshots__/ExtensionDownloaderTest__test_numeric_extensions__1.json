@@ -1,6 +1,7 @@
 {
     "plugin1": {
         "slug": "plugin1",
+        "entrypoint": null,
         "source": "123",
         "downloaded_source": null,
         "type": "plugin",
@@ -11,6 +12,7 @@
     },
     "plugin2": {
         "slug": "plugin2",
+        "entrypoint": null,
         "source": "456",
         "downloaded_source": null,
         "type": "plugin",
@@ -21,6 +23,7 @@
     },
     "theme1": {
         "slug": "theme1",
+        "entrypoint": null,
         "source": "789",
         "downloaded_source": null,
         "type": "theme",

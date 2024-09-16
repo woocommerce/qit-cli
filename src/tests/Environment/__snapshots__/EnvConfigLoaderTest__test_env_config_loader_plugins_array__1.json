@@ -11,6 +11,7 @@
     "plugins": [
         {
             "slug": "qit-beaver",
+            "entrypoint": null,
             "source": "qit-beaver",
             "downloaded_source": null,
             "type": "plugin",
@@ -30,6 +31,8 @@
     "nginx_port": null,
     "sut_slug": null,
     "sut_type": null,
+    "sut_entrypoint": null,
+    "sut_path": null,
     "sut_id": null,
     "domain": "localhost",
     "tests": [],

@@ -2,12 +2,16 @@
 
 namespace QIT_CLI\LocalTests;
 
+use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\IO\Output;
 use SplFileObject;
 
 class PrepareDebugLog {
 	public function prepare_debug_log( string $debug_log_file, string $new_debug_log_file, E2EEnvInfo $env_info ): void {
 		$sut_slug = $env_info->sut_slug;
+
+		$output = App::make( Output::class );
 
 		if ( file_exists( $debug_log_file ) ) {
 			$log_entries = [];
@@ -137,13 +141,13 @@ class PrepareDebugLog {
 			$written = file_put_contents( $new_debug_log_file, json_encode( $log_entries ) );
 
 			if ( ! $written ) {
-				echo "Failed to write $new_debug_log_file\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$output->writeln( "<error>Failed to write debug contents to file $new_debug_log_file.</error>" );
 				die( 1 );
 			} else {
-				echo "Wrote debug contents to: $new_debug_log_file\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$output->writeln( "Wrote debug contents to: $new_debug_log_file" );
 			}
 		} else {
-			echo "$debug_log_file does not exist for prepare."; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$output->writeln( "$debug_log_file does not exist for prepare." );
 		}
 	}
 }

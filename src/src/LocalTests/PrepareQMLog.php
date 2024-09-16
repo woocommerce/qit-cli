@@ -2,7 +2,15 @@
 
 namespace QIT_CLI\LocalTests;
 
+use Symfony\Component\Console\Output\OutputInterface;
+
 class PrepareQMLog {
+	/** @var OutputInterface */
+	protected $output;
+
+	public function __construct( OutputInterface $output ) {
+		$this->output = $output;
+	}
 
 	/**
 	 * Reads all JSON files in a directory and returns the data.
@@ -20,10 +28,10 @@ class PrepareQMLog {
 
 		if ( is_dir( $directory ) ) {
 
-            // phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure
+            // phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure, Generic.CodeAnalysis.AssignmentInCondition.Found
 			if ( $dh = opendir( $directory ) ) {
 
-				while ( ( $file = readdir( $dh ) ) !== false ) {
+				while ( ( $file = readdir( $dh ) ) !== false ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 
 					$file_path = $directory . $file;
 
@@ -39,12 +47,10 @@ class PrepareQMLog {
 
 				closedir( $dh );
 			} else {
-                // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				echo "Could not open directory: $directory";
+				$this->output->writeln( "Could not open directory: $directory" );
 			}
 		} else {
-            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-			echo "Directory does not exist: $directory";
+			$this->output->writeln( "Diectory does not exist: $directory" );
 		}
 
 		return $data;
@@ -85,7 +91,7 @@ class PrepareQMLog {
 
 		if ( $handle ) {
 
-			while ( ( $line = fgets( $handle ) ) !== false ) {
+			while ( ( $line = fgets( $handle ) ) !== false ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 				if ( str_contains( $line, 'PHP Fatal error:' ) ) {
 					$lines[] = $line;
 				}
@@ -93,7 +99,7 @@ class PrepareQMLog {
 
 			fclose( $handle );
 		} else {
-			echo 'Error opening the file.';
+			$this->output->writeln( 'Error opening the file.' );
 		}
 
 		return $lines;
@@ -140,7 +146,7 @@ class PrepareQMLog {
 				continue;
 			}
 
-			echo "Error parsing line: $line\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$this->output->writeln( "Error parsing line: $line" );
 		}
 
 		return $fatal_errors;
@@ -197,10 +203,10 @@ class PrepareQMLog {
 			return [];
 		}
 
-		echo 'Reading fatal errors from debug.log...'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		$this->output->writeln( 'Reading fatal errors from debug.log...' );
 		$fatal_error_lines = $this->extract_fatal_errors_from_debug_file( $file_path );
 
-		echo 'Extracting error info...'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		$this->output->writeln( 'Extracting error info...' );
 		$fatal_errors      = $this->extract_error_info( $fatal_error_lines );
 		$summarized_errors = [];
 
@@ -242,10 +248,8 @@ class PrepareQMLog {
 		}
 
 		return [
-			'qm_logs' => [
-				'non_fatal' => $qm_log,
-				'fatal'     => $debug_log,
-			],
+			'non_fatal' => $qm_log,
+			'fatal'     => $debug_log,
 		];
 	}
 }
