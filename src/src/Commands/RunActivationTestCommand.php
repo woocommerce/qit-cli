@@ -34,7 +34,8 @@ class RunActivationTestCommand extends Command {
 			->reuseOption( RunE2ECommand::getDefaultName(), 'plugin' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'ui' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'no_upload_report' )
-			->reuseOption( RunE2ECommand::getDefaultName(), 'notify' );
+			->reuseOption( RunE2ECommand::getDefaultName(), 'notify' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'php_extension' );
 
 		$this->addOption(
 			'json',
