@@ -4,12 +4,14 @@ namespace QIT_CLI\LocalTests;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\IO\Output;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
 use QIT_CLI\Zipper;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
@@ -109,9 +111,9 @@ class LocalTestRunNotifier {
 	/**
 	 * @param TestResult $test_result
 	 *
-	 * @return string The Report URL in QIT.
+	 * @return array{string, int|null} The first element is the report URL, the second is the exit status code override, if any.
 	 */
-	public function notify_test_finished( TestResult $test_result ): string {
+	public function notify_test_finished( TestResult $test_result ): array {
 		$test_run_id = App::getVar( 'test_run_id' );
 
 		if ( empty( $test_run_id ) ) {
@@ -176,6 +178,7 @@ class LocalTestRunNotifier {
 		 * - cancelled
 		 */
 		$status = null;
+		$exit_status_code_override = null;
 
 		if ( $test_result->status === 'cancelled' ) {
 			$status = 'cancelled';
@@ -189,8 +192,12 @@ class LocalTestRunNotifier {
 		// If there's anything on debug.log, it's a warning.
 		if ( is_null( $status ) ) {
 			if ( ! empty( $debug_log['qm_logs']['fatal'] ) ) {
+				// We exit with a 1 if it has fatal errors. If Playwright has failed an assertion from a user-perspective, the exit status code is already 1.
+				$exit_status_code_override = Command::FAILURE;
 				$status = 'failed';
 			} elseif ( ! empty( $debug_log['qm_logs']['non_fatal'] ) ) {
+				// We exit with a 2 if it has non-fatal errors.
+				$exit_status_code_override = RunE2ECommand::WARNING;
 				$status = 'warning';
 			}
 		}
@@ -232,6 +239,6 @@ class LocalTestRunNotifier {
 			}
 		}
 
-		return $response['report_url'];
+		return [ $response['report_url'], $exit_status_code_override ];
 	}
 }

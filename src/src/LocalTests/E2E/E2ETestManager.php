@@ -215,13 +215,18 @@ class E2ETestManager {
 			// No-op, a debug.log was not present.
 		}
 
-		$report_url = $this->notifier->notify_test_finished( $test_result );
+		[ $report_url, $exit_status_code_override ] = $this->notifier->notify_test_finished( $test_result );
 
 		App::make( Cache::class )->set( 'last_e2e_report', json_encode( [
 			'local_playwright' => file_exists( $test_result->get_results_dir() . '/report/index.html' ) ? $test_result->get_results_dir() . '/report' : '',
 			'remote_qit'       => $report_url,
 		] ), MONTH_IN_SECONDS );
 		self::$has_report = true;
+
+		// Modify the exit status code based on parsing the debug log.
+		if ( ! is_null( $exit_status_code_override ) ) {
+			$exit_status_code = $exit_status_code_override;
+		}
 
 		return $exit_status_code;
 	}

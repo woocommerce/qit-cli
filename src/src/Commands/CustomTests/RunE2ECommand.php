@@ -59,6 +59,16 @@ class RunE2ECommand extends DynamicCommand {
 
 	protected static $defaultName = 'run:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
+	/**
+	 * 0 is success.
+	 * 1 is either Playwright failed an assertion from a user-perspective, or a PHP fatal error has been logged.
+	 * 2 is reserved, so we skip it.
+	 * 3 is a warning, such as a PHP error that is not fatal.
+	 *
+	 * @link https://tldp.org/LDP/abs/html/exitcodes.html
+	 */
+	const WARNING = 3;
+
 	public function __construct(
 		E2EEnvironment $e2e_environment,
 		Cache $cache,
@@ -396,6 +406,12 @@ class RunE2ECommand extends DynamicCommand {
 			$io->success( "Tests passed. Run 'qit e2e-report' to view the report." );
 
 			return Command::SUCCESS;
+		} elseif ( $exit_status_code === RunE2ECommand::WARNING ) {
+			if ( $test_mode === E2ETestManager::$test_modes['headless'] ) {
+				$io->error( "Tests passed with a warning. Run 'qit e2e-report' to view the report." );
+			}
+
+			return RunE2ECommand::WARNING;
 		} else {
 			if ( $test_mode === E2ETestManager::$test_modes['headless'] ) {
 				$io->error( "Tests failed. Run 'qit e2e-report' to view the report." );
