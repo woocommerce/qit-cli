@@ -52,6 +52,13 @@ class EnvironmentVersionResolver {
 				'action'    => $action,
 				'test_tags' => $test_tags,
 			];
+		} elseif ( filter_var( $woo, FILTER_VALIDATE_URL ) ) {
+			$woo = [
+				'slug'      => 'woocommerce',
+				'source'    => $woo,
+				'action'    => $action,
+				'test_tags' => $test_tags,
+			];
 		} else {
 			$woo = [
 				'slug'      => 'woocommerce',
@@ -59,6 +66,7 @@ class EnvironmentVersionResolver {
 				'action'    => $action,
 				'test_tags' => $test_tags,
 			];
+
 		}
 
 		// On the lines above, "$test_tags" is a string, whereas "$plugin->test_tags" might return an array.
