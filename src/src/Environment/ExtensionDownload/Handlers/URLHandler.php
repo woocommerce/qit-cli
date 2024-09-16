@@ -5,6 +5,7 @@ namespace QIT_CLI\Environment\ExtensionDownload\Handlers;
 use QIT_CLI\App;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
+use QIT_CLI\Zipper;
 
 class URLHandler extends Handler {
 	/**
@@ -54,6 +55,14 @@ class URLHandler extends Handler {
 			}
 
 			RequestBuilder::download_file( $e->source, $cache_file );
+
+			try {
+				App::make( Zipper::class )->validate_zip( $cache_file );
+			} catch ( \Exception $exception ) {
+				unlink( $cache_file );
+				throw new \RuntimeException( sprintf( 'Could not download zip file from URL %s.', $e->source ) );
+			}
+
 			$e->downloaded_source = $cache_file;
 		}
 	}
