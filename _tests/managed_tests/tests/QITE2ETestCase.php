@@ -139,6 +139,69 @@ class QITE2ETestCase extends TestCase {
 					return ! is_null( json_decode( $value ) );
 				},
 			],
+			'test_media' => [
+				'normalize' => static function ( $value ) {
+					foreach ( $value as &$test_media ) {
+						// Normalize the path to a filename.
+						$test_media['path'] = 'normalized.' . pathinfo( $test_media['path'], PATHINFO_EXTENSION );
+
+						// Normalize timings.
+						if ( ! empty( $test_media['data']['Timings'] ) ) {
+							foreach ( $test_media['data']['Timings'] as $k => $timing ) {
+								$test_media['data']['Timings'][ $k ] = preg_replace( '/\d+\.\d+s/', 'NORMALIZED', $timing );
+							}
+						}
+
+						// Normalize JavaScript Console Log, removing "qitenvnginx1234567890", eg:
+						// Uncaught exception: "Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.
+						//    at http://qitenvnginx66e994a8c7848/wp-admin/admin.php?page=plugin-a:200:223"
+						if ( ! empty( $test_media['data']['JavaScript Console Log'] ) ) {
+							foreach ( $test_media['data']['JavaScript Console Log'] as $k => $log ) {
+								$test_media['data']['JavaScript Console Log'][ $k ] = preg_replace( '/http:\/\/qitenvnginx[0-9a-f]+/', 'http://normalized', $log );
+							}
+						}
+
+						if ( ! empty( $test_media['data']['PHP Debug Log'] ) ) {
+							foreach ( $test_media['data']['PHP Debug Log'] as $k => $log ) {
+								// Normalize timestamps.
+								$test_media['data']['PHP Debug Log'][ $k ] = preg_replace( '/\[\d{2}-\w{3}-\d{4} \d{2}:\d{2}:\d{2} UTC\]/', '[TIMESTAMP]', $log );
+							}
+						}
+					}
+					return $value;
+				},
+				'validate' => static function ( $value ) {
+					foreach ( $value as $test_media ) {
+						// Parse $test_media['path'] as a filepath, and validate that the extension is either "jpg" or "webm".
+						$extension = pathinfo( $test_media['path'], PATHINFO_EXTENSION );
+						if ( $extension !== 'jpg' && $extension !== 'webm' ) {
+							return false;
+						}
+
+						if ( ! empty( $test_media['data']['Timings'] ) ) {
+							foreach ( $test_media['data']['Timings'] as $timing ) {
+								// It usually looks like this:
+								// Time to page load: 0.293s
+								// Time to network idle: 0.669s
+								// Let's validate that it ends with "s".
+								if ( substr( $timing, - 1 ) !== 's' ) {
+									return false;
+								}
+							}
+						}
+						if ( ! empty( $test_media['data']['JavaScript Console Log'] ) ) {
+							foreach ( $test_media['data']['JavaScript Console Log'] as $log ) {
+								// Validate that the log is a string.
+								if ( ! is_string( $log ) ) {
+									return false;
+								}
+							}
+						}
+					}
+
+					return true;
+				},
+			],
 			'debug_log'                       => [
 				'normalize' => function ( $value ) use ( $file_path ) {
 					if ( ! is_array( $value ) ) {

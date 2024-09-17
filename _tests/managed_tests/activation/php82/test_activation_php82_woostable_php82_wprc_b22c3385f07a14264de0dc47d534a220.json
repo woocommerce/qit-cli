@@ -1,0 +1,165 @@
+[
+    {
+        "test_run_id": 1389470,
+        "run_id": 1389470,
+        "test_type": "e2e",
+        "test_type_display": "E2E",
+        "wordpress_version": "6.6.2",
+        "woocommerce_version": "9.3.0-rc.1",
+        "php_version": "8.2",
+        "max_php_version": "",
+        "min_php_version": "",
+        "additional_woo_plugins": [],
+        "additional_wp_plugins": [
+            "woocommerce"
+        ],
+        "test_log": "",
+        "status": "warning",
+        "test_result_aws_url": "",
+        "test_result_aws_expiration": 0,
+        "is_development": true,
+        "send_notifications": false,
+        "woo_extension": {
+            "id": 18619,
+            "host": "wccom",
+            "name": "Google Product Feed",
+            "type": "plugin"
+        },
+        "client": "qit_cli",
+        "event": "e2e_local_run",
+        "optional_features": {
+            "hpos": false,
+            "new_product_editor": false
+        },
+        "test_results_manager_url": "https:\/\/stagingcompatibilitydashboard.wpcomstaging.com?qit_results=1389470.xAQLgSGFUs0hzizRDgMEv34exJcNwJPc8Xo7rxkB2M5d3kHUsfgRjAGxqLHNIwqB",
+        "test_results_manager_expiration": 1727187465,
+        "test_summary": "",
+        "version": "",
+        "update_complete": false,
+        "ai_suggestion_status": "none",
+        "malware_whitelist_paths": [],
+        "workflow_id": "",
+        "runner": "",
+        "test_media": [],
+        "test_result_json_extracted": "{EXTRACTED}",
+        "debug_log_extracted": "{EXTRACTED}"
+    },
+    {
+        "test_result_json": {
+            "numFailedTestSuites": 0,
+            "numPassedTestSuites": 1,
+            "numPendingTestSuites": 0,
+            "numTotalTestSuites": 1,
+            "numFailedTests": 0,
+            "numPassedTests": 11,
+            "numPendingTests": 0,
+            "numTotalTests": 11,
+            "testResults": [
+                {
+                    "file": "woocommerce\/activation\/activation.spec.js",
+                    "status": "passed",
+                    "has_pending": false,
+                    "tests": {
+                        "woocommerce\/activation\/activation.spec.js": [
+                            {
+                                "title": "Activate Plugins",
+                                "status": "passed"
+                            },
+                            {
+                                "title": "Visit wp-admin pages added by the plugin",
+                                "status": "passed"
+                            },
+                            {
+                                "title": "Activate Theme",
+                                "status": "passed"
+                            },
+                            {
+                                "title": "Setup Local Pickup",
+                                "status": "passed"
+                            },
+                            {
+                                "title": "Set up Cash On Delivery Payment Method",
+                                "status": "passed"
+                            },
+                            {
+                                "title": "Create a Product",
+                                "status": "passed"
+                            },
+                            {
+                                "title": "Create a Simple Order",
+                                "status": "passed"
+                            },
+                            {
+                                "title": "Add Product Cart",
+                                "status": "passed"
+                            },
+                            {
+                                "title": "Can Place Order",
+                                "status": "passed"
+                            },
+                            {
+                                "title": "Deactivate Plugin",
+                                "status": "passed"
+                            },
+                            {
+                                "title": "Activate Other Theme",
+                                "status": "passed"
+                            }
+                        ]
+                    }
+                }
+            ],
+            "summary": "Test Suites: 0 skipped, 0 failed, 1 passed, 1 total | Tests: 0 skipped, 0 failed, 11 passed, 11 total."
+        }
+    },
+    {
+        "debug_log": {
+            "debug_log": "{\"9c04bbcb7c8c2d803181948cf4a4d7a5\":{\"count\":105,\"message\":\"PHP Deprecated: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated in \\\/var\\\/www\\\/html\\\/wp-content\\\/plugins\\\/woocommerce-product-feeds\\\/woocommerce-product-feeds.php on line 28\"},\"491224dd4ad993b4e75681c9c15863e0\":{\"count\":13,\"message\":\"PHP Deprecated: Function utf8_encode() is deprecated in \\\/var\\\/www\\\/html\\\/wp-content\\\/plugins\\\/woocommerce-product-feeds\\\/woocommerce-product-feeds.php on line 37\"}}",
+            "qm_logs": {
+                "non_fatal": {
+                    "da7adf24893e40f3e283177125274b59": {
+                        "message": "Function utf8_encode() is deprecated",
+                        "type": "deprecated",
+                        "file_line": "wp-content\/plugins\/woocommerce-product-feeds\/woocommerce-product-feeds.php:37",
+                        "traces": [
+                            {
+                                "file_line": "wp-includes\/class-wp-hook.php:324",
+                                "display": "SUT\\{closure}()"
+                            },
+                            {
+                                "file_line": "wp-includes\/class-wp.php:830",
+                                "display": "do_action_ref_array('wp')"
+                            },
+                            {
+                                "file_line": "wp-includes\/functions.php:1336",
+                                "display": "WP->main()"
+                            },
+                            {
+                                "file_line": "wp-blog-header.php:16",
+                                "display": "wp()"
+                            }
+                        ],
+                        "count": 13
+                    },
+                    "f954f907b6122613f1d64b61dfc267df": {
+                        "message": "Creation of dynamic property SUT\\BarUser::$bar is deprecated",
+                        "type": "deprecated",
+                        "file_line": "wp-content\/plugins\/woocommerce-product-feeds\/woocommerce-product-feeds.php:28",
+                        "traces": [
+                            {
+                                "file_line": "wp-includes\/class-wp-hook.php:324",
+                                "display": "SUT\\{closure}()"
+                            },
+                            {
+                                "file_line": "wp-settings.php:700",
+                                "display": "do_action('init')"
+                            }
+                        ],
+                        "count": 90
+                    }
+                },
+                "fatal": []
+            }
+        }
+    }
+]

@@ -41,6 +41,7 @@
             "malware_whitelist_paths": [],
             "workflow_id": "",
             "runner": "",
+            "test_media": [],
             "test_result_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
@@ -51,9 +52,9 @@
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 1,
                 "numFailedTests": 0,
-                "numPassedTests": 10,
+                "numPassedTests": 11,
                 "numPendingTests": 0,
-                "numTotalTests": 10,
+                "numTotalTests": 11,
                 "testResults": [
                     {
                         "file": "woocommerce\\/activation\\/activation.spec.js",
@@ -63,6 +64,10 @@
                             "woocommerce\\/activation\\/activation.spec.js": [
                                 {
                                     "title": "Activate Plugins",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Visit wp-admin pages added by the plugin",
                                     "status": "passed"
                                 },
                                 {
@@ -105,23 +110,23 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 1 passed, 1 total | Tests: 0 skipped, 0 failed, 10 passed, 10 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 1 passed, 1 total | Tests: 0 skipped, 0 failed, 11 passed, 11 total."
             }
         },
         {
             "debug_log": {
                 "qm_logs": [
                     {
-                        "message": "Creation of dynamic property SUT\\\\BarUser::$bar is deprecated",
-                        "type": "deprecated",
-                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:28",
-                        "count": 90
-                    },
-                    {
                         "message": "Function utf8_encode() is deprecated",
                         "type": "deprecated",
                         "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:37",
                         "count": 13
+                    },
+                    {
+                        "message": "Creation of dynamic property SUT\\\\BarUser::$bar is deprecated",
+                        "type": "deprecated",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:28",
+                        "count": 90
                     }
                 ],
                 "debug_log": [
