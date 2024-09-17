@@ -41,6 +41,7 @@
             "malware_whitelist_paths": [],
             "workflow_id": "",
             "runner": "",
+            "test_media": [],
             "test_result_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
@@ -51,18 +52,22 @@
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 1,
                 "numFailedTests": 1,
-                "numPassedTests": 9,
-                "numPendingTests": 0,
-                "numTotalTests": 10,
+                "numPassedTests": 7,
+                "numPendingTests": 3,
+                "numTotalTests": 11,
                 "testResults": [
                     {
                         "file": "woocommerce\\/activation\\/activation.spec.js",
                         "status": "failed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "woocommerce\\/activation\\/activation.spec.js": [
                                 {
                                     "title": "Activate Plugins",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Visit wp-admin pages added by the plugin",
                                     "status": "passed"
                                 },
                                 {
@@ -91,21 +96,21 @@
                                 },
                                 {
                                     "title": "Can Place Order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Deactivate Plugin",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Activate Other Theme",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 0 passed, 1 total | Tests: 0 skipped, 1 failed, 9 passed, 10 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 0 passed, 1 total | Tests: 3 skipped, 1 failed, 7 passed, 11 total."
             }
         },
         {
@@ -115,32 +120,32 @@
                         "message": "Notice on all requests - Child theme",
                         "type": "notice",
                         "file_line": "wp-content\\/themes\\/bistro\\/functions.php:17",
-                        "count": 110
+                        "count": 90
                     },
                     {
                         "message": "Warning on all requests - Child theme",
                         "type": "warning",
                         "file_line": "wp-content\\/themes\\/bistro\\/functions.php:13",
-                        "count": 22
+                        "count": 6
                     },
                     {
                         "message": " Uncaught Error: Call to undefined function call_to_undefined_function()",
                         "type": "PHP Fatal",
                         "file_line": "wp-content\\/themes\\/bistro\\/functions.php:10",
-                        "count": 2
+                        "count": 1
                     }
                 ],
                 "debug_log": [
                     {
-                        "count": "2",
+                        "count": "1",
                         "message": "PHP Fatal error: Uncaught Error: Call to undefined function call_to_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php:10\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(Object(WP))\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(NULL, Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(565): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-includes\\/class-wp.php(830): do_action_ref_array(\'wp\', Array)\\n#4 \\/var\\/www\\/html\\/wp-includes\\/functions.php(1336): WP->main(\'\')\\n#5 \\/var\\/www\\/html\\/wp-blog-header.php(16): wp()\\n#6 \\/var\\/www\\/html\\/index.php(17): require(\'\\/var\\/www\\/html\\/w...\')\\n#7 {main}\\n thrown in \\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php on line 10\\n"
                     },
                     {
-                        "count": "110",
+                        "count": "90",
                         "message": "PHP Notice: Notice on all requests - Child theme in \\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php on line 17"
                     },
                     {
-                        "count": "22",
+                        "count": "6",
                         "message": "PHP Warning: Warning on all requests - Child theme in \\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php on line 13"
                     }
                 ]
