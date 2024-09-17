@@ -3,8 +3,8 @@
         {
             "test_run_id": 123456,
             "run_id": 123456,
-            "test_type": "e2e",
-            "test_type_display": "E2E",
+            "test_type": "activation",
+            "test_type_display": "Activation",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "7.4",
@@ -27,7 +27,7 @@
                 "type": "plugin"
             },
             "client": "qit_cli",
-            "event": "e2e_local_run",
+            "event": "local_run",
             "optional_features": {
                 "hpos": false,
                 "new_product_editor": false
