@@ -106,19 +106,19 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 1,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 0,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 1,
-                "numFailedTests": 0,
-                "numPassedTests": 11,
-                "numPendingTests": 0,
+                "numFailedTests": 1,
+                "numPassedTests": 1,
+                "numPendingTests": 9,
                 "numTotalTests": 11,
                 "testResults": [
                     {
                         "file": "woocommerce\\/activation\\/activation.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
+                        "status": "failed",
+                        "has_pending": true,
                         "tests": {
                             "woocommerce\\/activation\\/activation.spec.js": [
                                 {
@@ -127,49 +127,49 @@
                                 },
                                 {
                                     "title": "Visit wp-admin pages added by the plugin",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "Activate Theme",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Setup Local Pickup",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Set up Cash On Delivery Payment Method",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Create a Product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Create a Simple Order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Add Product Cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can Place Order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Deactivate Plugin",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Activate Other Theme",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 1 passed, 1 total | Tests: 0 skipped, 0 failed, 11 passed, 11 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 0 passed, 1 total | Tests: 9 skipped, 1 failed, 1 passed, 11 total."
             }
         },
         {
