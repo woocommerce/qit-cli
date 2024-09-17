@@ -58,11 +58,26 @@ class LocalTestRunNotifier {
 
 		$additional_plugins = [];
 
+		$test_type = 'e2e';
+
 		foreach ( $env_info->plugins as $plugin ) {
+			// Are we running an activation test?
+			if ( $plugin['type'] === 'plugin' && $plugin['slug'] === 'woocommerce' ) {
+				if ( ! empty( $plugin['test_tags'] ) && is_array( $plugin['test_tags'] ) ) {
+					foreach ( $plugin['test_tags'] as $t ) {
+						if ( $t === 'activation' ) {
+							$test_type = 'activation';
+						}
+					}
+				}
+			}
+
 			if ( $plugin['type'] === 'plugin' && $plugin['slug'] !== $env_info->sut_slug ) {
 				$additional_plugins[] = $plugin['slug'];
 			}
 		}
+
+		$event = getenv( 'CI' ) ? 'ci_run' : 'local_run';
 
 		$body = [
 			'woo_id'                  => $woo_extension_id,
@@ -71,8 +86,8 @@ class LocalTestRunNotifier {
 			'php_version'             => $env_info->php_version,
 			'additional_plugins'      => $additional_plugins,
 			'will_have_allure_report' => App::getVar( 'should_upload_report' ) ? 'true' : 'false',
-			'test_type'               => 'e2e',
-			'event'                   => 'e2e_local_run',
+			'test_type'               => $test_type,
+			'event'                   => $event,
 			'is_development_build'    => $is_development ? 'true' : 'false',
 			'send_notification'       => $notify ? 'true' : 'false',
 		];
