@@ -57,9 +57,9 @@
                             "Time to network idle: NORMALIZED"
                         ],
                         "PHP Debug Log": [
-                            "[Notice] Notice in custom page. 1 (on file wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php line 14)",
-                            "[Notice] Undefined index: bar (on file wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php line 19)",
-                            "[Warning] Warning in custom page.1 (on file wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php line 16)",
+                            "[Notice] Notice in custom page. (on file wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php line 11)",
+                            "[Notice] Undefined index: bar (on file wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php line 16)",
+                            "[Warning] Warning in custom page. (on file wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php line 13)",
                             ""
                         ],
                         "JavaScript Console Log": [
@@ -84,14 +84,14 @@
                             "Time to network idle: NORMALIZED"
                         ],
                         "PHP Debug Log": [
-                            "[TIMESTAMP] PHP Fatal error:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:32",
+                            "[TIMESTAMP] PHP Fatal error:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29",
                             "Stack trace:",
                             "#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')",
                             "#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)",
                             "#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)",
                             "#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(259): do_action(\'toplevel_page_p...\')",
                             "#4 {main}",
-                            "  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 32",
+                            "  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29",
                             ""
                         ],
                         "JavaScript Console Log": [
@@ -176,46 +176,46 @@
             "debug_log": {
                 "qm_logs": [
                     {
-                        "message": "Notice in custom page. 1",
+                        "message": "Notice in custom page.",
                         "type": "notice",
-                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:14",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:11",
                         "count": 1
                     },
                     {
                         "message": "Undefined index: bar",
                         "type": "notice",
-                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:19",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:16",
                         "count": 1
                     },
                     {
-                        "message": "Warning in custom page.1",
+                        "message": "Warning in custom page.",
                         "type": "warning",
-                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:16",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:13",
                         "count": 1
                     },
                     {
                         "message": " Uncaught Error: Call to undefined function call_to_an_undefined_function()",
                         "type": "PHP Fatal",
-                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:32",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29",
                         "count": 1
                     }
                 ],
                 "debug_log": [
                     {
                         "count": "1",
-                        "message": "PHP Fatal error: Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:32\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(259): do_action(\'toplevel_page_p...\')\\n#4 {main}\\n thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 32\\n"
+                        "message": "PHP Fatal error: Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(259): do_action(\'toplevel_page_p...\')\\n#4 {main}\\n thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\n"
                     },
                     {
                         "count": "1",
-                        "message": "PHP Notice: Notice in custom page. 1 in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 14"
+                        "message": "PHP Notice: Notice in custom page. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 11"
                     },
                     {
                         "count": "1",
-                        "message": "PHP Notice: Undefined index: bar in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 19"
+                        "message": "PHP Notice: Undefined index: bar in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16"
                     },
                     {
                         "count": "1",
-                        "message": "PHP Warning: Warning in custom page.1 in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16"
+                        "message": "PHP Warning: Warning in custom page. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 13"
                     }
                 ]
             }
