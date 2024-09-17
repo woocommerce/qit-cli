@@ -401,6 +401,7 @@ class RunE2ECommand extends DynamicCommand {
 		$exit_status_code = $this->e2e_test_manager->run_tests( $env_info, $test_mode, $wait, $shard );
 
 		$io = new SymfonyStyle( $input, $output );
+		$io->setDecorated( true );
 
 		if ( $exit_status_code === Command::SUCCESS ) {
 			$io->success( "Tests passed. Run 'qit e2e-report' to view the report." );
@@ -408,7 +409,7 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::SUCCESS;
 		} elseif ( $exit_status_code === self::WARNING ) {
 			if ( $test_mode === E2ETestManager::$test_modes['headless'] ) {
-				$io->error( "Tests passed with a warning. Run 'qit e2e-report' to view the report." );
+				$io->warning( "Tests passed with a warning. Run 'qit e2e-report' to view the report." );
 			}
 
 			return self::WARNING;

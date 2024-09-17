@@ -10,7 +10,8 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\Upload;
 use QIT_CLI\Zipper;
-use Symfony\Component\Console\Cursor;
+use Symfony\Component\Console\Helper\Helper;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Terminal;
 use Symfony\Component\Process\Process;
 use function QIT_CLI\normalize_path;
@@ -211,7 +212,7 @@ class PlaywrightRunner extends E2ERunner {
 			'sh',
 			'-c',
 			"cd /qit/tests/e2e $dependencies_command" .
-			"npx playwright test $options --config /qit/tests/e2e/qit-playwright.config.js --output /qit/results/playwright $shard",
+			"npx playwright test $options --config /qit/tests/e2e/qit-playwright.config.js --output /qit/results/playwright $shard 2>&1",
 		] );
 
 		// Pull the image.
@@ -241,13 +242,19 @@ class PlaywrightRunner extends E2ERunner {
 			$this->output->writeln( 'Playwright command: ' . $playwright_process->getCommandLine() );
 		}
 
-		$has_previous_line = false;
+		// Initialize a variable to keep track of total lines printed.
+		$line_buffer         = [];
+		$total_lines_printed = 0;
 
-		$output_callback = function ( $type, $out ) use ( $playwright_container_name, $ci, &$has_previous_line ) {
-			$terminal = new Terminal();
-			$cursor   = new Cursor( $this->output );
-			$width    = $terminal->getWidth();
+		$output_callback = function ( $type, $out ) use ( $playwright_container_name, &$line_buffer, &$total_lines_printed ) {
+			$max_lines = 15;
 
+			// Handle both STDOUT and STDERR.
+			if ( $type !== Process::OUT && $type !== Process::ERR ) {
+				return;
+			}
+
+			// Remove unnecessary output.
 			if ( strpos( $out, 'Listening on' ) !== false ) {
 				$out = $this->get_playwright_headed_output( $playwright_container_name );
 			}
@@ -261,30 +268,73 @@ class PlaywrightRunner extends E2ERunner {
 			}
 
 			// Remove same-line cursor movement and clear line.
-			$out = preg_replace( '/\e\[1A|\e\[2K/', '', $out );
+			$out = preg_replace( '/\e\[\d*[ABCD]/', '', $out ); // Remove cursor movements.
+			$out = preg_replace( '/\e\[2K/', '', $out );        // Remove clear line codes.
 			$out = trim( $out );
 
 			if ( empty( $out ) ) {
 				return;
 			}
 
-			// eg: [3/18] [foo] Test name.
-			if ( ! $ci && preg_match( '/\[\d+\/\d+\]/', $out ) ) {
-				// Test line code.
-				if ( $has_previous_line ) {
-					$cursor->moveUp( 1 );
-					$cursor->moveToColumn( 0 );
-					$cursor->clearOutput();
-				}
-				$out = substr( $out, 0, $width );
-				$out = str_replace( "\n", '', $out );
-				// Fill string with empty characters until it matches the width of the terminal.
-				$out = str_pad( $out, $width, ' ' );
-				$this->output->writeln( trim( $out ) );
-				$has_previous_line = true;
-			} else {
-				$this->output->writeln( $out );
+			// Update terminal width in case it changes.
+			$terminal_width = ( new Terminal() )->getWidth();
+
+			// Split the output into individual lines.
+			$lines = explode( "\n", $out );
+
+			// For each line, calculate the height and add to buffer.
+			foreach ( $lines as $line_content ) {
+				// Strip ANSI codes for width calculation.
+				$plain_line = preg_replace( '/\033\[[0-9;]*[a-zA-Z]/', '', $line_content );
+				$plain_line = Helper::removeDecoration( $this->output->getFormatter(), $plain_line );
+
+				// Calculate visual width and height.
+				$visual_width = mb_strwidth( $plain_line, 'UTF-8' );
+				// Calculate how many terminal lines this line will occupy.
+				$line_height = max( 1, ceil( $visual_width / $terminal_width ) );
+
+				// Prepare line info.
+				$line_info = [
+					'content' => $line_content,
+					'height'  => $line_height,
+				];
+
+				// Add to buffer.
+				$line_buffer[] = $line_info;
 			}
+
+			// If buffer exceeds max_lines, remove the oldest line(s).
+			while ( count( $line_buffer ) > $max_lines ) { // phpcs:ignore Squiz.PHP.DisallowSizeFunctionsInLoops.Found
+				array_shift( $line_buffer );
+			}
+
+			// Calculate total height of the buffer.
+			$buffer_height = array_sum( array_column( $line_buffer, 'height' ) );
+
+			// Move cursor up by total_lines_printed.
+			if ( $total_lines_printed > 0 ) {
+				$this->output->write( "\033[{$total_lines_printed}A", false, OutputInterface::OUTPUT_RAW );
+			}
+
+			// Clear lines equal to total_lines_printed.
+			for ( $i = 0; $i < $total_lines_printed; $i++ ) {
+				$this->output->write( "\033[2K\033[1B", false, OutputInterface::OUTPUT_RAW ); // Clear line and move cursor down.
+			}
+
+			// Move cursor back up.
+			if ( $total_lines_printed > 0 ) {
+				$this->output->write( "\033[{$total_lines_printed}A", false, OutputInterface::OUTPUT_RAW );
+			}
+
+			// Reprint the buffer.
+			foreach ( $line_buffer as $line ) {
+				// Print the content.
+				$this->output->write( $line['content'], false, OutputInterface::OUTPUT_RAW );
+				$this->output->write( "\n", false, OutputInterface::OUTPUT_RAW );
+			}
+
+			// Update total_lines_printed to the new buffer height.
+			$total_lines_printed = $buffer_height;
 		};
 
 		if ( function_exists( 'pcntl_signal' ) ) {
@@ -297,6 +347,7 @@ class PlaywrightRunner extends E2ERunner {
 			pcntl_signal( SIGTERM, $signal_handler ); // eg: kill 123, where "123" is the PID of this PHP process.
 		}
 
+		$this->output->writeln( '<info>Running E2E Tests</info>' );
 		$playwright_process->run( $output_callback );
 
 		// Copy snapshots from Container to Host if needed.

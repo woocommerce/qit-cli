@@ -162,8 +162,6 @@ class E2ETestManager {
 			$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', 'wp db export /tmp/qit-bootstrap.sql' ] );
 		}
 
-		$this->output->writeln( '<info>Running E2E Tests</info>' );
-
 		$tests_to_run = [
 			'playwright' => [],
 		];

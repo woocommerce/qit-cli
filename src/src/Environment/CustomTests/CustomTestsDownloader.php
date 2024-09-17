@@ -3,13 +3,16 @@
 namespace QIT_CLI\Environment\CustomTests;
 
 use QIT_CLI\Commands\Tags\UploadTestTagsCommand;
+use QIT_CLI\Config;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Extension;
 use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Zipper;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use function QIT_CLI\get_manager_url;
 
 class CustomTestsDownloader {
@@ -58,7 +61,8 @@ class CustomTestsDownloader {
 	 * @return void
 	 */
 	protected function maybe_download_custom_tests( EnvInfo $env_info, array $extensions, string $cache_dir, string $test_type ): void {
-		$custom_tests = $this->get_custom_tests_info( $extensions );
+		$custom_tests    = $this->get_custom_tests_info( $extensions );
+		$printed_warning = false;
 
 		foreach ( $extensions as $extension ) {
 			if ( $extension->action === Extension::ACTIONS['activate'] ) {
@@ -91,6 +95,13 @@ class CustomTestsDownloader {
 					$custom_test_url       = $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ];
 					$custom_test_file_name = md5( $custom_test_url ) . '.zip';
 					$custom_test_file_path = "$cache_dir/tests/$test_type/$custom_test_file_name";
+
+					// If connected to Local manager, let the developer know.
+					if ( Config::get_current_manager_backend() === 'local' && $printed_warning === false ) {
+						$printed_warning = true;
+						$io              = new SymfonyStyle( new ArrayInput( [] ), $this->output );
+						$io->warning( 'You are connected to the Local manager. Custom tests will be downloaded from the local QIT instance and might be outdated!' );
+					}
 
 					if ( ! file_exists( $custom_test_file_path ) ) {
 						RequestBuilder::download_file( $custom_test_url, $custom_test_file_path );
