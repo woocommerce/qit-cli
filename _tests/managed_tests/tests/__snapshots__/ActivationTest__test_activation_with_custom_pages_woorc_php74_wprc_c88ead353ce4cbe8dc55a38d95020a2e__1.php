@@ -57,15 +57,15 @@
                             "Time to network idle: NORMALIZED"
                         ],
                         "PHP Debug Log": [
-                            "[TIMESTAMP] PHP Notice:  Notice in custom page. \\/var\\/www\\/html\\/wp-content\\/pagevisit.log in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 11",
-                            "[TIMESTAMP] PHP Warning:  Warning in custom page.\\/var\\/www\\/html\\/wp-content\\/pagevisit.log in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 13",
-                            "[TIMESTAMP] PHP Notice:  Undefined index: bar in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16",
+                            "[TIMESTAMP] PHP Notice:  Notice in custom page. \\/var\\/www\\/html\\/wp-content\\/pagevisit.log in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 14",
+                            "[TIMESTAMP] PHP Warning:  Warning in custom page.\\/var\\/www\\/html\\/wp-content\\/pagevisit.log in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16",
+                            "[TIMESTAMP] PHP Notice:  Undefined index: bar in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 19",
                             ""
                         ],
                         "JavaScript Console Log": [
                             "Console warning: Console Warning in custom page.",
                             "Console error: Console Error in custom page.",
-                            "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/normalized\\/wp-admin\\/admin.php?page=plugin-a:200:223\\""
+                            "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/normalized\\/wp-admin\\/admin.php?page=plugin-a:194:223\\""
                         ]
                     }
                 },
@@ -84,19 +84,18 @@
                             "Time to network idle: NORMALIZED"
                         ],
                         "PHP Debug Log": [
-                            "[TIMESTAMP] PHP Fatal error:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29",
+                            "[TIMESTAMP] PHP Fatal error:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:32",
                             "Stack trace:",
                             "#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')",
                             "#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)",
                             "#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)",
                             "#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(259): do_action(\'toplevel_page_p...\')",
                             "#4 {main}",
-                            "  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29",
+                            "  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 32",
                             ""
                         ],
                         "JavaScript Console Log": [
-                            "Console error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
-                            "Console error: PHP Fatal Error: Uncaught Error: Call to undefined function call_to_an_undefined_function()"
+                            "Console error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
                         ]
                     }
                 }
@@ -176,46 +175,28 @@
             "debug_log": {
                 "qm_logs": [
                     {
-                        "message": "Notice in custom page. \\/var\\/www\\/html\\/wp-content\\/pagevisit.log",
-                        "type": "notice",
-                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:11",
-                        "count": 1
-                    },
-                    {
-                        "message": "Undefined index: bar",
-                        "type": "notice",
-                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:16",
-                        "count": 1
-                    },
-                    {
-                        "message": "Warning in custom page.\\/var\\/www\\/html\\/wp-content\\/pagevisit.log",
-                        "type": "warning",
-                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:13",
-                        "count": 1
-                    },
-                    {
                         "message": " Uncaught Error: Call to undefined function call_to_an_undefined_function()",
                         "type": "PHP Fatal",
-                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:32",
                         "count": 1
                     }
                 ],
                 "debug_log": [
                     {
                         "count": "1",
-                        "message": "PHP Fatal error: Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(259): do_action(\'toplevel_page_p...\')\\n#4 {main}\\n thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\n"
+                        "message": "PHP Fatal error: Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:32\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(259): do_action(\'toplevel_page_p...\')\\n#4 {main}\\n thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 32\\n"
                     },
                     {
                         "count": "1",
-                        "message": "PHP Notice: Notice in custom page. \\/var\\/www\\/html\\/wp-content\\/pagevisit.log in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 11"
+                        "message": "PHP Notice: Notice in custom page. \\/var\\/www\\/html\\/wp-content\\/pagevisit.log in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 14"
                     },
                     {
                         "count": "1",
-                        "message": "PHP Notice: Undefined index: bar in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16"
+                        "message": "PHP Notice: Undefined index: bar in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 19"
                     },
                     {
                         "count": "1",
-                        "message": "PHP Warning: Warning in custom page.\\/var\\/www\\/html\\/wp-content\\/pagevisit.log in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 13"
+                        "message": "PHP Warning: Warning in custom page.\\/var\\/www\\/html\\/wp-content\\/pagevisit.log in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16"
                     }
                 ]
             }
