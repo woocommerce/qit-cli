@@ -56,7 +56,12 @@
                             "Time to page load: NORMALIZED",
                             "Time to network idle: NORMALIZED"
                         ],
-                        "PHP Debug Log": [],
+                        "PHP Debug Log": [
+                            "[TIMESTAMP] PHP Notice:  Notice in custom page. \\/var\\/www\\/html\\/wp-content\\/pagevisit.log in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 14",
+                            "[TIMESTAMP] PHP Warning:  Warning in custom page.\\/var\\/www\\/html\\/wp-content\\/pagevisit.log in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16",
+                            "[TIMESTAMP] PHP Notice:  Undefined index: bar in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 19",
+                            ""
+                        ],
                         "JavaScript Console Log": [
                             "Console warning: Console Warning in custom page.",
                             "Console error: Console Error in custom page.",
@@ -78,7 +83,17 @@
                             "Time to page load: NORMALIZED",
                             "Time to network idle: NORMALIZED"
                         ],
-                        "PHP Debug Log": [],
+                        "PHP Debug Log": [
+                            "[TIMESTAMP] PHP Fatal error:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:32",
+                            "Stack trace:",
+                            "#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')",
+                            "#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)",
+                            "#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)",
+                            "#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(259): do_action(\'toplevel_page_p...\')",
+                            "#4 {main}",
+                            "  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 32",
+                            ""
+                        ],
                         "JavaScript Console Log": [
                             "Console error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
                         ]
@@ -90,19 +105,19 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 1,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 0,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 1,
-                "numFailedTests": 0,
-                "numPassedTests": 11,
-                "numPendingTests": 0,
+                "numFailedTests": 1,
+                "numPassedTests": 1,
+                "numPendingTests": 9,
                 "numTotalTests": 11,
                 "testResults": [
                     {
                         "file": "woocommerce\\/activation\\/activation.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
+                        "status": "failed",
+                        "has_pending": true,
                         "tests": {
                             "woocommerce\\/activation\\/activation.spec.js": [
                                 {
@@ -111,49 +126,49 @@
                                 },
                                 {
                                     "title": "Visit wp-admin pages added by the plugin",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "Activate Theme",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Setup Local Pickup",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Set up Cash On Delivery Payment Method",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Create a Product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Create a Simple Order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Add Product Cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can Place Order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Deactivate Plugin",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Activate Other Theme",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 1 passed, 1 total | Tests: 0 skipped, 0 failed, 11 passed, 11 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 0 passed, 1 total | Tests: 9 skipped, 1 failed, 1 passed, 11 total."
             }
         },
         {
@@ -173,7 +188,7 @@
                     },
                     {
                         "count": "1",
-                        "message": "PHP Notice: Notice in custom page. 1 in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 14"
+                        "message": "PHP Notice: Notice in custom page. \\/var\\/www\\/html\\/wp-content\\/pagevisit.log in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 14"
                     },
                     {
                         "count": "1",
@@ -181,7 +196,7 @@
                     },
                     {
                         "count": "1",
-                        "message": "PHP Warning: Warning in custom page.1 in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16"
+                        "message": "PHP Warning: Warning in custom page.\\/var\\/www\\/html\\/wp-content\\/pagevisit.log in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16"
                     }
                 ]
             }
