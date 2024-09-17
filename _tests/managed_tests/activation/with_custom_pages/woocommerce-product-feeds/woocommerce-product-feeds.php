@@ -8,11 +8,11 @@
 add_action( 'admin_menu', function () {
 	add_menu_page( 'Plugin A', 'Plugin A', 'manage_options', 'plugin-a', function () {
 		// Generate a notice.
-		trigger_error( 'Notice in custom page. ' . WP_DEBUG_LOG, E_USER_NOTICE );
+		trigger_error( 'Notice in custom page.', E_USER_NOTICE );
 		// Generate an warning.
-		trigger_error( 'Warning in custom page.' . WP_DEBUG_LOG, E_USER_WARNING );
+		trigger_error( 'Warning in custom page.', E_USER_WARNING );
 		// Generate a legit notice without trigger_error.
-		$foo = [];
+		$foo                = [];
 		$undefined_variable = $foo['bar'];
 		// Generate a legit warning without trigger_error.
 		$undefined_variable = $undefined_variable + 1;
