@@ -247,7 +247,7 @@ class PlaywrightRunner extends E2ERunner {
 		$total_lines_printed = 0;
 
 		$output_callback = function ( $type, $out ) use ( $playwright_container_name, &$line_buffer, &$total_lines_printed ) {
-			$max_lines = 15;
+			$max_lines = 30;
 
 			// Handle both STDOUT and STDERR.
 			if ( $type !== Process::OUT && $type !== Process::ERR ) {
