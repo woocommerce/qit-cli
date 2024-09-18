@@ -32,6 +32,10 @@ jobs:
         working-directory: _tests/custom_tests
         run: composer install
 
+      - name: Composer install on Src
+        working-directory: src
+        run: composer install
+
       - name: Fill in .env
         working-directory: _tests/custom_tests
         run: |
