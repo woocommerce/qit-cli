@@ -248,6 +248,10 @@ class QITE2ETestCase extends TestCase {
 					};
 
 					$normalize_debug_log = function ( $value ) use ( $file_path ) {
+						if ( empty( $value ) ) {
+							return [];
+						}
+
 						/*
 						 * $debug_log is an array with the following structure:
 						 *

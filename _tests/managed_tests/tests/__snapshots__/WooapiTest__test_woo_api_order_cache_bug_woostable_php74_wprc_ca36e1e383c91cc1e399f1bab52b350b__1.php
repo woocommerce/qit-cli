@@ -39,6 +39,7 @@
             "malware_whitelist_paths": [],
             "workflow_id": "1234567890",
             "runner": "normalized",
+            "test_media": [],
             "test_result_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
@@ -1387,12 +1388,14 @@
             }
         },
         {
-            "debug_log": [
-                {
-                    "count": "550",
-                    "message": "PHP Notice: $order is Automattic\\\\WooCommerce\\\\Admin\\\\Overrides\\\\Order as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 41"
-                }
-            ]
+            "debug_log": {
+                "generic": [
+                    {
+                        "count": "550",
+                        "message": "PHP Notice: $order is Automattic\\\\WooCommerce\\\\Admin\\\\Overrides\\\\Order as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 41"
+                    }
+                ]
+            }
         }
     ]
 ]';
