@@ -27,7 +27,7 @@
                 "type": "plugin"
             },
             "client": "qit_cli",
-            "event": "local_run",
+            "event": "local_or_ci_run_normalized",
             "optional_features": {
                 "hpos": false,
                 "new_product_editor": false
@@ -117,16 +117,16 @@
             "debug_log": {
                 "qm_logs": [
                     {
-                        "message": "Function utf8_encode() is deprecated",
-                        "type": "deprecated",
-                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:37",
-                        "count": 13
-                    },
-                    {
                         "message": "Creation of dynamic property SUT\\\\BarUser::$bar is deprecated",
                         "type": "deprecated",
                         "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:28",
                         "count": 90
+                    },
+                    {
+                        "message": "Function utf8_encode() is deprecated",
+                        "type": "deprecated",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:37",
+                        "count": 13
                     }
                 ],
                 "debug_log": [

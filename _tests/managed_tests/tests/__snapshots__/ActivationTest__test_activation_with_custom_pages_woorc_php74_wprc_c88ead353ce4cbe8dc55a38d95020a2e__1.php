@@ -27,7 +27,7 @@
                 "type": "plugin"
             },
             "client": "qit_cli",
-            "event": "local_run",
+            "event": "local_or_ci_run_normalized",
             "optional_features": {
                 "hpos": false,
                 "new_product_editor": false
@@ -174,6 +174,12 @@
             "debug_log": {
                 "qm_logs": [
                     {
+                        "message": " Uncaught Error: Call to undefined function call_to_an_undefined_function()",
+                        "type": "PHP Fatal",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29",
+                        "count": 1
+                    },
+                    {
                         "message": "Notice in custom page.",
                         "type": "notice",
                         "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:11",
@@ -189,12 +195,6 @@
                         "message": "Warning in custom page.",
                         "type": "warning",
                         "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:13",
-                        "count": 1
-                    },
-                    {
-                        "message": " Uncaught Error: Call to undefined function call_to_an_undefined_function()",
-                        "type": "PHP Fatal",
-                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29",
                         "count": 1
                     }
                 ],

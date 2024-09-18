@@ -101,6 +101,18 @@ class QITE2ETestCase extends TestCase {
 					return true;
 				},
 			],
+			'event' => [
+				'normalize' => static function ( $value ) use ( $file_path ) {
+					if ( in_array( $value, [ 'ci_run', 'local_run' ], true ) ) {
+						return 'local_or_ci_run_normalized';
+					}
+
+					return $value;
+				},
+				'validate'  => static function ( $value ) {
+					return ! empty( $value );
+				},
+			],
 			'test_result_json'                => [
 				'normalize' => static function ( $value ) use ( $file_path ) {
 					// Encode as JSON if needed.
@@ -243,6 +255,13 @@ class QITE2ETestCase extends TestCase {
 								];
 							}
 						}
+
+						// Sort the normalized array for consistent ordering
+						usort($normalized, function($a, $b) {
+							return strcmp($a['message'], $b['message'])
+								?: strcmp($a['type'], $b['type'])
+									?: strcmp($a['file_line'], $b['file_line']);
+						});
 
 						return $normalized;
 					};

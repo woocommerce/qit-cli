@@ -27,7 +27,7 @@
                 "type": "theme"
             },
             "client": "qit_cli",
-            "event": "local_run",
+            "event": "local_or_ci_run_normalized",
             "optional_features": {
                 "hpos": false,
                 "new_product_editor": false
@@ -117,6 +117,12 @@
             "debug_log": {
                 "qm_logs": [
                     {
+                        "message": " Uncaught Error: Call to undefined function call_to_undefined_function()",
+                        "type": "PHP Fatal",
+                        "file_line": "wp-content\\/themes\\/bistro\\/functions.php:10",
+                        "count": 1
+                    },
+                    {
                         "message": "Notice on all requests - Parent Theme",
                         "type": "notice",
                         "file_line": "wp-content\\/themes\\/bistro\\/functions.php:17",
@@ -127,12 +133,6 @@
                         "type": "warning",
                         "file_line": "wp-content\\/themes\\/bistro\\/functions.php:13",
                         "count": 6
-                    },
-                    {
-                        "message": " Uncaught Error: Call to undefined function call_to_undefined_function()",
-                        "type": "PHP Fatal",
-                        "file_line": "wp-content\\/themes\\/bistro\\/functions.php:10",
-                        "count": 1
                     }
                 ],
                 "debug_log": [
