@@ -302,7 +302,7 @@ class RequestBuilder {
 				);
 			} else {
 				throw new NetworkErrorException(
-					sprintf( 'Error: %s (%s)', $error_message, $response_status_code ),
+					sprintf( 'Error: %s (%s) (Requested URL: %s)', $error_message, $response_status_code, $this->url ),
 					$response_status_code
 				);
 			}

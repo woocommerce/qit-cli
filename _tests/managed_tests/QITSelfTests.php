@@ -340,7 +340,7 @@ function run_test_runs( array $test_runs, $tests_based_on_custom_tests ) {
 	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
 		foreach ( $test_type_test_runs as &$t ) {
 			$php      = ( new PhpExecutableFinder() )->find( false );
-			$qit      = realpath( __DIR__ . '/../../qit' );
+			$qit      = realpath( __DIR__ . '/../../src/qit-cli.php' );
 			$sut_slug = $t['sut_slug'];
 
 			$args = [
