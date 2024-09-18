@@ -62,6 +62,10 @@ jobs:
         working-directory: _tests/managed_tests
         run: composer install
 
+      - name: Composer install on Src
+        working-directory: src
+        run: composer install
+
       - name: Connect to QIT
         run: ./qit partner:add --user="${{ secrets.QIT_USER }}" --application_password="${{ secrets.QIT_ACCESS_TOKEN }}"
 
