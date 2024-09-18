@@ -10,7 +10,7 @@ try {
 	require_once __DIR__ . '/vendor/autoload.php';
 	require_once __DIR__ . '/src/helpers.php';
 
-	// Initialize DI container.
+	// Initialize DI Container.
 	$container = new Container();
 	App::setContainer( $container );
 
