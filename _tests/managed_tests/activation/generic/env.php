@@ -2,5 +2,5 @@
 return [
 	'php' => '7.4',
 	'wp'  => 'rc',
-	'woo' => 'rc,stable',
+	'woo' => 'rc',
 ];

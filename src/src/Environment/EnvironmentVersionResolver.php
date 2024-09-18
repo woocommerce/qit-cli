@@ -3,6 +3,7 @@
 namespace QIT_CLI\Environment;
 
 use QIT_CLI\App;
+use QIT_CLI\Cache;
 
 class EnvironmentVersionResolver {
 	/**
@@ -13,6 +14,8 @@ class EnvironmentVersionResolver {
 	 */
 	public static function resolve_woo( string $woo, array $plugins ) {
 		$plugins = App::make( PluginsAndThemesParser::class )->parse_extensions( $plugins, Extension::TYPES['plugin'] );
+
+		$versions = App::make( Cache::class )->get_manager_sync_data( 'versions' );
 
 		$action    = 'activate';
 		$test_tags = 'default';
@@ -32,11 +35,27 @@ class EnvironmentVersionResolver {
 				'test_tags' => $test_tags,
 			];
 		} elseif ( $woo === 'rc' ) {
-			throw new \InvalidArgumentException( 'Please specify a RC version, such as "1.2.3-rc.1", or use "nightly".' );
+			if ( empty( $versions['woocommerce']['rc_unsynced'] ) ) {
+				throw new \InvalidArgumentException( 'No unsynced RC version available. Please specify a RC version, such as "1.2.3-rc.1".' );
+			}
+
+			$woo = [
+				'slug'      => 'woocommerce',
+				'source'    => "https://github.com/woocommerce/woocommerce/releases/download/{$versions['woocommerce']['rc_unsynced']}/woocommerce.zip",
+				'action'    => $action,
+				'test_tags' => $test_tags,
+			];
 		} elseif ( $woo === 'stable' ) {
 			$woo = [
 				'slug'      => 'woocommerce',
 				'source'    => 'https://downloads.wordpress.org/plugin/woocommerce.latest-stable.zip',
+				'action'    => $action,
+				'test_tags' => $test_tags,
+			];
+		} elseif ( filter_var( $woo, FILTER_VALIDATE_URL ) ) {
+			$woo = [
+				'slug'      => 'woocommerce',
+				'source'    => $woo,
 				'action'    => $action,
 				'test_tags' => $test_tags,
 			];
@@ -47,6 +66,7 @@ class EnvironmentVersionResolver {
 				'action'    => $action,
 				'test_tags' => $test_tags,
 			];
+
 		}
 
 		// On the lines above, "$test_tags" is a string, whereas "$plugin->test_tags" might return an array.
@@ -73,7 +93,13 @@ class EnvironmentVersionResolver {
 		if ( $wp === 'stable' ) {
 			$wp = 'latest';
 		} elseif ( $wp === 'rc' ) {
-			throw new \InvalidArgumentException( 'Please specify a RC version, such as "1.2.3-rc.1", or use "nightly".' );
+			$versions = App::make( Cache::class )->get_manager_sync_data( 'versions' );
+
+			if ( ! empty( $versions['wordpress']['rc'] ) ) {
+				$wp = $versions['wordpress']['rc'];
+			} else {
+				throw new \InvalidArgumentException( 'No RC version available. Please specify a RC version, such as "1.2.3-rc.1".' );
+			}
 		}
 
 		return $wp;

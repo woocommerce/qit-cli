@@ -84,6 +84,7 @@ $application->setAutoExit( true );
 $application->setCatchExceptions( true );
 $application->find( 'completion' )->setHidden( true );
 $application->find( 'list' )->setHidden( true );
+$container->singleton( Application::class, $application );
 
 // Define a global input/output for convenience.
 $container->singleton( Input::class, function () {
@@ -111,6 +112,7 @@ $application->configureIO( $container->make( Input::class ), $container->make( O
  * is outputted, ignoring all output that is not JSON.
  */
 if ( in_array( '--json', $GLOBALS['argv'], true ) ) {
+	$container->setVar( 'QIT_JSON_MODE', true );
 	class QIT_JSON_Filter extends \php_user_filter {
 		public function filter( $in, $out, &$consumed, $closing ): int {
 			while ( $bucket = stream_bucket_make_writeable( $in ) ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition,Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition

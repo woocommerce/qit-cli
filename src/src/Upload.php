@@ -3,6 +3,7 @@
 namespace QIT_CLI;
 
 use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use ZipArchive;
 
@@ -43,6 +44,8 @@ class Upload {
 			$endpoint = '/wp-json/cd/v1/upload-test-report';
 		} elseif ( $upload_type === 'custom-test' ) {
 			$endpoint = '/wp-json/cd/v1/cli/upload-test';
+		} elseif ( $upload_type === 'test-media' ) {
+			$endpoint = '/wp-json/cd/v1/upload-test-media';
 		} else {
 			throw new \InvalidArgumentException( 'Invalid upload type.' );
 		}
@@ -58,7 +61,9 @@ class Upload {
 		$total_chunks  = intval( ceil( $stat['size'] / ( $chunk_size_kb ) ) );
 		$cd_upload_id  = generate_uuid4();
 
-		$progress_bar = new ProgressBar( $output, $total_chunks );
+		$progress_bar_output = App::getVar( 'QIT_JSON_MODE' ) ? new NullOutput() : $output;
+
+		$progress_bar = new ProgressBar( $progress_bar_output, $total_chunks );
 		$output->writeln( 'Uploading zip...' );
 		$progress_bar->start();
 

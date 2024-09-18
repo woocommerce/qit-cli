@@ -1,6 +1,7 @@
 [
     {
         "slug": "qit-beaver",
+        "entrypoint": null,
         "source": "\\\\network-share\\plugins\\qit-beaver.zip",
         "downloaded_source": null,
         "type": "plugin",
@@ -13,6 +14,7 @@
     },
     {
         "slug": "qit-cat",
+        "entrypoint": null,
         "source": "qit-cat",
         "downloaded_source": null,
         "type": "plugin",
@@ -26,6 +28,7 @@
     },
     {
         "slug": "foo-extension",
+        "entrypoint": null,
         "source": "https:\/\/github.com\/qitbeaver\/foo-extension.zip",
         "downloaded_source": null,
         "type": "plugin",
@@ -38,6 +41,7 @@
     },
     {
         "slug": "bar-extension",
+        "entrypoint": null,
         "source": "\/path\/to\/file\/bar-extension.zip",
         "downloaded_source": null,
         "type": "plugin",
@@ -50,6 +54,7 @@
     },
     {
         "slug": "baz-extension",
+        "entrypoint": null,
         "source": "\/path\/to\/file\/baz-extension",
         "downloaded_source": null,
         "type": "plugin",

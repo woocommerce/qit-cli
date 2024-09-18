@@ -3,13 +3,16 @@
 namespace QIT_CLI\Environment\CustomTests;
 
 use QIT_CLI\Commands\Tags\UploadTestTagsCommand;
+use QIT_CLI\Config;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Extension;
 use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Zipper;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use function QIT_CLI\get_manager_url;
 
 class CustomTestsDownloader {
@@ -58,7 +61,8 @@ class CustomTestsDownloader {
 	 * @return void
 	 */
 	protected function maybe_download_custom_tests( EnvInfo $env_info, array $extensions, string $cache_dir, string $test_type ): void {
-		$custom_tests = $this->get_custom_tests_info( $extensions );
+		$custom_tests    = $this->get_custom_tests_info( $extensions );
+		$printed_warning = false;
 
 		foreach ( $extensions as $extension ) {
 			if ( $extension->action === Extension::ACTIONS['activate'] ) {
@@ -67,7 +71,45 @@ class CustomTestsDownloader {
 
 			foreach ( $extension->test_tags as $k => $test_tag ) {
 				$original_path = null;
+
+				/*
+				 * Sometimes a user might do "woocommerce:test:activation" and have a directory named "activation" in the same
+				 * working directory. In this scenario, emit a warning and use the published test tag.
+				 */
 				if ( file_exists( $test_tag ) ) {
+					foreach ( $extensions as $extension2 ) {
+						if ( $extension2->action !== Extension::ACTIONS['activate'] && ! empty( $extension2->test_tags ) ) {
+							foreach ( $extension2->test_tags as $extension_test_tag ) {
+								if ( $extension_test_tag === $test_tag ) {
+									$this->output->writeln( sprintf( 'Test tag "%s" found in the working directory. Using the published test tag for extension "%s".', $test_tag, $extension->slug ) );
+									if ( $extension2->slug !== $extension->slug ) {
+										continue 3; // Skip, let the extension that owns this test tag to handle it.
+									}
+								}
+							}
+						}
+					}
+				}
+
+				if ( isset( $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ] ) ) { // @phpstan-ignore-line
+					$custom_test_url       = $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ];
+					$custom_test_file_name = md5( $custom_test_url ) . '.zip';
+					$custom_test_file_path = "$cache_dir/tests/$test_type/$custom_test_file_name";
+
+					// If connected to Local manager, let the developer know.
+					if ( Config::get_current_manager_backend() === 'local' && $printed_warning === false ) {
+						$printed_warning = true;
+						$io              = new SymfonyStyle( new ArrayInput( [] ), $this->output );
+						$io->warning( 'You are connected to the Local manager. Custom tests will be downloaded from the local QIT instance and might be outdated!' );
+					}
+
+					if ( ! file_exists( $custom_test_file_path ) ) {
+						RequestBuilder::download_file( $custom_test_url, $custom_test_file_path );
+					}
+
+					$zip_file           = $custom_test_file_path;
+					$processed_test_tag = $test_tag;
+				} elseif ( file_exists( $test_tag ) ) {
 					if ( is_dir( $test_tag ) ) {
 						$original_path = $test_tag;
 						$zip_file      = tempnam( sys_get_temp_dir(), 'qit_' ) . '.zip';
@@ -77,17 +119,6 @@ class CustomTestsDownloader {
 					}
 
 					$processed_test_tag = $k > 0 ? "local-$k" : 'local';
-				} elseif ( isset( $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ] ) ) { // @phpstan-ignore-line
-					$custom_test_url       = $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ];
-					$custom_test_file_name = md5( $custom_test_url ) . '.zip';
-					$custom_test_file_path = "$cache_dir/tests/$test_type/$custom_test_file_name";
-
-					if ( ! file_exists( $custom_test_file_path ) ) {
-						RequestBuilder::download_file( $custom_test_url, $custom_test_file_path );
-					}
-
-					$zip_file           = $custom_test_file_path;
-					$processed_test_tag = $test_tag;
 				} else {
 					$this->output->writeln( sprintf( 'No test tag "%s" found for extension "%s".', $test_tag, $extension->slug ) );
 					continue;
@@ -144,11 +175,9 @@ class CustomTestsDownloader {
 
 		foreach ( $extensions as $ext ) {
 			foreach ( $ext->test_tags as $test_tag ) {
-				if ( ! file_exists( $test_tag ) ) {
-					$test_tags_to_fetch[] = "{$ext->slug}:{$test_tag}";
-					if ( ! in_array( $ext->slug, $extensions_to_get_tests_for, true ) ) {
-						$extensions_to_get_tests_for[] = $ext->slug;
-					}
+				$test_tags_to_fetch[] = "{$ext->slug}:{$test_tag}";
+				if ( ! in_array( $ext->slug, $extensions_to_get_tests_for, true ) ) {
+					$extensions_to_get_tests_for[] = $ext->slug;
 				}
 			}
 		}

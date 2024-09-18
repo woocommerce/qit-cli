@@ -2,9 +2,11 @@
 
 namespace QIT_CLI\Environment\ExtensionDownload\Handlers;
 
+use lucatume\DI52\ContainerException;
 use QIT_CLI\App;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
+use QIT_CLI\Zipper;
 
 class URLHandler extends Handler {
 	/**
@@ -19,6 +21,7 @@ class URLHandler extends Handler {
 	 * @param string                                $cache_dir
 	 *
 	 * @throws \RuntimeException If an error occurs during downloading or file handling.
+	 * @throws ContainerException If an error occurs during dependency resolution.
 	 */
 	public function maybe_download_extensions( array $extensions, string $cache_dir ): void {
 		$output = App::make( Output::class );
@@ -54,6 +57,14 @@ class URLHandler extends Handler {
 			}
 
 			RequestBuilder::download_file( $e->source, $cache_file );
+
+			try {
+				App::make( Zipper::class )->validate_zip( $cache_file );
+			} catch ( \Exception $exception ) {
+				unlink( $cache_file );
+				throw new \RuntimeException( sprintf( 'Could not download zip file from URL %s.', $e->source ) );
+			}
+
 			$e->downloaded_source = $cache_file;
 		}
 	}

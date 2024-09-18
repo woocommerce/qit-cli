@@ -2,6 +2,8 @@
 
 namespace QIT_CLI;
 
+use QIT_CLI\Exceptions\NetworkErrorException;
+
 class PluginDependencies {
 	/** @var Cache $cache */
 	protected $cache;
@@ -28,14 +30,18 @@ class PluginDependencies {
 			$response = json_decode( $cached, true );
 		} else {
 			// Example response: "{\"plugins\":[\"woocommerce-payments\",\"automatewoo-birthdays\"],\"themes\":[],\"php_extensions\":[]}".
-			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' ) )
-				->with_method( 'POST' )
-				->with_post_body( [
-					'sut_id'                       => $woo_id,
-					'additional_woo_extension_ids' => implode( ',', $additional_woo_extension_ids ),
-				] )
-				->with_retry( 2 )
-				->request();
+			try {
+				$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' ) )
+					->with_method( 'POST' )
+					->with_post_body( [
+						'sut_id'                       => $woo_id,
+						'additional_woo_extension_ids' => implode( ',', $additional_woo_extension_ids ),
+					] )
+					->request();
+			} catch ( NetworkErrorException $e ) {
+				// Could not get download URLs for any of the dependencies and/or the SUT.
+				throw $e;
+			}
 
 			$response = json_decode( $json, true );
 

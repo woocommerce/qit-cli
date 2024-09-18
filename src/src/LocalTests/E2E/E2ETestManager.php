@@ -162,8 +162,6 @@ class E2ETestManager {
 			$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', 'wp db export /tmp/qit-bootstrap.sql' ] );
 		}
 
-		$this->output->writeln( '<info>Running E2E Tests</info>' );
-
 		$tests_to_run = [
 			'playwright' => [],
 		];
@@ -192,7 +190,11 @@ class E2ETestManager {
 			$this->output->writeln( 'To open last HTML report run: qit e2e-report' );
 		}
 
-		$test_result->set_status( 'completed' );
+		if ( $exit_status_code === 143 ) {
+			$test_result->set_status( 'cancelled' );
+		} else {
+			$test_result->set_status( 'completed' );
+		}
 
 		if ( $this->output->isVeryVerbose() ) {
 			$this->output->writeln( sprintf( '[Verbose] Test artifacts directory: %s', $test_result->get_results_dir() ) );
@@ -205,14 +207,23 @@ class E2ETestManager {
 			// No-op, a debug.log was not present.
 		}
 
-		$report_url = $this->notifier->notify_test_finished( $test_result );
+		try {
+			$this->docker->copy_from_docker( $env_info, '/var/www/html/wp-content/plugins/logs', $test_result->get_results_dir() . '/logs' );
+		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// No-op, a debug.log was not present.
+		}
 
-		if ( file_exists( $test_result->get_results_dir() . '/report/index.html' ) ) {
-			App::make( Cache::class )->set( 'last_e2e_report', json_encode( [
-				'local_playwright' => $test_result->get_results_dir() . '/report',
-				'remote_qit'       => $report_url,
-			] ), MONTH_IN_SECONDS );
-			self::$has_report = true;
+		[ $report_url, $exit_status_code_override ] = $this->notifier->notify_test_finished( $test_result );
+
+		App::make( Cache::class )->set( 'last_e2e_report', json_encode( [
+			'local_playwright' => file_exists( $test_result->get_results_dir() . '/report/index.html' ) ? $test_result->get_results_dir() . '/report' : '',
+			'remote_qit'       => $report_url,
+		] ), MONTH_IN_SECONDS );
+		self::$has_report = true;
+
+		// Modify the exit status code based on parsing the debug log.
+		if ( ! is_null( $exit_status_code_override ) ) {
+			$exit_status_code = $exit_status_code_override;
 		}
 
 		return $exit_status_code;
