@@ -14,6 +14,7 @@ on:
 jobs:
   mac_environment_test:
     runs-on: ${{ matrix.os }}
+    if: false # Docker on Mac in GitHub Actions is broken. We need to wait. https://github.com/douglascamata/setup-docker-macos-action/issues/37
     strategy:
       matrix:
         os: [ macos-13 ]
