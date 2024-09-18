@@ -177,7 +177,7 @@ class PluginsAndThemesParser {
 		$json_array = json_decode( $extension, true );
 
 		// Early bail: Long format, JSON.
-		if ( ! is_null( $json_array ) ) {
+		if ( ! is_null( $json_array ) && ! is_numeric( $json_array ) ) {
 			return $json_array;
 		}
 
