@@ -374,7 +374,7 @@ class RequestBuilder {
 		}
 	}
 
-	protected function wait_after_429( string $headers, int $max_wait = 60 ): int {
+	protected function wait_after_429( string $headers, int $max_wait = 180 ): int {
 		$retry_after = null;
 
 		// HTTP dates are always expressed in GMT, never in local time. (RFC 9110 5.6.7).
@@ -428,7 +428,7 @@ class RequestBuilder {
 		// Ensure we wait at least 1 second.
 		$retry_after = max( 1, $retry_after );
 
-		// And no longer than 60 seconds.
+		// And no longer than 180 seconds.
 		$retry_after = min( $max_wait, $retry_after );
 
 		$retry_after += rand( 0, 5 ); // Add a random number of seconds to avoid all clients retrying at the same time.
