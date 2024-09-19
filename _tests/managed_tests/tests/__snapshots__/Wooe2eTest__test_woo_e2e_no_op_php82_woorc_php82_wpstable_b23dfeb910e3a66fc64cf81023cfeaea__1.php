@@ -39,6 +39,7 @@
             "malware_whitelist_paths": [],
             "workflow_id": "1234567890",
             "runner": "normalized",
+            "test_media": [],
             "test_result_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
@@ -2912,7 +2913,9 @@
             }
         },
         {
-            "debug_log": []
+            "debug_log": {
+                "generic": []
+            }
         }
     ]
 ]';
