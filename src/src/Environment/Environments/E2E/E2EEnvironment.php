@@ -90,7 +90,7 @@ class E2EEnvironment extends Environment {
 		// Setup WordPress.
 		$this->output->writeln( '<info>Setting up WordPress...</info>' );
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/wordpress-setup.sh 2>&1' ], [
-			'NGROK'            => $this->env_info->ngrok ? 'yes' : 'no',
+			'NGROK'             => $this->env_info->ngrok ? 'yes' : 'no',
 			'WORDPRESS_VERSION' => $this->env_info->wp,
 			'SITE_URL'          => $this->env_info->site_url,
 			'QIT_DOCKER_REDIS'  => $this->env_info->object_cache ? 'yes' : 'no',

@@ -6,7 +6,6 @@ use QIT_CLI\Environment\Docker;
 use QIT_CLI\Ngrok\NgrokConfig;
 use QIT_CLI\Ngrok\NgrokRunner;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -55,7 +54,7 @@ class NgrokCommand extends Command {
 	}
 
 	protected function ngrok_already_configured( InputInterface $input, OutputInterface $output ): int {
-		if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "<question>Ngrok is already configured. Continue? (y/n) </question>", false ) ) ) {
+		if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( '<question>Ngrok is already configured. Continue? (y/n) </question>', false ) ) ) {
 			return Command::SUCCESS;
 		}
 
@@ -63,7 +62,7 @@ class NgrokCommand extends Command {
 	}
 
 	protected function ngrok_setup_flow( InputInterface $input, OutputInterface $output ): int {
-		/** @var QuestionHelper $question */
+		/** @var \Symfony\Component\Console\Helper\QuestionHelper $question */
 		$question = $this->getHelper( 'question' );
 
 		$token = $input->getOption( 'token' );

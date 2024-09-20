@@ -16,6 +16,7 @@ class NgrokRunner {
 	/** @var OutputInterface */
 	protected $output;
 
+	/** @var Process */
 	protected static $ngrok_process;
 
 	public function __construct( Docker $docker, NgrokConfig $ngrok_config, OutputInterface $output ) {
@@ -47,7 +48,7 @@ class NgrokRunner {
 			$this->output->writeln( $process->getCommandLine() );
 		}
 
-		$process->start( function ( $type, $buffer ) use ( &$output ) {
+		$process->start( function ( $type, $buffer ) {
 			$this->output->write( $buffer );
 		} );
 
@@ -72,7 +73,7 @@ class NgrokRunner {
 			}
 
 			usleep( $wait_time );
-			$attempts ++;
+			++$attempts;
 		}
 
 		$process->stop();
@@ -125,7 +126,7 @@ class NgrokRunner {
 			$this->output->writeln( $process->getCommandLine() );
 		}
 
-		$process->start( function ( $type, $buffer ) use ( &$output ) {
+		$process->start( function ( $type, $buffer ) {
 			$this->output->write( $buffer );
 		} );
 

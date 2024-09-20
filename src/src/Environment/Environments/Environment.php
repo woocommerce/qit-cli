@@ -10,7 +10,6 @@ use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\EnvironmentDownloader;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
-use QIT_CLI\FreePortFinder;
 use QIT_CLI\SafeRemove;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -387,13 +386,11 @@ abstract class Environment {
 	}
 
 	/**
-	 * When spinning up an environment accessible by the host locally,
-	 * Docker will find a free port and map it to the container's port 80.
-	 *
-	 * This method will return the port that Docker has mapped to the container's port 80.
+	 * Returns the port of the Nginx container from the host perspective.
 	 *
 	 * @return int
-	 * @throws \Exception
+	 * @throws \Exception When there's no Nginx container running.
+	 * @throws \RuntimeException When the process fails.
 	 */
 	protected function get_nginx_port(): int {
 		$nginx_container = $this->env_info->get_docker_container( 'nginx' );
