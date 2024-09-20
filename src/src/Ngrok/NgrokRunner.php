@@ -25,6 +25,10 @@ class NgrokRunner {
 		$this->output       = $output;
 	}
 
+	public function get_config(): NgrokConfig {
+		return $this->ngrok_config;
+	}
+
 	public function test_ngrok_connection( string $token, string $domain ): string {
 		$docker_command = [
 			$this->docker->find_docker(),
@@ -108,6 +112,7 @@ class NgrokRunner {
 			$this->docker->find_docker(),
 			'run',
 			'--net=host',
+			'--name=qit_ngrok',
 			'-e',
 			"NGROK_AUTHTOKEN=$token",
 			'ngrok/ngrok:latest',
@@ -132,7 +137,14 @@ class NgrokRunner {
 
 		static::$ngrok_process = $process;
 
-		register_shutdown_function( [ __CLASS__, 'stop_ngrok' ] );
+		/*
+		 * If we are using this environment in a test flow,
+		 * the upstream test flow will be responsible for
+		 * stopping ngrok when the test is done.
+		 */
+		if ( getenv( 'QIT_UP_AND_TEST' ) !== '1' ) {
+			register_shutdown_function( [ __CLASS__, 'stop_ngrok' ] );
+		}
 
 		return $domain;
 	}
@@ -143,5 +155,32 @@ class NgrokRunner {
 				static::$ngrok_process->stop();
 			}
 		}
+	}
+
+	public function is_ngrok_running(): bool {
+		$docker_command = [
+			$this->docker->find_docker(),
+			'ps',
+			'--filter',
+			'name=qit_ngrok',
+			'--format',
+			'{{.Names}}',
+		];
+
+		$process = new Process( $docker_command );
+		$process->setTty( false );
+		$process->setTimeout( 30 );
+		$process->setIdleTimeout( 30 );
+
+		$process->run();
+
+		if ( $process->isSuccessful() ) {
+			$output = $process->getOutput();
+			if ( ! empty( $output ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

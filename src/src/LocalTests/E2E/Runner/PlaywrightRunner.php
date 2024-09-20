@@ -167,7 +167,7 @@ class PlaywrightRunner extends E2ERunner {
 		}
 
 		$dependencies_command    = ' && ';
-		$dependencies_to_install = [];
+		$dependencies_to_install = [ 'axios@0.27.2' ];
 
 		foreach ( $test_infos as $test_to_run ) {
 			$playwright_args = array_merge( $playwright_args, [

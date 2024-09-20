@@ -9,6 +9,7 @@ namespace QIT_CLI\Commands\CustomTests;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\Ngrok\NgrokRunner;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
@@ -31,6 +32,7 @@ use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Process\Process;
 use function QIT_CLI\is_windows;
 
 class RunE2ECommand extends DynamicCommand {
@@ -115,6 +117,7 @@ class RunE2ECommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'config' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'object_cache' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'skip_activating_plugins' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'ngrok' )
 			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright Sharding argument.' )
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
@@ -366,6 +369,14 @@ class RunE2ECommand extends DynamicCommand {
 		$env_info = E2EEnvInfo::from_array( $env_json );
 
 		App::singleton( E2EEnvInfo::class, $env_info );
+
+		// Schedule the ngrok process to be shut down on completion.
+		if ( $input->getOption( 'ngrok' ) ) {
+			register_shutdown_function( static function() {
+				$p = new Process( [ 'docker', 'rm', '-f', 'qit_ngrok' ] );
+				$p->run();
+			} );
+		}
 
 		if ( ! empty( $woo_extension_id ) ) {
 			$env_info->sut_slug = $woo_extension;

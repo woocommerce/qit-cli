@@ -33,7 +33,17 @@ class NgrokCommand extends Command {
 
 	protected function configure() {
 		$this
-			->setDescription( 'Sets up your ngrok configuration for enabling live site URLs.' )
+			->setDescription( 'Sets up your Ngrok configuration for enabling live site URLs.' )
+			->setHelp( <<<TXT
+This command sets up your Ngrok configuration for enabling live site URLs.
+
+Some plugins, especially payment methods plugins and SaaS might require a live site and a SSL connection to work properly.
+
+1. Register for a free account at ngrok.com.
+2. Grab your auth token and paste it here when requested.
+3. Create a free domain in Ngrok.com and paste it here when requested.
+4. Now when running tests that support Ngrok, just pass the "--ngrok" parameter.
+TXT)
 			->addOption( 'token', 't', InputOption::VALUE_OPTIONAL, 'The Ngrok token to use.' )
 			->addOption( 'domain', 'd', InputOption::VALUE_OPTIONAL, 'The Ngrok domain to use.' )
 			->addOption( 'force', 'f', InputOption::VALUE_NONE, 'Force the setup, even if Ngrok is already configured.' );
