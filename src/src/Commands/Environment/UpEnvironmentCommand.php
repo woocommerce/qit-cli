@@ -273,6 +273,16 @@ HELP
 			$output->writeln( $env_info->site_url );
 		}
 
+		if ( $input->getOption( 'ngrok' ) ) {
+			// Hold the process up until confirmation.
+			$this->output->writeln( '<comment>Press any key to stop Ngrok and remove the environment.</comment>' );
+
+			// Wait for user input.
+			$handle = fopen( 'php://stdin', 'r' );
+			fgets( $handle );
+			fclose( $handle );
+		}
+
 		return Command::SUCCESS;
 	}
 

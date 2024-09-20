@@ -222,12 +222,6 @@ abstract class Environment {
 			'QIT_DOCKER_REDIS'   => 'no', // Default. Might be overridden by the concrete environment.
 		];
 
-		if ( $this->env_info->ngrok ) {
-			$this->env_info->port = App::make( FreePortFinder::class )->find_free_port();
-			$envs['NGROK_DOMAIN'] = $this->env_info->domain;
-			$envs['NGROK_PORT']   = $this->env_info->port;
-		}
-
 		$process->setEnv( array_merge( $process->getEnv(), $envs, $this->get_generate_docker_compose_envs() ) );
 
 		if ( $this->output->isVeryVerbose() ) {
@@ -392,6 +386,15 @@ abstract class Environment {
 		$this->env_info->docker_network = $docker_network;
 	}
 
+	/**
+	 * When spinning up an environment accessible by the host locally,
+	 * Docker will find a free port and map it to the container's port 80.
+	 *
+	 * This method will return the port that Docker has mapped to the container's port 80.
+	 *
+	 * @return int
+	 * @throws \Exception
+	 */
 	protected function get_nginx_port(): int {
 		$nginx_container = $this->env_info->get_docker_container( 'nginx' );
 		if ( ! $nginx_container ) {

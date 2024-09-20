@@ -24,7 +24,7 @@ class NgrokConfig {
 		$ngrok_config = $this->cache->get( 'ngrok_config' );
 
 		if ( ! $ngrok_config ) {
-			throw new \Exception( 'Ngrok configuration not found. Please run "%s" to configure it first.', NgrokCommand::$defaultName );
+			throw new \Exception( sprintf( 'Ngrok configuration not found. Please run "%s" to configure it first.', NgrokCommand::$defaultName ) );
 		}
 
 		return $ngrok_config;

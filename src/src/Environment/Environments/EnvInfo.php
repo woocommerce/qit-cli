@@ -76,11 +76,6 @@ abstract class EnvInfo implements \JsonSerializable {
 	 */
 	public $ngrok = false;
 
-	/**
-	 * @var int|null The port to expose the environment to, if any specific.
-	 */
-	public $port = null;
-
 	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
 		return $this;
@@ -119,6 +114,10 @@ abstract class EnvInfo implements \JsonSerializable {
 		$env_info->temporary_env = normalize_path( Environment::get_temp_envs_dir() . $env_info->environment . '-' . $env_info->env_id );
 		$env_info->created_at    = time();
 		$env_info->status        = 'pending';
+
+		if ( ! empty( $env_info_array['ngrok'] ) ) {
+			$env_info->ngrok = true;
+		}
 
 		if ( $env_info instanceof E2EEnvInfo ) {
 			if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {

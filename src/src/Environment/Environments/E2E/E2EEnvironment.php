@@ -7,6 +7,8 @@ use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\EnvUpChecker;
 use QIT_CLI\Environment\PluginActivationReportRenderer;
+use QIT_CLI\Ngrok\NgrokConfig;
+use QIT_CLI\Ngrok\NgrokRunner;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -47,18 +49,26 @@ class E2EEnvironment extends Environment {
 	}
 
 	protected function post_up(): void {
-		if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
-			// Inside docker, the port is always 80 (that's what Nginx is listening to).
-			$this->env_info->nginx_port = '80';
-
-			// Site URL without explicit port.
-			$this->env_info->site_url = sprintf( 'http://%s', $this->env_info->domain );
-		} else {
-			// Host port.
+		if ( $this->env_info->ngrok ) {
+			$this->env_info->domain     = App::make( NgrokConfig::class )->get_ngrok_config()['domain'];
 			$this->env_info->nginx_port = (string) $this->get_nginx_port();
+			$this->env_info->site_url   = sprintf( 'https://%s', $this->env_info->domain );
 
-			// Site URL with explicit port.
-			$this->env_info->site_url = sprintf( 'http://%s:%s', $this->env_info->domain, $this->env_info->nginx_port );
+			App::make( NgrokRunner::class )->start_ngrok( $this->env_info->nginx_port );
+		} else {
+			if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
+				// Inside docker, the port is always 80 (that's what Nginx is listening to).
+				$this->env_info->nginx_port = '80';
+
+				// Site URL without explicit port.
+				$this->env_info->site_url = sprintf( 'http://%s', $this->env_info->domain );
+			} else {
+				// Host port.
+				$this->env_info->nginx_port = (string) $this->get_nginx_port();
+
+				// Site URL with explicit port.
+				$this->env_info->site_url = sprintf( 'http://%s:%s', $this->env_info->domain, $this->env_info->nginx_port );
+			}
 		}
 
 		$this->environment_monitor->environment_added_or_updated( $this->env_info );
@@ -80,6 +90,7 @@ class E2EEnvironment extends Environment {
 		// Setup WordPress.
 		$this->output->writeln( '<info>Setting up WordPress...</info>' );
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/wordpress-setup.sh 2>&1' ], [
+			'NGROK'            => $this->env_info->ngrok ? 'yes' : 'no',
 			'WORDPRESS_VERSION' => $this->env_info->wp,
 			'SITE_URL'          => $this->env_info->site_url,
 			'QIT_DOCKER_REDIS'  => $this->env_info->object_cache ? 'yes' : 'no',
