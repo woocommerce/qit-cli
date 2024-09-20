@@ -71,6 +71,16 @@ abstract class EnvInfo implements \JsonSerializable {
 	 */
 	public $themes = [];
 
+	/**
+	 * @var bool Whether to use Ngrok to expose the environment.
+	 */
+	public $ngrok = false;
+
+	/**
+	 * @var int|null The port to expose the environment to, if any specific.
+	 */
+	public $port = null;
+
 	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
 		return $this;

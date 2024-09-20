@@ -9,6 +9,7 @@ use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Environment\EnvConfigLoader;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\EnvironmentVersionResolver;
+use QIT_CLI\Ngrok\NgrokConfig;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -25,12 +26,16 @@ class UpEnvironmentCommand extends DynamicCommand {
 	/** @var OutputInterface */
 	protected $output;
 
+	/** @var NgrokConfig */
+	protected $ngrok_config;
+
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	public function __construct( E2EEnvironment $e2e_environment, Cache $cache, OutputInterface $output ) {
+	public function __construct( E2EEnvironment $e2e_environment, Cache $cache, OutputInterface $output, NgrokConfig $ngrok_config ) {
 		$this->e2e_environment = $e2e_environment;
 		$this->cache           = $cache;
 		$this->output          = $output;
+		$this->ngrok_config    = $ngrok_config;
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
@@ -58,6 +63,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
+			->addOption( 'ngrok', null, InputOption::VALUE_NONE, 'Whether to use Ngrok to expose the environment to the web.' )
 			// ->addOption( 'attached', 'a', InputOption::VALUE_NONE, 'Whether to attach to the environment after starting it.' )
 			->setAliases( [ 'env:start' ]
 			);
@@ -188,6 +194,16 @@ HELP
 		$skip_activating_plugins = $input->getOption( 'skip_activating_plugins' );
 		$input->setOption( 'woo', null );
 		$input->setOption( 'skip_activating_plugins', null );
+
+		if ( $input->getOption( 'ngrok' ) ) {
+			try {
+				$this->ngrok_config->get_ngrok_config();
+			} catch ( \Exception $e ) {
+				$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+
+				return Command::FAILURE;
+			}
+		}
 
 		try {
 			$options_to_env_info = $this->parse_options( $input );

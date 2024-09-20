@@ -21,6 +21,7 @@ use QIT_CLI\Commands\Environment\ListEnvironmentCommand;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\ListCommand;
+use QIT_CLI\Commands\NgrokCommand;
 use QIT_CLI\Commands\OpenCommand;
 use QIT_CLI\Commands\Partner\AddPartner;
 use QIT_CLI\Commands\Partner\RemovePartner;
@@ -182,6 +183,7 @@ $application->add( $container->make( WooValidateZipCommand::class ) );
 
 // Environment commands.
 try {
+	$application->add( $container->make( NgrokCommand::class ) );
 	$application->add( $container->make( UpEnvironmentCommand::class ) );
 	$application->add( $container->make( DownEnvironmentCommand::class ) );
 	$application->add( $container->make( ListEnvironmentCommand::class ) );

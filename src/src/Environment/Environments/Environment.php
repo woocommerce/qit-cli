@@ -10,6 +10,7 @@ use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\EnvironmentDownloader;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
+use QIT_CLI\FreePortFinder;
 use QIT_CLI\SafeRemove;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -213,13 +214,21 @@ abstract class Environment {
 
 		$this->env_info->volumes = array_merge( $this->env_info->volumes, $volumes );
 
-		$process->setEnv( array_merge( $process->getEnv(), [
+		$envs = [
 			'QIT_ENV_ID'         => $this->env_info->env_id,
 			'VOLUMES'            => json_encode( $volumes ),
 			'NORMALIZED_ENV_DIR' => $this->env_info->temporary_env,
 			'QIT_DOCKER_NGINX'   => 'yes', // Default. Might be overridden by the concrete environment.
 			'QIT_DOCKER_REDIS'   => 'no', // Default. Might be overridden by the concrete environment.
-		], $this->get_generate_docker_compose_envs() ) );
+		];
+
+		if ( $this->env_info->ngrok ) {
+			$this->env_info->port = App::make( FreePortFinder::class )->find_free_port();
+			$envs['NGROK_DOMAIN'] = $this->env_info->domain;
+			$envs['NGROK_PORT']   = $this->env_info->port;
+		}
+
+		$process->setEnv( array_merge( $process->getEnv(), $envs, $this->get_generate_docker_compose_envs() ) );
 
 		if ( $this->output->isVeryVerbose() ) {
 			$this->output->writeln( $process->getCommandLine() );
