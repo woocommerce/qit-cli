@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\Ngrok;
+namespace QIT_CLI\Tunnel;
 
 use QIT_CLI\Commands\NgrokCommand;
 use QIT_CLI\Environment\Docker;
@@ -114,6 +114,8 @@ class NgrokRunner {
 		$token        = $ngrok_config['token'];
 		$domain       = $ngrok_config['domain'];
 
+		$region = getenv('QIT_NGROK_REGION') ?: 'eu';
+
 		$docker_command = [
 			$this->docker->find_docker(),
 			'run',
@@ -124,6 +126,11 @@ class NgrokRunner {
 			'ngrok/ngrok:latest',
 			'http',
 			"--domain=$domain",
+			"--region=$region",
+			'--request-header-remove=X-Forwarded-For',
+			'--request-header-remove=X-Forwarded-Host',
+			'--request-header-remove=X-Forwarded-Proto',
+			'--request-header-add="country: us"',
 			$local_port,
 		];
 

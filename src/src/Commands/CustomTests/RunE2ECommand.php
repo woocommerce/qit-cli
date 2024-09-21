@@ -9,7 +9,7 @@ namespace QIT_CLI\Commands\CustomTests;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
-use QIT_CLI\Ngrok\NgrokRunner;
+use QIT_CLI\Tunnel\NgrokRunner;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;

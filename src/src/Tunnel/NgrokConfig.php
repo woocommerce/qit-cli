@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\Ngrok;
+namespace QIT_CLI\Tunnel;
 
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\NgrokCommand;

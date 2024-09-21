@@ -3,8 +3,8 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\Environment\Docker;
-use QIT_CLI\Ngrok\NgrokConfig;
-use QIT_CLI\Ngrok\NgrokRunner;
+use QIT_CLI\Tunnel\NgrokConfig;
+use QIT_CLI\Tunnel\NgrokRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

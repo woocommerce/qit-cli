@@ -10,7 +10,7 @@ use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Environment\EnvConfigLoader;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\EnvironmentVersionResolver;
-use QIT_CLI\Ngrok\NgrokRunner;
+use QIT_CLI\Tunnel\NgrokRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
