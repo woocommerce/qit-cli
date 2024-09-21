@@ -413,7 +413,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		if ( $up_exit_status_code !== Command::SUCCESS ) {
 			$this->output->writeln( sprintf( '<error>Failed to start the environment. Output: %s</error>', stream_get_contents( $resource_stream, - 1, 0 ) ) );
-			Environment::down( $env_json['env_id'], new NullOutput() );
+			Environment::down( $env_json['env_id'] );
 
 			return Command::FAILURE;
 		}
@@ -460,7 +460,7 @@ class RunE2ECommand extends DynamicCommand {
 			return;
 		}
 		try {
-			Environment::down( $GLOBALS['env_to_shutdown'], new NullOutput() );
+			Environment::down( $GLOBALS['env_to_shutdown'] );
 		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// no-op.
 		}
