@@ -212,16 +212,14 @@ abstract class Environment {
 		}
 
 		$this->env_info->volumes = array_merge( $this->env_info->volumes, $volumes );
-
-		$envs = [
+		
+		$process->setEnv( array_merge( $process->getEnv(), [
 			'QIT_ENV_ID'         => $this->env_info->env_id,
 			'VOLUMES'            => json_encode( $volumes ),
 			'NORMALIZED_ENV_DIR' => $this->env_info->temporary_env,
 			'QIT_DOCKER_NGINX'   => 'yes', // Default. Might be overridden by the concrete environment.
 			'QIT_DOCKER_REDIS'   => 'no', // Default. Might be overridden by the concrete environment.
-		];
-
-		$process->setEnv( array_merge( $process->getEnv(), $envs, $this->get_generate_docker_compose_envs() ) );
+		], $this->get_generate_docker_compose_envs() ) );
 
 		if ( $this->output->isVeryVerbose() ) {
 			$this->output->writeln( $process->getCommandLine() );
