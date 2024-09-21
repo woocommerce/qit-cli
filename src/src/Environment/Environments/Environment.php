@@ -11,6 +11,7 @@ use QIT_CLI\Environment\EnvironmentDownloader;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
 use QIT_CLI\SafeRemove;
+use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
@@ -344,6 +345,10 @@ abstract class Environment {
 				$output->write( $buffer );
 			}
 		} );
+
+		if ( $env_info->tunnel ) {
+			TunnelRunner::stop_tunnel( $env_info->env_id );
+		}
 
 		$environment_monitor->environment_stopped( $env_info );
 	}

@@ -52,7 +52,7 @@ class E2EEnvironment extends Environment {
 			// Host port.
 			$this->env_info->nginx_port = (string) $this->get_nginx_port();
 
-			$site_url = App::make( TunnelRunner::class )->start_tunnel( "http://localhost:{$this->env_info->nginx_port}/" );
+			$site_url = App::make( TunnelRunner::class )->start_tunnel( "http://localhost:{$this->env_info->nginx_port}/", $this->env_info->env_id );
 
 			$this->env_info->domain     = parse_url( $site_url, PHP_URL_HOST );
 			$this->env_info->nginx_port = (string) parse_url( $site_url, PHP_URL_PORT );

@@ -196,15 +196,6 @@ HELP
 		$input->setOption( 'woo', null );
 		$input->setOption( 'skip_activating_plugins', null );
 
-		if ( $input->getOption( 'tunnel' ) ) {
-			// We do not support two tunnelled environments in parallel.
-			if ( $this->tunnel_runner->is_tunnel_running() ) {
-				$output->writeln( '<comment>Another tunnelled test is already running.</comment>' );
-
-				return Command::FAILURE;
-			}
-		}
-
 		try {
 			$options_to_env_info = $this->parse_options( $input );
 		} catch ( \Exception $e ) {
@@ -271,16 +262,6 @@ HELP
 		} else {
 			// Print the site URL in the last line for easy scripting with "wc -l" or similar.
 			$output->writeln( $env_info->site_url );
-		}
-
-		if ( $input->getOption( 'tunnel' ) && getenv( 'QIT_UP_AND_TEST' ) !== '1' ) {
-			// Hold the process up until confirmation.
-			$this->output->writeln( '<comment>Press any key to stop the tunnel and remove the environment.</comment>' );
-
-			// Wait for user input.
-			$handle = fopen( 'php://stdin', 'r' );
-			fgets( $handle );
-			fclose( $handle );
 		}
 
 		return Command::SUCCESS;
