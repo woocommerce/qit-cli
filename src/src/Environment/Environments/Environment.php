@@ -212,7 +212,7 @@ abstract class Environment {
 		}
 
 		$this->env_info->volumes = array_merge( $this->env_info->volumes, $volumes );
-		
+
 		$process->setEnv( array_merge( $process->getEnv(), [
 			'QIT_ENV_ID'         => $this->env_info->env_id,
 			'VOLUMES'            => json_encode( $volumes ),
