@@ -31,33 +31,36 @@ class TunnelRunner {
 		}
 
 		// Start the Docker container in detached mode.
-		exec( "{$this->docker->find_docker()} run -d --net=host --name=$docker_container_name cloudflare/cloudflared:latest tunnel --no-autoupdate --region=$region --url=$local_url", $runOutput, $runReturn );
+		exec( "{$this->docker->find_docker()} run -d --net=host --name=$docker_container_name cloudflare/cloudflared:latest tunnel --no-autoupdate --region=$region --url=$local_url", $run_output, $run_return );
 
-		if ( $runReturn !== 0 ) {
-			$errorOutput = implode( "\n", $runOutput );
-			throw new \RuntimeException( "Failed to start tunnel container: $errorOutput" );
+		if ( $run_return !== 0 ) {
+			$error_output = implode( "\n", $run_output );
+			throw new \RuntimeException( "Failed to start tunnel container: $error_output" );
 		}
 
 		// Initialize variables for capturing the domain.
-		$domain     = null;
-		$start_time = time();
-		$timeout    = 60; // seconds
+		$domain      = null;
+		$start_time  = time();
+		$timeout     = 60; // seconds.
+		$logs_output = [];
 
 		// Loop to check the container logs for the domain.
 		while ( ( time() - $start_time ) < $timeout ) {
-			exec( "{$this->docker->find_docker()} logs $docker_container_name 2>&1", $logsOutput, $logsReturn );
+			exec( "{$this->docker->find_docker()} logs $docker_container_name 2>&1", $logs_output, $logs_return );
 
-			$logs = implode( "\n", $logsOutput );
+			$logs = implode( "\n", $logs_output );
 			if ( preg_match( '#https://[a-zA-Z0-9\-]+\.trycloudflare\.com#', $logs, $matches ) ) {
 				$domain = $matches[0];
 				break;
 			}
 
-			if ( $this->output->isVeryVerbose() ) {
-				$this->output->writeln( $logs );
-			}
-
 			usleep( 500000 ); // 0.5 seconds
+		}
+
+		if ( $this->output->isVeryVerbose() ) {
+			foreach ( $logs_output as $log ) {
+				$this->output->writeln( $log );
+			}
 		}
 
 		if ( $domain === null ) {

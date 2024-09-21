@@ -64,7 +64,7 @@
             ]
         }
     ],
-    "ngrok": false,
+    "tunnel": false,
     "site_url": null,
     "wp": "",
     "object_cache": false,

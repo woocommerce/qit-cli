@@ -4,7 +4,6 @@ namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
-use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Environment\EnvConfigLoader;
@@ -15,7 +14,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
 use function QIT_CLI\is_windows;
 
 class UpEnvironmentCommand extends DynamicCommand {
@@ -37,7 +35,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 		$this->e2e_environment = $e2e_environment;
 		$this->cache           = $cache;
 		$this->output          = $output;
-		$this->tunnel_runner    = $tunnel_runner;
+		$this->tunnel_runner   = $tunnel_runner;
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 

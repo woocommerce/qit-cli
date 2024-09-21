@@ -67,7 +67,7 @@ class RunE2ECommand extends DynamicCommand {
 	 *
 	 * @link https://tldp.org/LDP/abs/html/exitcodes.html
 	 */
-	const WARNING              = 3;
+	const WARNING = 3;
 
 	public function __construct(
 		E2EEnvironment $e2e_environment,
@@ -355,7 +355,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		// Read from the stream.
 		$up_output = stream_get_contents( $resource_stream, - 1, 0 );
-		$env_json = json_decode( $up_output, true );
+		$env_json  = json_decode( $up_output, true );
 
 		if ( ! is_array( $env_json ) || empty( $env_json['env_id'] ) ) {
 			$this->output->writeln( sprintf( '<error>Failed to parse the environment JSON. Output: %s</error>', $up_output ) );
