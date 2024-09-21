@@ -4,17 +4,18 @@ namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Environment\EnvConfigLoader;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\EnvironmentVersionResolver;
-use QIT_CLI\Ngrok\NgrokConfig;
 use QIT_CLI\Ngrok\NgrokRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use function QIT_CLI\is_windows;
 
 class UpEnvironmentCommand extends DynamicCommand {
@@ -32,7 +33,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	public function __construct( E2EEnvironment $e2e_environment, Cache $cache, OutputInterface $output, NgrokRunner $ngrok_runner) {
+	public function __construct( E2EEnvironment $e2e_environment, Cache $cache, OutputInterface $output, NgrokRunner $ngrok_runner ) {
 		$this->e2e_environment = $e2e_environment;
 		$this->cache           = $cache;
 		$this->output          = $output;
@@ -200,9 +201,9 @@ HELP
 			try {
 				$this->ngrok_runner->get_config()->get_ngrok_config();
 			} catch ( \Exception $e ) {
-				$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+				NgrokRunner::ngrok_not_configured_warning( $input, $output );
 
-				return Command::FAILURE;
+				return RunE2ECommand::NGROK_NOT_CONFIGURED;
 			}
 
 			// We do not support two ngrok environments in parallel.

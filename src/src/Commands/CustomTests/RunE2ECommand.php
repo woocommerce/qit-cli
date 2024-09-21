@@ -66,10 +66,12 @@ class RunE2ECommand extends DynamicCommand {
 	 * 1 is either Playwright failed an assertion from a user-perspective, or a PHP fatal error has been logged.
 	 * 2 is reserved, so we skip it.
 	 * 3 is a warning, such as a PHP error that is not fatal.
+	 * 11 is trying to run Ngrok but it has not been configured yet.
 	 *
 	 * @link https://tldp.org/LDP/abs/html/exitcodes.html
 	 */
-	const WARNING = 3;
+	const WARNING              = 3;
+	const NGROK_NOT_CONFIGURED = 11;
 
 	public function __construct(
 		E2EEnvironment $e2e_environment,
@@ -357,7 +359,14 @@ class RunE2ECommand extends DynamicCommand {
 
 		// Read from the stream.
 		$up_output = stream_get_contents( $resource_stream, - 1, 0 );
-		$env_json  = json_decode( $up_output, true );
+
+		if ( $up_exit_status_code === self::NGROK_NOT_CONFIGURED ) {
+			NgrokRunner::ngrok_not_configured_warning( $input, $output );
+
+			return self::NGROK_NOT_CONFIGURED;
+		}
+
+		$env_json = json_decode( $up_output, true );
 
 		if ( ! is_array( $env_json ) || empty( $env_json['env_id'] ) ) {
 			$this->output->writeln( sprintf( '<error>Failed to parse the environment JSON. Output: %s</error>', $up_output ) );
@@ -372,7 +381,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		// Schedule the ngrok process to be shut down on completion.
 		if ( $input->getOption( 'ngrok' ) ) {
-			register_shutdown_function( static function() {
+			register_shutdown_function( static function () {
 				$p = new Process( [ 'docker', 'rm', '-f', 'qit_ngrok' ] );
 				$p->run();
 			} );

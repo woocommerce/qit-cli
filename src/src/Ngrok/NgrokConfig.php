@@ -24,7 +24,7 @@ class NgrokConfig {
 		$ngrok_config = $this->cache->get( 'ngrok_config' );
 
 		if ( ! $ngrok_config ) {
-			throw new \Exception( sprintf( 'Ngrok configuration not found. Please run "%s" to configure it first.', NgrokCommand::$defaultName ) ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			throw new \Exception( sprintf( 'Ngrok is not configured. Please run "qit %s" to configure it.', NgrokCommand::$defaultName ) ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		}
 
 		return $ngrok_config;

@@ -2,8 +2,11 @@
 
 namespace QIT_CLI\Ngrok;
 
+use QIT_CLI\Commands\NgrokCommand;
 use QIT_CLI\Environment\Docker;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 
 class NgrokRunner {
@@ -53,7 +56,9 @@ class NgrokRunner {
 		}
 
 		$process->start( function ( $type, $buffer ) {
-			$this->output->write( $buffer );
+			if ( $this->output->isVeryVerbose() ) {
+				$this->output->write( $buffer );
+			}
 		} );
 
 		/*
@@ -87,13 +92,14 @@ class NgrokRunner {
 			$output       = $process->getOutput();
 			$error_output = $process->getErrorOutput();
 
-			$message = "Command not successul (Container exited with $exit_code).";
+			if ( $this->output->isVeryVerbose() ) {
+				$this->output->writeln( $process->getCommandLine() );
+				$this->output->writeln( 'Exit code: ' . $exit_code );
+				$this->output->writeln( $output );
+				$this->output->writeln( $error_output );
+			}
 
-			$message .= "\n" . $error_output;
-
-			$message .= "\n" . 'Command that was executed: ' . $process->getCommandLine();
-
-			throw new \RuntimeException( $message );
+			throw new \RuntimeException( trim( $error_output ) );
 		}
 
 		if ( is_null( $webhook_url ) ) {
@@ -182,5 +188,11 @@ class NgrokRunner {
 		}
 
 		return false;
+	}
+
+	public static function ngrok_not_configured_warning( InputInterface $input, OutputInterface $output ): void {
+		$io = new SymfonyStyle( $input, $output );
+		$io->setDecorated( true );
+		$io->warning( sprintf( 'To run tests with a live site URL, please run "qit %s" to configure Ngrok first.', NgrokCommand::$defaultName ) ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 }
