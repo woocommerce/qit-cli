@@ -36,7 +36,7 @@ class RunActivationTestCommand extends Command {
 			->reuseOption( RunE2ECommand::getDefaultName(), 'no_upload_report' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'notify' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'php_extension' )
-			->reuseOption( RunE2ECommand::getDefaultName(), 'ngrok' );
+			->reuseOption( RunE2ECommand::getDefaultName(), 'tunnel' );
 
 		$this->addOption(
 			'json',

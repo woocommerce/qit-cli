@@ -72,9 +72,9 @@ abstract class EnvInfo implements \JsonSerializable {
 	public $themes = [];
 
 	/**
-	 * @var bool Whether to use Ngrok to expose the environment.
+	 * @var bool Whether to use tunnels to expose the environment.
 	 */
-	public $ngrok = false;
+	public $tunnel = false;
 
 	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
@@ -115,8 +115,8 @@ abstract class EnvInfo implements \JsonSerializable {
 		$env_info->created_at    = time();
 		$env_info->status        = 'pending';
 
-		if ( ! empty( $env_info_array['ngrok'] ) ) {
-			$env_info->ngrok = true;
+		if ( ! empty( $env_info_array['tunnel'] ) ) {
+			$env_info->tunnel = true;
 		}
 
 		if ( $env_info instanceof E2EEnvInfo ) {

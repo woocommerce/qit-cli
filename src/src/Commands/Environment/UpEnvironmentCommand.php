@@ -10,7 +10,7 @@ use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Environment\EnvConfigLoader;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\EnvironmentVersionResolver;
-use QIT_CLI\Tunnel\NgrokRunner;
+use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -28,16 +28,16 @@ class UpEnvironmentCommand extends DynamicCommand {
 	/** @var OutputInterface */
 	protected $output;
 
-	/** @var NgrokRunner */
-	protected $ngrok_runner;
+	/** @var TunnelRunner */
+	protected $tunnel_runner;
 
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	public function __construct( E2EEnvironment $e2e_environment, Cache $cache, OutputInterface $output, NgrokRunner $ngrok_runner ) {
+	public function __construct( E2EEnvironment $e2e_environment, Cache $cache, OutputInterface $output, TunnelRunner $tunnel_runner ) {
 		$this->e2e_environment = $e2e_environment;
 		$this->cache           = $cache;
 		$this->output          = $output;
-		$this->ngrok_runner    = $ngrok_runner;
+		$this->tunnel_runner    = $tunnel_runner;
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
@@ -65,7 +65,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
-			->addOption( 'ngrok', null, InputOption::VALUE_NONE, 'Whether to use Ngrok to expose the environment to the web.' )
+			->addOption( 'tunnel', null, InputOption::VALUE_NONE, 'Whether to tunnel the environment, to expose the environment to the web.' )
 			->setAliases( [ 'env:start' ]
 			);
 
@@ -196,24 +196,12 @@ HELP
 		$input->setOption( 'woo', null );
 		$input->setOption( 'skip_activating_plugins', null );
 
-		if ( $input->getOption( 'ngrok' ) ) {
-			try {
-				$this->ngrok_runner->get_config()->get_ngrok_config();
-			} catch ( \Exception $e ) {
-				NgrokRunner::ngrok_not_configured_warning( $input, $output );
+		if ( $input->getOption( 'tunnel' ) ) {
+			// We do not support two tunnelled environments in parallel.
+			if ( $this->tunnel_runner->is_tunnel_running() ) {
+				$output->writeln( '<comment>Another tunnelled test is already running.</comment>' );
 
-				return RunE2ECommand::NGROK_NOT_CONFIGURED;
-			}
-
-			// We do not support two ngrok environments in parallel.
-			if ( $this->ngrok_runner->is_ngrok_running() ) {
-				$output->writeln( '<comment>Ngrok is already running. If you continue, the current Ngrok session will be stopped, and any test running on it might error out.</comment>' );
-
-				if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( '<question>Do you want to continue? (y/n) </question>', false ) ) ) {
-					return Command::SUCCESS;
-				}
-
-				$this->ngrok_runner->stop_ngrok();
+				return Command::FAILURE;
 			}
 		}
 
@@ -285,9 +273,9 @@ HELP
 			$output->writeln( $env_info->site_url );
 		}
 
-		if ( $input->getOption( 'ngrok' ) && getenv( 'QIT_UP_AND_TEST' ) !== '1' ) {
+		if ( $input->getOption( 'tunnel' ) && getenv( 'QIT_UP_AND_TEST' ) !== '1' ) {
 			// Hold the process up until confirmation.
-			$this->output->writeln( '<comment>Press any key to stop Ngrok and remove the environment.</comment>' );
+			$this->output->writeln( '<comment>Press any key to stop the tunnel and remove the environment.</comment>' );
 
 			// Wait for user input.
 			$handle = fopen( 'php://stdin', 'r' );

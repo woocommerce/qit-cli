@@ -9,7 +9,6 @@ namespace QIT_CLI\Commands\CustomTests;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
-use QIT_CLI\Tunnel\NgrokRunner;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
@@ -28,7 +27,6 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -66,12 +64,10 @@ class RunE2ECommand extends DynamicCommand {
 	 * 1 is either Playwright failed an assertion from a user-perspective, or a PHP fatal error has been logged.
 	 * 2 is reserved, so we skip it.
 	 * 3 is a warning, such as a PHP error that is not fatal.
-	 * 11 is trying to run Ngrok but it has not been configured yet.
 	 *
 	 * @link https://tldp.org/LDP/abs/html/exitcodes.html
 	 */
 	const WARNING              = 3;
-	const NGROK_NOT_CONFIGURED = 11;
 
 	public function __construct(
 		E2EEnvironment $e2e_environment,
@@ -119,7 +115,7 @@ class RunE2ECommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'config' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'object_cache' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'skip_activating_plugins' )
-			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'ngrok' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'tunnel' )
 			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright Sharding argument.' )
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
@@ -359,13 +355,6 @@ class RunE2ECommand extends DynamicCommand {
 
 		// Read from the stream.
 		$up_output = stream_get_contents( $resource_stream, - 1, 0 );
-
-		if ( $up_exit_status_code === self::NGROK_NOT_CONFIGURED ) {
-			NgrokRunner::ngrok_not_configured_warning( $input, $output );
-
-			return self::NGROK_NOT_CONFIGURED;
-		}
-
 		$env_json = json_decode( $up_output, true );
 
 		if ( ! is_array( $env_json ) || empty( $env_json['env_id'] ) ) {
@@ -379,10 +368,10 @@ class RunE2ECommand extends DynamicCommand {
 
 		App::singleton( E2EEnvInfo::class, $env_info );
 
-		// Schedule the ngrok process to be shut down on completion.
-		if ( $input->getOption( 'ngrok' ) ) {
+		// Schedule the tunnel process to be shut down on completion.
+		if ( $input->getOption( 'tunnel' ) ) {
 			register_shutdown_function( static function () {
-				$p = new Process( [ 'docker', 'rm', '-f', 'qit_ngrok' ] );
+				$p = new Process( [ 'docker', 'rm', '-f', 'qit_tunnel' ] );
 				$p->run();
 			} );
 		}
