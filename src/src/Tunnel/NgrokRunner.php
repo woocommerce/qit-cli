@@ -4,7 +4,6 @@ namespace QIT_CLI\Tunnel;
 
 use QIT_CLI\Commands\NgrokCommand;
 use QIT_CLI\Environment\Docker;
-use QIT_CLI\Tunnel\Ngrok\NgrokConfig;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
