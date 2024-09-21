@@ -66,7 +66,6 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
 			->addOption( 'ngrok', null, InputOption::VALUE_NONE, 'Whether to use Ngrok to expose the environment to the web.' )
-			// ->addOption( 'attached', 'a', InputOption::VALUE_NONE, 'Whether to attach to the environment after starting it.' )
 			->setAliases( [ 'env:start' ]
 			);
 
