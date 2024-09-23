@@ -19,19 +19,23 @@ class TunnelRunner {
 	}
 
 	public function start_tunnel( string $local_url, string $env_id ): string {
-		// Determine the region, defaulting to 'us' if not set.
-		$region    = getenv( 'QIT_TUNNEL_REGION' ) ?: 'us';
-		$local_url = escapeshellarg( $local_url );
-
-		$docker_container_name = "qit_env_tunnel_$env_id";
-
-		// Validate $region is a-z.
-		if ( ! preg_match( '/^[a-z]+$/', $region ) ) {
-			throw new \InvalidArgumentException( 'Invalid region specified.' );
+		if ( ! empty( getenv( 'QIT_TUNNEL_REGION' ) ) ) {
+			// Validate $region is a-z.
+			if ( ! preg_match( '/^[a-z]+$/', getenv( 'QIT_TUNNEL_REGION' ) ) ) {
+				throw new \InvalidArgumentException( 'Invalid region specified.' );
+			}
+			$region = '--region=' . getenv( 'QIT_TUNNEL_REGION' );
+		} else {
+			// If not defined, Cloudflare will allocate the fastest region to the requester.
+			// Some payment gateways might require "us" region, so we allow them to override it if needed.
+			$region = '';
 		}
 
+		$local_url             = escapeshellarg( $local_url );
+		$docker_container_name = "qit_env_tunnel_$env_id";
+
 		// Start the Docker container in detached mode.
-		exec( "{$this->docker->find_docker()} run -d --net=host --name=$docker_container_name cloudflare/cloudflared:latest tunnel --no-autoupdate --region=$region --url=$local_url", $run_output, $run_return );
+		exec( "{$this->docker->find_docker()} run -d --net=host --name=$docker_container_name cloudflare/cloudflared:latest tunnel --no-autoupdate $region --url=$local_url", $run_output, $run_return );
 
 		if ( $run_return !== 0 ) {
 			$error_output = implode( "\n", $run_output );
