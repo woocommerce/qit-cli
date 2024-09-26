@@ -1,0 +1,10 @@
+/*
+import { test, expect } from '@playwright/test';
+import qit from '/qitHelpers';
+
+// Optional, uncomment to use.
+// In the context of a compatibility test, any changes you do here will apply only when the tests of your plugin is running.
+
+test( 'Setup when my project starts', async ({page}) => {
+});
+ */
