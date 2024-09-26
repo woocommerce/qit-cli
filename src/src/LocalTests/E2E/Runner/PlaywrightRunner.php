@@ -459,25 +459,25 @@ class PlaywrightRunner extends E2ERunner {
 	 *
 	 * @return array<int,array<string,scalar>>
 	 */
-	protected function make_projects(array $test_infos): array {
-		$projects = [];
+	protected function make_projects( array $test_infos ): array {
+		$projects                   = [];
 		$shared_setup_project_names = [];
 
 		// **Add Shared Setup Projects**
 
-		foreach ($test_infos as $t) {
+		foreach ( $test_infos as $t ) {
 			$plugin_slug = $t['slug'];
-			$base_dir = $t['path_in_playwright_container'];
-			$qit_dir = "{$base_dir}/qit";
+			$base_dir    = $t['path_in_playwright_container'];
+			$qit_dir     = "{$base_dir}/qit";
 
 			// Check for sharedSetup.js
-			if (file_exists("{$t['path_in_host']}/qit/sharedSetup.js")) {
-				$shared_setup_project_name = "{$plugin_slug}-shared-setup";
-				$projects[] = [
-					'name' => $shared_setup_project_name,
-					'testDir' => $qit_dir,
+			if ( file_exists( "{$t['path_in_host']}/qit/sharedSetup.js" ) ) {
+				$shared_setup_project_name    = "{$plugin_slug}-shared-setup";
+				$projects[]                   = [
+					'name'      => $shared_setup_project_name,
+					'testDir'   => $qit_dir,
 					'testMatch' => 'sharedSetup.js',
-					'use' => [
+					'use'       => [
 						'browserName' => 'chromium',
 						'qitTestSlug' => $plugin_slug,
 					],
@@ -488,23 +488,23 @@ class PlaywrightRunner extends E2ERunner {
 
 		// **Add Database Export Project**
 
-		if (!empty($shared_setup_project_names)) {
+		if ( ! empty( $shared_setup_project_names ) ) {
 			$projects[] = [
-				'name' => 'db-export',
-				'testDir' => '/qit/tests/e2e',
-				'testMatch' => 'db-export.js',
+				'name'         => 'db-export',
+				'testDir'      => '/qit/tests/e2e',
+				'testMatch'    => 'db-export.js',
 				'dependencies' => $shared_setup_project_names,
-				'use' => [
+				'use'          => [
 					'browserName' => 'chromium',
 				],
 			];
 		} else {
 			// If no shared setups, db-export can run immediately
 			$projects[] = [
-				'name' => 'db-export',
-				'testDir' => '/qit/tests/e2e',
+				'name'      => 'db-export',
+				'testDir'   => '/qit/tests/e2e',
 				'testMatch' => 'db-export.js',
-				'use' => [
+				'use'       => [
 					'browserName' => 'chromium',
 				],
 			];
@@ -513,48 +513,48 @@ class PlaywrightRunner extends E2ERunner {
 		// **Add Database Import Project**
 
 		$projects[] = [
-			'name' => 'db-import',
-			'testDir' => '/qit/tests/e2e',
-			'testMatch' => 'db-import.js',
-			'dependencies' => ['db-export'],
-			'use' => [
+			'name'         => 'db-import',
+			'testDir'      => '/qit/tests/e2e',
+			'testMatch'    => 'db-import.js',
+			'dependencies' => [ 'db-export' ],
+			'use'          => [
 				'browserName' => 'chromium',
 			],
 		];
 
 		// **Add Isolated Setup and Test Projects**
 
-		foreach ($test_infos as $t) {
+		foreach ( $test_infos as $t ) {
 			$plugin_slug = $t['slug'];
-			$base_dir = $t['path_in_playwright_container'];
-			$qit_dir = "{$base_dir}/qit";
+			$base_dir    = $t['path_in_playwright_container'];
+			$qit_dir     = "{$base_dir}/qit";
 
-			$dependencies = ['db-import']; // Each project depends on db-import
+			$dependencies = [ 'db-import' ]; // Each project depends on db-import
 
 			// Check for isolatedSetup.js
-			if (file_exists("{$t['path_in_host']}/qit/isolatedSetup.js")) {
+			if ( file_exists( "{$t['path_in_host']}/qit/isolatedSetup.js" ) ) {
 				$isolated_setup_project_name = "{$plugin_slug}-isolated-setup";
-				$projects[] = [
-					'name' => $isolated_setup_project_name,
-					'testDir' => $qit_dir,
-					'testMatch' => 'isolatedSetup.js',
-					'dependencies' => ['db-import'],
-					'use' => [
+				$projects[]                  = [
+					'name'         => $isolated_setup_project_name,
+					'testDir'      => $qit_dir,
+					'testMatch'    => 'isolatedSetup.js',
+					'dependencies' => [ 'db-import' ],
+					'use'          => [
 						'browserName' => 'chromium',
 						'qitTestSlug' => $plugin_slug,
 					],
 				];
 				// Now, the test depends on the isolated setup
-				$dependencies = [$isolated_setup_project_name];
+				$dependencies = [ $isolated_setup_project_name ];
 			}
 
 			// Add the test project
 			$test_project_name = "{$plugin_slug}-test";
-			$projects[] = [
-				'name' => $test_project_name,
-				'testDir' => $base_dir,
+			$projects[]        = [
+				'name'         => $test_project_name,
+				'testDir'      => $base_dir,
 				'dependencies' => $dependencies,
-				'use' => [
+				'use'          => [
 					'browserName' => 'chromium',
 					'qitTestSlug' => $plugin_slug,
 				],
