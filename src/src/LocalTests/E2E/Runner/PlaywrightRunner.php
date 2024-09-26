@@ -142,6 +142,8 @@ class PlaywrightRunner extends E2ERunner {
 			'-v',
 			$env_info->temporary_env . '/playwright/db-import.js:/qit/tests/e2e/db-import.js',
 			'-v',
+			$env_info->temporary_env . '/playwright/db-export.js:/qit/tests/e2e/db-export.js',
+			'-v',
 			$env_info->temporary_env . '/test-media:/qit/tests/e2e/test-media',
 			'-v',
 			$env_info->temporary_env . '/playwright/qitHelpers.js:/qitHelpers/qitHelpers.js',
@@ -175,9 +177,9 @@ class PlaywrightRunner extends E2ERunner {
 				"{$test_to_run['path_in_host']}:{$test_to_run['path_in_php_container']}",
 			] );
 
-			if ( file_exists( "{$test_to_run['path_in_host']}/bootstrap/dependencies.json" ) ) {
+			if ( file_exists( "{$test_to_run['path_in_host']}/qit/dependencies.json" ) ) {
 				// Read the dependencies JSON and append.
-				$dependencies            = json_decode( file_get_contents( "{$test_to_run['path_in_host']}/bootstrap/dependencies.json" ), true );
+				$dependencies            = json_decode( file_get_contents( "{$test_to_run['path_in_host']}/qit/dependencies.json" ), true );
 				$dependencies_to_install = array_merge( $dependencies_to_install, $dependencies );
 			}
 		}
@@ -457,62 +459,106 @@ class PlaywrightRunner extends E2ERunner {
 	 *
 	 * @return array<int,array<string,scalar>>
 	 */
-	protected function make_projects( array $test_infos ): array {
+	protected function make_projects(array $test_infos): array {
 		$projects = [];
-		$is_first = true;
+		$shared_setup_project_names = [];
 
-		foreach ( $test_infos as $t ) {
-			$base_dir       = $t['path_in_php_container'];
-			$has_entrypoint = file_exists( "{$t['path_in_host']}/bootstrap/entrypoint.js" );
+		// **Add Shared Setup Projects**
 
-			// Include db-import before each project, except the first one.
-			if ( $is_first ) {
-				$is_first = false;
-			} else {
+		foreach ($test_infos as $t) {
+			$plugin_slug = $t['slug'];
+			$base_dir = $t['path_in_playwright_container'];
+			$qit_dir = "{$base_dir}/qit";
+
+			// Check for sharedSetup.js
+			if (file_exists("{$t['path_in_host']}/qit/sharedSetup.js")) {
+				$shared_setup_project_name = "{$plugin_slug}-shared-setup";
 				$projects[] = [
-					'name'      => 'db-import',
-					'testMatch' => '/qit/tests/e2e/db-import.js',
-					'use'       => [
+					'name' => $shared_setup_project_name,
+					'testDir' => $qit_dir,
+					'testMatch' => 'sharedSetup.js',
+					'use' => [
 						'browserName' => 'chromium',
-						'devices'     => [ 'Desktop Chrome' ],
+						'qitTestSlug' => $plugin_slug,
 					],
 				];
+				$shared_setup_project_names[] = $shared_setup_project_name;
 			}
+		}
 
-			if ( $has_entrypoint ) {
-				// Run the entrypoint.
-				$projects[] = [
-					'name'      => sprintf( '%s-%s-entrypoint', $t['slug'], $t['test_tag'] ),
-					'testDir'   => "$base_dir/bootstrap",
-					'testMatch' => 'entrypoint.js',
-					'use'       => [
-						'browserName' => 'chromium',
-						'devices'     => [ 'Desktop Chrome' ],
-						'stateDir'    => $base_dir . '/.state',
-						'qitTestTag'  => $t['test_tag'],
-						'qitTestSlug' => $t['slug'],
-					],
-				];
-			}
+		// **Add Database Export Project**
 
-			// Run the test.
-			$args = [
-				'name'    => sprintf( '%s-%s', $t['slug'], $t['test_tag'] ),
-				'testDir' => $base_dir,
-				'use'     => [
+		if (!empty($shared_setup_project_names)) {
+			$projects[] = [
+				'name' => 'db-export',
+				'testDir' => '/qit/tests/e2e',
+				'testMatch' => 'db-export.js',
+				'dependencies' => $shared_setup_project_names,
+				'use' => [
 					'browserName' => 'chromium',
-					'devices'     => [ 'Desktop Chrome' ],
-					'stateDir'    => $base_dir . '/.state',
-					'qitTestTag'  => $t['test_tag'],
-					'qitTestSlug' => $t['slug'],
 				],
 			];
+		} else {
+			// If no shared setups, db-export can run immediately
+			$projects[] = [
+				'name' => 'db-export',
+				'testDir' => '/qit/tests/e2e',
+				'testMatch' => 'db-export.js',
+				'use' => [
+					'browserName' => 'chromium',
+				],
+			];
+		}
 
-			if ( $has_entrypoint ) {
-				$args['dependencies'] = [ sprintf( '%s-%s-entrypoint', $t['slug'], $t['test_tag'] ) ];
+		// **Add Database Import Project**
+
+		$projects[] = [
+			'name' => 'db-import',
+			'testDir' => '/qit/tests/e2e',
+			'testMatch' => 'db-import.js',
+			'dependencies' => ['db-export'],
+			'use' => [
+				'browserName' => 'chromium',
+			],
+		];
+
+		// **Add Isolated Setup and Test Projects**
+
+		foreach ($test_infos as $t) {
+			$plugin_slug = $t['slug'];
+			$base_dir = $t['path_in_playwright_container'];
+			$qit_dir = "{$base_dir}/qit";
+
+			$dependencies = ['db-import']; // Each project depends on db-import
+
+			// Check for isolatedSetup.js
+			if (file_exists("{$t['path_in_host']}/qit/isolatedSetup.js")) {
+				$isolated_setup_project_name = "{$plugin_slug}-isolated-setup";
+				$projects[] = [
+					'name' => $isolated_setup_project_name,
+					'testDir' => $qit_dir,
+					'testMatch' => 'isolatedSetup.js',
+					'dependencies' => ['db-import'],
+					'use' => [
+						'browserName' => 'chromium',
+						'qitTestSlug' => $plugin_slug,
+					],
+				];
+				// Now, the test depends on the isolated setup
+				$dependencies = [$isolated_setup_project_name];
 			}
 
-			$projects[] = $args;
+			// Add the test project
+			$test_project_name = "{$plugin_slug}-test";
+			$projects[] = [
+				'name' => $test_project_name,
+				'testDir' => $base_dir,
+				'dependencies' => $dependencies,
+				'use' => [
+					'browserName' => 'chromium',
+					'qitTestSlug' => $plugin_slug,
+				],
+			];
 		}
 
 		return $projects;
