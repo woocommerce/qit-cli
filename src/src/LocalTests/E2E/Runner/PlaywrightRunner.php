@@ -463,6 +463,13 @@ class PlaywrightRunner extends E2ERunner {
 		$projects                   = [];
 		$shared_setup_project_names = [];
 
+		// **Determine the number of plugins under test**
+		$plugins_under_test = [];
+		foreach ( $test_infos as $t ) {
+			$plugins_under_test[ $t['slug'] ] = true;
+		}
+		$num_plugins_under_test = count( $plugins_under_test );
+
 		// **Add Shared Setup Projects**
 
 		foreach ( $test_infos as $t ) {
@@ -486,41 +493,43 @@ class PlaywrightRunner extends E2ERunner {
 			}
 		}
 
-		// **Add Database Export Project**
+		// **Add Database Export and Import Projects if more than one plugin**
 
-		if ( ! empty( $shared_setup_project_names ) ) {
+		if ( $num_plugins_under_test > 1 ) {
+			// **Add Database Export Project**
+			if ( ! empty( $shared_setup_project_names ) ) {
+				$projects[] = [
+					'name'         => 'db-export',
+					'testDir'      => '/qit/tests/e2e',
+					'testMatch'    => 'db-export.js',
+					'dependencies' => $shared_setup_project_names,
+					'use'          => [
+						'browserName' => 'chromium',
+					],
+				];
+			} else {
+				// If no shared setups, db-export can run immediately
+				$projects[] = [
+					'name'      => 'db-export',
+					'testDir'   => '/qit/tests/e2e',
+					'testMatch' => 'db-export.js',
+					'use'       => [
+						'browserName' => 'chromium',
+					],
+				];
+			}
+
+			// **Add Database Import Project**
 			$projects[] = [
-				'name'         => 'db-export',
+				'name'         => 'db-import',
 				'testDir'      => '/qit/tests/e2e',
-				'testMatch'    => 'db-export.js',
-				'dependencies' => $shared_setup_project_names,
+				'testMatch'    => 'db-import.js',
+				'dependencies' => [ 'db-export' ],
 				'use'          => [
 					'browserName' => 'chromium',
 				],
 			];
-		} else {
-			// If no shared setups, db-export can run immediately
-			$projects[] = [
-				'name'      => 'db-export',
-				'testDir'   => '/qit/tests/e2e',
-				'testMatch' => 'db-export.js',
-				'use'       => [
-					'browserName' => 'chromium',
-				],
-			];
 		}
-
-		// **Add Database Import Project**
-
-		$projects[] = [
-			'name'         => 'db-import',
-			'testDir'      => '/qit/tests/e2e',
-			'testMatch'    => 'db-import.js',
-			'dependencies' => [ 'db-export' ],
-			'use'          => [
-				'browserName' => 'chromium',
-			],
-		];
 
 		// **Add Isolated Setup and Test Projects**
 
@@ -529,7 +538,18 @@ class PlaywrightRunner extends E2ERunner {
 			$base_dir    = $t['path_in_playwright_container'];
 			$qit_dir     = "{$base_dir}/qit";
 
-			$dependencies = [ 'db-import' ]; // Each project depends on db-import
+			// Set dependencies
+			$dependencies = [];
+
+			if ( $num_plugins_under_test > 1 ) {
+				// When multiple plugins, depend on db-import
+				$dependencies = [ 'db-import' ];
+			} else {
+				// When only one plugin, depend on shared setups (if any)
+				if ( ! empty( $shared_setup_project_names ) ) {
+					$dependencies = $shared_setup_project_names;
+				}
+			}
 
 			// Check for isolatedSetup.js
 			if ( file_exists( "{$t['path_in_host']}/qit/isolatedSetup.js" ) ) {
@@ -538,7 +558,7 @@ class PlaywrightRunner extends E2ERunner {
 					'name'         => $isolated_setup_project_name,
 					'testDir'      => $qit_dir,
 					'testMatch'    => 'isolatedSetup.js',
-					'dependencies' => [ 'db-import' ],
+					'dependencies' => $dependencies,
 					'use'          => [
 						'browserName' => 'chromium',
 						'qitTestSlug' => $plugin_slug,
