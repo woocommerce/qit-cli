@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "178 total, 178 passed, 0 failed.",
+            "test_summary": "258 total, 256 passed, 0 failed, 2 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -46,13 +46,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 16,
-                "numPendingTestSuites": 0,
-                "numTotalTestSuites": 16,
+                "numPassedTestSuites": 19,
+                "numPendingTestSuites": 1,
+                "numTotalTestSuites": 20,
                 "numFailedTests": 0,
-                "numPassedTests": 178,
-                "numPendingTests": 0,
-                "numTotalTests": 178,
+                "numPassedTests": 256,
+                "numPendingTests": 2,
+                "numTotalTests": 258,
                 "testResults": [
                     {
                         "file": "api-tests\\/coupons\\/coupons.test.js",
@@ -71,6 +71,10 @@
                                 {
                                     "title": "can update a coupon",
                                     "status": "passed"
+                                },
+                                {
+                                    "title": "can permanently delete a coupon",
+                                    "status": "passed"
                                 }
                             ],
                             "Batch update coupons": [
@@ -80,6 +84,10 @@
                                 },
                                 {
                                     "title": "can batch update coupons",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can batch delete coupons",
                                     "status": "passed"
                                 }
                             ],
@@ -104,6 +112,98 @@
                             "Add coupon to order": [
                                 {
                                     "title": "can add coupon to an order",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "api-tests\\/customers\\/customers-crud.test.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Customers API tests: CRUD": [],
+                            "Customers API tests: CRUD > Retrieve after env setup": [
+                                {
+                                    "title": "can retrieve admin user",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can retrieve subscriber user",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "retrieve user with id 0 is invalid",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can retrieve customers",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can retrieve all customers",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Customers API tests: CRUD > Create a customer": [
+                                {
+                                    "title": "can create a customer",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Customers API tests: CRUD > Retrieve after create": [
+                                {
+                                    "title": "can retrieve a customer",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can retrieve all customers after create",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Customers API tests: CRUD > Update a customer": [
+                                {
+                                    "title": "can update the admin user\\/customer",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "retrieve after update admin",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can update the subscriber user\\/customer",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "retrieve after update subscriber",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can update a customer",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "retrieve after update customer",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Customers API tests: CRUD > Delete a customer": [
+                                {
+                                    "title": "can permanently delete an customer",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Customers API tests: CRUD > Batch update customers": [
+                                {
+                                    "title": "can batch create customers",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can batch update customers",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can batch delete customers",
                                     "status": "passed"
                                 }
                             ]
@@ -146,6 +246,19 @@
                                 },
                                 {
                                     "title": "can access an authenticated endpoint",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "api-tests\\/orders\\/order-complex.test.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Orders API test": [
+                                {
+                                    "title": "can add complex order",
                                     "status": "passed"
                                 }
                             ]
@@ -339,17 +452,230 @@
                         }
                     },
                     {
+                        "file": "api-tests\\/orders\\/orders.test.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Orders API tests": [
+                                {
+                                    "title": "can create an order",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can retrieve an order",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can add shipping and billing contacts to an order",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can permanently delete an order",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Orders API tests > List all orders": [
+                                {
+                                    "title": "pagination",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "inclusion \\/ exclusion",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "parent",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "status",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "customer",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "product",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "dp (precision)",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "search",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Orders API tests > orderby": [
+                                {
+                                    "title": "default",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "date",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "id",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "include",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "api-tests\\/payment-gateways\\/payment-gateways-crud.test.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Payment Gateways API tests": [
                                 {
+                                    "title": "can view all payment gateways",
+                                    "status": "passed"
+                                },
+                                {
                                     "title": "can view a payment gateway",
                                     "status": "passed"
                                 },
                                 {
                                     "title": "can update a payment gateway",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "api-tests\\/products\\/product-list.test.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Products API tests: List All Products": [],
+                            "Products API tests: List All Products > List all products": [
+                                {
+                                    "title": "defaults",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "pagination",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "search",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "inclusion \\/ exclusion",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "slug",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "sku",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "type",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "featured",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "categories",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "on sale",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "price",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "before \\/ after",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "attributes",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "status",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "shipping class",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "tax class",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "stock status",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "tags",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "parent",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Products API tests: List All Products > List all products > orderby": [
+                                {
+                                    "title": "default",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "date",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "id",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "title",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "slug orderby",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "price orderby",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "include",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "rating (desc)",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "rating (asc)",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "popularity (asc)",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "popularity (desc)",
                                     "status": "passed"
                                 }
                             ]
@@ -460,6 +786,40 @@
                                     "status": "passed"
                                 }
                             ],
+                            "Products API tests: CRUD > Product review tests: CRUD": [
+                                {
+                                    "title": "can add a product review",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "cannot add a product review with invalid product_id",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "cannot add a duplicate product review",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can retrieve a product review",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can retrieve all product reviews",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can update a product review",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can permanently delete a product review",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can batch update product reviews",
+                                    "status": "passed"
+                                }
+                            ],
                             "Products API tests: CRUD > Product shipping classes tests: CRUD": [
                                 {
                                     "title": "can add a product shipping class",
@@ -479,6 +839,10 @@
                                 },
                                 {
                                     "title": "can permanently delete a product shipping class",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can batch update product shipping classes",
                                     "status": "passed"
                                 }
                             ],
@@ -666,6 +1030,12 @@
                                     "status": "passed"
                                 }
                             ],
+                            "Settings API tests: CRUD > List all Tax settings options": [
+                                {
+                                    "title": "can retrieve all tax settings",
+                                    "status": "passed"
+                                }
+                            ],
                             "Settings API tests: CRUD > List all Shipping settings options": [
                                 {
                                     "title": "can retrieve all shipping settings",
@@ -690,9 +1060,21 @@
                                     "status": "passed"
                                 }
                             ],
+                            "Settings API tests: CRUD > List all Advanced settings options": [
+                                {
+                                    "title": "can retrieve all advanced settings",
+                                    "status": "passed"
+                                }
+                            ],
                             "Settings API tests: CRUD > List all Email New Order settings": [
                                 {
                                     "title": "can retrieve all email new order settings",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Settings API tests: CRUD > List all Email Failed Order settings": [
+                                {
+                                    "title": "can retrieve all email failed order settings",
                                     "status": "passed"
                                 }
                             ],
@@ -1002,14 +1384,14 @@
                         }
                     }
                 ],
-                "summary": "178 total, 178 passed, 0 failed."
+                "summary": "258 total, 256 passed, 0 failed, 2 skipped."
             }
         },
         {
             "debug_log": {
                 "generic": [
                     {
-                        "count": "250",
+                        "count": "550",
                         "message": "PHP Notice: $order is Automattic\\\\WooCommerce\\\\Admin\\\\Overrides\\\\Order as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 41"
                     }
                 ]
