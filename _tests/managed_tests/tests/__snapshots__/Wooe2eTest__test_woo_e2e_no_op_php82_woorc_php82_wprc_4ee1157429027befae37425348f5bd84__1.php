@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "380 total, 369 passed, 3 failed, 8 skipped.",
+            "test_summary": "442 total, 399 passed, 0 failed, 43 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,14 +45,14 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 3,
-                "numPassedTestSuites": 90,
-                "numPendingTestSuites": 5,
-                "numTotalTestSuites": 97,
-                "numFailedTests": 3,
-                "numPassedTests": 369,
-                "numPendingTests": 8,
-                "numTotalTests": 380,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 91,
+                "numPendingTestSuites": 19,
+                "numTotalTestSuites": 110,
+                "numFailedTests": 0,
+                "numPassedTests": 399,
+                "numPendingTests": 43,
+                "numTotalTests": 442,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -66,6 +66,33 @@
                                 },
                                 {
                                     "title": "can configure permalink settings",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "activate-and-setup\\/core-profiler.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Store owner can complete the core profiler": [
+                                {
+                                    "title": "Can complete the core profiler skipping extension install",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Can complete the core profiler installing default extensions",
+                                    "status": "pending"
+                                }
+                            ],
+                            "Store owner can skip the core profiler": [
+                                {
+                                    "title": "Can click skip guided setup",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Can connect to WooCommerce.com",
                                     "status": "passed"
                                 }
                             ]
@@ -196,6 +223,14 @@
                                     "status": "passed"
                                 },
                                 {
+                                    "title": "Marketing Overview page have relevant content",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Introduction can be dismissed",
+                                    "status": "passed"
+                                },
+                                {
                                     "title": "Learning section can be expanded",
                                     "status": "passed"
                                 }
@@ -264,7 +299,7 @@
                     {
                         "file": "customize-store\\/assembler\\/color-picker.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Assembler -> Color Pickers": [
                                 {
@@ -273,74 +308,82 @@
                                 },
                                 {
                                     "title": "Color palette Blueberry Sorbet should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Ancient Bronze should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Crimson Tide should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Purple Twilight should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Green Thumb should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Golden Haze should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Golden Indigo should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Arctic Dawn should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Raspberry Chocolate should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Canary should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Ice should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Rustic Rosewood should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Cinnamon Latte should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Lightning should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Aquamarine Night should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Charcoal should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color palette Slate should be applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Color picker should be focused when a color is picked",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Selected color palette should be applied on the frontend",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Create \\"your own\\" pickers should be visible",
                                     "status": "passed"
                                 }
                             ]
@@ -407,6 +450,10 @@
                         "tests": {
                             "Assembler -> Full composability": [
                                 {
+                                    "title": "The list of categories should be displayed",
+                                    "status": "passed"
+                                },
+                                {
                                     "title": "Clicking on \\"Design your homepage\\" should open the Intro sidebar by default",
                                     "status": "passed"
                                 },
@@ -436,6 +483,10 @@
                                 },
                                 {
                                     "title": "Clicking the \\"Add patterns\\" button on the No Blocks view should add a default pattern",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Clicking opt-in new patterns should be available",
                                     "status": "passed"
                                 }
                             ]
@@ -473,6 +524,10 @@
                         "tests": {
                             "Assembler -> Homepage": [
                                 {
+                                    "title": "Available homepage should be displayed",
+                                    "status": "pending"
+                                },
+                                {
                                     "title": "The selected homepage should be focused when is clicked",
                                     "status": "pending"
                                 },
@@ -487,11 +542,19 @@
                             ],
                             "Homepage tracking banner": [
                                 {
+                                    "title": "Should show the \\"Want more patterns?\\" banner with the PTK API unavailable message",
+                                    "status": "passed"
+                                },
+                                {
                                     "title": "Should show the \\"Want more patterns?\\" banner with the Opt-in message when tracking is not allowed",
                                     "status": "passed"
                                 },
                                 {
                                     "title": "Should show the \\"Want more patterns?\\" banner with the offline message when the user is offline and tracking is not allowed",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Should not show the \\"Want more patterns?\\" banner when tracking is allowed",
                                     "status": "passed"
                                 }
                             ]
@@ -525,6 +588,10 @@
                                 },
                                 {
                                     "title": "Logo should be visible after header update",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Enabling the \\"use as site icon\\" option should set the image as the site icon",
                                     "status": "passed"
                                 },
                                 {
@@ -562,11 +629,23 @@
                         "tests": {
                             "Store owner can view the Intro page": [
                                 {
+                                    "title": "it shows the \\"offline banner\\" when the network is offline",
+                                    "status": "passed"
+                                },
+                                {
                                     "title": "it shows the \\"no AI\\" banner on Core when the task is not completed",
                                     "status": "passed"
                                 },
                                 {
                                     "title": "it shows the \\"no AI customize theme\\" banner when the task is completed",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "it shows the \\"non default block theme\\" banner when the theme is a block theme different than TT4",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "clicking on \\"Go to the Customizer\\" with a classic theme should go to the customizer",
                                     "status": "passed"
                                 }
                             ]
@@ -599,6 +678,10 @@
                         "has_pending": false,
                         "tests": {
                             "Store owner can view the Transitional page": [
+                                {
+                                    "title": "Accessing the transitional page when the CYS flow is not completed should redirect to the Intro page",
+                                    "status": "passed"
+                                },
                                 {
                                     "title": "Clicking on \\"Finish customizing\\" in the assembler should go to the transitional page",
                                     "status": "passed"
@@ -664,14 +747,69 @@
                         }
                     },
                     {
-                        "file": "merchant\\/create-order.spec.js",
+                        "file": "merchant\\/create-cart-block.spec.js",
                         "status": "passed",
                         "has_pending": false,
+                        "tests": {
+                            "Transform Classic Cart To Cart Block": [
+                                {
+                                    "title": "can transform classic cart to cart block",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/create-checkout-block.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Transform Classic Checkout To Checkout Block": [
+                                {
+                                    "title": "can transform classic checkout to checkout block",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/create-coupon.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Coupon management": [
+                                {
+                                    "title": "can create new fixedCart coupon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create new fixedProduct coupon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create new percentage coupon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create new expiryDate coupon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create new freeShipping coupon",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/create-order.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Add new order": [
                                 {
                                     "title": "can create a simple guest order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can create an order for an existing customer",
@@ -715,14 +853,54 @@
                         }
                     },
                     {
-                        "file": "merchant\\/create-product-brand.spec.js",
+                        "file": "merchant\\/create-restricted-coupons.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
-                            "Merchant can add brands": [
+                            "Restricted coupon management": [
                                 {
-                                    "title": "Merchant can add brands",
-                                    "status": "pending"
+                                    "title": "can create new minimumSpend coupon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create new maximumSpend coupon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create new individualUse coupon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create new excludeSaleItems coupon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create new productCategories coupon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create new excludeProductCategories coupon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create new products coupon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create new excludeProducts coupon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create new allowedEmails coupon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create new usageLimitPerCoupon coupon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create new usageLimitPerUser coupon",
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -743,7 +921,7 @@
                     {
                         "file": "merchant\\/create-shipping-zones.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
@@ -770,14 +948,40 @@
                             "Verifies shipping options from customer perspective": [
                                 {
                                     "title": "allows customer to benefit from a free Local pickup if on Mayne Island",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to benefit from a free Free shipping if in BC",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to pay for a Flat rate shipping method",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/create-woocommerce-blocks.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Add WooCommerce Blocks Into Page": [
+                                {
+                                    "title": "can insert all WooCommerce blocks into page",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/create-woocommerce-patterns.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Add WooCommerce Patterns Into Page": [
+                                {
+                                    "title": "can insert WooCommerce patterns into page",
                                     "status": "passed"
                                 }
                             ]
@@ -789,6 +993,10 @@
                         "has_pending": false,
                         "tests": {
                             "Merchant > Customer List": [
+                                {
+                                    "title": "Merchant can view a list of all customers, filter and download",
+                                    "status": "passed"
+                                },
                                 {
                                     "title": "Merchant can view a single customer",
                                     "status": "passed"
@@ -816,6 +1024,39 @@
                                 },
                                 {
                                     "title": "can pay for the order through the customer payment page",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/launch-your-store.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Launch Your Store - logged in": [
+                                {
+                                    "title": "Entire site coming soon mode frontend",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Store only coming soon mode frontend",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Site visibility settings",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Homescreen badge coming soon store only",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Homescreen badge coming soon entire store",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Homescreen badge live",
                                     "status": "passed"
                                 }
                             ]
@@ -895,11 +1136,7 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "can load billing and shipping details",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can copy billing address to shipping address",
+                                    "title": "can load billing details",
                                     "status": "passed"
                                 }
                             ],
@@ -938,6 +1175,10 @@
                         "tests": {
                             "Merchant > Order Action emails received": [
                                 {
+                                    "title": "can receive new order email",
+                                    "status": "passed"
+                                },
+                                {
                                     "title": "can receive completed email",
                                     "status": "passed"
                                 },
@@ -958,8 +1199,8 @@
                     },
                     {
                         "file": "merchant\\/order-refund.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
@@ -968,7 +1209,7 @@
                                 },
                                 {
                                     "title": "can delete an issued refund",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
@@ -1228,24 +1469,6 @@
                                     "title": "can bulk edit products",
                                     "status": "passed"
                                 }
-                            ],
-                            "can restore regular price when bulk editing products": [
-                                {
-                                    "title": "can restore regular price when bulk editing products",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can decrease the sale price if the product was not previously in sale when bulk editing products": [
-                                {
-                                    "title": "can decrease the sale price if the product was not previously in sale when bulk editing products",
-                                    "status": "passed"
-                                }
-                            ],
-                            "increasing the sale price from 0 does not change the sale price when bulk editing products": [
-                                {
-                                    "title": "increasing the sale price from 0 does not change the sale price when bulk editing products",
-                                    "status": "passed"
-                                }
                             ]
                         }
                     },
@@ -1434,6 +1657,10 @@
                                 {
                                     "title": "can generate variations from product attributes",
                                     "status": "passed"
+                                },
+                                {
+                                    "title": "can manually add a variation",
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -1487,7 +1714,7 @@
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "General tab": [],
@@ -1499,8 +1726,12 @@
                             ],
                             "General tab > Create product": [
                                 {
+                                    "title": "can create a simple product",
+                                    "status": "pending"
+                                },
+                                {
                                     "title": "can not create a product with duplicated SKU",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can a shopper add the simple product to the cart",
@@ -1512,7 +1743,7 @@
                     {
                         "file": "merchant\\/products\\/block-editor\\/create-variable-product-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Variations tab": [],
                             "Variations tab > Create variable products": [
@@ -1522,7 +1753,7 @@
                                 },
                                 {
                                     "title": "can edit a variation",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete a variation",
@@ -1579,15 +1810,29 @@
                         }
                     },
                     {
+                        "file": "merchant\\/products\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "General tab": [],
+                            "General tab > Linked product": [
+                                {
+                                    "title": "can create a product with linked products",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/products\\/block-editor\\/organization-tab-product-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "General tab": [],
                             "General tab > Create product - Organization tab": [
                                 {
                                     "title": "can create a simple product with categories, tags and with password required",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1774,6 +2019,23 @@
                         }
                     },
                     {
+                        "file": "merchant\\/settings-woo-com.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "WooCommerce woo.com Settings": [
+                                {
+                                    "title": "can enable analytics tracking",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "can enable marketplace suggestions",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/users-create.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1826,7 +2088,7 @@
                     {
                         "file": "shopper\\/account-email-receiving.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Shopper Account Email Receiving": [
                                 {
@@ -1841,7 +2103,7 @@
                             "Shopper Password Reset Email Receiving": [
                                 {
                                     "title": "should receive an email when initiating a password reset",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2220,6 +2482,55 @@
                         }
                     },
                     {
+                        "file": "shopper\\/checkout-block.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Checkout Block page": [
+                                {
+                                    "title": "can see empty checkout block page",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "allows customer to choose available payment methods",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "allows customer to fill shipping details",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "allows customer to fill different shipping and billing details",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "allows customer to fill shipping details and toggle different billing",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can choose different shipping types in the checkout",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "allows guest customer to place an order",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "allows existing customer to place an order",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create an account during checkout",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create an account during checkout with custom password",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "shopper\\/checkout-create-account.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -2304,14 +2615,42 @@
                         }
                     },
                     {
-                        "file": "shopper\\/mini-cart.spec.js",
-                        "status": "failed",
+                        "file": "shopper\\/launch-your-store.spec.js",
+                        "status": "passed",
                         "has_pending": false,
+                        "tests": {
+                            "Launch Your Store front end - logged out": [],
+                            "Launch Your Store front end - logged out > Block Theme (Twenty Twenty Four)": [
+                                {
+                                    "title": "Entire site coming soon mode (function () { [native code] })",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Store only coming soon mode (function () { [native code] })",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Launch Your Store front end - logged out > Classic Theme (Storefront)": [
+                                {
+                                    "title": "Entire site coming soon mode (function () { [native code] })",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Store only coming soon mode (function () { [native code] })",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "shopper\\/mini-cart.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Mini Cart block page": [
                                 {
                                     "title": "can see empty customized mini cart, add and remove product, increase to max quantity, calculate tax and see redirection",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2401,7 +2740,7 @@
                     {
                         "file": "shopper\\/product-grouped.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Grouped Product Page": [
                                 {
@@ -2410,7 +2749,7 @@
                                 },
                                 {
                                     "title": "should be able to remove grouped products from the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2460,7 +2799,7 @@
                     {
                         "file": "shopper\\/product-variable.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Variable Product Page": [
                                 {
@@ -2469,7 +2808,7 @@
                                 },
                                 {
                                     "title": "should be able to remove variation products from the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Shopper > Update variable product": [
@@ -2493,9 +2832,22 @@
                         }
                     },
                     {
-                        "file": "shopper\\/shop-search-browse-sort.spec.js",
+                        "file": "shopper\\/shop-products-filter-by-price.spec.js",
                         "status": "passed",
                         "has_pending": false,
+                        "tests": {
+                            "Filter items in the shop by product price": [
+                                {
+                                    "title": "filter products by prices on the created page",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "shopper\\/shop-search-browse-sort.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Search, browse by categories and sort items in the shop": [
                                 {
@@ -2508,7 +2860,7 @@
                                 },
                                 {
                                     "title": "should let user sort the products in the shop",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2521,6 +2873,19 @@
                             "Check the title of the shop page after the page has been deleted": [
                                 {
                                     "title": "Check the title of the shop page after the page has been deleted",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "shopper\\/wordpress-post.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "logged-in customer can comment on a post": [
+                                {
+                                    "title": "logged-in customer can comment on a post",
                                     "status": "passed"
                                 }
                             ]
@@ -2544,7 +2909,7 @@
                         }
                     }
                 ],
-                "summary": "380 total, 369 passed, 3 failed, 8 skipped."
+                "summary": "442 total, 399 passed, 0 failed, 43 skipped."
             }
         },
         {
