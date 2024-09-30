@@ -92,7 +92,7 @@ foreach ( $it as $file ) {
 		if ( ! ( new ReflectionClass( $fqdn ) )->isSubclassOf( Command::class ) ) {
 			continue;
 		}
-		if ( ( new ReflectionClass( $fqdn ) )->isAbstract() ) {
+		if ( ! ( new ReflectionClass( $fqdn ) )->isInstantiable() ) {
 			continue;
 		}
 		if ( is_null( $fqdn::getDefaultName() ) ) {
