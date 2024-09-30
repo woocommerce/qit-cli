@@ -63,6 +63,7 @@ $GLOBALS['qit_application']->setAutoExit( false );
  * @var SplFileInfo $file
  * @var RecursiveDirectoryIterator $it
  */
+$failed_to_build = [];
 $it = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( __DIR__ . '/../src/Commands', FilesystemIterator::SKIP_DOTS ) );
 foreach ( $it as $file ) {
 	if ( $file->isFile() && $file->getExtension() === 'php' && ! $file->isLink() ) {
@@ -97,9 +98,23 @@ foreach ( $it as $file ) {
 
 		if ( ! $GLOBALS['qit_application']->has( $fqdn::getDefaultName() ) ) {
 			echo "Adding command: $fqdn\n";
-			$GLOBALS['qit_application']->add( App::make( $fqdn ) );
+			try {
+				$GLOBALS['qit_application']->add( App::make( $fqdn ) );
+			} catch ( Exception $e ) {
+				$failed_to_build[] = $fqdn;
+			}
 		}
 	}
+}
+/*
+ * Commands that use "reuseOption" might require a specific load order, which is respected
+ * on our manual bootstrap.php, but not here.
+ * 
+ * In that case, we "defer" any command that fails to add and try to add them again
+ * after all other commands have been added.
+ */
+if ( ! empty( $failed_to_build ) ) {
+	$GLOBALS['qit_application']->add( App::make( $fqdn ) );
 }
 
 define( 'UNIT_TESTS_BOOTSTRAPPED', true );
