@@ -35,7 +35,7 @@ require_once __DIR__ . '/../src/helpers.php';
 
 qit_tests_reset_config_dir();
 
-putenv( 'QIT_HOME=/tmp/.woo-qit-tests' );
+putenv( sprintf( 'QIT_HOME=%s/.woo-qit-tests', sys_get_temp_dir() ) );
 
 // Initialize DI container.
 $container = new Container();
