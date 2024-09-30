@@ -92,6 +92,9 @@ foreach ( $it as $file ) {
 		if ( ! ( new ReflectionClass( $fqdn ) )->isSubclassOf( Command::class ) ) {
 			continue;
 		}
+		if ( ( new ReflectionClass( $fqdn ) )->isAbstract() ) {
+			continue;
+		}
 		if ( is_null( $fqdn::getDefaultName() ) ) {
 			continue;
 		}
@@ -109,7 +112,7 @@ foreach ( $it as $file ) {
 /*
  * Commands that use "reuseOption" might require a specific load order, which is respected
  * on our manual bootstrap.php, but not here.
- * 
+ *
  * In that case, we "defer" any command that fails to add and try to add them again
  * after all other commands have been added.
  */
