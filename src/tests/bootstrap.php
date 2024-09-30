@@ -117,7 +117,10 @@ foreach ( $it as $file ) {
  * after all other commands have been added.
  */
 if ( ! empty( $failed_to_build ) ) {
-	$GLOBALS['qit_application']->add( App::make( $fqdn ) );
+	foreach ( $failed_to_build as $fqdn ) {
+		echo "Adding deferred command: $fqdn\n";
+		$GLOBALS['qit_application']->add( App::make( $fqdn ) );
+	}
 }
 
 define( 'UNIT_TESTS_BOOTSTRAPPED', true );
