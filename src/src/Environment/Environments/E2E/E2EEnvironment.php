@@ -49,10 +49,13 @@ class E2EEnvironment extends Environment {
 
 	protected function post_up(): void {
 		if ( $this->env_info->tunnel ) {
-			// Host port.
-			$this->env_info->nginx_port = (string) $this->get_nginx_port();
+			// Tunnelled environments must always be exposed to Docker.
 
-			$site_url = App::make( TunnelRunner::class )->start_tunnel( "http://localhost:{$this->env_info->nginx_port}/", $this->env_info->env_id );
+			// Inside docker, the port is always 80 (that's what Nginx is listening to).
+			$this->env_info->nginx_port = '80';
+			$nginx_container            = "qit_env_nginx_{$this->env_info->env_id}";
+
+			$site_url = App::make( TunnelRunner::class )->start_tunnel( "http://$nginx_container", $this->env_info->env_id, $this->env_info->docker_network );
 
 			$this->env_info->domain     = parse_url( $site_url, PHP_URL_HOST );
 			$this->env_info->nginx_port = (string) parse_url( $site_url, PHP_URL_PORT );

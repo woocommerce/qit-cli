@@ -18,7 +18,7 @@ class TunnelRunner {
 		$this->output = $output;
 	}
 
-	public function start_tunnel( string $local_url, string $env_id ): string {
+	public function start_tunnel( string $local_url, string $env_id, string $network_name ): string {
 		if ( ! empty( getenv( 'QIT_TUNNEL_REGION' ) ) ) {
 			// Validate $region is a-z.
 			if ( ! preg_match( '/^[a-z]+$/', getenv( 'QIT_TUNNEL_REGION' ) ) ) {
@@ -35,7 +35,7 @@ class TunnelRunner {
 		$docker_container_name = "qit_env_tunnel_$env_id";
 
 		// Start the Docker container in detached mode.
-		exec( "{$this->docker->find_docker()} run -d --net=host --name=$docker_container_name cloudflare/cloudflared:latest tunnel --no-autoupdate $region --url=$local_url", $run_output, $run_return );
+		exec( "{$this->docker->find_docker()} run -d --network=$network_name --name=$docker_container_name cloudflare/cloudflared:latest tunnel --no-autoupdate $region --url=$local_url", $run_output, $run_return );
 
 		if ( $run_return !== 0 ) {
 			$error_output = implode( "\n", $run_output );
