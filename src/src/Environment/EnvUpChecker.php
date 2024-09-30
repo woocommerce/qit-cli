@@ -25,7 +25,7 @@ class EnvUpChecker {
 			$site_url_domain = parse_url( $env_info->site_url, PHP_URL_HOST );
 			$io->section( 'Test connection failed' );
 
-			if ( $env_info->domain !== 'localhost' ) {
+			if ( $env_info->domain !== 'localhost' && ! $env_info->tunnel ) {
 				$io->writeln( 'We couldn\'t access the website. To fix this, please check if the following line is present in your hosts file:' );
 				$io->writeln( sprintf( "\n<info>127.0.0.1 %s</info>\n", $site_url_domain ) );
 				if ( is_wsl() ) {
