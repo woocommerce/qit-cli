@@ -96,6 +96,7 @@ foreach ( $it as $file ) {
 		}
 
 		if ( ! $GLOBALS['qit_application']->has( $fqdn::getDefaultName() ) ) {
+			echo "Adding command: $fqdn\n";
 			$GLOBALS['qit_application']->add( App::make( $fqdn ) );
 		}
 	}
