@@ -31,6 +31,7 @@ use QIT_CLI\Commands\SyncCommand;
 use QIT_CLI\Commands\Tags\DeleteTestTagsCommand;
 use QIT_CLI\Commands\Tags\ListTestTagsCommand;
 use QIT_CLI\Commands\Tags\UploadTestTagsCommand;
+use QIT_CLI\Commands\Tunnel\TunnelCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Commands\WooValidateZipCommand;
 use QIT_CLI\Config;
@@ -178,6 +179,7 @@ $is_connected_to_backend = false;
 $application->add( $container->make( DevModeCommand::class ) );
 $application->add( $container->make( ConfigDirCommand::class ) );
 $application->add( $container->make( ConnectCommand::class ) );
+$application->add( $container->make( TunnelCommand::class ) );
 $application->add( $container->make( WooValidateZipCommand::class ) );
 
 // Environment commands.
