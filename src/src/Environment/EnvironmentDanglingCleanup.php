@@ -480,7 +480,7 @@ class EnvironmentDanglingCleanup {
 			if ( ! in_array( $env_id, $running_env_ids, true ) ) {
 				$this->debug_output( "Removing dangling local tunnel: {$pid_file}" );
 				try {
-					TunnelRunner::stop_tunnel( $env_id, true );
+					TunnelRunner::stop_tunnel( $env_id );
 				} catch ( \Exception $e ) {
 					// Just a warning.
 					$this->output->writeln( $e->getMessage() );

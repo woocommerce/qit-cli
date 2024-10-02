@@ -23,19 +23,36 @@ class TunnelRunner {
 		$this->output = $output;
 	}
 
-	public function check_tunnel_support(): void {
-		if ( ! is_mac() && ! is_wsl() ) {
-			// Linux.
-			static::$tunnel_type = 'docker';
-
-			return;
-		} elseif ( is_mac() ) {
-			static::$tunnel_type = 'local';
-		} elseif ( is_wsl() ) {
-			throw new \RuntimeException( 'The "--tunnel" option is not supported in WSL.' );
+	public function check_tunnel_support( string $tunnel_type ): void {
+		// Determine the tunnel type based on the provided parameter or auto-detection.
+		if ( $tunnel_type !== 'auto' ) {
+			// Validate the provided tunnel type
+			if ( ! in_array( $tunnel_type, [ 'docker', 'local' ], true ) ) {
+				throw new \InvalidArgumentException( 'Invalid tunnel type specified. Allowed values are "docker" or "local".' );
+			}
+			static::$tunnel_type = $tunnel_type;
+		} else {
+			// Auto-detect tunnel type based on the operating system
+			if ( ! is_mac() && ! is_wsl() ) {
+				// Assuming it's Linux
+				static::$tunnel_type = 'docker';
+			} elseif ( is_mac() ) {
+				static::$tunnel_type = 'local';
+			} elseif ( is_wsl() ) {
+				throw new \RuntimeException( 'The "--tunnel" option is not supported in WSL.' );
+			}
 		}
 
-		// Check if "cloudflared" is installed.
+		// Early bail if the tunnel type is 'docker'
+		if ( static::$tunnel_type === 'docker' ) {
+			if ( is_mac() ) {
+				throw new \RuntimeException( 'Docker tunnels are not supported on macOS, as it requires network mode host. Use local tunnel instead.' );
+			}
+
+			return;
+		}
+
+		// If the tunnel type is 'local', verify that "cloudflared" is installed
 		$process = new Process( [ 'cloudflared', '--version' ] );
 		$process->run();
 
@@ -64,8 +81,8 @@ After installation, re-run your command. No additional configuration is needed.
 For detailed installation instructions and more information, visit the https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
 
 NOTICE
-			// phpcs:enable WordPress.Security.EscapeOutput.HeredocOutputNotEscaped
 			);
+			// phpcs:enable WordPress.Security.EscapeOutput.HeredocOutputNotEscaped
 		}
 	}
 
@@ -204,25 +221,21 @@ NOTICE
 		return $domain;
 	}
 
-	public static function stop_tunnel( string $env_id, bool $force_local = false ): void {
-		if ( ! $force_local && static::$tunnel_type === 'docker' ) {
+	public static function stop_tunnel( string $env_id ): void {
+		// Retrieve the PID from the pidfile.
+		$pid_file = sys_get_temp_dir() . "/qit_env_tunnel_{$env_id}.pid";
+		if ( file_exists( $pid_file ) ) {
+			$pid = trim( file_get_contents( $pid_file ) );
+			if ( $pid ) {
+				// Unix/Linux/MacOS.
+				$kill_command = [ 'kill', $pid ];
+				$kill_process = new Process( $kill_command );
+				$kill_process->run();
+			}
+			unlink( $pid_file );
+		} else {
 			$p = new Process( [ 'docker', 'rm', '-f', "qit_env_tunnel_$env_id" ] );
 			$p->run();
-		} else {
-			// Retrieve the PID from the pidfile.
-			$pid_file = sys_get_temp_dir() . "/qit_env_tunnel_{$env_id}.pid";
-			if ( file_exists( $pid_file ) ) {
-				$pid = trim( file_get_contents( $pid_file ) );
-				if ( $pid ) {
-					// Unix/Linux/MacOS.
-					$kill_command = [ 'kill', $pid ];
-					$kill_process = new Process( $kill_command );
-					$kill_process->run();
-				}
-				unlink( $pid_file );
-			} else {
-				throw new \RuntimeException( 'PID file not found. Unable to stop the tunnel.' );
-			}
 		}
 	}
 }

@@ -15,6 +15,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\is_windows;
+use function QIT_CLI\is_wsl;
 
 class UpEnvironmentCommand extends DynamicCommand {
 	/** @var E2EEnvironment */
@@ -63,7 +64,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
-			->addOption( 'tunnel', null, InputOption::VALUE_NONE, 'Whether to tunnel the environment, to expose the environment to the web.' )
+			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Expose the environment via a tunnel. Options: "docker", "local". Auto-detect the most appropriate tunnelling approach if not specified.' )
 			->setAliases( [ 'env:start' ]
 			);
 
@@ -194,15 +195,7 @@ HELP
 		$input->setOption( 'woo', null );
 		$input->setOption( 'skip_activating_plugins', null );
 
-		if ( $input->getOption( 'tunnel' ) ) {
-			try {
-				$this->tunnel_runner->check_tunnel_support();
-			} catch ( \Exception $e ) {
-				$this->output->writeln( $e->getMessage() );
-
-				return Command::FAILURE;
-			}
-		}
+		$tunnel = $input->getParameterOption( '--tunnel', 'no_tunnel' ) ?? 'auto';
 
 		try {
 			$options_to_env_info = $this->parse_options( $input );
@@ -255,6 +248,27 @@ HELP
 		}
 
 		$env_info = App::make( EnvConfigLoader::class )->init_env_info( $options_to_env_info );
+
+		if ( $tunnel !== 'no_tunnel' ) {
+			if ( is_wsl() ) {
+				$output->writeln( '<error>The "--tunnel" option is not supported in WSL.</error>' );
+
+				return Command::FAILURE;
+			}
+
+			try {
+				$this->tunnel_runner->check_tunnel_support( $tunnel );
+				$env_info->tunnel = true;
+			} catch ( \Exception $e ) {
+				if ( $tunnel !== 'auto' ) {
+					$this->output->writeln( '<comment>Warning:</comment> Explicitly specifying the tunnel type is not recommended. Auto-detection is preferred for optimal configuration.' );
+				}
+
+				$this->output->writeln( $e->getMessage() );
+
+				return Command::FAILURE;
+			}
+		}
 
 		if ( $output->isVeryVerbose() ) {
 			$this->output->writeln( 'Environment info: ' . json_encode( $env_info, JSON_PRETTY_PRINT ) );
