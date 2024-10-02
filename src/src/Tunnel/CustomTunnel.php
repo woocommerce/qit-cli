@@ -13,11 +13,11 @@ abstract class CustomTunnel {
 	 */
 	abstract public static function connect_tunnel( string $site_url, string $env_id ): string;
 
-	protected static function test_connection( string $tunnel_url ) {
+	public static function test_connection( string $tunnel_url ) {
 		echo "Waiting for tunnel to be ready... ";
 		// Wait for the tunnel to become accessible.
 		$start_time   = time();
-		$timeout      = 60; // seconds.
+		$timeout      = getenv( 'QIT_TUNNEL_TIMEOUT_SECONDS' ) ?: 60; // seconds.
 		$tunnel_ready = false;
 
 		while ( ( time() - $start_time ) < $timeout ) {
