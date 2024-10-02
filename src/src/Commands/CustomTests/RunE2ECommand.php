@@ -31,7 +31,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Process\Process;
 use function QIT_CLI\is_windows;
 
 class RunE2ECommand extends DynamicCommand {

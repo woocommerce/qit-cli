@@ -87,9 +87,9 @@ class RunActivationTestCommand extends Command {
 
 		foreach ( $this->reused_options as $reused_option ) {
 			if ( $reused_option === 'tunnel' ) {
-				$run_e2e_options["--tunnel"] = TunnelRunner::get_tunnel_value( $input );
+				$run_e2e_options['--tunnel'] = TunnelRunner::get_tunnel_value( $input );
 			} else {
-				$run_e2e_options["--$reused_option"] = $input->getOption( $reused_option );
+				$run_e2e_options[ "--$reused_option" ] = $input->getOption( $reused_option );
 			}
 		}
 
