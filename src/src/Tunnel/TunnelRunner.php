@@ -154,7 +154,7 @@ NOTICE
 		 * @link https://stackoverflow.com/a/3819422/2056484
 		 * @link https://github.com/cocur/background-process/blob/master/src/BackgroundProcess.php
 		 */
-		$command .= ' 2>&1 ' . escapeshellarg( $output_file ) . ' &';
+		$command .= ' > ' . escapeshellarg( $output_file ) . ' 2>&1 &';
 
 		exec( $command );
 
