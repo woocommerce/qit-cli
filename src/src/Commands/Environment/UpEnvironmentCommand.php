@@ -194,6 +194,16 @@ HELP
 		$input->setOption( 'woo', null );
 		$input->setOption( 'skip_activating_plugins', null );
 
+		if ( $input->getOption( 'tunnel' ) ) {
+			try {
+				$this->tunnel_runner->check_tunnel_support();
+			} catch ( \Exception $e ) {
+				$this->output->writeln( $e->getMessage() );
+
+				return Command::FAILURE;
+			}
+		}
+
 		try {
 			$options_to_env_info = $this->parse_options( $input );
 		} catch ( \Exception $e ) {
