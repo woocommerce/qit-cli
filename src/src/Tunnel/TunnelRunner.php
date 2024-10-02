@@ -2,8 +2,6 @@
 
 namespace QIT_CLI\Tunnel;
 
-use QIT_CLI\App;
-use QIT_CLI\Cache;
 use QIT_CLI\Environment\Docker;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,7 +16,7 @@ class TunnelRunner {
 	/** @var OutputInterface */
 	protected $output;
 
-	/** @var 'docker'|'local' $tunnel_type Tunnel runs in "docker" on Linux and in "local" on Mac. Initialized as "local" for convenience. */
+	/** @var 'docker'|'local'|'custom' $tunnel_type Tunnel runs in "docker" on Linux and in "local" on Mac. Initialized as "local" for convenience. */
 	protected static $tunnel_type = 'local';
 
 	public function __construct( Docker $docker, OutputInterface $output ) {
@@ -233,7 +231,7 @@ NOTICE
 			unlink( $output_file );
 		}
 
-		$this->test_conection_cloudflare( $domain );
+		$this->test_connection_cloudflare( $domain );
 
 		return $domain;
 	}
@@ -285,31 +283,30 @@ NOTICE
 			throw new \RuntimeException( 'Timed out waiting for tunnel domain.' );
 		}
 
-		$this->test_conection_cloudflare( $domain );
+		$this->test_connection_cloudflare( $domain );
 
 		return $domain;
 	}
 
-	protected function test_conection_cloudflare( $site_url ) {
-		$has_failed_connection_test = false;
+	protected function test_connection_cloudflare( string $site_url ): void {
+		$max_retries = 1;
+		$attempt     = 0;
 
-		try {
-			retry_test_connection:
-			CustomTunnel::test_connection( $site_url );
-		} catch ( \Exception $e ) {
-			/*
-			 * If the connection times out, it's possible that the DNS hasn't propagated yet.
-			 * For better performance, the host should be using Cloudflare DNS (1.1.1.1)
-			 * Inform this to the user.
-			 */
-			$this->output->writeln( '<comment>The connection to the tunnel timed out. This is usually because the DNS hasn\'t propagated yet. If you are using a different DNS, consider switching to Cloudflare DNS (1.1.1.1) for better performance.</comment>' );
+		while ( $attempt <= $max_retries ) {
+			try {
+				CustomTunnel::test_connection( $site_url );
 
-			if ( ! $has_failed_connection_test ) {
-				$has_failed_connection_test = true;
-				$this->output->writeln( '<comment>Retrying connection test...</comment>' );
-				goto retry_test_connection;
-			} else {
-				throw $e;
+				return;
+			} catch ( \Exception $e ) {
+				$this->output->writeln( '<comment>The connection to the tunnel timed out. This is usually because the DNS hasn\'t propagated yet. If you are using a different DNS, consider switching to Cloudflare DNS (1.1.1.1) for better performance.</comment>' );
+
+				if ( $attempt < $max_retries ) {
+					$this->output->writeln( '<comment>Retrying connection test...</comment>' );
+				} else {
+					throw $e;
+				}
+			} finally {
+				++$attempt;
 			}
 		}
 	}
