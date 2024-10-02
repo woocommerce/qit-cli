@@ -26,15 +26,14 @@ class TunnelRunner {
 	public function check_tunnel_support( string $tunnel_type ): void {
 		// Determine the tunnel type based on the provided parameter or auto-detection.
 		if ( $tunnel_type !== 'auto' ) {
-			// Validate the provided tunnel type
 			if ( ! in_array( $tunnel_type, [ 'docker', 'local' ], true ) ) {
 				throw new \InvalidArgumentException( 'Invalid tunnel type specified. Allowed values are "docker" or "local".' );
 			}
 			static::$tunnel_type = $tunnel_type;
 		} else {
-			// Auto-detect tunnel type based on the operating system
+			// Auto-detect tunnel type based on the operating system.
 			if ( ! is_mac() && ! is_wsl() ) {
-				// Assuming it's Linux
+				// Assuming it's Linux.
 				static::$tunnel_type = 'docker';
 			} elseif ( is_mac() ) {
 				static::$tunnel_type = 'local';
@@ -43,7 +42,6 @@ class TunnelRunner {
 			}
 		}
 
-		// Early bail if the tunnel type is 'docker'
 		if ( static::$tunnel_type === 'docker' ) {
 			if ( is_mac() ) {
 				throw new \RuntimeException( 'Docker tunnels are not supported on macOS, as it requires network mode host. Use local tunnel instead.' );
@@ -52,7 +50,7 @@ class TunnelRunner {
 			return;
 		}
 
-		// If the tunnel type is 'local', verify that "cloudflared" is installed
+		// If the tunnel type is 'local', verify that "cloudflared" is installed.
 		$process = new Process( [ 'cloudflared', '--version' ] );
 		$process->run();
 
@@ -106,36 +104,66 @@ NOTICE
 		}
 	}
 
+	/**
+	 * We cannot run a Docker tunnel on Mac due to network limitations.
+	 *
+	 * The easiest way to get Docker tunnel to work is with "network mode" set to "host",
+	 * which is only available in Linux.
+	 *
+	 * We couldn't get around it with other methods with Docker, so we fallback to
+	 * a local "cloudflared" binary running on the host.
+	 *
+	 * @returns string The tunnelled URL.
+	 */
 	public function start_tunnel_local( string $local_url, string $env_id, string $region ): string {
-		$pid_file = sys_get_temp_dir() . "/qit_env_tunnel_{$env_id}.pid";
+		$pid_file    = sys_get_temp_dir() . "/qit_env_tunnel_{$env_id}.pid";
+		$output_file = sys_get_temp_dir() . "/qit_env_tunnel_{$env_id}.log";
 
-		$command = [
+		$command_parts = [
+			'nohup',
 			'cloudflared',
 			'tunnel',
 			'--no-autoupdate',
 			'--pidfile',
-			$pid_file,
+			escapeshellarg( $pid_file ),
 		];
-		if ( $region !== '' ) {
-			$command[] = $region;
-		}
-		$command[] = '--url';
-		$command[] = $local_url;
 
-		$process = new Process( $command );
-		$process->setTimeout( null );
-		$process->start();
+		if ( $region !== '' ) {
+			$command_parts[] = escapeshellarg( $region );
+		}
+
+		$command_parts[] = '--url';
+		$command_parts[] = escapeshellarg( $local_url );
+
+		$command = implode( ' ', $command_parts );
+
+		/*
+		 * We have a couple of requirements:
+		 * - The tunnel process must continue running after this PHP script terminates.
+		 * - We need to capture the output of the 'cloudflared' process to extract the generated domain URL.
+		 *
+		 * PHP struggles at running things on the background detached from the current process.
+		 *
+		 * To achieve this, we:
+		 * - Use 'nohup' to prevent the process from terminating when the PHP script ends or the console is closed.
+		 * - Redirect both stdout and stderr to the output file.
+		 * - Run the command in the background.
+		 *
+		 * Then we keep reading from the output file until we find the tunnelled URL, or we bail.
+		 *
+		 * @link https://stackoverflow.com/a/3819422/2056484
+		 * @link https://github.com/cocur/background-process/blob/master/src/BackgroundProcess.php
+		 */
+		$command .= ' 2>&1 ' . escapeshellarg( $output_file ) . ' &';
+
+		exec( $command );
 
 		$start_time = time();
 		$timeout    = 60; // seconds.
 		$domain     = null;
-		$output     = '';
 
 		// Wait for the PID file to be created.
 		while ( ! file_exists( $pid_file ) && ( time() - $start_time ) < $timeout ) {
-			if ( ! $process->isRunning() ) {
-				throw new \RuntimeException( 'cloudflared process terminated unexpectedly.' );
-			}
 			usleep( 100000 ); // 0.1 seconds.
 		}
 
@@ -143,22 +171,17 @@ NOTICE
 			throw new \RuntimeException( 'Timed out waiting for PID file creation.' );
 		}
 
-		// Loop to get the domain from the process output.
+		$output = '';
+
+		// Loop to get the domain from the output file.
 		while ( ( time() - $start_time ) < $timeout ) {
-			// Get the incremental output.
-			$output .= $process->getIncrementalOutput() . $process->getIncrementalErrorOutput();
+			if ( file_exists( $output_file ) ) {
+				$output = file_get_contents( $output_file );
 
-			if ( preg_match( '#https://[a-zA-Z0-9\-]+\.trycloudflare\.com#', $output, $matches ) ) {
-				$domain = $matches[0];
-				break;
-			}
-
-			if ( ! $process->isRunning() ) {
-				// Clean up PID file.
-				if ( file_exists( $pid_file ) ) { // @phpstan-ignore-line
-					unlink( $pid_file );
+				if ( preg_match( '#https://[a-zA-Z0-9\-]+\.trycloudflare\.com#', $output, $matches ) ) {
+					$domain = $matches[0];
+					break;
 				}
-				throw new \RuntimeException( 'cloudflared process terminated unexpectedly.' );
 			}
 
 			usleep( 500000 ); // 0.5 seconds.
@@ -173,9 +196,18 @@ NOTICE
 			throw new \RuntimeException( 'Timed out waiting for tunnel domain.' );
 		}
 
+		if ( file_exists( $output_file ) ) {
+			unlink( $output_file );
+		}
+
 		return $domain;
 	}
 
+	/**
+	 * Spins up a tunnel using Docker. Only works on Linux.
+	 *
+	 * @return string The tunnelled URL.
+	 */
 	public function start_tunnel_docker( string $local_url, string $env_id, string $region ): string {
 		$local_url             = escapeshellarg( $local_url );
 		$docker_container_name = "qit_env_tunnel_$env_id";
