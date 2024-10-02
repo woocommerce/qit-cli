@@ -135,8 +135,9 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		try {
-			$options        = $this->parse_options( $input );
-			$env_up_options = $options['env_up'];
+			$options                    = $this->parse_options( $input );
+			$env_up_options             = $options['env_up'];
+			$env_up_options['--tunnel'] = $input->getParameterOption( '--tunnel', 'no_tunnel' ) ?? 'auto';
 		} catch ( \Exception $e ) {
 			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
@@ -367,14 +368,6 @@ class RunE2ECommand extends DynamicCommand {
 		$env_info = E2EEnvInfo::from_array( $env_json );
 
 		App::singleton( E2EEnvInfo::class, $env_info );
-
-		// Schedule the tunnel process to be shut down on completion.
-		if ( $input->getOption( 'tunnel' ) ) {
-			register_shutdown_function( static function () {
-				$p = new Process( [ 'docker', 'rm', '-f', 'qit_tunnel' ] );
-				$p->run();
-			} );
-		}
 
 		if ( ! empty( $woo_extension_id ) ) {
 			$env_info->sut_slug = $woo_extension;

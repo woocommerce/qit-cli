@@ -85,7 +85,11 @@ class RunActivationTestCommand extends Command {
 		$run_e2e_options['--skip_activating_plugins'] = true;
 
 		foreach ( $this->reused_options as $reused_option ) {
-			$run_e2e_options[ "--$reused_option" ] = $input->getOption( $reused_option );
+			if ( $reused_option === 'tunnel' ) {
+				$run_e2e_options["--tunnel"] = $input->getParameterOption( '--tunnel', 'no_tunnel' ) ?? 'auto';
+			} else {
+				$run_e2e_options["--$reused_option"] = $input->getOption( $reused_option );
+			}
 		}
 
 		// --zip deprecated option.
