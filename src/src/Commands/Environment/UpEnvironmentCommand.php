@@ -195,7 +195,7 @@ HELP
 		$input->setOption( 'woo', null );
 		$input->setOption( 'skip_activating_plugins', null );
 
-		$tunnel = $input->getParameterOption( '--tunnel', 'no_tunnel' ) ?? 'auto';
+		$tunnel = TunnelRunner::get_tunnel_value( $input );
 
 		try {
 			$options_to_env_info = $this->parse_options( $input );

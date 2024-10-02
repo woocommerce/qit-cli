@@ -7,6 +7,7 @@ use QIT_CLI\Cache;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use QIT_CLI\RequestBuilder;
+use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -86,7 +87,7 @@ class RunActivationTestCommand extends Command {
 
 		foreach ( $this->reused_options as $reused_option ) {
 			if ( $reused_option === 'tunnel' ) {
-				$run_e2e_options["--tunnel"] = $input->getParameterOption( '--tunnel', 'no_tunnel' ) ?? 'auto';
+				$run_e2e_options["--tunnel"] = TunnelRunner::get_tunnel_value( $input );
 			} else {
 				$run_e2e_options["--$reused_option"] = $input->getOption( $reused_option );
 			}

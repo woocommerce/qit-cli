@@ -3,6 +3,7 @@
 namespace QIT_CLI\Tunnel;
 
 use QIT_CLI\Environment\Docker;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use function QIT_CLI\is_mac;
@@ -27,7 +28,7 @@ class TunnelRunner {
 		// Determine the tunnel type based on the provided parameter or auto-detection.
 		if ( $tunnel_type !== 'auto' ) {
 			if ( ! in_array( $tunnel_type, [ 'docker', 'local' ], true ) ) {
-				throw new \InvalidArgumentException( 'Invalid tunnel type specified. Allowed values are "docker" or "local".' );
+				throw new \InvalidArgumentException( 'Invalid tunnel type "' . $tunnel_type . '" specified. Allowed values are "docker" or "local".' );
 			}
 			static::$tunnel_type = $tunnel_type;
 		} else {
@@ -82,6 +83,21 @@ NOTICE
 			);
 			// phpcs:enable WordPress.Security.EscapeOutput.HeredocOutputNotEscaped
 		}
+	}
+
+	/**
+	 * @link https://stackoverflow.com/a/76131126/2056484 For additional context.
+	 *
+	 * @return string The tunnel type to use.
+	 */
+	public static function get_tunnel_value( InputInterface $input ): string {
+		$tunnel = $input->getParameterOption( '--tunnel', 'no_tunnel', true ) ?? 'auto';
+
+		if ( ! in_array( $tunnel, [ 'auto', 'docker', 'local', 'no_tunnel' ], true ) ) {
+			return 'auto';
+		}
+
+		return $tunnel;
 	}
 
 	public function start_tunnel( string $local_url, string $env_id ): string {

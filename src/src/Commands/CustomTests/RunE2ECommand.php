@@ -21,6 +21,7 @@ use QIT_CLI\Environment\Extension;
 use QIT_CLI\LocalTests\E2E\E2ETestManager;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\PluginDependencies;
+use QIT_CLI\Tunnel\TunnelRunner;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -137,7 +138,7 @@ class RunE2ECommand extends DynamicCommand {
 		try {
 			$options                    = $this->parse_options( $input );
 			$env_up_options             = $options['env_up'];
-			$env_up_options['--tunnel'] = $input->getParameterOption( '--tunnel', 'no_tunnel' ) ?? 'auto';
+			$env_up_options['--tunnel'] = TunnelRunner::get_tunnel_value( $input );
 		} catch ( \Exception $e ) {
 			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
