@@ -2,6 +2,8 @@
 
 namespace QIT_CLI\Tunnel;
 
+use QIT_CLI\App;
+use QIT_CLI\Cache;
 use QIT_CLI\Environment\Docker;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -27,8 +29,8 @@ class TunnelRunner {
 	public function check_tunnel_support( string $tunnel_type ): void {
 		// Determine the tunnel type based on the provided parameter or auto-detection.
 		if ( $tunnel_type !== 'auto' ) {
-			if ( ! in_array( $tunnel_type, [ 'docker', 'local' ], true ) ) {
-				throw new \InvalidArgumentException( 'Invalid tunnel type "' . $tunnel_type . '" specified. Allowed values are "docker" or "local".' );
+			if ( ! in_array( $tunnel_type, [ 'docker', 'local', 'custom' ], true ) ) {
+				throw new \InvalidArgumentException( 'Invalid tunnel type "' . $tunnel_type . '" specified. Allowed values are "docker", "local" or "custom".' );
 			}
 			static::$tunnel_type = $tunnel_type;
 		} else {
@@ -48,6 +50,10 @@ class TunnelRunner {
 				throw new \RuntimeException( 'Docker tunnels are not supported on macOS, as it requires network mode host. Use local tunnel instead.' );
 			}
 
+			return;
+		}
+
+		if ( static::$tunnel_type === 'custom' ) {
 			return;
 		}
 
@@ -93,7 +99,7 @@ NOTICE
 	public static function get_tunnel_value( InputInterface $input ): string {
 		$tunnel = $input->getParameterOption( '--tunnel', 'no_tunnel', true ) ?? 'auto';
 
-		if ( ! in_array( $tunnel, [ 'auto', 'docker', 'local', 'no_tunnel' ], true ) ) {
+		if ( ! in_array( $tunnel, [ 'auto', 'docker', 'local', 'custom', 'no_tunnel' ], true ) ) {
 			return 'auto';
 		}
 
@@ -101,6 +107,17 @@ NOTICE
 	}
 
 	public function start_tunnel( string $local_url, string $env_id ): string {
+		if ( static::$tunnel_type === 'custom' ) {
+			$classes = get_declared_classes();
+			foreach ( $classes as $class ) {
+				if ( is_subclass_of( $class, CustomTunnel::class ) ) {
+					return $class::connect_tunnel( $local_url, $env_id );
+				}
+			}
+
+			throw new \RuntimeException( 'No custom tunnel found.' );
+		}
+
 		if ( ! empty( getenv( 'QIT_TUNNEL_REGION' ) ) ) {
 			// Validate $region is a-z.
 			if ( ! preg_match( '/^[a-z]+$/', getenv( 'QIT_TUNNEL_REGION' ) ) ) {
