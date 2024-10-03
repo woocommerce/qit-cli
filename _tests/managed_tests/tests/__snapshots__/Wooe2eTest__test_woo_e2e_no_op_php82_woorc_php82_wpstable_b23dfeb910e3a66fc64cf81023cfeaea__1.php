@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "442 total, 399 passed, 0 failed, 43 skipped.",
+            "test_summary": "448 total, 406 passed, 0 failed, 42 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -46,13 +46,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 91,
+                "numPassedTestSuites": 92,
                 "numPendingTestSuites": 19,
-                "numTotalTestSuites": 110,
+                "numTotalTestSuites": 111,
                 "numFailedTests": 0,
-                "numPassedTests": 399,
-                "numPendingTests": 43,
-                "numTotalTests": 442,
+                "numPassedTests": 406,
+                "numPendingTests": 42,
+                "numTotalTests": 448,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -853,6 +853,19 @@
                         }
                     },
                     {
+                        "file": "merchant\\/create-product-brand.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Merchant can add brands": [
+                                {
+                                    "title": "Merchant can add brands",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/create-restricted-coupons.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -880,6 +893,10 @@
                                 },
                                 {
                                     "title": "can create new excludeProductCategories coupon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create new excludeProductBrands coupon",
                                     "status": "passed"
                                 },
                                 {
@@ -1136,7 +1153,11 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "can load billing details",
+                                    "title": "can load billing and shipping details",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can copy billing address to shipping address",
                                     "status": "passed"
                                 }
                             ],
@@ -1469,6 +1490,24 @@
                                     "title": "can bulk edit products",
                                     "status": "passed"
                                 }
+                            ],
+                            "can restore regular price when bulk editing products": [
+                                {
+                                    "title": "can restore regular price when bulk editing products",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can decrease the sale price if the product was not previously in sale when bulk editing products": [
+                                {
+                                    "title": "can decrease the sale price if the product was not previously in sale when bulk editing products",
+                                    "status": "passed"
+                                }
+                            ],
+                            "increasing the sale price from 0 does not change the sale price when bulk editing products": [
+                                {
+                                    "title": "increasing the sale price from 0 does not change the sale price when bulk editing products",
+                                    "status": "passed"
+                                }
                             ]
                         }
                     },
@@ -1727,7 +1766,7 @@
                             "General tab > Create product": [
                                 {
                                     "title": "can create a simple product",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can not create a product with duplicated SKU",
@@ -1812,13 +1851,13 @@
                     {
                         "file": "merchant\\/products\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "General tab": [],
                             "General tab > Linked product": [
                                 {
                                     "title": "can create a product with linked products",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2909,7 +2948,7 @@
                         }
                     }
                 ],
-                "summary": "442 total, 399 passed, 0 failed, 43 skipped."
+                "summary": "448 total, 406 passed, 0 failed, 42 skipped."
             }
         },
         {

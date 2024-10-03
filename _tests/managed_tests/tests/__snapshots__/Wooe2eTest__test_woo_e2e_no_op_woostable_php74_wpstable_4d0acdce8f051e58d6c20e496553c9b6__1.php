@@ -33,6 +33,7 @@
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
             "test_summary": "442 total, 399 passed, 0 failed, 43 skipped.",
+            "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -40,8 +41,7 @@
             "workflow_id": "1234567890",
             "runner": "normalized",
             "test_media": [],
-            "test_result_json_extracted": "{EXTRACTED}",
-            "debug_log_extracted": "{EXTRACTED}"
+            "test_result_json_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
@@ -2910,11 +2910,6 @@
                     }
                 ],
                 "summary": "442 total, 399 passed, 0 failed, 43 skipped."
-            }
-        },
-        {
-            "debug_log": {
-                "generic": []
             }
         }
     ]
