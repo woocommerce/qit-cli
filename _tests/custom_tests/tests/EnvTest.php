@@ -88,7 +88,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 	public function test_env_up_with_plugins() {
 		$json = json_decode( qit( [ 'env:up', '--json' ], [
 			'plugins' => [
-				'qit-test-plugin' => [
+				'woocommerce-amazon-s3-storage' => [
 					'action' => 'activate',
 				],
 				'woocommerce' => [
@@ -106,7 +106,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 
 		/**
 		 * name    status
-		 * qit-test-plugin    active
+		 * woocommerce-amazon-s3-storage    active
 		 * woocommerce    active
 		 * qit-wp-cli    must-use
 		 * wp-cli-github-cache    must-use

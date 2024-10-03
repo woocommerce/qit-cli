@@ -1,6 +1,8 @@
+Warning: wp_update_plugins(): An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="https://wordpress.org/support/forums/">support forums</a>. (WordPress could not establish a secure connection to WordPress.org. Please contact your server administrator.) in /var/www/html/wp-includes/functions.php on line 6085
 name	status
-automatewoo	active
+woocommerce-amazon-s3-storage	active
 woocommerce	active
+qit-individual-log	must-use
 qit-wp-cli	must-use
 wp-cli-github-cache	must-use
 
