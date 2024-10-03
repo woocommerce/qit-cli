@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "442 total, 399 passed, 0 failed, 43 skipped.",
+            "test_summary": "448 total, 398 passed, 8 failed, 42 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,14 +45,14 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 91,
+                "numFailedTestSuites": 3,
+                "numPassedTestSuites": 89,
                 "numPendingTestSuites": 19,
-                "numTotalTestSuites": 110,
-                "numFailedTests": 0,
-                "numPassedTests": 399,
-                "numPendingTests": 43,
-                "numTotalTests": 442,
+                "numTotalTestSuites": 111,
+                "numFailedTests": 8,
+                "numPassedTests": 398,
+                "numPendingTests": 42,
+                "numTotalTests": 448,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -853,6 +853,19 @@
                         }
                     },
                     {
+                        "file": "merchant\\/create-product-brand.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Merchant can add brands": [
+                                {
+                                    "title": "Merchant can add brands",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/create-restricted-coupons.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -880,6 +893,10 @@
                                 },
                                 {
                                     "title": "can create new excludeProductCategories coupon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create new excludeProductBrands coupon",
                                     "status": "passed"
                                 },
                                 {
@@ -1136,7 +1153,11 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "can load billing details",
+                                    "title": "can load billing and shipping details",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can copy billing address to shipping address",
                                     "status": "passed"
                                 }
                             ],
@@ -1409,25 +1430,25 @@
                     },
                     {
                         "file": "merchant\\/product-create-simple.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "can create a simple virtual product": [
                                 {
                                     "title": "can create a simple virtual product",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "can create a simple non virtual product": [
                                 {
                                     "title": "can create a simple non virtual product",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "can create a simple downloadable product": [
                                 {
                                     "title": "can create a simple downloadable product",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -1467,6 +1488,24 @@
                             "can bulk edit products": [
                                 {
                                     "title": "can bulk edit products",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can restore regular price when bulk editing products": [
+                                {
+                                    "title": "can restore regular price when bulk editing products",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can decrease the sale price if the product was not previously in sale when bulk editing products": [
+                                {
+                                    "title": "can decrease the sale price if the product was not previously in sale when bulk editing products",
+                                    "status": "passed"
+                                }
+                            ],
+                            "increasing the sale price from 0 does not change the sale price when bulk editing products": [
+                                {
+                                    "title": "increasing the sale price from 0 does not change the sale price when bulk editing products",
                                     "status": "passed"
                                 }
                             ]
@@ -1727,7 +1766,7 @@
                             "General tab > Create product": [
                                 {
                                     "title": "can create a simple product",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can not create a product with duplicated SKU",
@@ -1812,13 +1851,13 @@
                     {
                         "file": "merchant\\/products\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "General tab": [],
                             "General tab > Linked product": [
                                 {
                                     "title": "can create a product with linked products",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2483,7 +2522,7 @@
                     },
                     {
                         "file": "shopper\\/checkout-block.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Checkout Block page": [
@@ -2513,15 +2552,15 @@
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "allows existing customer to place an order",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can create an account during checkout",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can create an account during checkout with custom password",
@@ -2558,7 +2597,7 @@
                     },
                     {
                         "file": "shopper\\/checkout.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Checkout page": [
@@ -2584,11 +2623,11 @@
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "allows existing customer to place order",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2909,12 +2948,17 @@
                         }
                     }
                 ],
-                "summary": "442 total, 399 passed, 0 failed, 43 skipped."
+                "summary": "448 total, 398 passed, 8 failed, 42 skipped."
             }
         },
         {
             "debug_log": {
-                "generic": []
+                "generic": [
+                    {
+                        "count": "13000",
+                        "message": "PHP Notice: Function load_plugin_textdomain was called incorrectly. Attempted to load translations for the wp-mail-logging domain too early. Translations should be loaded after the after_setup_theme action has fired, to ensure that the current user is already set up. Please see Debugging in WordPress for more information. (This message was added in version 6.7.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6099"
+                    }
+                ]
             }
         }
     ]
