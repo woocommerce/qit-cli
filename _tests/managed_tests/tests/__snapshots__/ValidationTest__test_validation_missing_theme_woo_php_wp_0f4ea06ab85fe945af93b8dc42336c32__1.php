@@ -52,7 +52,8 @@
                     "WC requires at least": false,
                     "WC tested up to": false,
                     "Woo": false
-                }
+                },
+                "features": []
             }
         }
     ]
