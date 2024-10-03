@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "258 total, 255 passed, 1 failed, 2 skipped.",
+            "test_summary": "258 total, 255 passed, 0 failed, 3 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,13 +45,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 18,
-                "numPendingTestSuites": 1,
+                "numPendingTestSuites": 2,
                 "numTotalTestSuites": 20,
-                "numFailedTests": 1,
+                "numFailedTests": 0,
                 "numPassedTests": 255,
-                "numPendingTests": 2,
+                "numPendingTests": 3,
                 "numTotalTests": 258,
                 "testResults": [
                     {
@@ -211,8 +211,8 @@
                     },
                     {
                         "file": "api-tests\\/data\\/data-crud.test.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Data API tests": [
                                 {
@@ -221,7 +221,7 @@
                                 },
                                 {
                                     "title": "can view country data",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can view currency data",
@@ -1384,7 +1384,7 @@
                         }
                     }
                 ],
-                "summary": "258 total, 255 passed, 1 failed, 2 skipped."
+                "summary": "258 total, 255 passed, 0 failed, 3 skipped."
             }
         },
         {

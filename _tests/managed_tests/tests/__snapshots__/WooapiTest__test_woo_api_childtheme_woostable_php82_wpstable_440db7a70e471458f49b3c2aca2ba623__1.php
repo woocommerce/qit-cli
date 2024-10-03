@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "258 total, 256 passed, 0 failed, 2 skipped.",
+            "test_summary": "258 total, 255 passed, 0 failed, 3 skipped.",
             "version": "1.0.15",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -46,12 +46,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 19,
-                "numPendingTestSuites": 1,
+                "numPassedTestSuites": 18,
+                "numPendingTestSuites": 2,
                 "numTotalTestSuites": 20,
                 "numFailedTests": 0,
-                "numPassedTests": 256,
-                "numPendingTests": 2,
+                "numPassedTests": 255,
+                "numPendingTests": 3,
                 "numTotalTests": 258,
                 "testResults": [
                     {
@@ -212,7 +212,7 @@
                     {
                         "file": "api-tests\\/data\\/data-crud.test.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Data API tests": [
                                 {
@@ -221,7 +221,7 @@
                                 },
                                 {
                                     "title": "can view country data",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can view currency data",
@@ -1384,7 +1384,7 @@
                         }
                     }
                 ],
-                "summary": "258 total, 256 passed, 0 failed, 2 skipped."
+                "summary": "258 total, 255 passed, 0 failed, 3 skipped."
             }
         },
         {
