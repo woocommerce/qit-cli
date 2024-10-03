@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "448 total, 398 passed, 8 failed, 42 skipped.",
+            "test_summary": "448 total, 406 passed, 0 failed, 42 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,12 +45,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 3,
-                "numPassedTestSuites": 89,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 92,
                 "numPendingTestSuites": 19,
                 "numTotalTestSuites": 111,
-                "numFailedTests": 8,
-                "numPassedTests": 398,
+                "numFailedTests": 0,
+                "numPassedTests": 406,
                 "numPendingTests": 42,
                 "numTotalTests": 448,
                 "testResults": [
@@ -1430,25 +1430,25 @@
                     },
                     {
                         "file": "merchant\\/product-create-simple.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "can create a simple virtual product": [
                                 {
                                     "title": "can create a simple virtual product",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "can create a simple non virtual product": [
                                 {
                                     "title": "can create a simple non virtual product",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "can create a simple downloadable product": [
                                 {
                                     "title": "can create a simple downloadable product",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2522,7 +2522,7 @@
                     },
                     {
                         "file": "shopper\\/checkout-block.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Checkout Block page": [
@@ -2552,15 +2552,15 @@
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "allows existing customer to place an order",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create an account during checkout",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can create an account during checkout with custom password",
@@ -2597,7 +2597,7 @@
                     },
                     {
                         "file": "shopper\\/checkout.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Checkout page": [
@@ -2623,11 +2623,11 @@
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "allows existing customer to place order",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2948,17 +2948,12 @@
                         }
                     }
                 ],
-                "summary": "448 total, 398 passed, 8 failed, 42 skipped."
+                "summary": "448 total, 406 passed, 0 failed, 42 skipped."
             }
         },
         {
             "debug_log": {
-                "generic": [
-                    {
-                        "count": "13000",
-                        "message": "PHP Notice: Function load_plugin_textdomain was called incorrectly. Attempted to load translations for the wp-mail-logging domain too early. Translations should be loaded after the after_setup_theme action has fired, to ensure that the current user is already set up. Please see Debugging in WordPress for more information. (This message was added in version 6.7.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6099"
-                    }
-                ]
+                "generic": []
             }
         }
     ]
