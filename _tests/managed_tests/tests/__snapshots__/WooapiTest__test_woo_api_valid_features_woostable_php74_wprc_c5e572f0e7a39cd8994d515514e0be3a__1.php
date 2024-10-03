@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "258 total, 256 passed, 0 failed, 2 skipped.",
+            "test_summary": "258 total, 255 passed, 1 failed, 2 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,12 +45,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 19,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 18,
                 "numPendingTestSuites": 1,
                 "numTotalTestSuites": 20,
-                "numFailedTests": 0,
-                "numPassedTests": 256,
+                "numFailedTests": 1,
+                "numPassedTests": 255,
                 "numPendingTests": 2,
                 "numTotalTests": 258,
                 "testResults": [
@@ -211,7 +211,7 @@
                     },
                     {
                         "file": "api-tests\\/data\\/data-crud.test.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Data API tests": [
@@ -221,7 +221,7 @@
                                 },
                                 {
                                     "title": "can view country data",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can view currency data",
@@ -1384,14 +1384,14 @@
                         }
                     }
                 ],
-                "summary": "258 total, 256 passed, 0 failed, 2 skipped."
+                "summary": "258 total, 255 passed, 1 failed, 2 skipped."
             }
         },
         {
             "debug_log": {
                 "generic": [
                     {
-                        "count": "625",
+                        "count": "600",
                         "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                     }
                 ]
