@@ -39,6 +39,12 @@ trait SnapshotHelpers {
 				continue;
 			}
 
+			// Normalize timings, eg "(8.9s)" or "(10.9s)", etc.
+			$line = preg_replace( '/\(\d+\.\d+s\)/', '(TIME)', $line );
+
+			// (235ms)
+			$line = preg_replace( '/\(\d+ms\)/', '(TIME)', $line );
+
 			// Normalize "woocommerce.8.8.5.zip" or "woocommerce.8.8.5-RC1.zip", etc to "woocommerce.VERSION.zip"
 			$line = preg_replace( '/woocommerce\.[^ ]+\.zip/', 'woocommerce.VERSION.zip', $line );
 

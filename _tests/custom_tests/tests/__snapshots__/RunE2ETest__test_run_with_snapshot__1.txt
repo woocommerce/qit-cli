@@ -7,18 +7,60 @@ Environment ready.
 Bootstrapping Plugins
 Bootstrapping deli /qit/tests/e2e/deli/local/bootstrap/bootstrap.php
 Bootstrapping deli /qit/tests/e2e/deli/local/bootstrap/bootstrap.sh
+Moving must-use plugin of deli /qit/tests/e2e/deli/local/bootstrap/mu-plugin.php
 Running E2E Tests
 Running 2 tests using 1 worker
-[1/2] [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli
-[deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli
 A snapshot doesn't exist at /qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png, writing actual.
-[2/2] [deli-local] › deli/local/example.spec.js:9:5 › I can see my plugin menu
+✓  1 [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli (TIME)
+could not read file /qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-actual.png Error: ENOENT: no such file or directory, open '/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-actual.png'
+at open (node:internal/fs/promises:639:25)
+at readFile (node:internal/fs/promises:1242:14) {
+errno: -2,
+code: 'ENOENT',
+syscall: 'open',
+path: '/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-actual.png'
+}
+could not read file /qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-expected.png Error: ENOENT: no such file or directory, open '/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-expected.png'
+at open (node:internal/fs/promises:639:25)
+at readFile (node:internal/fs/promises:1242:14) {
+errno: -2,
+code: 'ENOENT',
+syscall: 'open',
+path: '/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-expected.png'
+}
+could not read file /qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-diff.png Error: ENOENT: no such file or directory, open '/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-diff.png'
+at open (node:internal/fs/promises:639:25)
+at readFile (node:internal/fs/promises:1242:14) {
+errno: -2,
+code: 'ENOENT',
+syscall: 'open',
+path: '/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-diff.png'
+}
+could not read file /qit/results/playwright/activate-theme-I-can-activate-Deli-deli-local/home-expected.png Error: ENOENT: no such file or directory, open '/qit/results/playwright/activate-theme-I-can-activate-Deli-deli-local/home-expected.png'
+at open (node:internal/fs/promises:639:25)
+at readFile (node:internal/fs/promises:1242:14) {
+errno: -2,
+code: 'ENOENT',
+syscall: 'open',
+path: '/qit/results/playwright/activate-theme-I-can-activate-Deli-deli-local/home-expected.png'
+}
+could not read file /qit/results/playwright/activate-theme-I-can-activate-Deli-deli-local/home-diff.png Error: ENOENT: no such file or directory, open '/qit/results/playwright/activate-theme-I-can-activate-Deli-deli-local/home-diff.png'
+at open (node:internal/fs/promises:639:25)
+at readFile (node:internal/fs/promises:1242:14) {
+errno: -2,
+code: 'ENOENT',
+syscall: 'open',
+path: '/qit/results/playwright/activate-theme-I-can-activate-Deli-deli-local/home-diff.png'
+}
+✓  2 [deli-local] › deli/local/example.spec.js:9:5 › I can see my plugin menu (837ms)
 2 passed (TIME)
 Test artifacts being saved to: /tmp-normalized/qit-results-normalizedid
 Uploading zip...
 
 
-[OK] Tests passed. Run 'qit e2e-report' to view the report.
+[30;42m                                                                                                                        [39;49m
+[30;42m [OK] Tests passed. Run 'qit e2e-report' to view the report.                                                            [39;49m
+[30;42m                                                                                                                        [39;49m
 
 
 Shutting down environment...

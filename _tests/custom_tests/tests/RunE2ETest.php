@@ -117,8 +117,7 @@ JS;
 		$output = qit( [
 			'run:e2e',
 			'deli',
-			$scaffolded_dir,
-			'--testing_theme',
+			$scaffolded_dir
 		] );
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
@@ -158,7 +157,6 @@ JS;
 			'run:e2e',
 			'deli',
 			$scaffolded_dir,
-			'--testing_theme',
 			'--update_snapshots',
 		] );
 
@@ -169,8 +167,7 @@ JS;
 		$output = qit( [
 			'run:e2e',
 			'deli',
-			$scaffolded_dir,
-			'--testing_theme',
+			$scaffolded_dir
 		] );
 
 		$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
