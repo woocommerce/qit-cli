@@ -10,7 +10,7 @@ class CompatibilityTest extends \PHPUnit\Framework\TestCase {
 	public function test_sut_and_activate_additional() {
 		$output = qit( [
 				'run:e2e',
-				'automatewoo',
+				'qit-test-plugin',
 				$this->scaffold_test(),
 				'--plugin',
 				'woocommerce:activate'
@@ -31,10 +31,10 @@ class CompatibilityTest extends \PHPUnit\Framework\TestCase {
 			]
 		);
 
-		// Run AutomateWoo, bootstrapping Woo.
+		// Run qit-test-plugin, bootstrapping Woo.
 		$output = qit( [
 				'run:e2e',
-				'automatewoo',
+				'qit-test-plugin',
 				$this->scaffold_test(),
 				'--plugin',
 				'woocommerce:bootstrap:self-test-bootstrap-additional',
@@ -58,10 +58,10 @@ class CompatibilityTest extends \PHPUnit\Framework\TestCase {
 			]
 		);
 
-		// Run AutomateWoo, bootstrapping Woo.
+		// Run qit-test-plugin, bootstrapping Woo.
 		$output = qit( [
 				'run:e2e',
-				'automatewoo',
+				'qit-test-plugin',
 				$this->scaffold_test(),
 				'--plugin',
 				'woocommerce:test:self-test-sut-and-test-additional',
@@ -79,13 +79,13 @@ class CompatibilityTest extends \PHPUnit\Framework\TestCase {
 	public function test_multiple_tags_and_multiple_plugins_with_multiple_tags() {
 		qit( [
 			'tag:upload',
-			'automatewoo:self-test-multiple-test-tags',
+			'qit-test-plugin:self-test-multiple-test-tags',
 			$this->scaffold_test(),
 		] );
 
 		qit( [
 			'tag:upload',
-			'automatewoo:self-test-multiple-test-tags-another',
+			'qit-test-plugin:self-test-multiple-test-tags-another',
 			$this->scaffold_test( 'another-tag' ),
 		] );
 
@@ -103,14 +103,14 @@ class CompatibilityTest extends \PHPUnit\Framework\TestCase {
 
 		$output = qit( [
 			'run:e2e',
-			'automatewoo',
+			'qit-test-plugin',
 			'self-test-multiple-test-tags,self-test-multiple-test-tags-another',
 			'--plugin',
 			'woocommerce:test:self-test-multiple-test-tags,self-test-multiple-test-tags-another',
 		] );
 
-		qit( [ 'tag:delete', 'automatewoo:self-test-multiple-test-tags' ] );
-		qit( [ 'tag:delete', 'automatewoo:self-test-multiple-test-tags-another' ] );
+		qit( [ 'tag:delete', 'qit-test-plugin:self-test-multiple-test-tags' ] );
+		qit( [ 'tag:delete', 'qit-test-plugin:self-test-multiple-test-tags-another' ] );
 		qit( [ 'tag:delete', 'woocommerce:self-test-multiple-test-tags' ] );
 		qit( [ 'tag:delete', 'woocommerce:self-test-multiple-test-tags-another' ] );
 
