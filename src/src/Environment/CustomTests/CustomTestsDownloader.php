@@ -77,17 +77,12 @@ class CustomTestsDownloader {
 				 * working directory. In this scenario, emit a warning and use the published test tag.
 				 */
 				if ( file_exists( $test_tag ) ) {
-					foreach ( $extensions as $extension2 ) {
-						if ( $extension2->action !== Extension::ACTIONS['activate'] && ! empty( $extension2->test_tags ) ) {
-							foreach ( $extension2->test_tags as $extension_test_tag ) {
-								if ( $extension_test_tag === $test_tag ) {
-									$this->output->writeln( sprintf( 'Test tag "%s" found in the working directory. Using the published test tag for extension "%s".', $test_tag, $extension->slug ) );
-									if ( $extension2->slug !== $extension->slug ) {
-										continue 3; // Skip, let the extension that owns this test tag to handle it.
-									}
-								}
-							}
-						}
+					if ( ! empty( $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ] ) ) {
+						$this->output->writeln( sprintf(
+							'Conflict detected: Test tag "%s" exists both locally and remotely. The remote test tag will be used for the extension "%s".',
+							$test_tag,
+							$extension->slug
+						) );
 					}
 				}
 
