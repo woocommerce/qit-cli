@@ -447,11 +447,11 @@ class QITE2ETestCase extends TestCase {
 				echo "{$count}\n";
 			}
 		} elseif ( $count < 1000 ) {
-			if ( $count % 25 === 0 ) {
-				echo "Skipping normalization as it's already divisible by 25\n";
+			if ( $count % 50 === 0 ) {
+				echo "Skipping normalization as it's already divisible by 50\n";
 			} else {
 				echo "Normalizing debug_log.count from {$count} to ";
-				$count = round( $count / 25 ) * 25;  // Round to the closest 25.
+				$count = round( $count / 50 ) * 50;  // Round to the closest 50.
 				echo "{$count}\n";
 			}
 		} elseif ( $count < 10000 ) {
