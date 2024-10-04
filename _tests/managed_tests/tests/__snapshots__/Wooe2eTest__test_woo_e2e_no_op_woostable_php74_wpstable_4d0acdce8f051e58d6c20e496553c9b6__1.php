@@ -41,7 +41,7 @@
             "runner": "normalized",
             "test_media": [],
             "test_result_json_extracted": "{EXTRACTED}",
-            "debug_log_extracted": "{EXTRACTED}"\n
+            "debug_log_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
