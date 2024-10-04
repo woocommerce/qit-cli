@@ -11,7 +11,7 @@ Moving must-use plugin of deli /qit/tests/e2e/deli/local/bootstrap/mu-plugin.php
 Running E2E Tests
 Running 2 tests using 1 worker
 ✓  1 [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli (TIME)
-✓  2 [deli-local] › deli/local/example.spec.js:9:5 › I can see my plugin menu (843ms)
+✓  2 [deli-local] › deli/local/example.spec.js:9:5 › I can see my plugin menu (TIME)
 2 passed (TIME)
 Test artifacts being saved to: /tmp-normalized/qit-results-normalizedid
 Uploading zip...
