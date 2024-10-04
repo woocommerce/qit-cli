@@ -245,7 +245,7 @@ class PlaywrightRunner extends E2ERunner {
 		// Initialize a variable to keep track of total lines printed.
 		$line_buffer         = [];
 		$total_lines_printed = 0;
-		$ci = ! empty( getenv( 'CI' ) );
+		$ci                  = ! empty( getenv( 'CI' ) );
 
 		$output_callback = function ( $type, $out ) use ( $playwright_container_name, &$line_buffer, &$total_lines_printed, $ci ) {
 			$max_lines = 100;
