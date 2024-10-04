@@ -33,15 +33,15 @@ trait ScaffoldHelpers {
 		 * First-time setup is pulling Docker images and caching downloads. Subsequent runs will be faster.
 		 * Setting up WordPress...
 		 * Activating plugins...
-		 * Plugin automatewoo/automatewoo.php failed to activate.
+		 * Plugin woocommerce-amazon-s3-storage/woocommerce-amazon-s3-storage.php failed to activate.
 		 * Environment ready.
 		 *
 		 * Bootstrapping Plugins
-		 * Bootstrapping automatewoo /qit/tests/e2e/automatewoo/local/bootstrap/bootstrap.php
-		 * Bootstrapping automatewoo /qit/tests/e2e/automatewoo/local/bootstrap/bootstrap.sh
+		 * Bootstrapping woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/local/bootstrap/bootstrap.php
+		 * Bootstrapping woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/local/bootstrap/bootstrap.sh
 		 * Running E2E Tests
 		 * Running 1 test using 1 worker
-		 * [1/1] [automatewoo-local] › automatewoo/local/example.spec.js:8:5 › I can se
+		 * [1/1] [woocommerce-amazon-s3-storage-local] › woocommerce-amazon-s3-storage/local/example.spec.js:8:5 › I can se
 		 *** 1 passed (5.7s)
 		 * npm notice
 		 * npm

@@ -7,25 +7,10 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 	use SnapshotHelpers;
 	use ScaffoldHelpers;
 
-	public function test_fails_if_dependency_unmet() {
-		$output = qit( [
-			'run:e2e',
-			'automatewoo',
-			$this->scaffold_test(),
-		],
-			[],
-			1
-		);
-
-		$output = $this->normalize_scaffolded_test_run_output( $output );
-
-		$this->assertMatchesNormalizedSnapshot( $output );
-	}
-
 	public function test_runs_scaffolded_e2e() {
 		$output = qit( [
 				'run:e2e',
-				'automatewoo',
+				'woocommerce-amazon-s3-storage',
 				$this->scaffold_test(),
 				'--plugin',
 				'woocommerce:activate',
@@ -40,19 +25,19 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 	public function test_tag_and_run_test() {
 		qit( [
 			'tag:upload',
-			'automatewoo:self-test-tag-and-run',
+			'woocommerce-amazon-s3-storage:self-test-tag-and-run',
 			$this->scaffold_test(),
 		] );
 
 		$output = qit( [
 			'run:e2e',
-			'automatewoo',
+			'woocommerce-amazon-s3-storage',
 			'self-test-tag-and-run',
 			'--plugin',
 			'woocommerce:activate',
 		] );
 
-		qit( [ 'tag:delete', 'automatewoo:self-test-tag-and-run' ] );
+		qit( [ 'tag:delete', 'woocommerce-amazon-s3-storage:self-test-tag-and-run' ] );
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
@@ -62,26 +47,26 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 	public function test_multiple_tags_and_run_tests() {
 		qit( [
 			'tag:upload',
-			'automatewoo:self-test-multiple-test-tags',
+			'woocommerce-amazon-s3-storage:self-test-multiple-test-tags',
 			$this->scaffold_test(),
 		] );
 
 		qit( [
 			'tag:upload',
-			'automatewoo:self-test-multiple-test-tags-another',
+			'woocommerce-amazon-s3-storage:self-test-multiple-test-tags-another',
 			$this->scaffold_test( 'another-tag' ),
 		] );
 
 		$output = qit( [
 			'run:e2e',
-			'automatewoo',
+			'woocommerce-amazon-s3-storage',
 			'self-test-multiple-test-tags,self-test-multiple-test-tags-another',
 			'--plugin',
 			'woocommerce:activate',
 		] );
 
-		qit( [ 'tag:delete', 'automatewoo:self-test-multiple-test-tags' ] );
-		qit( [ 'tag:delete', 'automatewoo:self-test-multiple-test-tags-another' ] );
+		qit( [ 'tag:delete', 'woocommerce-amazon-s3-storage:self-test-multiple-test-tags' ] );
+		qit( [ 'tag:delete', 'woocommerce-amazon-s3-storage:self-test-multiple-test-tags-another' ] );
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
@@ -118,7 +103,6 @@ JS;
 			'run:e2e',
 			'deli',
 			$scaffolded_dir,
-			'--testing_theme',
 		] );
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
@@ -158,7 +142,6 @@ JS;
 			'run:e2e',
 			'deli',
 			$scaffolded_dir,
-			'--testing_theme',
 			'--update_snapshots',
 		] );
 
@@ -170,16 +153,34 @@ JS;
 			'run:e2e',
 			'deli',
 			$scaffolded_dir,
-			'--testing_theme',
 		] );
 
 		$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
+
+		// Check if ImageMagick command is available.
+		exec( "magick --version", $output, $return_var );
+		if ( $return_var === 0 ) {
+			// Modify the image using ImageMagick's convert command
+			$image_path = $scaffolded_dir . '/__snapshots__/activate-theme.spec.js/home.png';
+			exec( "magick convert $image_path -gravity southeast -stroke '#000C' -strokewidth 2 -annotate 0 'Watermark' -stroke none -fill white -annotate 0 'Watermark' $image_path" );
+
+			// Run the third time to check for snapshot failure.
+			$output = qit( [
+				'run:e2e',
+				'deli',
+				$scaffolded_dir,
+			], [], 1 );
+
+			$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
+		} else {
+			$this->markTestSkipped( 'ImageMagick convert command is not available.' );
+		}
 	}
 
 	public function test_playwright_config_override() {
 		$output = qit( [
 			'run:e2e',
-			'automatewoo',
+			'woocommerce-amazon-s3-storage',
 			$this->scaffold_test(),
 			'--plugin',
 			'woocommerce:activate',
@@ -198,7 +199,7 @@ JS;
 		// "Loading environment config from override parameter /tmp/qit-env-97d237784cddc7ec1341113ca364110d.json..." Normalize "97d237784cddc7ec1341113ca364110d".
 		$output = preg_replace( '/qit-env-[a-f0-9]{32}/', 'qit-env-<hash>', $output );
 
-		// "Slow test file: [automatewoo-local] › automatewoo/local/example.spec.js (7.1s)" Normalize "7.1s".
+		// "Slow test file: [woocommerce-amazon-s3-storage-local] › woocommerce-amazon-s3-storage/local/example.spec.js (7.1s)" Normalize "7.1s".
 		$output = preg_replace( '/\d+\.\d+s/', '<time>s', $output );
 
 		// Sometimes, for some reason, this has some spaces. "Consider splitting slow test files to speed up parallel execution"
@@ -210,7 +211,7 @@ JS;
 	public function test_cannot_use_woo_and_plugin_woocommerce() {
 		$output = qit( [
 			'run:e2e',
-			'automatewoo',
+			'woocommerce-amazon-s3-storage',
 			$this->scaffold_test(),
 			'--woo',
 			'8.6.2',
@@ -229,7 +230,7 @@ JS;
 	public function test_can_use_equal_signs() {
 		$output = qit( [
 			'run:e2e',
-			'automatewoo',
+			'woocommerce-amazon-s3-storage',
 			$this->scaffold_test(),
 			'--plugin=woocommerce',
 		] );

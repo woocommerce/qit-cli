@@ -7,22 +7,24 @@ Environment ready.
 Bootstrapping Plugins
 Bootstrapping woocommerce /qit/tests/e2e/woocommerce/self-test-sut-and-test-additional/bootstrap/bootstrap.php
 Bootstrapping woocommerce /qit/tests/e2e/woocommerce/self-test-sut-and-test-additional/bootstrap/bootstrap.sh
-Bootstrapping automatewoo /qit/tests/e2e/automatewoo/local/bootstrap/bootstrap.php
-Bootstrapping automatewoo /qit/tests/e2e/automatewoo/local/bootstrap/bootstrap.sh
+Moving must-use plugin of woocommerce /qit/tests/e2e/woocommerce/self-test-sut-and-test-additional/bootstrap/mu-plugin.php
+Bootstrapping woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/local/bootstrap/bootstrap.php
+Bootstrapping woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/local/bootstrap/bootstrap.sh
+Moving must-use plugin of woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/local/bootstrap/mu-plugin.php
 Exporting DB
 Running E2E Tests
 Running 3 tests using 1 worker
-[1/3] [woocommerce-self-test-sut-and-test-additional] › woocommerce/self-test-sut-and-test-additional/example.spec.js:9:5 › I can see my plugin menu
-[2/3] [db-import] › db-import.js:5:5 › Database Import
-[db-import] › db-import.js:5:5 › Database Import
-Success: Imported from '/tmp-normalized/qit-bootstrap.sql'.
-[3/3] [automatewoo-local] › automatewoo/local/example.spec.js:9:5 › I can see my plugin menu
+✓  1 [woocommerce-self-test-sut-and-test-additional] › woocommerce/self-test-sut-and-test-additional/example.spec.js:9:5 › I can see my plugin menu (TIME)
+✓  2 [db-import] › db-import.js:5:5 › Database Import (TIME)
+✓  3 [woocommerce-amazon-s3-storage-local] › woocommerce-amazon-s3-storage/local/example.spec.js:9:5 › I can see my plugin menu (TIME)
 3 passed (TIME)
 Test artifacts being saved to: /tmp-normalized/qit-results-normalizedid
 Uploading zip...
 
 
-[OK] Tests passed. Run 'qit e2e-report' to view the report.
+[30;42m                                                                                                                        [39;49m
+[30;42m [OK] Tests passed. Run 'qit e2e-report' to view the report.                                                            [39;49m
+[30;42m                                                                                                                        [39;49m
 
 
 Shutting down environment...
