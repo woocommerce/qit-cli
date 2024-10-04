@@ -35,7 +35,7 @@ require_once __DIR__ . '/../src/helpers.php';
 
 qit_tests_reset_config_dir();
 
-putenv( 'QIT_HOME=/tmp/.woo-qit-tests' );
+putenv( sprintf( 'QIT_HOME=%s/.woo-qit-tests', sys_get_temp_dir() ) );
 
 // Initialize DI container.
 $container = new Container();
@@ -63,6 +63,7 @@ $GLOBALS['qit_application']->setAutoExit( false );
  * @var SplFileInfo $file
  * @var RecursiveDirectoryIterator $it
  */
+$failed_to_build = [];
 $it = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( __DIR__ . '/../src/Commands', FilesystemIterator::SKIP_DOTS ) );
 foreach ( $it as $file ) {
 	if ( $file->isFile() && $file->getExtension() === 'php' && ! $file->isLink() ) {
@@ -91,13 +92,34 @@ foreach ( $it as $file ) {
 		if ( ! ( new ReflectionClass( $fqdn ) )->isSubclassOf( Command::class ) ) {
 			continue;
 		}
+		if ( ! ( new ReflectionClass( $fqdn ) )->isInstantiable() ) {
+			continue;
+		}
 		if ( is_null( $fqdn::getDefaultName() ) ) {
 			continue;
 		}
 
 		if ( ! $GLOBALS['qit_application']->has( $fqdn::getDefaultName() ) ) {
-			$GLOBALS['qit_application']->add( App::make( $fqdn ) );
+			echo "Adding command: $fqdn\n";
+			try {
+				$GLOBALS['qit_application']->add( App::make( $fqdn ) );
+			} catch ( Exception $e ) {
+				$failed_to_build[] = $fqdn;
+			}
 		}
+	}
+}
+/*
+ * Commands that use "reuseOption" might require a specific load order, which is respected
+ * on our manual bootstrap.php, but not here.
+ *
+ * In that case, we "defer" any command that fails to add and try to add them again
+ * after all other commands have been added.
+ */
+if ( ! empty( $failed_to_build ) ) {
+	foreach ( $failed_to_build as $fqdn ) {
+		echo "Adding deferred command: $fqdn\n";
+		$GLOBALS['qit_application']->add( App::make( $fqdn ) );
 	}
 }
 
