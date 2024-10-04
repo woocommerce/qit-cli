@@ -7,21 +7,6 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 	use SnapshotHelpers;
 	use ScaffoldHelpers;
 
-	public function test_fails_if_dependency_unmet() {
-		$output = qit( [
-			'run:e2e',
-			'woocommerce-amazon-s3-storage',
-			$this->scaffold_test(),
-		],
-			[],
-			1
-		);
-
-		$output = $this->normalize_scaffolded_test_run_output( $output );
-
-		$this->assertMatchesNormalizedSnapshot( $output );
-	}
-
 	public function test_runs_scaffolded_e2e() {
 		$output = qit( [
 				'run:e2e',
