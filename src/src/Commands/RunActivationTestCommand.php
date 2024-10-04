@@ -77,7 +77,6 @@ class RunActivationTestCommand extends Command {
 
 		$run_e2e_options = [];
 
-
 		$run_e2e_options['--pw_options']              = '--retries=0';
 		$run_e2e_options['--skip_activating_plugins'] = true;
 
