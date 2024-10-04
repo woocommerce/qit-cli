@@ -5,24 +5,26 @@ Activating plugins...
 Environment ready.
 
 Bootstrapping Plugins
-Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-multiple-test-tags/bootstrap/bootstrap.php
-Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-multiple-test-tags/bootstrap/bootstrap.sh
-Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-multiple-test-tags-another/bootstrap/bootstrap.php
-Bootstrapping automatewoo /qit/tests/e2e/automatewoo/self-test-multiple-test-tags-another/bootstrap/bootstrap.sh
+Bootstrapping woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/self-test-multiple-test-tags/bootstrap/bootstrap.php
+Bootstrapping woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/self-test-multiple-test-tags/bootstrap/bootstrap.sh
+Moving must-use plugin of woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/self-test-multiple-test-tags/bootstrap/mu-plugin.php
+Bootstrapping woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/self-test-multiple-test-tags-another/bootstrap/bootstrap.php
+Bootstrapping woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/self-test-multiple-test-tags-another/bootstrap/bootstrap.sh
+Moving must-use plugin of woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/self-test-multiple-test-tags-another/bootstrap/mu-plugin.php
 Exporting DB
 Running E2E Tests
 Running 3 tests using 1 worker
-[1/3] [automatewoo-self-test-multiple-test-tags] › automatewoo/self-test-multiple-test-tags/example.spec.js:9:5 › I can see my plugin menu
-[2/3] [db-import] › db-import.js:5:5 › Database Import
-[db-import] › db-import.js:5:5 › Database Import
-Success: Imported from '/tmp-normalized/qit-bootstrap.sql'.
-[3/3] [automatewoo-self-test-multiple-test-tags-another] › automatewoo/self-test-multiple-test-tags-another/another-tag.spec.js:9:5 › I can see my plugin menu
+✓  1 [woocommerce-amazon-s3-storage-self-test-multiple-test-tags] › woocommerce-amazon-s3-storage/self-test-multiple-test-tags/example.spec.js:9:5 › I can see my plugin menu (TIME)
+✓  2 [db-import] › db-import.js:5:5 › Database Import (TIME)
+✓  3 [woocommerce-amazon-s3-storage-self-test-multiple-test-tags-another] › woocommerce-amazon-s3-storage/self-test-multiple-test-tags-another/another-tag.spec.js:9:5 › I can see my plugin menu (TIME)
 3 passed (TIME)
 Test artifacts being saved to: /tmp-normalized/qit-results-normalizedid
 Uploading zip...
 
 
-[OK] Tests passed. Run 'qit e2e-report' to view the report.
+[30;42m                                                                                                                        [39;49m
+[30;42m [OK] Tests passed. Run 'qit e2e-report' to view the report.                                                            [39;49m
+[30;42m                                                                                                                        [39;49m
 
 
 Shutting down environment...
