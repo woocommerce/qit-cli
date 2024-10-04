@@ -4,6 +4,7 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\Environment\Extension;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use QIT_CLI\RequestBuilder;
@@ -76,10 +77,6 @@ class RunActivationTestCommand extends Command {
 
 		$run_e2e_options = [];
 
-		// Sut.
-		$run_e2e_options['woo_extension'] = $input->getArgument( 'woo_extension' );
-
-		$run_e2e_options['--sut_action']              = 'activate';
 		$run_e2e_options['--pw_options']              = '--retries=0';
 		$run_e2e_options['--skip_activating_plugins'] = true;
 
@@ -98,8 +95,17 @@ class RunActivationTestCommand extends Command {
 			$run_e2e_options['--source'] = $input->getOption( 'zip' );
 		}
 
-		// Set the test.
-		$run_e2e_options['--plugin'][] = 'woocommerce:test:activation';
+		$sut = $input->getArgument( 'woo_extension' );
+
+		if ( $sut !== 'woocommerce' ) {
+			$run_e2e_options['--sut_action']  = Extension::ACTIONS['activate'];
+			$run_e2e_options['woo_extension'] = $input->getArgument( 'woo_extension' );
+			$run_e2e_options['--plugin'][]    = 'woocommerce:test:activation';
+		} else {
+			$run_e2e_options['woo_extension'] = 'woocommerce';
+			$run_e2e_options['test']          = 'activation';
+			$run_e2e_options['--sut_action']  = Extension::ACTIONS['test'];
+		}
 
 		if ( $output->isVerbose() ) {
 			$run_e2e_options['--verbose'] = true;
