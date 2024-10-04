@@ -77,7 +77,8 @@ class CustomTestsDownloader {
 				 * working directory. In this scenario, emit a warning and use the published test tag.
 				 */
 				if ( file_exists( $test_tag ) ) {
-					if ( ! empty( $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ] ) ) {
+					if ( isset( $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ] ) &&
+					     ! empty( $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ] ) ) {
 						$this->output->writeln( sprintf(
 							'Conflict detected: Test tag "%s" exists both locally and remotely. The remote test tag will be used for the extension "%s".',
 							$test_tag,
