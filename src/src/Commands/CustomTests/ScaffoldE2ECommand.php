@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use function QIT_CLI\normalize_path;
 
@@ -32,11 +33,17 @@ class ScaffoldE2ECommand extends Command {
 			try {
 				$this->safely_delete_scaffolded_directory( $path_to_generate );
 			} catch ( \Exception $e ) {
-				// Ask the user to delete it manually, as it encountered an unknown file and prevented a destructive action for extra safety.
-				$output->writeln( '<error>Could not delete the existing directory: ' . $path_to_generate . '</error>' );
-				$output->writeln( '<error>' . $e->getMessage() . '</error>' );
-				$output->writeln( '<error>For safety reasons, we only delete files that we expect.</error>' );
-				$output->writeln( '<error>Please delete the directory manually and try again.</error>' );
+				/** @var  $io */
+				$io = new SymfonyStyle($input, $output);
+
+				// Use SymfonyStyle to output formatted error messages
+				$io->warning( [
+					"Could not delete the existing directory: $path_to_generate",
+					$e->getMessage(),
+				] );
+
+				$output->writeln('<comment>For safety reasons, only expected files are deleted.</comment>');
+				$output->writeln('<comment>Please delete the directory "' . $path_to_generate . '" manually and try again.</comment>');
 
 				return Command::FAILURE;
 			}
