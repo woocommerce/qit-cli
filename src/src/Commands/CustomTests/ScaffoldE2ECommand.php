@@ -33,9 +33,8 @@ class ScaffoldE2ECommand extends Command {
 			try {
 				$this->safely_delete_scaffolded_directory( $path_to_generate );
 			} catch ( \Exception $e ) {
-				/** @var  $io */
 				$io = new SymfonyStyle( $input, $output );
-				
+
 				$io->warning( [
 					"Could not delete the existing directory: $path_to_generate",
 					$e->getMessage(),
