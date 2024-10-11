@@ -10,6 +10,7 @@ use QIT_CLI\Environment\ExtensionDownload\Handlers\CustomHandler;
 use QIT_CLI\Environment\ExtensionDownload\Handlers\FileHandler;
 use QIT_CLI\Environment\ExtensionDownload\Handlers\QITHandler;
 use QIT_CLI\Environment\ExtensionDownload\Handlers\URLHandler;
+use QIT_CLI\WooExtensionsList;
 use QIT_CLI\Zipper;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -213,8 +214,17 @@ class ExtensionDownloader {
 					}
 				}
 
+				try {
+					$qit_extension = App::make( WooExtensionsList::class )->get_woo_extension_id_by_slug( $ext->source );
+				} catch ( \Exception $e ) {
+					$qit_extension = null;
+				}
+
 				if ( empty( $ext->handler ) ) {
-					if ( is_numeric( $ext->source ) ) {
+					if ( ! is_null( $qit_extension ) ) {
+						// A QIT extension slug that this user has access to.
+						$ext->handler = QITHandler::class;
+					} elseif ( is_numeric( $ext->source ) ) {
 						// Woo.com product ID.
 						$ext->handler = QITHandler::class;
 					} elseif ( preg_match( '#^https?://#i', $ext->source ) ) {
@@ -225,21 +235,27 @@ class ExtensionDownloader {
 					} elseif ( preg_match( '#^ssh://#i', $ext->source ) ) {
 						// SSH URLs, similar to wp-env.
 						throw new \InvalidArgumentException( 'SSH URLs are currently not supported.' );
+					} elseif( static::is_valid_plugin_slug( $ext->source ) ) {
+						// If it looks like a slug, let QITHandler handle it, this includes WPOrg slugs.
+						$ext->handler = QITHandler::class;
 					} elseif ( file_exists( $ext->source ) ) {
 						// Local path.
 						$ext->handler = FileHandler::class;
 					} else {
-						// If it's none of the above, it's a slug.
-						if ( static::is_valid_plugin_slug( $ext->source ) ) {
-							$ext->handler = QITHandler::class;
-						} else {
-							// Does it look like a path?
-							if ( substr( $ext->source, 0, 1 ) === '/' ) {
-								throw new \InvalidArgumentException( 'ZIP file does not exist: ' . $ext->source );
-							}
+						$error_message = 'Could not find extension %s';
 
-							throw new \InvalidArgumentException( sprintf( "Invalid extension \"%s\".\n\nExpected format: extension:action:tests\n\nValid extensions are WP.org/Woo.com Slugs, Woo.com product ID, Local path, or Zip URLs.\nValid actions are \"activate\", \"bootstrap\" and \"test\".\nValid tests are comma-separated list of test tags or local test directories.", $ext->source ) );
+						$d = $ext->source;
+
+						// If it's inside the filesystem, tell that the file was not found.
+						while ( true ) {
+							$d = realpath( dirname( $d ) );
+							if ( file_exists( $d ) ) {
+								$error_message .= sprintf( "\nFile \"%s\" was not found.", $ext->source );
+								break;
+							}
 						}
+
+						throw new \InvalidArgumentException( $error_message );
 					}
 				}
 
