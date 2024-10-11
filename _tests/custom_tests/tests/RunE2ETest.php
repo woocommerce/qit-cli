@@ -239,4 +239,23 @@ JS;
 
 		$this->assertMatchesNormalizedSnapshot( $output );
 	}
+
+	public function test_directory_with_same_basename_as_sut() {
+		$this->scaffold_plugin('woocommerce-amazon-s3-storage');
+
+		$output = qit( [
+			'run:e2e',
+			'woocommerce-amazon-s3-storage',
+			$this->scaffold_test(),
+			'--json',
+			'--plugin=woocommerce',
+		], [], 0, [ 'QIT_TEST_ENV' => 1 ] );
+
+		$output = $this->normalize_env_info( json_decode( $output, true ) );
+
+		$output = json_encode( $output, JSON_PRETTY_PRINT );
+
+		$this->assertMatchesNormalizedSnapshot( $output );
+	}
+
 }

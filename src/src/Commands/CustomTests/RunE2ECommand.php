@@ -115,6 +115,7 @@ class RunE2ECommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'config' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'object_cache' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'skip_activating_plugins' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'json' )
 			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright Sharding argument.' )
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
@@ -354,6 +355,14 @@ class RunE2ECommand extends DynamicCommand {
 
 		// Read from the stream.
 		$up_output = stream_get_contents( $resource_stream, - 1, 0 );
+
+		// If we receive this signal, we just pass the output through.
+		if ( $up_exit_status_code === 1337 ) {
+			$this->output->write( $up_output );
+
+			return Command::SUCCESS;
+		}
+
 		$env_json  = json_decode( $up_output, true );
 
 		if ( ! is_array( $env_json ) || empty( $env_json['env_id'] ) ) {
