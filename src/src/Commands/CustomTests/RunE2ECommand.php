@@ -407,6 +407,12 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::FAILURE;
 		}
 
+		if ( getenv( 'QIT_SELF_TEST' ) === 'env_up' ) {
+			$output->write( json_encode( $env_info ) );
+
+			return Command::SUCCESS;
+		}
+
 		$exit_status_code = $this->e2e_test_manager->run_tests( $env_info, $test_mode, $wait, $shard );
 
 		$io = new SymfonyStyle( $input, $output );

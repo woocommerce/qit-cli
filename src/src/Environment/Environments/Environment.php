@@ -191,10 +191,41 @@ abstract class Environment {
 		 * the container with the correct permissions, unless they are a file name,
 		 * at which point create the parent dir.
 		 */
-		foreach ( $volumes as $in_container => $local ) {
+		foreach ( $volumes as $in_container => &$local ) {
 			if ( strpos( $local, 'qit_env_volume' ) !== false ) {
 				continue;
 			}
+
+			/*
+			 * Convert volumes to paths.
+			 *
+			 * In Docker, the "volumes" section take both paths and volume names.
+			 *
+			 * If a string looks like a volume name, Docker considers it as a volume name, eg:
+			 *  - "wordpress:/var/www/html/wp-content/plugins"
+			 *
+			 * Would be considered as a volume name.
+			 *
+			 * Whereas
+			 *  - "/path/to/wordpress:/var/www/html/wp-content/plugins"
+			 *  - "./wordpress:/var/www/html/wp-content/plugins"
+			 *
+			 * Would be considered as paths.
+			 *
+			 * Here, we need to remove any ambiguity to make sure all volumes are considered paths, not volume names.
+			 *
+			 * To do this, we either expand the local path to an absolute path, or if it's a relative path, we resolve it.
+			 */
+			if ( file_exists( realpath( $local ) ) ) {
+				$local = realpath( $local );
+			} else {
+				// Check if it can be resolved by relative path to the working directory.
+				if ( file_exists( getcwd() . '/' . $local ) ) {
+					$local = getcwd() . '/' . $local;
+				}
+			}
+
+			// If it doesn't contain a "dot", it's a directory.
 			if ( stripos( $local, '.' ) === false ) {
 				if ( ! file_exists( $local ) ) {
 					if ( ! mkdir( $local, 0755, true ) ) {
@@ -211,7 +242,7 @@ abstract class Environment {
 			}
 		}
 
-		$this->env_info->volumes = array_merge( $this->env_info->volumes, $volumes );
+		$this->env_info->volumes = $volumes;
 
 		$process->setEnv( array_merge( $process->getEnv(), [
 			'QIT_ENV_ID'         => $this->env_info->env_id,

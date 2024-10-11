@@ -1,0 +1,87 @@
+{
+"environment": "e2e",
+"temporary_env": "\/path\/normalized\/\/tmp-normalized\/tmp-normalized_qit_config-qit_custom_tests_NORMALIZED_ID\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/",
+"created_at": "1700000000",
+"status": "started",
+"env_id": "ENV_ID_NORMALIZED",
+"volumes": {
+"\/qit\/bin": "\/path\/normalized\/\/tmp-normalized\/tmp-normalized_qit_config-qit_custom_tests_NORMALIZED_ID\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/bin",
+"\/qit\/mu-plugins": "\/path\/normalized\/\/tmp-normalized\/tmp-normalized_qit_config-qit_custom_tests_NORMALIZED_ID\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/mu-plugins",
+"\/qit\/cache": "\/path\/normalized\/\/tmp-normalized\/tmp-normalized_qit_config-qit_custom_tests_NORMALIZED_ID\/cache",
+"\/var\/www\/html": "qit_env_volume_ENV_ID_NORMALIZED",
+"\/var\/www\/html\/wp-content\/plugins\/woocommerce": "\/path\/normalized\/\/tmp-normalized\/tmp-normalized_qit_config-qit_custom_tests_NORMALIZED_ID\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/html\/wp-content\/plugins\/woocommerce",
+"\/var\/www\/html\/wp-content\/plugins\/woocommerce-amazon-s3-storage:ro,cached": "\/path\/normalized\/\/woocommerce-amazon-s3-storage",
+"\/qit\/tests\/e2e\/woocommerce\/default": "\/path\/normalized\/\/tmp-normalized\/tmp-normalized_qit_config-qit_custom_tests_NORMALIZED_ID\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/tests\/e2e\/woocommerce\/default",
+"\/qit\/tests\/e2e\/woocommerce-amazon-s3-storage\/local": "\/path\/normalized\/\/tmp-normalized\/tmp-normalized_qit_config-qit_custom_tests_NORMALIZED_ID\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/tests\/e2e\/woocommerce-amazon-s3-storage\/local"
+},
+"docker_images": [
+"qit_env_db_ENV_ID_NORMALIZED",
+"qit_env_php_ENV_ID_NORMALIZED",
+"qit_env_nginx_ENV_ID_NORMALIZED"
+],
+"docker_network": "e2e-ENV_ID_NORMALIZED_qit_network_ENV_ID_NORMALIZED",
+"php_extensions": [],
+"plugins": [
+{
+"slug": "woocommerce",
+"entrypoint": "woocommerce\/woocommerce.php",
+"source": "https:\/\/downloads.wordpress.org\/plugin\/woocommerce.VERSION.zip",
+"downloaded_source": "\/path\/normalized\/\/tmp-normalized\/tmp-normalized_qit_config-qit_custom_tests_NORMALIZED_ID\/cache\/\/plugin\/woocommerce-a9f303a5611d082342ccec7457159844-8.3.0-284.zip",
+"type": "plugin",
+"handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
+"version": "8.3.0",
+"action": "bootstrap",
+"test_tags": [
+"default"
+]
+},
+{
+"slug": "woocommerce-amazon-s3-storage",
+"entrypoint": "woocommerce-amazon-s3-storage\/woocommerce-amazon-s3-storage.php",
+"source": "woocommerce-amazon-s3-storage",
+"downloaded_source": "woocommerce-amazon-s3-storage",
+"type": "plugin",
+"handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\FileHandler",
+"version": "undefined",
+"action": "test",
+"test_tags": [
+"\/tmp-normalized\/qit_scaffolded_e2e-NORMALIZED_ID"
+]
+}
+],
+"themes": [],
+"site_url": "http:\/\/qitenvnginxENV_ID_NORMALIZED",
+"wp": "latest",
+"object_cache": false,
+"php_version": "7.4",
+"nginx_port": "80",
+"sut_slug": "woocommerce-amazon-s3-storage",
+"sut_type": "plugin",
+"sut_entrypoint": "woocommerce-amazon-s3-storage\/woocommerce-amazon-s3-storage.php",
+"sut_path": "woocommerce-amazon-s3-storage",
+"sut_id": 18663,
+"domain": "qitenvnginxENV_ID_NORMALIZED",
+"tests": [
+{
+"slug": "woocommerce",
+"test_tag": "default",
+"type": "plugin",
+"action": "bootstrap",
+"path_in_php_container": "\/qit\/tests\/e2e\/woocommerce\/default",
+"path_in_playwright_container": "\/home\/pwuser\/woocommerce\/default",
+"path_in_host": "\/path\/normalized\/\/tmp-normalized\/tmp-normalized_qit_config-qit_custom_tests_NORMALIZED_ID\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/\/tests\/e2e\/woocommerce\/default",
+"path_in_host_original": ""
+},
+{
+"slug": "woocommerce-amazon-s3-storage",
+"test_tag": "local",
+"type": "plugin",
+"action": "test",
+"path_in_php_container": "\/qit\/tests\/e2e\/woocommerce-amazon-s3-storage\/local",
+"path_in_playwright_container": "\/home\/pwuser\/woocommerce-amazon-s3-storage\/local",
+"path_in_host": "\/path\/normalized\/\/tmp-normalized\/tmp-normalized_qit_config-qit_custom_tests_NORMALIZED_ID\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/\/tests\/e2e\/woocommerce-amazon-s3-storage\/local",
+"path_in_host_original": "\/tmp-normalized\/qit_scaffolded_e2e-NORMALIZED_ID"
+}
+],
+"playwright_config": []
+}

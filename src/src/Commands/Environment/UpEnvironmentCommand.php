@@ -248,7 +248,7 @@ HELP
 		$this->e2e_environment->init( $env_info );
 
 		// Helper utility to test the environment.
-		if ( getenv( 'QIT_TEST_ENV' ) ) {
+		if ( getenv( 'QIT_SELF_TEST' ) === 'env_info' ) {
 			$output->write( json_encode( $env_info ) );
 
 			return 1337;

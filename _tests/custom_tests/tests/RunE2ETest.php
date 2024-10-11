@@ -249,7 +249,7 @@ JS;
 			$this->scaffold_test(),
 			'--json',
 			'--plugin=woocommerce',
-		], [], 0, [ 'QIT_TEST_ENV' => 1 ] );
+		], [], 0, [ 'QIT_SELF_TEST' => 'env_info' ] );
 
 		$output = $this->normalize_env_info( json_decode( $output, true ) );
 
@@ -258,4 +258,21 @@ JS;
 		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
+	public function test_directory_with_same_basename_as_sut_with_env_up() {
+		$this->scaffold_plugin('woocommerce-amazon-s3-storage');
+
+		$output = qit( [
+			'run:e2e',
+			'woocommerce-amazon-s3-storage',
+			$this->scaffold_test(),
+			'--json',
+			'--plugin=woocommerce',
+		], [], 0, [ 'QIT_SELF_TEST' => 'env_up' ] );
+
+		$output = $this->normalize_env_info( json_decode( $output, true ) );
+
+		$output = json_encode( $output, JSON_PRETTY_PRINT );
+
+		$this->assertMatchesNormalizedSnapshot( $output );
+	}
 }

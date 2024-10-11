@@ -31,16 +31,21 @@ trait ScaffoldHelpers {
 			throw new \RuntimeException( 'The parent directory of the plugin path does not exist. Expected to exist: ' . dirname( $plugin_path ) );
 		}
 
+		$plugin_name      = basename( $plugin_path );
+		$plugin_main_file = sprintf( '%s/%s.php', $plugin_path, basename( $plugin_path ) );
+
+		if ( file_exists( $plugin_path ) ) {
+			unlink( $plugin_main_file );
+			rmdir( $plugin_path );
+		}
+
 		if ( ! mkdir( $plugin_path, 0755, true ) ) {
 			throw new \RuntimeException( 'Failed to create the plugin directory at ' . $plugin_path );
 		}
 
-		$plugin_name      = basename( $plugin_path );
-		$plugin_main_file = sprintf( '%s/%s.php', $plugin_path, basename( $plugin_path ) );
-
 		$plugin_contents = <<<PHP
 <?php
-$/*
+/*
  * Plugin Name: $plugin_name
  */
 PHP;
@@ -63,9 +68,24 @@ PHP;
 		$id = $env_info['env_id'];
 
 		// Decode, str_replace, encode
-		$env_info = json_encode( $env_info );
+		$env_info = json_encode( $env_info, JSON_UNESCAPED_SLASHES );
+
+		$d = __DIR__;
+
+		while ( true ) {
+			$d = dirname( $d );
+			if ( basename( $d ) === 'custom_tests' ) {
+				$dir_to_replace = realpath( $d );
+				break;
+			}
+
+			if ( $d === '/' ) {
+				throw new \RuntimeException( 'Could not find the "custom_tests" directory.' );
+			}
+		}
 
 		$env_info = str_replace( $id, 'ENV_ID_NORMALIZED', $env_info );
+		$env_info = str_replace( $dir_to_replace, '/path/normalized/', $env_info );
 		$env_info = preg_replace( '/qit_scaffolded_e2e-[a-f0-9]+/', 'qit_scaffolded_e2e-NORMALIZED_ID', $env_info );
 		$env_info = preg_replace( '/qit_config-qit_custom_tests_[a-f0-9]+/', 'qit_config-qit_custom_tests_NORMALIZED_ID', $env_info );
 
