@@ -202,7 +202,7 @@ abstract class Environment {
 			 * In Docker, the "volumes" section take both paths and volume names.
 			 *
 			 * If a string looks like a volume name, Docker considers it as a volume name, eg:
-			 *  - "wordpress:/var/www/html/wp-content/plugins"
+			 *  - "WordPress:/var/www/html/wp-content/plugins"
 			 *
 			 * Would be considered as a volume name.
 			 *

@@ -235,7 +235,7 @@ class ExtensionDownloader {
 					} elseif ( preg_match( '#^ssh://#i', $ext->source ) ) {
 						// SSH URLs, similar to wp-env.
 						throw new \InvalidArgumentException( 'SSH URLs are currently not supported.' );
-					} elseif( static::is_valid_plugin_slug( $ext->source ) ) {
+					} elseif ( static::is_valid_plugin_slug( $ext->source ) ) {
 						// If it looks like a slug, let QITHandler handle it, this includes WPOrg slugs.
 						$ext->handler = QITHandler::class;
 					} elseif ( file_exists( $ext->source ) ) {

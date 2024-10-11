@@ -363,7 +363,7 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::SUCCESS;
 		}
 
-		$env_json  = json_decode( $up_output, true );
+		$env_json = json_decode( $up_output, true );
 
 		if ( ! is_array( $env_json ) || empty( $env_json['env_id'] ) ) {
 			$this->output->writeln( sprintf( '<error>Failed to parse the environment JSON. Output: %s</error>', $up_output ) );
