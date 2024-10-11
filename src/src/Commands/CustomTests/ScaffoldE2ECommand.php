@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Filesystem\Filesystem;
 use function QIT_CLI\normalize_path;
 
 class ScaffoldE2ECommand extends Command {
@@ -26,6 +27,18 @@ class ScaffoldE2ECommand extends Command {
 		if ( file_exists( $path_to_generate ) ) {
 			if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "Directory already exists. Scaffold E2E tests in \"$path_to_generate\" anyway? <question>(y/n)</question> ", false ) ) ) {
 				return Command::SUCCESS;
+			}
+
+			try {
+				$this->safely_delete_scaffolded_directory( $path_to_generate );
+			} catch ( \Exception $e ) {
+				// Ask the user to delete it manually, as it encountered an unknown file and prevented a destructive action for extra safety.
+				$output->writeln( '<error>Could not delete the existing directory: ' . $path_to_generate . '</error>' );
+				$output->writeln( '<error>' . $e->getMessage() . '</error>' );
+				$output->writeln( '<error>For safety reasons, we only delete files that we expect.</error>' );
+				$output->writeln( '<error>Please delete the directory manually and try again.</error>' );
+
+				return Command::FAILURE;
 			}
 		}
 
@@ -83,6 +96,110 @@ class ScaffoldE2ECommand extends Command {
 		$output->writeln( 'Read more about it on our documentation: https://qit.woo.com/docs/custom-tests/generating-tests' );
 
 		return Command::SUCCESS;
+	}
+
+	/**
+	 * Safely deletes a scaffolded directory after performing safety checks.
+	 *
+	 * @param string $path_to_generate The path to the directory to be safely deleted.
+	 *
+	 * @throws \RuntimeException If the directory contains unexpected files or directories.
+	 */
+	protected function safely_delete_scaffolded_directory( string $path_to_generate ): void {
+		$expected_files = [
+			'./'        => [
+				'*.spec.js',
+			],
+			'bootstrap' => [
+				'*.sh',
+				'*.php',
+				'*.js',
+			],
+		];
+
+		if ( ! is_dir( $path_to_generate ) ) {
+			throw new \RuntimeException( "$path_to_generate is not a directory" );
+		}
+
+		$root_iterator = new \DirectoryIterator( $path_to_generate );
+
+		$has_bootstrap_dir = false;
+
+		foreach ( $root_iterator as $fileinfo ) {
+			if ( $fileinfo->isDot() ) {
+				continue;
+			}
+
+			$filename = $fileinfo->getFilename();
+
+			if ( $fileinfo->isDir() ) {
+				if ( $filename === 'bootstrap' ) {
+					$has_bootstrap_dir = true;
+				} else {
+					throw new \RuntimeException( "Unexpected directory '$filename' found in the root directory." );
+				}
+			} elseif ( $fileinfo->isFile() ) {
+				// Check if the file matches any of the expected patterns in './'.
+				$matches_expected = false;
+				foreach ( $expected_files['./'] as $pattern ) {
+					if ( fnmatch( $pattern, $filename ) ) {
+						$matches_expected = true;
+						break;
+					}
+				}
+				if ( ! $matches_expected ) {
+					throw new \RuntimeException( "Unexpected file '$filename' found in the root directory." );
+				}
+			} else {
+				throw new \RuntimeException( "Unexpected item '$filename' found in the root directory." );
+			}
+		}
+
+		// If 'bootstrap' directory exists, check its contents.
+		if ( $has_bootstrap_dir ) {
+			$bootstrap_path = $path_to_generate . DIRECTORY_SEPARATOR . 'bootstrap';
+			if ( ! is_dir( $bootstrap_path ) ) {
+				throw new \RuntimeException( "'bootstrap' exists but is not a directory." );
+			}
+
+			$bootstrap_iterator = new \DirectoryIterator( $bootstrap_path );
+
+			// Iterate over bootstrap directory.
+			foreach ( $bootstrap_iterator as $fileinfo ) {
+				if ( $fileinfo->isDot() ) {
+					continue;
+				}
+
+				$filename = $fileinfo->getFilename();
+
+				if ( $fileinfo->isDir() ) {
+					throw new \RuntimeException( "Unexpected directory '$filename' found in the 'bootstrap' directory." );
+				} elseif ( $fileinfo->isFile() ) {
+					// Check if the file matches any of the expected patterns in 'bootstrap'.
+					$matches_expected = false;
+					foreach ( $expected_files['bootstrap'] as $pattern ) {
+						if ( fnmatch( $pattern, $filename ) ) {
+							$matches_expected = true;
+							break;
+						}
+					}
+					if ( ! $matches_expected ) {
+						throw new \RuntimeException( "Unexpected file '$filename' found in the 'bootstrap' directory." );
+					}
+				} else {
+					throw new \RuntimeException( "Unexpected item '$filename' found in the 'bootstrap' directory." );
+				}
+			}
+		}
+
+		// All safety checks passed, proceed to delete the directory.
+		$filesystem = new Filesystem();
+
+		try {
+			$filesystem->remove( $path_to_generate );
+		} catch ( \Exception $exception ) {
+			throw new \RuntimeException( "An error occurred while deleting '$path_to_generate': " . $exception->getMessage() );
+		}
 	}
 
 	protected function generate_bootstrap_shell_example(): string {
