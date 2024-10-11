@@ -93,6 +93,20 @@ PHP;
 
 		$env_info['created_at'] = '1700000000';
 
+		foreach ( $env_info['plugins'] as &$p ) {
+			if ( strpos( $p['source'], 'http' ) !== false ) {
+				$filename    = explode( '/', parse_url( $p['source'], PHP_URL_PATH ) );
+				$filename    = end( $filename );
+				$p['source'] = 'https://normalized-remote-source/' . $filename;
+			}
+			if ( ! empty( $p['version'] ) ) {
+				$p['version'] = 'NORMALIZED_VERSION';
+			}
+			if ( ! empty( $p['downloaded_source'] ) ) {
+				$p['downloaded_source'] = '/normalized/downloaded-path/file.zip';
+			}
+		}
+
 		return $env_info;
 	}
 
