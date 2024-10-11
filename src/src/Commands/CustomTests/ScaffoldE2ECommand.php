@@ -34,16 +34,15 @@ class ScaffoldE2ECommand extends Command {
 				$this->safely_delete_scaffolded_directory( $path_to_generate );
 			} catch ( \Exception $e ) {
 				/** @var  $io */
-				$io = new SymfonyStyle($input, $output);
-
-				// Use SymfonyStyle to output formatted error messages
+				$io = new SymfonyStyle( $input, $output );
+				
 				$io->warning( [
 					"Could not delete the existing directory: $path_to_generate",
 					$e->getMessage(),
 				] );
 
-				$output->writeln('<comment>For safety reasons, only expected files are deleted.</comment>');
-				$output->writeln('<comment>Please delete the directory "' . $path_to_generate . '" manually and try again.</comment>');
+				$output->writeln( '<comment>For safety reasons, only expected files are deleted.</comment>' );
+				$output->writeln( '<comment>Please delete the directory "' . $path_to_generate . '" manually and try again.</comment>' );
 
 				return Command::FAILURE;
 			}
