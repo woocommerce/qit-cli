@@ -2,6 +2,7 @@
 
 use QIT\SelfTests\CustomTests\Traits\ScaffoldHelpers;
 use QIT\SelfTests\CustomTests\Traits\SnapshotHelpers;
+use Spatie\Snapshots\Drivers\JsonDriver;
 
 class RunE2ETest extends \PHPUnit\Framework\TestCase {
 	use SnapshotHelpers;
@@ -238,5 +239,41 @@ JS;
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
 		$this->assertMatchesNormalizedSnapshot( $output );
+	}
+
+	public function test_directory_with_same_basename_as_sut() {
+		$this->scaffold_plugin('woocommerce-amazon-s3-storage');
+
+		$output = qit( [
+			'run:e2e',
+			'woocommerce-amazon-s3-storage',
+			$this->scaffold_test(),
+			'--json',
+			'--plugin=woocommerce',
+		], [], 0, [ 'QIT_SELF_TEST' => 'env_info' ] );
+
+		$output = $this->normalize_env_info( json_decode( $output, true ) );
+
+		$output = json_encode( $output, JSON_PRETTY_PRINT );
+
+		$this->assertMatchesNormalizedSnapshot( $output, new JsonDriver() );
+	}
+
+	public function test_directory_with_same_basename_as_sut_with_env_up() {
+		$this->scaffold_plugin('woocommerce-amazon-s3-storage');
+
+		$output = qit( [
+			'run:e2e',
+			'woocommerce-amazon-s3-storage',
+			$this->scaffold_test(),
+			'--json',
+			'--plugin=woocommerce',
+		], [], 0, [ 'QIT_SELF_TEST' => 'env_up' ] );
+
+		$output = $this->normalize_env_info( json_decode( $output, true ) );
+
+		$output = json_encode( $output, JSON_PRETTY_PRINT );
+
+		$this->assertMatchesNormalizedSnapshot( $output, new JsonDriver() );
 	}
 }

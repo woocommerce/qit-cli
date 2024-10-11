@@ -191,10 +191,36 @@ abstract class Environment {
 		 * the container with the correct permissions, unless they are a file name,
 		 * at which point create the parent dir.
 		 */
-		foreach ( $volumes as $in_container => $local ) {
+		foreach ( $volumes as $in_container => &$local ) {
 			if ( strpos( $local, 'qit_env_volume' ) !== false ) {
 				continue;
 			}
+
+			/*
+			 * Ensure volume sources are treated as paths, not named volumes.
+			 *
+			 * In Docker Compose, entries in the "volumes" section can be interpreted as either paths or named volumes.
+			 *
+			 * Undesired (interpreted as a named volume):
+			 *   - "my-extension:/var/www/html/wp-content/plugins/my-extension"
+			 *
+			 * Desired (interpreted as a path):
+			 *   - "/path/to/my-extension:/var/www/html/wp-content/plugins/my-extension"
+			 *   - "./my-extension:/var/www/html/wp-content/plugins/my-extension"
+			 *
+			 * To avoid ambiguity and ensure Docker treats all volume sources as paths (bind mounts), we convert local paths
+			 * to absolute or resolved relative paths.
+			 */
+			if ( file_exists( realpath( $local ) ) ) {
+				$local = realpath( $local );
+			} else {
+				// Check if it can be resolved by relative path to the working directory.
+				if ( file_exists( getcwd() . '/' . $local ) ) {
+					$local = getcwd() . '/' . $local;
+				}
+			}
+
+			// If it doesn't contain a "dot", it's a directory.
 			if ( stripos( $local, '.' ) === false ) {
 				if ( ! file_exists( $local ) ) {
 					if ( ! mkdir( $local, 0755, true ) ) {
@@ -211,7 +237,7 @@ abstract class Environment {
 			}
 		}
 
-		$this->env_info->volumes = array_merge( $this->env_info->volumes, $volumes );
+		$this->env_info->volumes = $volumes;
 
 		$process->setEnv( array_merge( $process->getEnv(), [
 			'QIT_ENV_ID'         => $this->env_info->env_id,

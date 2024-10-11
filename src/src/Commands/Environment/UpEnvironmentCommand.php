@@ -247,6 +247,13 @@ HELP
 
 		$this->e2e_environment->init( $env_info );
 
+		// Helper utility to test the environment.
+		if ( getenv( 'QIT_SELF_TEST' ) === 'env_info' ) {
+			$output->write( json_encode( $env_info ) );
+
+			return 1337;
+		}
+
 		// "up_and_test" is when we are using an environment to run a custom test. "up" is spinning up the environment on-demand.
 		$this->e2e_environment->up( getenv( 'QIT_UP_AND_TEST' ) ? 'up_and_test' : 'up' );
 

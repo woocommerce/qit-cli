@@ -41,6 +41,7 @@ class QITTestStart implements ExecutionStartedSubscriber {
 		}
 
 		$GLOBALS['qit'] = __DIR__ . '/../../qit';
+		$GLOBALS['qit-php'] = __DIR__ . '/../../src/qit-cli.php';
 
 		// Generate an ID for this run.
 		$run_id      = uniqid( 'qit_custom_tests_' );
