@@ -2,6 +2,7 @@
 
 use QIT\SelfTests\CustomTests\Traits\ScaffoldHelpers;
 use QIT\SelfTests\CustomTests\Traits\SnapshotHelpers;
+use Spatie\Snapshots\Drivers\JsonDriver;
 
 class RunE2ETest extends \PHPUnit\Framework\TestCase {
 	use SnapshotHelpers;
@@ -255,7 +256,7 @@ JS;
 
 		$output = json_encode( $output, JSON_PRETTY_PRINT );
 
-		$this->assertMatchesNormalizedSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output, new JsonDriver() );
 	}
 
 	public function test_directory_with_same_basename_as_sut_with_env_up() {
@@ -273,6 +274,6 @@ JS;
 
 		$output = json_encode( $output, JSON_PRETTY_PRINT );
 
-		$this->assertMatchesNormalizedSnapshot( $output );
+		$this->assertMatchesNormalizedSnapshot( $output, new JsonDriver() );
 	}
 }

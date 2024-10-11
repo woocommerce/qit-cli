@@ -2,6 +2,7 @@
 
 namespace QIT\SelfTests\CustomTests\Traits;
 
+use Spatie\Snapshots\Drivers\TextDriver;
 use Spatie\Snapshots\MatchesSnapshots;
 
 trait SnapshotHelpers {
@@ -52,6 +53,6 @@ trait SnapshotHelpers {
 			$normalized_spaces .= trim( $line ) . "\n";
 		}
 
-		$this->assertMatchesTextSnapshot( $normalized_spaces, $driver );
+		$this->assertMatchesSnapshot( $normalized_spaces, $driver ?? new TextDriver() );
 	}
 }

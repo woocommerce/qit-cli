@@ -92,6 +92,7 @@ PHP;
 		$env_info = json_decode( $env_info, true );
 
 		$env_info['created_at'] = '1700000000';
+		$env_info['sut_id']     = '123';
 
 		foreach ( $env_info['plugins'] as &$p ) {
 			if ( strpos( $p['source'], 'http' ) !== false ) {
