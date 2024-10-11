@@ -197,24 +197,19 @@ abstract class Environment {
 			}
 
 			/*
-			 * Convert volumes to paths.
+			 * Ensure volume sources are treated as paths, not named volumes.
 			 *
-			 * In Docker, the "volumes" section take both paths and volume names.
+			 * In Docker Compose, entries in the "volumes" section can be interpreted as either paths or named volumes.
 			 *
-			 * If a string looks like a volume name, Docker considers it as a volume name, eg:
-			 *  - "WordPress:/var/www/html/wp-content/plugins"
+			 * Undesired (interpreted as a named volume):
+			 *   - "my-extension:/var/www/html/wp-content/plugins/my-extension"
 			 *
-			 * Would be considered as a volume name.
+			 * Desired (interpreted as a path):
+			 *   - "/path/to/my-extension:/var/www/html/wp-content/plugins/my-extension"
+			 *   - "./my-extension:/var/www/html/wp-content/plugins/my-extension"
 			 *
-			 * Whereas
-			 *  - "/path/to/wordpress:/var/www/html/wp-content/plugins"
-			 *  - "./wordpress:/var/www/html/wp-content/plugins"
-			 *
-			 * Would be considered as paths.
-			 *
-			 * Here, we need to remove any ambiguity to make sure all volumes are considered paths, not volume names.
-			 *
-			 * To do this, we either expand the local path to an absolute path, or if it's a relative path, we resolve it.
+			 * To avoid ambiguity and ensure Docker treats all volume sources as paths (bind mounts), we convert local paths
+			 * to absolute or resolved relative paths.
 			 */
 			if ( file_exists( realpath( $local ) ) ) {
 				$local = realpath( $local );
