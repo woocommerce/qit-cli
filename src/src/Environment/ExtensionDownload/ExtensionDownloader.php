@@ -242,7 +242,7 @@ class ExtensionDownloader {
 						// Local path.
 						$ext->handler = FileHandler::class;
 					} else {
-						$error_message = 'Could not find extension %s';
+						$error_message = 'Could not find extension ' . $ext->source;
 
 						$d = $ext->source;
 

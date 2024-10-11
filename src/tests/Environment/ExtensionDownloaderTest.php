@@ -207,7 +207,7 @@ class ExtensionDownloaderTest extends TestCase {
 			$this->make_extension( 'theme', source: 'theme_special*chars' ),
 		];
 		$this->expectException( InvalidArgumentException::class );
-		$this->expectExceptionMessage( 'Invalid extension' );
+		$this->expectExceptionMessage( 'Could not find extension' );
 		$this->assertMatchesJsonSnapshot( $this->sut->categorize_extensions( $plugins, $themes, '/tmp/cache/' ) );
 	}
 
