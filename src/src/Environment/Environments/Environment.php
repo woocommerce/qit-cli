@@ -192,10 +192,36 @@ abstract class Environment {
 		 * the container with the correct permissions, unless they are a file name,
 		 * at which point create the parent dir.
 		 */
-		foreach ( $volumes as $in_container => $local ) {
+		foreach ( $volumes as $in_container => &$local ) {
 			if ( strpos( $local, 'qit_env_volume' ) !== false ) {
 				continue;
 			}
+
+			/*
+			 * Ensure volume sources are treated as paths, not named volumes.
+			 *
+			 * In Docker Compose, entries in the "volumes" section can be interpreted as either paths or named volumes.
+			 *
+			 * Undesired (interpreted as a named volume):
+			 *   - "my-extension:/var/www/html/wp-content/plugins/my-extension"
+			 *
+			 * Desired (interpreted as a path):
+			 *   - "/path/to/my-extension:/var/www/html/wp-content/plugins/my-extension"
+			 *   - "./my-extension:/var/www/html/wp-content/plugins/my-extension"
+			 *
+			 * To avoid ambiguity and ensure Docker treats all volume sources as paths (bind mounts), we convert local paths
+			 * to absolute or resolved relative paths.
+			 */
+			if ( file_exists( realpath( $local ) ) ) {
+				$local = realpath( $local );
+			} else {
+				// Check if it can be resolved by relative path to the working directory.
+				if ( file_exists( getcwd() . '/' . $local ) ) {
+					$local = getcwd() . '/' . $local;
+				}
+			}
+
+			// If it doesn't contain a "dot", it's a directory.
 			if ( stripos( $local, '.' ) === false ) {
 				if ( ! file_exists( $local ) ) {
 					if ( ! mkdir( $local, 0755, true ) ) {
@@ -212,7 +238,7 @@ abstract class Environment {
 			}
 		}
 
-		$this->env_info->volumes = array_merge( $this->env_info->volumes, $volumes );
+		$this->env_info->volumes = $volumes;
 
 		$process->setEnv( array_merge( $process->getEnv(), [
 			'QIT_ENV_ID'         => $this->env_info->env_id,
@@ -246,20 +272,7 @@ abstract class Environment {
 		}
 
 		// Do a docker compose pull first, to make sure images are updated.
-		if ( ! getenv( 'QIT_NO_PULL' ) ) {
-			$pull_process = new Process( array_merge( $this->docker->find_docker_compose(), [ '-f', $this->env_info->temporary_env . '/docker-compose.yml', 'pull' ] ) );
-			$pull_process->setTimeout( 600 );
-			$pull_process->setIdleTimeout( 600 );
-			$pull_process->setPty( use_tty() );
-			$pull_process->setEnv( [
-				'DOCKER_CLI_HINTS' => 'false',
-			]);
-			$pull_process->run( function ( $type, $buffer ) {
-				if ( $this->output->isVerbose() ) {
-					$this->output->write( $buffer );
-				}
-			} );
-		}
+		$this->docker->maybe_pull_docker_compose( $this->env_info->temporary_env . '/docker-compose.yml', 'e2e' );
 
 		$args = array_merge( $this->docker->find_docker_compose(), [ '-f', $this->env_info->temporary_env . '/docker-compose.yml', 'up', '-d' ] );
 

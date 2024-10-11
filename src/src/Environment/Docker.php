@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Environment;
 
+use QIT_CLI\Cache;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
@@ -12,8 +13,12 @@ class Docker {
 	/** @var OutputInterface */
 	protected $output;
 
-	public function __construct( OutputInterface $output ) {
+	/** @var Cache */
+	protected $cache;
+
+	public function __construct( OutputInterface $output, Cache $cache ) {
 		$this->output = $output;
+		$this->cache  = $cache;
 	}
 
 	public function find_docker(): string {
@@ -292,6 +297,50 @@ class Docker {
 			return [ 'docker', 'compose' ];
 		} else {
 			throw new \RuntimeException( 'Could not find docker-compose or docker compose' );
+		}
+	}
+
+	public function maybe_pull_docker_compose( string $docker_compose_path, string $environment_type ): void {
+		if ( getenv( 'QIT_NO_PULL' ) ) {
+			return;
+		}
+
+		if ( $this->cache->get( "did_pull_docker_compose_$environment_type" ) ) {
+			return;
+		}
+
+		$pull_process = new Process( array_merge( $this->find_docker_compose(), [ '-f', $docker_compose_path, 'pull' ] ) );
+		$pull_process->setTimeout( 600 );
+		$pull_process->setIdleTimeout( 600 );
+		$pull_process->setPty( use_tty() );
+		$pull_process->setEnv( [
+			'DOCKER_CLI_HINTS' => 'false',
+		] );
+		$pull_process->run( function ( $type, $buffer ) {
+			if ( $this->output->isVerbose() ) {
+				$this->output->write( $buffer );
+			}
+		} );
+		$this->cache->set( "did_pull_docker_compose_$environment_type", true, DAY_IN_SECONDS );
+	}
+
+	public function maybe_pull_image( string $image_name ): void {
+		if ( getenv( 'QIT_NO_PULL' ) ) {
+			return;
+		}
+
+		if ( $this->cache->get( 'did_pull_' . $image_name ) ) {
+			return;
+		}
+
+		$docker  = $this->find_docker();
+		$process = new Process( [ $docker, 'pull', $image_name ] );
+		$process->run();
+
+		$this->cache->set( 'did_pull_' . $image_name, true, DAY_IN_SECONDS );
+
+		if ( ! $process->isSuccessful() ) {
+			throw new \RuntimeException( 'Failed to pull image ' . $image_name );
 		}
 	}
 }

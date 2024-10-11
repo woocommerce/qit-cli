@@ -21,6 +21,96 @@ trait ScaffoldHelpers {
 		return $scaffolded_dir;
 	}
 
+	/**
+	 * There is no "scaffold:plugin" command, so we mock one in the given path.
+	 *
+	 * @param string $plugin_path The path of the plugin to scaffold.
+	 */
+	protected function scaffold_plugin( string $plugin_path ): void {
+		if ( ! file_exists( dirname( $plugin_path ) ) ) {
+			throw new \RuntimeException( 'The parent directory of the plugin path does not exist. Expected to exist: ' . dirname( $plugin_path ) );
+		}
+
+		$plugin_name      = basename( $plugin_path );
+		$plugin_main_file = sprintf( '%s/%s.php', $plugin_path, basename( $plugin_path ) );
+
+		if ( file_exists( $plugin_path ) ) {
+			unlink( $plugin_main_file );
+			rmdir( $plugin_path );
+		}
+
+		if ( ! mkdir( $plugin_path, 0755, true ) ) {
+			throw new \RuntimeException( 'Failed to create the plugin directory at ' . $plugin_path );
+		}
+
+		$plugin_contents = <<<PHP
+<?php
+/*
+ * Plugin Name: $plugin_name
+ */
+PHP;
+
+		if ( ! file_put_contents( $plugin_main_file, $plugin_contents ) ) {
+			throw new \RuntimeException( 'Failed to create the plugin main file at ' . $plugin_main_file );
+		}
+
+		register_shutdown_function( function () use ( $plugin_path, $plugin_main_file ) {
+			if ( file_exists( $plugin_main_file ) ) {
+				unlink( $plugin_main_file );
+			}
+			if ( file_exists( $plugin_path ) ) {
+				rmdir( $plugin_path );
+			}
+		} );
+	}
+
+	protected function normalize_env_info( array $env_info ): array {
+		$id = $env_info['env_id'];
+
+		// Decode, str_replace, encode
+		$env_info = json_encode( $env_info, JSON_UNESCAPED_SLASHES );
+
+		$d = __DIR__;
+
+		while ( true ) {
+			$d = dirname( $d );
+			if ( basename( $d ) === 'custom_tests' ) {
+				$dir_to_replace = realpath( $d );
+				break;
+			}
+
+			if ( $d === '/' ) {
+				throw new \RuntimeException( 'Could not find the "custom_tests" directory.' );
+			}
+		}
+
+		$env_info = str_replace( $id, 'ENV_ID_NORMALIZED', $env_info );
+		$env_info = str_replace( $dir_to_replace, '/path/normalized/', $env_info );
+		$env_info = preg_replace( '/qit_scaffolded_e2e-[a-f0-9]+/', 'qit_scaffolded_e2e-NORMALIZED_ID', $env_info );
+		$env_info = preg_replace( '/qit_config-qit_custom_tests_[a-f0-9]+/', 'qit_config-qit_custom_tests_NORMALIZED_ID', $env_info );
+
+		$env_info = json_decode( $env_info, true );
+
+		$env_info['created_at'] = '1700000000';
+		$env_info['sut_id']     = '123';
+
+		foreach ( $env_info['plugins'] as &$p ) {
+			if ( strpos( $p['source'], 'http' ) !== false ) {
+				$filename    = explode( '/', parse_url( $p['source'], PHP_URL_PATH ) );
+				$filename    = end( $filename );
+				$p['source'] = 'https://normalized-remote-source/' . $filename;
+			}
+			if ( ! empty( $p['version'] ) ) {
+				$p['version'] = 'NORMALIZED_VERSION';
+			}
+			if ( ! empty( $p['downloaded_source'] ) ) {
+				$p['downloaded_source'] = '/normalized/downloaded-path/file.zip';
+			}
+		}
+
+		return $env_info;
+	}
+
 	protected function normalize_scaffolded_test_run_output( string $output ): string {
 		/*
 		 * This is an example output that we are normalizing. We will remove anything that is completely random,

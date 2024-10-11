@@ -2,7 +2,7 @@
 
 use Symfony\Component\Process\Process;
 
-function qit( array $command, array $qit_env_json = [], int $expected_exit_code = 0 ): string {
+function qit( array $command, array $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [] ): string {
 	if ( ! empty( $qit_env_json ) ) {
 		$qit_config_filename = sprintf( '%s/qit-env-%s.json', sys_get_temp_dir(), md5( $GLOBALS['QIT_HOME'] ) );
 		if ( ! file_put_contents( $qit_config_filename, json_encode( $qit_env_json ) ) ) {
@@ -52,7 +52,7 @@ function qit( array $command, array $qit_env_json = [], int $expected_exit_code 
 		}
 	}
 
-	$args = [ $GLOBALS['qit'] ];
+	$args = [ 'php', $GLOBALS['qit-php'] ];
 	$args = array_merge( $args, $command );
 	if ( ! empty( $qit_env_json ) ) {
 		$args[] = '--config';
@@ -62,18 +62,23 @@ function qit( array $command, array $qit_env_json = [], int $expected_exit_code 
 		$args[] = '--pw_options';
 		$args[] = '"--trace on"';
 	}
-	$qit = new Process( $args );
-	$qit->setTimeout( 300 );
-	$qit->setIdleTimeout( 300 );
-	$qit->setTty( false );
-	$qit->setPty( false );
-	$qit->setEnv( [
+
+	$env = [
 		'QIT_HOME'            => $GLOBALS['QIT_HOME'],
 		'QIT_DISABLE_CLEANUP' => '1', // We need to disable it because of parallelization with individualized QIT_HOMEs.
 		'QIT_SELF_TESTS'      => '1',
 		'CI'                  => '1',
 		'COLUMNS'             => '300',  // Set a fixed width so that we can snapshot the output.
-	] );
+	];
+
+	$env = array_merge( $env, $extra_env );
+
+	$qit = new Process( $args );
+	$qit->setTimeout( 300 );
+	$qit->setIdleTimeout( 300 );
+	$qit->setTty( false );
+	$qit->setPty( false );
+	$qit->setEnv( $env );
 	$qit->run();
 
 	if ( $qit->getExitCode() !== $expected_exit_code ) {
