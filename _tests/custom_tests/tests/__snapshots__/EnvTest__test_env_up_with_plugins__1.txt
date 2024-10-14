@@ -1,7 +1,6 @@
 name	status
-woocommerce-amazon-s3-storage	active
-woocommerce	active
 qit-individual-log	must-use
 qit-wp-cli	must-use
+woocommerce	active
+woocommerce-amazon-s3-storage	active
 wp-cli-github-cache	must-use
-
