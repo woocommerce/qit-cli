@@ -86,6 +86,8 @@ PHP;
 
 		$env_info = str_replace( $id, 'ENV_ID_NORMALIZED', $env_info );
 		$env_info = str_replace( $dir_to_replace, '/path/normalized/', $env_info );
+		$env_info = str_replace( sys_get_temp_dir(), '/tmp-normalized', $env_info );
+		$env_info = str_replace( '/tmp/', '/tmp-normalized/', $env_info );
 		$env_info = preg_replace( '/qit_scaffolded_e2e-[a-f0-9]+/', 'qit_scaffolded_e2e-NORMALIZED_ID', $env_info );
 		$env_info = preg_replace( '/qit_config-qit_custom_tests_[a-f0-9]+/', 'qit_config-qit_custom_tests_NORMALIZED_ID', $env_info );
 
