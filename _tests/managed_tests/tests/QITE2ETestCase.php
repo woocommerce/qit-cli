@@ -431,43 +431,48 @@ class QITE2ETestCase extends TestCase {
 		if ( $count < 25 ) {
 			// No-op. Exact match for counts below 50.
 		} elseif ( $count < 100 ) {
-			if ( $count % 5 === 0 ) {
-				echo "Skipping normalization as it's already divisible by 5\n";
+			$normalize_to_closest = 10;
+			if ( $count % $normalize_to_closest === 0 ) {
+				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
 			} else {
 				echo "Normalizing debug_log.count from {$count} to ";
-				$count = round( $count / 5 ) * 5;  // Round to the closest 5.
+				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 10.
 				echo "{$count}\n";
 			}
 		} elseif ( $count < 200 ) {
-			if ( $count % 10 === 0 ) {
-				echo "Skipping normalization as it's already divisible by 10\n";
+			$normalize_to_closest = 25;
+			if ( $count % $normalize_to_closest === 0 ) {
+				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
 			} else {
 				echo "Normalizing debug_log.count from {$count} to ";
-				$count = round( $count / 10 ) * 10;  // Round to the closest 10.
+				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 25.
 				echo "{$count}\n";
 			}
 		} elseif ( $count < 1000 ) {
-			if ( $count % 50 === 0 ) {
-				echo "Skipping normalization as it's already divisible by 50\n";
+			$normalize_to_closest = 50;
+			if ( $count % $normalize_to_closest === 0 ) {
+				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
 			} else {
 				echo "Normalizing debug_log.count from {$count} to ";
-				$count = round( $count / 50 ) * 50;  // Round to the closest 50.
+				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 50.
 				echo "{$count}\n";
 			}
 		} elseif ( $count < 10000 ) {
-			if ( $count % 100 === 0 ) {
-				echo "Skipping normalization as it's already divisible by 100\n";
+			$normalize_to_closest = 100;
+			if ( $count % $normalize_to_closest === 0 ) {
+				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
 			} else {
 				echo "Normalizing debug_log.count from {$count} to ";
-				$count = round( $count / 100 ) * 100;  // Round to the closest 100.
+				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 100.
 				echo "{$count}\n";
 			}
 		} else {
-			if ( $count % 1000 === 0 ) {
-				echo "Skipping normalization as it's already divisible by 1000\n";
+			$normalize_to_closest = 1000;
+			if ( $count % $normalize_to_closest === 0 ) {
+				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
 			} else {
 				echo "Normalizing debug_log.count from {$count} to ";
-				$count = round( $count / 1000 ) * 1000;  // Round to the closest 1000.
+				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 1000.
 				echo "{$count}\n";
 			}
 		}

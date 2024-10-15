@@ -117,6 +117,7 @@ class RunE2ECommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'skip_activating_plugins' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'tunnel' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'json' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'volume' )
 			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright Sharding argument.' )
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )

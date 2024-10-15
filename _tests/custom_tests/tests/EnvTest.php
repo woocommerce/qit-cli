@@ -112,6 +112,14 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 		 * wp-cli-github-cache    must-use
 		 */
 
+		// Keep the first line (header), and sort the rest alphabetically.
+		$lines  = explode( "\n", $output );
+		$header = array_shift( $lines );
+		sort( $lines );
+		array_unshift( $lines, $header );
+		$lines = array_filter( $lines ); // Remove empty lines.
+		$output = implode( "\n", $lines );
+
 		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
