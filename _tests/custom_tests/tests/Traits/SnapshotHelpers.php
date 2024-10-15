@@ -29,6 +29,8 @@ trait SnapshotHelpers {
 			'npm',
 		];
 
+		$processing_docker_pull_output = false;
+
 		foreach ( explode( "\n", $actual ) as $line ) {
 			foreach ( $lines_to_remove as $to_remove ) {
 				if ( strpos( $line, $to_remove ) !== false ) {
@@ -37,6 +39,19 @@ trait SnapshotHelpers {
 			}
 
 			if ( trim( $line ) === 'notice' ) {
+				continue;
+			}
+
+			/*
+			 * Skip docker pull output.
+			 */
+			if ( strpos( $line, 'Unable to find image') !== false ) {
+				$processing_docker_pull_output = true;
+				continue;
+			} elseif ( $processing_docker_pull_output && strpos( $line, 'Downloaded newer image for' ) !== false ) {
+				$processing_docker_pull_output = false;
+				continue;
+			} elseif ( $processing_docker_pull_output ) {
 				continue;
 			}
 
