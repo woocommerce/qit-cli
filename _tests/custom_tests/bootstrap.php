@@ -67,9 +67,23 @@ function qit( array $command, array $qit_env_json = [], int $expected_exit_code 
 		'QIT_HOME'            => $GLOBALS['QIT_HOME'],
 		'QIT_DISABLE_CLEANUP' => '1', // We need to disable it because of parallelization with individualized QIT_HOMEs.
 		'QIT_SELF_TESTS'      => '1',
+		'QIT_NO_PULL'         => '1',
 		'CI'                  => '1',
 		'COLUMNS'             => '300',  // Set a fixed width so that we can snapshot the output.
 	];
+
+	/*
+	 * Add our helper mu-plugin, if applicable.
+	 * To do this, we check if the command we are running have a "--volume" option.
+	 */
+	$volume_check = new Process( [ 'php', $GLOBALS['qit-php'], $command[0], '--help' ] );
+	$volume_check->setEnv( $env );
+	$volume_check->run();
+
+	if ( strpos( $volume_check->getOutput(), '--volume' ) !== false ) {
+		$args[] = '--volume';
+		$args[] = sprintf( '%s:%s', __DIR__ . '/helpers/custom-test-mu-plugin.php', '/var/www/html/wp-content/mu-plugins/custom-test-mu-plugin.php' );
+	}
 
 	$env = array_merge( $env, $extra_env );
 

@@ -1,4 +1,5 @@
 name	status
+custom-test-mu-plugin	must-use
 qit-individual-log	must-use
 qit-wp-cli	must-use
 woocommerce	active
