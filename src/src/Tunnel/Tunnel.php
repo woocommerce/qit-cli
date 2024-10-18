@@ -52,7 +52,7 @@ abstract class Tunnel {
 		$tunnel_ready    = false;
 		$started_spinner = false;
 		$spinner         = new Spinner( $output );
-		$spinner->get_progress_bar()->setFormat( "%bar% (%elapsed:6s%) %message%\n" );
+		$spinner->get_progress_bar()->setFormat( "%bar% (%elapsed:6s%) %message%" );
 
 		$tunnels_that_works_best_on_cloudflare_dns = [
 			TunnelRunner::$tunnel_map['cloudflared-docker'],
@@ -111,5 +111,7 @@ abstract class Tunnel {
 		}
 
 		$spinner->finish();
+
+		$output->writeln();
 	}
 }
