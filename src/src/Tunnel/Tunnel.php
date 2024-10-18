@@ -92,6 +92,10 @@ abstract class Tunnel {
 				break;
 			}
 
+			if ( $output->isVerbose() ) {
+				$output->writeln( sprintf( 'Tunnel test failed. HTTP code: %s. Error: %s', $http_code, $curl_error ) );
+			}
+
 			if ( $http_code === 429 ) {
 				sleep( 10 );
 			} else {
