@@ -3,9 +3,7 @@
 namespace QIT_CLI\Tunnel;
 
 use QIT_CLI\App;
-use QIT_CLI\IO\Output;
 use QIT_CLI\Spinner;
-use QIT_CLI\Tunnel\Tunnels\CloudflaredDockerTunnel;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -18,21 +16,21 @@ abstract class Tunnel {
 	 *
 	 * @return string The public URL of the tunnel.
 	 */
-	public static abstract function connect_tunnel( string $local_url, string $env_id ): string;
+	abstract public static function connect_tunnel( string $local_url, string $env_id ): string;
 
 	/**
 	 * Determines whether this tunnel can be used.
 	 *
-	 * @return bool
+	 * @throws \RuntimeException If the tunnel is not supported.
 	 */
-	public static abstract function is_supported(): bool;
+	abstract public static function check_is_installed(): void;
 
 	/**
 	 * Checks if the tunnel is properly configured.
 	 *
 	 * @return bool
 	 */
-	public static abstract function is_configured(): bool;
+	abstract public static function is_configured(): bool;
 
 	/**
 	 * Optionally override this method if this tunnel has any other
@@ -41,10 +39,9 @@ abstract class Tunnel {
 	 *
 	 * @return void
 	 * @throws \RuntimeException If the tunnel is not available.
-	 *
 	 */
 	public static function check_is_available(): void {
-		return;
+		return; // phpcs:ignore Squiz.PHP.NonExecutableCode.ReturnNotRequired
 	}
 
 	public static function test_connection( string $tunnel_url, string $tunnel_type ): void {
@@ -55,7 +52,7 @@ abstract class Tunnel {
 		$tunnel_ready    = false;
 		$started_spinner = false;
 		$spinner         = new Spinner( $output );
-		$spinner->getProgressBar()->setFormat( "%bar% (%elapsed:6s%) %message%\n" );
+		$spinner->get_progress_bar()->setFormat( "%bar% (%elapsed:6s%) %message%\n" );
 
 		$tunnels_that_works_best_on_cloudflare_dns = [
 			TunnelRunner::$tunnel_map['cloudflared-docker'],
@@ -70,7 +67,7 @@ abstract class Tunnel {
 				$spinner_message = $spinner_message . sprintf( "\n<comment>The tunnel connection is taking longer than expected. This delay might be due to DNS propagation delays. For optimal performance, consider using Cloudflare DNS (if not already) or a persistent tunnel. The timeout is: %s</comment>", Helper::formatTime( $timeout ) );
 			}
 
-			$spinner->setMessage( $spinner_message );
+			$spinner->set_message( $spinner_message );
 
 			if ( ! $started_spinner ) {
 				$started_spinner = true;

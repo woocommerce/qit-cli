@@ -56,7 +56,7 @@ class CloudflaredDockerTunnel extends Tunnel {
 		}
 
 		if ( $output && $output->isVeryVerbose() ) {
-			$output->writeln( $logs );
+			$output->writeln( $logs ?? '' );
 		}
 
 		if ( $domain === null ) {
@@ -69,12 +69,10 @@ class CloudflaredDockerTunnel extends Tunnel {
 		return $domain;
 	}
 
-	public static function is_supported(): bool {
+	public static function check_is_installed(): void {
 		if ( is_wsl() || is_mac() ) {
-			return false;
+			throw new \RuntimeException( 'Cloudflared Docker tunnel is not supported on this OS.' );
 		}
-
-		return true;
 	}
 
 	public static function is_configured(): bool {

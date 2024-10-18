@@ -15,7 +15,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\is_windows;
-use function QIT_CLI\is_wsl;
 
 class UpEnvironmentCommand extends DynamicCommand {
 	/** @var E2EEnvironment */
@@ -258,7 +257,7 @@ HELP
 				return Command::FAILURE;
 			}
 		} else {
-			// Tunneling is disabled
+			// Tunneling is disabled.
 			$env_info->tunnel = false;
 		}
 

@@ -6,6 +6,7 @@ use QIT_CLI\App;
 use QIT_CLI\Tunnel\Tunnel;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Output\OutputInterface;
+use function QIT_CLI\is_mac;
 use function QIT_CLI\is_wsl;
 
 class CloudflaredBinaryTunnel extends Tunnel {
@@ -25,7 +26,7 @@ class CloudflaredBinaryTunnel extends Tunnel {
 			$region = '--region=' . getenv( 'QIT_TUNNEL_REGION' );
 		}
 
-		$pid_file_escaped = escapeshellarg( $pid_file );
+		$pid_file_escaped  = escapeshellarg( $pid_file );
 		$local_url_escaped = escapeshellarg( $local_url );
 
 		$command_parts = [
@@ -97,14 +98,29 @@ class CloudflaredBinaryTunnel extends Tunnel {
 		return $domain;
 	}
 
-	public static function is_supported(): bool {
+	public static function check_is_installed(): void {
 		if ( is_wsl() ) {
-			return false;
+			throw new \RuntimeException( 'Cloudflared binary tunnel is not supported on Windows Subsystem for Linux (WSL).' );
 		}
 
 		// Verify that "cloudflared" is installed.
-		exec( "which cloudflared", $output, $return_var );
-		return $return_var === 0;
+		exec( 'which cloudflared', $output, $return_var );
+
+		if ( $return_var !== 0 ) {
+			$output           = App::make( OutputInterface::class );
+			$installation_url = 'https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/';
+
+			if ( is_mac() ) {
+				$output->writeln( '<error>Cloudflared is not installed.</error>' );
+				$output->writeln( 'Please install it using Homebrew by running the following command:' );
+				$output->writeln( '<info>brew install cloudflared</info>' );
+				$output->writeln( "For detailed installation instructions, visit: $installation_url" );
+			} else {
+				$output->writeln( '<error>Cloudflared is not installed.</error>' );
+				$output->writeln( 'Please install it using the appropriate package manager for your operating system.' );
+				$output->writeln( "For detailed installation instructions, visit: $installation_url" );
+			}
+		}
 	}
 
 	public static function is_configured(): bool {

@@ -7,7 +7,6 @@ use QIT_CLI\Tunnel\Tunnel;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
-use function QIT_CLI\is_wsl;
 
 class PersistentCloudFlareTunnel extends Tunnel {
 	public static function connect_tunnel( string $local_url, string $env_id ): string {
@@ -59,15 +58,8 @@ class PersistentCloudFlareTunnel extends Tunnel {
 		return $cloudflare_tunnel_url;
 	}
 
-	public static function is_supported(): bool {
-		if ( is_wsl() ) {
-			return false;
-		}
-
-		// Verify that "cloudflared" is installed.
-		exec( "which cloudflared", $output, $return_var );
-
-		return $return_var === 0;
+	public static function check_is_installed(): void {
+		CloudflaredBinaryTunnel::check_is_installed();
 	}
 
 	public static function is_configured(): bool {
@@ -77,13 +69,6 @@ class PersistentCloudFlareTunnel extends Tunnel {
 		$config  = $configs['cloudflared-persistent'] ?? null;
 
 		return isset( $config['tunnel_name'], $config['tunnel_url'] );
-	}
-
-	private static function check_persistent_cloudflared_tunnel_exists( string $tunnel_name ): bool {
-		$process = new Process( [ 'cloudflared', 'tunnel', 'info', $tunnel_name ] );
-		$process->run();
-
-		return $process->isSuccessful();
 	}
 
 	public static function check_is_available(): void {

@@ -14,7 +14,7 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Process\Process;
 
 class TunnelSetupCommand extends Command {
-	protected static $defaultName = 'tunnel:setup';
+	protected static $defaultName = 'tunnel:setup'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/** @var Cache */
 	protected $cache;
@@ -107,38 +107,16 @@ TXT
 
 		$config = [ 'method' => $method ];
 
-		// Use the is_usable method to check usability
+		// Use the is_usable method to check usability.
 		$tunnel_class = TunnelRunner::get_tunnel_class( $method );
-		if ( $tunnel_class && ! $tunnel_class::is_supported() ) {
-			$output->writeln( '<error>The selected tunneling method is not usable on this system.</error>' );
-			return Command::FAILURE;
-		}
 
 		// Check if the relevant binaries are installed.
-		switch ( $method ) {
-			case 'cloudflared-binary':
-			case 'cloudflared-persistent':
-				if ( ! $this->check_binary_exists( 'cloudflared' ) ) {
-					$output->writeln( '<error>Cloudflared binary not found. Please install it first.</error>' );
+		try {
+			$tunnel_class::check_is_installed();
+		} catch ( \Exception $e ) {
+			$output->writeln( '<error>' . $e->getMessage() . '</error>' );
 
-					if ( is_mac() ) {
-						$output->writeln( '<info>Install Cloudflared binary on Mac using Homebrew:</info>' );
-						$output->writeln( '<info>brew install cloudflared</info>' );
-					} else {
-						$output->writeln( '<info>Download Cloudflared binary from:</info>' );
-						$output->writeln( '<info>https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/</info>' );
-					}
-
-					return Command::FAILURE;
-				}
-				break;
-			case 'jurassictube':
-				if ( ! $this->check_binary_exists( 'jurassictube' ) ) {
-					$output->writeln( '<error>JurassicTube binary not found. Please install it first.</error>' );
-
-					return Command::FAILURE;
-				}
-				break;
+			return Command::FAILURE;
 		}
 
 		// Gather additional information based on the selected method.
@@ -218,14 +196,14 @@ TXT
 		}
 
 		// Save the configuration.
-		$configs = $this->cache->get( 'tunnel_configs' ) ?? [];
+		$configs            = $this->cache->get( 'tunnel_configs' ) ?? [];
 		$configs[ $method ] = $config;
 		$this->cache->set( 'tunnel_configs', $configs, -1 );
 
-		// Ask the user if they want to set this tunnel as default
+		// Ask the user if they want to set this tunnel as default.
 		$set_as_default = false;
 		if ( getenv( 'CI' ) !== false ) {
-			// If running in CI, set as default automatically
+			// If running in CI, set as default automatically.
 			$set_as_default = true;
 		} else {
 			$question = new ChoiceQuestion(
@@ -233,7 +211,7 @@ TXT
 				[ 'yes', 'no' ],
 				0
 			);
-			$answer = $helper->ask( $input, $output, $question );
+			$answer   = $helper->ask( $input, $output, $question );
 			if ( $answer === 'yes' ) {
 				$set_as_default = true;
 			}
@@ -254,11 +232,5 @@ TXT
 		$process->run();
 
 		return $process->isSuccessful();
-	}
-
-	private function check_binary_exists( string $binary ): bool {
-		exec( "which $binary", $output, $return_var );
-
-		return $return_var === 0;
 	}
 }

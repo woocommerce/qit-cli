@@ -46,7 +46,7 @@ class EnvUpChecker {
 
 	protected function check_site( string $site_url ): bool {
 		$retries = 0;
-		retry:
+		retry: // phpcs:ignore Generic.PHP.DiscourageGoto.Found
 
 		if ( $this->output->isVerbose() ) {
 			$this->output->write( sprintf( 'Checking if %s is accessible...', $site_url ) );
@@ -66,14 +66,14 @@ class EnvUpChecker {
 		curl_close( $ch );
 
 		// 502 = Bad Gateway. This can happen for a short period, especially when using Jurassic Tube.
-		if ( $http_code === 502 && $retries < 3 ) {
-			$retries ++;
+		if ( $http_code === 502 && $retries < 3 ) { // @phpstan-ignore-line
+			++$retries;
 
 			// Wait 2, 4 and then 8 seconds.
 			$sleep = 2 ** ( $retries + 1 );
 
 			sleep( $sleep );
-			goto retry;
+			goto retry; // phpcs:ignore Generic.PHP.DiscourageGoto.Found
 		}
 
 		if ( $this->output->isVerbose() ) {

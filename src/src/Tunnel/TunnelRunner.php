@@ -20,7 +20,7 @@ class TunnelRunner {
 	/** @var string|Tunnel $tunnel_class */
 	protected $tunnel_class;
 
-	/** @var array $tunnel_map */
+	/** @var array<string, string|Tunnel> $tunnel_map */
 	public static $tunnel_map = [
 		'cloudflared-docker'     => CloudflaredDockerTunnel::class,
 		'cloudflared-binary'     => CloudflaredBinaryTunnel::class,
@@ -58,7 +58,7 @@ class TunnelRunner {
 		$cache = App::make( \QIT_CLI\Cache::class );
 
 		if ( $tunnel_type === 'auto' ) {
-			// Check if user has set a default tunnel
+			// Check if user has set a default tunnel.
 			$default_tunnel = $cache->get( 'tunnel_default' );
 
 			if ( $default_tunnel ) {
@@ -68,9 +68,9 @@ class TunnelRunner {
 				$output = App::make( OutputInterface::class );
 				$output->writeln( '<info>Using tunneling method: ' . $tunnel_type . '.</info>' );
 			} else {
-				// Determine the default tunnel based on the OS
+				// Determine the default tunnel based on the OS.
 				if ( ! is_mac() && ! is_wsl() ) {
-					// Assuming Linux
+					// Assuming Linux.
 					$tunnel_type = 'cloudflared-docker';
 				} elseif ( is_mac() ) {
 					$tunnel_type = 'cloudflared-binary';
@@ -84,7 +84,7 @@ class TunnelRunner {
 		}
 
 		if ( $tunnel_type === 'custom' ) {
-			// Check if a custom tunnel is available
+			// Check if a custom tunnel is available.
 			$custom_tunnel_class = $this->get_custom_tunnel_class();
 			if ( $custom_tunnel_class !== null ) {
 				$this->tunnel_type  = 'custom';
@@ -96,16 +96,13 @@ class TunnelRunner {
 			}
 		}
 
-		// Now check if the specified tunnel_type is valid
 		$tunnel_class = self::get_tunnel_class( $tunnel_type );
 		if ( $tunnel_class === null ) {
 			throw new \RuntimeException( 'Invalid tunnel type "' . $tunnel_type . '" specified.' );
 		}
 
 		// Check if the tunnel is supported, configured and available.
-		if ( ! $tunnel_class::is_supported() ) {
-			throw new \RuntimeException( 'The tunneling method "' . $tunnel_type . '" is not usable on this system.' );
-		}
+		$tunnel_class::check_is_installed();
 
 		if ( ! $tunnel_class::is_configured() ) {
 			throw new \RuntimeException( 'The tunneling method "' . $tunnel_type . '" is not configured properly. Please run "qit tunnel:setup".' );
@@ -122,7 +119,7 @@ class TunnelRunner {
 	 *
 	 * @return string|null|Tunnel
 	 */
-	public static function get_tunnel_class( string $tunnel_type ): ?string {
+	public static function get_tunnel_class( string $tunnel_type ) {
 		return self::$tunnel_map[ $tunnel_type ] ?? null;
 	}
 

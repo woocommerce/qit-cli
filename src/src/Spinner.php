@@ -78,8 +78,8 @@ class Spinner {
 		197,
 	];
 
-	public const NO_COLOR = 0;
-	public const COLOR_16 = 16;
+	public const NO_COLOR  = 0;
+	public const COLOR_16  = 16;
 	public const COLOR_256 = 256;
 
 	public const ALLOWED = [
@@ -88,68 +88,88 @@ class Spinner {
 		self::COLOR_256,
 	];
 
-	private $currentCharIdx = 0;
-	private $currentColorIdx = 0;
-	private $colorCount;
-	private $progressBar;
-	private $colorLevel;
+	/** @var int */
+	private $current_char_idx = 0;
+
+	/** @var int */
+	private $current_color_idx = 0;
+
+	/** @var int|null */
+	private $color_count;
+
+	/** @var ProgressBar */
+	private $progress_bar;
+
+	/** @var int */
+	private $color_level;
+
+	/** @var ConsoleSectionOutput */
 	private $section;
+
+	/** @var OutputInterface */
 	private $output;
-	private $indentLength;
+
+	/** @var int */
+	private $indent_length;
 
 	/**
 	 * Constructor for the Spinner class.
 	 *
 	 * @param OutputInterface $output
-	 * @param int $indent
-	 * @param int $colorLevel
+	 * @param int             $indent
+	 * @param int             $color_level
 	 */
-	public function __construct( OutputInterface $output, $indent = 0, $colorLevel = self::COLOR_256 ) {
-		$this->output       = $output;
-		$this->indentLength = $indent;
-		$indentString       = str_repeat( ' ', $indent );
+	public function __construct( OutputInterface $output, $indent = 0, $color_level = self::COLOR_256 ) {
+		$this->output        = $output;
+		$this->indent_length = $indent;
+		$indent_string       = str_repeat( ' ', $indent );
 
-		if ( ! $this->spinnerIsSupported() ) {
+		if ( ! $this->spinner_is_supported() ) {
 			return;
 		}
-		$this->section    = $output->section();
-		$this->colorLevel = $colorLevel;
-		$this->colorCount = count( self::COLORS );
+
+		if ( ! method_exists( $output, 'section' ) ) {
+			return;
+		}
+
+		$this->section     = $output->section(); // @phan-suppress-current-line PhanUndeclaredMethod
+		$this->color_level = $color_level;
+		$this->color_count = count( self::COLORS );
 
 		// Create progress bar.
-		$this->progressBar = new ProgressBar( $this->section );
-		$this->progressBar->setBarCharacter( '<info>✔</info>' );
-		$this->progressBar->setProgressCharacter( '⌛' );
-		$this->progressBar->setEmptyBarCharacter( '⌛' );
-		$this->progressBar->setFormat( $indentString . "%bar% %message%\n%detail%" );
-		$this->progressBar->setBarWidth( 1 );
-		$this->progressBar->setMessage( '', 'detail' );
-		$this->progressBar->setOverwrite( $output->getVerbosity() < OutputInterface::VERBOSITY_VERBOSE );
+		$this->progress_bar = new ProgressBar( $this->section );
+		$this->progress_bar->setBarCharacter( '<info>✔</info>' );
+		$this->progress_bar->setProgressCharacter( '⌛' );
+		$this->progress_bar->setEmptyBarCharacter( '⌛' );
+		$this->progress_bar->setFormat( $indent_string . "%bar% %message%\n%detail%" );
+		$this->progress_bar->setBarWidth( 1 );
+		$this->progress_bar->setMessage( '', 'detail' );
+		$this->progress_bar->setOverwrite( $output->getVerbosity() < OutputInterface::VERBOSITY_VERBOSE );
 	}
 
 	/**
 	 * Starts the spinner.
 	 */
-	public function start() {
-		if ( ! $this->spinnerIsSupported() ) {
+	public function start(): void {
+		if ( ! $this->spinner_is_supported() ) {
 			return;
 		}
-		$this->progressBar->start();
+		$this->progress_bar->start();
 	}
 
 	/**
 	 * Advances the spinner to the next state.
 	 */
-	public function advance() {
-		if ( ! $this->spinnerIsSupported() || $this->progressBar->getProgressPercent() === 1.0 ) {
+	public function advance(): void {
+		if ( ! $this->spinner_is_supported() || $this->progress_bar->getProgressPercent() === 1.0 ) {
 			return;
 		}
 
-		++ $this->currentCharIdx;
-		++ $this->currentColorIdx;
-		$char = $this->getSpinnerCharacter();
-		$this->progressBar->setProgressCharacter( $char );
-		$this->progressBar->advance();
+		++$this->current_char_idx;
+		++$this->current_color_idx;
+		$char = $this->get_spinner_character();
+		$this->progress_bar->setProgressCharacter( $char );
+		$this->progress_bar->advance();
 	}
 
 	/**
@@ -157,17 +177,17 @@ class Spinner {
 	 *
 	 * @return string|null
 	 */
-	private function getSpinnerCharacter() {
-		if ( $this->currentColorIdx === $this->colorCount ) {
-			$this->currentColorIdx = 0;
+	private function get_spinner_character(): ?string {
+		if ( $this->current_color_idx === $this->color_count ) {
+			$this->current_color_idx = 0;
 		}
-		$char  = self::CHARS[ $this->currentCharIdx % 8 ];
-		$color = self::COLORS[ $this->currentColorIdx ];
+		$char  = self::CHARS[ $this->current_char_idx % 8 ];
+		$color = self::COLORS[ $this->current_color_idx ];
 
-		if ( self::COLOR_256 === $this->colorLevel ) {
+		if ( self::COLOR_256 === $this->color_level ) {
 			return "\033[38;5;{$color}m{$char}\033[0m";
 		}
-		if ( self::COLOR_16 === $this->colorLevel ) {
+		if ( self::COLOR_16 === $this->color_level ) {
 			return "\033[96m{$char}\033[0m";
 		}
 
@@ -180,31 +200,31 @@ class Spinner {
 	 * @param string $message
 	 * @param string $name
 	 */
-	public function setMessage( $message, $name = 'message' ) {
-		if ( ! $this->spinnerIsSupported() ) {
+	public function set_message( $message, $name = 'message' ): void {
+		if ( ! $this->spinner_is_supported() ) {
 			return;
 		}
 		if ( $name === 'detail' ) {
 			$terminal_width = ( new Terminal() )->getWidth();
-			$message_length = Helper::length( $message ) + ( $this->indentLength * 2 );
+			$message_length = Helper::length( $message ) + ( $this->indent_length * 2 );
 			if ( $message_length > $terminal_width ) {
 				$suffix          = '...';
-				$new_message_len = ( $terminal_width - ( $this->indentLength * 2 ) - strlen( $suffix ) );
+				$new_message_len = ( $terminal_width - ( $this->indent_length * 2 ) - strlen( $suffix ) );
 				$message         = Helper::substr( $message, 0, $new_message_len );
-				$message         .= $suffix;
+				$message        .= $suffix;
 			}
 		}
-		$this->progressBar->setMessage( $message, $name );
+		$this->progress_bar->setMessage( $message, $name );
 	}
 
 	/**
 	 * Finishes the spinner display.
 	 */
-	public function finish() {
-		if ( ! $this->spinnerIsSupported() ) {
+	public function finish(): void {
+		if ( ! $this->spinner_is_supported() ) {
 			return;
 		}
-		$this->progressBar->finish();
+		$this->progress_bar->finish();
 		// Clear the %detail% line.
 		$this->section->clear( 1 );
 	}
@@ -212,11 +232,11 @@ class Spinner {
 	/**
 	 * Indicates that the spinner operation has failed.
 	 */
-	public function fail() {
-		if ( ! $this->spinnerIsSupported() ) {
+	public function fail(): void {
+		if ( ! $this->spinner_is_supported() ) {
 			return;
 		}
-		$this->progressBar->finish();
+		$this->progress_bar->finish();
 		// Clear the %detail% line.
 		$this->section->clear( 1 );
 	}
@@ -226,7 +246,7 @@ class Spinner {
 	 *
 	 * @return float
 	 */
-	public function interval() {
+	public function interval(): float {
 		return 0.1;
 	}
 
@@ -235,7 +255,7 @@ class Spinner {
 	 *
 	 * @return bool
 	 */
-	private function spinnerIsSupported() {
+	private function spinner_is_supported(): bool {
 		return $this->output instanceof ConsoleOutput;
 	}
 
@@ -244,7 +264,7 @@ class Spinner {
 	 *
 	 * @return ProgressBar
 	 */
-	public function getProgressBar() {
-		return $this->progressBar;
+	public function get_progress_bar(): ProgressBar {
+		return $this->progress_bar;
 	}
 }

@@ -28,7 +28,7 @@ class JurassicTubeTunnel extends Tunnel {
 		$parsed_url = parse_url( $local_url );
 
 		if ( ! isset( $parsed_url['host'] ) ) {
-			throw new \InvalidArgumentException( "Invalid site URL provided." );
+			throw new \InvalidArgumentException( 'Invalid site URL provided.' );
 		}
 
 		$host = $parsed_url['host'];
@@ -71,15 +71,17 @@ class JurassicTubeTunnel extends Tunnel {
 		return $tunnel_url;
 	}
 
-	public static function is_supported(): bool {
+	public static function check_is_installed(): void {
 		if ( is_wsl() ) {
-			return false;
+			throw new \RuntimeException( 'JurassicTube is not supported on WSL.' );
 		}
 
 		// Verify that "jurassictube" is installed.
-		exec( "which jurassictube", $output, $return_var );
+		exec( 'which jurassictube', $output, $return_var );
 
-		return $return_var === 0;
+		if ( $return_var !== 0 ) {
+			throw new \RuntimeException( 'JurassicTube is not installed. Please install it first' );
+		}
 	}
 
 	public static function is_configured(): bool {

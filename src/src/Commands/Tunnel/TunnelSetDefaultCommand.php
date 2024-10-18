@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
 class TunnelSetDefaultCommand extends Command {
-	protected static $defaultName = 'tunnel:set-default';
+	protected static $defaultName = 'tunnel:set-default'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/** @var Cache */
 	protected $cache;
@@ -32,7 +32,18 @@ class TunnelSetDefaultCommand extends Command {
 		$usable_methods = [];
 		foreach ( $available_methods as $method ) {
 			$tunnel_class = TunnelRunner::get_tunnel_class( $method );
-			if ( $tunnel_class && $tunnel_class::is_supported() && $tunnel_class::is_configured( $this->cache ) ) {
+
+			if ( ! $tunnel_class ) {
+				continue;
+			}
+
+			try {
+				$tunnel_class::check_is_installed();
+			} catch ( \Exception $e ) {
+				continue;
+			}
+
+			if ( $tunnel_class::is_configured() ) {
 				$usable_methods[ $method ] = $method;
 			}
 		}
@@ -42,7 +53,7 @@ class TunnelSetDefaultCommand extends Command {
 			return Command::FAILURE;
 		}
 
-		$helper = $this->getHelper( 'question' );
+		$helper   = $this->getHelper( 'question' );
 		$question = new ChoiceQuestion(
 			'Select the tunneling method you wish to set as default:',
 			$usable_methods,
@@ -52,7 +63,7 @@ class TunnelSetDefaultCommand extends Command {
 
 		$method = $helper->ask( $input, $output, $question );
 
-		// Save the default method
+		// Save the default method.
 		$this->cache->set( 'tunnel_default', $method, -1 );
 		$output->writeln( '<info>Default tunneling method set to: ' . $method . '</info>' );
 
