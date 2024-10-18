@@ -38,10 +38,12 @@ abstract class Tunnel {
 	 * runtime requirements, for instance, to check if the tunnel
 	 * is already in use, etc.
 	 *
-	 * @return bool
+	 * @throws \RuntimeException If the tunnel is not available.
+	 *
+	 * @return void
 	 */
-	public static function is_available(): bool {
-		return true;
+	public static function check_is_available(): void {
+		return;
 	}
 
 	public static function test_connection( string $tunnel_url, string $tunnel_type ): void {

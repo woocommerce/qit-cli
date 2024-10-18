@@ -76,15 +76,7 @@ class PersistentCloudFlareTunnel extends Tunnel {
 		$configs = $cache->get( 'tunnel_configs' );
 		$config  = $configs['cloudflared-persistent'] ?? null;
 
-		if ( ! isset( $config['tunnel_name'], $config['tunnel_url'] ) ) {
-			return false;
-		}
-
-		if ( ! static::check_persistent_cloudflared_tunnel_exists( $config['tunnel_name'] ) ) {
-			return false;
-		}
-
-		return true;
+		return isset( $config['tunnel_name'], $config['tunnel_url'] );
 	}
 
 	private static function check_persistent_cloudflared_tunnel_exists( string $tunnel_name ): bool {
@@ -92,5 +84,34 @@ class PersistentCloudFlareTunnel extends Tunnel {
 		$process->run();
 
 		return $process->isSuccessful();
+	}
+
+	public static function check_is_available(): void {
+		$cache  = App::make( \QIT_CLI\Cache::class );
+		$output = App::make( OutputInterface::class );
+
+		$configs = $cache->get( 'tunnel_configs' );
+		$config  = $configs['cloudflared-persistent'] ?? null;
+
+		$process = new Process( [ 'cloudflared', 'tunnel', 'info', '--output=json', $config['tunnel_name'] ] );
+		$process->run();
+
+		if ( ! $process->isSuccessful() ) {
+			throw new \RuntimeException( sprintf( 'Running "cloudflared tunnel info %s" returned an error, which indicates the tunnel does not exist. Please setup the tunnel again', $config['tunnel_name'] ) );
+		}
+
+		$json = json_decode( $process->getOutput(), true );
+
+		if ( empty( $json ) ) {
+			// Print a warning in the output but does not throw an error, as we could not parse the output.
+			$output->writeln( '<comment>Could not parse the output of "cloudflared tunnel info".</comment>' );
+
+			return;
+		}
+
+		if ( ! empty( $json['conns'] ) ) {
+			// The tunnel has active connections, so it's in use.
+			throw new \RuntimeException( sprintf( 'The tunnel "%s" is already in use. Please stop the environment using this tunnel before proceeding.', $config['tunnel_name'] ) );
+		}
 	}
 }

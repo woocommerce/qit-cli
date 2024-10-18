@@ -98,7 +98,7 @@ class TunnelRunner {
 			throw new \RuntimeException( 'Invalid tunnel type "' . $tunnel_type . '" specified.' );
 		}
 
-		// Check if the tunnel is usable and configured
+		// Check if the tunnel is supported, configured and available.
 		if ( ! $tunnel_class::is_supported() ) {
 			throw new \RuntimeException( 'The tunneling method "' . $tunnel_type . '" is not usable on this system.' );
 		}
@@ -106,6 +106,8 @@ class TunnelRunner {
 		if ( ! $tunnel_class::is_configured() ) {
 			throw new \RuntimeException( 'The tunneling method "' . $tunnel_type . '" is not configured properly. Please run "qit tunnel:setup".' );
 		}
+
+		$tunnel_class::check_is_available();
 
 		$this->tunnel_type  = $tunnel_type;
 		$this->tunnel_class = $tunnel_class;
