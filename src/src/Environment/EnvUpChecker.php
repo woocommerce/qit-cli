@@ -25,7 +25,7 @@ class EnvUpChecker {
 			$site_url_domain = parse_url( $env_info->site_url, PHP_URL_HOST );
 			$io->section( 'Test connection failed' );
 
-			if ( $env_info->domain !== 'localhost' ) {
+			if ( $env_info->domain !== 'localhost' && ! $env_info->tunnel ) {
 				$io->writeln( 'We couldn\'t access the website. To fix this, please check if the following line is present in your hosts file:' );
 				$io->writeln( sprintf( "\n<info>127.0.0.1 %s</info>\n", $site_url_domain ) );
 				if ( is_wsl() ) {
@@ -45,6 +45,9 @@ class EnvUpChecker {
 	}
 
 	protected function check_site( string $site_url ): bool {
+		$retries = 0;
+		retry: // phpcs:ignore Generic.PHP.DiscourageGoto.Found
+
 		if ( $this->output->isVerbose() ) {
 			$this->output->write( sprintf( 'Checking if %s is accessible...', $site_url ) );
 		}
@@ -61,6 +64,17 @@ class EnvUpChecker {
 		curl_exec( $ch );
 		$http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
 		curl_close( $ch );
+
+		// 502 = Bad Gateway. This can happen for a short period, especially when using Jurassic Tube.
+		if ( $http_code === 502 && $retries < 3 ) { // @phpstan-ignore-line
+			++$retries;
+
+			// Wait 2, 4 and then 8 seconds.
+			$sleep = 2 ** ( $retries + 1 );
+
+			sleep( $sleep );
+			goto retry; // phpcs:ignore Generic.PHP.DiscourageGoto.Found
+		}
 
 		if ( $this->output->isVerbose() ) {
 			$this->output->write( sprintf( " HTTP Code: %d\n", $http_code ) );

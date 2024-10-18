@@ -9,6 +9,7 @@ use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Environment\EnvConfigLoader;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\EnvironmentVersionResolver;
+use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -25,12 +26,16 @@ class UpEnvironmentCommand extends DynamicCommand {
 	/** @var OutputInterface */
 	protected $output;
 
+	/** @var TunnelRunner */
+	protected $tunnel_runner;
+
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	public function __construct( E2EEnvironment $e2e_environment, Cache $cache, OutputInterface $output ) {
+	public function __construct( E2EEnvironment $e2e_environment, Cache $cache, OutputInterface $output, TunnelRunner $tunnel_runner ) {
 		$this->e2e_environment = $e2e_environment;
 		$this->cache           = $cache;
 		$this->output          = $output;
+		$this->tunnel_runner   = $tunnel_runner;
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
@@ -58,7 +63,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
-			// ->addOption( 'attached', 'a', InputOption::VALUE_NONE, 'Whether to attach to the environment after starting it.' )
+			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use.' )
 			->setAliases( [ 'env:start' ]
 			);
 
@@ -189,6 +194,8 @@ HELP
 		$input->setOption( 'woo', null );
 		$input->setOption( 'skip_activating_plugins', null );
 
+		$tunnel = TunnelRunner::get_tunnel_value( $input );
+
 		try {
 			$options_to_env_info = $this->parse_options( $input );
 		} catch ( \Exception $e ) {
@@ -240,6 +247,19 @@ HELP
 		}
 
 		$env_info = App::make( EnvConfigLoader::class )->init_env_info( $options_to_env_info );
+
+		if ( $tunnel !== 'no_tunnel' ) {
+			try {
+				$this->tunnel_runner->check_tunnel_support( $tunnel );
+				$env_info->tunnel = true;
+			} catch ( \Exception $e ) {
+				$output->writeln( '<error>' . $e->getMessage() . '</error>' );
+				return Command::FAILURE;
+			}
+		} else {
+			// Tunneling is disabled.
+			$env_info->tunnel = false;
+		}
 
 		if ( $output->isVeryVerbose() ) {
 			$this->output->writeln( 'Environment info: ' . json_encode( $env_info, JSON_PRETTY_PRINT ) );
