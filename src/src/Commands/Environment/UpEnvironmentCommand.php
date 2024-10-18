@@ -64,7 +64,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
-			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Expose the environment via a tunnel. Options: "docker", "local". Auto-detect the most appropriate tunnelling approach if not specified.' )
+			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use.' )
 			->setAliases( [ 'env:start' ]
 			);
 
@@ -250,24 +250,16 @@ HELP
 		$env_info = App::make( EnvConfigLoader::class )->init_env_info( $options_to_env_info );
 
 		if ( $tunnel !== 'no_tunnel' ) {
-			if ( is_wsl() ) {
-				$output->writeln( '<error>The "--tunnel" option is not supported in WSL.</error>' );
-
-				return Command::FAILURE;
-			}
-
 			try {
 				$this->tunnel_runner->check_tunnel_support( $tunnel );
 				$env_info->tunnel = true;
 			} catch ( \Exception $e ) {
-				if ( $tunnel !== 'auto' ) {
-					$this->output->writeln( '<comment>Warning:</comment> Explicitly specifying the tunnel type is not recommended. Auto-detection is preferred for optimal configuration.' );
-				}
-
-				$this->output->writeln( $e->getMessage() );
-
+				$output->writeln( '<error>' . $e->getMessage() . '</error>' );
 				return Command::FAILURE;
 			}
+		} else {
+			// Tunneling is disabled
+			$env_info->tunnel = false;
 		}
 
 		if ( $output->isVeryVerbose() ) {
