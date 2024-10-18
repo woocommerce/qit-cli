@@ -79,6 +79,8 @@ abstract class Tunnel {
 			curl_setopt( $ch, CURLOPT_TIMEOUT, 5 );
 			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true );
 			curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 2 );
+			curl_setopt( $ch, CURLOPT_DNS_SERVERS, '1.1.1.1,8.8.8.8' );
+
 			$response   = curl_exec( $ch );
 			$http_code  = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
 			$curl_error = curl_error( $ch );
@@ -93,7 +95,7 @@ abstract class Tunnel {
 			}
 
 			if ( $output->isVerbose() ) {
-				$output->writeln( sprintf( 'Tunnel test failed. HTTP code: %s. Error: %s', $http_code, $curl_error ) );
+				$output->writeln( sprintf( 'Tunnel test failed. HTTP code: %s. Response: %s Error: %s', $http_code, $response, $curl_error ) );
 			}
 
 			if ( $http_code === 429 ) {
