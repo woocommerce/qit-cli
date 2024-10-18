@@ -6,6 +6,7 @@ use QIT_CLI\App;
 use QIT_CLI\IO\Output;
 use QIT_CLI\Spinner;
 use QIT_CLI\Tunnel\Tunnels\CloudflaredDockerTunnel;
+use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class Tunnel {
@@ -38,9 +39,9 @@ abstract class Tunnel {
 	 * runtime requirements, for instance, to check if the tunnel
 	 * is already in use, etc.
 	 *
+	 * @return void
 	 * @throws \RuntimeException If the tunnel is not available.
 	 *
-	 * @return void
 	 */
 	public static function check_is_available(): void {
 		return;
@@ -49,14 +50,12 @@ abstract class Tunnel {
 	public static function test_connection( string $tunnel_url, string $tunnel_type ): void {
 		$output = App::make( OutputInterface::class );
 		// Wait for the tunnel to become accessible.
-		$start_time   = time();
-		$timeout      = getenv( 'QIT_TUNNEL_TIMEOUT_SECONDS' ) ?: 300; // 5 min.
-		$tunnel_ready = false;
-		$waited       = 0;
-		$spinner      = new Spinner( $output );
-		$format_time  = static function ( $t ) {
-			return sprintf( "%02d:%02d", ( $t / 60 ) % 60, $t % 60 );
-		};
+		$start_time      = time();
+		$timeout         = getenv( 'QIT_TUNNEL_TIMEOUT_SECONDS' ) ?: 300; // 5 min.
+		$tunnel_ready    = false;
+		$started_spinner = false;
+		$spinner         = new Spinner( $output );
+		$spinner->getProgressBar()->setFormat( "%bar% (%elapsed:6s%) %message%\n" );
 
 		$tunnels_that_works_best_on_cloudflare_dns = [
 			TunnelRunner::$tunnel_map['cloudflared-docker'],
@@ -64,15 +63,17 @@ abstract class Tunnel {
 		];
 
 		while ( ( time() - $start_time ) < $timeout ) {
-			$spinner_message = sprintf( '(%s/%s) Waiting for tunnel to be ready... (Trying to access ' . $tunnel_url . '/qit-ping)', $format_time( $waited ), $format_time( $timeout ) );
+			$elapsed         = time() - $start_time;
+			$spinner_message = 'Waiting for tunnel to be ready... (Trying to access ' . $tunnel_url . '/qit-ping)';
 
-			if ( $waited > 30 && in_array( $tunnel_type, $tunnels_that_works_best_on_cloudflare_dns, true ) ) {
-				$spinner_message = $spinner_message . "\n<comment>The tunnel connection is taking longer than expected. This delay might be due to DNS propagation delays. For optimal performance, consider using Cloudflare DNS (if not already) or a persistent tunnel.</comment>";
+			if ( $elapsed > 30 && in_array( $tunnel_type, $tunnels_that_works_best_on_cloudflare_dns, true ) ) {
+				$spinner_message = $spinner_message . sprintf( "\n<comment>The tunnel connection is taking longer than expected. This delay might be due to DNS propagation delays. For optimal performance, consider using Cloudflare DNS (if not already) or a persistent tunnel. The timeout is: %s</comment>", Helper::formatTime( $timeout ) );
 			}
 
 			$spinner->setMessage( $spinner_message );
 
-			if ( $waited === 0 ) {
+			if ( ! $started_spinner ) {
+				$started_spinner = true;
 				$spinner->start();
 			}
 
@@ -86,16 +87,19 @@ abstract class Tunnel {
 			$curl_error = curl_error( $ch );
 			curl_close( $ch );
 
+			// Advance the spinner.
+			$spinner->advance();
+
 			if ( $response === 'qit-pong' && $http_code === 200 ) {
 				$tunnel_ready = true;
 				break;
 			}
 
-			// Advance the spinner.
-			$spinner->advance();
-
-			sleep( 1 );
-			$waited += 1;
+			if ( $http_code === 429 ) {
+				sleep( 10 );
+			} else {
+				sleep( 1 );
+			}
 		}
 
 		if ( ! $tunnel_ready ) {

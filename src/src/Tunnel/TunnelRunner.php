@@ -63,6 +63,10 @@ class TunnelRunner {
 
 			if ( $default_tunnel ) {
 				$tunnel_type = $default_tunnel;
+
+				// Tell which tunnel we are using.
+				$output = App::make( OutputInterface::class );
+				$output->writeln( '<info>Using tunneling method: ' . $tunnel_type . '.</info>' );
 			} else {
 				// Determine the default tunnel based on the OS
 				if ( ! is_mac() && ! is_wsl() ) {
