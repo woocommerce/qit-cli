@@ -67,6 +67,10 @@ abstract class Tunnel {
 				$spinner_message = $spinner_message . sprintf( "\n<comment>The tunnel connection is taking longer than expected. This delay might be due to DNS propagation delays. For optimal performance, consider using Cloudflare DNS (if not already) or a persistent tunnel. The timeout is: %s</comment>", Helper::formatTime( $timeout ) );
 			}
 
+			if ( isset( $http_code ) && isset( $response ) && isset( $curl_error ) ) {
+				$spinner->set_message( sprintf( 'Tunnel test failed. HTTP code: %s. Response: %s Error: %s', $http_code, $response, $curl_error ), 'detail' );
+			}
+
 			$spinner->set_message( $spinner_message );
 
 			if ( ! $started_spinner ) {
@@ -92,10 +96,6 @@ abstract class Tunnel {
 			if ( $response === 'qit-pong' && $http_code === 200 ) {
 				$tunnel_ready = true;
 				break;
-			}
-
-			if ( $output->isVerbose() ) {
-				$output->writeln( sprintf( 'Tunnel test failed. HTTP code: %s. Response: %s Error: %s', $http_code, $response, $curl_error ) );
 			}
 
 			if ( $http_code === 429 ) {
