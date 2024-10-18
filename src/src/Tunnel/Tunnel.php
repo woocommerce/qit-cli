@@ -112,6 +112,6 @@ abstract class Tunnel {
 
 		$spinner->finish();
 
-		$output->writeln();
+		$output->writeln( '' );
 	}
 }
