@@ -5,7 +5,6 @@ namespace QIT_CLI\Tunnel;
 use QIT_CLI\App;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Spinner;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
@@ -91,10 +90,9 @@ abstract class Tunnel {
 
 			$json = json_decode( $json, true );
 
-			$http_code = $json['http_code'];
-			$response  = $json['response'];
-			$curl_error = $json['curl_error'];
-
+			$http_code  = $json['http_code'] ?? 0;
+			$response   = $json['response'] ?? '';
+			$curl_error = $json['curl_error'] ?? '';
 
 			// Advance the spinner.
 			$spinner->advance();
