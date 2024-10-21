@@ -3,9 +3,12 @@
 namespace QIT_CLI\Tunnel;
 
 use QIT_CLI\App;
+use QIT_CLI\RequestBuilder;
 use QIT_CLI\Spinner;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Output\OutputInterface;
+use function QIT_CLI\get_manager_url;
 
 abstract class Tunnel {
 	/**
@@ -78,17 +81,20 @@ abstract class Tunnel {
 				$spinner->start();
 			}
 
-			$ch = curl_init( $tunnel_url . '/qit-ping' );
-			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-			curl_setopt( $ch, CURLOPT_TIMEOUT, 5 );
-			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true );
-			curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 2 );
-			curl_setopt( $ch, CURLOPT_DNS_CACHE_TIMEOUT, 0 );
+			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/env-ping' ) )
+				->with_method( 'POST' )
+				->with_post_body( [
+					'environment_url' => $tunnel_url,
+					'dns_server'      => getenv( 'QIT_TUNNEL_DNS_SERVER' ) ?: '1.1.1.1',
+				] )
+				->request();
 
-			$response   = curl_exec( $ch );
-			$http_code  = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-			$curl_error = curl_error( $ch );
-			curl_close( $ch );
+			$json = json_decode( $json, true );
+
+			$http_code = $json['http_code'];
+			$response  = $json['response'];
+			$curl_error = $json['curl_error'];
+
 
 			// Advance the spinner.
 			$spinner->advance();
