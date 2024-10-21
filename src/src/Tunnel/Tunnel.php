@@ -69,7 +69,7 @@ abstract class Tunnel {
 				$spinner_message = $spinner_message . sprintf( "\n<comment>The tunnel connection is taking longer than expected. This delay might be due to DNS propagation delays. For optimal performance, consider using Cloudflare DNS (if not already) or a persistent tunnel. The timeout is: %s</comment>", Helper::formatTime( $timeout ) );
 			}
 
-			if ( isset( $http_code ) && isset( $response ) && isset( $curl_error ) ) {
+			if ( $output->isVerbose() && isset( $http_code ) && isset( $response ) && isset( $curl_error ) ) {
 				$spinner->set_message( sprintf( 'Tunnel test failed. HTTP code: %s. Response: %s Error: %s', $http_code, $response, $curl_error ), 'detail' );
 			}
 
