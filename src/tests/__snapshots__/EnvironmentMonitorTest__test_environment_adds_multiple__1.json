@@ -11,6 +11,7 @@
         "php_extensions": [],
         "plugins": [],
         "themes": [],
+        "tunnel": false,
         "site_url": null,
         "wp": "",
         "object_cache": false,

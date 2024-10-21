@@ -8,6 +8,7 @@ use QIT_CLI\Environment\Extension;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use QIT_CLI\RequestBuilder;
+use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
@@ -36,7 +37,9 @@ class RunActivationTestCommand extends Command {
 			->reuseOption( RunE2ECommand::getDefaultName(), 'ui' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'no_upload_report' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'notify' )
-			->reuseOption( RunE2ECommand::getDefaultName(), 'php_extension' );
+			->reuseOption( RunE2ECommand::getDefaultName(), 'php_extension' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'tunnel' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'require' );
 
 		$this->addOption(
 			'json',
@@ -81,7 +84,11 @@ class RunActivationTestCommand extends Command {
 		$run_e2e_options['--skip_activating_plugins'] = true;
 
 		foreach ( $this->reused_options as $reused_option ) {
-			$run_e2e_options[ "--$reused_option" ] = $input->getOption( $reused_option );
+			if ( $reused_option === 'tunnel' ) {
+				$run_e2e_options['--tunnel'] = TunnelRunner::get_tunnel_value( $input );
+			} else {
+				$run_e2e_options[ "--$reused_option" ] = $input->getOption( $reused_option );
+			}
 		}
 
 		// --zip deprecated option.
