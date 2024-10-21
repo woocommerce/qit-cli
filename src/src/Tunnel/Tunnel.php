@@ -83,7 +83,7 @@ abstract class Tunnel {
 			curl_setopt( $ch, CURLOPT_TIMEOUT, 5 );
 			curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true );
 			curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 2 );
-			curl_setopt( $ch, CURLOPT_DNS_SERVERS, '1.1.1.1,8.8.8.8' );
+			curl_setopt( $ch, CURLOPT_DNS_CACHE_TIMEOUT, 0 );
 
 			$response   = curl_exec( $ch );
 			$http_code  = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
