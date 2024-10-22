@@ -166,9 +166,8 @@ class PlaywrightRunner extends E2ERunner {
 			$playwright_args[] = implode( ':', Docker::get_user_and_group() );
 		}
 
-		$dependencies_command = ' && ';
-		// Todo: bundle axios in the PW Docker image.
-		$dependencies_to_install = [ 'axios@0.27.2' ];
+		$dependencies_command    = ' && ';
+		$dependencies_to_install = [];
 
 		foreach ( $test_infos as $test_to_run ) {
 			$playwright_args = array_merge( $playwright_args, [
