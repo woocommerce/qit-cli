@@ -11,6 +11,7 @@ Moving must-use plugin of deli /qit/tests/e2e/deli/local/bootstrap/mu-plugin.php
 Running E2E Tests
 Running 2 tests using 1 worker
 ✘  1 [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli (TIME)
+✘  2 [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli (retry #1) (TIME)
 could not read file /qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-actual.png Error: ENOENT: no such file or directory, open '/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-actual.png'
 at open (node:internal/fs/promises:639:25)
 at readFile (node:internal/fs/promises:1242:14) {
@@ -35,18 +36,55 @@ code: 'ENOENT',
 syscall: 'open',
 path: '/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-diff.png'
 }
-✘  2 [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli (retry #1) (TIME)
 ✘  3 [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli (retry #2) (TIME)
 ✓  4 [deli-local] › deli/local/example.spec.js:9:5 › I can see my plugin menu (TIME)
 1) [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli ────────────────────
+
+TimeoutError: locator.click: Timeout 10000ms exceeded.
+Call log:
+[2m- waiting for getByRole('link', { name: 'Install Parent Theme' })[22m
+[2m  -   locator resolved to <a class="button install-theme" href="http://qitenvnginx6718426de3611/wp-admin/update.php?action=install-theme&theme=storefront&_wpnonce=6c2878c017">Install Parent Theme</a>[22m
+[2m  - attempting click action[22m
+[2m  -   waiting for element to be visible, enabled and stable[22m
+[2m  -   element is visible, enabled and stable[22m
+[2m  -   scrolling into view if needed[22m
+[2m  -   done scrolling[22m
+[2m  -   performing click action[22m
+[2m  -   click action done[22m
+[2m  -   waiting for scheduled navigations to finish[22m
+
+
+6 |     await page.getByRole('link', { name: 'Appearance' }).click();
+7 |     await expect(page.getByRole('cell', { name: 'Deli' })).toBeVisible();
+>  8 |     await page.getByRole('link', { name: 'Install Parent Theme' }).click();
+|                                                                    ^
+9 |     await page.getByRole('link', { name: 'Activate “Storefront”' }).click();
+10 |     await page.getByLabel('Activate Deli').click();
+11 |     await page.goto('/');
+
+at /qit/tests/e2e/deli/local/activate-theme.spec.js:8:68
+
+attachment #1: video (video/webm) ──────────────────────────────────────────────────────────────
+../../results/playwright/activate-theme-I-can-activate-Deli-deli-local/video.webm
+────────────────────────────────────────────────────────────────────────────────────────────────
+
+attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+../../results/playwright/activate-theme-I-can-activate-Deli-deli-local/trace.zip
+Usage:
+
+npx playwright show-trace ../../results/playwright/activate-theme-I-can-activate-Deli-deli-local/trace.zip
+
+────────────────────────────────────────────────────────────────────────────────────────────────
+
+Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
 
 Error: [31mScreenshot comparison failed:[39m
 
 363 pixels (ratio 0.01 of all image pixels) are different.
 
 Expected: [33m/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png[39m
-Received: [33m/qit/results/playwright/activate-theme-I-can-activate-Deli-deli-local/home-actual.png[39m
-Diff: [33m/qit/results/playwright/activate-theme-I-can-activate-Deli-deli-local/home-diff.png[39m
+Received: [33m/qit/results/playwright/activate-theme-I-can-activate-Deli-deli-local-retry1/home-actual.png[39m
+Diff: [33m/qit/results/playwright/activate-theme-I-can-activate-Deli-deli-local-retry1/home-diff.png[39m
 
 Call log:
 [2m- expect.toHaveScreenshot(home.png) with timeout 10000ms[22m
@@ -78,60 +116,22 @@ deli/local/__snapshots__/activate-theme.spec.js/home.png
 ────────────────────────────────────────────────────────────────────────────────────────────────
 
 attachment #2: home-actual.png (image/png) ─────────────────────────────────────────────────────
-../../results/playwright/activate-theme-I-can-activate-Deli-deli-local/home-actual.png
+../../results/playwright/activate-theme-I-can-activate-Deli-deli-local-retry1/home-actual.png
 ────────────────────────────────────────────────────────────────────────────────────────────────
 
 attachment #3: home-diff.png (image/png) ───────────────────────────────────────────────────────
-../../results/playwright/activate-theme-I-can-activate-Deli-deli-local/home-diff.png
+../../results/playwright/activate-theme-I-can-activate-Deli-deli-local-retry1/home-diff.png
 ────────────────────────────────────────────────────────────────────────────────────────────────
 
 attachment #4: screenshot (image/png) ──────────────────────────────────────────────────────────
-../../results/playwright/activate-theme-I-can-activate-Deli-deli-local/test-failed-1.png
-────────────────────────────────────────────────────────────────────────────────────────────────
-
-attachment #5: video (video/webm) ──────────────────────────────────────────────────────────────
-../../results/playwright/activate-theme-I-can-activate-Deli-deli-local/video.webm
-────────────────────────────────────────────────────────────────────────────────────────────────
-
-attachment #6: trace (application/zip) ─────────────────────────────────────────────────────────
-../../results/playwright/activate-theme-I-can-activate-Deli-deli-local/trace.zip
-Usage:
-
-npx playwright show-trace ../../results/playwright/activate-theme-I-can-activate-Deli-deli-local/trace.zip
-
-────────────────────────────────────────────────────────────────────────────────────────────────
-
-Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
-
-Error: [31mTimed out 10000ms waiting for [39m[2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m
-
-Locator: getByRole('cell', { name: 'Deli' })
-Expected: visible
-Received: <element(s) not found>
-Call log:
-[2m- expect.toBeVisible with timeout 10000ms[22m
-[2m  - waiting for getByRole('cell', { name: 'Deli' })[22m
-
-
-5 |     await qit.loginAsAdmin(page);
-6 |     await page.getByRole('link', { name: 'Appearance' }).click();
->  7 |     await expect(page.getByRole('cell', { name: 'Deli' })).toBeVisible();
-|                                                            ^
-8 |     await page.getByRole('link', { name: 'Install Parent Theme' }).click();
-9 |     await page.getByRole('link', { name: 'Activate “Storefront”' }).click();
-10 |     await page.getByLabel('Activate Deli').click();
-
-at /qit/tests/e2e/deli/local/activate-theme.spec.js:7:60
-
-attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
 ../../results/playwright/activate-theme-I-can-activate-Deli-deli-local-retry1/test-failed-1.png
 ────────────────────────────────────────────────────────────────────────────────────────────────
 
-attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+attachment #5: video (video/webm) ──────────────────────────────────────────────────────────────
 ../../results/playwright/activate-theme-I-can-activate-Deli-deli-local-retry1/video.webm
 ────────────────────────────────────────────────────────────────────────────────────────────────
 
-attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+attachment #6: trace (application/zip) ─────────────────────────────────────────────────────────
 ../../results/playwright/activate-theme-I-can-activate-Deli-deli-local-retry1/trace.zip
 Usage:
 
@@ -176,6 +176,7 @@ Usage:
 npx playwright show-trace ../../results/playwright/activate-theme-I-can-activate-Deli-deli-local-retry2/trace.zip
 
 ────────────────────────────────────────────────────────────────────────────────────────────────
+
 1 failed
 [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli ─────────────────────
 1 passed (TIME)

@@ -37,6 +37,7 @@
         }
     ],
     "themes": [],
+    "tunnel": false,
     "site_url": null,
     "wp": "latest",
     "object_cache": false,

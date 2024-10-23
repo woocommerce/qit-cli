@@ -333,11 +333,15 @@ abstract class Environment {
 			$down_process->setPty( use_tty() );
 
 			$down_process->run( static function ( $type, $buffer ) use ( $output ) {
-				$output->write( $buffer );
+				if ( $output->isVeryVerbose() ) {
+					$output->write( $buffer );
+				}
 			} );
 
 			if ( $down_process->isSuccessful() ) {
-				$output->writeln( 'Removing temporary environment: ' . $env_info->temporary_env );
+				if ( $output->isVeryVerbose() ) {
+					$output->writeln( 'Removing temporary environment: ' . $env_info->temporary_env );
+				}
 				SafeRemove::delete_dir( $env_info->temporary_env, static::get_temp_envs_dir() );
 			} else {
 				$output->writeln( 'Failed to remove temporary environment: ' . $env_info->temporary_env );

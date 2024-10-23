@@ -50,6 +50,7 @@
         }
     ],
     "themes": [],
+    "tunnel": false,
     "site_url": "http:\/\/qitenvnginxENV_ID_NORMALIZED",
     "wp": "latest",
     "object_cache": false,
