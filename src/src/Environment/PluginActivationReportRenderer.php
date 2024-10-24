@@ -59,10 +59,7 @@ class PluginActivationReportRenderer {
 			}
 
 			if ( ! $r['activated'] ) {
-				$this->output->writeln( sprintf( '<error>Plugin %s failed to activate.</error>', $r['plugin'] ) );
-				$this->output->writeln( $activation_output );
-
-				throw new \RuntimeException( sprintf( 'Plugin %s failed to activate.', $r['plugin'] ) );
+				throw new \RuntimeException( sprintf( "Plugin %s failed to activate. Output:\n %s", $r['plugin'], $activation_output ) );
 			}
 
 			if ( ! empty( $r['debug_log'] ) ) {

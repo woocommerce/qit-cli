@@ -184,6 +184,7 @@ class PlaywrightRunner extends E2ERunner {
 			}
 		}
 
+		// @phpstan-ignore-next-line
 		if ( ! empty( $dependencies_to_install ) ) {
 			$dependencies_to_install = array_unique( $dependencies_to_install );
 			$dependencies_command    = '&& npm install ' . implode( ' ', $dependencies_to_install ) . ' && ';
@@ -217,23 +218,8 @@ class PlaywrightRunner extends E2ERunner {
 			"npx playwright test $options --config /qit/tests/e2e/qit-playwright.config.js --output /qit/results/playwright $shard 2>&1",
 		] );
 
-		// Pull the image.
-		if ( ! getenv( 'QIT_NO_PULL' ) ) {
-			$pull_process = new Process( [ App::make( Docker::class )->find_docker(), 'pull', "automattic/qit-runner-playwright:$playwright_version_to_use" ] );
-			$pull_process->setTimeout( 300 );
-			$pull_process->setIdleTimeout( 300 );
-			$pull_process->setEnv( [
-				'DOCKER_CLI_HINTS' => 'false',
-			] );
-			$pull_process->run( function ( $type, $buffer ) {
-				if ( $this->output->isVerbose() || $type === Process::ERR ) {
-					$this->output->write( $buffer );
-				}
-			} );
-			if ( ! $pull_process->isSuccessful() ) {
-				throw new \RuntimeException( 'Could not pull the Playwright image.' );
-			}
-		}
+		// Make sure the Playwright image is up-to-date.
+		App::make( Docker::class )->maybe_pull_image( "automattic/qit-runner-playwright:$playwright_version_to_use" );
 
 		// Run the tests.
 		$playwright_process = new Process( $playwright_args );
@@ -247,7 +233,7 @@ class PlaywrightRunner extends E2ERunner {
 		// Initialize a variable to keep track of total lines printed.
 		$line_buffer         = [];
 		$total_lines_printed = 0;
-		$ci = ! empty( getenv( 'CI' ) );
+		$ci                  = ! empty( getenv( 'CI' ) );
 
 		$output_callback = function ( $type, $out ) use ( $playwright_container_name, &$line_buffer, &$total_lines_printed, $ci ) {
 			$max_lines = 100;

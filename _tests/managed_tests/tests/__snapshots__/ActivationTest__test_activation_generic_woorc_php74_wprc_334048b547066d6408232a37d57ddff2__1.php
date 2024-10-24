@@ -126,7 +126,7 @@
                         "message": "Notice on all requests",
                         "type": "notice",
                         "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:16",
-                        "count": 85
+                        "count": 90
                     },
                     {
                         "message": "Warning on all requests",

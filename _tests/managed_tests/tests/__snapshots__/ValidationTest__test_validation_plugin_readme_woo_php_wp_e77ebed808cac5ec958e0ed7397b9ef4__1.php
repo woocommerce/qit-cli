@@ -52,6 +52,20 @@
                     "WC requires at least": "5.8",
                     "WC tested up to": "5.8",
                     "Woo": false
+                },
+                "features": {
+                    "compatible": [],
+                    "incompatible": [],
+                    "uncertain": [
+                        "analytics",
+                        "product_block_editor",
+                        "cart_checkout_blocks",
+                        "marketplace",
+                        "order_attribution",
+                        "hpos_fts_indexes",
+                        "remote_logging",
+                        "custom_order_tables"
+                    ]
                 }
             }
         }

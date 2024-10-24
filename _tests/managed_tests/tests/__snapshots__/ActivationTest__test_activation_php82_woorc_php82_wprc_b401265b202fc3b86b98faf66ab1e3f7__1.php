@@ -131,7 +131,7 @@
                 ],
                 "debug_log": [
                     {
-                        "count": "110",
+                        "count": "100",
                         "message": "PHP Deprecated: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 28"
                     },
                     {

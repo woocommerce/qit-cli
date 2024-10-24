@@ -31,6 +31,8 @@ use QIT_CLI\Commands\SyncCommand;
 use QIT_CLI\Commands\Tags\DeleteTestTagsCommand;
 use QIT_CLI\Commands\Tags\ListTestTagsCommand;
 use QIT_CLI\Commands\Tags\UploadTestTagsCommand;
+use QIT_CLI\Commands\Tunnel\TunnelSetDefaultCommand;
+use QIT_CLI\Commands\Tunnel\TunnelSetupCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Commands\WooValidateZipCommand;
 use QIT_CLI\Config;
@@ -42,6 +44,7 @@ use QIT_CLI\IO\Input;
 use QIT_CLI\IO\Output;
 use QIT_CLI\ManagerBackend;
 use QIT_CLI\ManagerSync;
+use QIT_CLI\Tunnel\TunnelRunner;
 use Stecman\Component\Symfony\Console\BashCompletion\CompletionCommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -104,6 +107,7 @@ $container->singleton( ManagerSync::class );
 $container->singleton( Config::class );
 $container->singleton( ManagerBackend::class );
 $container->singleton( Cache::class );
+$container->singleton( TunnelRunner::class );
 
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 
@@ -179,6 +183,8 @@ $application->add( $container->make( DevModeCommand::class ) );
 $application->add( $container->make( ConfigDirCommand::class ) );
 $application->add( $container->make( ConnectCommand::class ) );
 $application->add( $container->make( WooValidateZipCommand::class ) );
+$application->add( $container->make( TunnelSetupCommand::class ) );
+$application->add( $container->make( TunnelSetDefaultCommand::class ) );
 
 // Environment commands.
 try {

@@ -59,7 +59,7 @@ class Zipper {
 			}
 		}
 
-		$this->pull_zip();
+		$this->docker->maybe_pull_image( 'automattic/qit-runner-zip:latest' );
 
 		$args = [
 			$this->docker->find_docker(),
@@ -93,32 +93,6 @@ class Zipper {
 		}
 	}
 
-	protected function pull_zip(): void {
-		if ( getenv( 'QIT_NO_PULL' ) ) {
-			return;
-		}
-
-		// Do this once a day max.
-		if ( ! is_null( App::make( Cache::class )->get( 'zip_pulled' ) ) ) {
-			return;
-		} else {
-			App::make( Cache::class )->set( 'zip_pulled', '1', DAY_IN_SECONDS );
-		}
-
-		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( 'Pulling Docker ZIP image.' );
-		}
-		$pull_process = new Process( [ $this->docker->find_docker(), 'pull', 'automattic/qit-runner-zip:latest' ] );
-		$pull_process->setEnv([
-			'DOCKER_CLI_HINTS' => 'false',
-		]);
-		$pull_process->run( function ( $type, $out ) {
-			if ( $this->output->isVeryVerbose() ) {
-				$this->output->write( 'Docker ZIP Pull: ' . $out );
-			}
-		} );
-	}
-
 	public function validate_zip( string $zip_file ): void {
 		$start = microtime( true );
 
@@ -140,7 +114,7 @@ class Zipper {
 			}
 		}
 
-		$this->pull_zip();
+		$this->docker->maybe_pull_image( 'automattic/qit-runner-zip:latest' );
 
 		$start = microtime( true );
 
@@ -211,7 +185,7 @@ class Zipper {
 			$exclude_string .= " '$item' ";
 		}
 
-		$this->pull_zip();
+		$this->docker->maybe_pull_image( 'automattic/qit-runner-zip:latest' );
 
 		$docker_command = [
 			$this->docker->find_docker(),

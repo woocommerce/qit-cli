@@ -11,6 +11,7 @@ use QIT_CLI\Environment\EnvironmentDownloader;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
 use QIT_CLI\SafeRemove;
+use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
@@ -191,10 +192,36 @@ abstract class Environment {
 		 * the container with the correct permissions, unless they are a file name,
 		 * at which point create the parent dir.
 		 */
-		foreach ( $volumes as $in_container => $local ) {
+		foreach ( $volumes as $in_container => &$local ) {
 			if ( strpos( $local, 'qit_env_volume' ) !== false ) {
 				continue;
 			}
+
+			/*
+			 * Ensure volume sources are treated as paths, not named volumes.
+			 *
+			 * In Docker Compose, entries in the "volumes" section can be interpreted as either paths or named volumes.
+			 *
+			 * Undesired (interpreted as a named volume):
+			 *   - "my-extension:/var/www/html/wp-content/plugins/my-extension"
+			 *
+			 * Desired (interpreted as a path):
+			 *   - "/path/to/my-extension:/var/www/html/wp-content/plugins/my-extension"
+			 *   - "./my-extension:/var/www/html/wp-content/plugins/my-extension"
+			 *
+			 * To avoid ambiguity and ensure Docker treats all volume sources as paths (bind mounts), we convert local paths
+			 * to absolute or resolved relative paths.
+			 */
+			if ( file_exists( realpath( $local ) ) ) {
+				$local = realpath( $local );
+			} else {
+				// Check if it can be resolved by relative path to the working directory.
+				if ( file_exists( getcwd() . '/' . $local ) ) {
+					$local = getcwd() . '/' . $local;
+				}
+			}
+
+			// If it doesn't contain a "dot", it's a directory.
 			if ( stripos( $local, '.' ) === false ) {
 				if ( ! file_exists( $local ) ) {
 					if ( ! mkdir( $local, 0755, true ) ) {
@@ -211,7 +238,7 @@ abstract class Environment {
 			}
 		}
 
-		$this->env_info->volumes = array_merge( $this->env_info->volumes, $volumes );
+		$this->env_info->volumes = $volumes;
 
 		$process->setEnv( array_merge( $process->getEnv(), [
 			'QIT_ENV_ID'         => $this->env_info->env_id,
@@ -245,20 +272,7 @@ abstract class Environment {
 		}
 
 		// Do a docker compose pull first, to make sure images are updated.
-		if ( ! getenv( 'QIT_NO_PULL' ) ) {
-			$pull_process = new Process( array_merge( $this->docker->find_docker_compose(), [ '-f', $this->env_info->temporary_env . '/docker-compose.yml', 'pull' ] ) );
-			$pull_process->setTimeout( 600 );
-			$pull_process->setIdleTimeout( 600 );
-			$pull_process->setPty( use_tty() );
-			$pull_process->setEnv( [
-				'DOCKER_CLI_HINTS' => 'false',
-			]);
-			$pull_process->run( function ( $type, $buffer ) {
-				if ( $this->output->isVerbose() ) {
-					$this->output->write( $buffer );
-				}
-			} );
-		}
+		$this->docker->maybe_pull_docker_compose( $this->env_info->temporary_env . '/docker-compose.yml', 'e2e' );
 
 		$args = array_merge( $this->docker->find_docker_compose(), [ '-f', $this->env_info->temporary_env . '/docker-compose.yml', 'up', '-d' ] );
 
@@ -319,11 +333,15 @@ abstract class Environment {
 			$down_process->setPty( use_tty() );
 
 			$down_process->run( static function ( $type, $buffer ) use ( $output ) {
-				$output->write( $buffer );
+				if ( $output->isVeryVerbose() ) {
+					$output->write( $buffer );
+				}
 			} );
 
 			if ( $down_process->isSuccessful() ) {
-				$output->writeln( 'Removing temporary environment: ' . $env_info->temporary_env );
+				if ( $output->isVeryVerbose() ) {
+					$output->writeln( 'Removing temporary environment: ' . $env_info->temporary_env );
+				}
 				SafeRemove::delete_dir( $env_info->temporary_env, static::get_temp_envs_dir() );
 			} else {
 				$output->writeln( 'Failed to remove temporary environment: ' . $env_info->temporary_env );
@@ -344,6 +362,10 @@ abstract class Environment {
 				$output->write( $buffer );
 			}
 		} );
+
+		if ( $env_info->tunnel ) {
+			TunnelRunner::stop_tunnel( $env_info->env_id );
+		}
 
 		$environment_monitor->environment_stopped( $env_info );
 	}
@@ -383,6 +405,13 @@ abstract class Environment {
 		$this->env_info->docker_network = $docker_network;
 	}
 
+	/**
+	 * Returns the port of the Nginx container from the host perspective.
+	 *
+	 * @return int
+	 * @throws \Exception When there's no Nginx container running.
+	 * @throws \RuntimeException When the process fails.
+	 */
 	protected function get_nginx_port(): int {
 		$nginx_container = $this->env_info->get_docker_container( 'nginx' );
 		if ( ! $nginx_container ) {

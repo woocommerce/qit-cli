@@ -7,19 +7,22 @@ Activating plugins...
 Environment ready.
 
 Bootstrapping Plugins
-Bootstrapping automatewoo /qit/tests/e2e/automatewoo/local/bootstrap/bootstrap.php
-Bootstrapping automatewoo /qit/tests/e2e/automatewoo/local/bootstrap/bootstrap.sh
+Bootstrapping woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/local/bootstrap/bootstrap.php
+Bootstrapping woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/local/bootstrap/bootstrap.sh
+Moving must-use plugin of woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/local/bootstrap/mu-plugin.php
 Running E2E Tests
 Running 1 test using 1 worker
-[1/1] [automatewoo-local] › automatewoo/local/example.spec.js:9:5 › I can see my plugin menu
-Slow test file: [automatewoo-local] › automatewoo/local/example.spec.js (<time>s)
+✓  1 [woocommerce-amazon-s3-storage-local] › woocommerce-amazon-s3-storage/local/example.spec.js:9:5 › I can see my plugin menu (<time>s)
+Slow test file: [woocommerce-amazon-s3-storage-local] › woocommerce-amazon-s3-storage/local/example.spec.js (<time>s)
 Consider splitting slow test files to speed up parallel execution
 1 passed (TIME)
 Test artifacts being saved to: /tmp-normalized/qit-results-normalizedid
 Uploading zip...
 
 
-[OK] Tests passed. Run 'qit e2e-report' to view the report.
+[30;42m                                                                                                                        [39;49m
+[30;42m [OK] Tests passed. Run 'qit e2e-report' to view the report.                                                            [39;49m
+[30;42m                                                                                                                        [39;49m
 
 
 Shutting down environment...

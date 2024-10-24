@@ -35,3 +35,5 @@ _tests/custom_tests/tmp/
 _tests/custom_tests/.env.staging
 
 _tests/custom_tests/.env.local
+
+_tests/custom_tests/.env.bk

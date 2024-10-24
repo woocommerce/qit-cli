@@ -88,7 +88,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 	public function test_env_up_with_plugins() {
 		$json = json_decode( qit( [ 'env:up', '--json' ], [
 			'plugins' => [
-				'automatewoo' => [
+				'woocommerce-amazon-s3-storage' => [
 					'action' => 'activate',
 				],
 				'woocommerce' => [
@@ -106,11 +106,19 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 
 		/**
 		 * name    status
-		 * automatewoo    active
+		 * woocommerce-amazon-s3-storage    active
 		 * woocommerce    active
 		 * qit-wp-cli    must-use
 		 * wp-cli-github-cache    must-use
 		 */
+
+		// Keep the first line (header), and sort the rest alphabetically.
+		$lines  = explode( "\n", $output );
+		$header = array_shift( $lines );
+		sort( $lines );
+		array_unshift( $lines, $header );
+		$lines = array_filter( $lines ); // Remove empty lines.
+		$output = implode( "\n", $lines );
 
 		$this->assertMatchesNormalizedSnapshot( $output );
 	}

@@ -21,13 +21,13 @@ use QIT_CLI\Environment\Extension;
 use QIT_CLI\LocalTests\E2E\E2ETestManager;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\PluginDependencies;
+use QIT_CLI\Tunnel\TunnelRunner;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -115,6 +115,9 @@ class RunE2ECommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'config' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'object_cache' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'skip_activating_plugins' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'tunnel' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'json' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'volume' )
 			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright Sharding argument.' )
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
@@ -134,8 +137,9 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		try {
-			$options        = $this->parse_options( $input );
-			$env_up_options = $options['env_up'];
+			$options                    = $this->parse_options( $input );
+			$env_up_options             = $options['env_up'];
+			$env_up_options['--tunnel'] = TunnelRunner::get_tunnel_value( $input );
 		} catch ( \Exception $e ) {
 			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
@@ -354,7 +358,15 @@ class RunE2ECommand extends DynamicCommand {
 
 		// Read from the stream.
 		$up_output = stream_get_contents( $resource_stream, - 1, 0 );
-		$env_json  = json_decode( $up_output, true );
+
+		// If we receive this signal, we just pass the output through.
+		if ( $up_exit_status_code === 1337 ) {
+			$this->output->write( $up_output );
+
+			return Command::SUCCESS;
+		}
+
+		$env_json = json_decode( $up_output, true );
 
 		if ( ! is_array( $env_json ) || empty( $env_json['env_id'] ) ) {
 			$this->output->writeln( sprintf( '<error>Failed to parse the environment JSON. Output: %s</error>', $up_output ) );
@@ -393,9 +405,15 @@ class RunE2ECommand extends DynamicCommand {
 
 		if ( $up_exit_status_code !== Command::SUCCESS ) {
 			$this->output->writeln( sprintf( '<error>Failed to start the environment. Output: %s</error>', stream_get_contents( $resource_stream, - 1, 0 ) ) );
-			Environment::down( $env_json['env_id'], new NullOutput() );
+			Environment::down( $env_json['env_id'] );
 
 			return Command::FAILURE;
+		}
+
+		if ( getenv( 'QIT_SELF_TEST' ) === 'env_up' ) {
+			$output->write( json_encode( $env_info ) );
+
+			return Command::SUCCESS;
 		}
 
 		$exit_status_code = $this->e2e_test_manager->run_tests( $env_info, $test_mode, $wait, $shard );
@@ -440,7 +458,7 @@ class RunE2ECommand extends DynamicCommand {
 			return;
 		}
 		try {
-			Environment::down( $GLOBALS['env_to_shutdown'], new NullOutput() );
+			Environment::down( $GLOBALS['env_to_shutdown'] );
 		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// no-op.
 		}

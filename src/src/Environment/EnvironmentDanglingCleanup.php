@@ -8,6 +8,7 @@ use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\IO\Output;
 use QIT_CLI\SafeRemove;
+use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -79,6 +80,7 @@ class EnvironmentDanglingCleanup {
 		$this->detect_dangling_networks();
 		$this->detect_dangling_volumes();
 		$this->detect_dangling_directories();
+		$this->stop_dangling_local_tunnels();
 
 		// Check if there are actions to perform.
 		if ( empty( $this->dangling_directories ) && empty( $this->dangling_containers ) && empty( $this->dangling_networks ) && empty( $this->dangling_volumes ) ) {
@@ -459,6 +461,30 @@ class EnvironmentDanglingCleanup {
 					$this->output->writeln( 'Missing containers: ' . implode( ', ', $containers_not_running ) );
 				}
 				Environment::down( $env_info );
+			}
+		}
+	}
+
+	protected function stop_dangling_local_tunnels(): void {
+		$running_environments = $this->environment_monitor->get();
+
+		$running_env_ids = array_map( function ( EnvInfo $env_info ) {
+			return $env_info->env_id;
+		}, $running_environments );
+
+		$pid_files = glob( sys_get_temp_dir() . '/qit_env_tunnel_*.pid' );
+
+		foreach ( $pid_files as $pid_file ) {
+			$env_id = preg_replace( '#^.*qit_env_tunnel_(.*)\.pid$#', '$1', $pid_file );
+
+			if ( ! in_array( $env_id, $running_env_ids, true ) ) {
+				$this->debug_output( "Removing dangling local tunnel: {$pid_file}" );
+				try {
+					TunnelRunner::stop_tunnel( $env_id );
+				} catch ( \Exception $e ) {
+					// Just a warning.
+					$this->output->writeln( $e->getMessage() );
+				}
 			}
 		}
 	}
