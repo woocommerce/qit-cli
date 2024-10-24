@@ -61,40 +61,40 @@ class ScaffoldE2ECommand extends Command {
 			return Command::FAILURE;
 		}
 
-		// Create basic 'qit' directory.
-		if ( ! mkdir( $path_to_generate . '/qit', 0755, true ) ) {
-			$output->writeln( '<error>Could not create directory: ' . $path_to_generate . '/qit</error>' );
+		// Create basic 'bootstrap' directory.
+		if ( ! mkdir( $path_to_generate . '/bootstrap', 0755, true ) ) {
+			$output->writeln( '<error>Could not create directory: ' . $path_to_generate . '/bootstrap</error>' );
 
 			return Command::FAILURE;
 		}
 
 		// We bootstrap with these files by default.
 		$files = [
-			'sharedSetup-sh.txt'     => '/qit/sharedSetup.sh',
-			'sharedSetup-js.txt'     => '/qit/sharedSetup.js',
+			'sharedSetup-sh.txt'    => '/bootstrap/sharedSetup.sh',
+			'sharedSetup-js.txt'    => '/bootstrap/sharedSetup.js',
 
-			'isolatedSetup-sh.txt'   => '/qit/isolatedSetup.sh',
-			'isolatedSetup-js.txt'   => '/qit/isolatedSetup.js',
+			'isolatedSetup-sh.txt'  => '/bootstrap/isolatedSetup.sh',
+			'isolatedSetup-js.txt'  => '/bootstrap/isolatedSetup.js',
 
-			'mu-plugin-php.txt'      => '/qit/mu-plugin.php',
-			'dependencies-json.txt'  => '/qit/dependencies.json',
-			'example-spec-js.txt'    => '/example.spec.js',
+			'mu-plugin-php.txt'     => '/bootstrap/mu-plugin.php',
+			'dependencies-json.txt' => '/bootstrap/dependencies.json',
+			'example-spec-js.txt'   => '/example.spec.js',
 		];
 
 		// If the user requests the advanced bootstrapping, we include every possibility.
 		if ( $input->getOption( 'advanced' ) ) {
 			$files = array_merge( $files, [
-				'sharedSetup-php.txt' => '/qit/sharedSetup.php',
+				'sharedSetup-php.txt'      => '/bootstrap/sharedSetup.php',
 
-				'isolatedSetup-php.txt' => '/qit/isolatedSetup.php',
+				'isolatedSetup-php.txt'    => '/bootstrap/isolatedSetup.php',
 
-				'sharedTeardown-sh.txt'  => '/qit/sharedTeardown.sh',
-				'sharedTeardown-php.txt' => '/qit/sharedTeardown.php',
-				'sharedTeardown-js.txt'  => '/qit/sharedTeardown.js',
+				'sharedTeardown-sh.txt'    => '/bootstrap/sharedTeardown.sh',
+				'sharedTeardown-php.txt'   => '/bootstrap/sharedTeardown.php',
+				'sharedTeardown-js.txt'    => '/bootstrap/sharedTeardown.js',
 
-				'isolatedTeardown-sh.txt'  => '/qit/isolatedTeardown.sh',
-				'isolatedTeardown-php.txt' => '/qit/isolatedTeardown.php',
-				'isolatedTeardown-js.txt'  => '/qit/isolatedTeardown.js',
+				'isolatedTeardown-sh.txt'  => '/bootstrap/isolatedTeardown.sh',
+				'isolatedTeardown-php.txt' => '/bootstrap/isolatedTeardown.php',
+				'isolatedTeardown-js.txt'  => '/bootstrap/isolatedTeardown.js',
 			] );
 		}
 
@@ -114,7 +114,7 @@ class ScaffoldE2ECommand extends Command {
 		return Command::SUCCESS;
 	}
 
-	function create_file_from_template( OutputInterface $output, string $path_to_generate, string $source, string $destination ): int {
+	protected function create_file_from_template( OutputInterface $output, string $path_to_generate, string $source, string $destination ): int {
 		if ( ! file_put_contents( "$path_to_generate/$destination", file_get_contents( __DIR__ . "/scaffolding/$source" ) ) ) {
 			$output->writeln( '<error>Could not create file: ' . basename( $destination ) . '</error>' );
 
@@ -124,7 +124,7 @@ class ScaffoldE2ECommand extends Command {
 		return Command::SUCCESS;
 	}
 
-    /**
+	/**
 	 * Safely deletes a scaffolded directory after performing safety checks.
 	 *
 	 * @param string $path_to_generate The path to the directory to be safely deleted.
@@ -140,6 +140,7 @@ class ScaffoldE2ECommand extends Command {
 				'*.sh',
 				'*.php',
 				'*.js',
+				'dependencies.json',
 			],
 		];
 
