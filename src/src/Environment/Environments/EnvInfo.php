@@ -134,7 +134,7 @@ abstract class EnvInfo implements \JsonSerializable {
 				$env_info->$key = $value;
 			} else {
 				// Boilerplate options added by Symfony Console.
-				$ignore_keys = [
+				$boilerplate_keys = [
 					'json',
 					'help',
 					'quiet',
@@ -142,6 +142,13 @@ abstract class EnvInfo implements \JsonSerializable {
 					'version',
 					'no-interaction',
 				];
+
+				$not_overridable_keys = [
+					'env',
+					'env_file',
+				];
+
+				$ignore_keys = array_merge( $boilerplate_keys, $not_overridable_keys );
 
 				if ( in_array( $key, $ignore_keys, true ) ) {
 					continue;
