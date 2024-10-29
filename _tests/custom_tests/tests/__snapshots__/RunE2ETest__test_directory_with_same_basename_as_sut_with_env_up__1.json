@@ -11,7 +11,6 @@
         "\/var\/www\/html": "qit_env_volume_ENV_ID_NORMALIZED",
         "\/var\/www\/html\/wp-content\/plugins\/woocommerce": "\/path\/normalized\/\/tmp-normalized\/tmp_qit_config-qit_custom_tests_NORMALIZED_ID\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/html\/wp-content\/plugins\/woocommerce",
         "\/var\/www\/html\/wp-content\/plugins\/woocommerce-amazon-s3-storage": "\/path\/normalized\/\/tmp-normalized\/tmp_qit_config-qit_custom_tests_NORMALIZED_ID\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/html\/wp-content\/plugins\/woocommerce-amazon-s3-storage",
-        "\/qit\/tests\/e2e\/woocommerce\/default": "\/path\/normalized\/\/tmp-normalized\/tmp_qit_config-qit_custom_tests_NORMALIZED_ID\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/tests\/e2e\/woocommerce\/default",
         "\/qit\/tests\/e2e\/woocommerce-amazon-s3-storage\/local": "\/path\/normalized\/\/tmp-normalized\/tmp_qit_config-qit_custom_tests_NORMALIZED_ID\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/tests\/e2e\/woocommerce-amazon-s3-storage\/local"
     },
     "docker_images": [
@@ -63,16 +62,6 @@
     "sut_id": "123",
     "domain": "qitenvnginxENV_ID_NORMALIZED",
     "tests": [
-        {
-            "slug": "woocommerce",
-            "test_tag": "default",
-            "type": "plugin",
-            "action": "bootstrap",
-            "path_in_php_container": "\/qit\/tests\/e2e\/woocommerce\/default",
-            "path_in_playwright_container": "\/home\/pwuser\/woocommerce\/default",
-            "path_in_host": "\/path\/normalized\/\/tmp-normalized\/tmp_qit_config-qit_custom_tests_NORMALIZED_ID\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/\/tests\/e2e\/woocommerce\/default",
-            "path_in_host_original": ""
-        },
         {
             "slug": "woocommerce-amazon-s3-storage",
             "test_tag": "local",
