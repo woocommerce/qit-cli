@@ -246,6 +246,7 @@ abstract class Environment {
 			'NORMALIZED_ENV_DIR' => $this->env_info->temporary_env,
 			'QIT_DOCKER_NGINX'   => 'yes', // Default. Might be overridden by the concrete environment.
 			'QIT_DOCKER_REDIS'   => 'no', // Default. Might be overridden by the concrete environment.
+			'ENV_VARS'           => json_encode( App::getVar( 'QIT_DOCKER_ENV_VARS' ) ),
 		], $this->get_generate_docker_compose_envs() ) );
 
 		if ( $this->output->isVeryVerbose() ) {
@@ -275,11 +276,6 @@ abstract class Environment {
 		$this->docker->maybe_pull_docker_compose( $this->env_info->temporary_env . '/docker-compose.yml', 'e2e' );
 
 		$args = array_merge( $this->docker->find_docker_compose(), [ '-f', $this->env_info->temporary_env . '/docker-compose.yml', 'up', '-d' ] );
-
-		foreach ( App::getVar( 'QIT_DOCKER_ENV_VARS' ) as $env_key => $env_value ) {
-			$args[] = '-e';
-			$args[] = "$env_key=$env_value";
-		}
 
 		$up_process = new Process( $args );
 
