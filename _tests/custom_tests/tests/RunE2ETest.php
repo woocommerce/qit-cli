@@ -163,7 +163,7 @@ JS;
 		if ( $return_var === 0 ) {
 			// Modify the image using ImageMagick's convert command
 			$image_path = $scaffolded_dir . '/__snapshots__/activate-theme.spec.js/home.png';
-			exec( "magick convert $image_path -gravity southeast -stroke '#000C' -strokewidth 2 -annotate 0 'Watermark' -stroke none -fill white -annotate 0 'Watermark' $image_path" );
+			exec( "magick $image_path -gravity southeast -stroke '#000C' -strokewidth 2 -annotate 0 'Watermark' -stroke none -fill white -annotate 0 'Watermark' $image_path" );
 
 			// Run the third time to check for snapshot failure.
 			$output = qit( [
