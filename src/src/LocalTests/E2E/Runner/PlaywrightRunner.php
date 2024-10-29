@@ -157,11 +157,9 @@ class PlaywrightRunner extends E2ERunner {
 		];
 
 		// Pass env vars to the test environment.
-		foreach ( App::getVar( 'QIT_PW_ENV_VARS' ) ?? [] as $env_key => $env_value ) {
-			$playwright_args = array_merge( $playwright_args, [
-				'-e',
-				"$env_key=$env_value",
-			] );
+		foreach ( App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?? [] as $env_key => $env_value ) {
+			$playwright_args[] = '-e';
+			$playwright_args[] = "$env_key=$env_value";
 		}
 
 		if ( $ci ) {

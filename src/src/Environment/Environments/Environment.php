@@ -139,7 +139,7 @@ abstract class Environment {
 			$this->custom_tests_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );
 		}
 
-		$this->output->writeln( '<info>Setting up Docker...</info>' );
+		$this->output->writeln( '<info>Starting Docker Environment...</info>' );
 		$this->generate_docker_compose();
 		$this->post_generate_docker_compose();
 		$this->up_docker_compose();
@@ -275,6 +275,11 @@ abstract class Environment {
 		$this->docker->maybe_pull_docker_compose( $this->env_info->temporary_env . '/docker-compose.yml', 'e2e' );
 
 		$args = array_merge( $this->docker->find_docker_compose(), [ '-f', $this->env_info->temporary_env . '/docker-compose.yml', 'up', '-d' ] );
+
+		foreach ( App::getVar( 'QIT_DOCKER_ENV_VARS' ) as $env_key => $env_value ) {
+			$args[] = '-e';
+			$args[] = "$env_key=$env_value";
+		}
 
 		$up_process = new Process( $args );
 

@@ -118,6 +118,8 @@ class RunE2ECommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'tunnel' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'json' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'volume' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'env' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'env_file' )
 			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright Sharding argument.' )
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
@@ -126,9 +128,7 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'dependencies', null, InputOption::VALUE_OPTIONAL, 'How to handle SUT dependencies. Possible values are: "activate", "bootstrap", "test", or "none"', Extension::ACTIONS['bootstrap'] )
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode. In this mode, you can start and view the tests running.' )
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run the environment for Codegen. In this mode, you can generate your test files.' )
-			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it up until you shut it down.' )
-			->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests.', [] )
-		;
+			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it up until you shut it down.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -172,7 +172,6 @@ class RunE2ECommand extends DynamicCommand {
 		$update_snapshots    = $input->getOption( 'update_snapshots' );
 		$pw_options          = $input->getOption( 'pw_options' ) ?? '';
 		$sut_action          = $input->getOption( 'sut_action' );
-		$this->parse_env_vars( $input->getOption( 'env' ) );
 
 		if ( empty( $input->getOption( 'source' ) ) ) {
 			$source = $woo_extension;
@@ -536,37 +535,5 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		return $parsed_options;
-	}
-
-	/**
-	 * We take the "--env" option as "--env FOO=bar" and convert it to ["FOO" => "bar"].
-	 *
-	 * @param array $env_vars
-	 *
-	 * @return void
-	 *
-	 * @throws \RuntimeException If the environment variable format or name is invalid.
-	 */
-	protected function parse_env_vars( array $env_vars ): void {
-		$parsed_vars = [];
-
-		foreach ( $env_vars as $env_var ) {
-			$env_var = explode( '=', $env_var, 2 );
-
-			if ( count( $env_var ) !== 2 ) {
-				throw new \RuntimeException( 'Invalid environment variable format. Should be in the format "--env FOO=bar".' );
-			}
-
-			$key   = trim( $env_var[0] );
-			$value = trim( $env_var[1] );
-
-			if ( ! preg_match( '/^[A-Za-z0-9_]+$/', $key ) ) {
-				throw new \RuntimeException( 'Invalid environment variable name. Must contain only letters, numbers, and underscores.' );
-			}
-
-			$parsed_vars[ $key ] = $value;
-		}
-
-		App::setVar( 'QIT_PW_ENV_VARS', $parsed_vars );
 	}
 }
