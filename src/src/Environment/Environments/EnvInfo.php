@@ -143,12 +143,12 @@ abstract class EnvInfo implements \JsonSerializable {
 					'no-interaction',
 				];
 
-				$not_overridable_keys = [
+				$non_overridable_keys = [
 					'env',
 					'env_file',
 				];
 
-				$ignore_keys = array_merge( $boilerplate_keys, $not_overridable_keys );
+				$ignore_keys = array_merge( $boilerplate_keys, $non_overridable_keys );
 
 				if ( in_array( $key, $ignore_keys, true ) ) {
 					continue;
