@@ -156,6 +156,12 @@ class PlaywrightRunner extends E2ERunner {
 			$test_result->get_results_dir() . ':/qit/results',
 		];
 
+		// Pass env vars to the test environment.
+		foreach ( App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?? [] as $env_key => $env_value ) {
+			$playwright_args[] = '-e';
+			$playwright_args[] = "$env_key=$env_value";
+		}
+
 		if ( $ci ) {
 			$playwright_args[] = '-e';
 			$playwright_args[] = 'FORCE_COLOR=false';
@@ -213,7 +219,7 @@ class PlaywrightRunner extends E2ERunner {
 			'sh',
 			'-c',
 			"cd /qit/tests/e2e $dependencies_command" .
-			"npx playwright test $options --config /qit/tests/e2e/qit-playwright.config.js --output /qit/results/playwright $shard 2>&1",
+			"npx playwright test $options --config /qit/tests/e2e/qit-playwright.config.js $shard 2>&1",
 		] );
 
 		// Make sure the Playwright image is up-to-date.

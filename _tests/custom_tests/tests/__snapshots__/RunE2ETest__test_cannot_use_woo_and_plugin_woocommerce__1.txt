@@ -1,2 +1,1 @@
 Both "--woo" and "--plugin woocommerce" cannot be used at the same time. Please use one or another when running the test.
-

@@ -16,7 +16,7 @@ abstract class Tunnel {
 	 * Takes as input the local URL, and should return the tunnelled URL.
 	 *
 	 * Example: $local_url = 'http://localhost:1234'
-	 * 		    $env_id = '1234'
+	 *          $env_id = '1234'
 	 *
 	 * Returns: 'https://mytunnel.example.com'
 	 *

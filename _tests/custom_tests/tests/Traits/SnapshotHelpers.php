@@ -42,6 +42,11 @@ trait SnapshotHelpers {
 				continue;
 			}
 
+			// Skip empty lines.
+			if ( trim( $line ) === '' ) {
+				continue;
+			}
+
 			/*
 			 * Skip docker pull output.
 			 */

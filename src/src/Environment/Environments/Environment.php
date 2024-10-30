@@ -139,7 +139,7 @@ abstract class Environment {
 			$this->custom_tests_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );
 		}
 
-		$this->output->writeln( '<info>Setting up Docker...</info>' );
+		$this->output->writeln( '<info>Starting Docker Environment...</info>' );
 		$this->generate_docker_compose();
 		$this->post_generate_docker_compose();
 		$this->up_docker_compose();
@@ -246,6 +246,7 @@ abstract class Environment {
 			'NORMALIZED_ENV_DIR' => $this->env_info->temporary_env,
 			'QIT_DOCKER_NGINX'   => 'yes', // Default. Might be overridden by the concrete environment.
 			'QIT_DOCKER_REDIS'   => 'no', // Default. Might be overridden by the concrete environment.
+			'ENV_VARS'           => json_encode( App::getVar( 'QIT_DOCKER_ENV_VARS' ) ),
 		], $this->get_generate_docker_compose_envs() ) );
 
 		if ( $this->output->isVeryVerbose() ) {
