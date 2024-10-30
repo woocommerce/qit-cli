@@ -176,7 +176,6 @@ Usage:
 npx playwright show-trace ../../results/playwright/activate-theme-I-can-activate-Deli-deli-local-retry2/trace.zip
 
 ────────────────────────────────────────────────────────────────────────────────────────────────
-
 1 failed
 [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli ─────────────────────
 1 passed (TIME)
