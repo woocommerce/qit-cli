@@ -3,7 +3,6 @@ Starting Docker Environment...
 Installing WordPress...
 Activating plugins...
 Environment ready.
-
 Bootstrapping Plugins
 Bootstrapping woocommerce /qit/tests/e2e/woocommerce/self-test-sut-and-test-additional/bootstrap/bootstrap.php
 Bootstrapping woocommerce /qit/tests/e2e/woocommerce/self-test-sut-and-test-additional/bootstrap/bootstrap.sh
@@ -20,12 +19,7 @@ Running 3 tests using 1 worker
 3 passed (TIME)
 Test artifacts being saved to: /tmp-normalized/qit-results-normalizedid
 Uploading zip...
-
-
 [30;42m                                                                                                                        [39;49m
 [30;42m [OK] Tests passed. Run 'qit e2e-report' to view the report.                                                            [39;49m
 [30;42m                                                                                                                        [39;49m
-
-
 Shutting down environment...
-

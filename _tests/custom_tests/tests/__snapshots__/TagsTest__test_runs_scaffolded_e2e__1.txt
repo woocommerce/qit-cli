@@ -1,4 +1,2 @@
 Uploading zip...
-
 Tests updated for extension 'woocommerce-amazon-s3-storage' successfully.
-

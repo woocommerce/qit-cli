@@ -3,7 +3,6 @@ Starting Docker Environment...
 Installing WordPress...
 Activating plugins...
 Environment ready.
-
 Bootstrapping Plugins
 Bootstrapping woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/self-test-tag-and-run/bootstrap/bootstrap.php
 Bootstrapping woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/self-test-tag-and-run/bootstrap/bootstrap.sh
@@ -14,12 +13,7 @@ Running 1 test using 1 worker
 1 passed (TIME)
 Test artifacts being saved to: /tmp-normalized/qit-results-normalizedid
 Uploading zip...
-
-
 [30;42m                                                                                                                        [39;49m
 [30;42m [OK] Tests passed. Run 'qit e2e-report' to view the report.                                                            [39;49m
 [30;42m                                                                                                                        [39;49m
-
-
 Shutting down environment...
-
