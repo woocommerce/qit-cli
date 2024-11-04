@@ -1,9 +1,7 @@
-Setting up Docker...
-Setting up WordPress...
+Starting Docker Environment...
+Installing WordPress...
 Activating plugins...
-
 [OK] Temporary test environment created. (ENV_ID)
-
 * URL: http://localhost:PORT
 * Admin URL: http://localhost:PORT/wp-admin
 * Admin Credentials: admin/password
@@ -11,8 +9,5 @@ Activating plugins...
 * WordPress Version: NORMALIZED
 * Redis Object Cache? No
 * Path: QIT_HOME/temporary-envs/e2e-ENV_ID/
-
 To see additional info, run with the "--verbose" flag.
-
 http://localhost:PORT
-

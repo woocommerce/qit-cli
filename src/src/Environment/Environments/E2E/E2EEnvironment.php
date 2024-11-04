@@ -92,7 +92,7 @@ class E2EEnvironment extends Environment {
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'cp /qit/mu-plugins/* /var/www/html/wp-content/mu-plugins 2>&1' ] );
 
 		// Setup WordPress.
-		$this->output->writeln( '<info>Setting up WordPress...</info>' );
+		$this->output->writeln( '<info>Installing WordPress...</info>' );
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/wordpress-setup.sh 2>&1' ], [
 			'TUNNEL'            => $this->env_info->tunnel ? 'yes' : 'no',
 			'WORDPRESS_VERSION' => $this->env_info->wp,

@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands\Environment;
 
+use Dotenv\Dotenv;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\DynamicCommand;
@@ -64,6 +65,8 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
 			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use.' )
+			->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests.', [] )
+			->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests from a file.', [] )
 			->setAliases( [ 'env:start' ]
 			);
 
@@ -193,6 +196,7 @@ HELP
 		$skip_activating_plugins = $input->getOption( 'skip_activating_plugins' );
 		$input->setOption( 'woo', null );
 		$input->setOption( 'skip_activating_plugins', null );
+		$this->parse_env_vars( $input->getOption( 'env' ), $input->getOption( 'env_file' ) );
 
 		$tunnel = TunnelRunner::get_tunnel_value( $input );
 
@@ -351,5 +355,47 @@ HELP
 		}
 
 		return $options_to_env_info;
+	}
+
+
+	/**
+	 * We take the "--env" option as "--env FOO=bar" and convert it to ["FOO" => "bar"].
+	 * We also take "--env_file" option and parse the file content as env vars.
+	 * We store this value as QIT_DOCKER_ENV_VARS and pass it to the test context.
+	 *
+	 * @param array<string> $env_vars
+	 * @param array<string> $env_files
+	 *
+	 * @return void
+	 */
+	protected function parse_env_vars( array $env_vars, array $env_files ): void {
+		$parsed_vars = [];
+
+		foreach ( $env_files as $env_file ) {
+			if ( ! file_exists( $env_file ) ) {
+				throw new \RuntimeException( sprintf( 'Environment file "%s" does not exist.', $env_file ) );
+			}
+
+			$parsed_vars = array_merge( $parsed_vars, Dotenv::parse( file_get_contents( $env_file ) ) );
+		}
+
+		foreach ( $env_vars as $env_var ) {
+			$env_var = explode( '=', $env_var, 2 );
+
+			if ( count( $env_var ) !== 2 ) {
+				throw new \RuntimeException( 'Invalid environment variable format. Should be in the format "--env FOO=bar".' );
+			}
+
+			$key   = trim( $env_var[0] );
+			$value = trim( $env_var[1] );
+
+			if ( ! preg_match( '/^[A-Za-z0-9_]+$/', $key ) ) {
+				throw new \RuntimeException( 'Invalid environment variable name. Must contain only letters, numbers, and underscores.' );
+			}
+
+			$parsed_vars[ $key ] = $value;
+		}
+
+		App::setVar( 'QIT_DOCKER_ENV_VARS', $parsed_vars );
 	}
 }
