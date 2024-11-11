@@ -3461,7 +3461,8 @@
                             }
                         }
                     },
-                    "semgrep": []
+                    "semgrep": [],
+                    "composer_audit": []
                 }
             }
         }

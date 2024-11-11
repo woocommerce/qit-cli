@@ -73,7 +73,8 @@
                                 "messages": []
                             }
                         }
-                    }
+                    },
+                    "composer_audit": []
                 }
             }
         }
