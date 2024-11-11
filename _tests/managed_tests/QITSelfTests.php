@@ -381,7 +381,7 @@ function run_test_runs( array $test_runs, $tests_based_on_custom_tests ) {
 			}
 
 			if ( in_array( $test_type, $tests_based_on_custom_tests ) ) {
-				$args[] = "--no_upload_report";
+				// $args[] = "--no_upload_report";
 			}
 
 			if ( ! empty( $t['features'] ) ) {
