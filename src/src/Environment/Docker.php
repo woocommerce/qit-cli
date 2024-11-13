@@ -287,17 +287,21 @@ class Docker {
 	 * @return array<string> The docker-compose command to use, in a Symfony Process format.
 	 */
 	public function find_docker_compose(): array {
-		// Find out if it's docker-compose (v1) or docker compose (v2).
-		$v1_version = trim( shell_exec( 'docker-compose --version' ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
-		$v2_version = trim( shell_exec( 'docker compose --version' ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
+		$output     = [];
+		$return_var = 0;
 
-		if ( $v1_version ) {
-			return [ 'docker-compose' ];
-		} elseif ( $v2_version ) {
+		// Prefer Docker Compose v2 over v1.
+		exec( 'docker compose version >/dev/null 2>&1', $output, $return_var );
+		if ( $return_var === 0 ) {
 			return [ 'docker', 'compose' ];
-		} else {
-			throw new \RuntimeException( 'Could not find docker-compose or docker compose' );
 		}
+
+		exec( 'docker-compose version >/dev/null 2>&1', $output, $return_var );
+		if ( $return_var === 0 ) {
+			return [ 'docker-compose' ];
+		}
+
+		throw new \RuntimeException( 'Could not find docker compose or docker-compose' );
 	}
 
 	public function maybe_pull_docker_compose( string $docker_compose_path, string $environment_type ): void {
