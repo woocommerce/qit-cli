@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "448 total, 383 passed, 1 failed, 64 skipped.",
+            "test_summary": "448 total, 384 passed, 0 failed, 64 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,12 +45,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 87,
                 "numPendingTestSuites": 24,
                 "numTotalTestSuites": 111,
-                "numFailedTests": 1,
-                "numPassedTests": 383,
+                "numFailedTests": 0,
+                "numPassedTests": 384,
                 "numPendingTests": 64,
                 "numTotalTests": 448,
                 "testResults": [
@@ -1753,7 +1753,7 @@
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "General tab": [],
@@ -1766,7 +1766,7 @@
                             "General tab > Create product": [
                                 {
                                     "title": "can create a simple product",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can not create a product with duplicated SKU",
@@ -2948,7 +2948,7 @@
                         }
                     }
                 ],
-                "summary": "448 total, 383 passed, 1 failed, 64 skipped."
+                "summary": "448 total, 384 passed, 0 failed, 64 skipped."
             }
         },
         {
