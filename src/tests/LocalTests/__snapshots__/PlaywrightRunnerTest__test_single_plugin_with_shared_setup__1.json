@@ -1,0 +1,22 @@
+[
+    {
+        "name": "test-slug-shared-setup",
+        "testDir": "test-path-in-playwright-container\/qit",
+        "testMatch": "sharedSetup.js",
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-slug"
+        }
+    },
+    {
+        "name": "test-slug-test",
+        "testDir": "test-path-in-playwright-container",
+        "dependencies": [
+            "test-slug-shared-setup"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-slug"
+        }
+    }
+]

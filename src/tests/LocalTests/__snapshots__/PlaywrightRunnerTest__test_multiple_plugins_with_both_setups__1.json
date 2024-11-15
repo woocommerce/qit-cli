@@ -1,0 +1,89 @@
+[
+    {
+        "name": "plugin-one-shared-setup",
+        "testDir": "test-path-in-playwright-container\/plugin-one\/qit",
+        "testMatch": "sharedSetup.js",
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-one"
+        }
+    },
+    {
+        "name": "plugin-two-shared-setup",
+        "testDir": "test-path-in-playwright-container\/plugin-two\/qit",
+        "testMatch": "sharedSetup.js",
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-two"
+        }
+    },
+    {
+        "name": "db-export",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "db-export.js",
+        "dependencies": [
+            "plugin-one-shared-setup",
+            "plugin-two-shared-setup"
+        ],
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "db-import",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "db-import.js",
+        "dependencies": [
+            "db-export"
+        ],
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "plugin-one-isolated-setup",
+        "testDir": "test-path-in-playwright-container\/plugin-one\/qit",
+        "testMatch": "isolatedSetup.js",
+        "dependencies": [
+            "db-import"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-one"
+        }
+    },
+    {
+        "name": "plugin-one-test",
+        "testDir": "test-path-in-playwright-container\/plugin-one",
+        "dependencies": [
+            "plugin-one-isolated-setup"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-one"
+        }
+    },
+    {
+        "name": "plugin-two-isolated-setup",
+        "testDir": "test-path-in-playwright-container\/plugin-two\/qit",
+        "testMatch": "isolatedSetup.js",
+        "dependencies": [
+            "db-import"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-two"
+        }
+    },
+    {
+        "name": "plugin-two-test",
+        "testDir": "test-path-in-playwright-container\/plugin-two",
+        "dependencies": [
+            "plugin-two-isolated-setup"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-two"
+        }
+    }
+]

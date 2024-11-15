@@ -86,7 +86,7 @@ class PlaywrightRunner extends E2ERunner {
 		} );
 
 		if ( ! $process->isSuccessful() ) {
-			throw new \RuntimeException( "Failed to generate docker-compose.yml. Output:\n" . $process->getOutput() . $process->getErrorOutput() );
+			throw new \RuntimeException( "Failed to generate playwright config file. Output:\n" . $process->getOutput() . $process->getErrorOutput() );
 		}
 
 		$ci = ! empty( getenv( 'CI' ) );
@@ -242,7 +242,7 @@ class PlaywrightRunner extends E2ERunner {
 		$ci                  = ! empty( getenv( 'CI' ) );
 
 		$output_callback = function ( $type, $out ) use ( $playwright_container_name, &$line_buffer, &$total_lines_printed, $ci ) {
-			$max_lines = 100;
+			$max_lines = 10;
 
 			// Handle both STDOUT and STDERR.
 			if ( $type !== Process::OUT && $type !== Process::ERR ) {
@@ -271,7 +271,7 @@ class PlaywrightRunner extends E2ERunner {
 				return;
 			}
 
-			if ( $ci ) {
+			if ( $ci || true ) {
 				$this->output->writeln( $out );
 
 				return;
