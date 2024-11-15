@@ -195,7 +195,9 @@
                                 ]
                             }
                         }
-                    }
+                    },
+                    "composer_audit": [],
+                    "npm_audit": []
                 }
             }
         }

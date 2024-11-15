@@ -62,6 +62,7 @@
                         "cart_checkout_blocks",
                         "marketplace",
                         "order_attribution",
+                        "site_visibility_badge",
                         "hpos_fts_indexes",
                         "remote_logging",
                         "custom_order_tables"
