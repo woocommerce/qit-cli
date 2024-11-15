@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "442 total, 399 passed, 0 failed, 43 skipped.",
+            "test_summary": "448 total, 383 passed, 1 failed, 64 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,14 +45,14 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 91,
-                "numPendingTestSuites": 19,
-                "numTotalTestSuites": 110,
-                "numFailedTests": 0,
-                "numPassedTests": 399,
-                "numPendingTests": 43,
-                "numTotalTests": 442,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 87,
+                "numPendingTestSuites": 24,
+                "numTotalTestSuites": 111,
+                "numFailedTests": 1,
+                "numPassedTests": 383,
+                "numPendingTests": 64,
+                "numTotalTests": 448,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/basic-setup.spec.js",
@@ -202,12 +202,12 @@
                     {
                         "file": "admin-marketing\\/coupons.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Coupons page": [
                                 {
                                     "title": "A user can view the coupons overview without it crashing",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -853,6 +853,19 @@
                         }
                     },
                     {
+                        "file": "merchant\\/create-product-brand.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Merchant can add brands": [
+                                {
+                                    "title": "Merchant can add brands",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/create-restricted-coupons.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -880,6 +893,10 @@
                                 },
                                 {
                                     "title": "can create new excludeProductCategories coupon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can create new excludeProductBrands coupon",
                                     "status": "passed"
                                 },
                                 {
@@ -1136,7 +1153,11 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "can load billing details",
+                                    "title": "can load billing and shipping details",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can copy billing address to shipping address",
                                     "status": "passed"
                                 }
                             ],
@@ -1345,64 +1366,64 @@
                     {
                         "file": "merchant\\/page-loads.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Page Load > Load WooCommerce sub pages": [
                                 {
                                     "title": "Can load Home",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Orders",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Customers",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Reports",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Status",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "WooCommerce Page Load > Load Products sub pages": [
                                 {
                                     "title": "Can load All Products",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Add New",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Categories",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Tags",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Attributes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "WooCommerce Page Load > Load Marketing sub pages": [
                                 {
                                     "title": "Can load Overview",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can load Coupons",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1410,24 +1431,24 @@
                     {
                         "file": "merchant\\/product-create-simple.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "can create a simple virtual product": [
                                 {
                                     "title": "can create a simple virtual product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can create a simple non virtual product": [
                                 {
                                     "title": "can create a simple non virtual product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can create a simple downloadable product": [
                                 {
                                     "title": "can create a simple downloadable product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1467,6 +1488,24 @@
                             "can bulk edit products": [
                                 {
                                     "title": "can bulk edit products",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can restore regular price when bulk editing products": [
+                                {
+                                    "title": "can restore regular price when bulk editing products",
+                                    "status": "passed"
+                                }
+                            ],
+                            "can decrease the sale price if the product was not previously in sale when bulk editing products": [
+                                {
+                                    "title": "can decrease the sale price if the product was not previously in sale when bulk editing products",
+                                    "status": "passed"
+                                }
+                            ],
+                            "increasing the sale price from 0 does not change the sale price when bulk editing products": [
+                                {
+                                    "title": "increasing the sale price from 0 does not change the sale price when bulk editing products",
                                     "status": "passed"
                                 }
                             ]
@@ -1714,7 +1753,7 @@
                     },
                     {
                         "file": "merchant\\/products\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "General tab": [],
@@ -1727,7 +1766,7 @@
                             "General tab > Create product": [
                                 {
                                     "title": "can create a simple product",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can not create a product with duplicated SKU",
@@ -1812,13 +1851,13 @@
                     {
                         "file": "merchant\\/products\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "General tab": [],
                             "General tab > Linked product": [
                                 {
                                     "title": "can create a product with linked products",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2484,7 +2523,7 @@
                     {
                         "file": "shopper\\/checkout-block.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Checkout Block page": [
                                 {
@@ -2513,15 +2552,15 @@
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows existing customer to place an order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can create an account during checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can create an account during checkout with custom password",
@@ -2559,7 +2598,7 @@
                     {
                         "file": "shopper\\/checkout.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Checkout page": [
                                 {
@@ -2584,11 +2623,11 @@
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows existing customer to place order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2909,7 +2948,7 @@
                         }
                     }
                 ],
-                "summary": "442 total, 399 passed, 0 failed, 43 skipped."
+                "summary": "448 total, 383 passed, 1 failed, 64 skipped."
             }
         },
         {
