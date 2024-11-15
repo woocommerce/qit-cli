@@ -74,7 +74,8 @@
                             }
                         }
                     },
-                    "composer_audit": []
+                    "composer_audit": [],
+                    "npm_audit": []
                 }
             }
         }
