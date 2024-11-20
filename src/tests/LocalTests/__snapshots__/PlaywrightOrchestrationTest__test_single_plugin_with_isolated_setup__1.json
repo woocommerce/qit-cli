@@ -1,31 +1,20 @@
 [
     {
-        "name": "01-db-export",
-        "testDir": "\/qit\/tests\/e2e",
-        "testMatch": "db-export.js",
-        "dependencies": [],
-        "use": {
-            "browserName": "chromium"
-        }
-    },
-    {
-        "name": "02-test-slug-isolated-setup-js",
+        "name": "01-test-slug-isolated-setup-js",
         "testDir": "test-path-in-php-container\/bootstrap",
         "testMatch": "bootstrap.js",
-        "dependencies": [
-            "01-db-export"
-        ],
+        "dependencies": [],
         "use": {
             "browserName": "chromium",
             "qitTestSlug": "test-slug"
         }
     },
     {
-        "name": "03-test-slug-test",
+        "name": "02-test-slug-test",
         "testDir": "test-path-in-php-container",
         "testMatch": "**\/*.spec.js",
         "dependencies": [
-            "02-test-slug-isolated-setup-js"
+            "01-test-slug-isolated-setup-js"
         ],
         "use": {
             "browserName": "chromium",

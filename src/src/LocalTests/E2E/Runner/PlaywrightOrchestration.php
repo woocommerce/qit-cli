@@ -7,6 +7,7 @@ class PlaywrightOrchestration {
 		$projects = [];
 		$last_setup = null;
 		$project_counter = 1;
+		$multiple_plugins = count($test_infos) > 1;
 
 		// Shared setups first
 		foreach ($test_infos as $t) {
@@ -37,7 +38,7 @@ class PlaywrightOrchestration {
 					'name' => $name,
 					'testDir' => '/qit/tests/e2e',
 					'testMatch' => 'qit-bootstrap.js',
-					'dependencies' => $last_setup ? [$last_setup] : [], // Fixed potential null dependency
+					'dependencies' => $last_setup ? [$last_setup] : [],
 					'use' => [
 						'qitTestSlug' => $plugin_slug,
 						'type' => 'php',
@@ -63,17 +64,22 @@ class PlaywrightOrchestration {
 			}
 		}
 
-		// DB Export after shared setups
-		$name = sprintf("%02d-db-export", $project_counter++);
-		$projects[] = [
-			'name' => $name,
-			'testDir' => '/qit/tests/e2e',
-			'testMatch' => 'db-export.js',
-			'dependencies' => $last_setup ? [$last_setup] : [], // Fixed null dependency
-			'use' => ['browserName' => 'chromium'],
-		];
+		// Track the last operation for dependency chain
+		$last_operation = $last_setup;
 
-		$last_test = $name;
+		// DB Export only for multiple plugins
+		if ($multiple_plugins) {
+			$name = sprintf("%02d-db-export", $project_counter++);
+			$projects[] = [
+				'name' => $name,
+				'testDir' => '/qit/tests/e2e',
+				'testMatch' => 'db-export.js',
+				'dependencies' => $last_operation ? [$last_operation] : [],
+				'use' => ['browserName' => 'chromium'],
+			];
+			$last_operation = $name;
+		}
+
 		$first_test = true;
 
 		// Tests with conditional DB import and isolated setups
@@ -81,19 +87,19 @@ class PlaywrightOrchestration {
 			$plugin_slug = $t['slug'];
 			$base_dir = $t['path_in_php_container'];
 			$host_path = $t['path_in_host'];
-			$last_setup = $last_test;
+			$current_setup = $last_operation ?: null; // Initialize as null if no previous operations
 
-			if (!$first_test) {
+			if (!$first_test && $multiple_plugins) {
 				// Add DB import before subsequent tests
 				$import_name = sprintf("%02d-db-import-before-%s", $project_counter++, $plugin_slug);
 				$projects[] = [
 					'name' => $import_name,
 					'testDir' => '/qit/tests/e2e',
 					'testMatch' => 'db-import.js',
-					'dependencies' => [$last_test],
+					'dependencies' => $last_operation ? [$last_operation] : [],
 					'use' => ['browserName' => 'chromium'],
 				];
-				$last_setup = $import_name;
+				$current_setup = $import_name;
 			}
 
 			// Isolated setups (sh, php, js)
@@ -103,14 +109,14 @@ class PlaywrightOrchestration {
 					'name' => $name,
 					'testDir' => '/qit/tests/e2e',
 					'testMatch' => 'qit-bootstrap.js',
-					'dependencies' => [$last_setup],
+					'dependencies' => $current_setup ? [$current_setup] : [],
 					'use' => [
 						'qitTestSlug' => $plugin_slug,
 						'type' => 'bash',
 						'file' => "{$base_dir}/bootstrap/bootstrap.sh",
 					],
 				];
-				$last_setup = $name;
+				$current_setup = $name;
 			}
 
 			if (file_exists("{$host_path}/bootstrap/bootstrap.php")) {
@@ -119,14 +125,14 @@ class PlaywrightOrchestration {
 					'name' => $name,
 					'testDir' => '/qit/tests/e2e',
 					'testMatch' => 'qit-bootstrap.js',
-					'dependencies' => [$last_setup],
+					'dependencies' => $current_setup ? [$current_setup] : [],
 					'use' => [
 						'qitTestSlug' => $plugin_slug,
 						'type' => 'php',
 						'file' => "{$base_dir}/bootstrap/bootstrap.php",
 					],
 				];
-				$last_setup = $name;
+				$current_setup = $name;
 			}
 
 			if (file_exists("{$host_path}/bootstrap/bootstrap.js")) {
@@ -135,13 +141,13 @@ class PlaywrightOrchestration {
 					'name' => $name,
 					'testDir' => "{$base_dir}/bootstrap",
 					'testMatch' => "bootstrap.js",
-					'dependencies' => [$last_setup],
+					'dependencies' => $current_setup ? [$current_setup] : [],
 					'use' => [
 						'browserName' => 'chromium',
 						'qitTestSlug' => $plugin_slug,
 					],
 				];
-				$last_setup = $name;
+				$current_setup = $name;
 			}
 
 			// Add the actual test phase
@@ -150,13 +156,13 @@ class PlaywrightOrchestration {
 				'name' => $name,
 				'testDir' => $base_dir,
 				'testMatch' => '**/*.spec.js',
-				'dependencies' => [$last_setup],
+				'dependencies' => $current_setup ? [$current_setup] : [],
 				'use' => [
 					'browserName' => 'chromium',
 					'qitTestSlug' => $plugin_slug,
 				],
 			];
-			$last_test = $name;
+			$last_operation = $name;
 			$first_test = false;
 		}
 

@@ -36,22 +36,11 @@
         }
     },
     {
-        "name": "04-db-export",
-        "testDir": "\/qit\/tests\/e2e",
-        "testMatch": "db-export.js",
-        "dependencies": [
-            "03-test-slug-shared-setup-js"
-        ],
-        "use": {
-            "browserName": "chromium"
-        }
-    },
-    {
-        "name": "05-test-slug-test",
+        "name": "04-test-slug-test",
         "testDir": "test-path-in-php-container",
         "testMatch": "**\/*.spec.js",
         "dependencies": [
-            "04-db-export"
+            "03-test-slug-shared-setup-js"
         ],
         "use": {
             "browserName": "chromium",
