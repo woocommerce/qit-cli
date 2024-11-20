@@ -1,0 +1,88 @@
+[
+    {
+        "name": "01-test-slug-shared-setup-sh",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "qit-bootstrap.js",
+        "dependencies": [],
+        "use": {
+            "qitTestSlug": "test-slug",
+            "type": "bash",
+            "file": "test-path-in-php-container\/bootstrap\/shared-bootstrap.sh"
+        }
+    },
+    {
+        "name": "02-test-slug-shared-setup-php",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "qit-bootstrap.js",
+        "dependencies": [
+            "01-test-slug-shared-setup-sh"
+        ],
+        "use": {
+            "qitTestSlug": "test-slug",
+            "type": "php",
+            "file": "test-path-in-php-container\/bootstrap\/shared-bootstrap.php"
+        }
+    },
+    {
+        "name": "03-test-slug-shared-setup-js",
+        "testDir": "test-path-in-php-container\/bootstrap",
+        "testMatch": "shared-bootstrap.js",
+        "dependencies": [
+            "02-test-slug-shared-setup-php"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-slug"
+        }
+    },
+    {
+        "name": "04-test-slug-isolated-setup-sh",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "qit-bootstrap.js",
+        "dependencies": [
+            "03-test-slug-shared-setup-js"
+        ],
+        "use": {
+            "qitTestSlug": "test-slug",
+            "type": "bash",
+            "file": "test-path-in-php-container\/bootstrap\/bootstrap.sh"
+        }
+    },
+    {
+        "name": "05-test-slug-isolated-setup-php",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "qit-bootstrap.js",
+        "dependencies": [
+            "04-test-slug-isolated-setup-sh"
+        ],
+        "use": {
+            "qitTestSlug": "test-slug",
+            "type": "php",
+            "file": "test-path-in-php-container\/bootstrap\/bootstrap.php"
+        }
+    },
+    {
+        "name": "06-test-slug-isolated-setup-js",
+        "testDir": "test-path-in-php-container\/bootstrap",
+        "testMatch": "bootstrap.js",
+        "dependencies": [
+            "05-test-slug-isolated-setup-php"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-slug"
+        }
+    },
+    {
+        "name": "07-test-slug-test",
+        "testDir": "test-path-in-php-container",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [
+            "06-test-slug-isolated-setup-js"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-slug"
+        }
+    }
+]

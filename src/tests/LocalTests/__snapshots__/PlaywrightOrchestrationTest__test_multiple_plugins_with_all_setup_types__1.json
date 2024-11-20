@@ -1,0 +1,198 @@
+[
+    {
+        "name": "01-plugin-one-shared-setup-sh",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "qit-bootstrap.js",
+        "dependencies": [],
+        "use": {
+            "qitTestSlug": "plugin-one",
+            "type": "bash",
+            "file": "test-path-in-php-container-1\/bootstrap\/shared-bootstrap.sh"
+        }
+    },
+    {
+        "name": "02-plugin-one-shared-setup-php",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "qit-bootstrap.js",
+        "dependencies": [
+            "01-plugin-one-shared-setup-sh"
+        ],
+        "use": {
+            "qitTestSlug": "plugin-one",
+            "type": "php",
+            "file": "test-path-in-php-container-1\/bootstrap\/shared-bootstrap.php"
+        }
+    },
+    {
+        "name": "03-plugin-one-shared-setup-js",
+        "testDir": "test-path-in-php-container-1\/bootstrap",
+        "testMatch": "shared-bootstrap.js",
+        "dependencies": [
+            "02-plugin-one-shared-setup-php"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-one"
+        }
+    },
+    {
+        "name": "04-plugin-two-shared-setup-sh",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "qit-bootstrap.js",
+        "dependencies": [
+            "03-plugin-one-shared-setup-js"
+        ],
+        "use": {
+            "qitTestSlug": "plugin-two",
+            "type": "bash",
+            "file": "test-path-in-php-container-2\/bootstrap\/shared-bootstrap.sh"
+        }
+    },
+    {
+        "name": "05-plugin-two-shared-setup-php",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "qit-bootstrap.js",
+        "dependencies": [
+            "04-plugin-two-shared-setup-sh"
+        ],
+        "use": {
+            "qitTestSlug": "plugin-two",
+            "type": "php",
+            "file": "test-path-in-php-container-2\/bootstrap\/shared-bootstrap.php"
+        }
+    },
+    {
+        "name": "06-plugin-two-shared-setup-js",
+        "testDir": "test-path-in-php-container-2\/bootstrap",
+        "testMatch": "shared-bootstrap.js",
+        "dependencies": [
+            "05-plugin-two-shared-setup-php"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-two"
+        }
+    },
+    {
+        "name": "07-db-export",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "db-export.js",
+        "dependencies": [
+            "06-plugin-two-shared-setup-js"
+        ],
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "08-plugin-one-isolated-setup-sh",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "qit-bootstrap.js",
+        "dependencies": [
+            "07-db-export"
+        ],
+        "use": {
+            "qitTestSlug": "plugin-one",
+            "type": "bash",
+            "file": "test-path-in-php-container-1\/bootstrap\/bootstrap.sh"
+        }
+    },
+    {
+        "name": "09-plugin-one-isolated-setup-php",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "qit-bootstrap.js",
+        "dependencies": [
+            "08-plugin-one-isolated-setup-sh"
+        ],
+        "use": {
+            "qitTestSlug": "plugin-one",
+            "type": "php",
+            "file": "test-path-in-php-container-1\/bootstrap\/bootstrap.php"
+        }
+    },
+    {
+        "name": "10-plugin-one-isolated-setup-js",
+        "testDir": "test-path-in-php-container-1\/bootstrap",
+        "testMatch": "bootstrap.js",
+        "dependencies": [
+            "09-plugin-one-isolated-setup-php"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-one"
+        }
+    },
+    {
+        "name": "11-plugin-one-test",
+        "testDir": "test-path-in-php-container-1",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [
+            "10-plugin-one-isolated-setup-js"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-one"
+        }
+    },
+    {
+        "name": "12-db-import-before-plugin-two",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "db-import.js",
+        "dependencies": [
+            "11-plugin-one-test"
+        ],
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "13-plugin-two-isolated-setup-sh",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "qit-bootstrap.js",
+        "dependencies": [
+            "12-db-import-before-plugin-two"
+        ],
+        "use": {
+            "qitTestSlug": "plugin-two",
+            "type": "bash",
+            "file": "test-path-in-php-container-2\/bootstrap\/bootstrap.sh"
+        }
+    },
+    {
+        "name": "14-plugin-two-isolated-setup-php",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "qit-bootstrap.js",
+        "dependencies": [
+            "13-plugin-two-isolated-setup-sh"
+        ],
+        "use": {
+            "qitTestSlug": "plugin-two",
+            "type": "php",
+            "file": "test-path-in-php-container-2\/bootstrap\/bootstrap.php"
+        }
+    },
+    {
+        "name": "15-plugin-two-isolated-setup-js",
+        "testDir": "test-path-in-php-container-2\/bootstrap",
+        "testMatch": "bootstrap.js",
+        "dependencies": [
+            "14-plugin-two-isolated-setup-php"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-two"
+        }
+    },
+    {
+        "name": "16-plugin-two-test",
+        "testDir": "test-path-in-php-container-2",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [
+            "15-plugin-two-isolated-setup-js"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-two"
+        }
+    }
+]
