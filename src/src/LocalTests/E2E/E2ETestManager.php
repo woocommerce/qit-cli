@@ -11,11 +11,7 @@ use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\LocalTests\E2E\Runner\E2ERunner;
 use QIT_CLI\LocalTests\E2E\Runner\PlaywrightRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
-use Symfony\Component\Console\Helper\QuestionHelper;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 class E2ETestManager {
 	/** @var Docker $docker */

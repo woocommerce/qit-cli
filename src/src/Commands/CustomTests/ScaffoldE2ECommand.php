@@ -69,7 +69,7 @@ class ScaffoldE2ECommand extends Command {
 			return Command::FAILURE;
 		}
 
-		// We bootstrap with isolated setup files by default
+		// We bootstrap with isolated setup files by default.
 		$files = [
 			'setup-sh.txt'          => '/bootstrap/setup.sh',
 			'setup-js.txt'          => '/bootstrap/setup.js',
@@ -78,7 +78,7 @@ class ScaffoldE2ECommand extends Command {
 			'example-spec-js.txt'   => '/example.spec.js',
 		];
 
-		// If the user requests shared setup examples, we include them
+		// If the user requests shared setup examples, we include them.
 		if ( $input->getOption( 'with-shared' ) ) {
 			$files = array_merge( $files, [
 				'shared-setup-sh.txt' => '/bootstrap/shared-setup.sh',
@@ -86,14 +86,14 @@ class ScaffoldE2ECommand extends Command {
 			] );
 		}
 
-		// If the user requests teardown examples, include both isolated and shared teardowns
+		// If the user requests teardown examples, include both isolated and shared teardowns.
 		if ( $input->getOption( 'with-teardown' ) ) {
 			$teardown_files = [
 				'teardown-sh.txt' => '/bootstrap/teardown.sh',
 				'teardown-js.txt' => '/bootstrap/teardown.js',
 			];
 
-			// Add shared teardowns only if shared setups were requested
+			// Add shared teardowns only if shared setups were requested.
 			if ( $input->getOption( 'with-shared' ) ) {
 				$teardown_files = array_merge( $teardown_files, [
 					'shared-teardown-sh.txt' => '/bootstrap/shared-teardown.sh',

@@ -320,7 +320,7 @@ class PlaywrightRunner extends E2ERunner {
 			}
 
 			// Clear lines equal to total_lines_printed.
-			for ( $i = 0; $i < $total_lines_printed; $i ++ ) {
+			for ( $i = 0; $i < $total_lines_printed; $i++ ) {
 				$this->output->write( "\033[2K\033[1B", false, OutputInterface::OUTPUT_RAW ); // Clear line and move cursor down.
 			}
 
@@ -413,7 +413,7 @@ class PlaywrightRunner extends E2ERunner {
 				}
 
 				if ( in_array( $file->getExtension(), $allowed_extensions, true ) ) {
-					++ $count_of_allowed_files;
+					++$count_of_allowed_files;
 				} else {
 					throw new \RuntimeException( sprintf( 'Screenshots directory contains file disallowed file type: %s', $file->getFilename() ) );
 				}

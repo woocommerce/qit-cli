@@ -119,8 +119,8 @@ class CustomTestsDownloader {
 					continue;
 				}
 
-				$path_in_host                 = "{$env_info->temporary_env}/tests/$test_type/{$extension->slug}/$processed_test_tag";
-				$path_in_php_container        = "/qit/tests/$test_type/{$extension->slug}/$processed_test_tag";
+				$path_in_host          = "{$env_info->temporary_env}/tests/$test_type/{$extension->slug}/$processed_test_tag";
+				$path_in_php_container = "/qit/tests/$test_type/{$extension->slug}/$processed_test_tag";
 
 				$this->zipper->extract_zip( $zip_file, $path_in_host );
 
@@ -128,13 +128,13 @@ class CustomTestsDownloader {
 
 				if ( $env_info instanceof E2EEnvInfo ) {
 					$env_info->tests[] = [
-						'slug'                         => $extension->slug,
-						'test_tag'                     => $processed_test_tag,
-						'type'                         => $extension->type,
-						'action'                       => $extension->action,
-						'path_in_php_container'        => $path_in_php_container,
-						'path_in_host'                 => $path_in_host,
-						'path_in_host_original'        => $original_path ?? '',
+						'slug'                  => $extension->slug,
+						'test_tag'              => $processed_test_tag,
+						'type'                  => $extension->type,
+						'action'                => $extension->action,
+						'path_in_php_container' => $path_in_php_container,
+						'path_in_host'          => $path_in_host,
+						'path_in_host_original' => $original_path ?? '',
 					];
 				}
 			}
