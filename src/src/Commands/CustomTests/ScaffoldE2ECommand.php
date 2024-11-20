@@ -18,7 +18,7 @@ class ScaffoldE2ECommand extends Command {
 	protected function configure() {
 		$this
 			->addArgument( 'path', InputArgument::REQUIRED, 'The path to scaffold an example E2E test.' )
-			->addOption( 'advanced', 'f', InputOption::VALUE_NONE, 'Include advanced scaffolding.' )
+			->addOption( 'with-shared', 's', InputOption::VALUE_NONE, 'Include shared setup examples.' )
 			->setDescription( 'Scaffold an example E2E test.' );
 	}
 
@@ -28,7 +28,7 @@ class ScaffoldE2ECommand extends Command {
 		$path_to_generate = normalize_path( $path );
 
 		if ( file_exists( $path_to_generate ) ) {
-			if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "Directory already exists. Scaffold E2E tests in \"$path_to_generate\" anyway? <question>(y/n)</question> ", false ) ) ) {
+			if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "Directory already exists. Do you want to delete this directory and Scaffold E2E tests in \"$path_to_generate\" anyway? <question>(y/n)</question> ", false ) ) ) {
 				return Command::SUCCESS;
 			}
 
@@ -68,33 +68,20 @@ class ScaffoldE2ECommand extends Command {
 			return Command::FAILURE;
 		}
 
-		// We bootstrap with these files by default.
+		// We bootstrap with isolated setup files by default
 		$files = [
-			'sharedSetup-sh.txt'    => '/bootstrap/sharedSetup.sh',
-			'sharedSetup-js.txt'    => '/bootstrap/sharedSetup.js',
-
-			'isolatedSetup-sh.txt'  => '/bootstrap/isolatedSetup.sh',
-			'isolatedSetup-js.txt'  => '/bootstrap/isolatedSetup.js',
-
+			'setup-sh.txt'          => '/bootstrap/setup.sh',
+			'setup-js.txt'          => '/bootstrap/setup.js',
 			'mu-plugin-php.txt'     => '/bootstrap/mu-plugin.php',
 			'dependencies-json.txt' => '/bootstrap/dependencies.json',
 			'example-spec-js.txt'   => '/example.spec.js',
 		];
 
-		// If the user requests the advanced bootstrapping, we include every possibility.
-		if ( $input->getOption( 'advanced' ) ) {
+		// If the user requests shared setup examples, we include them
+		if ( $input->getOption( 'with-shared' ) ) {
 			$files = array_merge( $files, [
-				'sharedSetup-php.txt'      => '/bootstrap/sharedSetup.php',
-
-				'isolatedSetup-php.txt'    => '/bootstrap/isolatedSetup.php',
-
-				'sharedTeardown-sh.txt'    => '/bootstrap/sharedTeardown.sh',
-				'sharedTeardown-php.txt'   => '/bootstrap/sharedTeardown.php',
-				'sharedTeardown-js.txt'    => '/bootstrap/sharedTeardown.js',
-
-				'isolatedTeardown-sh.txt'  => '/bootstrap/isolatedTeardown.sh',
-				'isolatedTeardown-php.txt' => '/bootstrap/isolatedTeardown.php',
-				'isolatedTeardown-js.txt'  => '/bootstrap/isolatedTeardown.js',
+				'shared-setup-sh.txt'  => '/bootstrap/shared-setup.sh',
+				'shared-setup-js.txt'  => '/bootstrap/shared-setup.js',
 			] );
 		}
 
