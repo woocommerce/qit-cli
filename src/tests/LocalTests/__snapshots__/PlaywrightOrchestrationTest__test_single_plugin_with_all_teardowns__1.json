@@ -1,0 +1,62 @@
+[
+    {
+        "name": "01-test-slug-test",
+        "testDir": "test-path-in-php-container",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-slug"
+        }
+    },
+    {
+        "name": "02-test-slug-isolated-teardown-sh",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "qit-bootstrap.js",
+        "dependencies": [
+            "01-test-slug-test"
+        ],
+        "use": {
+            "qitTestSlug": "test-slug",
+            "type": "bash",
+            "file": "test-path-in-php-container\/bootstrap\/teardown.sh"
+        }
+    },
+    {
+        "name": "03-test-slug-isolated-teardown-js",
+        "testDir": "test-path-in-php-container\/bootstrap",
+        "testMatch": "teardown.js",
+        "dependencies": [
+            "02-test-slug-isolated-teardown-sh"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-slug"
+        }
+    },
+    {
+        "name": "04-test-slug-shared-teardown-sh",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "qit-bootstrap.js",
+        "dependencies": [
+            "03-test-slug-isolated-teardown-js"
+        ],
+        "use": {
+            "qitTestSlug": "test-slug",
+            "type": "bash",
+            "file": "test-path-in-php-container\/bootstrap\/shared-teardown.sh"
+        }
+    },
+    {
+        "name": "05-test-slug-shared-teardown-js",
+        "testDir": "test-path-in-php-container\/bootstrap",
+        "testMatch": "shared-teardown.js",
+        "dependencies": [
+            "04-test-slug-shared-teardown-sh"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-slug"
+        }
+    }
+]

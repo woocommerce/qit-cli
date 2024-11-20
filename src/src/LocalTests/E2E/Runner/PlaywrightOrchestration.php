@@ -87,16 +87,16 @@ class PlaywrightOrchestration {
 			$plugin_slug   = $t['slug'];
 			$base_dir      = $t['path_in_php_container'];
 			$host_path     = $t['path_in_host'];
-			$current_setup = $last_operation ?: null; // Initialize as null if no previous operations
+			$current_setup = $last_operation ?: null;
 
 			if ( ! $first_test && $multiple_plugins ) {
-				// Add DB import before subsequent tests
+				// Add DB import before subsequent tests - depends on previous plugin's complete chain
 				$import_name   = sprintf( "%02d-db-import-before-%s", $project_counter ++, $plugin_slug );
 				$projects[]    = [
 					'name'         => $import_name,
 					'testDir'      => '/qit/tests/e2e',
 					'testMatch'    => 'db-import.js',
-					'dependencies' => $last_operation ? [ $last_operation ] : [],
+					'dependencies' => [ $last_operation ],
 					'use'          => [ 'browserName' => 'chromium' ],
 				];
 				$current_setup = $import_name;
@@ -151,9 +151,9 @@ class PlaywrightOrchestration {
 			}
 
 			// Add the actual test phase
-			$name       = sprintf( "%02d-%s-test", $project_counter ++, $plugin_slug );
-			$projects[] = [
-				'name'         => $name,
+			$test_name     = sprintf( "%02d-%s-test", $project_counter ++, $plugin_slug );
+			$projects[]    = [
+				'name'         => $test_name,
 				'testDir'      => $base_dir,
 				'testMatch'    => '**/*.spec.js',
 				'dependencies' => $current_setup ? [ $current_setup ] : [],
@@ -162,8 +162,9 @@ class PlaywrightOrchestration {
 					'qitTestSlug' => $plugin_slug,
 				],
 			];
+			$current_setup = $test_name;
 
-			// Isolated teardowns (runs after plugin's tests)
+			// Add isolated teardowns
 			if ( file_exists( "{$host_path}/bootstrap/teardown.sh" ) ) {
 				$name          = sprintf( "%02d-%s-isolated-teardown-sh", $project_counter ++, $plugin_slug );
 				$projects[]    = [
@@ -195,40 +196,41 @@ class PlaywrightOrchestration {
 				$current_setup = $name;
 			}
 
-			$last_operation = $name;
+			// Update last_operation after all plugin operations (setup, test, teardown) are complete
+			$last_operation = $current_setup;
 			$first_test     = false;
 		}
 
-		// Shared teardowns (runs after all tests are complete)
-		foreach ( array_reverse( $test_infos ) as $t ) {
+		// Add shared teardowns in reverse order
+		foreach (array_reverse($test_infos) as $t) {
 			$plugin_slug = $t['slug'];
-			$base_dir    = $t['path_in_php_container'];
-			$host_path   = $t['path_in_host'];
+			$base_dir = $t['path_in_php_container'];
+			$host_path = $t['path_in_host'];
 
-			if ( file_exists( "{$host_path}/bootstrap/shared-teardown.sh" ) ) {
-				$name           = sprintf( "%02d-%s-shared-teardown-sh", $project_counter ++, $plugin_slug );
-				$projects[]     = [
-					'name'         => $name,
-					'testDir'      => '/qit/tests/e2e',
-					'testMatch'    => 'qit-bootstrap.js',
-					'dependencies' => [ $last_operation ],
-					'use'          => [
+			if (file_exists("{$host_path}/bootstrap/shared-teardown.sh")) {
+				$name = sprintf("%02d-%s-shared-teardown-sh", $project_counter++, $plugin_slug);
+				$projects[] = [
+					'name' => $name,
+					'testDir' => '/qit/tests/e2e',
+					'testMatch' => 'qit-bootstrap.js',
+					'dependencies' => [$last_operation],
+					'use' => [
 						'qitTestSlug' => $plugin_slug,
-						'type'        => 'bash',
-						'file'        => "{$base_dir}/bootstrap/shared-teardown.sh",
+						'type' => 'bash',
+						'file' => "{$base_dir}/bootstrap/shared-teardown.sh",
 					],
 				];
 				$last_operation = $name;
 			}
 
-			if ( file_exists( "{$host_path}/bootstrap/shared-teardown.js" ) ) {
-				$name           = sprintf( "%02d-%s-shared-teardown-js", $project_counter ++, $plugin_slug );
-				$projects[]     = [
-					'name'         => $name,
-					'testDir'      => "{$base_dir}/bootstrap",
-					'testMatch'    => "shared-teardown.js",
-					'dependencies' => [ $last_operation ],
-					'use'          => [
+			if (file_exists("{$host_path}/bootstrap/shared-teardown.js")) {
+				$name = sprintf("%02d-%s-shared-teardown-js", $project_counter++, $plugin_slug);
+				$projects[] = [
+					'name' => $name,
+					'testDir' => "{$base_dir}/bootstrap",
+					'testMatch' => "shared-teardown.js",
+					'dependencies' => [$last_operation],
+					'use' => [
 						'browserName' => 'chromium',
 						'qitTestSlug' => $plugin_slug,
 					],
