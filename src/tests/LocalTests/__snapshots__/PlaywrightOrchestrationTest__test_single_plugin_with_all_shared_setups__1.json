@@ -7,7 +7,7 @@
         "use": {
             "qitTestSlug": "test-slug",
             "type": "bash",
-            "file": "test-path-in-php-container\/bootstrap\/shared-setup.sh"
+            "file": "test-path-in-php-container\/bootstrap\/shared-bootstrap.sh"
         }
     },
     {
@@ -20,13 +20,13 @@
         "use": {
             "qitTestSlug": "test-slug",
             "type": "php",
-            "file": "test-path-in-php-container\/bootstrap\/shared-setup.php"
+            "file": "test-path-in-php-container\/bootstrap\/shared-bootstrap.php"
         }
     },
     {
         "name": "03-test-slug-shared-setup-js",
         "testDir": "test-path-in-php-container\/bootstrap",
-        "testMatch": "shared-setup.js",
+        "testMatch": "shared-bootstrap.js",
         "dependencies": [
             "02-test-slug-shared-setup-php"
         ],

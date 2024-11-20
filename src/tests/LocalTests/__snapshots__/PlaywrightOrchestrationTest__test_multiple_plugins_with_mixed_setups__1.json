@@ -7,7 +7,7 @@
         "use": {
             "qitTestSlug": "plugin-one",
             "type": "bash",
-            "file": "test-path-in-php-container-1\/bootstrap\/shared-setup.sh"
+            "file": "test-path-in-php-container-1\/bootstrap\/shared-bootstrap.sh"
         }
     },
     {
@@ -20,7 +20,7 @@
         "use": {
             "qitTestSlug": "plugin-one",
             "type": "php",
-            "file": "test-path-in-php-container-1\/bootstrap\/shared-setup.php"
+            "file": "test-path-in-php-container-1\/bootstrap\/shared-bootstrap.php"
         }
     },
     {
@@ -33,13 +33,13 @@
         "use": {
             "qitTestSlug": "plugin-two",
             "type": "php",
-            "file": "test-path-in-php-container-2\/bootstrap\/shared-setup.php"
+            "file": "test-path-in-php-container-2\/bootstrap\/shared-bootstrap.php"
         }
     },
     {
         "name": "04-plugin-two-shared-setup-js",
         "testDir": "test-path-in-php-container-2\/bootstrap",
-        "testMatch": "shared-setup.js",
+        "testMatch": "shared-bootstrap.js",
         "dependencies": [
             "03-plugin-two-shared-setup-php"
         ],
@@ -69,7 +69,7 @@
         "use": {
             "qitTestSlug": "plugin-one",
             "type": "bash",
-            "file": "test-path-in-php-container-1\/bootstrap\/setup.sh"
+            "file": "test-path-in-php-container-1\/bootstrap\/bootstrap.sh"
         }
     },
     {
@@ -98,7 +98,7 @@
     {
         "name": "09-plugin-two-isolated-setup-js",
         "testDir": "test-path-in-php-container-2\/bootstrap",
-        "testMatch": "setup.js",
+        "testMatch": "bootstrap.js",
         "dependencies": [
             "08-db-import-before-plugin-two"
         ],
