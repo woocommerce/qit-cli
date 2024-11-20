@@ -47,7 +47,6 @@ class E2EEnvInfo extends EnvInfo {
 	 *     type:string,
 	 *     action:string,
 	 *     path_in_php_container:string,
-	 *     path_in_playwright_container:string,
 	 *     path_in_host:string
 	 * }> $tests
 	 */

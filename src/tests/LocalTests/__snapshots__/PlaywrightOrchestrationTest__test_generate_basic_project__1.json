@@ -1,0 +1,25 @@
+[
+    {
+        "name": "01-db-export",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "db-export.js",
+        "dependencies": [
+            null
+        ],
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "02-test-slug-test",
+        "testDir": "test-path-in-php-container",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [
+            "01-db-export"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-slug"
+        }
+    }
+]

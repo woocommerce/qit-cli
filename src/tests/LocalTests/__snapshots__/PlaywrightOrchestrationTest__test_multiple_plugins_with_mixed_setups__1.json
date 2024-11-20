@@ -1,0 +1,97 @@
+[
+    {
+        "name": "01-plugin-one-shared-setup-sh",
+        "testDir": "test-path-in-php-container-1\/qit",
+        "testMatch": "qit-bootstrap.js",
+        "dependencies": [],
+        "use": {
+            "qitTestSlug": "plugin-one",
+            "type": "bash",
+            "file": "test-path-in-php-container-1\/qit\/sharedSetup.sh"
+        }
+    },
+    {
+        "name": "02-plugin-one-shared-setup-php",
+        "testDir": "test-path-in-php-container-1\/qit",
+        "testMatch": "qit-bootstrap.js",
+        "dependencies": [
+            "01-plugin-one-shared-setup-sh"
+        ],
+        "use": {
+            "qitTestSlug": "plugin-one",
+            "type": "php",
+            "file": "test-path-in-php-container-1\/qit\/sharedSetup.php"
+        }
+    },
+    {
+        "name": "03-plugin-two-shared-setup-php",
+        "testDir": "test-path-in-php-container-2\/qit",
+        "testMatch": "qit-bootstrap.js",
+        "dependencies": [
+            "02-plugin-one-shared-setup-php"
+        ],
+        "use": {
+            "qitTestSlug": "plugin-two",
+            "type": "php",
+            "file": "test-path-in-php-container-2\/qit\/sharedSetup.php"
+        }
+    },
+    {
+        "name": "04-plugin-two-shared-setup-js",
+        "testDir": "test-path-in-php-container-2\/qit",
+        "testMatch": "test-path-in-php-container-2\/qit\/sharedSetup.js",
+        "dependencies": [
+            "03-plugin-two-shared-setup-php"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-two"
+        }
+    },
+    {
+        "name": "05-db-export",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "db-export.js",
+        "dependencies": [
+            "04-plugin-two-shared-setup-js"
+        ],
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "06-plugin-one-test",
+        "testDir": "test-path-in-php-container-1",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [
+            "05-db-export"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-one"
+        }
+    },
+    {
+        "name": "07-db-import-before-plugin-two",
+        "testDir": "\/qit\/tests\/e2e",
+        "testMatch": "db-import.js",
+        "dependencies": [
+            "06-plugin-one-test"
+        ],
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "08-plugin-two-test",
+        "testDir": "test-path-in-php-container-2",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [
+            "07-db-import-before-plugin-two"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-two"
+        }
+    }
+]

@@ -68,7 +68,7 @@ class PlaywrightRunner extends E2ERunner {
 		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright/playwright-config-generator.php' ] );
 		$process->setEnv( [
 			'BASE_URL'            => $env_info->site_url,
-			'PROJECTS'            => json_encode( $this->make_projects( $test_infos ), JSON_UNESCAPED_SLASHES ),
+			'PROJECTS'            => json_encode( $this->orchestration->make_projects( $test_infos ), JSON_UNESCAPED_SLASHES ),
 			'SAVE_AS'             => $env_info->temporary_env . 'qit-playwright.config.js',
 			'TEST_RESULT_PATH'    => $results_dir,
 			'CONFIG_OVERRIDES'    => json_encode( $env_info->playwright_config ),
@@ -153,6 +153,8 @@ class PlaywrightRunner extends E2ERunner {
 			$env_info->temporary_env . '/playwright/qitHelpers-package.json:/qitHelpers/package.json',
 			'-v',
 			$env_info->temporary_env . '/playwright/global-setup.js:/qit/tests/e2e/global-setup.js',
+			'-v',
+			$env_info->temporary_env . '/playwright/qit-bootstrap.js:/qit/tests/e2e/qit-bootstrap.js',
 			'--add-host=host.docker.internal:host-gateway',
 			'-v',
 			$test_result->get_results_dir() . ':/qit/results',
@@ -318,7 +320,7 @@ class PlaywrightRunner extends E2ERunner {
 			}
 
 			// Clear lines equal to total_lines_printed.
-			for ( $i = 0; $i < $total_lines_printed; $i++ ) {
+			for ( $i = 0; $i < $total_lines_printed; $i ++ ) {
 				$this->output->write( "\033[2K\033[1B", false, OutputInterface::OUTPUT_RAW ); // Clear line and move cursor down.
 			}
 
@@ -411,7 +413,7 @@ class PlaywrightRunner extends E2ERunner {
 				}
 
 				if ( in_array( $file->getExtension(), $allowed_extensions, true ) ) {
-					++$count_of_allowed_files;
+					++ $count_of_allowed_files;
 				} else {
 					throw new \RuntimeException( sprintf( 'Screenshots directory contains file disallowed file type: %s', $file->getFilename() ) );
 				}
@@ -432,148 +434,6 @@ class PlaywrightRunner extends E2ERunner {
 		$this->output->writeln( sprintf( 'Test artifacts being saved to: %s', $results_dir ) );
 
 		return $exit_status_code;
-	}
-
-	/**
-	 * // phpcs:disable Squiz.Commenting.FunctionComment.MissingParamName
-	 *
-	 * @param array<int,array{
-	 *     slug:string,
-	 *     test_tag:string,
-	 *     type:string,
-	 *     action:string,
-	 *     path_in_php_container:string,
-	 *     path_in_playwright_container:string,
-	 *     path_in_host:string
-	 *  }> $test_infos
-	 *
-	 * // phpcs:enable
-	 *
-	 * @return array<int,array<string,scalar>>
-	 */
-	protected function make_projects( array $test_infos ): array {
-		$projects                   = [];
-		$shared_setup_project_names = [];
-
-		// **Determine the number of plugins under test**
-		$plugins_under_test = [];
-		foreach ( $test_infos as $t ) {
-			$plugins_under_test[ $t['slug'] ] = true;
-		}
-		$num_plugins_under_test = count( $plugins_under_test );
-
-		// **Add Shared Setup Projects**
-
-		foreach ( $test_infos as $t ) {
-			$plugin_slug = $t['slug'];
-			$base_dir    = $t['path_in_playwright_container'];
-			$qit_dir     = "{$base_dir}/qit";
-
-			// Check for sharedSetup.js
-			if ( file_exists( "{$t['path_in_host']}/qit/sharedSetup.js" ) ) {
-				$shared_setup_project_name    = "{$plugin_slug}-shared-setup";
-				$projects[]                   = [
-					'name'      => $shared_setup_project_name,
-					'testDir'   => $qit_dir,
-					'testMatch' => 'sharedSetup.js',
-					'use'       => [
-						'browserName' => 'chromium',
-						'qitTestSlug' => $plugin_slug,
-					],
-				];
-				$shared_setup_project_names[] = $shared_setup_project_name;
-			}
-		}
-
-		// **Add Database Export and Import Projects if more than one plugin**
-
-		if ( $num_plugins_under_test > 1 ) {
-			// **Add Database Export Project**
-			if ( ! empty( $shared_setup_project_names ) ) {
-				$projects[] = [
-					'name'         => 'db-export',
-					'testDir'      => '/qit/tests/e2e',
-					'testMatch'    => 'db-export.js',
-					'dependencies' => $shared_setup_project_names,
-					'use'          => [
-						'browserName' => 'chromium',
-					],
-				];
-			} else {
-				// If no shared setups, db-export can run immediately
-				$projects[] = [
-					'name'      => 'db-export',
-					'testDir'   => '/qit/tests/e2e',
-					'testMatch' => 'db-export.js',
-					'use'       => [
-						'browserName' => 'chromium',
-					],
-				];
-			}
-
-			// **Add Database Import Project**
-			$projects[] = [
-				'name'         => 'db-import',
-				'testDir'      => '/qit/tests/e2e',
-				'testMatch'    => 'db-import.js',
-				'dependencies' => [ 'db-export' ],
-				'use'          => [
-					'browserName' => 'chromium',
-				],
-			];
-		}
-
-		// **Add Isolated Setup and Test Projects**
-
-		foreach ( $test_infos as $t ) {
-			$plugin_slug = $t['slug'];
-			$base_dir    = $t['path_in_playwright_container'];
-			$qit_dir     = "{$base_dir}/qit";
-
-			// Set dependencies
-			$dependencies = [];
-
-			if ( $num_plugins_under_test > 1 ) {
-				// When multiple plugins, depend on db-import
-				$dependencies = [ 'db-import' ];
-			} else {
-				// When only one plugin, depend on shared setups (if any)
-				if ( ! empty( $shared_setup_project_names ) ) {
-					$dependencies = $shared_setup_project_names;
-				}
-			}
-
-			// Check for isolatedSetup.js
-			if ( file_exists( "{$t['path_in_host']}/qit/isolatedSetup.js" ) ) {
-				$isolated_setup_project_name = "{$plugin_slug}-isolated-setup";
-				$projects[]                  = [
-					'name'         => $isolated_setup_project_name,
-					'testDir'      => $qit_dir,
-					'testMatch'    => 'isolatedSetup.js',
-					'dependencies' => $dependencies,
-					'use'          => [
-						'browserName' => 'chromium',
-						'qitTestSlug' => $plugin_slug,
-					],
-				];
-				// Now, the test depends on the isolated setup
-				$dependencies = [ $isolated_setup_project_name ];
-			}
-
-			// Add the test project
-			$test_project_name = "{$plugin_slug}-test";
-			$projects[]        = [
-				'name'         => $test_project_name,
-				'testDir'      => $base_dir,
-				'dependencies' => $dependencies,
-				'use'          => [
-					'browserName' => 'chromium',
-					'qitTestSlug' => $plugin_slug,
-				],
-			];
-		}
-
-		return $projects;
 	}
 
 	/**

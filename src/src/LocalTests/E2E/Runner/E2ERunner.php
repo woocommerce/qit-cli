@@ -10,8 +10,14 @@ abstract class E2ERunner {
 	/** @var OutputInterface */
 	protected $output;
 
-	public function __construct( OutputInterface $output ) {
-		$this->output = $output;
+	/**
+	 * @var PlaywrightOrchestration $orchestration
+	 */
+	protected $orchestration;
+
+	public function __construct( OutputInterface $output, PlaywrightOrchestration $orchestration ) {
+		$this->output        = $output;
+		$this->orchestration = $orchestration;
 	}
 
 	/**
@@ -62,7 +68,6 @@ abstract class E2ERunner {
 	 *     type:string,
 	 *     action:string,
 	 *     path_in_php_container:string,
-	 *     path_in_playwright_container:string,
 	 *     path_in_host:string,
 	 *     path_in_host_original:string
 	 *  }>                     $test_infos
