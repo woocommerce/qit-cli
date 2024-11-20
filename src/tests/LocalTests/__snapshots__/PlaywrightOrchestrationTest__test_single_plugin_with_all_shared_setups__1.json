@@ -1,18 +1,18 @@
 [
     {
         "name": "01-test-slug-shared-setup-sh",
-        "testDir": "test-path-in-php-container\/qit",
+        "testDir": "\/qit\/tests\/e2e",
         "testMatch": "qit-bootstrap.js",
         "dependencies": [],
         "use": {
             "qitTestSlug": "test-slug",
             "type": "bash",
-            "file": "test-path-in-php-container\/qit\/sharedSetup.sh"
+            "file": "test-path-in-php-container\/bootstrap\/shared-setup.sh"
         }
     },
     {
         "name": "02-test-slug-shared-setup-php",
-        "testDir": "test-path-in-php-container\/qit",
+        "testDir": "\/qit\/tests\/e2e",
         "testMatch": "qit-bootstrap.js",
         "dependencies": [
             "01-test-slug-shared-setup-sh"
@@ -20,13 +20,13 @@
         "use": {
             "qitTestSlug": "test-slug",
             "type": "php",
-            "file": "test-path-in-php-container\/qit\/sharedSetup.php"
+            "file": "test-path-in-php-container\/bootstrap\/shared-setup.php"
         }
     },
     {
         "name": "03-test-slug-shared-setup-js",
-        "testDir": "test-path-in-php-container\/qit",
-        "testMatch": "test-path-in-php-container\/qit\/sharedSetup.js",
+        "testDir": "test-path-in-php-container\/bootstrap",
+        "testMatch": "shared-setup.js",
         "dependencies": [
             "02-test-slug-shared-setup-php"
         ],

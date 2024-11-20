@@ -1,8 +1,8 @@
 [
     {
         "name": "01-test-slug-shared-setup-js",
-        "testDir": "test-path-in-php-container\/qit",
-        "testMatch": "test-path-in-php-container\/qit\/sharedSetup.js",
+        "testDir": "test-path-in-php-container\/bootstrap",
+        "testMatch": "shared-setup.js",
         "dependencies": [],
         "use": {
             "browserName": "chromium",
