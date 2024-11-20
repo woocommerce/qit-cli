@@ -1,15 +1,14 @@
-#!/bin/bash
+!/bin/bash
 
-# Shared Setup Bash Script (Optional)
+# This is an isolated teardown script that runs after your plugin's tests.
+# Use it to:
+# - Clean up test data specific to your plugin
+# - Reset plugin settings
+# - Remove temporary files
+# - Clean up test users or other resources created during tests
 
-# Purpose: This script is executed before test runs to set up the testing environment.
-#
-# Usage:
-# - Use WP CLI to configure prerequisites for your tests.
-# - Example: To install a specific theme required for tests:
-#   wp theme install twentytwentynine
-#   (You can then activate this theme during your tests)
-#
-# Note: Delete this file if it's not required for your setup.
-#
-# Documentation: Detailed instructions available at https://qit.woo.com/docs/custom-tests/generating-tests
+# echo "Running isolated teardown for the plugin..."
+# wp post list # List posts that might need cleanup
+# wp user list # List users that might need cleanup
+
+# Add your teardown commands here

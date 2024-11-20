@@ -19,6 +19,7 @@ class ScaffoldE2ECommand extends Command {
 		$this
 			->addArgument( 'path', InputArgument::REQUIRED, 'The path to scaffold an example E2E test.' )
 			->addOption( 'with-shared', 's', InputOption::VALUE_NONE, 'Include shared setup examples.' )
+			->addOption( 'with-teardown', 't', InputOption::VALUE_NONE, 'Include teardown examples.' )
 			->setDescription( 'Scaffold an example E2E test.' );
 	}
 
@@ -80,9 +81,27 @@ class ScaffoldE2ECommand extends Command {
 		// If the user requests shared setup examples, we include them
 		if ( $input->getOption( 'with-shared' ) ) {
 			$files = array_merge( $files, [
-				'shared-setup-sh.txt'  => '/bootstrap/shared-setup.sh',
-				'shared-setup-js.txt'  => '/bootstrap/shared-setup.js',
+				'shared-setup-sh.txt' => '/bootstrap/shared-setup.sh',
+				'shared-setup-js.txt' => '/bootstrap/shared-setup.js',
 			] );
+		}
+
+		// If the user requests teardown examples, include both isolated and shared teardowns
+		if ( $input->getOption( 'with-teardown' ) ) {
+			$teardown_files = [
+				'teardown-sh.txt' => '/bootstrap/teardown.sh',
+				'teardown-js.txt' => '/bootstrap/teardown.js',
+			];
+
+			// Add shared teardowns only if shared setups were requested
+			if ( $input->getOption( 'with-shared' ) ) {
+				$teardown_files = array_merge( $teardown_files, [
+					'shared-teardown-sh.txt' => '/bootstrap/shared-teardown.sh',
+					'shared-teardown-js.txt' => '/bootstrap/shared-teardown.js',
+				] );
+			}
+
+			$files = array_merge( $files, $teardown_files );
 		}
 
 		foreach ( $files as $example => $destination ) {
