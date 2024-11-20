@@ -3,9 +3,7 @@
         "name": "01-db-export",
         "testDir": "\/qit\/tests\/e2e",
         "testMatch": "db-export.js",
-        "dependencies": [
-            null
-        ],
+        "dependencies": [],
         "use": {
             "browserName": "chromium"
         }

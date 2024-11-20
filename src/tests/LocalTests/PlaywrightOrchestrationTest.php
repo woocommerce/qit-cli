@@ -38,9 +38,41 @@ class PlaywrightOrchestrationTest extends QITTestCase {
 		}
 	}
 
-	// No changes needed for basic project test as it doesn't involve setup files
+	/**
+	 * Test generating projects for a single plugin without any setup files.
+	 *
+	 * **Scenario:**
+	 * - Only one plugin is under test.
+	 * - No `sharedSetup.js` or `isolatedSetup.js` files exist.
+	 *
+	 * **Expected Behavior:**
+	 * - Only the test project for the plugin is created.
+	 * - The test project has no dependencies.
+	 */
 	public function test_generate_basic_project() {
-		// Existing implementation remains the same
+		/** @var array<int,array{
+		 *     slug:string,
+		 *     test_tag:string,
+		 *     type:string,
+		 *     action:string,
+		 *     path_in_php_container:string,
+		 *     path_in_host:string
+		 * }> $test_infos
+		 */
+		$test_infos = [
+			[
+				'slug'                         => 'test-slug',
+				'test_tag'                     => 'test-tag',
+				'type'                         => 'test-type',
+				'action'                       => 'test-action',
+				'path_in_php_container'        => 'test-path-in-php-container',
+				'path_in_host'                 => 'test-path-in-host',
+			],
+		];
+
+		$sut = $this->make_sut();
+
+		$this->assertMatchesJsonSnapshot( $sut->make_projects( $test_infos ) );
 	}
 
 	public function test_single_plugin_with_shared_setup() {
