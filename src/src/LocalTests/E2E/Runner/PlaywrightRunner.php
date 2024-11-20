@@ -273,14 +273,14 @@ class PlaywrightRunner extends E2ERunner {
 				return;
 			}
 
-			if ( $ci || true ) {
+			if ( $ci || true ) { // @phpstan-ignore-line
 				$this->output->writeln( $out );
 
 				return;
 			}
 
 			// Update terminal width in case it changes.
-			$terminal_width = ( new Terminal() )->getWidth();
+			$terminal_width = ( new Terminal() )->getWidth(); // @phpstan-ignore-line
 
 			// Split the output into individual lines.
 			$lines = explode( "\n", $out );

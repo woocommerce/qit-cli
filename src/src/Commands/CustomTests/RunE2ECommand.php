@@ -542,7 +542,7 @@ class RunE2ECommand extends DynamicCommand {
 	/**
 	 * We take the "--env" option as "--env FOO=bar" and convert it to ["FOO" => "bar"].
 	 *
-	 * @param array $env_vars
+	 * @param array<string,string> $env_vars
 	 *
 	 * @return void
 	 *

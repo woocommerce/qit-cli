@@ -3,6 +3,22 @@
 namespace QIT_CLI\LocalTests\E2E\Runner;
 
 class PlaywrightOrchestration {
+	/**
+	 * // phpcs:disable Squiz.Commenting.FunctionComment.MissingParamName
+	 *
+	 * @param array<int,array{
+	 *      slug:string,
+	 *      test_tag:string,
+	 *      type:string,
+	 *      action:string,
+	 *      path_in_php_container:string,
+	 *      path_in_host:string
+	 *  }> $test_infos
+	 *
+	 * // phpcs:enable Squiz.Commenting.FunctionComment.MissingParamName
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
 	public function make_projects( array $test_infos ): array {
 		$projects         = [];
 		$last_setup       = null;
