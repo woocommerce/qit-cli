@@ -1,6 +1,6 @@
 [
     {
-        "name": "01-db-export",
+        "name": "[db export",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "db-export.js",
         "dependencies": [],
@@ -9,11 +9,11 @@
         }
     },
     {
-        "name": "02-plugin-one-isolated-setup-sh",
+        "name": "[setup] Plugin One (Shell)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "bash.js",
         "dependencies": [
-            "01-db-export"
+            "[db export"
         ],
         "use": {
             "qitTestSlug": "plugin-one",
@@ -22,11 +22,11 @@
         }
     },
     {
-        "name": "03-plugin-one-isolated-setup-php",
+        "name": "[setup] Plugin One (PHP)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "php.js",
         "dependencies": [
-            "02-plugin-one-isolated-setup-sh"
+            "[setup] Plugin One (Shell)"
         ],
         "use": {
             "qitTestSlug": "plugin-one",
@@ -35,11 +35,11 @@
         }
     },
     {
-        "name": "04-plugin-one-isolated-setup-js",
+        "name": "[setup] Plugin One (JS)",
         "testDir": "test-path-in-php-container-1\/bootstrap",
         "testMatch": "setup.js",
         "dependencies": [
-            "03-plugin-one-isolated-setup-php"
+            "[setup] Plugin One (PHP)"
         ],
         "use": {
             "browserName": "chromium",
@@ -47,11 +47,11 @@
         }
     },
     {
-        "name": "05-plugin-one-test",
+        "name": "[test] Plugin One (Run)",
         "testDir": "test-path-in-php-container-1",
         "testMatch": "**\/*.spec.js",
         "dependencies": [
-            "04-plugin-one-isolated-setup-js"
+            "[setup] Plugin One (JS)"
         ],
         "use": {
             "browserName": "chromium",
@@ -59,22 +59,22 @@
         }
     },
     {
-        "name": "06-db-import-before-plugin-two",
+        "name": "[db import",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "db-import.js",
         "dependencies": [
-            "05-plugin-one-test"
+            "[test] Plugin One (Run)"
         ],
         "use": {
             "browserName": "chromium"
         }
     },
     {
-        "name": "07-plugin-two-isolated-setup-sh",
+        "name": "[setup] Plugin Two (Shell)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "bash.js",
         "dependencies": [
-            "06-db-import-before-plugin-two"
+            "[db import"
         ],
         "use": {
             "qitTestSlug": "plugin-two",
@@ -83,11 +83,11 @@
         }
     },
     {
-        "name": "08-plugin-two-isolated-setup-php",
+        "name": "[setup] Plugin Two (PHP)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "php.js",
         "dependencies": [
-            "07-plugin-two-isolated-setup-sh"
+            "[setup] Plugin Two (Shell)"
         ],
         "use": {
             "qitTestSlug": "plugin-two",
@@ -96,11 +96,11 @@
         }
     },
     {
-        "name": "09-plugin-two-isolated-setup-js",
+        "name": "[setup] Plugin Two (JS)",
         "testDir": "test-path-in-php-container-2\/bootstrap",
         "testMatch": "setup.js",
         "dependencies": [
-            "08-plugin-two-isolated-setup-php"
+            "[setup] Plugin Two (PHP)"
         ],
         "use": {
             "browserName": "chromium",
@@ -108,11 +108,11 @@
         }
     },
     {
-        "name": "10-plugin-two-test",
+        "name": "[test] Plugin Two (Run)",
         "testDir": "test-path-in-php-container-2",
         "testMatch": "**\/*.spec.js",
         "dependencies": [
-            "09-plugin-two-isolated-setup-js"
+            "[setup] Plugin Two (JS)"
         ],
         "use": {
             "browserName": "chromium",

@@ -1,6 +1,6 @@
 [
     {
-        "name": "01-test-slug-test",
+        "name": "[test] Test Slug (Run)",
         "testDir": "test-path-in-php-container",
         "testMatch": "**\/*.spec.js",
         "dependencies": [],

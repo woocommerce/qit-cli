@@ -2,6 +2,9 @@
 
 namespace QIT_CLI\LocalTests\E2E\Runner;
 
+use QIT_CLI\App;
+use QIT_CLI\LocalTests\E2E\E2ETestManager;
+
 class PlaywrightOrchestration {
 	/**
 	 * // phpcs:disable Squiz.Commenting.FunctionComment.MissingParamName
@@ -25,15 +28,34 @@ class PlaywrightOrchestration {
 		$project_counter  = 1;
 		$multiple_plugins = count( $test_infos ) > 1;
 
+		// Helper function to get readable plugin name.
+		$get_plugin_name = function ( string $slug ): string {
+			return ucwords( str_replace( [ 'woocommerce-', '-' ], [ '', ' ' ], $slug ) );
+		};
+
+		// Helper function to format project name with counter.
+		$format_name = function ( string $name ) use ( &$project_counter ): string {
+			/*
+			 * In UI mode, prefixes the project name with a counter (e.g., "01 - [test] Plugin (Run)").
+			 * This provides visual ordering of test order since dependencies aren't visible when running in UI mode.
+			 */
+			if ( in_array( App::getVar( 'TEST_MODE' ), [ E2ETestManager::$test_modes['codegen'], E2ETestManager::$test_modes['ui'] ], true ) ) {
+				return sprintf( '%02d - %s', $project_counter ++, $name );
+			} else {
+				return $name;
+			}
+		};
+
 		// Shared setups first.
 		foreach ( $test_infos as $t ) {
 			$plugin_slug = $t['slug'];
 			$base_dir    = $t['path_in_php_container'];
 			$host_path   = $t['path_in_host'];
+			$plugin_name = $get_plugin_name( $plugin_slug );
 
 			// Shared setups (sh, php, js).
 			if ( file_exists( "{$host_path}/bootstrap/shared-setup.sh" ) ) {
-				$name       = sprintf( '%02d-%s-shared-setup-sh', $project_counter++, $plugin_slug );
+				$name       = $format_name( "[setup:shared] $plugin_name (Shell)" );
 				$projects[] = [
 					'name'         => $name,
 					'testDir'      => '/qit/tests/e2e/scripts',
@@ -49,7 +71,7 @@ class PlaywrightOrchestration {
 			}
 
 			if ( file_exists( "{$host_path}/bootstrap/shared-setup.php" ) ) {
-				$name       = sprintf( '%02d-%s-shared-setup-php', $project_counter++, $plugin_slug );
+				$name       = $format_name( "[setup:shared] $plugin_name (PHP)" );
 				$projects[] = [
 					'name'         => $name,
 					'testDir'      => '/qit/tests/e2e/scripts',
@@ -65,7 +87,7 @@ class PlaywrightOrchestration {
 			}
 
 			if ( file_exists( "{$host_path}/bootstrap/shared-setup.js" ) ) {
-				$name       = sprintf( '%02d-%s-shared-setup-js', $project_counter++, $plugin_slug );
+				$name       = $format_name( "[setup:shared] $plugin_name (JS)" );
 				$projects[] = [
 					'name'         => $name,
 					'testDir'      => "{$base_dir}/bootstrap",
@@ -85,7 +107,7 @@ class PlaywrightOrchestration {
 
 		// DB Export only for multiple plugins.
 		if ( $multiple_plugins ) {
-			$name           = sprintf( '%02d-db-export', $project_counter++ );
+			$name           = $format_name( '[db export' );
 			$projects[]     = [
 				'name'         => $name,
 				'testDir'      => '/qit/tests/e2e/scripts',
@@ -103,24 +125,25 @@ class PlaywrightOrchestration {
 			$plugin_slug   = $t['slug'];
 			$base_dir      = $t['path_in_php_container'];
 			$host_path     = $t['path_in_host'];
+			$plugin_name   = $get_plugin_name( $plugin_slug );
 			$current_setup = $last_operation ?: null;
 
 			if ( ! $first_test && $multiple_plugins ) {
-				// Add DB import before subsequent tests - depends on previous plugin's complete chain.
-				$import_name   = sprintf( '%02d-db-import-before-%s', $project_counter++, $plugin_slug );
+				// Add DB import before subsequent tests
+				$name          = $format_name( "[db import" );
 				$projects[]    = [
-					'name'         => $import_name,
+					'name'         => $name,
 					'testDir'      => '/qit/tests/e2e/scripts',
 					'testMatch'    => 'db-import.js',
 					'dependencies' => [ $last_operation ],
 					'use'          => [ 'browserName' => 'chromium' ],
 				];
-				$current_setup = $import_name;
+				$current_setup = $name;
 			}
 
 			// Isolated setups (sh, php, js).
 			if ( file_exists( "{$host_path}/bootstrap/setup.sh" ) ) {
-				$name          = sprintf( '%02d-%s-isolated-setup-sh', $project_counter++, $plugin_slug );
+				$name = $format_name( "[setup] $plugin_name (Shell)" );
 				$projects[]    = [
 					'name'         => $name,
 					'testDir'      => '/qit/tests/e2e/scripts',
@@ -136,7 +159,7 @@ class PlaywrightOrchestration {
 			}
 
 			if ( file_exists( "{$host_path}/bootstrap/setup.php" ) ) {
-				$name          = sprintf( '%02d-%s-isolated-setup-php', $project_counter++, $plugin_slug );
+				$name          = $format_name( "[setup] $plugin_name (PHP)" );
 				$projects[]    = [
 					'name'         => $name,
 					'testDir'      => '/qit/tests/e2e/scripts',
@@ -152,7 +175,7 @@ class PlaywrightOrchestration {
 			}
 
 			if ( file_exists( "{$host_path}/bootstrap/setup.js" ) ) {
-				$name          = sprintf( '%02d-%s-isolated-setup-js', $project_counter++, $plugin_slug );
+				$name          = $format_name( "[setup] $plugin_name (JS)" );
 				$projects[]    = [
 					'name'         => $name,
 					'testDir'      => "{$base_dir}/bootstrap",
@@ -167,9 +190,9 @@ class PlaywrightOrchestration {
 			}
 
 			// Add the actual test phase.
-			$test_name     = sprintf( '%02d-%s-test', $project_counter++, $plugin_slug );
+			$name          = $format_name( "[test] $plugin_name (Run)" );
 			$projects[]    = [
-				'name'         => $test_name,
+				'name'         => $name,
 				'testDir'      => $base_dir,
 				'testMatch'    => '**/*.spec.js',
 				'dependencies' => $current_setup ? [ $current_setup ] : [],
@@ -178,11 +201,11 @@ class PlaywrightOrchestration {
 					'qitTestSlug' => $plugin_slug,
 				],
 			];
-			$current_setup = $test_name;
+			$current_setup = $name;
 
 			// Add isolated teardowns.
 			if ( file_exists( "{$host_path}/bootstrap/teardown.sh" ) ) {
-				$name          = sprintf( '%02d-%s-isolated-teardown-sh', $project_counter++, $plugin_slug );
+				$name          = $format_name( "[teardown] $plugin_name (Shell)" );
 				$projects[]    = [
 					'name'         => $name,
 					'testDir'      => '/qit/tests/e2e/scripts',
@@ -198,7 +221,7 @@ class PlaywrightOrchestration {
 			}
 
 			if ( file_exists( "{$host_path}/bootstrap/teardown.php" ) ) {
-				$name          = sprintf( '%02d-%s-isolated-teardown-php', $project_counter++, $plugin_slug );
+				$name          = $format_name( "[teardown] $plugin_name (PHP)" );
 				$projects[]    = [
 					'name'         => $name,
 					'testDir'      => '/qit/tests/e2e/scripts',
@@ -214,7 +237,7 @@ class PlaywrightOrchestration {
 			}
 
 			if ( file_exists( "{$host_path}/bootstrap/teardown.js" ) ) {
-				$name          = sprintf( '%02d-%s-isolated-teardown-js', $project_counter++, $plugin_slug );
+				$name          = $format_name( "[teardown] $plugin_name (JS)" );
 				$projects[]    = [
 					'name'         => $name,
 					'testDir'      => "{$base_dir}/bootstrap",
@@ -228,7 +251,6 @@ class PlaywrightOrchestration {
 				$current_setup = $name;
 			}
 
-			// Update last_operation after all plugin operations (setup, test, teardown) are complete.
 			$last_operation = $current_setup;
 			$first_test     = false;
 		}
@@ -238,9 +260,10 @@ class PlaywrightOrchestration {
 			$plugin_slug = $t['slug'];
 			$base_dir    = $t['path_in_php_container'];
 			$host_path   = $t['path_in_host'];
+			$plugin_name = $get_plugin_name( $plugin_slug );
 
 			if ( file_exists( "{$host_path}/bootstrap/shared-teardown.sh" ) ) {
-				$name           = sprintf( '%02d-%s-shared-teardown-sh', $project_counter++, $plugin_slug );
+				$name           = $format_name( "[teardown:shared] $plugin_name (Shell)" );
 				$projects[]     = [
 					'name'         => $name,
 					'testDir'      => '/qit/tests/e2e/scripts',
@@ -256,7 +279,7 @@ class PlaywrightOrchestration {
 			}
 
 			if ( file_exists( "{$host_path}/bootstrap/shared-teardown.php" ) ) {
-				$name           = sprintf( '%02d-%s-shared-teardown-php', $project_counter++, $plugin_slug );
+				$name           = $format_name( "[teardown:shared] $plugin_name (PHP)" );
 				$projects[]     = [
 					'name'         => $name,
 					'testDir'      => '/qit/tests/e2e/scripts',
@@ -272,7 +295,7 @@ class PlaywrightOrchestration {
 			}
 
 			if ( file_exists( "{$host_path}/bootstrap/shared-teardown.js" ) ) {
-				$name           = sprintf( '%02d-%s-shared-teardown-js', $project_counter++, $plugin_slug );
+				$name           = $format_name( "[teardown:shared] $plugin_name (JS)" );
 				$projects[]     = [
 					'name'         => $name,
 					'testDir'      => "{$base_dir}/bootstrap",

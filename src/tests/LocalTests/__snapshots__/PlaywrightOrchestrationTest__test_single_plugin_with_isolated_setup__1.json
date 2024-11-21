@@ -1,6 +1,6 @@
 [
     {
-        "name": "01-test-slug-isolated-setup-js",
+        "name": "[setup] Test Slug (JS)",
         "testDir": "test-path-in-php-container\/bootstrap",
         "testMatch": "setup.js",
         "dependencies": [],
@@ -10,11 +10,11 @@
         }
     },
     {
-        "name": "02-test-slug-test",
+        "name": "[test] Test Slug (Run)",
         "testDir": "test-path-in-php-container",
         "testMatch": "**\/*.spec.js",
         "dependencies": [
-            "01-test-slug-isolated-setup-js"
+            "[setup] Test Slug (JS)"
         ],
         "use": {
             "browserName": "chromium",

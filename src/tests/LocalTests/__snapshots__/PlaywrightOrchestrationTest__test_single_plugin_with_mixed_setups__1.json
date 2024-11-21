@@ -1,6 +1,6 @@
 [
     {
-        "name": "01-test-slug-shared-setup-sh",
+        "name": "[setup:shared] Test Slug (Shell)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "bash.js",
         "dependencies": [],
@@ -11,11 +11,11 @@
         }
     },
     {
-        "name": "02-test-slug-shared-setup-php",
+        "name": "[setup:shared] Test Slug (PHP)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "php.js",
         "dependencies": [
-            "01-test-slug-shared-setup-sh"
+            "[setup:shared] Test Slug (Shell)"
         ],
         "use": {
             "qitTestSlug": "test-slug",
@@ -24,11 +24,11 @@
         }
     },
     {
-        "name": "03-test-slug-shared-setup-js",
+        "name": "[setup:shared] Test Slug (JS)",
         "testDir": "test-path-in-php-container\/bootstrap",
         "testMatch": "shared-setup.js",
         "dependencies": [
-            "02-test-slug-shared-setup-php"
+            "[setup:shared] Test Slug (PHP)"
         ],
         "use": {
             "qitTestSlug": "test-slug",
@@ -36,11 +36,11 @@
         }
     },
     {
-        "name": "04-test-slug-isolated-setup-sh",
+        "name": "[setup] Test Slug (Shell)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "bash.js",
         "dependencies": [
-            "03-test-slug-shared-setup-js"
+            "[setup:shared] Test Slug (JS)"
         ],
         "use": {
             "qitTestSlug": "test-slug",
@@ -49,11 +49,11 @@
         }
     },
     {
-        "name": "05-test-slug-isolated-setup-php",
+        "name": "[setup] Test Slug (PHP)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "php.js",
         "dependencies": [
-            "04-test-slug-isolated-setup-sh"
+            "[setup] Test Slug (Shell)"
         ],
         "use": {
             "qitTestSlug": "test-slug",
@@ -62,11 +62,11 @@
         }
     },
     {
-        "name": "06-test-slug-isolated-setup-js",
+        "name": "[setup] Test Slug (JS)",
         "testDir": "test-path-in-php-container\/bootstrap",
         "testMatch": "setup.js",
         "dependencies": [
-            "05-test-slug-isolated-setup-php"
+            "[setup] Test Slug (PHP)"
         ],
         "use": {
             "browserName": "chromium",
@@ -74,11 +74,11 @@
         }
     },
     {
-        "name": "07-test-slug-test",
+        "name": "[test] Test Slug (Run)",
         "testDir": "test-path-in-php-container",
         "testMatch": "**\/*.spec.js",
         "dependencies": [
-            "06-test-slug-isolated-setup-js"
+            "[setup] Test Slug (JS)"
         ],
         "use": {
             "browserName": "chromium",

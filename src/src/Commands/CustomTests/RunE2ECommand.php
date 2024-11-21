@@ -165,6 +165,8 @@ class RunE2ECommand extends DynamicCommand {
 			$test_mode = E2ETestManager::$test_modes['headless'];
 		}
 
+		App::setVar( 'TEST_MODE', $test_mode );
+
 		$wait                = $input->getOption( 'up_only' ) || $test_mode === E2ETestManager::$test_modes['codegen'];
 		$woo_extension       = $input->getArgument( 'woo_extension' );
 		$test                = $input->getArgument( 'test' );

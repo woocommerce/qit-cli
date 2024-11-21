@@ -263,6 +263,22 @@ class PlaywrightRunner extends E2ERunner {
 			// Remove same-line cursor movement and clear line.
 			$out = preg_replace( '/\e\[\d*[ABCD]/', '', $out ); // Remove cursor movements.
 			$out = preg_replace( '/\e\[2K/', '', $out );        // Remove clear line codes.
+			/*
+			 * [[setup:
+			 * [[db]
+			 * [[test]
+			 * [[teardown:
+			 * Remove double brackets (keep everything else)
+			 */
+			$out = preg_replace( '/\[\[(setup|db|test|teardown)/', '[$1', $out );
+			/*
+			 * (Shell)]
+			 * (JS)]
+			 * (PHP)]
+			 * Remove unnecessary brackets.
+			 */
+			$out = preg_replace( '/\((Shell|JS|PHP)\)]/', '($1)', $out );
+
 			$out = trim( $out );
 
 			if ( empty( $out ) ) {

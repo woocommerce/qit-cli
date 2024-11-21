@@ -1,6 +1,6 @@
 [
     {
-        "name": "01-plugin-one-shared-setup-sh",
+        "name": "[setup:shared] Plugin One (Shell)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "bash.js",
         "dependencies": [],
@@ -11,11 +11,11 @@
         }
     },
     {
-        "name": "02-plugin-one-shared-setup-php",
+        "name": "[setup:shared] Plugin One (PHP)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "php.js",
         "dependencies": [
-            "01-plugin-one-shared-setup-sh"
+            "[setup:shared] Plugin One (Shell)"
         ],
         "use": {
             "qitTestSlug": "plugin-one",
@@ -24,11 +24,11 @@
         }
     },
     {
-        "name": "03-plugin-one-shared-setup-js",
+        "name": "[setup:shared] Plugin One (JS)",
         "testDir": "test-path-in-php-container-1\/bootstrap",
         "testMatch": "shared-setup.js",
         "dependencies": [
-            "02-plugin-one-shared-setup-php"
+            "[setup:shared] Plugin One (PHP)"
         ],
         "use": {
             "qitTestSlug": "plugin-one",
@@ -36,11 +36,11 @@
         }
     },
     {
-        "name": "04-plugin-two-shared-setup-sh",
+        "name": "[setup:shared] Plugin Two (Shell)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "bash.js",
         "dependencies": [
-            "03-plugin-one-shared-setup-js"
+            "[setup:shared] Plugin One (JS)"
         ],
         "use": {
             "qitTestSlug": "plugin-two",
@@ -49,11 +49,11 @@
         }
     },
     {
-        "name": "05-plugin-two-shared-setup-php",
+        "name": "[setup:shared] Plugin Two (PHP)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "php.js",
         "dependencies": [
-            "04-plugin-two-shared-setup-sh"
+            "[setup:shared] Plugin Two (Shell)"
         ],
         "use": {
             "qitTestSlug": "plugin-two",
@@ -62,11 +62,11 @@
         }
     },
     {
-        "name": "06-plugin-two-shared-setup-js",
+        "name": "[setup:shared] Plugin Two (JS)",
         "testDir": "test-path-in-php-container-2\/bootstrap",
         "testMatch": "shared-setup.js",
         "dependencies": [
-            "05-plugin-two-shared-setup-php"
+            "[setup:shared] Plugin Two (PHP)"
         ],
         "use": {
             "qitTestSlug": "plugin-two",
@@ -74,22 +74,22 @@
         }
     },
     {
-        "name": "07-db-export",
+        "name": "[db export",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "db-export.js",
         "dependencies": [
-            "06-plugin-two-shared-setup-js"
+            "[setup:shared] Plugin Two (JS)"
         ],
         "use": {
             "browserName": "chromium"
         }
     },
     {
-        "name": "08-plugin-one-isolated-setup-sh",
+        "name": "[setup] Plugin One (Shell)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "bash.js",
         "dependencies": [
-            "07-db-export"
+            "[db export"
         ],
         "use": {
             "qitTestSlug": "plugin-one",
@@ -98,11 +98,11 @@
         }
     },
     {
-        "name": "09-plugin-one-isolated-setup-php",
+        "name": "[setup] Plugin One (PHP)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "php.js",
         "dependencies": [
-            "08-plugin-one-isolated-setup-sh"
+            "[setup] Plugin One (Shell)"
         ],
         "use": {
             "qitTestSlug": "plugin-one",
@@ -111,11 +111,11 @@
         }
     },
     {
-        "name": "10-plugin-one-isolated-setup-js",
+        "name": "[setup] Plugin One (JS)",
         "testDir": "test-path-in-php-container-1\/bootstrap",
         "testMatch": "setup.js",
         "dependencies": [
-            "09-plugin-one-isolated-setup-php"
+            "[setup] Plugin One (PHP)"
         ],
         "use": {
             "browserName": "chromium",
@@ -123,11 +123,11 @@
         }
     },
     {
-        "name": "11-plugin-one-test",
+        "name": "[test] Plugin One (Run)",
         "testDir": "test-path-in-php-container-1",
         "testMatch": "**\/*.spec.js",
         "dependencies": [
-            "10-plugin-one-isolated-setup-js"
+            "[setup] Plugin One (JS)"
         ],
         "use": {
             "browserName": "chromium",
@@ -135,22 +135,22 @@
         }
     },
     {
-        "name": "12-db-import-before-plugin-two",
+        "name": "[db import",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "db-import.js",
         "dependencies": [
-            "11-plugin-one-test"
+            "[test] Plugin One (Run)"
         ],
         "use": {
             "browserName": "chromium"
         }
     },
     {
-        "name": "13-plugin-two-isolated-setup-sh",
+        "name": "[setup] Plugin Two (Shell)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "bash.js",
         "dependencies": [
-            "12-db-import-before-plugin-two"
+            "[db import"
         ],
         "use": {
             "qitTestSlug": "plugin-two",
@@ -159,11 +159,11 @@
         }
     },
     {
-        "name": "14-plugin-two-isolated-setup-php",
+        "name": "[setup] Plugin Two (PHP)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "php.js",
         "dependencies": [
-            "13-plugin-two-isolated-setup-sh"
+            "[setup] Plugin Two (Shell)"
         ],
         "use": {
             "qitTestSlug": "plugin-two",
@@ -172,11 +172,11 @@
         }
     },
     {
-        "name": "15-plugin-two-isolated-setup-js",
+        "name": "[setup] Plugin Two (JS)",
         "testDir": "test-path-in-php-container-2\/bootstrap",
         "testMatch": "setup.js",
         "dependencies": [
-            "14-plugin-two-isolated-setup-php"
+            "[setup] Plugin Two (PHP)"
         ],
         "use": {
             "browserName": "chromium",
@@ -184,11 +184,11 @@
         }
     },
     {
-        "name": "16-plugin-two-test",
+        "name": "[test] Plugin Two (Run)",
         "testDir": "test-path-in-php-container-2",
         "testMatch": "**\/*.spec.js",
         "dependencies": [
-            "15-plugin-two-isolated-setup-js"
+            "[setup] Plugin Two (JS)"
         ],
         "use": {
             "browserName": "chromium",

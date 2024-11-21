@@ -1,6 +1,6 @@
 [
     {
-        "name": "01-test-slug-test",
+        "name": "[test] Test Slug (Run)",
         "testDir": "test-path-in-php-container",
         "testMatch": "**\/*.spec.js",
         "dependencies": [],
@@ -10,11 +10,11 @@
         }
     },
     {
-        "name": "02-test-slug-isolated-teardown-sh",
+        "name": "[teardown] Test Slug (Shell)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "bash.js",
         "dependencies": [
-            "01-test-slug-test"
+            "[test] Test Slug (Run)"
         ],
         "use": {
             "qitTestSlug": "test-slug",
@@ -23,11 +23,11 @@
         }
     },
     {
-        "name": "03-test-slug-isolated-teardown-js",
+        "name": "[teardown] Test Slug (JS)",
         "testDir": "test-path-in-php-container\/bootstrap",
         "testMatch": "teardown.js",
         "dependencies": [
-            "02-test-slug-isolated-teardown-sh"
+            "[teardown] Test Slug (Shell)"
         ],
         "use": {
             "browserName": "chromium",
