@@ -1,0 +1,23 @@
+import { test, expect } from '@playwright/test';
+import qit from '/qitHelpers';
+
+test('Isolated Setup', async ({ page }) => {
+    await page.goto('/wp-admin');
+    console.log('[Isolated Setup JS] Progressive Discounts');
+    const shared = await qit.wp('option get woocommerce-progressive-discounts_shared_order', true);
+    expect(shared.output.trim()).toBe("first");
+    const setup = await qit.wp('option get woocommerce-progressive-discounts_isolated_order', true);
+    expect(setup.output.trim()).toBe("second");
+
+    // Check that Plugin A's isolated option does not exist
+    try {
+        await qit.wp('option get woocommerce-amazon-s3-storage_isolated_order', true);
+        throw new Error('Expected Plugin A isolated option not to exist, but it does.');
+    } catch (e) {
+        expect(e.message).toContain("Does it exist?");
+    }
+
+
+    const pluginAiShared = await qit.wp('option get woocommerce-amazon-s3-storage_shared_order', true);
+    expect(pluginAiShared.output.trim()).toBe("first");
+});

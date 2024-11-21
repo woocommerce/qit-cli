@@ -1,0 +1,10 @@
+plugins:
+  woocommerce-amazon-s3-storage:
+    source: ./woocommerce-amazon-s3-storage
+    test_tags:
+      - ./woocommerce-amazon-s3-storage-tests
+  woocommerce-progressive-discounts:
+    action: test
+    source: ./woocommerce-progressive-discounts
+    test_tags:
+      - ./woocommerce-progressive-discounts-tests
