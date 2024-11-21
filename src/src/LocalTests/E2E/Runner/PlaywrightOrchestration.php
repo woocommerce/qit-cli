@@ -40,7 +40,7 @@ class PlaywrightOrchestration {
 			 * This provides visual ordering of test order since dependencies aren't visible when running in UI mode.
 			 */
 			if ( in_array( App::getVar( 'TEST_MODE' ), [ E2ETestManager::$test_modes['codegen'], E2ETestManager::$test_modes['ui'] ], true ) ) {
-				return sprintf( '%02d - %s', $project_counter ++, $name );
+				return sprintf( '%02d - %s', $project_counter++, $name );
 			} else {
 				return $name;
 			}
@@ -132,8 +132,8 @@ class PlaywrightOrchestration {
 			$current_setup = $last_operation ?: null;
 
 			if ( ! $first_test && $multiple_plugins ) {
-				// Add DB import before subsequent tests
-				$name          = $format_name( "[db import" );
+				// Add DB import before subsequent tests.
+				$name          = $format_name( '[db import' );
 				$projects[]    = [
 					'name'         => $name,
 					'testDir'      => '/qit/tests/e2e/scripts',
@@ -147,7 +147,7 @@ class PlaywrightOrchestration {
 
 			// Isolated setups (sh, php, js).
 			if ( file_exists( "{$host_path}/bootstrap/setup.sh" ) ) {
-				$name = $format_name( "[setup] $plugin_name (Shell)" );
+				$name          = $format_name( "[setup] $plugin_name (Shell)" );
 				$projects[]    = [
 					'name'         => $name,
 					'testDir'      => '/qit/tests/e2e/scripts',

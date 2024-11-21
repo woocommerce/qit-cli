@@ -52,6 +52,7 @@ class PluginsAndThemesParser {
 			$string_extension = null;
 			if ( is_string( $extension ) ) {
 				$string_extension = $extension;
+
 				/*
 				 * Short-syntax like "qit-beaver:test:rc,foo-feature"
 				 */

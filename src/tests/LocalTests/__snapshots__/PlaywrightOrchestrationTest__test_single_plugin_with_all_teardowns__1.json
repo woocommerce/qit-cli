@@ -16,6 +16,7 @@
         "dependencies": [
             "[test] Test Slug (Run)"
         ],
+        "retries": 0,
         "use": {
             "qitTestSlug": "test-slug",
             "type": "Isolated Teardown for test-slug (Bash)",
@@ -41,6 +42,7 @@
         "dependencies": [
             "[teardown] Test Slug (JS)"
         ],
+        "retries": 0,
         "use": {
             "qitTestSlug": "test-slug",
             "type": "Shared Teardown for test-slug (Bash)",

@@ -263,6 +263,7 @@ class PlaywrightRunner extends E2ERunner {
 			// Remove same-line cursor movement and clear line.
 			$out = preg_replace( '/\e\[\d*[ABCD]/', '', $out ); // Remove cursor movements.
 			$out = preg_replace( '/\e\[2K/', '', $out );        // Remove clear line codes.
+
 			/*
 			 * [[setup:
 			 * [[db]
@@ -291,7 +292,7 @@ class PlaywrightRunner extends E2ERunner {
 				'[db export]'       => '<fg=yellow;options=bold>[db export]</>',
 				'[db import]'       => '<fg=yellow;options=bold>[db import]</>',
 				'[setup]'           => '<fg=green;options=bold>[setup]</>',
-				'[test]'           => '<fg=cyan;options=bold>[test]</>',
+				'[test]'            => '<fg=cyan;options=bold>[test]</>',
 				'[teardown]'        => '<fg=red;options=bold>[teardown]</>',
 				'[teardown:shared]' => '<fg=magenta;options=bold>[teardown:shared]</>',
 			];

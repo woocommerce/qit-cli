@@ -3,6 +3,7 @@
         "name": "[db export",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "db-export.js",
+        "retries": 0,
         "dependencies": [],
         "use": {
             "browserName": "chromium"
@@ -27,6 +28,7 @@
         "dependencies": [
             "[test] Plugin One (Run)"
         ],
+        "retries": 0,
         "use": {
             "browserName": "chromium"
         }

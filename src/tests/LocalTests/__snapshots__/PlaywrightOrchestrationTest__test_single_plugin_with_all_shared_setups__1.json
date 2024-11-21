@@ -4,6 +4,7 @@
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "bash.js",
         "dependencies": [],
+        "retries": 0,
         "use": {
             "qitTestSlug": "test-slug",
             "type": "Shared Setup for test-slug (Bash)",
@@ -17,6 +18,7 @@
         "dependencies": [
             "[setup:shared] Test Slug (Shell)"
         ],
+        "retries": 0,
         "use": {
             "qitTestSlug": "test-slug",
             "type": "Shared Setup for test-slug (PHP)",

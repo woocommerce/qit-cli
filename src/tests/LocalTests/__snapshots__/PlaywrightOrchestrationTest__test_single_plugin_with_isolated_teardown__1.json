@@ -16,6 +16,7 @@
         "dependencies": [
             "[test] Test Slug (Run)"
         ],
+        "retries": 0,
         "use": {
             "qitTestSlug": "test-slug",
             "type": "Isolated Teardown for test-slug (Bash)",
