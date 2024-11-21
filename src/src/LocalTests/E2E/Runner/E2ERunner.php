@@ -55,7 +55,7 @@ abstract class E2ERunner {
 			}
 		}
 
-		throw new \RuntimeException( sprintf( 'Could not find a valid runner type in %s', $e2e_test_path ) );
+		throw new \RuntimeException( sprintf( 'Could not find a valid runner type in %s. Are you missing "import { test, expect } from \'@playwright/test\';"?', $e2e_test_path ) );
 	}
 
 	/**
