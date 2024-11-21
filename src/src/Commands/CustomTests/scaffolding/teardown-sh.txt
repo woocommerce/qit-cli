@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 
 # This is an isolated teardown script that runs after your plugin's tests.
 # Use it to:
