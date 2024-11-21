@@ -1,7 +1,7 @@
 [
     {
         "name": "01-db-export",
-        "testDir": "\/qit\/tests\/e2e",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "db-export.js",
         "dependencies": [],
         "use": {
@@ -22,7 +22,7 @@
     },
     {
         "name": "03-db-import-before-plugin-two",
-        "testDir": "\/qit\/tests\/e2e",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "db-import.js",
         "dependencies": [
             "02-plugin-one-test"

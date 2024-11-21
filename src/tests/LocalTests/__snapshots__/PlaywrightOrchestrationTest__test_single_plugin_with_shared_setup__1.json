@@ -2,11 +2,11 @@
     {
         "name": "01-test-slug-shared-setup-js",
         "testDir": "test-path-in-php-container\/bootstrap",
-        "testMatch": "shared-bootstrap.js",
+        "testMatch": "shared-setup.js",
         "dependencies": [],
         "use": {
-            "browserName": "chromium",
-            "qitTestSlug": "test-slug"
+            "qitTestSlug": "test-slug",
+            "browserName": "chromium"
         }
     },
     {

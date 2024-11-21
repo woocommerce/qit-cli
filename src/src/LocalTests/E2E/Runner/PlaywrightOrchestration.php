@@ -36,12 +36,12 @@ class PlaywrightOrchestration {
 				$name       = sprintf( '%02d-%s-shared-setup-sh', $project_counter++, $plugin_slug );
 				$projects[] = [
 					'name'         => $name,
-					'testDir'      => '/qit/tests/e2e',
-					'testMatch'    => 'qit-bootstrap.js',
+					'testDir'      => '/qit/tests/e2e/scripts',
+					'testMatch'    => 'bash.js',
 					'dependencies' => $last_setup ? [ $last_setup ] : [],
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
-						'type'        => 'bash',
+						'type'        => "Shared Setup for $plugin_slug (Bash)",
 						'file'        => "{$base_dir}/bootstrap/shared-setup.sh",
 					],
 				];
@@ -52,12 +52,12 @@ class PlaywrightOrchestration {
 				$name       = sprintf( '%02d-%s-shared-setup-php', $project_counter++, $plugin_slug );
 				$projects[] = [
 					'name'         => $name,
-					'testDir'      => '/qit/tests/e2e',
-					'testMatch'    => 'qit-bootstrap.js',
+					'testDir'      => '/qit/tests/e2e/scripts',
+					'testMatch'    => 'php.js',
 					'dependencies' => $last_setup ? [ $last_setup ] : [],
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
-						'type'        => 'php',
+						'type'        => "Shared Setup for $plugin_slug (PHP)",
 						'file'        => "{$base_dir}/bootstrap/shared-setup.php",
 					],
 				];
@@ -72,8 +72,8 @@ class PlaywrightOrchestration {
 					'testMatch'    => 'shared-setup.js',
 					'dependencies' => $last_setup ? [ $last_setup ] : [],
 					'use'          => [
-						'browserName' => 'chromium',
 						'qitTestSlug' => $plugin_slug,
+						'browserName' => 'chromium',
 					],
 				];
 				$last_setup = $name;
@@ -88,7 +88,7 @@ class PlaywrightOrchestration {
 			$name           = sprintf( '%02d-db-export', $project_counter++ );
 			$projects[]     = [
 				'name'         => $name,
-				'testDir'      => '/qit/tests/e2e',
+				'testDir'      => '/qit/tests/e2e/scripts',
 				'testMatch'    => 'db-export.js',
 				'dependencies' => $last_operation ? [ $last_operation ] : [],
 				'use'          => [ 'browserName' => 'chromium' ],
@@ -110,7 +110,7 @@ class PlaywrightOrchestration {
 				$import_name   = sprintf( '%02d-db-import-before-%s', $project_counter++, $plugin_slug );
 				$projects[]    = [
 					'name'         => $import_name,
-					'testDir'      => '/qit/tests/e2e',
+					'testDir'      => '/qit/tests/e2e/scripts',
 					'testMatch'    => 'db-import.js',
 					'dependencies' => [ $last_operation ],
 					'use'          => [ 'browserName' => 'chromium' ],
@@ -123,12 +123,12 @@ class PlaywrightOrchestration {
 				$name          = sprintf( '%02d-%s-isolated-setup-sh', $project_counter++, $plugin_slug );
 				$projects[]    = [
 					'name'         => $name,
-					'testDir'      => '/qit/tests/e2e',
-					'testMatch'    => 'qit-bootstrap.js',
+					'testDir'      => '/qit/tests/e2e/scripts',
+					'testMatch'    => 'bash.js',
 					'dependencies' => $current_setup ? [ $current_setup ] : [],
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
-						'type'        => 'bash',
+						'type'        => "Isolated Setup for $plugin_slug (Bash)",
 						'file'        => "{$base_dir}/bootstrap/setup.sh",
 					],
 				];
@@ -139,12 +139,12 @@ class PlaywrightOrchestration {
 				$name          = sprintf( '%02d-%s-isolated-setup-php', $project_counter++, $plugin_slug );
 				$projects[]    = [
 					'name'         => $name,
-					'testDir'      => '/qit/tests/e2e',
-					'testMatch'    => 'qit-bootstrap.js',
+					'testDir'      => '/qit/tests/e2e/scripts',
+					'testMatch'    => 'php.js',
 					'dependencies' => $current_setup ? [ $current_setup ] : [],
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
-						'type'        => 'php',
+						'type'        => "Isolated Setup for $plugin_slug (PHP)",
 						'file'        => "{$base_dir}/bootstrap/setup.php",
 					],
 				];
@@ -185,13 +185,29 @@ class PlaywrightOrchestration {
 				$name          = sprintf( '%02d-%s-isolated-teardown-sh', $project_counter++, $plugin_slug );
 				$projects[]    = [
 					'name'         => $name,
-					'testDir'      => '/qit/tests/e2e',
-					'testMatch'    => 'qit-bootstrap.js',
+					'testDir'      => '/qit/tests/e2e/scripts',
+					'testMatch'    => 'bash.js',
 					'dependencies' => [ $current_setup ],
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
-						'type'        => 'bash',
+						'type'        => "Isolated Teardown for $plugin_slug (Bash)",
 						'file'        => "{$base_dir}/bootstrap/teardown.sh",
+					],
+				];
+				$current_setup = $name;
+			}
+
+			if ( file_exists( "{$host_path}/bootstrap/teardown.php" ) ) {
+				$name          = sprintf( '%02d-%s-isolated-teardown-php', $project_counter++, $plugin_slug );
+				$projects[]    = [
+					'name'         => $name,
+					'testDir'      => '/qit/tests/e2e/scripts',
+					'testMatch'    => 'php.js',
+					'dependencies' => [ $current_setup ],
+					'use'          => [
+						'qitTestSlug' => $plugin_slug,
+						'type'        => "Isolated Teardown for $plugin_slug (PHP)",
+						'file'        => "{$base_dir}/bootstrap/teardown.php",
 					],
 				];
 				$current_setup = $name;
@@ -227,13 +243,29 @@ class PlaywrightOrchestration {
 				$name           = sprintf( '%02d-%s-shared-teardown-sh', $project_counter++, $plugin_slug );
 				$projects[]     = [
 					'name'         => $name,
-					'testDir'      => '/qit/tests/e2e',
-					'testMatch'    => 'qit-bootstrap.js',
+					'testDir'      => '/qit/tests/e2e/scripts',
+					'testMatch'    => 'bash.js',
 					'dependencies' => [ $last_operation ],
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
-						'type'        => 'bash',
+						'type'        => "Shared Teardown for $plugin_slug (Bash)",
 						'file'        => "{$base_dir}/bootstrap/shared-teardown.sh",
+					],
+				];
+				$last_operation = $name;
+			}
+
+			if ( file_exists( "{$host_path}/bootstrap/shared-teardown.php" ) ) {
+				$name           = sprintf( '%02d-%s-shared-teardown-php', $project_counter++, $plugin_slug );
+				$projects[]     = [
+					'name'         => $name,
+					'testDir'      => '/qit/tests/e2e/scripts',
+					'testMatch'    => 'php.js',
+					'dependencies' => [ $last_operation ],
+					'use'          => [
+						'qitTestSlug' => $plugin_slug,
+						'type'        => "Shared Teardown for $plugin_slug (PHP)",
+						'file'        => "{$base_dir}/bootstrap/shared-teardown.php",
 					],
 				];
 				$last_operation = $name;

@@ -11,14 +11,14 @@
     },
     {
         "name": "02-test-slug-isolated-teardown-sh",
-        "testDir": "\/qit\/tests\/e2e",
-        "testMatch": "qit-bootstrap.js",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
         "dependencies": [
             "01-test-slug-test"
         ],
         "use": {
             "qitTestSlug": "test-slug",
-            "type": "bash",
+            "type": "Isolated Teardown for test-slug (Bash)",
             "file": "test-path-in-php-container\/bootstrap\/teardown.sh"
         }
     },
@@ -36,14 +36,14 @@
     },
     {
         "name": "04-test-slug-shared-teardown-sh",
-        "testDir": "\/qit\/tests\/e2e",
-        "testMatch": "qit-bootstrap.js",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
         "dependencies": [
             "03-test-slug-isolated-teardown-js"
         ],
         "use": {
             "qitTestSlug": "test-slug",
-            "type": "bash",
+            "type": "Shared Teardown for test-slug (Bash)",
             "file": "test-path-in-php-container\/bootstrap\/shared-teardown.sh"
         }
     },

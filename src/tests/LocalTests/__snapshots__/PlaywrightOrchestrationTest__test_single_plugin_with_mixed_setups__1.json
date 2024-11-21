@@ -1,70 +1,70 @@
 [
     {
         "name": "01-test-slug-shared-setup-sh",
-        "testDir": "\/qit\/tests\/e2e",
-        "testMatch": "qit-bootstrap.js",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
         "dependencies": [],
         "use": {
             "qitTestSlug": "test-slug",
-            "type": "bash",
-            "file": "test-path-in-php-container\/bootstrap\/shared-bootstrap.sh"
+            "type": "Shared Setup for test-slug (Bash)",
+            "file": "test-path-in-php-container\/bootstrap\/shared-setup.sh"
         }
     },
     {
         "name": "02-test-slug-shared-setup-php",
-        "testDir": "\/qit\/tests\/e2e",
-        "testMatch": "qit-bootstrap.js",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "php.js",
         "dependencies": [
             "01-test-slug-shared-setup-sh"
         ],
         "use": {
             "qitTestSlug": "test-slug",
-            "type": "php",
-            "file": "test-path-in-php-container\/bootstrap\/shared-bootstrap.php"
+            "type": "Shared Setup for test-slug (PHP)",
+            "file": "test-path-in-php-container\/bootstrap\/shared-setup.php"
         }
     },
     {
         "name": "03-test-slug-shared-setup-js",
         "testDir": "test-path-in-php-container\/bootstrap",
-        "testMatch": "shared-bootstrap.js",
+        "testMatch": "shared-setup.js",
         "dependencies": [
             "02-test-slug-shared-setup-php"
         ],
         "use": {
-            "browserName": "chromium",
-            "qitTestSlug": "test-slug"
+            "qitTestSlug": "test-slug",
+            "browserName": "chromium"
         }
     },
     {
         "name": "04-test-slug-isolated-setup-sh",
-        "testDir": "\/qit\/tests\/e2e",
-        "testMatch": "qit-bootstrap.js",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
         "dependencies": [
             "03-test-slug-shared-setup-js"
         ],
         "use": {
             "qitTestSlug": "test-slug",
-            "type": "bash",
-            "file": "test-path-in-php-container\/bootstrap\/bootstrap.sh"
+            "type": "Isolated Setup for test-slug (Bash)",
+            "file": "test-path-in-php-container\/bootstrap\/setup.sh"
         }
     },
     {
         "name": "05-test-slug-isolated-setup-php",
-        "testDir": "\/qit\/tests\/e2e",
-        "testMatch": "qit-bootstrap.js",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "php.js",
         "dependencies": [
             "04-test-slug-isolated-setup-sh"
         ],
         "use": {
             "qitTestSlug": "test-slug",
-            "type": "php",
-            "file": "test-path-in-php-container\/bootstrap\/bootstrap.php"
+            "type": "Isolated Setup for test-slug (PHP)",
+            "file": "test-path-in-php-container\/bootstrap\/setup.php"
         }
     },
     {
         "name": "06-test-slug-isolated-setup-js",
         "testDir": "test-path-in-php-container\/bootstrap",
-        "testMatch": "bootstrap.js",
+        "testMatch": "setup.js",
         "dependencies": [
             "05-test-slug-isolated-setup-php"
         ],

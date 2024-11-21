@@ -11,29 +11,29 @@ class PlaywrightOrchestrationTest extends QITTestCase {
 	use MatchesSnapshots;
 
 	protected function make_sut(): PlaywrightOrchestration {
-		return App::make(PlaywrightOrchestration::class);
+		return App::make( PlaywrightOrchestration::class );
 	}
 
 	protected function tearDown(): void {
 		$test_infos = [
 			[
-				'slug' => 'plugin-one',
+				'slug'         => 'plugin-one',
 				'path_in_host' => sys_get_temp_dir() . '/plugin-one',
 			],
 			[
-				'slug' => 'plugin-two',
+				'slug'         => 'plugin-two',
 				'path_in_host' => sys_get_temp_dir() . '/plugin-two',
 			],
 			[
-				'slug' => 'test-slug',
+				'slug'         => 'test-slug',
 				'path_in_host' => sys_get_temp_dir() . '/test-plugin',
-			]
+			],
 		];
 
-		foreach ($test_infos as $t) {
+		foreach ( $test_infos as $t ) {
 			$path_in_host = $t['path_in_host'];
-			if (file_exists($path_in_host)) {
-				$this->cleanup($path_in_host . '/bootstrap');
+			if ( file_exists( $path_in_host ) ) {
+				$this->cleanup( $path_in_host . '/bootstrap' );
 			}
 		}
 	}
@@ -61,12 +61,12 @@ class PlaywrightOrchestrationTest extends QITTestCase {
 		 */
 		$test_infos = [
 			[
-				'slug'                         => 'test-slug',
-				'test_tag'                     => 'test-tag',
-				'type'                         => 'test-type',
-				'action'                       => 'test-action',
-				'path_in_php_container'        => 'test-path-in-php-container',
-				'path_in_host'                 => 'test-path-in-host',
+				'slug'                  => 'test-slug',
+				'test_tag'              => 'test-tag',
+				'type'                  => 'test-type',
+				'action'                => 'test-action',
+				'path_in_php_container' => 'test-path-in-php-container',
+				'path_in_host'          => 'test-path-in-host',
 			],
 		];
 
@@ -78,288 +78,290 @@ class PlaywrightOrchestrationTest extends QITTestCase {
 	public function test_single_plugin_with_shared_setup() {
 		$test_infos = [
 			[
-				'slug' => 'test-slug',
-				'test_tag' => 'test-tag',
-				'type' => 'test-type',
-				'action' => 'test-action',
+				'slug'                  => 'test-slug',
+				'test_tag'              => 'test-tag',
+				'type'                  => 'test-type',
+				'action'                => 'test-action',
 				'path_in_php_container' => 'test-path-in-php-container',
-				'path_in_host' => sys_get_temp_dir() . '/test-plugin',
+				'path_in_host'          => sys_get_temp_dir() . '/test-plugin',
 			],
 		];
 
 		// Create the directory and the shared setup file
-		$path_in_host = $test_infos[0]['path_in_host'];
+		$path_in_host  = $test_infos[0]['path_in_host'];
 		$bootstrap_dir = $path_in_host . '/bootstrap';
-		mkdir($bootstrap_dir, 0777, true);
-		file_put_contents($bootstrap_dir . '/shared-bootstrap.js', '// shared setup');
+		mkdir( $bootstrap_dir, 0777, true );
+		file_put_contents( $bootstrap_dir . '/shared-setup.js', '// shared setup' );
 
 		$sut = $this->make_sut();
-		$this->assertMatchesJsonSnapshot($sut->make_projects($test_infos));
+		$this->assertMatchesJsonSnapshot( $sut->make_projects( $test_infos ) );
 
 		// Clean up
-		unlink($bootstrap_dir . '/shared-bootstrap.js');
-		rmdir($bootstrap_dir);
-		rmdir($path_in_host);
+		unlink( $bootstrap_dir . '/shared-setup.js' );
+		rmdir( $bootstrap_dir );
+		rmdir( $path_in_host );
 	}
 
 	public function test_single_plugin_with_isolated_setup() {
 		$test_infos = [
 			[
-				'slug' => 'test-slug',
-				'test_tag' => 'test-tag',
-				'type' => 'test-type',
-				'action' => 'test-action',
+				'slug'                  => 'test-slug',
+				'test_tag'              => 'test-tag',
+				'type'                  => 'test-type',
+				'action'                => 'test-action',
 				'path_in_php_container' => 'test-path-in-php-container',
-				'path_in_host' => sys_get_temp_dir() . '/test-plugin',
+				'path_in_host'          => sys_get_temp_dir() . '/test-plugin',
 			],
 		];
 
 		// Create the directory and the isolated setup file
-		$path_in_host = $test_infos[0]['path_in_host'];
+		$path_in_host  = $test_infos[0]['path_in_host'];
 		$bootstrap_dir = $path_in_host . '/bootstrap';
-		mkdir($bootstrap_dir, 0777, true);
-		file_put_contents($bootstrap_dir . '/bootstrap.js', '// isolated setup');
+		mkdir( $bootstrap_dir, 0777, true );
+		file_put_contents( $bootstrap_dir . '/setup.js', '// isolated setup' );
 
 		$sut = $this->make_sut();
-		$this->assertMatchesJsonSnapshot($sut->make_projects($test_infos));
+		$this->assertMatchesJsonSnapshot( $sut->make_projects( $test_infos ) );
 
 		// Clean up
-		unlink($bootstrap_dir . '/bootstrap.js');
-		rmdir($bootstrap_dir);
-		rmdir($path_in_host);
+		unlink( $bootstrap_dir . '/setup.js' );
+		rmdir( $bootstrap_dir );
+		rmdir( $path_in_host );
 	}
 
 	public function test_single_plugin_with_all_shared_setups() {
-		$test_infos = [[
-			'slug' => 'test-slug',
-			'test_tag' => 'test-tag',
-			'type' => 'test-type',
-			'action' => 'test-action',
-			'path_in_php_container' => 'test-path-in-php-container',
-			'path_in_host' => sys_get_temp_dir() . '/test-plugin'
-		]];
+		$test_infos = [
+			[
+				'slug'                  => 'test-slug',
+				'test_tag'              => 'test-tag',
+				'type'                  => 'test-type',
+				'action'                => 'test-action',
+				'path_in_php_container' => 'test-path-in-php-container',
+				'path_in_host'          => sys_get_temp_dir() . '/test-plugin',
+			],
+		];
 
 		$bootstrap_dir = $this->createSetupFiles(
 			$test_infos[0]['path_in_host'],
-			['shared-bootstrap.sh', 'shared-bootstrap.php', 'shared-bootstrap.js']
+			[ 'shared-setup.sh', 'shared-setup.php', 'shared-setup.js' ]
 		);
 
 		$sut = $this->make_sut();
-		$this->assertMatchesJsonSnapshot($sut->make_projects($test_infos));
+		$this->assertMatchesJsonSnapshot( $sut->make_projects( $test_infos ) );
 
-		$this->cleanup($bootstrap_dir);
+		$this->cleanup( $bootstrap_dir );
 	}
 
 	public function test_multiple_plugins_with_mixed_setups() {
 		$test_infos = [
 			[
-				'slug' => 'plugin-one',
-				'test_tag' => 'test-tag-1',
-				'type' => 'test-type-1',
-				'action' => 'test-action-1',
+				'slug'                  => 'plugin-one',
+				'test_tag'              => 'test-tag-1',
+				'type'                  => 'test-type-1',
+				'action'                => 'test-action-1',
 				'path_in_php_container' => 'test-path-in-php-container-1',
-				'path_in_host' => sys_get_temp_dir() . '/plugin-one'
+				'path_in_host'          => sys_get_temp_dir() . '/plugin-one',
 			],
 			[
-				'slug' => 'plugin-two',
-				'test_tag' => 'test-tag-2',
-				'type' => 'test-type-2',
-				'action' => 'test-action-2',
+				'slug'                  => 'plugin-two',
+				'test_tag'              => 'test-tag-2',
+				'type'                  => 'test-type-2',
+				'action'                => 'test-action-2',
 				'path_in_php_container' => 'test-path-in-php-container-2',
-				'path_in_host' => sys_get_temp_dir() . '/plugin-two'
-			]
+				'path_in_host'          => sys_get_temp_dir() . '/plugin-two',
+			],
 		];
 
 		// Plugin one with shell and PHP setups
 		$this->createSetupFiles(
 			$test_infos[0]['path_in_host'],
-			['shared-bootstrap.sh', 'shared-bootstrap.php', 'bootstrap.sh']
+			[ 'shared-setup.sh', 'shared-setup.php', 'setup.sh' ]
 		);
 
 		// Plugin two with PHP and JS setups
 		$this->createSetupFiles(
 			$test_infos[1]['path_in_host'],
-			['shared-bootstrap.php', 'shared-bootstrap.js', 'bootstrap.js']
+			[ 'shared-setup.php', 'shared-setup.js', 'setup.js' ]
 		);
 
 		$sut = $this->make_sut();
-		$this->assertMatchesJsonSnapshot($sut->make_projects($test_infos));
+		$this->assertMatchesJsonSnapshot( $sut->make_projects( $test_infos ) );
 
-		$this->cleanup($test_infos[0]['path_in_host'] . '/bootstrap');
-		$this->cleanup($test_infos[1]['path_in_host'] . '/bootstrap');
+		$this->cleanup( $test_infos[0]['path_in_host'] . '/bootstrap' );
+		$this->cleanup( $test_infos[1]['path_in_host'] . '/bootstrap' );
 	}
 
 	public function test_multiple_plugins_without_setups() {
 		$test_infos = [
 			[
-				'slug' => 'plugin-one',
-				'test_tag' => 'test-tag-1',
-				'type' => 'test-type-1',
-				'action' => 'test-action-1',
+				'slug'                  => 'plugin-one',
+				'test_tag'              => 'test-tag-1',
+				'type'                  => 'test-type-1',
+				'action'                => 'test-action-1',
 				'path_in_php_container' => 'test-path-in-php-container-1',
-				'path_in_host' => sys_get_temp_dir() . '/plugin-one'
+				'path_in_host'          => sys_get_temp_dir() . '/plugin-one',
 			],
 			[
-				'slug' => 'plugin-two',
-				'test_tag' => 'test-tag-2',
-				'type' => 'test-type-2',
-				'action' => 'test-action-2',
+				'slug'                  => 'plugin-two',
+				'test_tag'              => 'test-tag-2',
+				'type'                  => 'test-type-2',
+				'action'                => 'test-action-2',
 				'path_in_php_container' => 'test-path-in-php-container-2',
-				'path_in_host' => sys_get_temp_dir() . '/plugin-two'
-			]
+				'path_in_host'          => sys_get_temp_dir() . '/plugin-two',
+			],
 		];
 
 		$sut = $this->make_sut();
-		$this->assertMatchesJsonSnapshot($sut->make_projects($test_infos));
+		$this->assertMatchesJsonSnapshot( $sut->make_projects( $test_infos ) );
 	}
 
 	public function test_multiple_plugins_with_shared_setups_only() {
 		$test_infos = [
 			[
-				'slug' => 'plugin-one',
-				'test_tag' => 'test-tag-1',
-				'type' => 'test-type-1',
-				'action' => 'test-action-1',
+				'slug'                  => 'plugin-one',
+				'test_tag'              => 'test-tag-1',
+				'type'                  => 'test-type-1',
+				'action'                => 'test-action-1',
 				'path_in_php_container' => 'test-path-in-php-container-1',
-				'path_in_host' => sys_get_temp_dir() . '/plugin-one'
+				'path_in_host'          => sys_get_temp_dir() . '/plugin-one',
 			],
 			[
-				'slug' => 'plugin-two',
-				'test_tag' => 'test-tag-2',
-				'type' => 'test-type-2',
-				'action' => 'test-action-2',
+				'slug'                  => 'plugin-two',
+				'test_tag'              => 'test-tag-2',
+				'type'                  => 'test-type-2',
+				'action'                => 'test-action-2',
 				'path_in_php_container' => 'test-path-in-php-container-2',
-				'path_in_host' => sys_get_temp_dir() . '/plugin-two'
-			]
+				'path_in_host'          => sys_get_temp_dir() . '/plugin-two',
+			],
 		];
 
 		// Create shared setup files for both plugins
 		$this->createSetupFiles(
 			$test_infos[0]['path_in_host'],
-			['shared-bootstrap.sh', 'shared-bootstrap.php', 'shared-bootstrap.js']
+			[ 'shared-setup.sh', 'shared-setup.php', 'shared-setup.js' ]
 		);
 
 		$this->createSetupFiles(
 			$test_infos[1]['path_in_host'],
-			['shared-bootstrap.sh', 'shared-bootstrap.php', 'shared-bootstrap.js']
+			[ 'shared-setup.sh', 'shared-setup.php', 'shared-setup.js' ]
 		);
 
 		$sut = $this->make_sut();
-		$this->assertMatchesJsonSnapshot($sut->make_projects($test_infos));
+		$this->assertMatchesJsonSnapshot( $sut->make_projects( $test_infos ) );
 
-		$this->cleanup($test_infos[0]['path_in_host'] . '/bootstrap');
-		$this->cleanup($test_infos[1]['path_in_host'] . '/bootstrap');
+		$this->cleanup( $test_infos[0]['path_in_host'] . '/bootstrap' );
+		$this->cleanup( $test_infos[1]['path_in_host'] . '/bootstrap' );
 	}
 
 	public function test_multiple_plugins_with_isolated_setups_only() {
 		$test_infos = [
 			[
-				'slug' => 'plugin-one',
-				'test_tag' => 'test-tag-1',
-				'type' => 'test-type-1',
-				'action' => 'test-action-1',
+				'slug'                  => 'plugin-one',
+				'test_tag'              => 'test-tag-1',
+				'type'                  => 'test-type-1',
+				'action'                => 'test-action-1',
 				'path_in_php_container' => 'test-path-in-php-container-1',
-				'path_in_host' => sys_get_temp_dir() . '/plugin-one'
+				'path_in_host'          => sys_get_temp_dir() . '/plugin-one',
 			],
 			[
-				'slug' => 'plugin-two',
-				'test_tag' => 'test-tag-2',
-				'type' => 'test-type-2',
-				'action' => 'test-action-2',
+				'slug'                  => 'plugin-two',
+				'test_tag'              => 'test-tag-2',
+				'type'                  => 'test-type-2',
+				'action'                => 'test-action-2',
 				'path_in_php_container' => 'test-path-in-php-container-2',
-				'path_in_host' => sys_get_temp_dir() . '/plugin-two'
-			]
+				'path_in_host'          => sys_get_temp_dir() . '/plugin-two',
+			],
 		];
 
 		// Create isolated setup files for both plugins
 		$this->createSetupFiles(
 			$test_infos[0]['path_in_host'],
-			['bootstrap.sh', 'bootstrap.php', 'bootstrap.js']
+			[ 'setup.sh', 'setup.php', 'setup.js' ]
 		);
 
 		$this->createSetupFiles(
 			$test_infos[1]['path_in_host'],
-			['bootstrap.sh', 'bootstrap.php', 'bootstrap.js']
+			[ 'setup.sh', 'setup.php', 'setup.js' ]
 		);
 
 		$sut = $this->make_sut();
-		$this->assertMatchesJsonSnapshot($sut->make_projects($test_infos));
+		$this->assertMatchesJsonSnapshot( $sut->make_projects( $test_infos ) );
 
-		$this->cleanup($test_infos[0]['path_in_host'] . '/bootstrap');
-		$this->cleanup($test_infos[1]['path_in_host'] . '/bootstrap');
+		$this->cleanup( $test_infos[0]['path_in_host'] . '/bootstrap' );
+		$this->cleanup( $test_infos[1]['path_in_host'] . '/bootstrap' );
 	}
 
 	public function test_single_plugin_with_mixed_setups() {
 		$test_infos = [
 			[
-				'slug' => 'test-slug',
-				'test_tag' => 'test-tag',
-				'type' => 'test-type',
-				'action' => 'test-action',
+				'slug'                  => 'test-slug',
+				'test_tag'              => 'test-tag',
+				'type'                  => 'test-type',
+				'action'                => 'test-action',
 				'path_in_php_container' => 'test-path-in-php-container',
-				'path_in_host' => sys_get_temp_dir() . '/test-plugin'
-			]
+				'path_in_host'          => sys_get_temp_dir() . '/test-plugin',
+			],
 		];
 
 		// Create both shared and isolated setup files
 		$this->createSetupFiles(
 			$test_infos[0]['path_in_host'],
 			[
-				'shared-bootstrap.sh',
-				'shared-bootstrap.php',
-				'shared-bootstrap.js',
-				'bootstrap.sh',
-				'bootstrap.php',
-				'bootstrap.js'
+				'shared-setup.sh',
+				'shared-setup.php',
+				'shared-setup.js',
+				'setup.sh',
+				'setup.php',
+				'setup.js',
 			]
 		);
 
 		$sut = $this->make_sut();
-		$this->assertMatchesJsonSnapshot($sut->make_projects($test_infos));
+		$this->assertMatchesJsonSnapshot( $sut->make_projects( $test_infos ) );
 
-		$this->cleanup($test_infos[0]['path_in_host'] . '/bootstrap');
+		$this->cleanup( $test_infos[0]['path_in_host'] . '/bootstrap' );
 	}
 
 	public function test_multiple_plugins_with_all_setup_types() {
 		$test_infos = [
 			[
-				'slug' => 'plugin-one',
-				'test_tag' => 'test-tag-1',
-				'type' => 'test-type-1',
-				'action' => 'test-action-1',
+				'slug'                  => 'plugin-one',
+				'test_tag'              => 'test-tag-1',
+				'type'                  => 'test-type-1',
+				'action'                => 'test-action-1',
 				'path_in_php_container' => 'test-path-in-php-container-1',
-				'path_in_host' => sys_get_temp_dir() . '/plugin-one'
+				'path_in_host'          => sys_get_temp_dir() . '/plugin-one',
 			],
 			[
-				'slug' => 'plugin-two',
-				'test_tag' => 'test-tag-2',
-				'type' => 'test-type-2',
-				'action' => 'test-action-2',
+				'slug'                  => 'plugin-two',
+				'test_tag'              => 'test-tag-2',
+				'type'                  => 'test-type-2',
+				'action'                => 'test-action-2',
 				'path_in_php_container' => 'test-path-in-php-container-2',
-				'path_in_host' => sys_get_temp_dir() . '/plugin-two'
-			]
+				'path_in_host'          => sys_get_temp_dir() . '/plugin-two',
+			],
 		];
 
 		// Create all types of setup files for both plugins
-		foreach ($test_infos as $info) {
+		foreach ( $test_infos as $info ) {
 			$this->createSetupFiles(
 				$info['path_in_host'],
 				[
-					'shared-bootstrap.sh',
-					'shared-bootstrap.php',
-					'shared-bootstrap.js',
-					'bootstrap.sh',
-					'bootstrap.php',
-					'bootstrap.js'
+					'shared-setup.sh',
+					'shared-setup.php',
+					'shared-setup.js',
+					'setup.sh',
+					'setup.php',
+					'setup.js',
 				]
 			);
 		}
 
 		$sut = $this->make_sut();
-		$this->assertMatchesJsonSnapshot($sut->make_projects($test_infos));
+		$this->assertMatchesJsonSnapshot( $sut->make_projects( $test_infos ) );
 
-		foreach ($test_infos as $info) {
-			$this->cleanup($info['path_in_host'] . '/bootstrap');
+		foreach ( $test_infos as $info ) {
+			$this->cleanup( $info['path_in_host'] . '/bootstrap' );
 		}
 	}
 
@@ -376,25 +378,25 @@ class PlaywrightOrchestrationTest extends QITTestCase {
 	public function test_single_plugin_with_isolated_teardown() {
 		$test_infos = [
 			[
-				'slug' => 'test-slug',
-				'test_tag' => 'test-tag',
-				'type' => 'test-type',
-				'action' => 'test-action',
+				'slug'                  => 'test-slug',
+				'test_tag'              => 'test-tag',
+				'type'                  => 'test-type',
+				'action'                => 'test-action',
 				'path_in_php_container' => 'test-path-in-php-container',
-				'path_in_host' => sys_get_temp_dir() . '/test-plugin'
-			]
+				'path_in_host'          => sys_get_temp_dir() . '/test-plugin',
+			],
 		];
 
 		// Create only teardown files
 		$this->createSetupFiles(
 			$test_infos[0]['path_in_host'],
-			['teardown.sh', 'teardown.js']
+			[ 'teardown.sh', 'teardown.js' ]
 		);
 
 		$sut = $this->make_sut();
-		$this->assertMatchesJsonSnapshot($sut->make_projects($test_infos));
+		$this->assertMatchesJsonSnapshot( $sut->make_projects( $test_infos ) );
 
-		$this->cleanup($test_infos[0]['path_in_host'] . '/bootstrap');
+		$this->cleanup( $test_infos[0]['path_in_host'] . '/bootstrap' );
 	}
 
 	/**
@@ -412,13 +414,13 @@ class PlaywrightOrchestrationTest extends QITTestCase {
 	public function test_single_plugin_with_all_teardowns() {
 		$test_infos = [
 			[
-				'slug' => 'test-slug',
-				'test_tag' => 'test-tag',
-				'type' => 'test-type',
-				'action' => 'test-action',
+				'slug'                  => 'test-slug',
+				'test_tag'              => 'test-tag',
+				'type'                  => 'test-type',
+				'action'                => 'test-action',
 				'path_in_php_container' => 'test-path-in-php-container',
-				'path_in_host' => sys_get_temp_dir() . '/test-plugin'
-			]
+				'path_in_host'          => sys_get_temp_dir() . '/test-plugin',
+			],
 		];
 
 		// Create both shared and isolated teardown files
@@ -428,14 +430,14 @@ class PlaywrightOrchestrationTest extends QITTestCase {
 				'teardown.sh',
 				'teardown.js',
 				'shared-teardown.sh',
-				'shared-teardown.js'
+				'shared-teardown.js',
 			]
 		);
 
 		$sut = $this->make_sut();
-		$this->assertMatchesJsonSnapshot($sut->make_projects($test_infos));
+		$this->assertMatchesJsonSnapshot( $sut->make_projects( $test_infos ) );
 
-		$this->cleanup($test_infos[0]['path_in_host'] . '/bootstrap');
+		$this->cleanup( $test_infos[0]['path_in_host'] . '/bootstrap' );
 	}
 
 	/**
@@ -453,36 +455,36 @@ class PlaywrightOrchestrationTest extends QITTestCase {
 	public function test_multiple_plugins_with_isolated_teardowns() {
 		$test_infos = [
 			[
-				'slug' => 'plugin-one',
-				'test_tag' => 'test-tag-1',
-				'type' => 'test-type-1',
-				'action' => 'test-action-1',
+				'slug'                  => 'plugin-one',
+				'test_tag'              => 'test-tag-1',
+				'type'                  => 'test-type-1',
+				'action'                => 'test-action-1',
 				'path_in_php_container' => 'test-path-in-php-container-1',
-				'path_in_host' => sys_get_temp_dir() . '/plugin-one'
+				'path_in_host'          => sys_get_temp_dir() . '/plugin-one',
 			],
 			[
-				'slug' => 'plugin-two',
-				'test_tag' => 'test-tag-2',
-				'type' => 'test-type-2',
-				'action' => 'test-action-2',
+				'slug'                  => 'plugin-two',
+				'test_tag'              => 'test-tag-2',
+				'type'                  => 'test-type-2',
+				'action'                => 'test-action-2',
 				'path_in_php_container' => 'test-path-in-php-container-2',
-				'path_in_host' => sys_get_temp_dir() . '/plugin-two'
-			]
+				'path_in_host'          => sys_get_temp_dir() . '/plugin-two',
+			],
 		];
 
 		// Create isolated teardown files for both plugins
-		foreach ($test_infos as $info) {
+		foreach ( $test_infos as $info ) {
 			$this->createSetupFiles(
 				$info['path_in_host'],
-				['teardown.sh', 'teardown.js']
+				[ 'teardown.sh', 'teardown.js' ]
 			);
 		}
 
 		$sut = $this->make_sut();
-		$this->assertMatchesJsonSnapshot($sut->make_projects($test_infos));
+		$this->assertMatchesJsonSnapshot( $sut->make_projects( $test_infos ) );
 
-		foreach ($test_infos as $info) {
-			$this->cleanup($info['path_in_host'] . '/bootstrap');
+		foreach ( $test_infos as $info ) {
+			$this->cleanup( $info['path_in_host'] . '/bootstrap' );
 		}
 	}
 
@@ -506,64 +508,73 @@ class PlaywrightOrchestrationTest extends QITTestCase {
 	public function test_multiple_plugins_with_all_setups_and_teardowns() {
 		$test_infos = [
 			[
-				'slug' => 'plugin-one',
-				'test_tag' => 'test-tag-1',
-				'type' => 'test-type-1',
-				'action' => 'test-action-1',
+				'slug'                  => 'plugin-one',
+				'test_tag'              => 'test-tag-1',
+				'type'                  => 'test-type-1',
+				'action'                => 'test-action-1',
 				'path_in_php_container' => 'test-path-in-php-container-1',
-				'path_in_host' => sys_get_temp_dir() . '/plugin-one'
+				'path_in_host'          => sys_get_temp_dir() . '/plugin-one',
 			],
 			[
-				'slug' => 'plugin-two',
-				'test_tag' => 'test-tag-2',
-				'type' => 'test-type-2',
-				'action' => 'test-action-2',
+				'slug'                  => 'plugin-two',
+				'test_tag'              => 'test-tag-2',
+				'type'                  => 'test-type-2',
+				'action'                => 'test-action-2',
 				'path_in_php_container' => 'test-path-in-php-container-2',
-				'path_in_host' => sys_get_temp_dir() . '/plugin-two'
-			]
+				'path_in_host'          => sys_get_temp_dir() . '/plugin-two',
+			],
 		];
 
 		// Create all types of files for both plugins
-		foreach ($test_infos as $info) {
+		foreach ( $test_infos as $info ) {
 			$this->createSetupFiles(
 				$info['path_in_host'],
 				[
-					'shared-bootstrap.sh',
-					'shared-bootstrap.php',
-					'shared-bootstrap.js',
-					'bootstrap.sh',
-					'bootstrap.php',
-					'bootstrap.js',
+					'shared-setup.sh',
+					'shared-setup.php',
+					'shared-setup.js',
+					'setup.sh',
+					'setup.php',
+					'setup.js',
 					'teardown.sh',
 					'teardown.js',
 					'shared-teardown.sh',
-					'shared-teardown.js'
+					'shared-teardown.js',
 				]
 			);
 		}
 
 		$sut = $this->make_sut();
-		$this->assertMatchesJsonSnapshot($sut->make_projects($test_infos));
+		$this->assertMatchesJsonSnapshot( $sut->make_projects( $test_infos ) );
 
-		foreach ($test_infos as $info) {
-			$this->cleanup($info['path_in_host'] . '/bootstrap');
+		foreach ( $test_infos as $info ) {
+			$this->cleanup( $info['path_in_host'] . '/bootstrap' );
 		}
 	}
 
-	protected function createSetupFiles($path, $files) {
+	protected function createSetupFiles( $path, $files ) {
 		$bootstrap_dir = $path . '/bootstrap';
-		mkdir($bootstrap_dir, 0777, true);
 
-		foreach ($files as $file) {
-			file_put_contents("$bootstrap_dir/$file", "// Test content for $file");
+		if ( file_exists( $bootstrap_dir ) ) {
+			$this->cleanup( $bootstrap_dir );
+		}
+
+		if ( ! mkdir( $bootstrap_dir, 0755, true ) ) {
+			throw new \RuntimeException( "Could not create the bootstrap directory: $bootstrap_dir" );
+		}
+
+		foreach ( $files as $file ) {
+			if ( ! file_put_contents( "$bootstrap_dir/$file", "// Test content for $file" ) ) {
+				throw new \RuntimeException( "Could not create the file: $bootstrap_dir/$file" );
+			}
 		}
 
 		return $bootstrap_dir;
 	}
 
-	protected function cleanup($bootstrap_dir) {
-		array_map('unlink', glob("$bootstrap_dir/*"));
-		rmdir($bootstrap_dir);
-		rmdir(dirname($bootstrap_dir));
+	protected function cleanup( $bootstrap_dir ) {
+		array_map( 'unlink', glob( "$bootstrap_dir/*" ) );
+		rmdir( $bootstrap_dir );
+		rmdir( dirname( $bootstrap_dir ) );
 	}
 }

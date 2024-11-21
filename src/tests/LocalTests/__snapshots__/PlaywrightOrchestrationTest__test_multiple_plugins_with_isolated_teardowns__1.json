@@ -1,7 +1,7 @@
 [
     {
         "name": "01-db-export",
-        "testDir": "\/qit\/tests\/e2e",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "db-export.js",
         "dependencies": [],
         "use": {
@@ -22,14 +22,14 @@
     },
     {
         "name": "03-plugin-one-isolated-teardown-sh",
-        "testDir": "\/qit\/tests\/e2e",
-        "testMatch": "qit-bootstrap.js",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
         "dependencies": [
             "02-plugin-one-test"
         ],
         "use": {
             "qitTestSlug": "plugin-one",
-            "type": "bash",
+            "type": "Isolated Teardown for plugin-one (Bash)",
             "file": "test-path-in-php-container-1\/bootstrap\/teardown.sh"
         }
     },
@@ -47,7 +47,7 @@
     },
     {
         "name": "05-db-import-before-plugin-two",
-        "testDir": "\/qit\/tests\/e2e",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "db-import.js",
         "dependencies": [
             "04-plugin-one-isolated-teardown-js"
@@ -70,14 +70,14 @@
     },
     {
         "name": "07-plugin-two-isolated-teardown-sh",
-        "testDir": "\/qit\/tests\/e2e",
-        "testMatch": "qit-bootstrap.js",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
         "dependencies": [
             "06-plugin-two-test"
         ],
         "use": {
             "qitTestSlug": "plugin-two",
-            "type": "bash",
+            "type": "Isolated Teardown for plugin-two (Bash)",
             "file": "test-path-in-php-container-2\/bootstrap\/teardown.sh"
         }
     },
