@@ -271,6 +271,7 @@ class PlaywrightRunner extends E2ERunner {
 			 * Remove double brackets (keep everything else)
 			 */
 			$out = preg_replace( '/\[\[(setup|db|test|teardown)/', '[$1', $out );
+
 			/*
 			 * (Shell)]
 			 * (JS)]
@@ -284,6 +285,18 @@ class PlaywrightRunner extends E2ERunner {
 			if ( empty( $out ) ) {
 				return;
 			}
+
+			$colored_strings = [
+				'[setup:shared]'    => '<fg=blue;options=bold>[setup:shared]</>',
+				'[db export]'       => '<fg=yellow;options=bold>[db export]</>',
+				'[db import]'       => '<fg=yellow;options=bold>[db import]</>',
+				'[setup]'           => '<fg=green;options=bold>[setup]</>',
+				'[test]'           => '<fg=cyan;options=bold>[test]</>',
+				'[teardown]'        => '<fg=red;options=bold>[teardown]</>',
+				'[teardown:shared]' => '<fg=magenta;options=bold>[teardown:shared]</>',
+			];
+
+			$out = str_replace( array_keys( $colored_strings ), array_values( $colored_strings ), $out );
 
 			if ( $ci || true ) { // @phpstan-ignore-line
 				$this->output->writeln( $out );
