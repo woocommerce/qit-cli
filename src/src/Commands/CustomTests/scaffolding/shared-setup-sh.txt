@@ -1,15 +1,14 @@
 #!/bin/bash
 
-# Shared Setup Bash Script (Optional)
+# This is a shared setup script that runs before all plugins' tests are executed.
+# Use it to:
+# - Set WordPress settings to a known state
+# - Create shared test data
+# - Set up caches and transients
+# - Prepare the environment for the tests
 
-# Purpose: This script is executed before test runs to set up the testing environment.
-#
-# Usage:
-# - Use WP CLI to configure prerequisites for your tests.
-# - Example: To install a specific theme required for tests:
-#   wp theme install twentytwentynine
-#   (You can then activate this theme during your tests)
-#
-# Note: Delete this file if it's not required for your setup.
-#
-# Documentation: Detailed instructions available at https://qit.woo.com/docs/custom-tests/generating-tests
+# echo "Running shared setup..."
+# wp option update blogname "Test Blog" # Update a WordPress setting
+# wp post create --post_title="Shared Test Post" # Create a shared test post
+
+# Add your shared setup commands here

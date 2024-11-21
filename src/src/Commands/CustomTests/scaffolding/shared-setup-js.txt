@@ -1,10 +1,15 @@
-/*
-import { test, expect } from '@playwright/test';
-import qit from '/qitHelpers';
+import { test } from '@playwright/test';
 
-// Optional, uncomment to use.
-// In the context of a compatibility test, any changes you do here will apply only when the tests of your plugin is running.
-
-test( 'Setup when my project starts', async ({page}) => {
-});
+/**
+ * Shared setup that runs before all plugins' tests are executed.
+ * Use it to:
+ * - Set up shared UI settings
+ * - Prepare shared browser storage
+ * - Create any shared test data via UI
+ * - Set up site-wide settings that require UI interaction
  */
+test('Shared Setup', async ({ page }) => {
+    // Example: Set up site-wide caches via UI
+    // await page.goto('/wp-admin/options-general.php');
+    // await page.click('text=Clear Cache');
+});

@@ -32,7 +32,7 @@ class PlaywrightOrchestration {
 			$host_path   = $t['path_in_host'];
 
 			// Shared setups (sh, php, js).
-			if ( file_exists( "{$host_path}/bootstrap/shared-bootstrap.sh" ) ) {
+			if ( file_exists( "{$host_path}/bootstrap/shared-setup.sh" ) ) {
 				$name       = sprintf( '%02d-%s-shared-setup-sh', $project_counter++, $plugin_slug );
 				$projects[] = [
 					'name'         => $name,
@@ -42,13 +42,13 @@ class PlaywrightOrchestration {
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
 						'type'        => 'bash',
-						'file'        => "{$base_dir}/bootstrap/shared-bootstrap.sh",
+						'file'        => "{$base_dir}/bootstrap/shared-setup.sh",
 					],
 				];
 				$last_setup = $name;
 			}
 
-			if ( file_exists( "{$host_path}/bootstrap/shared-bootstrap.php" ) ) {
+			if ( file_exists( "{$host_path}/bootstrap/shared-setup.php" ) ) {
 				$name       = sprintf( '%02d-%s-shared-setup-php', $project_counter++, $plugin_slug );
 				$projects[] = [
 					'name'         => $name,
@@ -58,18 +58,18 @@ class PlaywrightOrchestration {
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
 						'type'        => 'php',
-						'file'        => "{$base_dir}/bootstrap/shared-bootstrap.php",
+						'file'        => "{$base_dir}/bootstrap/shared-setup.php",
 					],
 				];
 				$last_setup = $name;
 			}
 
-			if ( file_exists( "{$host_path}/bootstrap/shared-bootstrap.js" ) ) {
+			if ( file_exists( "{$host_path}/bootstrap/shared-setup.js" ) ) {
 				$name       = sprintf( '%02d-%s-shared-setup-js', $project_counter++, $plugin_slug );
 				$projects[] = [
 					'name'         => $name,
 					'testDir'      => "{$base_dir}/bootstrap",
-					'testMatch'    => 'shared-bootstrap.js',
+					'testMatch'    => 'shared-setup.js',
 					'dependencies' => $last_setup ? [ $last_setup ] : [],
 					'use'          => [
 						'browserName' => 'chromium',
@@ -119,7 +119,7 @@ class PlaywrightOrchestration {
 			}
 
 			// Isolated setups (sh, php, js).
-			if ( file_exists( "{$host_path}/bootstrap/bootstrap.sh" ) ) {
+			if ( file_exists( "{$host_path}/bootstrap/setup.sh" ) ) {
 				$name          = sprintf( '%02d-%s-isolated-setup-sh', $project_counter++, $plugin_slug );
 				$projects[]    = [
 					'name'         => $name,
@@ -129,13 +129,13 @@ class PlaywrightOrchestration {
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
 						'type'        => 'bash',
-						'file'        => "{$base_dir}/bootstrap/bootstrap.sh",
+						'file'        => "{$base_dir}/bootstrap/setup.sh",
 					],
 				];
 				$current_setup = $name;
 			}
 
-			if ( file_exists( "{$host_path}/bootstrap/bootstrap.php" ) ) {
+			if ( file_exists( "{$host_path}/bootstrap/setup.php" ) ) {
 				$name          = sprintf( '%02d-%s-isolated-setup-php', $project_counter++, $plugin_slug );
 				$projects[]    = [
 					'name'         => $name,
@@ -145,18 +145,18 @@ class PlaywrightOrchestration {
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
 						'type'        => 'php',
-						'file'        => "{$base_dir}/bootstrap/bootstrap.php",
+						'file'        => "{$base_dir}/bootstrap/setup.php",
 					],
 				];
 				$current_setup = $name;
 			}
 
-			if ( file_exists( "{$host_path}/bootstrap/bootstrap.js" ) ) {
+			if ( file_exists( "{$host_path}/bootstrap/setup.js" ) ) {
 				$name          = sprintf( '%02d-%s-isolated-setup-js', $project_counter++, $plugin_slug );
 				$projects[]    = [
 					'name'         => $name,
 					'testDir'      => "{$base_dir}/bootstrap",
-					'testMatch'    => 'bootstrap.js',
+					'testMatch'    => 'setup.js',
 					'dependencies' => $current_setup ? [ $current_setup ] : [],
 					'use'          => [
 						'browserName' => 'chromium',

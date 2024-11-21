@@ -1,10 +1,16 @@
-/*
-import { test, expect } from '@playwright/test';
-import qit from '/qitHelpers';
+import { test } from '@playwright/test';
 
-// Optional, uncomment to use.
-// In the context of a compatibility test, any changes you do here will apply only when the tests of your plugin is running.
-
-test( 'Setup when my project starts', async ({page}) => {
-});
+/**
+ * Isolated setup that runs before your plugin's tests.
+ * Use it to:
+ * - Set up UI settings that can't be done via CLI
+ * - Prepare plugin-specific browser storage
+ * - Create any UI-generated test data
+ * - Set up plugin state via UI interactions
  */
+test('Isolated Setup', async ({ page }) => {
+    // Example: Set up plugin settings via UI
+    // await page.goto('/wp-admin/admin.php?page=your-plugin-settings');
+    // await page.fill('input[name="plugin_setting"]', 'test value');
+    // await page.click('text=Save Changes');
+});
