@@ -61,6 +61,7 @@ class PlaywrightOrchestration {
 					'testDir'      => '/qit/tests/e2e/scripts',
 					'testMatch'    => 'bash.js',
 					'dependencies' => $last_setup ? [ $last_setup ] : [],
+					'retries'      => 0,
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
 						'type'        => "Shared Setup for $plugin_slug (Bash)",
@@ -77,6 +78,7 @@ class PlaywrightOrchestration {
 					'testDir'      => '/qit/tests/e2e/scripts',
 					'testMatch'    => 'php.js',
 					'dependencies' => $last_setup ? [ $last_setup ] : [],
+					'retries'      => 0,
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
 						'type'        => "Shared Setup for $plugin_slug (PHP)",
@@ -112,6 +114,7 @@ class PlaywrightOrchestration {
 				'name'         => $name,
 				'testDir'      => '/qit/tests/e2e/scripts',
 				'testMatch'    => 'db-export.js',
+				'retries'      => 0,
 				'dependencies' => $last_operation ? [ $last_operation ] : [],
 				'use'          => [ 'browserName' => 'chromium' ],
 			];
@@ -136,6 +139,7 @@ class PlaywrightOrchestration {
 					'testDir'      => '/qit/tests/e2e/scripts',
 					'testMatch'    => 'db-import.js',
 					'dependencies' => [ $last_operation ],
+					'retries'      => 0,
 					'use'          => [ 'browserName' => 'chromium' ],
 				];
 				$current_setup = $name;
@@ -149,6 +153,7 @@ class PlaywrightOrchestration {
 					'testDir'      => '/qit/tests/e2e/scripts',
 					'testMatch'    => 'bash.js',
 					'dependencies' => $current_setup ? [ $current_setup ] : [],
+					'retries'      => 0,
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
 						'type'        => "Isolated Setup for $plugin_slug (Bash)",
@@ -165,6 +170,7 @@ class PlaywrightOrchestration {
 					'testDir'      => '/qit/tests/e2e/scripts',
 					'testMatch'    => 'php.js',
 					'dependencies' => $current_setup ? [ $current_setup ] : [],
+					'retries'      => 0,
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
 						'type'        => "Isolated Setup for $plugin_slug (PHP)",
@@ -211,6 +217,7 @@ class PlaywrightOrchestration {
 					'testDir'      => '/qit/tests/e2e/scripts',
 					'testMatch'    => 'bash.js',
 					'dependencies' => [ $current_setup ],
+					'retries'      => 0,
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
 						'type'        => "Isolated Teardown for $plugin_slug (Bash)",
@@ -227,6 +234,7 @@ class PlaywrightOrchestration {
 					'testDir'      => '/qit/tests/e2e/scripts',
 					'testMatch'    => 'php.js',
 					'dependencies' => [ $current_setup ],
+					'retries'      => 0,
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
 						'type'        => "Isolated Teardown for $plugin_slug (PHP)",
@@ -269,6 +277,7 @@ class PlaywrightOrchestration {
 					'testDir'      => '/qit/tests/e2e/scripts',
 					'testMatch'    => 'bash.js',
 					'dependencies' => [ $last_operation ],
+					'retries'      => 0,
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
 						'type'        => "Shared Teardown for $plugin_slug (Bash)",
@@ -285,6 +294,7 @@ class PlaywrightOrchestration {
 					'testDir'      => '/qit/tests/e2e/scripts',
 					'testMatch'    => 'php.js',
 					'dependencies' => [ $last_operation ],
+					'retries'      => 0,
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
 						'type'        => "Shared Teardown for $plugin_slug (PHP)",
