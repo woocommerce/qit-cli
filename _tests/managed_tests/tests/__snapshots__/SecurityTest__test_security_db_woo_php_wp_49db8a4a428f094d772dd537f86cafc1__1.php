@@ -3463,7 +3463,8 @@
                     },
                     "semgrep": [],
                     "composer_audit": [],
-                    "npm_audit": []
+                    "npm_audit": [],
+                    "wpscan_audit": []
                 }
             }
         }
