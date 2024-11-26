@@ -431,7 +431,7 @@ class QITE2ETestCase extends TestCase {
 		if ( $count < 25 ) {
 			// No-op. Exact match for counts below 50.
 		} elseif ( $count < 100 ) {
-			$normalize_to_closest = 10;
+			$normalize_to_closest = 25;
 			if ( $count % $normalize_to_closest === 0 ) {
 				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
 			} else {
@@ -440,7 +440,7 @@ class QITE2ETestCase extends TestCase {
 				echo "{$count}\n";
 			}
 		} elseif ( $count < 200 ) {
-			$normalize_to_closest = 25;
+			$normalize_to_closest = 50;
 			if ( $count % $normalize_to_closest === 0 ) {
 				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
 			} else {
@@ -449,7 +449,7 @@ class QITE2ETestCase extends TestCase {
 				echo "{$count}\n";
 			}
 		} elseif ( $count < 1000 ) {
-			$normalize_to_closest = 50;
+			$normalize_to_closest = 100;
 			if ( $count % $normalize_to_closest === 0 ) {
 				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
 			} else {
@@ -458,7 +458,7 @@ class QITE2ETestCase extends TestCase {
 				echo "{$count}\n";
 			}
 		} elseif ( $count < 10000 ) {
-			$normalize_to_closest = 100;
+			$normalize_to_closest = 250;
 			if ( $count % $normalize_to_closest === 0 ) {
 				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
 			} else {
