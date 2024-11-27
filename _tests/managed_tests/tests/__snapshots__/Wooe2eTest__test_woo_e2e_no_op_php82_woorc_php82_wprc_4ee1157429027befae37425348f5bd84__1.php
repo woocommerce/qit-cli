@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "448 total, 384 passed, 0 failed, 64 skipped.",
+            "test_summary": "427 total, 382 passed, 0 failed, 45 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -46,31 +46,14 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 87,
-                "numPendingTestSuites": 24,
-                "numTotalTestSuites": 111,
+                "numPassedTestSuites": 86,
+                "numPendingTestSuites": 22,
+                "numTotalTestSuites": 108,
                 "numFailedTests": 0,
-                "numPassedTests": 384,
-                "numPendingTests": 64,
-                "numTotalTests": 448,
+                "numPassedTests": 382,
+                "numPendingTests": 45,
+                "numTotalTests": 427,
                 "testResults": [
-                    {
-                        "file": "activate-and-setup\\/basic-setup.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Store owner can finish initial store setup": [
-                                {
-                                    "title": "can enable tax rates and calculations",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can configure permalink settings",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
                     {
                         "file": "activate-and-setup\\/core-profiler.spec.js",
                         "status": "passed",
@@ -93,19 +76,6 @@
                                 },
                                 {
                                     "title": "Can connect to WooCommerce.com",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "activate-and-setup\\/setup-onboarding.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Store owner can login and make sure WooCommerce is activated": [
-                                {
-                                    "title": "can make sure WooCommerce is activated.",
                                     "status": "passed"
                                 }
                             ]
@@ -299,7 +269,7 @@
                     {
                         "file": "customize-store\\/assembler\\/color-picker.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Assembler -> Color Pickers": [
                                 {
@@ -307,72 +277,8 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Color palette Blueberry Sorbet should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Ancient Bronze should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Crimson Tide should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Purple Twilight should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Green Thumb should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Golden Haze should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Golden Indigo should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Arctic Dawn should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Raspberry Chocolate should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Canary should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Ice should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Rustic Rosewood should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Cinnamon Latte should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Lightning should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Aquamarine Night should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Charcoal should be applied",
-                                    "status": "pending"
-                                },
-                                {
                                     "title": "Color palette Slate should be applied",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Color picker should be focused when a color is picked",
@@ -687,7 +593,7 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Clicking on \\"View store\\" should go to the store home page in a new page",
+                                    "title": "Clicking on \\"View store\\" should go to the store home page",
                                     "status": "passed"
                                 },
                                 {
@@ -2929,31 +2835,19 @@
                                 }
                             ]
                         }
-                    },
-                    {
-                        "file": "smoke-tests\\/update-woocommerce.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "WooCommerce update": [
-                                {
-                                    "title": "can update WooCommerce to \\"undefined\\"",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can run the database update",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
                     }
                 ],
-                "summary": "448 total, 384 passed, 0 failed, 64 skipped."
+                "summary": "427 total, 382 passed, 0 failed, 45 skipped."
             }
         },
         {
             "debug_log": {
-                "generic": []
+                "generic": [
+                    {
+                        "count": "13000",
+                        "message": "PHP Notice: Function _load_textdomain_just_in_time was called incorrectly. Translation loading for the wp-mail-logging domain was triggered too early. This is usually an indicator for some code in the plugin or theme running too early. Translations should be loaded at the init action or later. Please see Debugging in WordPress for more information. (This message was added in version 6.7.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6114"
+                    }
+                ]
             }
         }
     ]
