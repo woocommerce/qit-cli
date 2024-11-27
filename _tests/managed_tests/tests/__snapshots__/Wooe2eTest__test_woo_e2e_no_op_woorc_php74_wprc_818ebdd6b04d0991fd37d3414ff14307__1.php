@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "427 total, 270 passed, 14 failed, 143 skipped.",
+            "test_summary": "427 total, 275 passed, 15 failed, 137 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,13 +45,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 8,
-                "numPassedTestSuites": 55,
-                "numPendingTestSuites": 45,
+                "numFailedTestSuites": 9,
+                "numPassedTestSuites": 56,
+                "numPendingTestSuites": 44,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 14,
-                "numPassedTests": 270,
-                "numPendingTests": 143,
+                "numFailedTests": 15,
+                "numPassedTests": 275,
+                "numPendingTests": 137,
                 "numTotalTests": 427,
                 "testResults": [
                     {
@@ -2132,41 +2132,41 @@
                     {
                         "file": "shopper\\/cart-calculate-shipping.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Cart Calculate Shipping": [
                                 {
                                     "title": "allows customer to calculate Free Shipping if in Germany",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "allows customer to calculate Flat rate and Local pickup if in France",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should show correct total cart price after updating quantity",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should show correct total cart price with 2 products and flat rate",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should show correct total cart price with 2 products without flat rate",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "shopper\\/cart-checkout-block-calculate-tax.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "Shopper Cart & Checkout Block Tax Display": [
                                 {
                                     "title": "can create Cart Block page",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can create Checkout Block page",
@@ -2837,15 +2837,15 @@
                         }
                     }
                 ],
-                "summary": "427 total, 270 passed, 14 failed, 143 skipped."
+                "summary": "427 total, 275 passed, 15 failed, 137 skipped."
             }
         },
         {
             "debug_log": {
                 "generic": [
                     {
-                        "count": "1",
-                        "message": "\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Utilities\\/CartController.php(52): Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\CartController->set_cart_item_quantity(\'cbcb58ac2e49620...\', 1)\\n#1 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Routes\\/V1\\/AbstractCartRoute.php(180): Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\CartController->normalize_cart()\\n#2 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Routes\\/V1\\/AbstractCartRoute.php(114): Automattic\\\\WooCommerce\\\\StoreApi\\\\Routes\\\\V1\\\\AbstractCartRoute->load_cart_session(Object(WP_REST_Request))\\n#3 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1230): Automattic\\\\WooCommerce\\\\StoreApi\\\\Routes\\\\V1\\\\AbstractCartRoute->get_response(Object(WP_REST_Request))\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Utilities\\/CartController.php(52): Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\CartController->set_cart_item_quantity(\'cbcb58ac2e49620...\', 1)\\n#1 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Routes\\/V1\\/AbstractCartRoute.php(180): Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\CartController->normalize_cart()\\n#2 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Routes\\/V1\\/AbstractCartRoute.php(114): Automattic\\\\WooCommerce\\\\StoreApi\\\\Routes\\\\V1\\\\AbstractCartRoute->load_cart_session(Object(WP_REST_Request))\\n#3 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1230): Automattic\\\\WooCommerce\\\\StoreApi\\\\Routes\\\\V1\\\\AbstractCartRoute->get_response(Object(WP_REST_Request))\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Utilities\\/CartController.php(52): Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\CartController->set_cart_item_quantity(\'cbcb58ac2e49620...\', 1)\\n#1 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Routes\\/V1\\/AbstractCartRoute.php(180): Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\CartController->normalize_cart()\\n#2 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Routes\\/V1\\/AbstractCartRoute.php(114): Automattic\\\\WooCommerce\\\\StoreApi\\\\Routes\\\\V1\\\\AbstractCartRoute->load_cart_session(Object(WP_REST_Request))\\n#3 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1230): Automattic\\\\WooCommerce\\\\StoreApi\\\\Routes\\\\V1\\\\AbstractCartRoute->get_response(Object(WP_REST_Request))\\n"
+                        "count": "11000",
+                        "message": "PHP Notice: Function _load_textdomain_just_in_time was called incorrectly. Translation loading for the wp-mail-logging domain was triggered too early. This is usually an indicator for some code in the plugin or theme running too early. Translations should be loaded at the init action or later. Please see Debugging in WordPress for more information. (This message was added in version 6.7.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6114"
                     }
                 ]
             }
