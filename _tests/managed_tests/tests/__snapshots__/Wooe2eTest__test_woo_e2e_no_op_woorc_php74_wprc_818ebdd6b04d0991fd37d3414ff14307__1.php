@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "427 total, 380 passed, 1 failed, 46 skipped.",
+            "test_summary": "427 total, 382 passed, 0 failed, 45 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,13 +45,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 85,
-                "numPendingTestSuites": 23,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 86,
+                "numPendingTestSuites": 22,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 1,
-                "numPassedTests": 380,
-                "numPendingTests": 46,
+                "numFailedTests": 0,
+                "numPassedTests": 382,
+                "numPendingTests": 45,
                 "numTotalTests": 427,
                 "testResults": [
                     {
@@ -2561,8 +2561,8 @@
                     },
                     {
                         "file": "shopper\\/launch-your-store.spec.js",
-                        "status": "failed",
-                        "has_pending": true,
+                        "status": "passed",
+                        "has_pending": false,
                         "tests": {
                             "Launch Your Store front end - logged out": [],
                             "Launch Your Store front end - logged out > Block Theme (Twenty Twenty Four)": [
@@ -2578,11 +2578,11 @@
                             "Launch Your Store front end - logged out > Classic Theme (Storefront)": [
                                 {
                                     "title": "Entire site coming soon mode (function () { [native code] })",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Store only coming soon mode (function () { [native code] })",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2837,7 +2837,7 @@
                         }
                     }
                 ],
-                "summary": "427 total, 380 passed, 1 failed, 46 skipped."
+                "summary": "427 total, 382 passed, 0 failed, 45 skipped."
             }
         },
         {
