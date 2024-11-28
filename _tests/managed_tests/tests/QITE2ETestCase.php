@@ -467,7 +467,7 @@ class QITE2ETestCase extends TestCase {
 				echo "{$count}\n";
 			}
 		} else {
-			$normalize_to_closest = 5000;
+			$normalize_to_closest = 10000;
 			if ( $count % $normalize_to_closest === 0 ) {
 				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
 			} else {
