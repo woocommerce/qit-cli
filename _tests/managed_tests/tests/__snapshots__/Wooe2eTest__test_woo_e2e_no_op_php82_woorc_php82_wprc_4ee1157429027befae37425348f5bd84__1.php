@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "427 total, 382 passed, 0 failed, 45 skipped.",
+            "test_summary": "427 total, 381 passed, 1 failed, 45 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,12 +45,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
+                "numFailedTestSuites": 1,
                 "numPassedTestSuites": 86,
                 "numPendingTestSuites": 22,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 0,
-                "numPassedTests": 382,
+                "numFailedTests": 1,
+                "numPassedTests": 381,
                 "numPendingTests": 45,
                 "numTotalTests": 427,
                 "testResults": [
@@ -2428,7 +2428,7 @@
                     },
                     {
                         "file": "shopper\\/checkout-block.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "Checkout Block page": [
@@ -2438,7 +2438,7 @@
                                 },
                                 {
                                     "title": "allows customer to choose available payment methods",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "allows customer to fill shipping details",
@@ -2837,7 +2837,7 @@
                         }
                     }
                 ],
-                "summary": "427 total, 382 passed, 0 failed, 45 skipped."
+                "summary": "427 total, 381 passed, 1 failed, 45 skipped."
             }
         },
         {
