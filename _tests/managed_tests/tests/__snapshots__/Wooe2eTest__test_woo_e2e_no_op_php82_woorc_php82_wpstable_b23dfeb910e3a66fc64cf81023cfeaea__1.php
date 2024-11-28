@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "427 total, 270 passed, 14 failed, 143 skipped.",
+            "test_summary": "427 total, 275 passed, 15 failed, 137 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,13 +45,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 8,
-                "numPassedTestSuites": 55,
-                "numPendingTestSuites": 45,
+                "numFailedTestSuites": 9,
+                "numPassedTestSuites": 56,
+                "numPendingTestSuites": 44,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 14,
-                "numPassedTests": 270,
-                "numPendingTests": 143,
+                "numFailedTests": 15,
+                "numPassedTests": 275,
+                "numPendingTests": 137,
                 "numTotalTests": 427,
                 "testResults": [
                     {
@@ -2132,41 +2132,41 @@
                     {
                         "file": "shopper\\/cart-calculate-shipping.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Cart Calculate Shipping": [
                                 {
                                     "title": "allows customer to calculate Free Shipping if in Germany",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "allows customer to calculate Flat rate and Local pickup if in France",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should show correct total cart price after updating quantity",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should show correct total cart price with 2 products and flat rate",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "should show correct total cart price with 2 products without flat rate",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "shopper\\/cart-checkout-block-calculate-tax.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "Shopper Cart & Checkout Block Tax Display": [
                                 {
                                     "title": "can create Cart Block page",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can create Checkout Block page",
@@ -2837,7 +2837,7 @@
                         }
                     }
                 ],
-                "summary": "427 total, 270 passed, 14 failed, 143 skipped."
+                "summary": "427 total, 275 passed, 15 failed, 137 skipped."
             }
         },
         {
