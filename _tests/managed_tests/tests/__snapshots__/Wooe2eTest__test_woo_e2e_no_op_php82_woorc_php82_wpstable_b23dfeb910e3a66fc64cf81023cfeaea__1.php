@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "427 total, 382 passed, 0 failed, 45 skipped.",
+            "test_summary": "427 total, 270 passed, 14 failed, 143 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,13 +45,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 86,
-                "numPendingTestSuites": 22,
+                "numFailedTestSuites": 8,
+                "numPassedTestSuites": 55,
+                "numPendingTestSuites": 45,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 0,
-                "numPassedTests": 382,
-                "numPendingTests": 45,
+                "numFailedTests": 14,
+                "numPassedTests": 270,
+                "numPendingTests": 143,
                 "numTotalTests": 427,
                 "testResults": [
                     {
@@ -654,26 +654,26 @@
                     },
                     {
                         "file": "merchant\\/create-cart-block.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Transform Classic Cart To Cart Block": [
                                 {
                                     "title": "can transform classic cart to cart block",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/create-checkout-block.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Transform Classic Checkout To Checkout Block": [
                                 {
                                     "title": "can transform classic checkout to checkout block",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -734,26 +734,26 @@
                     },
                     {
                         "file": "merchant\\/create-page.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Can create a new page": [
                                 {
                                     "title": "can create new page",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "merchant\\/create-post.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Can create a new post": [
                                 {
                                     "title": "can create new post",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -899,13 +899,13 @@
                     },
                     {
                         "file": "merchant\\/create-woocommerce-patterns.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Add WooCommerce Patterns Into Page": [
                                 {
                                     "title": "can insert WooCommerce patterns into page",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2068,63 +2068,63 @@
                     },
                     {
                         "file": "shopper\\/cart-block-calculate-shipping.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Cart Block Calculate Shipping": [
                                 {
                                     "title": "allows customer to calculate Free Shipping in cart block if in Netherlands",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "allows customer to calculate Flat rate and Local pickup in cart block if in Portugal",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "should show correct total cart block price after updating quantity",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "should show correct total cart block price with 2 different products and flat rate\\/local pickup",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "shopper\\/cart-block-coupons.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Cart Block Applying Coupons": [
                                 {
                                     "title": "allows cart block to apply coupon of any type",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "allows cart block to apply multiple coupons",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "prevents cart block applying same coupon twice",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "prevents cart block applying coupon with usage limit",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "shopper\\/cart-block.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Cart Block page": [
                                 {
                                     "title": "can see empty cart, add and remove simple & cross sell product, increase to max quantity",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2132,28 +2132,28 @@
                     {
                         "file": "shopper\\/cart-calculate-shipping.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Cart Calculate Shipping": [
                                 {
                                     "title": "allows customer to calculate Free Shipping if in Germany",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to calculate Flat rate and Local pickup if in France",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should show correct total cart price after updating quantity",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should show correct total cart price with 2 products and flat rate",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should show correct total cart price with 2 products without flat rate",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2161,50 +2161,50 @@
                     {
                         "file": "shopper\\/cart-checkout-block-calculate-tax.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Shopper Cart & Checkout Block Tax Display": [
                                 {
                                     "title": "can create Cart Block page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can create Checkout Block page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "that inclusive tax is displayed properly in block-based Cart & Checkout pages",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "that exclusive tax is displayed properly in block-based Cart & Checkout pages",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Shopper Cart & Checkout Block Tax Rounding": [
                                 {
                                     "title": "that tax rounding is present at subtotal level in block-based Cart & Checkout pages",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "that tax rounding is off at subtotal level in block-based Cart & Checkout pages",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Shopper Cart & Checkout Block Tax Levels": [
                                 {
                                     "title": "that applying taxes in cart block of 4 different levels calculates properly",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "that applying taxes in block-based Cart & Checkout of 2 different levels (2 excluded) calculates properly",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Shipping Cart & Checkout Block Tax": [
                                 {
                                     "title": "that tax is applied in Cart Block to shipping as well as order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2212,47 +2212,47 @@
                     {
                         "file": "shopper\\/cart-checkout-calculate-tax.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Tax rates in the cart and checkout": [],
                             "Tax rates in the cart and checkout > Shopper Tax Display Tests": [
                                 {
                                     "title": "checks that taxes are calculated properly on totals, inclusive tax displayed properly",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "checks that taxes are calculated and displayed correctly exclusive on shop, cart and checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "checks that display suffix is shown",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Tax rates in the cart and checkout > Shopper Tax Rounding": [
                                 {
                                     "title": "checks rounding at subtotal level",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "checks rounding off at subtotal level",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Tax rates in the cart and checkout > Shopper Tax Levels": [
                                 {
                                     "title": "checks applying taxes of 4 different levels",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "checks applying taxes of 2 different levels (2 excluded)",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Tax rates in the cart and checkout > Shipping Tax": [
                                 {
                                     "title": "checks that tax is applied to shipping as well as order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2260,32 +2260,32 @@
                     {
                         "file": "shopper\\/cart-checkout-coupons.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Cart & Checkout applying coupons": [
                                 {
                                     "title": "allows applying coupon of type fixed_cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows applying coupon of type percent",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows applying coupon of type fixed_product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "prevents applying same coupon twice",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows applying multiple coupons",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "restores total when coupons are removed",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2293,52 +2293,52 @@
                     {
                         "file": "shopper\\/cart-checkout-restricted-coupons.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Cart & Checkout Restricted Coupons": [
                                 {
                                     "title": "expired coupon cannot be used",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "coupon requiring min and max amounts and can only be used alone can only be used within limits",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "coupon cannot be used on sale item",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "coupon can only be used twice",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "coupon cannot be used on certain products\\/categories (included product\\/category)",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "coupon can be used on certain products\\/categories",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "coupon cannot be used on specific products\\/categories (excluded product\\/category)",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "coupon can be used on other products\\/categories",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "coupon cannot be used by any customer on cart (email restricted)",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "coupon cannot be used by any customer on checkout (email restricted)",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "coupon can be used by the right customer (email restricted) but only once",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2346,16 +2346,16 @@
                     {
                         "file": "shopper\\/cart-redirection.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Cart > Redirect to cart from shop": [
                                 {
                                     "title": "can redirect user to cart from shop page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can redirect user to cart from detail page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2363,40 +2363,40 @@
                     {
                         "file": "shopper\\/cart.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Cart page": [
                                 {
                                     "title": "should display no item in the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should add the product to the cart from the shop page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should increase item quantity when \\"Add to cart\\" of the same product is clicked",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should update quantity when updated via quantity input",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should remove the item from the cart when remove is clicked",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should update subtotal in cart totals when adding product to the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should go to the checkout page when \\"Proceed to Checkout\\" is clicked",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can manage cross-sell products and maximum item quantity",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2404,24 +2404,24 @@
                     {
                         "file": "shopper\\/checkout-block-coupons.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Checkout Block Applying Coupons": [
                                 {
                                     "title": "allows checkout block to apply coupon of any type",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows checkout block to apply multiple coupons",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "prevents checkout block applying same coupon twice",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "prevents checkout block applying coupon with usage limit",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2434,27 +2434,27 @@
                             "Checkout Block page": [
                                 {
                                     "title": "can see empty checkout block page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to choose available payment methods",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to fill shipping details",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to fill different shipping and billing details",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to fill shipping details and toggle different billing",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can choose different shipping types in the checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
@@ -2470,7 +2470,7 @@
                                 },
                                 {
                                     "title": "can create an account during checkout with custom password",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2478,12 +2478,12 @@
                     {
                         "file": "shopper\\/checkout-create-account.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Shopper Checkout Create Account": [
                                 {
                                     "title": "can create an account during checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2491,12 +2491,12 @@
                     {
                         "file": "shopper\\/checkout-login.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Shopper Checkout Login Account": [
                                 {
                                     "title": "can login to an existing account during checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2509,23 +2509,23 @@
                             "Checkout page": [
                                 {
                                     "title": "should display cart items in order review",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to choose available payment methods",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to fill billing details",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "warn when customer is missing required details",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to fill shipping details",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
@@ -2541,20 +2541,20 @@
                     {
                         "file": "shopper\\/dashboard-access.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Customer-role users are blocked from accessing the WP Dashboard.": [
                                 {
                                     "title": "Customer is redirected from WP Admin home back to the My Account page.",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Customer is redirected from WP Admin profile page back to the My Account page.",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Customer is redirected from WP Admin using ajax query param back to the My Account page.",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2562,27 +2562,27 @@
                     {
                         "file": "shopper\\/launch-your-store.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Launch Your Store front end - logged out": [],
                             "Launch Your Store front end - logged out > Block Theme (Twenty Twenty Four)": [
                                 {
                                     "title": "Entire site coming soon mode (function () { [native code] })",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Store only coming soon mode (function () { [native code] })",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Launch Your Store front end - logged out > Classic Theme (Storefront)": [
                                 {
                                     "title": "Entire site coming soon mode (function () { [native code] })",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Store only coming soon mode (function () { [native code] })",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2603,16 +2603,16 @@
                     {
                         "file": "shopper\\/my-account-addresses.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Customer can manage addresses in My Account > Addresses page": [
                                 {
                                     "title": "can add billing address from my account",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can add shipping address from my account",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2620,12 +2620,12 @@
                     {
                         "file": "shopper\\/my-account-create-account.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Shopper My Account Create Account": [
                                 {
                                     "title": "can create a new account via my account",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2633,12 +2633,12 @@
                     {
                         "file": "shopper\\/my-account-downloads.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Customer can manage downloadable file in My Account > Downloads page": [
                                 {
                                     "title": "can see downloadable file and click to download it",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2646,12 +2646,12 @@
                     {
                         "file": "shopper\\/my-account-pay-order.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Customer can pay for their order through My Account": [
                                 {
                                     "title": "allows customer to pay for their order in My Account",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2659,12 +2659,12 @@
                     {
                         "file": "shopper\\/my-account.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "My account page": [
                                 {
                                     "title": "allows customer to login and navigate",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2672,12 +2672,12 @@
                     {
                         "file": "shopper\\/order-email-receiving.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Shopper Order Email Receiving": [
                                 {
                                     "title": "should receive order email after purchasing an item",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2690,7 +2690,7 @@
                             "Grouped Product Page": [
                                 {
                                     "title": "should be able to add grouped products to the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should be able to remove grouped products from the cart",
@@ -2702,16 +2702,16 @@
                     {
                         "file": "shopper\\/product-simple.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Single Product Page": [
                                 {
                                     "title": "should be able to post a review and see it after",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should be able to see product description",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2719,24 +2719,24 @@
                     {
                         "file": "shopper\\/product-tags-attributes.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Browse product tags and attributes from the product page": [
                                 {
                                     "title": "should see shop catalog with all its products",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should see and sort tags page with all the products",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should see and sort attributes page with all its products",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can see products showcase",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2749,7 +2749,7 @@
                             "Variable Product Page": [
                                 {
                                     "title": "should be able to add variation products to the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should be able to remove variation products from the cart",
@@ -2759,19 +2759,19 @@
                             "Shopper > Update variable product": [
                                 {
                                     "title": "Shopper can change variable attributes to the same value",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Shopper can change attributes to combination with dimensions and weight",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Shopper can change variable product attributes to variation with a different price",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Shopper can reset variations",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2779,12 +2779,12 @@
                     {
                         "file": "shopper\\/shop-products-filter-by-price.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Filter items in the shop by product price": [
                                 {
                                     "title": "filter products by prices on the created page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2797,11 +2797,11 @@
                             "Search, browse by categories and sort items in the shop": [
                                 {
                                     "title": "should let user search the store",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should let user browse products by categories",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should let user sort the products in the shop",
@@ -2813,12 +2813,12 @@
                     {
                         "file": "shopper\\/shop-title-after-deletion.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Check the title of the shop page after the page has been deleted": [
                                 {
                                     "title": "Check the title of the shop page after the page has been deleted",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2826,18 +2826,18 @@
                     {
                         "file": "shopper\\/wordpress-post.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "logged-in customer can comment on a post": [
                                 {
                                     "title": "logged-in customer can comment on a post",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     }
                 ],
-                "summary": "427 total, 382 passed, 0 failed, 45 skipped."
+                "summary": "427 total, 270 passed, 14 failed, 143 skipped."
             }
         },
         {
