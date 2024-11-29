@@ -356,6 +356,11 @@ class QITE2ETestCase extends TestCase {
 						return true;
 					}
 
+					// Save it to file as "pre"
+					$tmp_name = tempnam( sys_get_temp_dir(), 'debug_log_pre_' );
+					file_put_contents( $tmp_name, json_encode( $value ) );
+					echo "Debug log written to: $tmp_name\n";
+
 					if ( is_array( $value ) ) {
 						$value = json_encode( $value );
 					}
