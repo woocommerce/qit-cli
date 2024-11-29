@@ -362,7 +362,7 @@ class QITE2ETestCase extends TestCase {
 					echo "Debug log written to: $tmp_name\n";
 
 					if ( is_array( $value ) ) {
-						$value = json_encode( $value );
+						$value = json_encode( $value, JSON_HEX_QUOT | JSON_HEX_APOS );
 					}
 
 					$is_valid = ! is_null( json_decode( $value ) );
