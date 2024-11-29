@@ -360,7 +360,14 @@ class QITE2ETestCase extends TestCase {
 						$value = json_encode( $value );
 					}
 
-					return ! is_null( json_decode( $value ) );
+					$is_valid = ! is_null( json_decode( $value ) );
+
+					// Write it to a tmp file and echo the path for debugging. Use sys_get_tmp_dir. Use a unique name.
+					$tmp_name = tempnam( sys_get_temp_dir(), 'debug_log_' );
+					file_put_contents( $tmp_name, $value );
+					echo "Debug log written to: $tmp_name\n";
+
+					return $is_valid;
 				},
 			],
 			'test_result_aws_expiration'      => [
