@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "427 total, 381 passed, 1 failed, 45 skipped.",
+            "test_summary": "427 total, 382 passed, 0 failed, 45 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,12 +45,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 86,
                 "numPendingTestSuites": 22,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 1,
-                "numPassedTests": 381,
+                "numFailedTests": 0,
+                "numPassedTests": 382,
                 "numPendingTests": 45,
                 "numTotalTests": 427,
                 "testResults": [
@@ -2428,7 +2428,7 @@
                     },
                     {
                         "file": "shopper\\/checkout-block.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Checkout Block page": [
@@ -2438,7 +2438,7 @@
                                 },
                                 {
                                     "title": "allows customer to choose available payment methods",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "allows customer to fill shipping details",
@@ -2837,15 +2837,15 @@
                         }
                     }
                 ],
-                "summary": "427 total, 381 passed, 1 failed, 45 skipped."
+                "summary": "427 total, 382 passed, 0 failed, 45 skipped."
             }
         },
         {
             "debug_log": {
                 "generic": [
                     {
-                        "count": "10000",
-                        "message": "PHP Notice: Function _load_textdomain_just_in_time was called incorrectly. Translation loading for the wp-mail-logging domain was triggered too early. This is usually an indicator for some code in the plugin or theme running too early. Translations should be loaded at the init action or later. Please see Debugging in WordPress for more information. (This message was added in version 6.7.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6114"
+                        "count": "1",
+                        "message": "\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Utilities\\/CartController.php(52): Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\CartController->set_cart_item_quantity(\'db85e2590b61098...\', 1)\\n#1 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Routes\\/V1\\/AbstractCartRoute.php(180): Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\CartController->normalize_cart()\\n#2 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Routes\\/V1\\/AbstractCartRoute.php(114): Automattic\\\\WooCommerce\\\\StoreApi\\\\Routes\\\\V1\\\\AbstractCartRoute->load_cart_session(Object(WP_REST_Request))\\n#3 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1292): Automattic\\\\WooCommerce\\\\StoreApi\\\\Routes\\\\V1\\\\AbstractCartRoute->get_response(Object(WP_REST_Request))\\n#4 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1125): WP_REST_Server->respond_to_request(Object(WP_REST_Request), \'\\/wc\\/store\\/v1\\/ca...\', Array, NULL)\\n#5 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(439): WP_REST_Server->dispatch(Object(WP_REST_Request))\\n#6 \\/var\\/www\\/html\\/wp-includes\\/rest-api.php(449): WP_REST_Server->serve_request(\'\\/wc\\/store\\/v1\\/ca...\')\\n#7 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): rest_api_loaded(Object(WP))\\n#8 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(NULL, Array)\\n#9 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(565): WP_Hook->do_action(Array)\\n#10 \\/var\\/www\\/html\\/wp-includes\\/class-wp.php(418): do_action_ref_array(\'parse_request\', Array)\\n#11 \\/var\\/www\\/html\\/wp-includes\\/class-wp.php(813): WP->parse_request(\'\')\\n#12 \\/var\\/www\\/html\\/wp-includes\\/functions.php(1336): WP->main(\'\')\\n#13 \\/var\\/www\\/html\\/wp-blog-header.php(16): wp()\\n#14 \\/var\\/www\\/html\\/index.php(17): require(\'\\/var\\/www\\/html\\/w...\')\\n#15 {main}\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Utilities\\/CartController.php(52): Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\CartController->set_cart_item_quantity(\'db85e2590b61098...\', 1)\\n#1 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Routes\\/V1\\/AbstractCartRoute.php(180): Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\CartController->normalize_cart()\\n#2 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Routes\\/V1\\/AbstractCartRoute.php(114): Automattic\\\\WooCommerce\\\\StoreApi\\\\Routes\\\\V1\\\\AbstractCartRoute->load_cart_session(Object(WP_REST_Request))\\n#3 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1292): Automattic\\\\WooCommerce\\\\StoreApi\\\\Routes\\\\V1\\\\AbstractCartRoute->get_response(Object(WP_REST_Request))\\n#4 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1125): WP_REST_Server->respond_to_request(Object(WP_REST_Request), \'\\/wc\\/store\\/v1\\/ca...\', Array, NULL)\\n#5 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(439): WP_REST_Server->dispatch(Object(WP_REST_Request))\\n#6 \\/var\\/www\\/html\\/wp-includes\\/rest-api.php(449): WP_REST_Server->serve_request(\'\\/wc\\/store\\/v1\\/ca...\')\\n#7 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): rest_api_loaded(Object(WP))\\n#8 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(NULL, Array)\\n#9 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(565): WP_Hook->do_action(Array)\\n#10 \\/var\\/www\\/html\\/wp-includes\\/class-wp.php(418): do_action_ref_array(\'parse_request\', Array)\\n#11 \\/var\\/www\\/html\\/wp-includes\\/class-wp.php(813): WP->parse_request(\'\')\\n#12 \\/var\\/www\\/html\\/wp-includes\\/functions.php(1336): WP->main(\'\')\\n#13 \\/var\\/www\\/html\\/wp-blog-header.php(16): wp()\\n#14 \\/var\\/www\\/html\\/index.php(17): require(\'\\/var\\/www\\/html\\/w...\')\\n#15 {main}\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Utilities\\/CartController.php(52): Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\CartController->set_cart_item_quantity(\'db85e2590b61098...\', 1)\\n#1 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Routes\\/V1\\/AbstractCartRoute.php(180): Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\CartController->normalize_cart()\\n#2 \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce\\/src\\/StoreApi\\/Routes\\/V1\\/AbstractCartRoute.php(114): Automattic\\\\WooCommerce\\\\StoreApi\\\\Routes\\\\V1\\\\AbstractCartRoute->load_cart_session(Object(WP_REST_Request))\\n#3 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1292): Automattic\\\\WooCommerce\\\\StoreApi\\\\Routes\\\\V1\\\\AbstractCartRoute->get_response(Object(WP_REST_Request))\\n#4 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(1125): WP_REST_Server->respond_to_request(Object(WP_REST_Request), \'\\/wc\\/store\\/v1\\/ca...\', Array, NULL)\\n#5 \\/var\\/www\\/html\\/wp-includes\\/rest-api\\/class-wp-rest-server.php(439): WP_REST_Server->dispatch(Object(WP_REST_Request))\\n#6 \\/var\\/www\\/html\\/wp-includes\\/rest-api.php(449): WP_REST_Server->serve_request(\'\\/wc\\/store\\/v1\\/ca...\')\\n#7 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): rest_api_loaded(Object(WP))\\n#8 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(NULL, Array)\\n#9 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(565): WP_Hook->do_action(Array)\\n#10 \\/var\\/www\\/html\\/wp-includes\\/class-wp.php(418): do_action_ref_array(\'parse_request\', Array)\\n#11 \\/var\\/www\\/html\\/wp-includes\\/class-wp.php(813): WP->parse_request(\'\')\\n#12 \\/var\\/www\\/html\\/wp-includes\\/functions.php(1336): WP->main(\'\')\\n#13 \\/var\\/www\\/html\\/wp-blog-header.php(16): wp()\\n#14 \\/var\\/www\\/html\\/index.php(17): require(\'\\/var\\/www\\/html\\/w...\')\\n#15 {main}\\n"
                     }
                 ]
             }
