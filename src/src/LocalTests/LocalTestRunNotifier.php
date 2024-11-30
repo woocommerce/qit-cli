@@ -225,7 +225,7 @@ class LocalTestRunNotifier {
 		}
 
 		if ( function_exists( 'gzcompress' ) && ! empty( $test_result_json_original ) ) {
-			$test_result_json_original = base64_encode( gzcompress( json_encode( $result_json ) ) );
+			$test_result_json_original = base64_encode( gzcompress( $test_result_json_original ) );
 		}
 
 		$data = [
