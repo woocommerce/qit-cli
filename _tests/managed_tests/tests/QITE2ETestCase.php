@@ -376,7 +376,7 @@ class QITE2ETestCase extends TestCase {
 					// Now, $value should be an array
 					if ( is_array( $value ) ) {
 						// Encode the array to JSON with proper options
-						$value = json_encode( $value, JSON_HEX_QUOT | JSON_HEX_APOS );
+						$value = json_encode( $value );
 						if ( $value === false ) {
 							echo "json_encode error: " . json_last_error_msg() . "\n";
 							return false;

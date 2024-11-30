@@ -35,3 +35,8 @@ To run only a single test type, run `php QitSelfTests.php run TEST_TYPE`. For ex
 - Create the SUT plugin directory with the plugin files to test, eg: `performance/test-1/{SLUG}`, where `{SLUG}` follows the same convention as existing tests.
 
 That's it, now you can run `php QitSelfTests.php run performance` to run the test. Validate that the snapshot is correct, and commit the snapshot.
+
+## Running the self-tests
+
+- `./vendor/bin/phpunit ./tests/self_test`
+- Or `./vendor/bin/phpunit -d --update-snapshots ./tests/self_test`
