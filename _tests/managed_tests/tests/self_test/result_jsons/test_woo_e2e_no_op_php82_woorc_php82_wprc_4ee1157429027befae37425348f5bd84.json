@@ -1,0 +1,82 @@
+[
+    {
+        "test_run_id": 1393482,
+        "run_id": 1393482,
+        "test_type": "woo-e2e",
+        "test_type_display": "Woo E2E",
+        "wordpress_version": "6.7.1",
+        "woocommerce_version": "9.5.0-beta.2",
+        "php_version": "8.2",
+        "max_php_version": "",
+        "min_php_version": "",
+        "additional_woo_plugins": [],
+        "additional_wp_plugins": [],
+        "test_log": "",
+        "status": "success",
+        "test_result_aws_url": "",
+        "test_result_aws_expiration": 0,
+        "is_development": true,
+        "send_notifications": false,
+        "woo_extension": {
+            "id": 18619,
+            "host": "wccom",
+            "name": "Google Product Feed",
+            "type": "plugin"
+        },
+        "client": "qit_cli",
+        "event": "cli_development_extension_test",
+        "optional_features": {
+            "hpos": false,
+            "new_product_editor": false
+        },
+        "test_results_manager_url": "https:\/\/stagingcompatibilitydashboard.wpcomstaging.com?qit_results=1393482.jJlxNJrQ0oesOndi32F0aPATbqlvdyPFTaMWsUvnZ5y3T3weSA2XU3x6pBLabvMg",
+        "test_results_manager_expiration": 1733505761,
+        "test_summary": "427 total, 382 passed, 0 failed, 45 skipped.",
+        "debug_log": "{\"b2222e813b8a81aa3cc5969e1a2d6fe9\":{\"count\":1,\"message\":\"PHP Fatal error: Uncaught Automattic\\\\WooCommerce\\\\StoreApi\\\\Exceptions\\\\RouteException: The quantity of \u0022Product 1732902946548\u0022 cannot be changed in \\\/var\\\/www\\\/html\\\/wp-content\\\/plugins\\\/woocommerce\\\/src\\\/StoreApi\\\/Utilities\\\/CartController.php:238\\nStack trace:\\n#0 \\\/var\\\/www\\\/html\\\/wp-content\\\/plugins\\\/woocommerce\\\/src\\\/StoreApi\\\/Utilities\\\/CartController.php(52): Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\CartController->set_cart_item_quantity(\\u0027766ebcd59621e30...\\u0027, 1)\\n#1 \\\/var\\\/www\\\/html\\\/wp-content\\\/plugins\\\/woocommerce\\\/src\\\/StoreApi\\\/Routes\\\/V1\\\/AbstractCartRoute.php(180): Automattic\\\\WooCommerce\\\\StoreApi\\\\Utilities\\\\CartController->normalize_cart()\\n#2 \\\/var\\\/www\\\/html\\\/wp-content\\\/plugins\\\/woocommerce\\\/src\\\/StoreApi\\\/Routes\\\/V1\\\/AbstractCartRoute.php(114): Automattic\\\\WooCommerce\\\\StoreApi\\\\Routes\\\\V1\\\\AbstractCartRoute->load_cart_session(Object(WP_REST_Request))\\n#3 \\\/var\\\/www\\\/html\\\/wp-includes\\\/rest-api\\\/class-wp-rest-server.php(1292): Automattic\\\\WooCommerce\\\\StoreApi\\\\Routes\\\\V1\\\\AbstractCartRoute->get_response(Object(WP_REST_Request))\\n#4 \\\/var\\\/www\\\/html\\\/wp-includes\\\/rest-api\\\/class-wp-rest-server.php(1125): WP_REST_Server->respond_to_request(Object(WP_REST_Request), \\u0027\\\/wc\\\/store\\\/v1\\\/ca...\\u0027, Array, NULL)\\n#5 \\\/var\\\/www\\\/html\\\/wp-includes\\\/rest-api\\\/class-wp-rest-server.php(439): WP_REST_Server->dispatch(Object(WP_REST_Request))\\n#6 \\\/var\\\/www\\\/html\\\/wp-includes\\\/rest-api.php(449): WP_REST_Server->serve_request(\\u0027\\\/wc\\\/store\\\/v1\\\/ca...\\u0027)\\n#7 \\\/var\\\/www\\\/html\\\/wp-includes\\\/class-wp-hook.php(324): rest_api_loaded(Object(WP))\\n#8 \\\/var\\\/www\\\/html\\\/wp-includes\\\/class-wp-hook.php(348): WP_Hook->apply_filters(NULL, Array)\\n#9 \\\/var\\\/www\\\/html\\\/wp-includes\\\/plugin.php(565): WP_Hook->do_action(Array)\\n#10 \\\/var\\\/www\\\/html\\\/wp-includes\\\/class-wp.php(418): do_action_ref_array(\\u0027parse_request\\u0027, Array)\\n#11 \\\/var\\\/www\\\/html\\\/wp-includes\\\/class-wp.php(813): WP->parse_request(\\u0027\\u0027)\\n#12 \\\/var\\\/www\\\/html\\\/wp-includes\\\/functions.php(1336): WP->main(\\u0027\\u0027)\\n#13 \\\/var\\\/www\\\/html\\\/wp-blog-header.php(16): wp()\\n#14 \\\/var\\\/www\\\/html\\\/index.php(17): require(\\u0027\\\/var\\\/www\\\/html\\\/w...\\u0027)\\n#15 {main}\\n\"}}",
+        "version": "Undefined",
+        "update_complete": true,
+        "ai_suggestion_status": "none",
+        "malware_whitelist_paths": [],
+        "workflow_id": "12088625093",
+        "runner": "public",
+        "test_media": [],
+        "test_result_json_extracted": "{EXTRACTED}"
+    },
+    {
+        "test_result_json": {
+            "numFailedTestSuites": 0,
+            "numPassedTestSuites": 86,
+            "numPendingTestSuites": 22,
+            "numTotalTestSuites": 108,
+            "numFailedTests": 0,
+            "numPassedTests": 382,
+            "numPendingTests": 45,
+            "numTotalTests": 427,
+            "testResults": [
+                {
+                    "file": "activate-and-setup\/core-profiler.spec.js",
+                    "status": "passed",
+                    "has_pending": true,
+                    "tests": {
+                        "Store owner can complete the core profiler": [
+                            {
+                                "title": "Can complete the core profiler skipping extension install",
+                                "status": "passed"
+                            },
+                            {
+                                "title": "Can complete the core profiler installing default extensions",
+                                "status": "pending"
+                            }
+                        ],
+                        "Store owner can skip the core profiler": [
+                            {
+                                "title": "Can click skip guided setup",
+                                "status": "passed"
+                            },
+                            {
+                                "title": "Can connect to WooCommerce.com",
+                                "status": "passed"
+                            }
+                        ]
+                    }
+                },
