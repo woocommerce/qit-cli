@@ -356,11 +356,6 @@ class QITE2ETestCase extends TestCase {
 						return true;
 					}
 
-					// Save it to file as "pre"
-					$tmp_name = tempnam( sys_get_temp_dir(), 'debug_log_pre_' );
-					file_put_contents( $tmp_name, is_array($value) ? json_encode( $value ) : $value );
-					echo "Debug log written to: $tmp_name\n";
-
 					// Check if $value is a JSON string
 					if ( is_string( $value ) ) {
 						$decoded_value = json_decode( $value, true );
@@ -389,11 +384,6 @@ class QITE2ETestCase extends TestCase {
 
 					// Validate the JSON
 					$is_valid = json_decode( $value ) !== null && json_last_error() === JSON_ERROR_NONE;
-
-					// Write it to a tmp file and echo the path for debugging
-					$tmp_name = tempnam( sys_get_temp_dir(), 'debug_log_' );
-					file_put_contents( $tmp_name, $value );
-					echo "Debug log written to: $tmp_name\n";
 
 					return $is_valid;
 				},
