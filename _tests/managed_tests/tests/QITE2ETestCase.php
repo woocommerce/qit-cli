@@ -356,11 +356,36 @@ class QITE2ETestCase extends TestCase {
 						return true;
 					}
 
-					if ( is_array( $value ) ) {
-						$value = json_encode( $value );
+					// Check if $value is a JSON string
+					if ( is_string( $value ) ) {
+						$decoded_value = json_decode( $value, true );
+						if ( json_last_error() === JSON_ERROR_NONE ) {
+							$value = $decoded_value;
+						} else {
+							// If it's not valid JSON, return false
+							echo "json_decode error: " . json_last_error_msg() . "\n";
+							return false;
+						}
 					}
 
-					return ! is_null( json_decode( $value ) );
+					// Now, $value should be an array
+					if ( is_array( $value ) ) {
+						// Encode the array to JSON with proper options
+						$value = json_encode( $value );
+						if ( $value === false ) {
+							echo "json_encode error: " . json_last_error_msg() . "\n";
+							return false;
+						}
+					} else {
+						// If $value is neither an array nor a valid JSON string
+						echo "Value is neither an array nor a valid JSON string.\n";
+						return false;
+					}
+
+					// Validate the JSON
+					$is_valid = json_decode( $value ) !== null && json_last_error() === JSON_ERROR_NONE;
+
+					return $is_valid;
 				},
 			],
 			'test_result_aws_expiration'      => [

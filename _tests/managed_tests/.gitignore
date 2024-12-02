@@ -1,3 +1,4 @@
 tests/*
 !tests/__snapshots__
+!tests/self_test
 !tests/QITE2ETestCase.php

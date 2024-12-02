@@ -7,7 +7,7 @@
             "test_type_display": "Woo E2E",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
-            "php_version": "8.2",
+            "php_version": "7.4",
             "max_php_version": "",
             "min_php_version": "",
             "additional_woo_plugins": [],
@@ -32,7 +32,8 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "448 total, 384 passed, 0 failed, 64 skipped.",
+            "test_summary": "427 total, 382 passed, 0 failed, 45 skipped.",
+            "debug_log": "{\\"e4c41cc649924e24c8e617d2bbaa88eb\\":{\\"count\\":1,\\"message\\":\\"PHP Fatal error: Uncaught Automattic\\\\\\\\WooCommerce\\\\\\\\StoreApi\\\\\\\\Exceptions\\\\\\\\RouteException: The quantity of Product 1732903050889 cannot be changed in \\\\\\/var\\\\\\/www\\\\\\/html\\\\\\/wp-content\\\\\\/plugins\\\\\\/woocommerce\\\\\\/src\\\\\\/StoreApi\\\\\\/Utilities\\\\\\/CartController.php:238\\\\nStack trace:\\\\n#0 \\\\\\/var\\\\\\/www\\\\\\/html\\\\\\/wp-content\\\\\\/plugins\\\\\\/woocommerce\\\\\\/src\\\\\\/StoreApi\\\\\\/Utilities\\\\\\/CartController.php(52): Automattic\\\\\\\\WooCommerce\\\\\\\\StoreApi\\\\\\\\Utilities\\\\\\\\CartController->set_cart_item_quantity(\\\\u0027db85e2590b61098...\\\\u0027, 1)\\\\n#1 \\\\\\/var\\\\\\/www\\\\\\/html\\\\\\/wp-content\\\\\\/plugins\\\\\\/woocommerce\\\\\\/src\\\\\\/StoreApi\\\\\\/Routes\\\\\\/V1\\\\\\/AbstractCartRoute.php(180): Automattic\\\\\\\\WooCommerce\\\\\\\\StoreApi\\\\\\\\Utilities\\\\\\\\CartController->normalize_cart()\\\\n#2 \\\\\\/var\\\\\\/www\\\\\\/html\\\\\\/wp-content\\\\\\/plugins\\\\\\/woocommerce\\\\\\/src\\\\\\/StoreApi\\\\\\/Routes\\\\\\/V1\\\\\\/AbstractCartRoute.php(114): Automattic\\\\\\\\WooCommerce\\\\\\\\StoreApi\\\\\\\\Routes\\\\\\\\V1\\\\\\\\AbstractCartRoute->load_cart_session(Object(WP_REST_Request))\\\\n#3 \\\\\\/var\\\\\\/www\\\\\\/html\\\\\\/wp-includes\\\\\\/rest-api\\\\\\/class-wp-rest-server.php(1292): Automattic\\\\\\\\WooCommerce\\\\\\\\StoreApi\\\\\\\\Routes\\\\\\\\V1\\\\\\\\AbstractCartRoute->get_response(Object(WP_REST_Request))\\\\n\\"}}",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -40,37 +41,19 @@
             "workflow_id": "1234567890",
             "runner": "normalized",
             "test_media": [],
-            "test_result_json_extracted": "{EXTRACTED}",
-            "debug_log_extracted": "{EXTRACTED}"
+            "test_result_json_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 87,
-                "numPendingTestSuites": 24,
-                "numTotalTestSuites": 111,
+                "numPassedTestSuites": 86,
+                "numPendingTestSuites": 22,
+                "numTotalTestSuites": 108,
                 "numFailedTests": 0,
-                "numPassedTests": 384,
-                "numPendingTests": 64,
-                "numTotalTests": 448,
+                "numPassedTests": 382,
+                "numPendingTests": 45,
+                "numTotalTests": 427,
                 "testResults": [
-                    {
-                        "file": "activate-and-setup\\/basic-setup.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Store owner can finish initial store setup": [
-                                {
-                                    "title": "can enable tax rates and calculations",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can configure permalink settings",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
                     {
                         "file": "activate-and-setup\\/core-profiler.spec.js",
                         "status": "passed",
@@ -93,19 +76,6 @@
                                 },
                                 {
                                     "title": "Can connect to WooCommerce.com",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "activate-and-setup\\/setup-onboarding.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Store owner can login and make sure WooCommerce is activated": [
-                                {
-                                    "title": "can make sure WooCommerce is activated.",
                                     "status": "passed"
                                 }
                             ]
@@ -299,7 +269,7 @@
                     {
                         "file": "customize-store\\/assembler\\/color-picker.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Assembler -> Color Pickers": [
                                 {
@@ -307,72 +277,8 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Color palette Blueberry Sorbet should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Ancient Bronze should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Crimson Tide should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Purple Twilight should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Green Thumb should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Golden Haze should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Golden Indigo should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Arctic Dawn should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Raspberry Chocolate should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Canary should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Ice should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Rustic Rosewood should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Cinnamon Latte should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Lightning should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Aquamarine Night should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Charcoal should be applied",
-                                    "status": "pending"
-                                },
-                                {
                                     "title": "Color palette Slate should be applied",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Color picker should be focused when a color is picked",
@@ -687,7 +593,7 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Clicking on \\"View store\\" should go to the store home page in a new page",
+                                    "title": "Clicking on \\"View store\\" should go to the store home page",
                                     "status": "passed"
                                 },
                                 {
@@ -2929,31 +2835,9 @@
                                 }
                             ]
                         }
-                    },
-                    {
-                        "file": "smoke-tests\\/update-woocommerce.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "WooCommerce update": [
-                                {
-                                    "title": "can update WooCommerce to \\"undefined\\"",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can run the database update",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
                     }
                 ],
-                "summary": "448 total, 384 passed, 0 failed, 64 skipped."
-            }
-        },
-        {
-            "debug_log": {
-                "generic": []
+                "summary": "427 total, 382 passed, 0 failed, 45 skipped."
             }
         }
     ]
