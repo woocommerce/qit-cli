@@ -2,9 +2,7 @@
 
 namespace QIT_CLI\Commands\CustomTests;
 
-use QIT_CLI\App;
 use QIT_CLI\Cache;
-use QIT_CLI\IO\Output;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
@@ -35,7 +33,8 @@ class ShowReportCommand extends Command {
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		if ( ! is_null( $input->getArgument( 'report_dir' ) ) ) {
-			$local_report = $input->getArgument( 'report_dir' );
+			$local_report  = $input->getArgument( 'report_dir' );
+			$remote_report = null; // Assuming no remote report is provided when report_dir is specified.
 		} else {
 			$report_dir = json_decode( $this->cache->get( 'last_e2e_report' ) ?: '', true );
 
@@ -49,6 +48,27 @@ class ShowReportCommand extends Command {
 			$remote_report = $report_dir['remote_qit'];
 		}
 
+		// Handle --dir_only option early.
+		if ( $input->getOption( 'dir_only' ) ) {
+			if ( $input->getOption( 'local' ) || empty( $remote_report ) ) {
+				// If --local is set or no remote report exists, show local directory.
+				if ( ! file_exists( $local_report ) ) {
+					throw new \RuntimeException( sprintf( 'Could not find the report directory: %s', $local_report ) );
+				}
+
+				$directory = dirname( $local_report );
+				$output->writeln( $directory );
+
+				return Command::SUCCESS;
+			} else {
+				// Show remote directory if available and --local is not set.
+				$directory = $remote_report;
+				$output->writeln( $directory );
+
+				return Command::SUCCESS;
+			}
+		}
+
 		// If it has both local and remote, show the remote, unless "force-local" is true.
 		if ( ! $input->getOption( 'local' ) && ! empty( $remote_report ) ) {
 			open_in_browser( $remote_report );
@@ -56,6 +76,7 @@ class ShowReportCommand extends Command {
 			return Command::SUCCESS;
 		}
 
+		// Proceed with handling local report.
 		if ( ! file_exists( $local_report ) ) {
 			throw new \RuntimeException( sprintf( 'Could not find the report directory: %s', $local_report ) );
 		}
@@ -64,27 +85,18 @@ class ShowReportCommand extends Command {
 			throw new \RuntimeException( sprintf( 'Could not find the report file: %s', $local_report . '/index.html' ) );
 		}
 
-		if ( $input->getOption( 'dir_only' ) ) {
-			// We usually want the "HTML" report, but here print the general result directory.
-			$local_report = dirname( $local_report );
-
-			$output->writeln( $local_report );
-
-			return Command::SUCCESS;
-		}
-
 		try {
 			$port = $this->start_server( $local_report );
-			echo "Server started on port: $port\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$output->writeln( "Server started on port: $port" );
 		} catch ( \RuntimeException $e ) {
-			echo 'Error: ' . $e->getMessage() . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$output->writeln( 'Error: ' . $e->getMessage() );
 
 			return Command::FAILURE;
 		}
 
 		open_in_browser( "http://localhost:$port" );
 
-		( new QuestionHelper() )->ask( App::make( InputInterface::class ), App::make( Output::class ), new Question( "Report available on http://localhost:$port. Press Ctrl+C to quit." ) );
+		( new QuestionHelper() )->ask( $input, $output, new Question( "Report available on http://localhost:$port. Press Ctrl+C to quit." ) );
 
 		return Command::SUCCESS;
 	}
