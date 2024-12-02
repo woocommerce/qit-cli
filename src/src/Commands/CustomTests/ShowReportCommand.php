@@ -27,49 +27,47 @@ class ShowReportCommand extends Command {
 		$this
 			->addArgument( 'report_dir', InputArgument::OPTIONAL, '(Optional) The report directory. If not set, will show the last report.' )
 			->addOption( 'local', null, null, 'Force showing the local report instead of the remote one.' )
-			->addOption( 'dir_only', null, null, 'Only show the report directory.' )
+			->addOption( 'dir_only', null, null, 'Only output the local report directory path.' )
 			->setDescription( 'Shows a test report.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
+		// Determine the report directories.
 		if ( ! is_null( $input->getArgument( 'report_dir' ) ) ) {
 			$local_report  = $input->getArgument( 'report_dir' );
-			$remote_report = null; // Assuming no remote report is provided when report_dir is specified.
+			$remote_report = null; // Assuming no remote report when report_dir is specified.
 		} else {
 			$report_dir = json_decode( $this->cache->get( 'last_e2e_report' ) ?: '', true );
 
 			if ( empty( $report_dir ) ) {
-				$output->writeln( 'No report found.' );
+				$output->writeln( '<error>No report found.</error>' );
 
 				return Command::FAILURE;
 			}
 
 			$local_report  = $report_dir['local_playwright'];
-			$remote_report = $report_dir['remote_qit'];
+			$remote_report = $report_dir['remote_qit'] ?? null; // Use null coalescing in case 'remote_qit' is not set.
 		}
 
 		// Handle --dir_only option early.
 		if ( $input->getOption( 'dir_only' ) ) {
-			if ( $input->getOption( 'local' ) || empty( $remote_report ) ) {
-				// If --local is set or no remote report exists, show local directory.
-				if ( ! file_exists( $local_report ) ) {
-					throw new \RuntimeException( sprintf( 'Could not find the report directory: %s', $local_report ) );
-				}
-
-				$directory = dirname( $local_report );
-				$output->writeln( $directory );
-
-				return Command::SUCCESS;
-			} else {
-				// Show remote directory if available and --local is not set.
-				$directory = $remote_report;
-				$output->writeln( $directory );
-
-				return Command::SUCCESS;
+			// Check if the local report directory exists.
+			if ( ! file_exists( $local_report ) ) {
+				throw new \RuntimeException( sprintf( 'Could not find the report directory: %s', $local_report ) );
 			}
+
+			// Output the local report directory path.
+			$directory = realpath( $local_report );
+			if ( $directory === false ) {
+				throw new \RuntimeException( sprintf( 'Invalid report directory path: %s', $local_report ) );
+			}
+
+			$output->writeln( $directory );
+
+			return Command::SUCCESS;
 		}
 
-		// If it has both local and remote, show the remote, unless "force-local" is true.
+		// If remote_report exists and --local is not set, open the remote report.
 		if ( ! $input->getOption( 'local' ) && ! empty( $remote_report ) ) {
 			open_in_browser( $remote_report );
 
@@ -87,16 +85,21 @@ class ShowReportCommand extends Command {
 
 		try {
 			$port = $this->start_server( $local_report );
-			$output->writeln( "Server started on port: $port" );
+			$output->writeln( "<info>Server started on port: $port</info>" );
 		} catch ( \RuntimeException $e ) {
-			$output->writeln( 'Error: ' . $e->getMessage() );
+			$output->writeln( '<error>Error: ' . $e->getMessage() . '</error>' );
 
 			return Command::FAILURE;
 		}
 
 		open_in_browser( "http://localhost:$port" );
 
-		( new QuestionHelper() )->ask( $input, $output, new Question( "Report available on http://localhost:$port. Press Ctrl+C to quit." ) );
+		// Prompt the user to keep the server running.
+		( new QuestionHelper() )->ask(
+			$input,
+			$output,
+			new Question( "Report available on http://localhost:$port. Press Ctrl+C to quit." )
+		);
 
 		return Command::SUCCESS;
 	}

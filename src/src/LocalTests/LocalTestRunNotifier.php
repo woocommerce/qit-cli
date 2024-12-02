@@ -161,7 +161,7 @@ class LocalTestRunNotifier {
 			}
 
 			$test_result_json_original = $result_json;
-			$result_json = $this->playwright_to_puppeteer_converter->convert_pw_to_puppeteer( json_decode( $result_json, true ) );
+			$result_json               = $this->playwright_to_puppeteer_converter->convert_pw_to_puppeteer( json_decode( $result_json, true ) );
 		} else {
 			$result_json = [];
 		}
