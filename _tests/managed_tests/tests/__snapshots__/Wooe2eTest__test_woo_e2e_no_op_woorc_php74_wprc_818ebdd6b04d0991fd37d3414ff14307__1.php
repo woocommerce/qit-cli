@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "427 total, 382 passed, 0 failed, 45 skipped.",
+            "test_summary": "427 total, 379 passed, 2 failed, 46 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,13 +45,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 86,
-                "numPendingTestSuites": 22,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 84,
+                "numPendingTestSuites": 23,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 0,
-                "numPassedTests": 382,
-                "numPendingTests": 45,
+                "numFailedTests": 2,
+                "numPassedTests": 379,
+                "numPendingTests": 46,
                 "numTotalTests": 427,
                 "testResults": [
                     {
@@ -1495,7 +1495,7 @@
                     {
                         "file": "merchant\\/product-reviews.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Product Reviews": [
                                 {
@@ -1524,7 +1524,7 @@
                                 },
                                 {
                                     "title": "can reply to a product review",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete a product review",
@@ -2001,7 +2001,7 @@
                     },
                     {
                         "file": "merchant\\/users-manage.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "can update customer data": [
@@ -2019,13 +2019,13 @@
                             "can delete a customer": [
                                 {
                                     "title": "can delete a customer",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "can delete a shop manager": [
                                 {
                                     "title": "can delete a shop manager",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2837,7 +2837,7 @@
                         }
                     }
                 ],
-                "summary": "427 total, 382 passed, 0 failed, 45 skipped."
+                "summary": "427 total, 379 passed, 2 failed, 46 skipped."
             }
         },
         {
