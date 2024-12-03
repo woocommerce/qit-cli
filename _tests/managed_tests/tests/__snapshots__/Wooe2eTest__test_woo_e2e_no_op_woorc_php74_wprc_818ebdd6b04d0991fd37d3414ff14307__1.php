@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "427 total, 379 passed, 2 failed, 46 skipped.",
+            "test_summary": "427 total, 381 passed, 0 failed, 46 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,12 +45,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 84,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 85,
                 "numPendingTestSuites": 23,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 2,
-                "numPassedTests": 379,
+                "numFailedTests": 0,
+                "numPassedTests": 381,
                 "numPendingTests": 46,
                 "numTotalTests": 427,
                 "testResults": [
@@ -2001,7 +2001,7 @@
                     },
                     {
                         "file": "merchant\\/users-manage.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "can update customer data": [
@@ -2019,13 +2019,13 @@
                             "can delete a customer": [
                                 {
                                     "title": "can delete a customer",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "can delete a shop manager": [
                                 {
                                     "title": "can delete a shop manager",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2837,7 +2837,7 @@
                         }
                     }
                 ],
-                "summary": "427 total, 379 passed, 2 failed, 46 skipped."
+                "summary": "427 total, 381 passed, 0 failed, 46 skipped."
             }
         },
         {
