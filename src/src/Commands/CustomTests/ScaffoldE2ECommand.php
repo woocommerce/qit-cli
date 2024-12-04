@@ -5,6 +5,7 @@ namespace QIT_CLI\Commands\CustomTests;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -17,6 +18,8 @@ class ScaffoldE2ECommand extends Command {
 	protected function configure() {
 		$this
 			->addArgument( 'path', InputArgument::REQUIRED, 'The path to scaffold an example E2E test.' )
+			->addOption( 'with-shared', 's', InputOption::VALUE_NONE, 'Include shared setup examples.' )
+			->addOption( 'with-teardown', 't', InputOption::VALUE_NONE, 'Include teardown examples.' )
 			->setDescription( 'Scaffold an example E2E test.' );
 	}
 
@@ -26,7 +29,7 @@ class ScaffoldE2ECommand extends Command {
 		$path_to_generate = normalize_path( $path );
 
 		if ( file_exists( $path_to_generate ) ) {
-			if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "Directory already exists. Scaffold E2E tests in \"$path_to_generate\" anyway? <question>(y/n)</question> ", false ) ) ) {
+			if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "Directory already exists. Do you want to delete this directory and Scaffold E2E tests in \"$path_to_generate\" anyway? <question>(y/n)</question> ", false ) ) ) {
 				return Command::SUCCESS;
 			}
 
@@ -59,39 +62,53 @@ class ScaffoldE2ECommand extends Command {
 			return Command::FAILURE;
 		}
 
-		// Create basic bootstrap.
+		// Create basic 'bootstrap' directory.
 		if ( ! mkdir( $path_to_generate . '/bootstrap', 0755, true ) ) {
 			$output->writeln( '<error>Could not create directory: ' . $path_to_generate . '/bootstrap</error>' );
 
 			return Command::FAILURE;
 		}
 
-		// bootstrap.sh.
-		if ( ! file_put_contents( $path_to_generate . '/bootstrap/bootstrap.sh', $this->generate_bootstrap_shell_example() ) ) {
-			$output->writeln( '<error>Could not create file: ' . $path_to_generate . '/bootstrap/bootstrap.sh</error>' );
+		// We bootstrap with isolated setup files by default.
+		$files = [
+			'setup-sh.txt'          => '/bootstrap/setup.sh',
+			'setup-js.txt'          => '/bootstrap/setup.js',
+			'mu-plugin-php.txt'     => '/bootstrap/mu-plugin.php',
+			'dependencies-json.txt' => '/bootstrap/dependencies.json',
+			'example-spec-js.txt'   => '/example.spec.js',
+		];
 
-			return Command::FAILURE;
+		// If the user requests shared setup examples, we include them.
+		if ( $input->getOption( 'with-shared' ) ) {
+			$files = array_merge( $files, [
+				'shared-setup-sh.txt' => '/bootstrap/shared-setup.sh',
+				'shared-setup-js.txt' => '/bootstrap/shared-setup.js',
+			] );
 		}
 
-		// bootstrap.php (read from text file to avoid our prefixer).
-		if ( ! file_put_contents( $path_to_generate . '/bootstrap/bootstrap.php', file_get_contents( __DIR__ . '/scaffolding/bootstrap-php.txt' ) ) ) {
-			$output->writeln( '<error>Could not create file: ' . $path_to_generate . '/bootstrap/bootstrap.php</error>' );
+		// If the user requests teardown examples, include both isolated and shared teardowns.
+		if ( $input->getOption( 'with-teardown' ) ) {
+			$teardown_files = [
+				'teardown-sh.txt' => '/bootstrap/teardown.sh',
+				'teardown-js.txt' => '/bootstrap/teardown.js',
+			];
 
-			return Command::FAILURE;
+			// Add shared teardowns only if shared setups were requested.
+			if ( $input->getOption( 'with-shared' ) ) {
+				$teardown_files = array_merge( $teardown_files, [
+					'shared-teardown-sh.txt' => '/bootstrap/shared-teardown.sh',
+					'shared-teardown-js.txt' => '/bootstrap/shared-teardown.js',
+				] );
+			}
+
+			$files = array_merge( $files, $teardown_files );
 		}
 
-		// mu-plugin.php (read from text file to avoid our prefixer).
-		if ( ! file_put_contents( $path_to_generate . '/bootstrap/mu-plugin.php', file_get_contents( __DIR__ . '/scaffolding/mu-plugin.txt' ) ) ) {
-			$output->writeln( '<error>Could not create file: ' . $path_to_generate . '/bootstrap/mu-plugin.php</error>' );
-
-			return Command::FAILURE;
-		}
-
-		// example.spec.js.
-		if ( ! file_put_contents( $path_to_generate . '/example.spec.js', $this->example_spec_js() ) ) {
-			$output->writeln( '<error>Could not create file: ' . $path_to_generate . '/example.spec.js</error>' );
-
-			return Command::FAILURE;
+		foreach ( $files as $example => $destination ) {
+			$result = $this->create_file_from_template( $output, $path_to_generate, $example, $destination );
+			if ( $result === Command::FAILURE ) {
+				return $result;
+			}
 		}
 
 		$output->writeln( '<info>Example E2E test generated in: ' . $path_to_generate . '</info>' );
@@ -99,6 +116,16 @@ class ScaffoldE2ECommand extends Command {
 		$output->writeln( 'You can start writing your tests with codegen: <comment>qit run:e2e --codegen</comment>' );
 		$output->writeln( 'And when you are ready, you can publish your tests with <comment>qit test-tags:upload <your_slug> <path_to_test></comment>' );
 		$output->writeln( 'Read more about it on our documentation: https://qit.woo.com/docs/custom-tests/generating-tests' );
+
+		return Command::SUCCESS;
+	}
+
+	protected function create_file_from_template( OutputInterface $output, string $path_to_generate, string $source, string $destination ): int {
+		if ( ! file_put_contents( "$path_to_generate/$destination", file_get_contents( __DIR__ . "/scaffolding/$source" ) ) ) {
+			$output->writeln( '<error>Could not create file: ' . basename( $destination ) . '</error>' );
+
+			return Command::FAILURE;
+		}
 
 		return Command::SUCCESS;
 	}
@@ -119,6 +146,7 @@ class ScaffoldE2ECommand extends Command {
 				'*.sh',
 				'*.php',
 				'*.js',
+				'dependencies.json',
 			],
 		];
 
@@ -205,49 +233,5 @@ class ScaffoldE2ECommand extends Command {
 		} catch ( \Exception $exception ) {
 			throw new \RuntimeException( "An error occurred while deleting '$path_to_generate': " . $exception->getMessage() );
 		}
-	}
-
-	protected function generate_bootstrap_shell_example(): string {
-		return <<<'SHELL'
-#!/bin/bash
-
-# Bootstrap Shell Script (Optional)
-
-# Purpose: This script is executed before test runs to set up the testing environment.
-#
-# Usage:
-# - Use WP CLI to configure prerequisites for your tests. 
-# - Example: To install a specific theme required for tests:
-#   wp theme install twentytwentynine
-#   (You can then activate this theme during your tests)
-#
-# Note: Delete this file if it's not required for your setup.
-#
-# Documentation: Detailed instructions available at https://qit.woo.com/docs/custom-tests/generating-tests
-SHELL;
-	}
-
-	protected function example_spec_js(): string {
-		return <<<'JS'
-/*
- * This is an example E2E test. You can write your own tests, or generate them with Codegen.
- * 
- * Read more about it on our documentation: https://qit.woo.com/docs/custom-tests/generating-tests
- */
-import { test, expect } from '@playwright/test';
-import qit from '/qitHelpers';
-
-test('I can see my plugin menu', async ({ page }) => {
-    // Log-in as admin.
-    await qit.loginAsAdmin(page);
-    // View WordPress Core "Dashboard" heading
-    await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible();
-    // Click on my menu on the sidebar.
-    // await page.getByRole('link', { name: 'My Plugin Menu', exact: true }).click();
-    // await page.waitForLoadState('networkidle');
-    // Assert I see my welcome message when I click it.
-    // await expect(page.locator('h3')).toContainText('Welcome to My Plugin!');
-});
-JS;
 	}
 }

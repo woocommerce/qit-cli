@@ -46,8 +46,13 @@ class PluginsAndThemesParser {
 			throw new \LogicException( sprintf( 'Invalid type "%s". Valid types are: %s', $type, implode( ', ', Extension::TYPES ) ) );
 		}
 
+		$sut_slug = getenv( 'QIT_SUT' );
+
 		foreach ( $plugins_or_themes as $potential_slug => $extension ) {
+			$string_extension = null;
 			if ( is_string( $extension ) ) {
+				$string_extension = $extension;
+
 				/*
 				 * Short-syntax like "qit-beaver:test:rc,foo-feature"
 				 */
@@ -148,9 +153,28 @@ class PluginsAndThemesParser {
 			$extension_instance->test_tags = $extension['test_tags'];
 			$extension_instance->type      = $type;
 
+			// Force SUT to be "test" action.
+			if ( $extension_instance->slug === $sut_slug ) {
+				$extension_instance->action = Extension::ACTIONS['test'];
+			}
+
 			// Check if this "slug" is already defined, if it is, override it.
-			foreach ( $parsed_extensions as $k => $p ) {
-				if ( $p->slug === $extension_instance->slug ) {
+			foreach ( $parsed_extensions as $k => $already_parsed ) {
+				if ( $extension_instance->slug === $already_parsed->slug ) {
+					/*
+					 * We inject the SUT using a short-syntax string.
+					 * If the SUT is declared in a qit.yml file, this
+					 * overrides it, so we need to prevent it.
+					 */
+					if ( $extension_instance->slug === $sut_slug ) {
+						if ( ! is_null( $string_extension ) ) {
+							$pattern = sprintf( '/^%s:%s(:base64.*)?$/', $sut_slug, Extension::ACTIONS['test'] );
+							if ( preg_match( $pattern, $string_extension ) ) {
+								continue 2;
+							}
+						}
+					}
+
 					$parsed_extensions[ $k ] = $extension_instance;
 					$this->output->writeln( sprintf( '<comment>Overriding extension "%s".</comment>', $extension['slug'] ) );
 					continue 2;

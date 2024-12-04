@@ -10,8 +10,14 @@ abstract class E2ERunner {
 	/** @var OutputInterface */
 	protected $output;
 
-	public function __construct( OutputInterface $output ) {
-		$this->output = $output;
+	/**
+	 * @var PlaywrightOrchestration $orchestration
+	 */
+	protected $orchestration;
+
+	public function __construct( OutputInterface $output, PlaywrightOrchestration $orchestration ) {
+		$this->output        = $output;
+		$this->orchestration = $orchestration;
 	}
 
 	/**
@@ -49,7 +55,7 @@ abstract class E2ERunner {
 			}
 		}
 
-		throw new \RuntimeException( sprintf( 'Could not find a valid runner type in %s', $e2e_test_path ) );
+		throw new \RuntimeException( sprintf( 'Could not find a valid runner type in %s. Are you missing "import { test, expect } from \'@playwright/test\';"?', $e2e_test_path ) );
 	}
 
 	/**
@@ -62,7 +68,6 @@ abstract class E2ERunner {
 	 *     type:string,
 	 *     action:string,
 	 *     path_in_php_container:string,
-	 *     path_in_playwright_container:string,
 	 *     path_in_host:string,
 	 *     path_in_host_original:string
 	 *  }>                     $test_infos

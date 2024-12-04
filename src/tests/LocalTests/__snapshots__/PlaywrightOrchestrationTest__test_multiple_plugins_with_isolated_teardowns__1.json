@@ -1,0 +1,100 @@
+[
+    {
+        "name": "[db export",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "db-export.js",
+        "retries": 0,
+        "dependencies": [],
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "[test] Plugin One (Run)",
+        "testDir": "test-path-in-php-container-1",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [
+            "[db export"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-one"
+        }
+    },
+    {
+        "name": "[teardown] Plugin One (Shell)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [
+            "[test] Plugin One (Run)"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "plugin-one",
+            "type": "Isolated Teardown for plugin-one (Bash)",
+            "file": "test-path-in-php-container-1\/bootstrap\/teardown.sh"
+        }
+    },
+    {
+        "name": "[teardown] Plugin One (JS)",
+        "testDir": "test-path-in-php-container-1\/bootstrap",
+        "testMatch": "teardown.js",
+        "dependencies": [
+            "[teardown] Plugin One (Shell)"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-one"
+        }
+    },
+    {
+        "name": "[db import",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "db-import.js",
+        "dependencies": [
+            "[teardown] Plugin One (JS)"
+        ],
+        "retries": 0,
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "[test] Plugin Two (Run)",
+        "testDir": "test-path-in-php-container-2",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [
+            "[db import"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-two"
+        }
+    },
+    {
+        "name": "[teardown] Plugin Two (Shell)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [
+            "[test] Plugin Two (Run)"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "plugin-two",
+            "type": "Isolated Teardown for plugin-two (Bash)",
+            "file": "test-path-in-php-container-2\/bootstrap\/teardown.sh"
+        }
+    },
+    {
+        "name": "[teardown] Plugin Two (JS)",
+        "testDir": "test-path-in-php-container-2\/bootstrap",
+        "testMatch": "teardown.js",
+        "dependencies": [
+            "[teardown] Plugin Two (Shell)"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "plugin-two"
+        }
+    }
+]

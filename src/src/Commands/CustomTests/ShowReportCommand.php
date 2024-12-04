@@ -2,9 +2,7 @@
 
 namespace QIT_CLI\Commands\CustomTests;
 
-use QIT_CLI\App;
 use QIT_CLI\Cache;
-use QIT_CLI\IO\Output;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
@@ -29,33 +27,54 @@ class ShowReportCommand extends Command {
 		$this
 			->addArgument( 'report_dir', InputArgument::OPTIONAL, '(Optional) The report directory. If not set, will show the last report.' )
 			->addOption( 'local', null, null, 'Force showing the local report instead of the remote one.' )
-			->addOption( 'dir_only', null, null, 'Only show the report directory.' )
+			->addOption( 'dir_only', null, null, 'Only output the local report directory path.' )
 			->setDescription( 'Shows a test report.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
+		// Determine the report directories.
 		if ( ! is_null( $input->getArgument( 'report_dir' ) ) ) {
-			$local_report = $input->getArgument( 'report_dir' );
+			$local_report  = $input->getArgument( 'report_dir' );
+			$remote_report = null; // Assuming no remote report when report_dir is specified.
 		} else {
 			$report_dir = json_decode( $this->cache->get( 'last_e2e_report' ) ?: '', true );
 
 			if ( empty( $report_dir ) ) {
-				$output->writeln( 'No report found.' );
+				$output->writeln( '<error>No report found.</error>' );
 
 				return Command::FAILURE;
 			}
 
 			$local_report  = $report_dir['local_playwright'];
-			$remote_report = $report_dir['remote_qit'];
+			$remote_report = $report_dir['remote_qit'] ?? null; // Use null coalescing in case 'remote_qit' is not set.
 		}
 
-		// If it has both local and remote, show the remote, unless "force-local" is true.
+		// Handle --dir_only option early.
+		if ( $input->getOption( 'dir_only' ) ) {
+			// Check if the local report directory exists.
+			if ( ! file_exists( $local_report ) ) {
+				throw new \RuntimeException( sprintf( 'Could not find the report directory: %s', $local_report ) );
+			}
+
+			// Output the local report directory path.
+			$directory = realpath( $local_report );
+			if ( $directory === false ) {
+				throw new \RuntimeException( sprintf( 'Invalid report directory path: %s', $local_report ) );
+			}
+
+			$output->writeln( $directory );
+
+			return Command::SUCCESS;
+		}
+
+		// If remote_report exists and --local is not set, open the remote report.
 		if ( ! $input->getOption( 'local' ) && ! empty( $remote_report ) ) {
 			open_in_browser( $remote_report );
 
 			return Command::SUCCESS;
 		}
 
+		// Proceed with handling local report.
 		if ( ! file_exists( $local_report ) ) {
 			throw new \RuntimeException( sprintf( 'Could not find the report directory: %s', $local_report ) );
 		}
@@ -64,27 +83,23 @@ class ShowReportCommand extends Command {
 			throw new \RuntimeException( sprintf( 'Could not find the report file: %s', $local_report . '/index.html' ) );
 		}
 
-		if ( $input->getOption( 'dir_only' ) ) {
-			// We usually want the "HTML" report, but here print the general result directory.
-			$local_report = dirname( $local_report );
-
-			$output->writeln( $local_report );
-
-			return Command::SUCCESS;
-		}
-
 		try {
 			$port = $this->start_server( $local_report );
-			echo "Server started on port: $port\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$output->writeln( "<info>Server started on port: $port</info>" );
 		} catch ( \RuntimeException $e ) {
-			echo 'Error: ' . $e->getMessage() . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			$output->writeln( '<error>Error: ' . $e->getMessage() . '</error>' );
 
 			return Command::FAILURE;
 		}
 
 		open_in_browser( "http://localhost:$port" );
 
-		( new QuestionHelper() )->ask( App::make( InputInterface::class ), App::make( Output::class ), new Question( "Report available on http://localhost:$port. Press Ctrl+C to quit." ) );
+		// Prompt the user to keep the server running.
+		( new QuestionHelper() )->ask(
+			$input,
+			$output,
+			new Question( "Report available on http://localhost:$port. Press Ctrl+C to quit." )
+		);
 
 		return Command::SUCCESS;
 	}

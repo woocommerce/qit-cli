@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# This is an isolated setup script that runs before your plugin's tests.
+# Use it to:
+# - Create test data specific to your plugin
+# - Set up plugin settings
+# - Create temporary files
+# - Set up test users or other resources needed for the tests
+
+# echo "Running isolated setup for the plugin..."
+# wp post create --post_title="Test Post" # Create a test post
+# wp user create testuser test@example.com # Create a test user
+
+# Add your setup commands here

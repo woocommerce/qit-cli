@@ -137,8 +137,9 @@ class LocalTestRunNotifier {
 
 		$results_dir = $test_result->get_results_dir();
 
-		$result_file  = $results_dir . '/result.json';
-		$qm_logs_path = $results_dir . '/logs';
+		$result_file               = $results_dir . '/result.json';
+		$qm_logs_path              = $results_dir . '/logs';
+		$test_result_json_original = '';
 
 		/**
 		 * If the logs directory exists, we will send the Query Monitor logs as well.
@@ -159,7 +160,8 @@ class LocalTestRunNotifier {
 				throw new \RuntimeException( 'Result file not a JSON.' );
 			}
 
-			$result_json = $this->playwright_to_puppeteer_converter->convert_pw_to_puppeteer( json_decode( $result_json, true ) );
+			$test_result_json_original = $result_json;
+			$result_json               = $this->playwright_to_puppeteer_converter->convert_pw_to_puppeteer( json_decode( $result_json, true ) );
 		} else {
 			$result_json = [];
 		}
@@ -222,12 +224,17 @@ class LocalTestRunNotifier {
 			$status = 'success';
 		}
 
+		if ( function_exists( 'gzcompress' ) && ! empty( $test_result_json_original ) ) {
+			$test_result_json_original = base64_encode( gzcompress( $test_result_json_original ) );
+		}
+
 		$data = [
-			'test_run_id'      => $test_run_id,
-			'test_result_json' => $result_json,
-			'bootstrap_log'    => json_encode( $test_result->bootstrap ),
-			'debug_log'        => json_encode( $debug_log ),
-			'status'           => $status,
+			'test_run_id'               => $test_run_id,
+			'test_result_json'          => $result_json,
+			'test_result_json_original' => $test_result_json_original,
+			'bootstrap_log'             => json_encode( $test_result->bootstrap ),
+			'debug_log'                 => json_encode( $debug_log ),
+			'status'                    => $status,
 		];
 
 		$r = App::make( RequestBuilder::class )

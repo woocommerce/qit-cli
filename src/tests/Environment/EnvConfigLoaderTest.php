@@ -32,7 +32,7 @@ class EnvConfigLoaderTest extends TestCase {
 			throw new \RuntimeException( 'This test is not running in a docker container. It should not be run outside of a docker container for safety reasons.' );
 		}
 
-		foreach ( glob( $this->configDir . '{.qit-env*,qit-env*}', GLOB_BRACE ) as $file ) {
+		foreach ( glob( $this->configDir . '{.qit*,qit*}', GLOB_BRACE ) as $file ) {
 			unlink( $file );
 		}
 		parent::tearDown();
@@ -49,69 +49,69 @@ class EnvConfigLoaderTest extends TestCase {
 	}
 
 	public function test_env_config_loader_from_json() {
-		$this->create_config_file( 'qit-env.json', json_encode( [ 'foo' => 'bar' ] ) );
+		$this->create_config_file( 'qit.json', json_encode( [ 'foo' => 'bar' ] ) );
 
 		$this->assertMatchesJsonSnapshot( $this->sut->load_config() );
 	}
 
 	public function test_env_config_loader_from_yml() {
-		$this->create_config_file( 'qit-env.yml', "foo: bar" );
+		$this->create_config_file( 'qit.yml', "foo: bar" );
 
 		$this->assertMatchesJsonSnapshot( $this->sut->load_config() );
 	}
 
 	public function test_env_config_loader_from_override_json() {
-		$this->create_config_file( 'qit-env.json', json_encode( [ 'foo' => 'bar' ] ) );
-		$this->create_config_file( 'qit-env.override.json', json_encode( [ 'foo' => 'baz' ] ) );
+		$this->create_config_file( 'qit.json', json_encode( [ 'foo' => 'bar' ] ) );
+		$this->create_config_file( 'qit.override.json', json_encode( [ 'foo' => 'baz' ] ) );
 
 		$this->assertMatchesJsonSnapshot( $this->sut->load_config() );
 	}
 
 	public function test_env_config_loader_from_override_yml() {
-		$this->create_config_file( 'qit-env.yml', "foo: bar" );
-		$this->create_config_file( 'qit-env.override.yml', "foo: baz" );
+		$this->create_config_file( 'qit.yml', "foo: bar" );
+		$this->create_config_file( 'qit.override.yml', "foo: baz" );
 
 		$this->assertMatchesJsonSnapshot( $this->sut->load_config() );
 	}
 
 	public function test_env_config_exception_both_json_and_yml_exist() {
-		$this->create_config_file( 'qit-env.json', json_encode( [ 'foo' => 'bar' ] ) );
-		$this->create_config_file( 'qit-env.yml', "foo: baz" );
+		$this->create_config_file( 'qit.json', json_encode( [ 'foo' => 'bar' ] ) );
+		$this->create_config_file( 'qit.yml', "foo: baz" );
 
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( 'More than one "qit-env" file exists. Please remove one.' );
+		$this->expectExceptionMessage( 'More than one "qit" file exists. Please remove one.' );
 		$this->sut->load_config();
 	}
 
 	public function test_env_config_exception_both_json_and_dot_json_exists() {
-		$this->create_config_file( 'qit-env.json', json_encode( [ 'foo' => 'bar' ] ) );
-		$this->create_config_file( '.qit-env.json', json_encode( [ 'foo' => 'bar' ] ) );
+		$this->create_config_file( 'qit.json', json_encode( [ 'foo' => 'bar' ] ) );
+		$this->create_config_file( '.qit.json', json_encode( [ 'foo' => 'bar' ] ) );
 
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( 'More than one "qit-env" file exists. Please remove one.' );
+		$this->expectExceptionMessage( 'More than one "qit" file exists. Please remove one.' );
 		$this->sut->load_config();
 	}
 
 	public function test_env_config_exception_both_json_and_yml_overrides_exist() {
-		$this->create_config_file( 'qit-env.json', json_encode( [ 'foo' => 'bar' ] ) );
-		$this->create_config_file( 'qit-env.override.json', json_encode( [ 'foo' => 'bar' ] ) );
-		$this->create_config_file( 'qit-env.override.yml', "foo: baz" );
+		$this->create_config_file( 'qit.json', json_encode( [ 'foo' => 'bar' ] ) );
+		$this->create_config_file( 'qit.override.json', json_encode( [ 'foo' => 'bar' ] ) );
+		$this->create_config_file( 'qit.override.yml', "foo: baz" );
 
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( 'More than one "qit-env.override" file exists. Please remove one.' );
+		$this->expectExceptionMessage( 'More than one "qit.override" file exists. Please remove one.' );
 		$this->sut->load_config();
 	}
 
 	public function test_env_config_allows_json_config_and_yml_override() {
-		$this->create_config_file( 'qit-env.json', json_encode( [ 'foo' => 'bar' ] ) );
-		$this->create_config_file( 'qit-env.override.yml', "foo: baz" );
+		$this->create_config_file( 'qit.json', json_encode( [ 'foo' => 'bar' ] ) );
+		$this->create_config_file( 'qit.override.yml', "foo: baz" );
 
 		$this->assertMatchesJsonSnapshot( $this->sut->load_config() );
 	}
 
 	public function test_env_config_allows_yml_config_and_json_override() {
-		$this->create_config_file( 'qit-env.yml', "foo: bar" );
-		$this->create_config_file( 'qit-env.override.json', json_encode( [ 'foo' => 'baz' ] ) );
+		$this->create_config_file( 'qit.yml', "foo: bar" );
+		$this->create_config_file( 'qit.override.json', json_encode( [ 'foo' => 'baz' ] ) );
 
 		$this->assertMatchesJsonSnapshot( $this->sut->load_config() );
 	}
@@ -128,7 +128,7 @@ class EnvConfigLoaderTest extends TestCase {
 			],
 			'features' => [ 'feature1', 'feature2', 'feature3' ],
 		];
-		$this->create_config_file( 'qit-env.json', json_encode( $complexStructure ) );
+		$this->create_config_file( 'qit.json', json_encode( $complexStructure ) );
 
 		$this->assertMatchesJsonSnapshot( $this->sut->load_config() );
 	}
@@ -153,8 +153,8 @@ class EnvConfigLoaderTest extends TestCase {
 			],
 			'features' => [ 'feature5', 'feature4' ],
 		];
-		$this->create_config_file( 'qit-env.json', json_encode( $baseStructure ) );
-		$this->create_config_file( 'qit-env.override.json', json_encode( $overrideStructure ) );
+		$this->create_config_file( 'qit.json', json_encode( $baseStructure ) );
+		$this->create_config_file( 'qit.override.json', json_encode( $overrideStructure ) );
 
 		$this->assertMatchesJsonSnapshot( $this->sut->load_config() );
 	}
@@ -168,8 +168,8 @@ class EnvConfigLoaderTest extends TestCase {
 			'server' => [ 'host' => 'remotehost', 'backup' => 'backuphost' ], // scalar to array
 		];
 
-		$this->create_config_file( 'qit-env.json', json_encode( $baseStructure ) );
-		$this->create_config_file( 'qit-env.override.json', json_encode( $overrideStructure ) );
+		$this->create_config_file( 'qit.json', json_encode( $baseStructure ) );
+		$this->create_config_file( 'qit.override.json', json_encode( $overrideStructure ) );
 
 		$this->expectException( \InvalidArgumentException::class );
 		$this->sut->load_config();
@@ -184,8 +184,8 @@ class EnvConfigLoaderTest extends TestCase {
 			'server' => 'localhost', // array to scalar
 		];
 
-		$this->create_config_file( 'qit-env.json', json_encode( $baseStructure ) );
-		$this->create_config_file( 'qit-env.override.json', json_encode( $overrideStructure ) );
+		$this->create_config_file( 'qit.json', json_encode( $baseStructure ) );
+		$this->create_config_file( 'qit.override.json', json_encode( $overrideStructure ) );
 
 		$this->expectException( \InvalidArgumentException::class );
 		$this->sut->load_config();
@@ -194,7 +194,7 @@ class EnvConfigLoaderTest extends TestCase {
 	public function test_env_config_loader_invalid_json_should_throw() {
 		$baseStructure = 'this is not a valid JSON';
 
-		$this->create_config_file( 'qit-env.json', json_encode( $baseStructure ) );
+		$this->create_config_file( 'qit.json', json_encode( $baseStructure ) );
 
 		$this->expectException( \RuntimeException::class );
 		$this->sut->load_config();
@@ -207,8 +207,8 @@ class EnvConfigLoaderTest extends TestCase {
 
 		$invalidOverride = "this is not valid JSON";
 
-		$this->create_config_file( 'qit-env.json', json_encode( $baseStructure ) );
-		$this->create_config_file( 'qit-env.override.json', $invalidOverride );
+		$this->create_config_file( 'qit.json', json_encode( $baseStructure ) );
+		$this->create_config_file( 'qit.override.json', $invalidOverride );
 
 		$this->expectException( \RuntimeException::class );
 		$this->sut->load_config();
@@ -222,7 +222,7 @@ class EnvConfigLoaderTest extends TestCase {
 				],
 			],
 		];
-		$this->create_config_file( 'qit-env.json', json_encode( $complexStructure ) );
+		$this->create_config_file( 'qit.json', json_encode( $complexStructure ) );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $this->normalized_env_info( $this->sut->load_config() ) ) );
 	}
@@ -233,7 +233,7 @@ class EnvConfigLoaderTest extends TestCase {
 				'qit-beaver',
 			],
 		];
-		$this->create_config_file( 'qit-env.json', json_encode( $complexStructure ) );
+		$this->create_config_file( 'qit.json', json_encode( $complexStructure ) );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $this->normalized_env_info( $this->sut->load_config() ) ) );
 	}
@@ -253,7 +253,7 @@ class EnvConfigLoaderTest extends TestCase {
 				],
 			],
 		];
-		$this->create_config_file( 'qit-env.json', json_encode( $complexStructure ) );
+		$this->create_config_file( 'qit.json', json_encode( $complexStructure ) );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $this->normalized_env_info( $this->sut->load_config() ) ) );
 	}
@@ -281,13 +281,13 @@ class EnvConfigLoaderTest extends TestCase {
 				'qit-beaver:test',
 			],
 		];
-		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
+		$this->create_config_file( 'qit.json', json_encode( [] ) );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $this->normalized_env_info( $this->sut->load_config(), $override_structure ) ) );
 	}
 
 	public function test_env_config_loader_plugins_url_with_source() {
-		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
+		$this->create_config_file( 'qit.json', json_encode( [] ) );
 		$this->assertMatchesJsonSnapshot(
 			json_encode(
 				$this->normalized_env_info( $this->sut->load_config(), [
@@ -302,7 +302,7 @@ class EnvConfigLoaderTest extends TestCase {
 	}
 
 	public function test_env_config_loader_plugins_url_with_source_and_tags() {
-		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
+		$this->create_config_file( 'qit.json', json_encode( [] ) );
 		$this->assertMatchesJsonSnapshot(
 			json_encode(
 				$this->normalized_env_info( $this->sut->load_config(), [
@@ -318,7 +318,7 @@ class EnvConfigLoaderTest extends TestCase {
 	}
 
 	public function test_env_config_loader_plugins_url_with_source_json() {
-		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
+		$this->create_config_file( 'qit.json', json_encode( [] ) );
 		$this->assertMatchesJsonSnapshot(
 			json_encode(
 				$this->normalized_env_info( $this->sut->load_config(), [
@@ -331,7 +331,7 @@ class EnvConfigLoaderTest extends TestCase {
 	}
 
 	public function test_env_config_loader_plugins_url_with_source_and_tags_json() {
-		$this->create_config_file( 'qit-env.json', json_encode( [] ) );
+		$this->create_config_file( 'qit.json', json_encode( [] ) );
 		$this->assertMatchesJsonSnapshot(
 			json_encode(
 				$this->normalized_env_info( $this->sut->load_config(), [

@@ -1,0 +1,52 @@
+[
+    {
+        "name": "[setup:shared] Test Slug (Shell)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "test-slug",
+            "type": "Shared Setup for test-slug (Bash)",
+            "file": "test-path-in-php-container\/bootstrap\/shared-setup.sh"
+        }
+    },
+    {
+        "name": "[setup:shared] Test Slug (PHP)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "php.js",
+        "dependencies": [
+            "[setup:shared] Test Slug (Shell)"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "test-slug",
+            "type": "Shared Setup for test-slug (PHP)",
+            "file": "test-path-in-php-container\/bootstrap\/shared-setup.php"
+        }
+    },
+    {
+        "name": "[setup:shared] Test Slug (JS)",
+        "testDir": "test-path-in-php-container\/bootstrap",
+        "testMatch": "shared-setup.js",
+        "dependencies": [
+            "[setup:shared] Test Slug (PHP)"
+        ],
+        "use": {
+            "qitTestSlug": "test-slug",
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "[test] Test Slug (Run)",
+        "testDir": "test-path-in-php-container",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [
+            "[setup:shared] Test Slug (JS)"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-slug"
+        }
+    }
+]

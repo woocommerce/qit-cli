@@ -11,11 +11,7 @@ use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\LocalTests\E2E\Runner\E2ERunner;
 use QIT_CLI\LocalTests\E2E\Runner\PlaywrightRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
-use Symfony\Component\Console\Helper\QuestionHelper;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Console\Style\SymfonyStyle;
 
 class E2ETestManager {
 	/** @var Docker $docker */
@@ -65,10 +61,12 @@ class E2ETestManager {
 	public function run_tests( E2EEnvInfo $env_info, string $test_mode, bool $bootstrap_only, ?string $shard = null ): int {
 		$test_result = TestResult::init_from( $env_info );
 
-		$this->output->writeln( '<info>Bootstrapping Plugins</info>' );
+		if ( empty( $env_info->tests ) ) {
+			throw new \RuntimeException( 'No tests found for the given plugins.' );
+		}
 
 		/**
-		 * Bootstrap all plugins.
+		 * Include mu-plugins from the tests, if any.
 		 */
 		foreach ( $env_info->tests as $test_info ) {
 			if ( $test_info['action'] !== Extension::ACTIONS['bootstrap'] && $test_info['action'] !== Extension::ACTIONS['test'] ) {
@@ -83,32 +81,6 @@ class E2ETestManager {
 				'QIT_TEST_DIR' => $test_info['path_in_php_container'],
 			];
 
-			// bootstrap.php.
-			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/bootstrap.php' ) ) {
-				$this->output->writeln( sprintf( 'Bootstrapping %s %s', $plugin_slug, $test_info['path_in_php_container'] . '/bootstrap/bootstrap.php' ) );
-				try {
-					$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "php {$test_info['path_in_php_container']}/bootstrap/bootstrap.php" ], $env_vars );
-					$test_result->register_bootstrap( $plugin_slug, 'bootstrap.php', 'success' );
-				} catch ( \Exception $e ) {
-					$test_result->register_bootstrap( $plugin_slug, 'bootstrap.php', 'failed' );
-				}
-			} else {
-				$test_result->register_bootstrap( $plugin_slug, 'bootstrap.php', 'not_present' );
-			}
-
-			// bootstrap.sh.
-			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/bootstrap.sh' ) ) {
-				$this->output->writeln( sprintf( 'Bootstrapping %s %s', $plugin_slug, $test_info['path_in_php_container'] . '/bootstrap/bootstrap.sh' ) );
-				try {
-					$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', "bash {$test_info['path_in_php_container']}/bootstrap/bootstrap.sh" ], $env_vars );
-					$test_result->register_bootstrap( $plugin_slug, 'bootstrap.sh', 'success' );
-				} catch ( \Exception $e ) {
-					$test_result->register_bootstrap( $plugin_slug, 'bootstrap.sh', 'failed' );
-				}
-			} else {
-				$test_result->register_bootstrap( $plugin_slug, 'bootstrap.sh', 'not_present' );
-			}
-
 			// must-use-plugin.php.
 			if ( file_exists( $test_info['path_in_host'] . '/bootstrap/mu-plugin.php' ) ) {
 				$this->output->writeln( sprintf( 'Moving must-use plugin of %s %s', $plugin_slug, $test_info['path_in_php_container'] . '/bootstrap/mu-plugin.php' ) );
@@ -121,45 +93,6 @@ class E2ETestManager {
 			} else {
 				$test_result->register_bootstrap( $plugin_slug, 'must-use-plugin.php', 'not_present' );
 			}
-		}
-
-		if ( $bootstrap_only ) {
-			if ( $test_mode === 'codegen' ) {
-				$io = new SymfonyStyle( App::make( InputInterface::class ), $this->output );
-				$io->success( "Open the site URL above on Playwright Codegen and start generating tests.\nLearn More: https://qit.woo.com/docs/custom-tests/generating-tests#codegen" );
-
-				$this->playwright_codegen->open_codegen( $env_info );
-
-				return 0;
-			} else {
-				$this->output->writeln( '' );
-
-				$question = new Question( '<comment>Environment ready. Press "Enter" when you are done to terminate it.</comment>' );
-				$question->setValidator( function ( $answer ) {
-					return $answer;
-				} );
-				( new QuestionHelper() )->ask( App::make( InputInterface::class ), $this->output, $question );
-
-				return 0;
-			}
-		}
-
-		if ( empty( $env_info->tests ) ) {
-			throw new \RuntimeException( 'No tests found for the given plugins.' );
-		}
-
-		$test_phases = 0;
-
-		foreach ( $env_info->tests as $test_info ) {
-			if ( $test_info['action'] === Extension::ACTIONS['test'] ) {
-				++$test_phases;
-			}
-		}
-
-		if ( $test_phases > 1 ) {
-			// Do a DB export.
-			$this->output->writeln( '<info>Exporting DB</info>' );
-			$this->docker->run_inside_docker( $env_info, [ 'bash', '-c', 'wp db export /tmp/qit-bootstrap.sql' ] );
 		}
 
 		$tests_to_run = [

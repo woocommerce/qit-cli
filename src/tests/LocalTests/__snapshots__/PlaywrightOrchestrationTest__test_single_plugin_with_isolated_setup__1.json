@@ -1,0 +1,24 @@
+[
+    {
+        "name": "[setup] Test Slug (JS)",
+        "testDir": "test-path-in-php-container\/bootstrap",
+        "testMatch": "setup.js",
+        "dependencies": [],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-slug"
+        }
+    },
+    {
+        "name": "[test] Test Slug (Run)",
+        "testDir": "test-path-in-php-container",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [
+            "[setup] Test Slug (JS)"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-slug"
+        }
+    }
+]

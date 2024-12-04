@@ -121,8 +121,8 @@ Creates a configurable, temporary, disposable test environment.
 
 <comment>Config File:</comment>
 Create a config file (JSON or YML) to set default environment options.
-Valid names include qit-env.json, qit-env.yml, .qit-env.json, and .qit-env.yml.
-Override defaults with qit-env.override.json, qit-env.override.yml, etc., typically ignored in version control.
+Valid names include qit.json, qit.yml, .qit.json, and .qit.yml.
+Override defaults with qit.override.json, qit.override.yml, etc., typically ignored in version control.
 
 The possible options are:
 
@@ -136,7 +136,7 @@ $yml_example
 
 <comment>Where to Place Config:</comment>
 The command searches for a config file in the current directory from which it's executed. For example:
-A config file located at /home/mycomputer/my-plugin/qit-env.json is detected when you run <info>cd /home/mycomputer/my-plugin && qit env:up</info>.
+A config file located at /home/mycomputer/my-plugin/qit.json is detected when you run <info>cd /home/mycomputer/my-plugin && qit env:up</info>.
 If the config file is placed in the root directory of your plugin, the command automatically includes that plugin in the environment.
 
 You can also pass a "--config" parameter and point it to a file path.
@@ -327,7 +327,7 @@ HELP
 		 * This affects the order of precedence that each option gets.
 		 *
 		 * 1: Option set at runtime (will be in $GLOBALS['argv'])
-		 * 2: Option in config file (will be in .?qit-env.(json|yml))
+		 * 2: Option in config file (will be in .?qit.(json|yml))
 		 * 3. Default value
 		 */
 		foreach ( $options as $key => $value ) {

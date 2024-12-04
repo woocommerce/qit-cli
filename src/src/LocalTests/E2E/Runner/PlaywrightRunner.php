@@ -68,7 +68,7 @@ class PlaywrightRunner extends E2ERunner {
 		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright/playwright-config-generator.php' ] );
 		$process->setEnv( [
 			'BASE_URL'            => $env_info->site_url,
-			'PROJECTS'            => json_encode( $this->make_projects( $test_infos ), JSON_UNESCAPED_SLASHES ),
+			'PROJECTS'            => json_encode( $this->orchestration->make_projects( $test_infos ), JSON_UNESCAPED_SLASHES ),
 			'SAVE_AS'             => $env_info->temporary_env . 'qit-playwright.config.js',
 			'TEST_RESULT_PATH'    => $results_dir,
 			'CONFIG_OVERRIDES'    => json_encode( $env_info->playwright_config ),
@@ -86,7 +86,7 @@ class PlaywrightRunner extends E2ERunner {
 		} );
 
 		if ( ! $process->isSuccessful() ) {
-			throw new \RuntimeException( "Failed to generate docker-compose.yml. Output:\n" . $process->getOutput() . $process->getErrorOutput() );
+			throw new \RuntimeException( "Failed to generate playwright config file. Output:\n" . $process->getOutput() . $process->getErrorOutput() );
 		}
 
 		$ci = ! empty( getenv( 'CI' ) );
@@ -140,7 +140,7 @@ class PlaywrightRunner extends E2ERunner {
 			'-v',
 			$env_info->temporary_env . 'qit-playwright.config.js:/qit/tests/e2e/qit-playwright.config.js',
 			'-v',
-			$env_info->temporary_env . '/playwright/db-import.js:/qit/tests/e2e/db-import.js',
+			$env_info->temporary_env . '/playwright/scripts:/qit/tests/e2e/scripts',
 			'-v',
 			$env_info->temporary_env . '/test-media:/qit/tests/e2e/test-media',
 			'-v',
@@ -181,9 +181,9 @@ class PlaywrightRunner extends E2ERunner {
 				"{$test_to_run['path_in_host']}:{$test_to_run['path_in_php_container']}",
 			] );
 
-			if ( file_exists( "{$test_to_run['path_in_host']}/bootstrap/dependencies.json" ) ) {
+			if ( file_exists( "{$test_to_run['path_in_host']}/qit/dependencies.json" ) ) {
 				// Read the dependencies JSON and append.
-				$dependencies            = json_decode( file_get_contents( "{$test_to_run['path_in_host']}/bootstrap/dependencies.json" ), true );
+				$dependencies            = json_decode( file_get_contents( "{$test_to_run['path_in_host']}/qit/dependencies.json" ), true );
 				$dependencies_to_install = array_merge( $dependencies_to_install, $dependencies );
 			}
 		}
@@ -240,7 +240,7 @@ class PlaywrightRunner extends E2ERunner {
 		$ci                  = ! empty( getenv( 'CI' ) );
 
 		$output_callback = function ( $type, $out ) use ( $playwright_container_name, &$line_buffer, &$total_lines_printed, $ci ) {
-			$max_lines = 100;
+			$max_lines = 10;
 
 			// Handle both STDOUT and STDERR.
 			if ( $type !== Process::OUT && $type !== Process::ERR ) {
@@ -263,20 +263,50 @@ class PlaywrightRunner extends E2ERunner {
 			// Remove same-line cursor movement and clear line.
 			$out = preg_replace( '/\e\[\d*[ABCD]/', '', $out ); // Remove cursor movements.
 			$out = preg_replace( '/\e\[2K/', '', $out );        // Remove clear line codes.
+
+			/*
+			 * [[setup:
+			 * [[db]
+			 * [[test]
+			 * [[teardown:
+			 * Remove double brackets (keep everything else)
+			 */
+			$out = preg_replace( '/\[\[(setup|db|test|teardown)/', '[$1', $out );
+
+			/*
+			 * (Shell)]
+			 * (JS)]
+			 * (PHP)]
+			 * Remove unnecessary brackets.
+			 */
+			$out = preg_replace( '/\((Shell|JS|PHP)\)]/', '($1)', $out );
+
 			$out = trim( $out );
 
 			if ( empty( $out ) ) {
 				return;
 			}
 
-			if ( $ci ) {
+			$colored_strings = [
+				'[setup:shared]'    => '<fg=blue;options=bold>[setup:shared]</>',
+				'[db export]'       => '<fg=yellow;options=bold>[db export]</>',
+				'[db import]'       => '<fg=yellow;options=bold>[db import]</>',
+				'[setup]'           => '<fg=green;options=bold>[setup]</>',
+				'[test]'            => '<fg=cyan;options=bold>[test]</>',
+				'[teardown]'        => '<fg=red;options=bold>[teardown]</>',
+				'[teardown:shared]' => '<fg=magenta;options=bold>[teardown:shared]</>',
+			];
+
+			$out = str_replace( array_keys( $colored_strings ), array_values( $colored_strings ), $out );
+
+			if ( $ci || true ) { // @phpstan-ignore-line
 				$this->output->writeln( $out );
 
 				return;
 			}
 
 			// Update terminal width in case it changes.
-			$terminal_width = ( new Terminal() )->getWidth();
+			$terminal_width = ( new Terminal() )->getWidth(); // @phpstan-ignore-line
 
 			// Split the output into individual lines.
 			$lines = explode( "\n", $out );
@@ -430,84 +460,6 @@ class PlaywrightRunner extends E2ERunner {
 		$this->output->writeln( sprintf( 'Test artifacts being saved to: %s', $results_dir ) );
 
 		return $exit_status_code;
-	}
-
-	/**
-	 * // phpcs:disable Squiz.Commenting.FunctionComment.MissingParamName
-	 *
-	 * @param array<int,array{
-	 *     slug:string,
-	 *     test_tag:string,
-	 *     type:string,
-	 *     action:string,
-	 *     path_in_php_container:string,
-	 *     path_in_playwright_container:string,
-	 *     path_in_host:string
-	 *  }> $test_infos
-	 *
-	 * // phpcs:enable
-	 *
-	 * @return array<int,array<string,scalar>>
-	 */
-	protected function make_projects( array $test_infos ): array {
-		$projects = [];
-		$is_first = true;
-
-		foreach ( $test_infos as $t ) {
-			$base_dir       = $t['path_in_php_container'];
-			$has_entrypoint = file_exists( "{$t['path_in_host']}/bootstrap/entrypoint.js" );
-
-			// Include db-import before each project, except the first one.
-			if ( $is_first ) {
-				$is_first = false;
-			} else {
-				$projects[] = [
-					'name'      => 'db-import',
-					'testMatch' => '/qit/tests/e2e/db-import.js',
-					'use'       => [
-						'browserName' => 'chromium',
-						'devices'     => [ 'Desktop Chrome' ],
-					],
-				];
-			}
-
-			if ( $has_entrypoint ) {
-				// Run the entrypoint.
-				$projects[] = [
-					'name'      => sprintf( '%s-%s-entrypoint', $t['slug'], $t['test_tag'] ),
-					'testDir'   => "$base_dir/bootstrap",
-					'testMatch' => 'entrypoint.js',
-					'use'       => [
-						'browserName' => 'chromium',
-						'devices'     => [ 'Desktop Chrome' ],
-						'stateDir'    => $base_dir . '/.state',
-						'qitTestTag'  => $t['test_tag'],
-						'qitTestSlug' => $t['slug'],
-					],
-				];
-			}
-
-			// Run the test.
-			$args = [
-				'name'    => sprintf( '%s-%s', $t['slug'], $t['test_tag'] ),
-				'testDir' => $base_dir,
-				'use'     => [
-					'browserName' => 'chromium',
-					'devices'     => [ 'Desktop Chrome' ],
-					'stateDir'    => $base_dir . '/.state',
-					'qitTestTag'  => $t['test_tag'],
-					'qitTestSlug' => $t['slug'],
-				],
-			];
-
-			if ( $has_entrypoint ) {
-				$args['dependencies'] = [ sprintf( '%s-%s-entrypoint', $t['slug'], $t['test_tag'] ) ];
-			}
-
-			$projects[] = $args;
-		}
-
-		return $projects;
 	}
 
 	/**

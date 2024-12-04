@@ -9,6 +9,17 @@ class PlaywrightToPuppeteerConverter {
 	 * @return bool Whether the results represent a failed test run.
 	 */
 	public function has_failed( array $pw_results ): bool {
+		// Check if 'numFailedTests' exists and is an integer.
+		if ( ! array_key_exists( 'numFailedTests', $pw_results ) || ! is_int( $pw_results['numFailedTests'] ) ) {
+			return true;
+		}
+
+		// Check if 'numFailedTestSuites' exists and is an integer.
+		if ( ! array_key_exists( 'numFailedTestSuites', $pw_results ) || ! is_int( $pw_results['numFailedTestSuites'] ) ) {
+			return true;
+		}
+
+		// If both keys exist and are integers, check if any value is greater than zero.
 		return $pw_results['numFailedTests'] > 0 || $pw_results['numFailedTestSuites'] > 0;
 	}
 

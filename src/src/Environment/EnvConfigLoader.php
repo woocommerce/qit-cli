@@ -209,12 +209,12 @@ class EnvConfigLoader {
 		/*
 		 * Rules:
 		 * - Directory is working-directory gwtcwd();
-		 * - Filename starts with "qit-env"
+		 * - Filename starts with "qit"
 		 * - File extension is ".json" or ".yml"
 		 * - If a ".override.json" or ".override.yml" file exists, it should add or override the values from the original file.
 		 * - We will use App::make(SerializerInterface::class)->unserialize() to unserialize the files we find.
-		 * - If both "qit-env.json" and "qit-env.yml" exists, throw.
-		 * - If both "qit-env.override.json" and "qit-env.override.yml" exists, throw.
+		 * - If both "qit.json" and "qit.yml" exists, throw.
+		 * - If both "qit.override.json" and "qit.override.yml" exists, throw.
 		 */
 		if ( defined( 'UNIT_TESTS' ) ) {
 			$working_directory = App::getVar( 'QIT_CONFIG_LOADER_DIR' );
@@ -223,16 +223,16 @@ class EnvConfigLoader {
 		}
 
 		$env_files          = [
-			'qit-env.json'  => file_exists( $working_directory . '/qit-env.json' ),
-			'qit-env.yml'   => file_exists( $working_directory . '/qit-env.yml' ),
-			'.qit-env.json' => file_exists( $working_directory . '/.qit-env.json' ),
-			'.qit-env.yml'  => file_exists( $working_directory . '/.qit-env.yml' ),
+			'qit.json'  => file_exists( $working_directory . '/qit.json' ),
+			'qit.yml'   => file_exists( $working_directory . '/qit.yml' ),
+			'.qit.json' => file_exists( $working_directory . '/.qit.json' ),
+			'.qit.yml'  => file_exists( $working_directory . '/.qit.yml' ),
 		];
 		$env_override_files = [
-			'qit-env.override.json'  => file_exists( $working_directory . '/qit-env.override.json' ),
-			'qit-env.override.yml'   => file_exists( $working_directory . '/qit-env.override.yml' ),
-			'.qit-env.override.json' => file_exists( $working_directory . '/.qit-env.override.json' ),
-			'.qit-env.override.yml'  => file_exists( $working_directory . '/.qit-env.override.yml' ),
+			'qit.override.json'  => file_exists( $working_directory . '/qit.override.json' ),
+			'qit.override.yml'   => file_exists( $working_directory . '/qit.override.yml' ),
+			'.qit.override.json' => file_exists( $working_directory . '/.qit.override.json' ),
+			'.qit.override.yml'  => file_exists( $working_directory . '/.qit.override.yml' ),
 		];
 
 		if ( $this->output->isVeryVerbose() ) {
@@ -244,12 +244,12 @@ class EnvConfigLoader {
 
 		// If more than one env file exists, throw.
 		if ( count( array_filter( $env_files ) ) > 1 ) {
-			throw new \RuntimeException( 'More than one "qit-env" file exists. Please remove one.' );
+			throw new \RuntimeException( 'More than one "qit" file exists. Please remove one.' );
 		}
 
 		// If more than one override file exists, throw.
 		if ( count( array_filter( $env_override_files ) ) > 1 ) {
-			throw new \RuntimeException( 'More than one "qit-env.override" file exists. Please remove one.' );
+			throw new \RuntimeException( 'More than one "qit.override" file exists. Please remove one.' );
 		}
 
 		$env_file = array_search( true, $env_files, true );
