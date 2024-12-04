@@ -67,7 +67,8 @@
                         "remote_logging",
                         "custom_order_tables"
                     ]
-                }
+                },
+                "has_outdated_templates": false
             }
         }
     ]

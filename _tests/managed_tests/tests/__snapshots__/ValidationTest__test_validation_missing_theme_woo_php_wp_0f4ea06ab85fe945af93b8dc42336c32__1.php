@@ -53,7 +53,8 @@
                     "WC tested up to": false,
                     "Woo": false
                 },
-                "features": []
+                "features": [],
+                "has_outdated_templates": false
             }
         }
     ]
