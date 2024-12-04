@@ -48,14 +48,27 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 1,
+                "numPassedTestSuites": 2,
                 "numPendingTestSuites": 0,
-                "numTotalTestSuites": 1,
+                "numTotalTestSuites": 2,
                 "numFailedTests": 0,
-                "numPassedTests": 11,
+                "numPassedTests": 12,
                 "numPendingTests": 0,
-                "numTotalTests": 11,
+                "numTotalTests": 12,
                 "testResults": [
+                    {
+                        "file": "scripts\\/bash.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "scripts\\/bash.js": [
+                                {
+                                    "title": "Bash Script",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
                     {
                         "file": "woocommerce\\/activation\\/activation.spec.js",
                         "status": "passed",
@@ -110,7 +123,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 1 passed, 1 total | Tests: 0 skipped, 0 failed, 11 passed, 11 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 2 passed, 2 total | Tests: 0 skipped, 0 failed, 12 passed, 12 total."
             }
         },
         {
