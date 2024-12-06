@@ -21,7 +21,7 @@ class EnvConfigLoader {
 	/** @var PluginsAndThemesParser */
 	protected $plugins_and_themes_parser;
 
-	/** @var array|null */
+	/** @var array<mixed>|null */
 	private $loaded_config = null;
 
 	public function __construct( Serializer $serializer, Cache $cache, OutputInterface $output, PluginsAndThemesParser $plugins_and_themes_parser ) {
@@ -190,7 +190,7 @@ class EnvConfigLoader {
 	 * @return array<mixed> Multidimensional array of scalars.
 	 */
 	public function load_config( bool $load_once = true ): array {
-		if ( $load_once && $this->loaded_config !== null ) {
+		if ( $load_once && $this->loaded_config !== null && ( ! defined( 'UNIT_TESTS' ) || ! UNIT_TESTS ) ) {
 			return $this->loaded_config;
 		}
 
