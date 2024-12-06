@@ -399,12 +399,24 @@ class RunE2ECommand extends DynamicCommand {
 		}
 	}
 
-	protected function prepare_output( OutputInterface $output ) {
+	/**
+	 * Prepare the output for JSON mode if needed.
+	 *
+	 * @param OutputInterface $output
+	 *
+	 * @return void
+	 */
+	protected function prepare_output( OutputInterface $output ): void {
 		$this->output = $output;
 
 		if ( App::getVar( 'QIT_JSON_MODE' ) === true || defined( 'UNIT_TESTS' ) ) {
-			/* @phan-suppress-next-line PhanUndeclaredMethod */
-			if ( ! stream_filter_append( $output->getStream(), 'qit_json' ) ) {
+			// Ensure $output is a StreamOutput to call getStream().
+			if ( ! $output instanceof StreamOutput ) {
+				throw new \RuntimeException( 'QIT_JSON_MODE is set, but OutputInterface is not a StreamOutput.' );
+			}
+
+			$stream = $output->getStream();
+			if ( ! stream_filter_append( $stream, 'qit_json' ) ) {
 				exit( 152 );
 			}
 		}
@@ -502,11 +514,12 @@ class RunE2ECommand extends DynamicCommand {
 	 * - Determine final source and test_tags
 	 * - Ensure action=test
 	 *
-	 * @param string|null $woo_extension
-	 * @param int|null    $woo_extension_id
-	 * @param string|null $source
-	 * @param string|null $test
-	 * @param string      $dependencies_option
+	 * @param string|null                                  $woo_extension
+	 * @param int|null                                     $woo_extension_id
+	 * @param string|null                                  $source
+	 * @param string|null                                  $test
+	 * @param string                                       $dependencies_option
+	 * @param array<string,array|bool|string|int|string[]> $env_up_options
 	 *
 	 * @return void
 	 */
@@ -579,7 +592,14 @@ class RunE2ECommand extends DynamicCommand {
 		}
 	}
 
-	protected function process_dependencies( $woo_extension_id, $dependencies_option, array &$env_up_options ) {
+	/**
+	 * @param int|null                                     $woo_extension_id
+	 * @param string                                       $dependencies_option
+	 * @param array<string,array|bool|string|int|string[]> $env_up_options
+	 *
+	 * @return void
+	 */
+	protected function process_dependencies( $woo_extension_id, $dependencies_option, array &$env_up_options ): void {
 		if ( $dependencies_option === 'none' ) {
 			return;
 		}
@@ -623,9 +643,9 @@ class RunE2ECommand extends DynamicCommand {
 			}
 
 			if ( ! $already_present ) {
-				$formatted_plugin             = $dependencies_option === 'none' ? $plugin_slug : "{$dep_plugin}:{$dependencies_option}";
-				$env_up_options['--plugin'][] = $formatted_plugin;
+				$formatted_plugin = "{$dep_plugin}:{$dependencies_option}";
 				$this->output->writeln( sprintf( 'Adding plugin dependency: %s', $formatted_plugin ) );
+				$env_up_options['--plugin'][] = $formatted_plugin;
 			}
 		}
 	}
