@@ -58,7 +58,7 @@ class RunE2ECommand extends DynamicCommand {
 	/** @var PluginDependencies */
 	protected $dependencies;
 
-	protected static $defaultName = 'run:e2e';
+	protected static $defaultName = 'run:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	const WARNING = 3;
 
@@ -79,7 +79,7 @@ class RunE2ECommand extends DynamicCommand {
 		$this->test_run_notifier   = $test_run_notifier;
 		$this->dependencies        = $dependencies;
 
-		parent::__construct( static::$defaultName );
+		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
 	protected function configure() {
@@ -148,7 +148,7 @@ class RunE2ECommand extends DynamicCommand {
 		if ( $input->getOption( 'ui' ) ) {
 			$test_mode = E2ETestManager::$test_modes['ui'];
 		} elseif ( $input->getOption( 'codegen' ) ) {
-			putenv( 'QIT_CODEGEN=1' );
+			putenv( 'QIT_CODEGEN=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 			$test_mode = E2ETestManager::$test_modes['codegen'];
 		} else {
 			$test_mode = E2ETestManager::$test_modes['headless'];
@@ -290,13 +290,13 @@ class RunE2ECommand extends DynamicCommand {
 		$resource_stream = fopen( 'php://temp', 'w+' );
 
 		if ( $wait ) {
-			putenv( 'QIT_HIDE_SITE_INFO=0' );
+			putenv( 'QIT_HIDE_SITE_INFO=0' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		} else {
-			putenv( 'QIT_HIDE_SITE_INFO=1' );
-			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO=DOCKER' );
+			putenv( 'QIT_HIDE_SITE_INFO=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO=DOCKER' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
 
-		putenv( 'QIT_UP_AND_TEST=1' );
+		putenv( 'QIT_UP_AND_TEST=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		if ( ! empty( $woo_extension ) ) {
 			App::setVar( 'QIT_SUT', (int) $woo_extension_id );
 		}
@@ -391,8 +391,8 @@ class RunE2ECommand extends DynamicCommand {
 
 		try {
 			Environment::down( $GLOBALS['env_to_shutdown'] );
-		} catch ( \Exception $e ) {
-			// no-op
+		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// no-op.
 		}
 	}
 
@@ -476,46 +476,46 @@ class RunE2ECommand extends DynamicCommand {
 			));
 		}
 
-		// Load qit.yml config
+		// Load qit.yml config.
 		$env_config    = App::make( \QIT_CLI\Environment\EnvConfigLoader::class )->load_config();
 		$plugin_config = $env_config['plugins'] ?? $env_config['plugin'] ?? [];
 
-		// Determine if qit.yml defines the SUT
+		// Determine if qit.yml defines the SUT.
 		if ( isset( $plugin_config[ $woo_extension ] ) ) {
-			// SUT is defined in qit.yml, use it as the base
+			// SUT is defined in qit.yml, use it as the base.
 			$sut_base = $plugin_config[ $woo_extension ];
 		} else {
-			// SUT not in qit.yml, create a default entry
+			// SUT not in qit.yml, create a default entry.
 			$sut_base = [
 				'slug'      => $woo_extension,
-				// Default source is the slug if qit.yml doesn't provide one
+				// Default source is the slug if qit.yml doesn't provide one.
 				'source'    => $woo_extension,
 				'test_tags' => [ 'default' ],
 			];
 		}
 
-		// If CLI --source is given, override the source from qit.yml or default
+		// If CLI --source is given, override the source from qit.yml or default.
 		if ( ! empty( $source ) ) {
 			$sut_base['source'] = $source;
-		} else {
-			// If qit.yml had a local source (e.g., "./woocommerce-amazon-s3-storage"), keep it
+		} else { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedElse
+			// If qit.yml had a local source (e.g., "./woocommerce-amazon-s3-storage"), keep it.
 			// Check if qit.yml actually defined it. If at the start it had "./", it should still be here.
 			// We'll see this in the debug output if it changes.
 		}
 
-		// If CLI test argument provided, override test_tags
+		// If CLI test argument provided, override test_tags.
 		if ( ! empty( $test ) ) {
 			$sut_base['test_tags'] = [ $test ];
 		} elseif ( empty( $sut_base['test_tags'] ) ) {
 			$sut_base['test_tags'] = [ 'default' ];
 		}
 
-		// Respect qit.yml action if defined, else default to 'test'
+		// Respect qit.yml action if defined, else default to 'test'.
 		if ( ! isset( $sut_base['action'] ) ) {
 			$sut_base['action'] = \QIT_CLI\Environment\Extension::ACTIONS['test'];
 		}
 
-		// Handle dependencies if needed
+		// Handle dependencies if needed.
 		if ( $dependencies_option !== 'none' ) {
 			$dependencies = $this->dependencies->get_plugin_and_php_ext_dependencies( $woo_extension_id, [] );
 			foreach ( $dependencies['php_extensions'] as $php_extension ) {
@@ -528,11 +528,11 @@ class RunE2ECommand extends DynamicCommand {
 			}
 		}
 
-		// Save updated config
+		// Save updated config.
 		$plugin_config[ $woo_extension ] = $sut_base;
 		App::setVar( 'QIT_FINAL_SUT_SLUG', $woo_extension );
 		App::setVar( 'QIT_FINAL_SUT_MODIFIED_CONFIG', $plugin_config );
 
-		return null; // We don't add a second definition directly to env_up_options
+		return null; // We don't add a second definition directly to env_up_options.
 	}
 }

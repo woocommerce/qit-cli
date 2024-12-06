@@ -78,7 +78,6 @@ class PluginsAndThemesParser {
 			// No SUT overriding logic here. The caller must ensure correct action for SUT.
 
 			// If slug already defined, override it with the newest definition.
-			// (This might still be needed if multiple entries for the same slug appear)
 			foreach ( $parsed_extensions as $k => $already_parsed ) {
 				if ( $extension_instance->slug === $already_parsed->slug ) {
 					$this->output->writeln( sprintf( '<comment>Overriding extension "%s".</comment>', $extension['slug'] ) );
