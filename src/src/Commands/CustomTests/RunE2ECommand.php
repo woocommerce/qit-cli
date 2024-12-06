@@ -9,6 +9,7 @@ namespace QIT_CLI\Commands\CustomTests;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\Environment\EnvConfigLoader;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
@@ -167,7 +168,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		// Validate source for SUT.
 		if ( empty( $input->getOption( 'source' ) ) ) {
-			$source = $woo_extension;
+			$source = '';
 		} else {
 			$resolved_source = realpath( $input->getOption( 'source' ) );
 			if ( $resolved_source && file_exists( $resolved_source ) ) {
@@ -250,13 +251,10 @@ class RunE2ECommand extends DynamicCommand {
 			$input->getOption( 'dependencies' )
 		);
 
-		// Now add the finalized SUT extension to env_up_options.
 		if ( $final_sut_extension ) {
-			if ( $sut_type === 'theme' ) {
-				$env_up_options['--theme'][] = $final_sut_extension;
-			} else {
-				$env_up_options['--plugin'][] = $final_sut_extension;
-			}
+			// Mark that we have a finalized SUT and store it.
+			App::setVar( 'QIT_FINAL_SUT_SLUG', $woo_extension );
+			App::setVar( 'QIT_FINAL_SUT_DEFINITION', $final_sut_extension );
 		}
 
 		if ( ! is_null( $shard ) ) {
@@ -457,57 +455,84 @@ class RunE2ECommand extends DynamicCommand {
 		App::setVar( 'QIT_PW_ENV_VARS', $parsed_vars );
 	}
 
-	/**
-	 * Finalize the SUT definition by merging CLI and config:
-	 * - Load config
-	 * - Determine final source and test_tags
-	 * - Ensure action=test
-	 *
-	 * @param string|null $woo_extension
-	 * @param int|null    $woo_extension_id
-	 * @param string      $sut_action
-	 * @param string|null $source
-	 * @param string|null $test
-	 * @param string|null $woocommerce_version
-	 * @param string      $dependencies_option
-	 *
-	 * @return string|null The final short-syntax plugin string or null if no SUT.
-	 */
-	protected function finalize_sut_definition( $woo_extension, $woo_extension_id, $sut_action, $source, $test, $woocommerce_version, $dependencies_option ) {
-		// If no SUT, return null.
+	protected function finalize_sut_definition(
+		$woo_extension,
+		$woo_extension_id,
+		$sut_action,
+		$source,
+		$test,
+		$woocommerce_version,
+		$dependencies_option
+	) {
 		if ( empty( $woo_extension ) ) {
 			return null;
 		}
 
 		// Validate dependencies action.
-		if ( $dependencies_option !== 'none' && ! in_array( $dependencies_option, Extension::ACTIONS, true ) ) {
-			throw new \RuntimeException( sprintf( 'Invalid dependencies action. Possible values: none, %s', implode( ', ', Extension::ACTIONS ) ) );
+		if ( $dependencies_option !== 'none' && ! in_array( $dependencies_option, \QIT_CLI\Environment\Extension::ACTIONS, true ) ) {
+			throw new \RuntimeException(sprintf(
+				'Invalid dependencies action. Possible values: none, %s',
+				implode( ', ', \QIT_CLI\Environment\Extension::ACTIONS )
+			));
 		}
 
-		// Build the base SUT syntax.
-		if ( ! empty( $test ) ) {
-			$encoded_test         = 'base64' . base64_encode( $test );
-			$woo_extension_syntax = sprintf( '%s:%s:%s', $woo_extension, $sut_action, $encoded_test );
+		// Load qit.yml config
+		$env_config    = App::make( \QIT_CLI\Environment\EnvConfigLoader::class )->load_config();
+		$plugin_config = $env_config['plugins'] ?? $env_config['plugin'] ?? [];
+
+		// Determine if qit.yml defines the SUT
+		if ( isset( $plugin_config[ $woo_extension ] ) ) {
+			// SUT is defined in qit.yml, use it as the base
+			$sut_base = $plugin_config[ $woo_extension ];
 		} else {
-			$woo_extension_syntax = sprintf( '%s:%s', $woo_extension, $sut_action );
+			// SUT not in qit.yml, create a default entry
+			$sut_base = [
+				'slug'      => $woo_extension,
+				// Default source is the slug if qit.yml doesn't provide one
+				'source'    => $woo_extension,
+				'test_tags' => [ 'default' ],
+			];
 		}
 
-		// Handle dependencies if needed.
+		// If CLI --source is given, override the source from qit.yml or default
+		if ( ! empty( $source ) ) {
+			$sut_base['source'] = $source;
+		} else {
+			// If qit.yml had a local source (e.g., "./woocommerce-amazon-s3-storage"), keep it
+			// Check if qit.yml actually defined it. If at the start it had "./", it should still be here.
+			// We'll see this in the debug output if it changes.
+		}
+
+		// If CLI test argument provided, override test_tags
+		if ( ! empty( $test ) ) {
+			$sut_base['test_tags'] = [ $test ];
+		} elseif ( empty( $sut_base['test_tags'] ) ) {
+			$sut_base['test_tags'] = [ 'default' ];
+		}
+
+		// Respect qit.yml action if defined, else default to 'test'
+		if ( ! isset( $sut_base['action'] ) ) {
+			$sut_base['action'] = \QIT_CLI\Environment\Extension::ACTIONS['test'];
+		}
+
+		// Handle dependencies if needed
 		if ( $dependencies_option !== 'none' ) {
 			$dependencies = $this->dependencies->get_plugin_and_php_ext_dependencies( $woo_extension_id, [] );
 			foreach ( $dependencies['php_extensions'] as $php_extension ) {
-				// We'll append them to env_up_options later, this method just finalizes SUT.
-				// This is done earlier in the original code, so no change needed here.
 				$this->output->writeln( sprintf( 'Adding PHP extension dependency: %s', $php_extension ) );
 				App::setVar( 'QIT_ADDITIONAL_PHP_EXT', $php_extension );
 			}
-
-			foreach ( $dependencies['plugins'] as $plugin ) {
-				$this->output->writeln( sprintf( 'Adding dependency: %s', $plugin ) );
-				App::pushVar( 'QIT_ADDITIONAL_PLUGINS', "$plugin:$dependencies_option" );
+			foreach ( $dependencies['plugins'] as $dep_plugin ) {
+				$this->output->writeln( sprintf( 'Adding dependency: %s', $dep_plugin ) );
+				App::pushVar( 'QIT_ADDITIONAL_PLUGINS', "$dep_plugin:$dependencies_option" );
 			}
 		}
 
-		return $woo_extension_syntax;
+		// Save updated config
+		$plugin_config[ $woo_extension ] = $sut_base;
+		App::setVar( 'QIT_FINAL_SUT_SLUG', $woo_extension );
+		App::setVar( 'QIT_FINAL_SUT_MODIFIED_CONFIG', $plugin_config );
+
+		return null; // We don't add a second definition directly to env_up_options
 	}
 }

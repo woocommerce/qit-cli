@@ -97,23 +97,32 @@ class PluginsAndThemesParser {
 	 * Infer slug from source if possible.
 	 */
 	protected function infer_slug_from_source( string $source ): string {
-		// Try WCCOM IDs first.
-		if ( is_numeric( $source ) ) {
-			return $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $source );
-		}
-
-		try {
-			$this->woo_extensions_list->get_woo_extension_id_by_slug( $source );
-			return $source;
-		} catch ( \Exception $e ) {
-			// Not a known Woo slug, try path/URL inference.
+		$result = null;
+		if ( file_exists( $source ) ) {
 			$filename = pathinfo( \QIT_CLI\normalize_path( $source ), PATHINFO_FILENAME );
 			if ( empty( $filename ) ) {
-				throw new \Exception( "Could not infer slug from '{$source}'." );
+				throw new \Exception( "Could not infer slug from local source '{$source}'." );
 			}
-			return $filename;
+			$result = $filename;
+		} elseif ( is_numeric( $source ) ) {
+			$id     = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $source );
+			$result = $id;
+		} else {
+			try {
+				$id     = $this->woo_extensions_list->get_woo_extension_id_by_slug( $source );
+				$result = $source;
+			} catch ( \Exception $e ) {
+				$filename = pathinfo( \QIT_CLI\normalize_path( $source ), PATHINFO_FILENAME );
+				if ( empty( $filename ) ) {
+					throw new \Exception( "Could not infer slug from '{$source}'." );
+				}
+				$result = $filename;
+			}
 		}
+
+		return $result;
 	}
+
 
 	/**
 	 * Validate a test tag.

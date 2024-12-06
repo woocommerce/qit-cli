@@ -75,6 +75,10 @@ class EnvConfigLoader {
 
 		$this->normalize_plural_to_singular( $env_config );
 
+		if ( App::offsetExists( 'QIT_FINAL_SUT_MODIFIED_CONFIG' ) ) {
+			$env_config['plugin'] = App::getVar( 'QIT_FINAL_SUT_MODIFIED_CONFIG' );
+		}
+
 		// Plugins and Themes.
 		$env_config['plugin'] = $this->plugins_and_themes_parser->parse_extensions(
 			$env_config['plugin'] ?? [],
