@@ -299,14 +299,6 @@ class RunE2ECommand extends DynamicCommand {
 
 		$resource_stream = fopen( 'php://temp', 'w+' );
 
-		if ( $wait ) {
-			putenv( 'QIT_HIDE_SITE_INFO=0' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-		} else {
-			putenv( 'QIT_HIDE_SITE_INFO=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO=DOCKER' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-		}
-
-		putenv( 'QIT_UP_AND_TEST=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		if ( ! empty( $woo_extension ) ) {
 			App::setVar( 'QIT_SUT', (int) $woo_extension_id );
 		}
@@ -322,10 +314,22 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::SUCCESS;
 		}
 
+		if ( $wait ) {
+			putenv( 'QIT_HIDE_SITE_INFO=0' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		} else {
+			putenv( 'QIT_HIDE_SITE_INFO=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO=DOCKER' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		}
+
+		putenv( 'QIT_UP_AND_TEST=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+
 		$up_exit_status_code = $env_up_command->run(
 			new ArrayInput( $env_up_options ),
 			new StreamOutput( $resource_stream )
 		);
+
+		putenv( 'QIT_HIDE_SITE_INFO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 
 		$up_output = stream_get_contents( $resource_stream, - 1, 0 );
 
