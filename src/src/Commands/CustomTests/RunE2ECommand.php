@@ -513,12 +513,11 @@ class RunE2ECommand extends DynamicCommand {
 
 		// Load qit.yml config.
 		$env_config    = App::make( \QIT_CLI\Environment\EnvConfigLoader::class )->load_config();
-		$plugin_config = $env_config['plugins'] ?? $env_config['plugin'] ?? [];
 
 		// Determine if qit.yml defines the SUT.
-		if ( isset( $plugin_config[ $woo_extension ] ) ) {
+		if ( isset( $env_config['plugins'][ $woo_extension ] ) ) {
 			// SUT is defined in qit.yml, use it as the base.
-			$sut_base = $plugin_config[ $woo_extension ];
+			$sut_base = $env_config['plugins'][ $woo_extension ];
 		} else {
 			// SUT not in qit.yml, create a default entry.
 			$sut_base = [
@@ -550,7 +549,7 @@ class RunE2ECommand extends DynamicCommand {
 		$this->process_dependencies( $woo_extension_id, $dependencies_option, $env_up_options );
 
 		// Save updated config.
-		$plugin_config[ $woo_extension ] = $sut_base;
+		$env_config['plugins'][ $woo_extension ] = $sut_base;
 	}
 
 	protected function process_dependencies( $woo_extension_id, $dependencies_option, array &$env_up_options ) {
