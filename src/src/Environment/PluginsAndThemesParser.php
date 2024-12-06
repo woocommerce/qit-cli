@@ -18,6 +18,12 @@ class PluginsAndThemesParser {
 		$this->woo_extensions_list = $woo_extensions_list;
 	}
 
+	/**
+	 * @param array<int|string,string|array{source?:string,slug?:string,action?:string,test_tags?:array<string>}> $plugins_or_themes
+	 * @param string                                                                                              $type
+	 * @param string                                                                                              $default_action
+	 * @return array<Extension>
+	 */
 	public function parse_extensions( array $plugins_or_themes, string $type, string $default_action = Extension::ACTIONS['activate'] ): array {
 		$parsed_extensions = [];
 
@@ -52,7 +58,7 @@ class PluginsAndThemesParser {
 			$extension['action'] = $extension['action'] ?? $default_action;
 
 			// Ensure test_tags is set.
-			if ( empty( $extension['test_tags'] ) || ! is_array( $extension['test_tags'] ) ) {
+			if ( empty( $extension['test_tags'] ) || ! is_array( $extension['test_tags'] ) ) { // @phpstan-ignore-line
 				$extension['test_tags'] = [ 'default' ];
 			}
 

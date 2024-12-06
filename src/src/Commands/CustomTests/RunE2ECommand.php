@@ -434,6 +434,10 @@ class RunE2ECommand extends DynamicCommand {
 		return $parsed_options;
 	}
 
+	/**
+	 * @param array<string> $env_vars
+	 * @return void
+	 */
 	protected function parse_env_vars( array $env_vars ): void {
 		$parsed_vars = [];
 		foreach ( $env_vars as $env_var ) {
@@ -455,6 +459,22 @@ class RunE2ECommand extends DynamicCommand {
 		App::setVar( 'QIT_PW_ENV_VARS', $parsed_vars );
 	}
 
+	/**
+	 * Finalize the SUT definition by merging CLI and config:
+	 * - Load config
+	 * - Determine final source and test_tags
+	 * - Ensure action=test
+	 *
+	 * @param string|null $woo_extension
+	 * @param int|null    $woo_extension_id
+	 * @param string      $sut_action
+	 * @param string|null $source
+	 * @param string|null $test
+	 * @param string|null $woocommerce_version
+	 * @param string      $dependencies_option
+	 *
+	 * @return string|null The final short-syntax plugin string or null if no SUT.
+	 */
 	protected function finalize_sut_definition(
 		$woo_extension,
 		$woo_extension_id,
@@ -524,7 +544,7 @@ class RunE2ECommand extends DynamicCommand {
 			}
 			foreach ( $dependencies['plugins'] as $dep_plugin ) {
 				$this->output->writeln( sprintf( 'Adding dependency: %s', $dep_plugin ) );
-				App::pushVar( 'QIT_ADDITIONAL_PLUGINS', "$dep_plugin:$dependencies_option" );
+				App::setVar( 'QIT_ADDITIONAL_PLUGINS', "$dep_plugin:$dependencies_option" );
 			}
 		}
 
