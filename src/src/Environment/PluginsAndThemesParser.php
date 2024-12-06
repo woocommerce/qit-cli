@@ -18,27 +18,6 @@ class PluginsAndThemesParser {
 		$this->woo_extensions_list = $woo_extensions_list;
 	}
 
-	/**
-	 * // phpcs:disable
-	 *
-	 * @param array<int|string, string|array{
-	 *     source?: string,
-	 *     slug?: string,
-	 *     action?: string,
-	 *     test_tags?: array<string>,
-	 * }> $plugins_or_themes
-	 * // phpcs:enable
-	 * @param string                          $type One of Extension::TYPES.
-	 * @param string                          $default_action One of Extension::ACTIONS.
-	 *
-	 * @return array<Extension>
-	 * @throws \Exception If it couldn't parse the extensions.
-	 * @throws \InvalidArgumentException If the extensions are invalid.
-	 * @throws \LogicException If the type is invalid.
-	 *
-	 * @see Extension::TYPES
-	 * @see Extension::ACTIONS
-	 */
 	public function parse_extensions( array $plugins_or_themes, string $type, string $default_action = Extension::ACTIONS['activate'] ): array {
 		$parsed_extensions = [];
 
@@ -46,21 +25,12 @@ class PluginsAndThemesParser {
 			throw new \LogicException( sprintf( 'Invalid type "%s". Valid types are: %s', $type, implode( ', ', Extension::TYPES ) ) );
 		}
 
-		$sut_slug = getenv( 'QIT_SUT' );
-
 		foreach ( $plugins_or_themes as $potential_slug => $extension ) {
 			$string_extension = null;
 			if ( is_string( $extension ) ) {
 				$string_extension = $extension;
-
-				/*
-				 * Short-syntax like "qit-beaver:test:rc,foo-feature"
-				 */
-				$extension = $this->parse_string_extension( $extension, $default_action );
+				$extension        = $this->parse_string_extension( $extension, $default_action );
 			} elseif ( is_array( $extension ) ) {
-				/*
-				 * Arrays comes from config files.
-				 */
 				$extension = $this->parse_array_extension( $extension, $potential_slug );
 			}
 
@@ -70,47 +40,11 @@ class PluginsAndThemesParser {
 
 			// Infer slug if not set.
 			if ( ! isset( $extension['slug'] ) ) {
-				try {
-					if ( is_numeric( $extension['source'] ) ) {
-						$extension['slug'] = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $extension['source'] );
-					} else {
-						$this->woo_extensions_list->get_woo_extension_id_by_slug( $extension['source'] );
-						$extension['slug'] = $extension['source'];
-					}
-				} catch ( \Exception $e ) {
-					// Source is not a slug of a ID. Try to infer it.
-					try {
-						/*
-						 * If the source is a URL, we can try to infer the slug from the file that is being downloaded, eg:
-						 *
-						 * https://github.com/foo/bar/releases/qit-beaver.zip (inferred slug is "qit-beaver")
-						 *
-						 * If the source is a local file path, we infer from the basename of the file without the extension, eg:
-						 * /path/to/qit-beaver.zip (inferred slug is "qit-beaver")
-						 *
-						 * If it's a directory, it's the basename of the dir, eg:
-						 * /path/to/qit-beaver (inferred slug is "qit-beaver")
-						 */
-						$extension['slug'] = pathinfo( normalize_path( $extension['source'] ), PATHINFO_FILENAME );
-
-						if ( $this->output->isVerbose() ) {
-							$this->output->writeln( sprintf( '<comment>Inferred slug "%s" from source "%s".</comment>', $extension['slug'], $extension['source'] ) );
-						}
-					} catch ( \Exception $e ) {
-						throw new \Exception( "Could not find an extension with slug {$extension['slug']}. (Inferred from '{$extension['source']}')" );
-					}
-				}
-			}
-
-			if ( ! empty( getenv( 'QIT_SUT' ) ) && ! empty( getenv( 'QIT_SUT_SOURCE' ) ) ) {
-				if ( ! empty( $extension['slug'] ) && $extension['slug'] === getenv( 'QIT_SUT' ) ) {
-					$extension['source'] = getenv( 'QIT_SUT_SOURCE' );
-				}
+				$extension['slug'] = $this->infer_slug_from_source( $extension['source'] ?? '' );
 			}
 
 			// If "source" is empty, use slug as the source.
 			if ( ! isset( $extension['source'] ) ) {
-				// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
 				$extension['source'] = $extension['slug'];
 			}
 
@@ -118,32 +52,20 @@ class PluginsAndThemesParser {
 			$extension['action'] = $extension['action'] ?? $default_action;
 
 			// Ensure test_tags is set.
-			// @phpstan-ignore-next-line.
 			if ( empty( $extension['test_tags'] ) || ! is_array( $extension['test_tags'] ) ) {
 				$extension['test_tags'] = [ 'default' ];
 			}
 
-			// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
 			foreach ( $extension['test_tags'] as $test_tag ) {
-				if ( ! file_exists( $test_tag ) ) {
-					if ( ! preg_match( '/^[a-z0-9-_]+$/i', $test_tag ) ) {
-						throw new \InvalidArgumentException( sprintf( 'Invalid test tag "%s". Test tags must either be alphanumeric strings (dashes and underscores allowed), a local zip file, or a directory.', $test_tag ) );
-					}
-				} else {
-					// File exists. If it's a file, it must be a zip one.
-					if ( is_file( $test_tag ) ) {
-						if ( pathinfo( $test_tag, PATHINFO_EXTENSION ) !== 'zip' ) {
-							throw new \InvalidArgumentException( sprintf( 'Invalid test tag "%s". Test tags must either be alphanumeric strings (dashes and underscores allowed), a local zip file, or a directory.', $test_tag ) );
-						}
-					}
-				}
+				$this->validate_test_tag( $test_tag );
 			}
 
 			if ( ! in_array( $extension['action'], Extension::ACTIONS, true ) ) {
-				throw new \InvalidArgumentException( sprintf( 'Invalid action "%s". Valid actions are: %s', $extension['action'], implode( ', ', Extension::ACTIONS ) ) );
+				throw new \InvalidArgumentException(
+					sprintf( 'Invalid action "%s". Valid actions are: %s', $extension['action'], implode( ', ', Extension::ACTIONS ) )
+				);
 			}
 
-			// Sort by key.
 			ksort( $extension, SORT_STRING );
 
 			$extension_instance            = new Extension();
@@ -153,30 +75,14 @@ class PluginsAndThemesParser {
 			$extension_instance->test_tags = $extension['test_tags'];
 			$extension_instance->type      = $type;
 
-			// Force SUT to be "test" action.
-			if ( $extension_instance->slug === $sut_slug ) {
-				$extension_instance->action = Extension::ACTIONS['test'];
-			}
+			// No SUT overriding logic here. The caller must ensure correct action for SUT.
 
-			// Check if this "slug" is already defined, if it is, override it.
+			// If slug already defined, override it with the newest definition.
+			// (This might still be needed if multiple entries for the same slug appear)
 			foreach ( $parsed_extensions as $k => $already_parsed ) {
 				if ( $extension_instance->slug === $already_parsed->slug ) {
-					/*
-					 * We inject the SUT using a short-syntax string.
-					 * If the SUT is declared in a qit.yml file, this
-					 * overrides it, so we need to prevent it.
-					 */
-					if ( $extension_instance->slug === $sut_slug ) {
-						if ( ! is_null( $string_extension ) ) {
-							$pattern = sprintf( '/^%s:%s(:base64.*)?$/', $sut_slug, Extension::ACTIONS['test'] );
-							if ( preg_match( $pattern, $string_extension ) ) {
-								continue 2;
-							}
-						}
-					}
-
-					$parsed_extensions[ $k ] = $extension_instance;
 					$this->output->writeln( sprintf( '<comment>Overriding extension "%s".</comment>', $extension['slug'] ) );
+					$parsed_extensions[ $k ] = $extension_instance;
 					continue 2;
 				}
 			}
@@ -185,6 +91,48 @@ class PluginsAndThemesParser {
 		}
 
 		return $parsed_extensions;
+	}
+
+	/**
+	 * Infer slug from source if possible.
+	 */
+	protected function infer_slug_from_source( string $source ): string {
+		// Try WCCOM IDs first.
+		if ( is_numeric( $source ) ) {
+			return $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $source );
+		}
+
+		try {
+			$this->woo_extensions_list->get_woo_extension_id_by_slug( $source );
+			return $source;
+		} catch ( \Exception $e ) {
+			// Not a known Woo slug, try path/URL inference.
+			$filename = pathinfo( \QIT_CLI\normalize_path( $source ), PATHINFO_FILENAME );
+			if ( empty( $filename ) ) {
+				throw new \Exception( "Could not infer slug from '{$source}'." );
+			}
+			return $filename;
+		}
+	}
+
+	/**
+	 * Validate a test tag.
+	 */
+	protected function validate_test_tag( string $test_tag ): void {
+		if ( ! file_exists( $test_tag ) ) {
+			if ( ! preg_match( '/^[a-z0-9-_]+$/i', $test_tag ) ) {
+				throw new \InvalidArgumentException(
+					sprintf( 'Invalid test tag "%s". Test tags must be alphanumeric (dashes/underscores allowed), zip file, or directory.', $test_tag )
+				);
+			}
+		} else {
+			// It's a file/directory. If file, must be zip.
+			if ( is_file( $test_tag ) && pathinfo( $test_tag, PATHINFO_EXTENSION ) !== 'zip' ) {
+				throw new \InvalidArgumentException(
+					sprintf( 'Invalid test tag "%s". Must be alphanumeric, zip file, or directory.', $test_tag )
+				);
+			}
+		}
 	}
 
 	/**
