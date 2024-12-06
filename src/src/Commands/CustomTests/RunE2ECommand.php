@@ -72,7 +72,6 @@ class RunE2ECommand extends DynamicCommand {
 	public function __construct(
 		E2EEnvironment $e2e_environment,
 		Cache $cache,
-		OutputInterface $output,
 		E2ETestManager $e2e_test_manager,
 		WooExtensionsList $woo_extensions_list,
 		LocalTestRunNotifier $test_run_notifier,
@@ -80,7 +79,6 @@ class RunE2ECommand extends DynamicCommand {
 	) {
 		$this->e2e_environment     = $e2e_environment;
 		$this->cache               = $cache;
-		$this->output              = $output;
 		$this->e2e_test_manager    = $e2e_test_manager;
 		$this->woo_extensions_list = $woo_extensions_list;
 		$this->test_run_notifier   = $test_run_notifier;
@@ -132,6 +130,8 @@ class RunE2ECommand extends DynamicCommand {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
+		$this->prepare_output( $output );
+
 		if ( is_windows() ) {
 			$output->writeln( '<comment>To run E2E Tests on Windows, please use WSL.</comment>' );
 
@@ -314,6 +314,14 @@ class RunE2ECommand extends DynamicCommand {
 		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
 		App::setVar( 'QIT_ENV_UP_OPTIONS', $env_up_options );
 
+		if ( getenv( 'QIT_TESTING_ENV_CONFIG' ) ) {
+			// Print out the final merged configuration for inspection.
+			$this->output->writeln( json_encode( $env_up_options, JSON_PRETTY_PRINT ) );
+
+			// Early return before environment setup and test execution.
+			return Command::SUCCESS;
+		}
+
 		$up_exit_status_code = $env_up_command->run(
 			new ArrayInput( $env_up_options ),
 			new StreamOutput( $resource_stream )
@@ -391,6 +399,17 @@ class RunE2ECommand extends DynamicCommand {
 		}
 	}
 
+	protected function prepare_output( OutputInterface $output ) {
+		$this->output = $output;
+
+		if ( App::getVar( 'QIT_JSON_MODE' ) === true || defined( 'UNIT_TESTS' ) ) {
+			/* @phan-suppress-next-line PhanUndeclaredMethod */
+			if ( ! stream_filter_append( $output->getStream(), 'qit_json' ) ) {
+				exit( 152 );
+			}
+		}
+	}
+
 	public static function shutdown_test_run(): void {
 		static $did_shutdown = false;
 		if ( $did_shutdown ) {
@@ -444,7 +463,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up']["--$option_name"] = $option_value;
+				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
 			}
 		}
 
@@ -484,10 +503,10 @@ class RunE2ECommand extends DynamicCommand {
 	 * - Ensure action=test
 	 *
 	 * @param string|null $woo_extension
-	 * @param int|null $woo_extension_id
+	 * @param int|null    $woo_extension_id
 	 * @param string|null $source
 	 * @param string|null $test
-	 * @param string $dependencies_option
+	 * @param string      $dependencies_option
 	 *
 	 * @return void
 	 */
@@ -497,7 +516,7 @@ class RunE2ECommand extends DynamicCommand {
 		$source,
 		$test,
 		$dependencies_option,
-		array &$env_up_options // Type-hinted as array for clarity
+		array &$env_up_options
 	) {
 		if ( empty( $woo_extension ) ) {
 			return;
@@ -512,7 +531,7 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		// Load qit.yml config.
-		$env_config    = App::make( \QIT_CLI\Environment\EnvConfigLoader::class )->load_config();
+		$env_config = App::make( \QIT_CLI\Environment\EnvConfigLoader::class )->load_config();
 
 		// Determine if qit.yml defines the SUT.
 		if ( isset( $env_config['plugins'][ $woo_extension ] ) ) {
@@ -522,9 +541,9 @@ class RunE2ECommand extends DynamicCommand {
 			// SUT not in qit.yml, create a default entry.
 			$sut_base = [
 				'slug'      => $woo_extension,
-				'source'    => $woo_extension, // Default source is the slug
+				'source'    => $woo_extension, // Default source is the slug.
 				'test_tags' => [ 'default' ],
-				// 'action' will be set below if not defined
+				// 'action' will be set below if not defined.
 			];
 		}
 
@@ -545,11 +564,19 @@ class RunE2ECommand extends DynamicCommand {
 			$sut_base['action'] = \QIT_CLI\Environment\Extension::ACTIONS['test'];
 		}
 
-		// Process dependencies and merge them into env_up_options
+		// Process dependencies and merge them into env_up_options.
 		$this->process_dependencies( $woo_extension_id, $dependencies_option, $env_up_options );
 
 		// Save updated config.
 		$env_config['plugins'][ $woo_extension ] = $sut_base;
+
+		// Now save it back to $env_up_options.
+		$env_up_options['--plugin'] = [];
+
+		foreach ( $env_config['plugins'] as $plugin_slug => $plugin_config ) {
+			$plugin_config['slug']        = $plugin_slug;
+			$env_up_options['--plugin'][] = $plugin_config;
+		}
 	}
 
 	protected function process_dependencies( $woo_extension_id, $dependencies_option, array &$env_up_options ) {
@@ -559,7 +586,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		$dependencies = $this->dependencies->get_plugin_and_php_ext_dependencies( $woo_extension_id, [] );
 
-		// Initialize arrays if not already set
+		// Initialize arrays if not already set.
 		if ( ! isset( $env_up_options['--php_extension'] ) ) {
 			$env_up_options['--php_extension'] = [];
 		}
@@ -568,7 +595,7 @@ class RunE2ECommand extends DynamicCommand {
 			$env_up_options['--plugin'] = [];
 		}
 
-		// Add PHP extensions, avoiding duplicates
+		// Add PHP extensions, avoiding duplicates.
 		foreach ( $dependencies['php_extensions'] as $php_extension ) {
 			$this->output->writeln( sprintf( 'Adding PHP extension dependency: %s', $php_extension ) );
 			if ( ! in_array( $php_extension, $env_up_options['--php_extension'], true ) ) {
@@ -576,17 +603,17 @@ class RunE2ECommand extends DynamicCommand {
 			}
 		}
 
-		// Add Plugins, avoiding duplicates and handling --woo option if necessary
+		// Add Plugins, avoiding duplicates and handling --woo option if necessary.
 		foreach ( $dependencies['plugins'] as $dep_plugin ) {
-			// If --woo is set and the plugin is a WooCommerce plugin, skip it
+			// If --woo is set and the plugin is a WooCommerce plugin, skip it.
 			if ( ! empty( $env_up_options['--woo'] ) && stripos( $dep_plugin, 'woocommerce:' ) !== false ) {
 				continue;
 			}
 
-			// Extract the plugin slug (before the colon, if present)
+			// Extract the plugin slug (before the colon, if present).
 			$plugin_slug = strtok( $dep_plugin, ':' );
 
-			// Check if the plugin is already present in env_up_options['--plugin']
+			// Check if the plugin is already present in env_up_options['--plugin'].
 			$already_present = false;
 			foreach ( $env_up_options['--plugin'] as $existing_plugin ) {
 				if ( stripos( $existing_plugin, $plugin_slug ) !== false ) {

@@ -1,0 +1,2 @@
+<?php
+/* WooCommerce Core Stub */

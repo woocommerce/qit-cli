@@ -41,8 +41,8 @@ class TunnelRunner {
 		$allowed_tunnels = array_merge( array_keys( self::$tunnel_map ), [ 'auto', 'custom', 'no_tunnel' ] );
 
 		if ( ! in_array( $tunnel, $allowed_tunnels, true ) ) {
-			// If an invalid tunnel type is provided, default to 'auto'.
-			$tunnel = 'auto';
+			// If an invalid tunnel type is provided, throw.
+			throw new \RuntimeException( 'Invalid tunnel type "' . $tunnel . '" specified. Allowed values are: ' . implode( ', ', $allowed_tunnels ) );
 		}
 
 		return $tunnel;

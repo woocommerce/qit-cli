@@ -117,28 +117,30 @@ $application->configureIO( $container->make( Input::class ), $container->make( O
  * If the parameter "--json" is present, make sure only JSON
  * is outputted, ignoring all output that is not JSON.
  */
-if ( in_array( '--json', $GLOBALS['argv'], true ) ) {
-	$container->setVar( 'QIT_JSON_MODE', true );
-	class QIT_JSON_Filter extends \php_user_filter {
-		public function filter( $in, $out, &$consumed, $closing ): int {
-			while ( $bucket = stream_bucket_make_writeable( $in ) ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition,Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
-				if ( ! is_null( json_decode( $bucket->data ) ) ) {
-					$consumed += $bucket->datalen;
-					stream_bucket_append( $out, $bucket );
-				} else {
-					if ( ! empty( getenv( 'QIT_NON_JSON_OUTPUT' ) ) ) {
-						file_put_contents( getenv( 'QIT_NON_JSON_OUTPUT' ), $bucket->data, FILE_APPEND );
-					}
+// phpcs:ignore Squiz.Commenting.ClassComment.WrongStyle
+class QIT_JSON_Filter extends \php_user_filter {
+	public function filter( $in, $out, &$consumed, $closing ): int {
+		while ( $bucket = stream_bucket_make_writeable( $in ) ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition,Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
+			if ( ! is_null( json_decode( $bucket->data ) ) ) {
+				$consumed += $bucket->datalen;
+				stream_bucket_append( $out, $bucket );
+			} else {
+				if ( ! empty( getenv( 'QIT_NON_JSON_OUTPUT' ) ) ) {
+					file_put_contents( getenv( 'QIT_NON_JSON_OUTPUT' ), $bucket->data, FILE_APPEND );
 				}
 			}
-
-			return PSFS_PASS_ON;
 		}
-	}
 
-	if ( ! stream_filter_register( 'qit_json', QIT_JSON_Filter::class ) ) {
-		exit( 151 );
+		return PSFS_PASS_ON;
 	}
+}
+
+if ( ! stream_filter_register( 'qit_json', QIT_JSON_Filter::class ) ) {
+	exit( 151 );
+}
+
+if ( in_array( '--json', $GLOBALS['argv'], true ) ) {
+	$container->setVar( 'QIT_JSON_MODE', true );
 	/* @phan-suppress-next-line PhanUndeclaredMethod */
 	if ( ! stream_filter_append( App::make( Output::class )->getStream(), 'qit_json' ) ) {
 		exit( 152 );

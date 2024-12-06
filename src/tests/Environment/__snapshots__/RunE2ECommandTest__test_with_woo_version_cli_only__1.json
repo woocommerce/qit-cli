@@ -1,0 +1,25 @@
+{
+    "--php_version": "7.4",
+    "--wp": "stable",
+    "--woo": "6.0",
+    "--plugin": [
+        {
+            "slug": "woocommerce-amazon-s3-storage",
+            "source": ".\/woocommerce-amazon-s3-storage",
+            "test_tags": [
+                "default"
+            ],
+            "action": "test"
+        }
+    ],
+    "--theme": [],
+    "--volume": [],
+    "--php_extension": [],
+    "--require": [],
+    "--object_cache": false,
+    "--skip_activating_plugins": false,
+    "--tunnel": "no_tunnel",
+    "--json": true,
+    "--env": [],
+    "--env_file": []
+}
