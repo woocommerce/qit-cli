@@ -37,6 +37,7 @@ use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Commands\WooValidateZipCommand;
 use QIT_CLI\Config;
 use QIT_CLI\Diagnosis;
+use QIT_CLI\Environment\EnvConfigLoader;
 use QIT_CLI\Environment\EnvironmentDanglingCleanup;
 use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\Exceptions\UpdateRequiredException;
@@ -108,6 +109,7 @@ $container->singleton( Config::class );
 $container->singleton( ManagerBackend::class );
 $container->singleton( Cache::class );
 $container->singleton( TunnelRunner::class );
+$container->singleton( EnvConfigLoader::class );
 
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 

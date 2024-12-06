@@ -21,6 +21,9 @@ class EnvConfigLoader {
 	/** @var PluginsAndThemesParser */
 	protected $plugins_and_themes_parser;
 
+	/** @var array|null */
+	private $loaded_config = null;
+
 	public function __construct( Serializer $serializer, Cache $cache, OutputInterface $output, PluginsAndThemesParser $plugins_and_themes_parser ) {
 		$this->serializer                = $serializer;
 		$this->cache                     = $cache;
@@ -39,7 +42,7 @@ class EnvConfigLoader {
 			'overrides' => [],
 		]
 	): EnvInfo {
-		// Load the environment config file..
+		// Load the environment config file.
 		$env_config = $this->load_config();
 
 		// Check that config file doesn't contain disallowed keys.
@@ -186,7 +189,11 @@ class EnvConfigLoader {
 	/**
 	 * @return array<mixed> Multidimensional array of scalars.
 	 */
-	public function load_config(): array {
+	public function load_config( bool $load_once = true ): array {
+		if ( $load_once && $this->loaded_config !== null ) {
+			return $this->loaded_config;
+		}
+
 		// If it's an override (user passed --config) parameter, load it and return.
 		if ( ! empty( App::getVar( 'QIT_CONFIG_OVERRIDE' ) ) ) {
 			$config_override = App::getVar( 'QIT_CONFIG_OVERRIDE' );
@@ -291,6 +298,8 @@ class EnvConfigLoader {
 				throw new \InvalidArgumentException( 'Configuration contains non-scalar values.' );
 			}
 		}
+
+		$this->loaded_config = $env_config;
 
 		return $env_config;
 	}
