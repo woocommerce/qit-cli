@@ -22,7 +22,7 @@ class PluginDependencies {
 	 * } The dependencies of the plugins.
 	 */
 	public function get_plugin_and_php_ext_dependencies( int $woo_id, array $additional_woo_extension_ids ): array {
-		$cache_key = sprintf( 'plugin_dependencies_%s_%s', $woo_id, md5( implode( ',', $additional_woo_extension_ids ) ) );
+		$cache_key = sprintf( 'plugin_dependencies_%s_%s_v2', $woo_id, md5( implode( ',', $additional_woo_extension_ids ) ) );
 
 		$cached = $this->cache->get( $cache_key );
 
