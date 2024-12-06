@@ -102,32 +102,51 @@ class PluginsAndThemesParser {
 	 * Infer slug from source if possible.
 	 */
 	protected function infer_slug_from_source( string $source ): string {
-		$result = null;
-		if ( file_exists( $source ) ) {
+		// If the source looks like a remote URL or non-local scheme, don't call file_exists().
+		// A simple check can be if it starts with a known scheme like http://, https://, ftp://, ssh://, or \\\\.
+		if ( preg_match( '/^(https?|ftp|ssh|\\\\)/i', $source ) ) {
+			// This is a remote URL or network path, skip file_exists().
 			$filename = pathinfo( \QIT_CLI\normalize_path( $source ), PATHINFO_FILENAME );
 			if ( empty( $filename ) ) {
-				throw new \Exception( "Could not infer slug from local source '{$source}'." );
+				throw new \Exception( "Could not infer slug from '{$source}'." );
 			}
-			$result = $filename;
-		} elseif ( is_numeric( $source ) ) {
-			$id     = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $source );
-			$result = $id;
-		} else {
-			try {
-				$id     = $this->woo_extensions_list->get_woo_extension_id_by_slug( $source );
-				$result = $source;
-			} catch ( \Exception $e ) {
+
+			return $filename;
+		}
+
+		// If source is numeric, try WCCOM by ID.
+		if ( is_numeric( $source ) ) {
+			$id = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $source );
+
+			return $id;
+		}
+
+		// Otherwise, try WCCOM by slug.
+		try {
+			$id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $source );
+
+			return $source;
+		} catch ( \Exception $e ) {
+			// If not a known WCCOM slug or ID, assume it's a local path or a fallback.
+			// Check if the file is local and exists.
+			if ( file_exists( $source ) ) {
+				$filename = pathinfo( \QIT_CLI\normalize_path( $source ), PATHINFO_FILENAME );
+				if ( empty( $filename ) ) {
+					throw new \Exception( "Could not infer slug from local source '{$source}'." );
+				}
+
+				return $filename;
+			} else {
+				// If file doesn't exist locally, just infer the slug from the filename.
 				$filename = pathinfo( \QIT_CLI\normalize_path( $source ), PATHINFO_FILENAME );
 				if ( empty( $filename ) ) {
 					throw new \Exception( "Could not infer slug from '{$source}'." );
 				}
-				$result = $filename;
+
+				return $filename;
 			}
 		}
-
-		return $result;
 	}
-
 
 	/**
 	 * Validate a test tag.
