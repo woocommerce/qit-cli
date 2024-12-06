@@ -75,7 +75,7 @@ class EnvConfigLoader {
 
 		$this->normalize_plural_to_singular( $env_config );
 
-		if ( App::offsetExists( 'QIT_FINAL_SUT_MODIFIED_CONFIG' ) ) {
+		if ( App::offsetExists( 'QIT_FINAL_SUT_MODIFIED_CONFIG' ) ) { // @phan-suppress-current-line PhanUndeclaredClassReference
 			$env_config['plugin'] = App::getVar( 'QIT_FINAL_SUT_MODIFIED_CONFIG' );
 		}
 

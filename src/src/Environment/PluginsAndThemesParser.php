@@ -4,7 +4,6 @@ namespace QIT_CLI\Environment;
 
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Output\OutputInterface;
-use function QIT_CLI\normalize_path;
 
 class PluginsAndThemesParser {
 	/** @var OutputInterface */
