@@ -183,8 +183,9 @@ class CustomTestsDownloader {
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/download-urls' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
-				'extensions' => $extensions_to_get_tests_for,
-				'test_tags'  => implode( ',', $test_tags_to_fetch ),
+				'extensions'    => $extensions_to_get_tests_for,
+				'test_tags'     => implode( ',', $test_tags_to_fetch ),
+				'download_type' => 'tests',
 			] )
 			->request();
 		if ( $this->output->isVerbose() ) {
