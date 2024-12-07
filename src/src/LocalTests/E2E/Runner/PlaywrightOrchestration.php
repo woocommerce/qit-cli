@@ -338,7 +338,7 @@ class PlaywrightOrchestration {
 
 				if ( $need_db_export && ($more_tests_coming || $has_shared_teardown) ) {
 					$db_import_count++;
-					$name       = $format_name( "[db import #{$db_import_count}]" );
+					$name = $format_name("[db import] #{$db_import_count}");
 					$projects[] = [
 						'name'         => $name,
 						'testDir'      => '/qit/tests/e2e/scripts',
@@ -358,7 +358,7 @@ class PlaywrightOrchestration {
 				if ( $need_db_export && $last_operation && $test_plugins_count === 0 ) {
 					// No tests were run, but we have shared teardown and db export
 					$db_import_count++;
-					$name       = $format_name( "[db import #{$db_import_count}]" );
+					$name = $format_name("[db import] #{$db_import_count}");
 					$projects[] = [
 						'name'         => $name,
 						'testDir'      => '/qit/tests/e2e/scripts',

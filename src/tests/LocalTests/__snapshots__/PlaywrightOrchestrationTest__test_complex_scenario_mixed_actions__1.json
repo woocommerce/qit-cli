@@ -90,7 +90,7 @@
         }
     },
     {
-        "name": "[db import #1]",
+        "name": "[db import] #1",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "db-import.js",
         "dependencies": [
@@ -106,7 +106,7 @@
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "php.js",
         "dependencies": [
-            "[db import #1]"
+            "[db import] #1"
         ],
         "retries": 0,
         "use": {
@@ -140,7 +140,7 @@
         }
     },
     {
-        "name": "[db import #2]",
+        "name": "[db import] #2",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "db-import.js",
         "dependencies": [
@@ -156,7 +156,7 @@
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "bash.js",
         "dependencies": [
-            "[db import #2]"
+            "[db import] #2"
         ],
         "retries": 0,
         "use": {
@@ -193,7 +193,7 @@
         }
     },
     {
-        "name": "[db import #3]",
+        "name": "[db import] #3",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "db-import.js",
         "dependencies": [
@@ -209,7 +209,7 @@
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "bash.js",
         "dependencies": [
-            "[db import #3]"
+            "[db import] #3"
         ],
         "retries": 0,
         "use": {
