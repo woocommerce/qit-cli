@@ -19,8 +19,8 @@
             "[setup:shared] Bootstrap One (Shell)"
         ],
         "use": {
-            "qitTestSlug": "bootstrap-two",
-            "browserName": "chromium"
+            "browserName": "chromium",
+            "qitTestSlug": "bootstrap-two"
         }
     },
     {
@@ -36,7 +36,7 @@
         }
     },
     {
-        "name": "[db import]",
+        "name": "[db import #1]",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "db-import.js",
         "dependencies": [
@@ -52,7 +52,7 @@
         "testDir": "test-path-bootstrap-2\/bootstrap",
         "testMatch": "shared-teardown.js",
         "dependencies": [
-            "[db import]"
+            "[db import #1]"
         ],
         "use": {
             "browserName": "chromium",

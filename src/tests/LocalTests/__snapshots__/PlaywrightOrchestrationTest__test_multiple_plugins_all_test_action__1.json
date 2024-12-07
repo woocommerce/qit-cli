@@ -76,7 +76,7 @@
         }
     },
     {
-        "name": "[db import]",
+        "name": "[db import #1]",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "db-import.js",
         "dependencies": [
@@ -92,7 +92,7 @@
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "bash.js",
         "dependencies": [
-            "[db import]"
+            "[db import #1]"
         ],
         "retries": 0,
         "use": {

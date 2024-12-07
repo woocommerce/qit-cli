@@ -35,6 +35,9 @@ class PlaywrightOrchestration {
 		$projects        = [];
 		$project_counter = 1;
 
+		// Added for db import naming
+		$db_import_count = 0;
+
 		// Validate actions.
 		foreach ( $test_infos as $t ) {
 			if ( ! in_array( $t['action'], Extension::ACTIONS, true ) ) {
@@ -206,14 +209,13 @@ class PlaywrightOrchestration {
 			}
 
 			if ( $action === 'bootstrap' ) {
-				// Bootstrap does nothing isolated here, just mark first_test as false after first one
 				$last_operation = $current_setup;
 				$first_test     = false;
 				continue;
 			}
 
 			if ( $action === 'test' ) {
-				// Run isolated setups
+				// Isolated setups
 				if ( file_exists( "{$host_path}/bootstrap/setup.sh" ) ) {
 					$name          = $format_name( "[setup] $plugin_name (Shell)" );
 					$projects[]    = [
@@ -331,13 +333,12 @@ class PlaywrightOrchestration {
 				$first_test     = false;
 				$processed_test_plugins++;
 
-				// After finishing a test plugin scenario, decide if we need a DB import.
-				// We do this if $need_db_export is true AND
-				// (more test plugins are coming OR shared teardown is present).
+				// After finishing a test plugin scenario, if we need a db import:
 				$more_tests_coming = $processed_test_plugins < $test_plugins_count;
 
 				if ( $need_db_export && ($more_tests_coming || $has_shared_teardown) ) {
-					$name       = $format_name( '[db import]' );
+					$db_import_count++;
+					$name       = $format_name( "[db import #{$db_import_count}]" );
 					$projects[] = [
 						'name'         => $name,
 						'testDir'      => '/qit/tests/e2e/scripts',
@@ -354,20 +355,10 @@ class PlaywrightOrchestration {
 		// Shared teardowns run in reverse order, but only if we ran shared steps.
 		if ( $run_shared_steps ) {
 			if ( $has_shared_teardown ) {
-				// At this point, if shared teardowns exist, we've already done DB imports after test plugins as needed.
-				// If no tests were run or no import occurred, we should ensure a baseline before shared teardowns:
-				// Only if no test plugins triggered a DB import at the end do we need one here.
-				// Actually, from logic above, if we had test plugins and shared teardown, we did the import after last test plugin scenario.
-				// If we had no test plugins but shared teardown and multiple plugins scenario, we should have done an import after db export if needed.
-				// If you find a scenario needing an import here, you can add it, but currently we've handled test scenarios.
-
-				// If we had no tests at all, just bootstrap or activate with shared teardown,
-				// then we have a DB export but never imported. Let's handle that:
-
 				if ( $need_db_export && $last_operation && $test_plugins_count === 0 ) {
-					// No tests were run. If we have shared teardown and multiple plugins (or reason to do DB export),
-					// we likely need a baseline before teardown:
-					$name       = $format_name( '[db import]' );
+					// No tests were run, but we have shared teardown and db export
+					$db_import_count++;
+					$name       = $format_name( "[db import #{$db_import_count}]" );
 					$projects[] = [
 						'name'         => $name,
 						'testDir'      => '/qit/tests/e2e/scripts',
@@ -439,5 +430,4 @@ class PlaywrightOrchestration {
 
 		return $projects;
 	}
-
 }
