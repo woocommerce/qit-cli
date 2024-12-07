@@ -19,8 +19,8 @@
             "[setup:shared] Test Plugin A (Shell)"
         ],
         "use": {
-            "qitTestSlug": "test-plugin-b",
-            "browserName": "chromium"
+            "browserName": "chromium",
+            "qitTestSlug": "test-plugin-b"
         }
     },
     {

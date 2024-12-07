@@ -75,7 +75,7 @@ class PlaywrightOrchestration {
 		$test_plugins_count = 0;
 		foreach ( $test_infos as $ti ) {
 			if ( $ti['action'] === 'test' ) {
-				$test_plugins_count ++;
+				$test_plugins_count++;
 			}
 		}
 
@@ -91,14 +91,15 @@ class PlaywrightOrchestration {
 
 		$format_name = function ( string $name ) use ( &$project_counter ): string {
 			if ( in_array( App::getVar( 'TEST_MODE' ), [ E2ETestManager::$test_modes['codegen'], E2ETestManager::$test_modes['ui'] ], true ) ) {
-				return sprintf( '%02d - %s', $project_counter ++, $name );
+				return sprintf( '%02d - %s', $project_counter++, $name );
 			}
-
 			return $name;
 		};
 
-		$last_setup     = null;
-		$last_operation = null;
+		$last_setup          = null;
+		$last_operation      = null;
+		$processed_test_plugins = 0;
+		$first_test          = true;
 
 		// Run shared setup steps if applicable.
 		if ( $run_shared_steps ) {
@@ -160,12 +161,11 @@ class PlaywrightOrchestration {
 		}
 
 		$last_operation = $last_setup;
-		$db_import_done = false; // Track if we have done a db import to avoid duplicates.
 
 		// If needed, do a DB export after shared setup.
 		if ( $need_db_export && $last_operation ) {
-			$name           = $format_name( '[db export]' );
-			$projects[]     = [
+			$name       = $format_name( '[db export]' );
+			$projects[] = [
 				'name'         => $name,
 				'testDir'      => '/qit/tests/e2e/scripts',
 				'testMatch'    => 'db-export.js',
@@ -175,8 +175,6 @@ class PlaywrightOrchestration {
 			];
 			$last_operation = $name;
 		}
-
-		$first_test = true;
 
 		foreach ( $test_infos as $t ) {
 			$action      = $t['action'];
@@ -188,8 +186,8 @@ class PlaywrightOrchestration {
 			$current_setup = $last_operation ?: null;
 
 			if ( $action === 'activate' ) {
-				$name           = $format_name( "[activate] $plugin_name" );
-				$projects[]     = [
+				$name          = $format_name( "[activate] $plugin_name" );
+				$projects[]    = [
 					'name'         => $name,
 					'testDir'      => '/qit/tests/e2e/scripts',
 					'testMatch'    => 'bash.js',
@@ -207,31 +205,15 @@ class PlaywrightOrchestration {
 				continue;
 			}
 
-			if ( $action === 'bootstrap' || $action === 'test' ) {
-				// If not the first test/bootstrap and we need DB baseline again, do a DB import only if not done yet.
-				if ( ! $first_test && $need_db_export && ! $db_import_done ) {
-					$name           = $format_name( '[db import]' );
-					$projects[]     = [
-						'name'         => $name,
-						'testDir'      => '/qit/tests/e2e/scripts',
-						'testMatch'    => 'db-import.js',
-						'dependencies' => [ $last_operation ],
-						'retries'      => 0,
-						'use'          => [ 'browserName' => 'chromium' ],
-					];
-					$current_setup  = $name;
-					$last_operation = $current_setup;
-					$db_import_done = true;
-				}
-			}
-
 			if ( $action === 'bootstrap' ) {
+				// Bootstrap does nothing isolated here, just mark first_test as false after first one
 				$last_operation = $current_setup;
 				$first_test     = false;
 				continue;
 			}
 
 			if ( $action === 'test' ) {
+				// Run isolated setups
 				if ( file_exists( "{$host_path}/bootstrap/setup.sh" ) ) {
 					$name          = $format_name( "[setup] $plugin_name (Shell)" );
 					$projects[]    = [
@@ -281,6 +263,7 @@ class PlaywrightOrchestration {
 					$current_setup = $name;
 				}
 
+				// Test phase
 				$name          = $format_name( "[test] $plugin_name (Run)" );
 				$projects[]    = [
 					'name'         => $name,
@@ -294,6 +277,7 @@ class PlaywrightOrchestration {
 				];
 				$current_setup = $name;
 
+				// Isolated teardowns
 				if ( file_exists( "{$host_path}/bootstrap/teardown.sh" ) ) {
 					$name          = $format_name( "[teardown] $plugin_name (Shell)" );
 					$projects[]    = [
@@ -345,26 +329,55 @@ class PlaywrightOrchestration {
 
 				$last_operation = $current_setup;
 				$first_test     = false;
-				// After finishing a test phase, reset $db_import_done to false, so we can import again before the next test phase or teardown if needed.
-				$db_import_done = false;
+				$processed_test_plugins++;
+
+				// After finishing a test plugin scenario, decide if we need a DB import.
+				// We do this if $need_db_export is true AND
+				// (more test plugins are coming OR shared teardown is present).
+				$more_tests_coming = $processed_test_plugins < $test_plugins_count;
+
+				if ( $need_db_export && ($more_tests_coming || $has_shared_teardown) ) {
+					$name       = $format_name( '[db import]' );
+					$projects[] = [
+						'name'         => $name,
+						'testDir'      => '/qit/tests/e2e/scripts',
+						'testMatch'    => 'db-import.js',
+						'dependencies' => [ $last_operation ],
+						'retries'      => 0,
+						'use'          => [ 'browserName' => 'chromium' ],
+					];
+					$last_operation = $name;
+				}
 			}
 		}
 
 		// Shared teardowns run in reverse order, but only if we ran shared steps.
 		if ( $run_shared_steps ) {
-			// Before we do shared teardowns, if we need a clean baseline and we haven't done a DB import recently, do it now.
-			if ( $need_db_export && $last_operation && ! $db_import_done ) {
-				$name           = $format_name( '[db import]' );
-				$projects[]     = [
-					'name'         => $name,
-					'testDir'      => '/qit/tests/e2e/scripts',
-					'testMatch'    => 'db-import.js',
-					'dependencies' => [ $last_operation ],
-					'retries'      => 0,
-					'use'          => [ 'browserName' => 'chromium' ],
-				];
-				$last_operation = $name;
-				$db_import_done = true;
+			if ( $has_shared_teardown ) {
+				// At this point, if shared teardowns exist, we've already done DB imports after test plugins as needed.
+				// If no tests were run or no import occurred, we should ensure a baseline before shared teardowns:
+				// Only if no test plugins triggered a DB import at the end do we need one here.
+				// Actually, from logic above, if we had test plugins and shared teardown, we did the import after last test plugin scenario.
+				// If we had no test plugins but shared teardown and multiple plugins scenario, we should have done an import after db export if needed.
+				// If you find a scenario needing an import here, you can add it, but currently we've handled test scenarios.
+
+				// If we had no tests at all, just bootstrap or activate with shared teardown,
+				// then we have a DB export but never imported. Let's handle that:
+
+				if ( $need_db_export && $last_operation && $test_plugins_count === 0 ) {
+					// No tests were run. If we have shared teardown and multiple plugins (or reason to do DB export),
+					// we likely need a baseline before teardown:
+					$name       = $format_name( '[db import]' );
+					$projects[] = [
+						'name'         => $name,
+						'testDir'      => '/qit/tests/e2e/scripts',
+						'testMatch'    => 'db-import.js',
+						'dependencies' => [ $last_operation ],
+						'retries'      => 0,
+						'use'          => [ 'browserName' => 'chromium' ],
+					];
+					$last_operation = $name;
+				}
 			}
 
 			foreach ( array_reverse( $test_infos ) as $t ) {

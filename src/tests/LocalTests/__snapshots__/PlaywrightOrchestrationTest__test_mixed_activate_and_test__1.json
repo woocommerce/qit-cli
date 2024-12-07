@@ -79,11 +79,23 @@
         }
     },
     {
+        "name": "[db import]",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "db-import.js",
+        "dependencies": [
+            "[teardown] Test Plugin (Shell)"
+        ],
+        "retries": 0,
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
         "name": "[teardown:shared] Test Plugin (Shell)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "bash.js",
         "dependencies": [
-            "[teardown] Test Plugin (Shell)"
+            "[db import]"
         ],
         "retries": 0,
         "use": {

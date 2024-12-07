@@ -38,23 +38,11 @@
         }
     },
     {
-        "name": "[db import]",
-        "testDir": "\/qit\/tests\/e2e\/scripts",
-        "testMatch": "db-import.js",
-        "dependencies": [
-            "[db export]"
-        ],
-        "retries": 0,
-        "use": {
-            "browserName": "chromium"
-        }
-    },
-    {
         "name": "[setup] Test Plugin (JS)",
         "testDir": "test-path-test\/bootstrap",
         "testMatch": "setup.js",
         "dependencies": [
-            "[db import]"
+            "[db export]"
         ],
         "use": {
             "browserName": "chromium",
@@ -86,11 +74,23 @@
         }
     },
     {
+        "name": "[db import]",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "db-import.js",
+        "dependencies": [
+            "[teardown] Test Plugin (JS)"
+        ],
+        "retries": 0,
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
         "name": "[teardown:shared] Test Plugin (JS)",
         "testDir": "test-path-test\/bootstrap",
         "testMatch": "shared-teardown.js",
         "dependencies": [
-            "[teardown] Test Plugin (JS)"
+            "[db import]"
         ],
         "use": {
             "browserName": "chromium",

@@ -39,11 +39,23 @@
         }
     },
     {
+        "name": "[db import]",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "db-import.js",
+        "dependencies": [
+            "[activate] Activate Plugin Y"
+        ],
+        "retries": 0,
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
         "name": "[teardown:shared] Bootstrap Only Plugin (PHP)",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "php.js",
         "dependencies": [
-            "[activate] Activate Plugin Y"
+            "[db import]"
         ],
         "retries": 0,
         "use": {
