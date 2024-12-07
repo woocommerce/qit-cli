@@ -6,10 +6,18 @@ use QIT_CLI\App;
 use QIT_CLI\LocalTests\E2E\E2ETestManager;
 use QIT_CLI\Environment\Extension;
 
-// Ensure this is the correct namespace for Extension class
-
+/**
+ * Class PlaywrightOrchestration.
+ *
+ * This class orchestrates and generates a list of Playwright test projects
+ * for running various E2E test scenarios against WordPress plugins.
+ */
 class PlaywrightOrchestration {
 	/**
+	 * Generates an array of projects for testing.
+	 *
+	 * // phpcs:disable Squiz.Commenting.FunctionComment.MissingParamName
+	 *
 	 * @param array<int,array{
 	 *      slug:string,
 	 *      test_tag:string,
@@ -17,18 +25,20 @@ class PlaywrightOrchestration {
 	 *      action:string,
 	 *      path_in_php_container:string,
 	 *      path_in_host:string
-	 * }> $test_infos
+	 * }> $test_infos The array of test information.
 	 *
-	 * @return array<int,array<string,mixed>>
+	 * // phpcs:enable Squiz.Commenting.FunctionComment.MissingParamName
+	 *
+	 * @return array<int,array<string,mixed>> Returns a structured array of project configurations.
 	 */
 	public function make_projects( array $test_infos ): array {
 		$projects        = [];
 		$project_counter = 1;
 
-		// Validate actions
+		// Validate actions.
 		foreach ( $test_infos as $t ) {
 			if ( ! in_array( $t['action'], Extension::ACTIONS, true ) ) {
-				throw new \InvalidArgumentException( "Invalid action '{$t['action']}' for plugin '{$t['slug']}'" );
+				throw new \InvalidArgumentException( "Invalid action '{$t['action']}' for plugin '{$t['slug']}'." );
 			}
 		}
 
@@ -47,40 +57,34 @@ class PlaywrightOrchestration {
 			}
 		}
 
-		// Helper functions
+		// Helper functions.
 		$get_plugin_name = function ( string $slug ): string {
 			return ucwords( str_replace( [ 'woocommerce-', '-' ], [ '', ' ' ], $slug ) );
 		};
 
 		$format_name = function ( string $name ) use ( &$project_counter ): string {
 			if ( in_array( App::getVar( 'TEST_MODE' ), [ E2ETestManager::$test_modes['codegen'], E2ETestManager::$test_modes['ui'] ], true ) ) {
-				return sprintf( '%02d - %s', $project_counter ++, $name );
+				return sprintf( '%02d - %s', $project_counter++, $name );
 			}
 
 			return $name;
 		};
 
-		// Determine if we run shared steps
+		// Determine if we run shared steps.
 		// We run shared setup/teardown if we have at least one plugin with bootstrap or test action.
 		$run_shared_steps = $has_test_plugin || $has_bootstrap_plugin;
 
 		$last_setup = null;
 
-		// Run shared setup steps if applicable
+		// Run shared setup steps if applicable.
 		if ( $run_shared_steps ) {
 			foreach ( $test_infos as $t ) {
-				if ( $t['action'] === 'activate' ) {
-					// Activate-only plugins do not need shared steps themselves, but we don't exclude them
-					// from scanning since shared steps can come from any plugin.
-					// (Though typically shared steps are associated with the SUT or compatibility plugins.)
-				}
-
 				$plugin_slug = $t['slug'];
 				$base_dir    = $t['path_in_php_container'];
 				$host_path   = $t['path_in_host'];
 				$plugin_name = $get_plugin_name( $plugin_slug );
 
-				// Shared setup scripts (sh, php, js)
+				// Shared setup scripts (sh, php, js).
 				if ( file_exists( "{$host_path}/bootstrap/shared-setup.sh" ) ) {
 					$name       = $format_name( "[setup:shared] $plugin_name (Shell)" );
 					$projects[] = [
@@ -134,9 +138,9 @@ class PlaywrightOrchestration {
 
 		$last_operation = $last_setup;
 
-		// If we have multiple plugins and at least one test or bootstrap plugin, we do DB export.
-		// DB export is only necessary if there's a scenario where isolated tests can run (test action)
-		// or if multiple plugins require a baseline snapshot (bootstrap also might need a consistent baseline).
+		// If we have multiple plugins and at least one test or bootstrap plugin, we do a DB export.
+		// DB export is only necessary if there's a scenario where isolated tests can run (test action).
+		// or if multiple plugins require a baseline snapshot (for bootstrap).
 		$need_db_export = $multiple_plugins && ( $has_test_plugin || $has_bootstrap_plugin );
 		if ( $need_db_export ) {
 			$name           = $format_name( '[db export]' );
@@ -153,7 +157,7 @@ class PlaywrightOrchestration {
 
 		$first_test = true;
 
-		// Process each plugin depending on its action
+		// Process each plugin depending on its action.
 		foreach ( $test_infos as $t ) {
 			$action      = $t['action'];
 			$plugin_slug = $t['slug'];
@@ -166,7 +170,6 @@ class PlaywrightOrchestration {
 			if ( $action === 'activate' ) {
 				// Just activate the plugin. No shared/isolated steps, no tests.
 				// We'll run a bash command to activate the plugin.
-				// Assume a standard script (wp plugin activate <slug>).
 				$name          = $format_name( "[activate] $plugin_name" );
 				$projects[]    = [
 					'name'         => $name,
@@ -177,22 +180,19 @@ class PlaywrightOrchestration {
 					'use'          => [
 						'qitTestSlug' => $plugin_slug,
 						'type'        => "Activate $plugin_slug (Bash)",
-						// We assume we have a standard activation script or command:
 						'file'        => null,
 						'command'     => "wp plugin activate {$plugin_slug}",
 					],
 				];
 				$current_setup = $name;
 
-				// No isolated or test steps for activate-only actions.
 				$last_operation = $current_setup;
 				continue;
 			}
 
 			if ( $action === 'bootstrap' || $action === 'test' ) {
-				// If not first test/bootstrap and we have multiple plugins, do DB import
-				// Only needed if we had a db export and we are running a scenario that involves isolation.
-				// "bootstrap" implies multiple plugins scenario might need a consistent baseline.
+				// If not the first test/bootstrap and we have multiple plugins, do a DB import.
+				// Only needed if we had a DB export and we're running a scenario that involves isolation.
 				if ( ! $first_test && $need_db_export ) {
 					$name          = $format_name( '[db import]' );
 					$projects[]    = [
@@ -208,16 +208,17 @@ class PlaywrightOrchestration {
 			}
 
 			if ( $action === 'bootstrap' ) {
-				// Bootstrap means run shared steps (already done) and will run shared teardown later.
-				// No isolated setup/teardown, no tests.
+				// "bootstrap" implies multiple plugins scenario might need a consistent baseline.
+				// No isolated setup/teardown, no tests for bootstrap itself.
 				$last_operation = $current_setup;
 				$first_test     = false;
 				continue;
 			}
 
 			if ( $action === 'test' ) {
-				// Test action: run isolated setup(s), test, isolated teardown(s)
-				// Isolated setups
+				// Test action: run isolated setup(s), test, isolated teardown(s).
+
+				// Isolated setups.
 				if ( file_exists( "{$host_path}/bootstrap/setup.sh" ) ) {
 					$name          = $format_name( "[setup] $plugin_name (Shell)" );
 					$projects[]    = [
@@ -267,7 +268,7 @@ class PlaywrightOrchestration {
 					$current_setup = $name;
 				}
 
-				// Test phase
+				// Test phase.
 				$name          = $format_name( "[test] $plugin_name (Run)" );
 				$projects[]    = [
 					'name'         => $name,
@@ -281,7 +282,7 @@ class PlaywrightOrchestration {
 				];
 				$current_setup = $name;
 
-				// Isolated teardowns
+				// Isolated teardowns.
 				if ( file_exists( "{$host_path}/bootstrap/teardown.sh" ) ) {
 					$name          = $format_name( "[teardown] $plugin_name (Shell)" );
 					$projects[]    = [
@@ -336,7 +337,7 @@ class PlaywrightOrchestration {
 			}
 		}
 
-		// Shared teardowns run in reverse order, but only if we ran shared steps
+		// Shared teardowns run in reverse order, but only if we ran shared steps.
 		if ( $run_shared_steps ) {
 			foreach ( array_reverse( $test_infos ) as $t ) {
 				$plugin_slug = $t['slug'];
