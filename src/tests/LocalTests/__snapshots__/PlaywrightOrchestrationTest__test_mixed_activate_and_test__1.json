@@ -1,0 +1,95 @@
+[
+    {
+        "name": "[setup:shared] Test Plugin (Shell)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "test-plugin",
+            "type": "Shared Setup for test-plugin (Bash)",
+            "file": "test-path-test\/bootstrap\/shared-setup.sh"
+        }
+    },
+    {
+        "name": "[db export]",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "db-export.js",
+        "retries": 0,
+        "dependencies": [
+            "[setup:shared] Test Plugin (Shell)"
+        ],
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "[activate] Activate Plugin",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [
+            "[db export]"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "activate-plugin",
+            "type": "Activate activate-plugin (Bash)",
+            "file": null,
+            "command": "wp plugin activate activate-plugin"
+        }
+    },
+    {
+        "name": "[setup] Test Plugin (Shell)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [
+            "[activate] Activate Plugin"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "test-plugin",
+            "type": "Isolated Setup for test-plugin (Bash)",
+            "file": "test-path-test\/bootstrap\/setup.sh"
+        }
+    },
+    {
+        "name": "[test] Test Plugin (Run)",
+        "testDir": "test-path-test",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [
+            "[setup] Test Plugin (Shell)"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-plugin"
+        }
+    },
+    {
+        "name": "[teardown] Test Plugin (Shell)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [
+            "[test] Test Plugin (Run)"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "test-plugin",
+            "type": "Isolated Teardown for test-plugin (Bash)",
+            "file": "test-path-test\/bootstrap\/teardown.sh"
+        }
+    },
+    {
+        "name": "[teardown:shared] Test Plugin (Shell)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [
+            "[teardown] Test Plugin (Shell)"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "test-plugin",
+            "type": "Shared Teardown for test-plugin (Bash)",
+            "file": "test-path-test\/bootstrap\/shared-teardown.sh"
+        }
+    }
+]
