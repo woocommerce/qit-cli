@@ -58,12 +58,12 @@ class RunE2ECommandTest extends QITTestCase {
 
 		// Mock the get-dependencies endpoint
 		App::setVar(
-			sprintf('mock_%s', 'https://qit.woo.com/wp-json/cd/v1/cli/get-dependencies'),
-			json_encode([
-				'plugins' => [],
-				'themes' => [],
-				'php_extensions' => []
-			])
+			sprintf( 'mock_%s', 'https://qit.woo.com/wp-json/cd/v1/cli/get-dependencies' ),
+			json_encode( [
+				'plugins'        => [],
+				'themes'         => [],
+				'php_extensions' => [],
+			] )
 		);
 
 		// Register run:e2e command.
@@ -144,19 +144,19 @@ class RunE2ECommandTest extends QITTestCase {
 	 * Triggering conflict by adding --plugin=woocommerce along with --woo.
 	 */
 	public function test_conflict_woo() {
-		putenv('QIT_TESTING_ENV_CONFIG=1');
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
 
 		$fixture_dir = $this->scenarios_dir . 'scenario-conflict-woo';
-		chdir($fixture_dir);
+		chdir( $fixture_dir );
 
-		$this->application_tester->run([
+		$this->application_tester->run( [
 			'command'       => 'run:e2e',
 			'woo_extension' => 'woocommerce-amazon-s3-storage',
 			'--woo'         => '6.0',
-			'--plugin'      => ['woocommerce'],
-		], ['capture_stderr_separately' => true]);
+			'--plugin'      => [ 'woocommerce' ],
+		], [ 'capture_stderr_separately' => true ] );
 
-		$this->assertNotEquals(Command::SUCCESS, $this->application_tester->getStatusCode(), 'Command unexpectedly succeeded.');
+		$this->assertNotEquals( Command::SUCCESS, $this->application_tester->getStatusCode(), 'Command unexpectedly succeeded.' );
 	}
 
 	/**
@@ -279,102 +279,157 @@ class RunE2ECommandTest extends QITTestCase {
 	}
 
 	public function test_with_plugin_dependencies_cli_only() {
-		putenv('QIT_TESTING_ENV_CONFIG=1');
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
 
 		// Mock plugin dependencies
-		App::setVar(sprintf('mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies'), json_encode([
-			'plugins' => ['woocommerce-gateway-stripe', 'woocommerce-subscriptions'],
-			'themes' => [],
-			'php_extensions' => []
-		]));
+		App::setVar( sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' ), json_encode( [
+			'plugins'        => [ 'woocommerce-gateway-stripe', 'woocommerce-subscriptions' ],
+			'themes'         => [],
+			'php_extensions' => [],
+		] ) );
 
-		$this->application_tester->run([
-			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
-			'--source'      => './woocommerce-amazon-s3-storage', // CLI-only, local dir
+		$this->application_tester->run( [
+			'command'        => 'run:e2e',
+			'woo_extension'  => 'woocommerce-amazon-s3-storage',
+			'--source'       => './woocommerce-amazon-s3-storage', // CLI-only, local dir
 			'--dependencies' => 'bootstrap',
-		], ['capture_stderr_separately' => true]);
+		], [ 'capture_stderr_separately' => true ] );
 
-		$this->assertCommandIsSuccessful($this->application_tester);
-		$this->assertMatchesJsonSnapshot($this->application_tester->getDisplay());
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
 	}
 
 	public function test_with_theme_dependencies_cli_only() {
-		putenv('QIT_TESTING_ENV_CONFIG=1');
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
 
 		// Mock theme dependencies
-		App::setVar(sprintf('mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies'), json_encode([
-			'plugins' => ['woocommerce-services'],
-			'themes' => ['storefront'],
-			'php_extensions' => []
-		]));
+		App::setVar( sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' ), json_encode( [
+			'plugins'        => [ 'woocommerce-services' ],
+			'themes'         => [ 'storefront' ],
+			'php_extensions' => [],
+		] ) );
 
-		$this->application_tester->run([
-			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
-			'--source'      => './woocommerce-amazon-s3-storage',
+		$this->application_tester->run( [
+			'command'        => 'run:e2e',
+			'woo_extension'  => 'woocommerce-amazon-s3-storage',
+			'--source'       => './woocommerce-amazon-s3-storage',
 			'--dependencies' => 'bootstrap',
-		], ['capture_stderr_separately' => true]);
+		], [ 'capture_stderr_separately' => true ] );
 
-		$this->assertCommandIsSuccessful($this->application_tester);
-		$this->assertMatchesJsonSnapshot($this->application_tester->getDisplay());
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
 	}
 
 	public function test_with_php_extensions_cli_only() {
-		putenv('QIT_TESTING_ENV_CONFIG=1');
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
 
 		// Mock PHP extensions dependencies
-		App::setVar(sprintf('mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies'), json_encode([
-			'plugins' => [],
-			'themes' => [],
-			'php_extensions' => ['intl', 'soap']
-		]));
+		App::setVar( sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' ), json_encode( [
+			'plugins'        => [],
+			'themes'         => [],
+			'php_extensions' => [ 'intl', 'soap' ],
+		] ) );
 
-		$this->application_tester->run([
-			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
-			'--source'      => './woocommerce-amazon-s3-storage',
+		$this->application_tester->run( [
+			'command'        => 'run:e2e',
+			'woo_extension'  => 'woocommerce-amazon-s3-storage',
+			'--source'       => './woocommerce-amazon-s3-storage',
 			'--dependencies' => 'bootstrap',
-		], ['capture_stderr_separately' => true]);
+		], [ 'capture_stderr_separately' => true ] );
 
-		$this->assertCommandIsSuccessful($this->application_tester);
-		$this->assertMatchesJsonSnapshot($this->application_tester->getDisplay());
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
 	}
 
 	public function test_with_valid_tunnel_cli_only() {
-		putenv('QIT_TESTING_ENV_CONFIG=1');
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
 
-		$this->application_tester->run([
+		$this->application_tester->run( [
 			'command'       => 'run:e2e',
 			'woo_extension' => 'woocommerce-amazon-s3-storage',
 			'--source'      => './woocommerce-amazon-s3-storage',
 			'--tunnel'      => 'cloudflared-binary',
 			'--json'        => true,
-		], ['capture_stderr_separately' => true]);
+		], [ 'capture_stderr_separately' => true ] );
 
-		$this->assertCommandIsSuccessful($this->application_tester);
-		$this->assertMatchesJsonSnapshot($this->application_tester->getDisplay());
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
 	}
 
 
 	public function test_with_woo_version_cli_only() {
-		putenv('QIT_TESTING_ENV_CONFIG=1');
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
 
 		// No additional mocks needed if no dependencies required.
-		$this->application_tester->run([
+		$this->application_tester->run( [
 			'command'       => 'run:e2e',
 			'woo_extension' => 'woocommerce-amazon-s3-storage',
 			'--source'      => './woocommerce-amazon-s3-storage',
 			'--woo'         => '6.0',
-		], ['capture_stderr_separately' => true]);
+		], [ 'capture_stderr_separately' => true ] );
 
-		$this->assertCommandIsSuccessful($this->application_tester);
-		$this->assertMatchesJsonSnapshot($this->application_tester->getDisplay());
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
 	}
 
 
 	public function tearDown(): void {
 		parent::tearDown();
 		putenv( 'QIT_TESTING_ENV_CONFIG' );
+	}
+
+	public function test_cli_override_dependencies() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+		chdir( $this->scenarios_dir . 'scenario-cli-override-dependencies' );
+
+		// Mock dependencies to check they are merged and overridden by CLI.
+		App::setVar( sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' ), json_encode( [
+			'plugins'        => [ 'woocommerce-services' ],
+			'themes'         => [],
+			'php_extensions' => [],
+		] ) );
+
+		// qit.yml sets action=test. We'll override it to bootstrap via CLI.
+		$this->application_tester->run( [
+			'command'        => 'run:e2e',
+			'woo_extension'  => 'woocommerce-amazon-s3-storage', // SUT
+			'-p'             => [ 'woocommerce-sample-plugin:bootstrap' ],
+			'--dependencies' => 'bootstrap',
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+	}
+
+	public function test_cli_add_new_plugin() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+		chdir( $this->scenarios_dir . 'scenario-cli-add-new-plugin' );
+
+		// qit.yml defines woocommerce-known-plugin only.
+		// We'll add a new plugin via CLI that isn't in qit.yml.
+		$this->application_tester->run( [
+			'command'       => 'run:e2e',
+			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'--plugin'      => [ 'woocommerce-new-plugin:bootstrap' ],
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+	}
+
+	public function test_cli_default_action() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+		chdir( $this->scenarios_dir . 'scenario-cli-default-action' );
+
+		// qit.yml sets no action for woocommerce-no-action.
+		// We'll just specify the plugin in CLI with no action. It should default to 'test'.
+		$this->application_tester->run( [
+			'command'       => 'run:e2e',
+			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'--plugin'      => [ 'woocommerce-no-action' ], // no action specified
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
 	}
 }

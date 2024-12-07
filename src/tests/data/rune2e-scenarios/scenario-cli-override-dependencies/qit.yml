@@ -1,0 +1,6 @@
+plugins:
+  woocommerce-sample-plugin:
+    source: ./woocommerce-sample-plugin
+    action: test
+    test_tags:
+      - ./woocommerce-sample-plugin-tests

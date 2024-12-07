@@ -262,7 +262,8 @@ class RunE2ECommand extends DynamicCommand {
 			$source,
 			$test,
 			$input->getOption( 'dependencies' ),
-			$env_up_options
+			$env_up_options,
+			$input
 		);
 
 		if ( ! is_null( $shard ) ) {
@@ -533,63 +534,85 @@ class RunE2ECommand extends DynamicCommand {
 		$source,
 		$test,
 		$dependencies_option,
-		array &$env_up_options
+		array &$env_up_options,
+		InputInterface $input
 	) {
 		if ( empty( $woo_extension ) ) {
 			return;
 		}
 
 		// Validate dependencies action.
-		if ( $dependencies_option !== 'none' && ! in_array( $dependencies_option, \QIT_CLI\Environment\Extension::ACTIONS, true ) ) {
+		if ( $dependencies_option !== 'none' && ! in_array( $dependencies_option, Extension::ACTIONS, true ) ) {
 			throw new \RuntimeException( sprintf(
 				'Invalid dependencies action. Possible values: none, %s',
-				implode( ', ', \QIT_CLI\Environment\Extension::ACTIONS )
+				implode( ', ', Extension::ACTIONS )
 			) );
 		}
 
-		// Load qit.yml config.
+		// Load qit.yml.
 		$env_config = App::make( \QIT_CLI\Environment\EnvConfigLoader::class )->load_config();
 
 		// Determine if qit.yml defines the SUT.
 		if ( isset( $env_config['plugins'][ $woo_extension ] ) ) {
-			// SUT is defined in qit.yml, use it as the base.
 			$sut_base = $env_config['plugins'][ $woo_extension ];
 		} else {
-			// SUT not in qit.yml, create a default entry.
 			$sut_base = [
 				'slug'      => $woo_extension,
-				'source'    => $woo_extension, // Default source is the slug.
+				'source'    => $woo_extension,
 				'test_tags' => [ 'default' ],
-				// 'action' will be set below if not defined.
 			];
 		}
 
-		// Override source if provided via CLI.
+		// Apply CLI overrides for source/test_tags before merging.
 		if ( ! empty( $source ) ) {
 			$sut_base['source'] = $source;
 		}
-
-		// Override test_tags if provided via CLI.
 		if ( ! empty( $test ) ) {
 			$sut_base['test_tags'] = [ $test ];
 		} elseif ( empty( $sut_base['test_tags'] ) ) {
 			$sut_base['test_tags'] = [ 'default' ];
 		}
 
-		// Set default action if not defined.
 		if ( ! isset( $sut_base['action'] ) ) {
-			$sut_base['action'] = \QIT_CLI\Environment\Extension::ACTIONS['test'];
+			$sut_base['action'] = Extension::ACTIONS['test'];
 		}
 
-		// Process dependencies and merge them into env_up_options.
+		// Process dependencies based on qit.yml and CLI --dependencies.
 		$this->process_dependencies( $woo_extension_id, $dependencies_option, $env_up_options );
 
-		// Save updated config.
+		// Merge SUT base back into env_config.
 		$env_config['plugins'][ $woo_extension ] = $sut_base;
 
-		// Now save it back to $env_up_options.
-		$env_up_options['--plugin'] = [];
+		$cli_plugins = $input->getOption( 'plugin' );
 
+		if ( ! empty( $cli_plugins ) ) {
+			foreach ( $cli_plugins as $cli_plugin ) {
+				$parts    = explode( ':', $cli_plugin, 2 );
+				$cli_slug = $parts[0];
+				// Default action is 'test' unless overridden.
+				$cli_action = Extension::ACTIONS['test'];
+
+				if ( isset( $parts[1] ) && in_array( $parts[1], Extension::ACTIONS, true ) ) {
+					$cli_action = $parts[1];
+				}
+
+				// If plugin exists in env_config, override its action.
+				if ( isset( $env_config['plugins'][ $cli_slug ] ) ) {
+					$env_config['plugins'][ $cli_slug ]['action'] = $cli_action;
+				} else {
+					// Plugin not defined in qit.yml? Add it.
+					$env_config['plugins'][ $cli_slug ] = [
+						'slug'      => $cli_slug,
+						'source'    => $cli_slug,
+						'test_tags' => [ 'default' ],
+						'action'    => $cli_action,
+					];
+				}
+			}
+		}
+
+		// Now no more qit.yml merges happen, so CLI overrides remain final.
+		$env_up_options['--plugin'] = [];
 		foreach ( $env_config['plugins'] as $plugin_slug => $plugin_config ) {
 			$plugin_config['slug']        = $plugin_slug;
 			$env_up_options['--plugin'][] = $plugin_config;
