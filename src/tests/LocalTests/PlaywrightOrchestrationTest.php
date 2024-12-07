@@ -734,4 +734,109 @@ class PlaywrightOrchestrationTest extends QITTestCase {
 
 		return false;
 	}
+
+	/**
+	 * Complex Scenario: Mixed actions with multiple test plugins, bootstrap, and activate plugins.
+	 *
+	 * Scenario:
+	 * - Plugin A: test plugin with full lifecycle (shared & isolated setups, teardowns, and specs).
+	 * - Plugin B: test plugin with partial setups (only setup.php) and specs.
+	 * - Plugin C: bootstrap plugin with shared setups/teardowns only.
+	 * - Plugin D: activate plugin (no setups, no tests).
+	 * - Plugin E: test plugin with no shared setups, only isolated teardown and a spec.
+	 *
+	 * Expected:
+	 * - Shared steps run if any test/bootstrap plugin exists.
+	 * - Multiple DB exports/imports due to multiple test plugins.
+	 * - Activate plugin just activates at the right time.
+	 * - Multiple `[db import #x]` steps should appear to maintain environment consistency.
+	 */
+	public function test_complex_scenario_mixed_actions() {
+		$test_infos = [
+			[
+				'slug'                  => 'test-plugin-a',
+				'test_tag'              => 'tag-a',
+				'type'                  => 'type-a',
+				'action'                => 'test',
+				'path_in_php_container' => 'test-a-container-path',
+				'path_in_host'          => sys_get_temp_dir() . '/test-plugin-a',
+			],
+			[
+				'slug'                  => 'test-plugin-b',
+				'test_tag'              => 'tag-b',
+				'type'                  => 'type-b',
+				'action'                => 'test',
+				'path_in_php_container' => 'test-b-container-path',
+				'path_in_host'          => sys_get_temp_dir() . '/test-plugin-b',
+			],
+			[
+				'slug'                  => 'bootstrap-c',
+				'test_tag'              => 'tag-c',
+				'type'                  => 'type-c',
+				'action'                => 'bootstrap',
+				'path_in_php_container' => 'boot-c-container-path',
+				'path_in_host'          => sys_get_temp_dir() . '/bootstrap-c',
+			],
+			[
+				'slug'                  => 'activate-plugin-d',
+				'test_tag'              => 'tag-d',
+				'type'                  => 'type-d',
+				'action'                => 'activate',
+				'path_in_php_container' => 'activate-d-container-path',
+				'path_in_host'          => sys_get_temp_dir() . '/activate-plugin-d',
+			],
+			[
+				'slug'                  => 'test-plugin-e',
+				'test_tag'              => 'tag-e',
+				'type'                  => 'type-e',
+				'action'                => 'test',
+				'path_in_php_container' => 'test-e-container-path',
+				'path_in_host'          => sys_get_temp_dir() . '/test-plugin-e',
+			],
+		];
+
+		// Plugin A: full lifecycle: shared & isolated setups, tests, and teardowns
+		$this->createSetupFiles(
+			$test_infos[0]['path_in_host'],
+			[ 'shared-setup.sh', 'setup.sh', 'teardown.sh', 'shared-teardown.php', 'shared-teardown.sh', 'setup.php' ]
+		);
+		file_put_contents( $test_infos[0]['path_in_host'] . '/test.spec.js', "// test spec A" );
+
+		// Plugin B: test plugin partial: only isolated setup.php and test
+		$this->createSetupFiles(
+			$test_infos[1]['path_in_host'],
+			[ 'setup.php', 'teardown.js' ] // has isolated setup.php and isolated teardown.js
+		);
+		file_put_contents( $test_infos[1]['path_in_host'] . '/test.spec.js', "// test spec B" );
+
+		// Plugin C: bootstrap plugin with shared setups/teardowns only
+		$this->createSetupFiles(
+			$test_infos[2]['path_in_host'],
+			[ 'shared-setup.js', 'shared-teardown.sh' ]
+		);
+
+		// Plugin D: activate plugin - just ensure directory exists
+		if ( ! file_exists( $test_infos[3]['path_in_host'] ) ) {
+			mkdir( $test_infos[3]['path_in_host'], 0777, true );
+		}
+
+		// Plugin E: test plugin with no shared setups, only isolated teardown and a spec
+		$this->createSetupFiles(
+			$test_infos[4]['path_in_host'],
+			[ 'teardown.php' ] // only isolated teardown
+		);
+		file_put_contents( $test_infos[4]['path_in_host'] . '/test.spec.js', "// test spec E" );
+
+		$sut = $this->make_sut();
+		$this->assertMatchesJsonSnapshot( $sut->make_projects( $test_infos ) );
+
+		// Cleanup
+		unlink( $test_infos[0]['path_in_host'] . '/test.spec.js' );
+		unlink( $test_infos[1]['path_in_host'] . '/test.spec.js' );
+		unlink( $test_infos[4]['path_in_host'] . '/test.spec.js' );
+
+		foreach ( $test_infos as $info ) {
+			$this->cleanup( $info['path_in_host'] );
+		}
+	}
 }

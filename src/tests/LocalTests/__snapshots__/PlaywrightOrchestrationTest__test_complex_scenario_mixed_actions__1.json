@@ -1,0 +1,249 @@
+[
+    {
+        "name": "[setup:shared] Test Plugin A (Shell)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "test-plugin-a",
+            "type": "Shared Setup for test-plugin-a (Bash)",
+            "file": "test-a-container-path\/bootstrap\/shared-setup.sh"
+        }
+    },
+    {
+        "name": "[setup:shared] Bootstrap C (JS)",
+        "testDir": "boot-c-container-path\/bootstrap",
+        "testMatch": "shared-setup.js",
+        "dependencies": [
+            "[setup:shared] Test Plugin A (Shell)"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "bootstrap-c"
+        }
+    },
+    {
+        "name": "[db export]",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "db-export.js",
+        "retries": 0,
+        "dependencies": [
+            "[setup:shared] Bootstrap C (JS)"
+        ],
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "[setup] Test Plugin A (Shell)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [
+            "[db export]"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "test-plugin-a",
+            "type": "Isolated Setup for test-plugin-a (Bash)",
+            "file": "test-a-container-path\/bootstrap\/setup.sh"
+        }
+    },
+    {
+        "name": "[setup] Test Plugin A (PHP)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "php.js",
+        "dependencies": [
+            "[setup] Test Plugin A (Shell)"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "test-plugin-a",
+            "type": "Isolated Setup for test-plugin-a (PHP)",
+            "file": "test-a-container-path\/bootstrap\/setup.php"
+        }
+    },
+    {
+        "name": "[test] Test Plugin A (Run)",
+        "testDir": "test-a-container-path",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [
+            "[setup] Test Plugin A (PHP)"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-plugin-a"
+        }
+    },
+    {
+        "name": "[teardown] Test Plugin A (Shell)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [
+            "[test] Test Plugin A (Run)"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "test-plugin-a",
+            "type": "Isolated Teardown for test-plugin-a (Bash)",
+            "file": "test-a-container-path\/bootstrap\/teardown.sh"
+        }
+    },
+    {
+        "name": "[db import #1]",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "db-import.js",
+        "dependencies": [
+            "[teardown] Test Plugin A (Shell)"
+        ],
+        "retries": 0,
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "[setup] Test Plugin B (PHP)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "php.js",
+        "dependencies": [
+            "[db import #1]"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "test-plugin-b",
+            "type": "Isolated Setup for test-plugin-b (PHP)",
+            "file": "test-b-container-path\/bootstrap\/setup.php"
+        }
+    },
+    {
+        "name": "[test] Test Plugin B (Run)",
+        "testDir": "test-b-container-path",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [
+            "[setup] Test Plugin B (PHP)"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-plugin-b"
+        }
+    },
+    {
+        "name": "[teardown] Test Plugin B (JS)",
+        "testDir": "test-b-container-path\/bootstrap",
+        "testMatch": "teardown.js",
+        "dependencies": [
+            "[test] Test Plugin B (Run)"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-plugin-b"
+        }
+    },
+    {
+        "name": "[db import #2]",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "db-import.js",
+        "dependencies": [
+            "[teardown] Test Plugin B (JS)"
+        ],
+        "retries": 0,
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "[activate] Activate Plugin D",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [
+            "[db import #2]"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "activate-plugin-d",
+            "type": "Activate activate-plugin-d (Bash)",
+            "file": null,
+            "command": "wp plugin activate activate-plugin-d"
+        }
+    },
+    {
+        "name": "[test] Test Plugin E (Run)",
+        "testDir": "test-e-container-path",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [
+            "[activate] Activate Plugin D"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-plugin-e"
+        }
+    },
+    {
+        "name": "[teardown] Test Plugin E (PHP)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "php.js",
+        "dependencies": [
+            "[test] Test Plugin E (Run)"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "test-plugin-e",
+            "type": "Isolated Teardown for test-plugin-e (PHP)",
+            "file": "test-e-container-path\/bootstrap\/teardown.php"
+        }
+    },
+    {
+        "name": "[db import #3]",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "db-import.js",
+        "dependencies": [
+            "[teardown] Test Plugin E (PHP)"
+        ],
+        "retries": 0,
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "[teardown:shared] Bootstrap C (Shell)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [
+            "[db import #3]"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "bootstrap-c",
+            "type": "Shared Teardown for bootstrap-c (Bash)",
+            "file": "boot-c-container-path\/bootstrap\/shared-teardown.sh"
+        }
+    },
+    {
+        "name": "[teardown:shared] Test Plugin A (Shell)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [
+            "[teardown:shared] Bootstrap C (Shell)"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "test-plugin-a",
+            "type": "Shared Teardown for test-plugin-a (Bash)",
+            "file": "test-a-container-path\/bootstrap\/shared-teardown.sh"
+        }
+    },
+    {
+        "name": "[teardown:shared] Test Plugin A (PHP)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "php.js",
+        "dependencies": [
+            "[teardown:shared] Test Plugin A (Shell)"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "test-plugin-a",
+            "type": "Shared Teardown for test-plugin-a (PHP)",
+            "file": "test-a-container-path\/bootstrap\/shared-teardown.php"
+        }
+    }
+]
