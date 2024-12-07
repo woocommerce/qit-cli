@@ -51,9 +51,17 @@ class E2ETestManager {
 	}
 
 	/**
-	 * @param E2EEnvInfo  $env_info
-	 * @param string      $test_mode One of the allowed test modes.
-	 * @param bool        $bootstrap_only If true, will only bootstrap.
+	 * @param E2EEnvInfo $env_info
+	 * @param string $test_mode One of the allowed test modes.
+	 * @param bool $bootstrap_only If true, will only bootstrap.
+	 * @param string|null $shard
+	 *
+	 * @return int The exit status code.
+	 */
+	/**
+	 * @param E2EEnvInfo $env_info
+	 * @param string $test_mode One of the allowed test modes.
+	 * @param bool $bootstrap_only If true, will only bootstrap.
 	 * @param string|null $shard
 	 *
 	 * @return int The exit status code.
@@ -103,7 +111,10 @@ class E2ETestManager {
 		 * Split the test to be run.
 		 */
 		foreach ( $env_info->tests as $test_info ) {
-			if ( $test_info['action'] === Extension::ACTIONS['test'] && E2ERunner::find_runner_type( $test_info['path_in_host'] ) === 'playwright' ) {
+			if (
+				in_array( $test_info['action'], [ Extension::ACTIONS['test'], Extension::ACTIONS['bootstrap'] ], true )
+				&& E2ERunner::find_runner_type( $test_info['path_in_host'] ) === 'playwright'
+			) {
 				$tests_to_run['playwright'][] = $test_info;
 			}
 		}
@@ -143,7 +154,7 @@ class E2ETestManager {
 		try {
 			$this->docker->copy_from_docker( $env_info, '/var/www/html/wp-content/plugins/logs', $test_result->get_results_dir() . '/logs' );
 		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-			// No-op, a debug.log was not present.
+			// No-op, logs directory was not present.
 		}
 
 		[ $report_url, $exit_status_code_override ] = $this->notifier->notify_test_finished( $test_result );
