@@ -29,23 +29,21 @@ class PlaywrightOrchestration {
 	 *
 	 * // phpcs:enable Squiz.Commenting.FunctionComment.MissingParamName
 	 *
-	 * @return array<int,array<string,mixed>> Returns a structured array of project configurations.
+	 * @return array<int,array<string,mixed>> Returns a structured array of Playwright project configurations.
 	 */
 	public function make_projects( array $test_infos ): array {
 		$projects        = [];
 		$project_counter = 1;
-
-		// Added for db import naming
-		$db_import_count = 0;
+		$name_count      = []; // Track usage of names to avoid duplicates.
 
 		// Validate actions.
 		foreach ( $test_infos as $t ) {
 			if ( ! in_array( $t['action'], Extension::ACTIONS, true ) ) {
-				throw new \InvalidArgumentException( "Invalid action '{$t['action']}' for plugin '{$t['slug']}'." );
+				throw new \InvalidArgumentException( "Invalid action '{$t['action']}' for plugin '{$t['slug']}'" );
 			}
 		}
 
-		$multiple_plugins     = count( $test_infos ) > 1;
+		$multiple_plugins     = ( count( $test_infos ) > 1 );
 		$has_test_plugin      = false;
 		$has_bootstrap_plugin = false;
 		$has_activate_plugin  = false;
@@ -78,7 +76,7 @@ class PlaywrightOrchestration {
 		$test_plugins_count = 0;
 		foreach ( $test_infos as $ti ) {
 			if ( $ti['action'] === 'test' ) {
-				$test_plugins_count++;
+				++$test_plugins_count;
 			}
 		}
 
@@ -92,17 +90,31 @@ class PlaywrightOrchestration {
 			return ucwords( str_replace( [ 'woocommerce-', '-' ], [ '', ' ' ], $slug ) );
 		};
 
-		$format_name = function ( string $name ) use ( &$project_counter ): string {
+		// Modified $format_name to handle name conflicts.
+		$format_name = function ( string $name ) use ( &$project_counter, &$name_count ): string {
+			// First, check if this name already used.
+			if ( ! isset( $name_count[ $name ] ) ) {
+				$name_count[ $name ] = 0;
+			}
+			++$name_count[ $name ];
+
+			// If this is the first occurrence, just use the name.
+			// If not the first, append #X.
+			if ( $name_count[ $name ] > 1 ) {
+				$name .= ' #' . $name_count[ $name ];
+			}
+
 			if ( in_array( App::getVar( 'TEST_MODE' ), [ E2ETestManager::$test_modes['codegen'], E2ETestManager::$test_modes['ui'] ], true ) ) {
 				return sprintf( '%02d - %s', $project_counter++, $name );
 			}
+
 			return $name;
 		};
 
-		$last_setup          = null;
-		$last_operation      = null;
+		$last_setup             = null;
+		$last_operation         = null;
 		$processed_test_plugins = 0;
-		$first_test          = true;
+		$first_test             = true;
 
 		// Run shared setup steps if applicable.
 		if ( $run_shared_steps ) {
@@ -167,8 +179,8 @@ class PlaywrightOrchestration {
 
 		// If needed, do a DB export after shared setup.
 		if ( $need_db_export && $last_operation ) {
-			$name       = $format_name( '[db export]' );
-			$projects[] = [
+			$name           = $format_name( '[db export]' );
+			$projects[]     = [
 				'name'         => $name,
 				'testDir'      => '/qit/tests/e2e/scripts',
 				'testMatch'    => 'db-export.js',
@@ -189,8 +201,8 @@ class PlaywrightOrchestration {
 			$current_setup = $last_operation ?: null;
 
 			if ( $action === 'activate' ) {
-				$name          = $format_name( "[activate] $plugin_name" );
-				$projects[]    = [
+				$name           = $format_name( "[activate] $plugin_name" );
+				$projects[]     = [
 					'name'         => $name,
 					'testDir'      => '/qit/tests/e2e/scripts',
 					'testMatch'    => 'bash.js',
@@ -215,7 +227,7 @@ class PlaywrightOrchestration {
 			}
 
 			if ( $action === 'test' ) {
-				// Isolated setups
+				// Isolated setups.
 				if ( file_exists( "{$host_path}/bootstrap/setup.sh" ) ) {
 					$name          = $format_name( "[setup] $plugin_name (Shell)" );
 					$projects[]    = [
@@ -265,7 +277,7 @@ class PlaywrightOrchestration {
 					$current_setup = $name;
 				}
 
-				// Test phase
+				// Test phase.
 				$name          = $format_name( "[test] $plugin_name (Run)" );
 				$projects[]    = [
 					'name'         => $name,
@@ -279,7 +291,7 @@ class PlaywrightOrchestration {
 				];
 				$current_setup = $name;
 
-				// Isolated teardowns
+				// Isolated teardowns.
 				if ( file_exists( "{$host_path}/bootstrap/teardown.sh" ) ) {
 					$name          = $format_name( "[teardown] $plugin_name (Shell)" );
 					$projects[]    = [
@@ -331,15 +343,14 @@ class PlaywrightOrchestration {
 
 				$last_operation = $current_setup;
 				$first_test     = false;
-				$processed_test_plugins++;
+				++$processed_test_plugins;
 
-				// After finishing a test plugin scenario, if we need a db import:
+				// After finishing a test plugin scenario, if we need a db import.
 				$more_tests_coming = $processed_test_plugins < $test_plugins_count;
 
-				if ( $need_db_export && ($more_tests_coming || $has_shared_teardown) ) {
-					$db_import_count++;
-					$name = $format_name("[db import] #{$db_import_count}");
-					$projects[] = [
+				if ( $need_db_export && ( $more_tests_coming || $has_shared_teardown ) ) {
+					$name           = $format_name( '[db import]' );
+					$projects[]     = [
 						'name'         => $name,
 						'testDir'      => '/qit/tests/e2e/scripts',
 						'testMatch'    => 'db-import.js',
@@ -356,10 +367,9 @@ class PlaywrightOrchestration {
 		if ( $run_shared_steps ) {
 			if ( $has_shared_teardown ) {
 				if ( $need_db_export && $last_operation && $test_plugins_count === 0 ) {
-					// No tests were run, but we have shared teardown and db export
-					$db_import_count++;
-					$name = $format_name("[db import] #{$db_import_count}");
-					$projects[] = [
+					// No tests were run, but we have shared teardown and db export.
+					$name           = $format_name( '[db import]' );
+					$projects[]     = [
 						'name'         => $name,
 						'testDir'      => '/qit/tests/e2e/scripts',
 						'testMatch'    => 'db-import.js',

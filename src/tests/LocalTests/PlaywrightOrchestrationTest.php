@@ -839,4 +839,86 @@ class PlaywrightOrchestrationTest extends QITTestCase {
 			$this->cleanup( $info['path_in_host'] );
 		}
 	}
+
+	public function test_conflicting_db_import_steps() {
+		$test_infos = [
+			// Three test plugins to force multiple db imports.
+			[
+				'slug'                  => 'test-plugin-one',
+				'test_tag'              => 'tag-one',
+				'type'                  => 'type-one',
+				'action'                => 'test',
+				'path_in_php_container' => 'test-one-container-path',
+				'path_in_host'          => sys_get_temp_dir() . '/test-plugin-one',
+			],
+			[
+				'slug'                  => 'test-plugin-two',
+				'test_tag'              => 'tag-two',
+				'type'                  => 'type-two',
+				'action'                => 'test',
+				'path_in_php_container' => 'test-two-container-path',
+				'path_in_host'          => sys_get_temp_dir() . '/test-plugin-two',
+			],
+			[
+				'slug'                  => 'test-plugin-three',
+				'test_tag'              => 'tag-three',
+				'type'                  => 'type-three',
+				'action'                => 'test',
+				'path_in_php_container' => 'test-three-container-path',
+				'path_in_host'          => sys_get_temp_dir() . '/test-plugin-three',
+			],
+			// One bootstrap plugin to ensure shared steps run and possibly another db import before shared teardown
+			[
+				'slug'                  => 'bootstrap-plugin',
+				'test_tag'              => 'tag-boot',
+				'type'                  => 'type-boot',
+				'action'                => 'bootstrap',
+				'path_in_php_container' => 'boot-container-path',
+				'path_in_host'          => sys_get_temp_dir() . '/bootstrap-plugin',
+			],
+		];
+
+		// Setup for each test plugin: minimal isolated setups and a spec file.
+		// Plugin one: a shared setup to force DB export.
+		$this->createSetupFiles(
+			$test_infos[0]['path_in_host'],
+			[ 'shared-setup.sh', 'setup.sh', 'teardown.sh' ]
+		);
+		file_put_contents( $test_infos[0]['path_in_host'] . '/test.spec.js', "// spec one" );
+
+		// Plugin two: another setup and spec to ensure a second db import occurs
+		$this->createSetupFiles(
+			$test_infos[1]['path_in_host'],
+			[ 'setup.js', 'teardown.php' ]
+		);
+		file_put_contents( $test_infos[1]['path_in_host'] . '/test.spec.js', "// spec two" );
+
+		// Plugin three: also has a setup and spec to force a third db import
+		$this->createSetupFiles(
+			$test_infos[2]['path_in_host'],
+			[ 'setup.php', 'teardown.js' ]
+		);
+		file_put_contents( $test_infos[2]['path_in_host'] . '/test.spec.js', "// spec three" );
+
+		// Bootstrap plugin: shared teardown only to ensure one last db import before tear down
+		$this->createSetupFiles(
+			$test_infos[3]['path_in_host'],
+			[ 'shared-setup.php', 'shared-teardown.js' ]
+		);
+
+		$sut      = $this->make_sut();
+		$projects = $sut->make_projects( $test_infos );
+
+		// Assert against snapshot to verify we see something like:
+		// [db import], [db import #2], [db import #3], etc.
+		$this->assertMatchesJsonSnapshot( $projects );
+
+		// Cleanup
+		foreach ( $test_infos as $info ) {
+			if ( file_exists( $info['path_in_host'] . '/test.spec.js' ) ) {
+				unlink( $info['path_in_host'] . '/test.spec.js' );
+			}
+			$this->cleanup( $info['path_in_host'] );
+		}
+	}
 }

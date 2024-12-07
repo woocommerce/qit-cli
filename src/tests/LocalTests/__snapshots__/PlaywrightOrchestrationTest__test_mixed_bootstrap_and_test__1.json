@@ -74,7 +74,7 @@
         }
     },
     {
-        "name": "[db import] #1",
+        "name": "[db import]",
         "testDir": "\/qit\/tests\/e2e\/scripts",
         "testMatch": "db-import.js",
         "dependencies": [
@@ -90,7 +90,7 @@
         "testDir": "test-path-test\/bootstrap",
         "testMatch": "shared-teardown.js",
         "dependencies": [
-            "[db import] #1"
+            "[db import]"
         ],
         "use": {
             "browserName": "chromium",
