@@ -281,13 +281,13 @@ class PlaywrightRunner extends E2ERunner {
 			 */
 			$out = preg_replace( '/\((Shell|JS|PHP)\)]/', '($1)', $out );
 
-			// Fix "(Run)]" to "(Run)"
+			// Fix "(Run)]" to "(Run)".
 			$out = preg_replace( '/\(Run\)\]/', '(Run)', $out );
 
-			// Fix "[db import] #X]" to "[db import] #X"
+			// Fix "[db import] #X]" to "[db import] #X".
 			$out = preg_replace( '/(\[db import\] #[0-9]+)\]/', '$1', $out );
 
-			// Fix "[db export]]" to "[db export]"
+			// Fix "[db export]]" to "[db export]".
 			$out = preg_replace( '/(\[db export\])\]/', '$1', $out );
 
 			$out = trim( $out );

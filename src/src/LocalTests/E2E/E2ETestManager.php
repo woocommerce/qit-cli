@@ -59,9 +59,9 @@ class E2ETestManager {
 	 * @return int The exit status code.
 	 */
 	/**
-	 * @param E2EEnvInfo $env_info
-	 * @param string $test_mode One of the allowed test modes.
-	 * @param bool $bootstrap_only If true, will only bootstrap.
+	 * @param E2EEnvInfo  $env_info
+	 * @param string      $test_mode One of the allowed test modes.
+	 * @param bool        $bootstrap_only If true, will only bootstrap.
 	 * @param string|null $shard
 	 *
 	 * @return int The exit status code.
