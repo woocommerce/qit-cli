@@ -524,6 +524,7 @@ class RunE2ECommandTest extends QITTestCase {
 		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
 
 		$fixture_dir = $this->scenarios_dir . 'scenario-theme-sut';
+		$this->assertDirectoryExists($fixture_dir, "Fixture directory does not exist: {$fixture_dir}");
 		chdir( $fixture_dir );
 
 		// We know qit.yml defines the theme "storefront" as SUT.
@@ -541,6 +542,7 @@ class RunE2ECommandTest extends QITTestCase {
 		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
 
 		$fixture_dir = $this->scenarios_dir . 'scenario-plugin-and-theme-sut';
+		$this->assertDirectoryExists($fixture_dir, "Fixture directory does not exist: {$fixture_dir}");
 		chdir( $fixture_dir );
 
 		// qit.yml has both plugins and themes, we pick 'deli-theme' as SUT.
