@@ -552,7 +552,7 @@ class RunE2ECommand extends DynamicCommand {
 		// Load qit.yml.
 		$env_config = App::make( \QIT_CLI\Environment\EnvConfigLoader::class )->load_config();
 
-		// Determine if qit.yml defines the SUT.
+		// Determine SUT base configuration.
 		if ( isset( $env_config['plugins'][ $woo_extension ] ) ) {
 			$sut_base = $env_config['plugins'][ $woo_extension ];
 		} else {
@@ -563,60 +563,110 @@ class RunE2ECommand extends DynamicCommand {
 			];
 		}
 
-		// Apply CLI overrides for source/test_tags before merging.
+		// Override SUT source if provided.
 		if ( ! empty( $source ) ) {
 			$sut_base['source'] = $source;
 		}
+
+		// If CLI provides test tags, override qit.yml tags entirely.
 		if ( ! empty( $test ) ) {
-			$sut_base['test_tags'] = [ $test ];
-		} elseif ( empty( $sut_base['test_tags'] ) ) {
-			$sut_base['test_tags'] = [ 'default' ];
+			$cli_tags              = array_map( 'trim', explode( ',', $test ) );
+			$sut_base['test_tags'] = $cli_tags;
+		} else {
+			// If no tags in qit.yml and none via CLI, default to ['default'].
+			if ( empty( $sut_base['test_tags'] ) ) {
+				$sut_base['test_tags'] = [ 'default' ];
+			}
 		}
 
+		// Ensure SUT action is set to 'test' if not already set.
 		if ( ! isset( $sut_base['action'] ) ) {
 			$sut_base['action'] = Extension::ACTIONS['test'];
 		}
 
-		// Process dependencies based on qit.yml and CLI --dependencies.
+		// Process dependencies.
 		$this->process_dependencies( $woo_extension_id, $dependencies_option, $env_up_options );
 
-		// Merge SUT base back into env_config.
+		// Merge SUT back into env_config.
 		$env_config['plugins'][ $woo_extension ] = $sut_base;
 
+		// Handle additional plugins passed via CLI.
 		$cli_plugins = $input->getOption( 'plugin' );
-
 		if ( ! empty( $cli_plugins ) ) {
 			foreach ( $cli_plugins as $cli_plugin ) {
-				$parts    = explode( ':', $cli_plugin, 2 );
-				$cli_slug = $parts[0];
-				// Default action is 'test' unless overridden.
+				// Format: slug[:action[:comma-separated-tags]].
+				$parts      = explode( ':', $cli_plugin );
+				$cli_slug   = $parts[0];
 				$cli_action = Extension::ACTIONS['test'];
+				$cli_tags   = [];
 
 				if ( isset( $parts[1] ) && in_array( $parts[1], Extension::ACTIONS, true ) ) {
 					$cli_action = $parts[1];
+					if ( isset( $parts[2] ) && ! empty( $parts[2] ) ) {
+						$cli_tags = array_map( 'trim', explode( ',', $parts[2] ) );
+					}
+				} else {
+					// If no explicit action found, any extra parts are considered tags.
+					if ( isset( $parts[1] ) ) {
+						$cli_tags = array_map( 'trim', explode( ',', $parts[1] ) );
+					}
 				}
 
-				// If plugin exists in env_config, override its action.
-				if ( isset( $env_config['plugins'][ $cli_slug ] ) ) {
-					$env_config['plugins'][ $cli_slug ]['action'] = $cli_action;
-				} else {
-					// Plugin not defined in qit.yml? Add it.
+				// If plugin not defined in qit.yml, create a new entry.
+				if ( ! isset( $env_config['plugins'][ $cli_slug ] ) ) {
 					$env_config['plugins'][ $cli_slug ] = [
 						'slug'      => $cli_slug,
 						'source'    => $cli_slug,
-						'test_tags' => [ 'default' ],
+						'test_tags' => empty( $cli_tags ) ? [ 'default' ] : $cli_tags,
 						'action'    => $cli_action,
 					];
+				} else {
+					// Override any existing qit.yml tags completely with CLI tags if provided.
+					if ( ! empty( $cli_tags ) ) {
+						$env_config['plugins'][ $cli_slug ]['test_tags'] = $cli_tags;
+					} elseif ( empty( $env_config['plugins'][ $cli_slug ]['test_tags'] ) ) {
+						$env_config['plugins'][ $cli_slug ]['test_tags'] = [ 'default' ];
+					}
+
+					$env_config['plugins'][ $cli_slug ]['action'] = $cli_action;
 				}
 			}
 		}
 
-		// Now no more qit.yml merges happen, so CLI overrides remain final.
-		$env_up_options['--plugin'] = [];
-		foreach ( $env_config['plugins'] as $plugin_slug => $plugin_config ) {
-			$plugin_config['slug']        = $plugin_slug;
-			$env_up_options['--plugin'][] = $plugin_config;
+		// Normalize test_tags to ensure arrays and split if any leftover commas exist (unlikely now).
+		foreach ( $env_config['plugins'] as $plugin_slug => &$plugin_config ) {
+			if ( ! isset( $plugin_config['test_tags'] ) || empty( $plugin_config['test_tags'] ) ) {
+				$plugin_config['test_tags'] = [ 'default' ];
+			} else {
+				$plugin_config['test_tags'] = (array) $plugin_config['test_tags'];
+				$normalized_tags            = [];
+				foreach ( $plugin_config['test_tags'] as $tag ) {
+					if ( strpos( $tag, ',' ) !== false ) {
+						$split_tags      = array_map( 'trim', explode( ',', $tag ) );
+						$normalized_tags = array_merge( $normalized_tags, $split_tags );
+					} else {
+						$normalized_tags[] = $tag;
+					}
+				}
+				$plugin_config['test_tags'] = $normalized_tags;
+			}
+
+			if ( ! isset( $plugin_config['action'] ) ) {
+				$plugin_config['action'] = Extension::ACTIONS['test'];
+			}
+
+			if ( ! isset( $plugin_config['slug'] ) ) {
+				$plugin_config['slug'] = $plugin_slug;
+			}
+
+			if ( ! isset( $plugin_config['source'] ) ) {
+				$plugin_config['source'] = $plugin_slug;
+			}
 		}
+		unset( $plugin_config );
+
+		// Update env_up_options with the final plugin list.
+		$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
 	}
 
 	/**

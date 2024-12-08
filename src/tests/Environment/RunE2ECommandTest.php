@@ -432,4 +432,50 @@ class RunE2ECommandTest extends QITTestCase {
 		$this->assertCommandIsSuccessful( $this->application_tester );
 		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
 	}
+
+	public function test_multiple_test_tags_from_config_and_cli() {
+		putenv('QIT_TESTING_ENV_CONFIG=1');
+
+		// Change to the new scenario directory.
+		$fixture_dir = $this->scenarios_dir . 'scenario-multiple-test-tags';
+		chdir($fixture_dir);
+
+		// We pass the second argument "test" as comma-separated tags:
+		// "self-test-multiple-test-tags,self-test-multiple-test-tags-another"
+		$this->application_tester->run( [
+			'command'       => 'run:e2e',
+			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'test'          => 'self-test-multiple-test-tags,self-test-multiple-test-tags-another',
+		], [ 'capture_stderr_separately' => true ] );
+
+		// Initially, if the code doesn't handle splitting comma-separated test tags,
+		// it might fail or produce incorrect JSON.
+		// After you implement the fix to split comma-separated tags,
+		// this should pass and match the snapshot.
+		$this->assertCommandIsSuccessful($this->application_tester);
+		$this->assertMatchesJsonSnapshot($this->application_tester->getDisplay());
+	}
+
+	public function test_additional_plugin_multiple_test_tags() {
+		putenv('QIT_TESTING_ENV_CONFIG=1');
+
+		$fixture_dir = $this->scenarios_dir . 'scenario-additional-plugin-multiple-test-tags';
+		chdir($fixture_dir);
+
+		// The SUT test tags come via CLI as comma-separated:
+		// "self-test-multiple-test-tags,self-test-multiple-test-tags-another"
+		// The additional plugin is also given via CLI, with :test: plus comma-separated tags:
+		// "woocommerce-progressive-discounts:test:self-test-extra-tag,self-test-extra-tag-2"
+		$this->application_tester->run([
+			'command'       => 'run:e2e',
+			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'test'          => 'self-test-multiple-test-tags,self-test-multiple-test-tags-another',
+			'--plugin'      => [
+				'woocommerce-progressive-discounts:test:self-test-extra-tag,self-test-extra-tag-2'
+			],
+		], [ 'capture_stderr_separately' => true ]);
+
+		$this->assertCommandIsSuccessful($this->application_tester);
+		$this->assertMatchesJsonSnapshot($this->application_tester->getDisplay());
+	}
 }
