@@ -39,8 +39,11 @@ abstract class AbstractRunTestCommand extends Command {
 			// Start with an empty array for env_up_options.
 			$env_up_options = [];
 
+			// Hardcoded for now, when adding another test type this needs to be further abstracted from RunE2ECommand.
+			$sut_type = 'plugin';
+
 			// Merge configuration from qit.yml and CLI into final env_up_options.
-			$env_up_options = $this->configuration_processor->process_configuration( $input, $env_up_options );
+			$env_up_options = $this->configuration_processor->process_configuration( $input, $env_up_options, $sut_type );
 
 			// Start the environment and retrieve EnvInfo.
 			$env_info = $this->environment_runner->run_environment( $env_up_options );

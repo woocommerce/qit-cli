@@ -21,9 +21,9 @@ class ConfigurationProcessor {
 	/**
 	 * Process and merge configuration from qit.yml and CLI options into a final set of env:up options.
 	 *
-	 * @param InputInterface $input
+	 * @param InputInterface      $input
 	 * @param array<string,mixed> $env_up_options The partially processed env_up_options from RunE2ECommand.
-	 * @param string $sut_type Either 'plugin' or 'theme'.
+	 * @param string              $sut_type Either 'plugin' or 'theme'.
 	 *
 	 * @return array<string,mixed> Final configuration suitable for passing to env:up (e.g., $env_up_options).
 	 */
@@ -87,14 +87,14 @@ class ConfigurationProcessor {
 	 * - Add CLI plugins
 	 * - Normalize all plugins/themes
 	 *
-	 * @param string|null $woo_extension
-	 * @param string|null $source
-	 * @param string|null $test
-	 * @param string $dependencies_option
+	 * @param string|null         $woo_extension
+	 * @param string|null         $source
+	 * @param string|null         $test
+	 * @param string              $dependencies_option
 	 * @param array<string,mixed> $env_up_options
 	 * @param array<string,mixed> $env_config
-	 * @param InputInterface $input
-	 * @param string $sut_type
+	 * @param InputInterface      $input
+	 * @param string              $sut_type
 	 *
 	 * @return void
 	 */
@@ -147,7 +147,7 @@ class ConfigurationProcessor {
 			$sut_base['action'] = Extension::ACTIONS['test'];
 		}
 
-		// Place SUT in themes if sut_type is 'theme', else in plugins
+		// Place SUT in themes if sut_type is 'theme', else in plugins.
 		if ( $sut_type === 'theme' ) {
 			$env_config['themes'][ $woo_extension ] = $sut_base;
 		} else {
@@ -172,7 +172,7 @@ class ConfigurationProcessor {
 	 * Retrieve a base configuration for the SUT from qit.yml if present, otherwise return defaults.
 	 *
 	 * @param array<string,mixed> $env_config
-	 * @param string $woo_extension
+	 * @param string              $woo_extension
 	 *
 	 * @return array<string,mixed>
 	 */
@@ -197,7 +197,7 @@ class ConfigurationProcessor {
 	 * Merge CLI plugins into the env_config as objects.
 	 *
 	 * @param array<string,mixed> $env_config
-	 * @param InputInterface $input
+	 * @param InputInterface      $input
 	 *
 	 * @return void
 	 */
@@ -239,7 +239,7 @@ class ConfigurationProcessor {
 					'action'    => $cli_action,
 				];
 			} else {
-				// If found in plugins
+				// If found in plugins.
 				if ( isset( $env_config['plugins'][ $cli_slug ] ) ) {
 					if ( ! empty( $cli_tags ) ) {
 						$env_config['plugins'][ $cli_slug ]['test_tags'] = $cli_tags;
@@ -250,7 +250,7 @@ class ConfigurationProcessor {
 					$env_config['plugins'][ $cli_slug ]['action'] = $cli_action;
 				}
 
-				// If found in themes
+				// If found in themes.
 				if ( isset( $env_config['themes'][ $cli_slug ] ) ) {
 					if ( ! empty( $cli_tags ) ) {
 						$env_config['themes'][ $cli_slug ]['test_tags'] = $cli_tags;
@@ -355,8 +355,8 @@ class ConfigurationProcessor {
 	/**
 	 * Add dependencies as strings to --plugin (and php_extensions to --php_extension).
 	 *
-	 * @param int|null $woo_extension_id
-	 * @param string $dependencies_option
+	 * @param int|null            $woo_extension_id
+	 * @param string              $dependencies_option
 	 * @param array<string,mixed> $env_up_options
 	 *
 	 * @return void
