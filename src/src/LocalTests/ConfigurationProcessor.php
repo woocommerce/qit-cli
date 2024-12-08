@@ -11,6 +11,9 @@ class ConfigurationProcessor {
 	/** @var EnvConfigLoader */
 	protected $config_loader;
 
+	/** @var bool */
+	protected $is_development;
+
 	public function __construct( EnvConfigLoader $config_loader ) {
 		$this->config_loader = $config_loader;
 	}
@@ -60,6 +63,8 @@ class ConfigurationProcessor {
 			$this->normalize_plugins( $env_config );
 			$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
 		}
+
+		$this->is_development = ! empty( $input->getOption( 'source' ) ) && file_exists( $input->getOption( 'source' ) );
 
 		return $env_up_options;
 	}
@@ -128,14 +133,12 @@ class ConfigurationProcessor {
 		$env_config['plugins'][ $woo_extension ] = $sut_base;
 
 		$woo_extension_id = App::getVar( 'QIT_SUT' );
-		$is_development   = ( ! empty( $sut_base['source'] ) && file_exists( $sut_base['source'] ) );
 
 		$this->apply_dependencies( $woo_extension_id, $dependencies_option, $env_up_options );
 		$this->add_cli_plugins( $env_config, $input );
 		$this->normalize_plugins( $env_config );
 
-		$env_up_options['--plugin']       = array_values( $env_config['plugins'] );
-		$env_up_options['is_development'] = $is_development;
+		$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
 	}
 
 	/**
@@ -313,5 +316,9 @@ class ConfigurationProcessor {
 				$env_up_options['--plugin'][] = $formatted_plugin;
 			}
 		}
+	}
+
+	public function is_development(): bool {
+		return $this->is_development;
 	}
 }

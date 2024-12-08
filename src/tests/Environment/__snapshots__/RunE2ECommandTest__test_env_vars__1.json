@@ -22,6 +22,5 @@
     "--env": [
         "FOO=bar"
     ],
-    "--env_file": [],
-    "is_development": true
+    "--env_file": []
 }

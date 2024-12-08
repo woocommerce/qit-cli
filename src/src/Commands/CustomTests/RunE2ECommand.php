@@ -330,7 +330,7 @@ class RunE2ECommand extends DynamicCommand {
 				$woo_extension_id,
 				$woocommerce_version ?? 'none',
 				$env_info,
-				$env_up_options['is_development'],
+				$this->configuration_processor->is_development(),
 				$input->getOption( 'notify' )
 			);
 		}
