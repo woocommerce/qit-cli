@@ -18,13 +18,14 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\Extension;
+use QIT_CLI\LocalTests\ConfigurationProcessor;
 use QIT_CLI\LocalTests\E2E\E2ETestManager;
+use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\PluginDependencies;
 use QIT_CLI\Tunnel\TunnelRunner;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -57,6 +58,12 @@ class RunE2ECommand extends DynamicCommand {
 	/** @var PluginDependencies */
 	protected $dependencies;
 
+	/** @var ConfigurationProcessor */
+	protected $configuration_processor;
+
+	/** @var EnvironmentRunner */
+	protected $environment_runner;
+
 	protected static $defaultName = 'run:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/**
@@ -75,14 +82,18 @@ class RunE2ECommand extends DynamicCommand {
 		E2ETestManager $e2e_test_manager,
 		WooExtensionsList $woo_extensions_list,
 		LocalTestRunNotifier $test_run_notifier,
-		PluginDependencies $dependencies
+		PluginDependencies $dependencies,
+		ConfigurationProcessor $configuration_processor,
+		EnvironmentRunner $environment_runner
 	) {
-		$this->e2e_environment     = $e2e_environment;
-		$this->cache               = $cache;
-		$this->e2e_test_manager    = $e2e_test_manager;
-		$this->woo_extensions_list = $woo_extensions_list;
-		$this->test_run_notifier   = $test_run_notifier;
-		$this->dependencies        = $dependencies;
+		$this->e2e_environment         = $e2e_environment;
+		$this->cache                   = $cache;
+		$this->e2e_test_manager        = $e2e_test_manager;
+		$this->woo_extensions_list     = $woo_extensions_list;
+		$this->test_run_notifier       = $test_run_notifier;
+		$this->dependencies            = $dependencies;
+		$this->configuration_processor = $configuration_processor;
+		$this->environment_runner      = $environment_runner;
 
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
@@ -168,25 +179,12 @@ class RunE2ECommand extends DynamicCommand {
 
 		$wait                = $input->getOption( 'up_only' ) || $test_mode === E2ETestManager::$test_modes['codegen'];
 		$woo_extension       = $input->getArgument( 'woo_extension' );
-		$test                = $input->getArgument( 'test' );
 		$woocommerce_version = $input->getOption( 'woo' );
 		$shard               = $input->getOption( 'shard' );
 		$update_snapshots    = $input->getOption( 'update_snapshots' );
 		$pw_options          = $input->getOption( 'pw_options' ) ?? '';
 		$sut_action          = $input->getOption( 'sut_action' );
 		$this->parse_env_vars( $input->getOption( 'env' ) );
-
-		// Validate source for SUT.
-		if ( empty( $input->getOption( 'source' ) ) ) {
-			$source = ''; // No source provided, it will be inferred from the SUT.
-		} else {
-			$resolved_source = realpath( $input->getOption( 'source' ) );
-			if ( $resolved_source && file_exists( $resolved_source ) ) {
-				$source = $resolved_source;
-			} else {
-				$source = $input->getOption( 'source' );
-			}
-		}
 
 		// Prevent "--woo" and "--plugin woocommerce" usage together.
 		if ( ! empty( $woocommerce_version ) && ! empty( $input->getOption( 'plugin' ) ) ) {
@@ -214,7 +212,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		// Validate extension parameter if needed.
 		if ( empty( $woo_extension ) ) {
-			if ( ! empty( $source ) || ! empty( $sut_action ) ) {
+			if ( ! empty( $input->getOption( 'source' ) ) || ! empty( $sut_action ) ) {
 				$output->writeln( '<error>The extension parameter is required when source or sut_action is set.</error>' );
 
 				return Command::INVALID;
@@ -254,17 +252,8 @@ class RunE2ECommand extends DynamicCommand {
 			App::setVar( 'QIT_CONFIG_OVERRIDE', $input->getOption( 'config' ) );
 		}
 
-		// Before calling env:up, we finalize the SUT definition.
-		// This merges CLI and config, ensures correct precedence and action=test for SUT.
-		$this->finalize_sut_definition(
-			$woo_extension,
-			$woo_extension_id,
-			$source,
-			$test,
-			$input->getOption( 'dependencies' ),
-			$env_up_options,
-			$input
-		);
+		// Previously we finalized the SUT definition and processed dependencies here.
+		// Now this is delegated to ConfigurationProcessor, so we remove that code.
 
 		if ( ! is_null( $shard ) ) {
 			if ( ! preg_match( '/^\d+\/\d+$/', $shard ) ) {
@@ -294,24 +283,20 @@ class RunE2ECommand extends DynamicCommand {
 			$env_up_options['--object_cache'] = true;
 		}
 
-		$env_up_command = $this->getApplication()->find( UpEnvironmentCommand::getDefaultName() );
-
 		$this->handle_termination();
-
-		$resource_stream = fopen( 'php://temp', 'w+' );
 
 		if ( ! empty( $woo_extension ) ) {
 			App::setVar( 'QIT_SUT', (int) $woo_extension_id );
 		}
 
+		$env_up_options = $this->configuration_processor->process_configuration( $input, $env_up_options );
+
 		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
 		App::setVar( 'QIT_ENV_UP_OPTIONS', $env_up_options );
 
 		if ( getenv( 'QIT_TESTING_ENV_CONFIG' ) ) {
-			// Print out the final merged configuration for inspection.
 			$this->output->writeln( json_encode( $env_up_options, JSON_PRETTY_PRINT ) );
 
-			// Early return before environment setup and test execution.
 			return Command::SUCCESS;
 		}
 
@@ -324,56 +309,33 @@ class RunE2ECommand extends DynamicCommand {
 
 		putenv( 'QIT_UP_AND_TEST=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 
-		$up_exit_status_code = $env_up_command->run(
-			new ArrayInput( $env_up_options ),
-			new StreamOutput( $resource_stream )
-		);
-
-		putenv( 'QIT_HIDE_SITE_INFO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-		putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-
-		$up_output = stream_get_contents( $resource_stream, - 1, 0 );
-
-		if ( $up_exit_status_code === 1337 ) {
-			$this->output->write( $up_output );
-
-			return Command::SUCCESS;
-		}
-
-		$env_json = json_decode( $up_output, true );
-		if ( ! is_array( $env_json ) || empty( $env_json['env_id'] ) ) {
-			$this->output->writeln( sprintf( '<error>Failed to parse environment JSON. Output: %s</error>', $up_output ) );
+		try {
+			/** @var E2EEnvInfo $env_info */
+			$env_info = $this->environment_runner->run_environment( $env_up_options );
+		} catch ( \Exception $e ) {
+			$this->output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
 			return Command::FAILURE;
 		}
 
-		/** @var E2EEnvInfo $env_info */
-		$env_info = E2EEnvInfo::from_array( $env_json );
-		App::singleton( E2EEnvInfo::class, $env_info );
+		putenv( 'QIT_HIDE_SITE_INFO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 
-		if ( ! empty( $woo_extension_id ) ) {
+		if ( $env_info instanceof E2EEnvInfo && ! empty( $woo_extension_id ) ) {
 			$env_info->sut_slug = $woo_extension;
 			$env_info->sut_id   = $woo_extension_id;
 			$env_info->sut_type = $sut_type;
 
-			$is_development = file_exists( $source );
 			$this->test_run_notifier->notify_test_started(
 				$woo_extension_id,
 				$woocommerce_version ?? 'none',
 				$env_info,
-				$is_development,
+				$env_up_options['is_development'],
 				$input->getOption( 'notify' )
 			);
 		}
 
 		$GLOBALS['env_to_shutdown'] = $env_info;
-
-		if ( $up_exit_status_code !== Command::SUCCESS ) {
-			$this->output->writeln( sprintf( '<error>Failed to start the environment. Output: %s</error>', $up_output ) );
-			Environment::down( $env_json['env_id'] );
-
-			return Command::FAILURE;
-		}
 
 		if ( getenv( 'QIT_SELF_TEST' ) === 'env_up' ) {
 			$output->write( json_encode( $env_info ) );
@@ -511,219 +473,5 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		App::setVar( 'QIT_PW_ENV_VARS', $parsed_vars );
-	}
-
-	/**
-	 * Finalize the SUT definition by merging CLI and config:
-	 * - Load config
-	 * - Determine final source and test_tags
-	 * - Ensure action=test
-	 *
-	 * @param string|null                                  $woo_extension
-	 * @param int|null                                     $woo_extension_id
-	 * @param string|null                                  $source
-	 * @param string|null                                  $test
-	 * @param string                                       $dependencies_option
-	 * @param array<string,array|bool|string|int|string[]> $env_up_options
-	 *
-	 * @return void
-	 */
-	protected function finalize_sut_definition(
-		$woo_extension,
-		$woo_extension_id,
-		$source,
-		$test,
-		$dependencies_option,
-		array &$env_up_options,
-		InputInterface $input
-	) {
-		if ( empty( $woo_extension ) ) {
-			return;
-		}
-
-		// Validate dependencies action.
-		if ( $dependencies_option !== 'none' && ! in_array( $dependencies_option, Extension::ACTIONS, true ) ) {
-			throw new \RuntimeException( sprintf(
-				'Invalid dependencies action. Possible values: none, %s',
-				implode( ', ', Extension::ACTIONS )
-			) );
-		}
-
-		// Load qit.yml.
-		$env_config = App::make( \QIT_CLI\Environment\EnvConfigLoader::class )->load_config();
-
-		// Determine SUT base configuration.
-		if ( isset( $env_config['plugins'][ $woo_extension ] ) ) {
-			$sut_base = $env_config['plugins'][ $woo_extension ];
-		} else {
-			$sut_base = [
-				'slug'      => $woo_extension,
-				'source'    => $woo_extension,
-				'test_tags' => [ 'default' ],
-			];
-		}
-
-		// Override SUT source if provided.
-		if ( ! empty( $source ) ) {
-			$sut_base['source'] = $source;
-		}
-
-		// If CLI provides test tags, override qit.yml tags entirely.
-		if ( ! empty( $test ) ) {
-			$cli_tags              = array_map( 'trim', explode( ',', $test ) );
-			$sut_base['test_tags'] = $cli_tags;
-		} else {
-			// If no tags in qit.yml and none via CLI, default to ['default'].
-			if ( empty( $sut_base['test_tags'] ) ) {
-				$sut_base['test_tags'] = [ 'default' ];
-			}
-		}
-
-		// Ensure SUT action is set to 'test' if not already set.
-		if ( ! isset( $sut_base['action'] ) ) {
-			$sut_base['action'] = Extension::ACTIONS['test'];
-		}
-
-		// Process dependencies.
-		$this->process_dependencies( $woo_extension_id, $dependencies_option, $env_up_options );
-
-		// Merge SUT back into env_config.
-		$env_config['plugins'][ $woo_extension ] = $sut_base;
-
-		// Handle additional plugins passed via CLI.
-		$cli_plugins = $input->getOption( 'plugin' );
-		if ( ! empty( $cli_plugins ) ) {
-			foreach ( $cli_plugins as $cli_plugin ) {
-				// Format: slug[:action[:comma-separated-tags]].
-				$parts      = explode( ':', $cli_plugin );
-				$cli_slug   = $parts[0];
-				$cli_action = Extension::ACTIONS['test'];
-				$cli_tags   = [];
-
-				if ( isset( $parts[1] ) && in_array( $parts[1], Extension::ACTIONS, true ) ) {
-					$cli_action = $parts[1];
-					if ( isset( $parts[2] ) && ! empty( $parts[2] ) ) {
-						$cli_tags = array_map( 'trim', explode( ',', $parts[2] ) );
-					}
-				} else {
-					// If no explicit action found, any extra parts are considered tags.
-					if ( isset( $parts[1] ) ) {
-						$cli_tags = array_map( 'trim', explode( ',', $parts[1] ) );
-					}
-				}
-
-				// If plugin not defined in qit.yml, create a new entry.
-				if ( ! isset( $env_config['plugins'][ $cli_slug ] ) ) {
-					$env_config['plugins'][ $cli_slug ] = [
-						'slug'      => $cli_slug,
-						'source'    => $cli_slug,
-						'test_tags' => empty( $cli_tags ) ? [ 'default' ] : $cli_tags,
-						'action'    => $cli_action,
-					];
-				} else {
-					// Override any existing qit.yml tags completely with CLI tags if provided.
-					if ( ! empty( $cli_tags ) ) {
-						$env_config['plugins'][ $cli_slug ]['test_tags'] = $cli_tags;
-					} elseif ( empty( $env_config['plugins'][ $cli_slug ]['test_tags'] ) ) {
-						$env_config['plugins'][ $cli_slug ]['test_tags'] = [ 'default' ];
-					}
-
-					$env_config['plugins'][ $cli_slug ]['action'] = $cli_action;
-				}
-			}
-		}
-
-		// Normalize test_tags to ensure arrays and split if any leftover commas exist (unlikely now).
-		foreach ( $env_config['plugins'] as $plugin_slug => &$plugin_config ) {
-			if ( ! isset( $plugin_config['test_tags'] ) || empty( $plugin_config['test_tags'] ) ) {
-				$plugin_config['test_tags'] = [ 'default' ];
-			} else {
-				$plugin_config['test_tags'] = (array) $plugin_config['test_tags'];
-				$normalized_tags            = [];
-				foreach ( $plugin_config['test_tags'] as $tag ) {
-					if ( strpos( $tag, ',' ) !== false ) {
-						$split_tags      = array_map( 'trim', explode( ',', $tag ) );
-						$normalized_tags = array_merge( $normalized_tags, $split_tags );
-					} else {
-						$normalized_tags[] = $tag;
-					}
-				}
-				$plugin_config['test_tags'] = $normalized_tags;
-			}
-
-			if ( ! isset( $plugin_config['action'] ) ) {
-				$plugin_config['action'] = Extension::ACTIONS['test'];
-			}
-
-			if ( ! isset( $plugin_config['slug'] ) ) {
-				$plugin_config['slug'] = $plugin_slug;
-			}
-
-			if ( ! isset( $plugin_config['source'] ) ) {
-				$plugin_config['source'] = $plugin_slug;
-			}
-		}
-		unset( $plugin_config );
-
-		// Update env_up_options with the final plugin list.
-		$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
-	}
-
-	/**
-	 * @param int|null                                     $woo_extension_id
-	 * @param string                                       $dependencies_option
-	 * @param array<string,array|bool|string|int|string[]> $env_up_options
-	 *
-	 * @return void
-	 */
-	protected function process_dependencies( $woo_extension_id, $dependencies_option, array &$env_up_options ): void {
-		if ( $dependencies_option === 'none' ) {
-			return;
-		}
-
-		$dependencies = $this->dependencies->get_plugin_and_php_ext_dependencies( $woo_extension_id, [] );
-
-		// Initialize arrays if not already set.
-		if ( ! isset( $env_up_options['--php_extension'] ) ) {
-			$env_up_options['--php_extension'] = [];
-		}
-
-		if ( ! isset( $env_up_options['--plugin'] ) ) {
-			$env_up_options['--plugin'] = [];
-		}
-
-		// Add PHP extensions, avoiding duplicates.
-		foreach ( $dependencies['php_extensions'] as $php_extension ) {
-			$this->output->writeln( sprintf( 'Adding PHP extension dependency: %s', $php_extension ) );
-			if ( ! in_array( $php_extension, $env_up_options['--php_extension'], true ) ) {
-				$env_up_options['--php_extension'][] = $php_extension;
-			}
-		}
-
-		// Add Plugins, avoiding duplicates and handling --woo option if necessary.
-		foreach ( $dependencies['plugins'] as $dep_plugin ) {
-			// If --woo is set and the plugin is a WooCommerce plugin, skip it.
-			if ( ! empty( $env_up_options['--woo'] ) && stripos( $dep_plugin, 'woocommerce:' ) !== false ) {
-				continue;
-			}
-
-			// Extract the plugin slug (before the colon, if present).
-			$plugin_slug = strtok( $dep_plugin, ':' );
-
-			// Check if the plugin is already present in env_up_options['--plugin'].
-			$already_present = false;
-			foreach ( $env_up_options['--plugin'] as $existing_plugin ) {
-				if ( stripos( $existing_plugin, $plugin_slug ) !== false ) {
-					$already_present = true;
-					break;
-				}
-			}
-
-			if ( ! $already_present ) {
-				$formatted_plugin = "{$dep_plugin}:{$dependencies_option}";
-				$this->output->writeln( sprintf( 'Adding plugin dependency: %s', $formatted_plugin ) );
-				$env_up_options['--plugin'][] = $formatted_plugin;
-			}
-		}
 	}
 }

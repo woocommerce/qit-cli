@@ -20,5 +20,6 @@
     "--tunnel": "cloudflared-binary",
     "--json": true,
     "--env": [],
-    "--env_file": []
+    "--env_file": [],
+    "is_development": false
 }

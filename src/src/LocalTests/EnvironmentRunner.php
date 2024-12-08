@@ -1,0 +1,57 @@
+<?php
+
+namespace QIT_CLI\LocalTests;
+
+use QIT_CLI\App;
+use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
+use QIT_CLI\Environment\Environments\EnvInfo;
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\StreamOutput;
+
+class EnvironmentRunner {
+
+	/**
+	 * Runs the environment using the given env_up options and returns the EnvInfo object.
+	 *
+	 * @param array<string,mixed> $env_up_options Array of options to pass to the env:up command.
+	 *
+	 * @return EnvInfo
+	 *
+	 * @throws \RuntimeException If the environment fails to start.
+	 */
+	public function run_environment( array $env_up_options ): EnvInfo {
+		// Ensure JSON output from env:up for parsing.
+		$env_up_options['--json'] = true;
+
+		$env_up_command   = App::make( Application::class )->find( UpEnvironmentCommand::getDefaultName() );
+		$resource_stream  = fopen( 'php://temp', 'w+' );
+		$exit_status_code = $env_up_command->run(
+			new ArrayInput( $env_up_options ),
+			new StreamOutput( $resource_stream )
+		);
+
+		$up_output = stream_get_contents( $resource_stream, - 1, 0 );
+		fclose( $resource_stream );
+
+		if ( $exit_status_code === 1337 ) {
+			// Special code that might mean just showing info without actually starting.
+			// Depending on the workflow, you might return early or handle differently.
+			throw new \RuntimeException( 'Environment did not start. Received code 1337 (info-only).' );
+		}
+
+		$env_json = json_decode( $up_output, true );
+		if ( ! is_array( $env_json ) || empty( $env_json['env_id'] ) ) {
+			throw new \RuntimeException( 'Failed to parse environment JSON. Output: ' . $up_output );
+		}
+
+		if ( $exit_status_code !== Command::SUCCESS ) {
+			throw new \RuntimeException( 'Failed to start the environment. Output: ' . $up_output );
+		}
+
+		// Convert the JSON output to an EnvInfo object.
+		// EnvInfo::from_array is assumed to be a method that creates an EnvInfo instance from an array.
+		return EnvInfo::from_array( $env_json );
+	}
+}

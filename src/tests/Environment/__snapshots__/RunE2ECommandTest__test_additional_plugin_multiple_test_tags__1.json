@@ -30,5 +30,6 @@
     "--tunnel": "no_tunnel",
     "--json": true,
     "--env": [],
-    "--env_file": []
+    "--env_file": [],
+    "is_development": true
 }
