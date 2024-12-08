@@ -11,8 +11,8 @@
             "action": "test"
         },
         {
-            "slug": "woocommerce-no-action",
-            "source": "woocommerce-no-action",
+            "slug": "extra-plugin",
+            "source": "extra-plugin",
             "test_tags": [
                 "default"
             ],

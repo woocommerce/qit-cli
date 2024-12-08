@@ -653,4 +653,53 @@ class RunE2ECommandTest extends QITTestCase {
 		$this->assertCommandIsSuccessful( $this->application_tester );
 		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
 	}
+
+	public function test_multiple_additional_plugins_no_actions_in_cli_only_config() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+		chdir( $this->scenarios_dir . 'scenario-cli-only' );
+
+		// Run with a SUT and multiple additional plugins without specifying actions.
+		// Expected: SUT defaults to "test", additional plugins default to "bootstrap".
+		$this->application_tester->run( [
+			'command'       => 'run:e2e',
+			'woo_extension' => 'woocommerce-amazon-s3-storage', // SUT
+			'--plugin'      => [ 'plugin-one', 'plugin-two' ],  // No actions specified
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+	}
+
+	public function test_sut_default_test_with_non_sut_plugins_bootstrap_in_cli_only_config() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+		chdir( $this->scenarios_dir . 'scenario-cli-only' );
+
+		// SUT with no action => defaults to test.
+		// One additional plugin with no action => defaults to bootstrap.
+		$this->application_tester->run( [
+			'command'       => 'run:e2e',
+			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'--plugin'      => [ 'extra-plugin' ], // No action specified
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+	}
+
+	public function test_mixed_explicit_and_default_actions_in_cli_only_config() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+		chdir( $this->scenarios_dir . 'scenario-cli-only' );
+
+		// SUT defaults to test.
+		// explicit-test-plugin explicitly set to test.
+		// default-plugin no action => bootstrap.
+		$this->application_tester->run( [
+			'command'       => 'run:e2e',
+			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'--plugin'      => [ 'explicit-test-plugin:test', 'default-plugin' ],
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+	}
 }

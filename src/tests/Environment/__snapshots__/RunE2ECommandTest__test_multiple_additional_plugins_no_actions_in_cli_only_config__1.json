@@ -11,8 +11,16 @@
             "action": "test"
         },
         {
-            "slug": "woocommerce-no-action",
-            "source": "woocommerce-no-action",
+            "slug": "plugin-one",
+            "source": "plugin-one",
+            "test_tags": [
+                "default"
+            ],
+            "action": "bootstrap"
+        },
+        {
+            "slug": "plugin-two",
+            "source": "plugin-two",
             "test_tags": [
                 "default"
             ],

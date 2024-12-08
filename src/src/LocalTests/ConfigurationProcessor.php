@@ -210,7 +210,7 @@ class ConfigurationProcessor {
 		foreach ( $cli_plugins as $cli_plugin ) {
 			$parts      = explode( ':', $cli_plugin );
 			$cli_slug   = $parts[0];
-			$cli_action = Extension::ACTIONS['test'];
+			$cli_action = Extension::ACTIONS['bootstrap'];
 			$cli_tags   = [];
 
 			if ( isset( $parts[1] ) && in_array( $parts[1], Extension::ACTIONS, true ) ) {
@@ -293,7 +293,7 @@ class ConfigurationProcessor {
 			}
 
 			if ( ! isset( $plugin_config['action'] ) ) {
-				$plugin_config['action'] = Extension::ACTIONS['test'];
+				$plugin_config['action'] = Extension::ACTIONS['bootstrap'];
 			}
 
 			if ( ! isset( $plugin_config['slug'] ) ) {
