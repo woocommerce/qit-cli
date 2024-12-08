@@ -3,13 +3,12 @@ Starting Docker Environment...
 Installing WordPress...
 Activating plugins...
 Environment ready.
-Bootstrapping Plugins
-Bootstrapping deli /qit/tests/e2e/deli/local/bootstrap/bootstrap.php
-Bootstrapping deli /qit/tests/e2e/deli/local/bootstrap/bootstrap.sh
 Moving must-use plugin of deli /qit/tests/e2e/deli/local/bootstrap/mu-plugin.php
 Running E2E Tests
-Running 2 tests using 1 worker
-✘  1 [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli (TIME)
+Running 4 tests using 1 worker
+✓  1 [setup] Deli (Shell) › scripts/bash.js:4:5 › Bash Script (TIME)
+✓  2 [setup] Deli (JS) › deli/local/bootstrap/setup.js:11:5 › Isolated Setup (TIME)
+✘  3 [test] Deli (Run) › deli/local/activate-theme.spec.js:4:5 › I can activate Deli (TIME)
 could not read file /qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-actual.png Error: ENOENT: no such file or directory, open '/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-actual.png'
 at open (node:internal/fs/promises:639:25)
 at readFile (node:internal/fs/promises:1242:14) {
@@ -34,30 +33,30 @@ code: 'ENOENT',
 syscall: 'open',
 path: '/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-diff.png'
 }
-✘  2 [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli (retry #1) (TIME)
-✘  3 [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli (retry #2) (TIME)
-✓  4 [deli-local] › deli/local/example.spec.js:9:5 › I can see my plugin menu (TIME)
-1) [deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli ────────────────────
+✘  4 [test] Deli (Run) › deli/local/activate-theme.spec.js:4:5 › I can activate Deli (retry #1) (TIME)
+✘  5 [test] Deli (Run) › deli/local/activate-theme.spec.js:4:5 › I can activate Deli (retry #2) (TIME)
+✓  6 [test] Deli (Run) › deli/local/example.spec.js:9:5 › I can see my plugin menu (TIME)
+1) [test] Deli (Run) › deli/local/activate-theme.spec.js:4:5 › I can activate Deli ─────────────
 Error: [31mScreenshot comparison failed:[39m
-363 pixels (ratio 0.01 of all image pixels) are different.
+278 pixels (ratio 0.01 of all image pixels) are different.
 Expected: [33m/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png[39m
-Received: [33m/qit/results/playwright/activate-theme-I-can-activate-Deli-deli-local/home-actual.png[39m
-Diff: [33m/qit/results/playwright/activate-theme-I-can-activate-Deli-deli-local/home-diff.png[39m
+Received: [33m/qit/results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run-/home-actual.png[39m
+Diff: [33m/qit/results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run-/home-diff.png[39m
 Call log:
-[2m- expect.toHaveScreenshot(home.png) with timeout 10000ms[22m
+[2m- expect.toHaveScreenshot(home.png) with timeout 20000ms[22m
 [2m  -   verifying given screenshot expectation[22m
 [2m  - taking page screenshot[22m
 [2m  -   disabled all CSS animations[22m
 [2m  - waiting for fonts to load...[22m
 [2m  - fonts loaded[22m
-[2m  - 363 pixels (ratio 0.01 of all image pixels) are different.[22m
+[2m  - 278 pixels (ratio 0.01 of all image pixels) are different.[22m
 [2m  - waiting 100ms before taking screenshot[22m
 [2m  - taking page screenshot[22m
 [2m  -   disabled all CSS animations[22m
 [2m  - waiting for fonts to load...[22m
 [2m  - fonts loaded[22m
 [2m  - captured a stable screenshot[22m
-[2m  - 363 pixels (ratio 0.01 of all image pixels) are different.[22m
+[2m  - 278 pixels (ratio 0.01 of all image pixels) are different.[22m
 10 |     await page.getByLabel('Activate Deli').click();
 11 |     await page.goto('/');
 > 12 |     await expect(page).toHaveScreenshot('home.png', { maxDiffPixels: 100 });
@@ -68,29 +67,29 @@ attachment #1: home-expected.png (image/png) ───────────�
 deli/local/__snapshots__/activate-theme.spec.js/home.png
 ────────────────────────────────────────────────────────────────────────────────────────────────
 attachment #2: home-actual.png (image/png) ─────────────────────────────────────────────────────
-../../results/playwright/activate-theme-I-can-activate-Deli-deli-local/home-actual.png
+../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run-/home-actual.png
 ────────────────────────────────────────────────────────────────────────────────────────────────
 attachment #3: home-diff.png (image/png) ───────────────────────────────────────────────────────
-../../results/playwright/activate-theme-I-can-activate-Deli-deli-local/home-diff.png
+../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run-/home-diff.png
 ────────────────────────────────────────────────────────────────────────────────────────────────
 attachment #4: screenshot (image/png) ──────────────────────────────────────────────────────────
-../../results/playwright/activate-theme-I-can-activate-Deli-deli-local/test-failed-1.png
+../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run-/test-failed-1.png
 ────────────────────────────────────────────────────────────────────────────────────────────────
 attachment #5: video (video/webm) ──────────────────────────────────────────────────────────────
-../../results/playwright/activate-theme-I-can-activate-Deli-deli-local/video.webm
+../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run-/video.webm
 ────────────────────────────────────────────────────────────────────────────────────────────────
 attachment #6: trace (application/zip) ─────────────────────────────────────────────────────────
-../../results/playwright/activate-theme-I-can-activate-Deli-deli-local/trace.zip
+../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run-/trace.zip
 Usage:
-npx playwright show-trace ../../results/playwright/activate-theme-I-can-activate-Deli-deli-local/trace.zip
+npx playwright show-trace ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run-/trace.zip
 ────────────────────────────────────────────────────────────────────────────────────────────────
 Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
-Error: [31mTimed out 10000ms waiting for [39m[2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m
+Error: [31mTimed out 20000ms waiting for [39m[2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m
 Locator: getByRole('cell', { name: 'Deli' })
 Expected: visible
 Received: <element(s) not found>
 Call log:
-[2m- expect.toBeVisible with timeout 10000ms[22m
+[2m- expect.toBeVisible with timeout 20000ms[22m
 [2m  - waiting for getByRole('cell', { name: 'Deli' })[22m
 5 |     await qit.loginAsAdmin(page);
 6 |     await page.getByRole('link', { name: 'Appearance' }).click();
@@ -101,23 +100,23 @@ Call log:
 10 |     await page.getByLabel('Activate Deli').click();
 at /qit/tests/e2e/deli/local/activate-theme.spec.js:7:60
 attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-../../results/playwright/activate-theme-I-can-activate-Deli-deli-local-retry1/test-failed-1.png
+../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry1/test-failed-1.png
 ────────────────────────────────────────────────────────────────────────────────────────────────
 attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-../../results/playwright/activate-theme-I-can-activate-Deli-deli-local-retry1/video.webm
+../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry1/video.webm
 ────────────────────────────────────────────────────────────────────────────────────────────────
 attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
-../../results/playwright/activate-theme-I-can-activate-Deli-deli-local-retry1/trace.zip
+../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry1/trace.zip
 Usage:
-npx playwright show-trace ../../results/playwright/activate-theme-I-can-activate-Deli-deli-local-retry1/trace.zip
+npx playwright show-trace ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry1/trace.zip
 ────────────────────────────────────────────────────────────────────────────────────────────────
 Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
-Error: [31mTimed out 10000ms waiting for [39m[2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m
+Error: [31mTimed out 20000ms waiting for [39m[2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m
 Locator: getByRole('cell', { name: 'Deli' })
 Expected: visible
 Received: <element(s) not found>
 Call log:
-[2m- expect.toBeVisible with timeout 10000ms[22m
+[2m- expect.toBeVisible with timeout 20000ms[22m
 [2m  - waiting for getByRole('cell', { name: 'Deli' })[22m
 5 |     await qit.loginAsAdmin(page);
 6 |     await page.getByRole('link', { name: 'Appearance' }).click();
@@ -128,19 +127,19 @@ Call log:
 10 |     await page.getByLabel('Activate Deli').click();
 at /qit/tests/e2e/deli/local/activate-theme.spec.js:7:60
 attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
-../../results/playwright/activate-theme-I-can-activate-Deli-deli-local-retry2/test-failed-1.png
+../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry2/test-failed-1.png
 ────────────────────────────────────────────────────────────────────────────────────────────────
 attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
-../../results/playwright/activate-theme-I-can-activate-Deli-deli-local-retry2/video.webm
+../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry2/video.webm
 ────────────────────────────────────────────────────────────────────────────────────────────────
 attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
-../../results/playwright/activate-theme-I-can-activate-Deli-deli-local-retry2/trace.zip
+../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry2/trace.zip
 Usage:
-npx playwright show-trace ../../results/playwright/activate-theme-I-can-activate-Deli-deli-local-retry2/trace.zip
+npx playwright show-trace ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry2/trace.zip
 ────────────────────────────────────────────────────────────────────────────────────────────────
 1 failed
-[deli-local] › deli/local/activate-theme.spec.js:4:5 › I can activate Deli ─────────────────────
-1 passed (TIME)
+[test] Deli (Run) › deli/local/activate-theme.spec.js:4:5 › I can activate Deli ──────────────
+3 passed (TIME)
 Test artifacts being saved to: /tmp-normalized/qit-results-normalizedid
 Uploading zip...
 [37;41m                                                                                                                        [39;49m

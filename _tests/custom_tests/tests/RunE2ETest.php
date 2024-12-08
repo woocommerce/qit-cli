@@ -104,6 +104,8 @@ JS;
 			'run:e2e',
 			'deli',
 			$scaffolded_dir,
+			'--source',
+			__DIR__ . '/../data/deli.zip',
 		] );
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
@@ -143,6 +145,8 @@ JS;
 			'run:e2e',
 			'deli',
 			$scaffolded_dir,
+			'--source',
+			__DIR__ . '/../data/deli.zip',
 			'--update_snapshots',
 		] );
 
@@ -154,6 +158,8 @@ JS;
 			'run:e2e',
 			'deli',
 			$scaffolded_dir,
+			'--source',
+			__DIR__ . '/../data/deli.zip',
 		] );
 
 		$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
@@ -170,6 +176,8 @@ JS;
 				'run:e2e',
 				'deli',
 				$scaffolded_dir,
+				'--source',
+				__DIR__ . '/../data/deli.zip',
 			], [], 1 );
 
 			$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
@@ -222,6 +230,20 @@ JS;
 			[],
 			2
 		);
+
+		$output = $this->normalize_scaffolded_test_run_output( $output );
+
+		$this->assertMatchesNormalizedSnapshot( $output );
+	}
+
+	public function test_can_use_space() {
+		$output = qit( [
+			'run:e2e',
+			'woocommerce-amazon-s3-storage',
+			$this->scaffold_test(),
+			'--plugin',
+			'woocommerce'
+		] );
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
