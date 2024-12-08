@@ -22,7 +22,6 @@ class EnvironmentRunner {
 	 * @throws \RuntimeException If the environment fails to start.
 	 */
 	public function run_environment( array $env_up_options ): EnvInfo {
-		// Ensure JSON output from env:up for parsing.
 		$env_up_options['--json'] = true;
 
 		$env_up_command   = App::make( Application::class )->find( UpEnvironmentCommand::getDefaultName() );
@@ -36,8 +35,15 @@ class EnvironmentRunner {
 		fclose( $resource_stream );
 
 		if ( $exit_status_code === 1337 ) {
-			// Special code that might mean just showing info without actually starting.
-			// Depending on the workflow, you might return early or handle differently.
+			if ( getenv( 'QIT_SELF_TEST' ) === 'env_info' ) {
+				$env_json = json_decode( $up_output, true );
+				if ( ! is_array( $env_json ) ) {
+					throw new \RuntimeException( 'Failed to parse environment JSON in info-only mode. Output: ' . $up_output );
+				}
+
+				return EnvInfo::from_array( $env_json );
+			}
+
 			throw new \RuntimeException( 'Environment did not start. Received code 1337 (info-only).' );
 		}
 
@@ -50,8 +56,6 @@ class EnvironmentRunner {
 			throw new \RuntimeException( 'Failed to start the environment. Output: ' . $up_output );
 		}
 
-		// Convert the JSON output to an EnvInfo object.
-		// EnvInfo::from_array is assumed to be a method that creates an EnvInfo instance from an array.
 		return EnvInfo::from_array( $env_json );
 	}
 }

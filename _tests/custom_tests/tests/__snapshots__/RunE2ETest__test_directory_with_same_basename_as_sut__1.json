@@ -30,7 +30,7 @@
             "type": "plugin",
             "handler": null,
             "version": "NORMALIZED_VERSION",
-            "action": "test",
+            "action": "bootstrap",
             "test_tags": [
                 "default"
             ]

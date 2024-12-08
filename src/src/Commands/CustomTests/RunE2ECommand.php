@@ -312,6 +312,11 @@ class RunE2ECommand extends DynamicCommand {
 		try {
 			/** @var E2EEnvInfo $env_info */
 			$env_info = $this->environment_runner->run_environment( $env_up_options );
+
+			if ( getenv( 'QIT_SELF_TEST' ) === 'env_info' ) {
+				$output->write( json_encode( $env_info ) );
+				return Command::SUCCESS;
+			}
 		} catch ( \Exception $e ) {
 			$this->output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 

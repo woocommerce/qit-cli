@@ -1,1 +1,23 @@
+Downloading plugins and themes...
+Starting Docker Environment...
+Installing WordPress...
+Activating plugins...
+Environment ready.
+Moving must-use plugin of woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/local/bootstrap/mu-plugin.php
+Running E2E Tests
+added 23 packages, and audited 41 packages in 3s
+3 packages are looking for funding
+3 vulnerabilities (1 moderate, 2 high)
+Some issues need review, and may require choosing
+a different dependency.
+Running 3 tests using 1 worker
+✓  1 [setup] Amazon S3 Storage (Shell) › scripts/bash.js:4:5 › Bash Script (TIME)
+✓  2 [setup] Amazon S3 Storage (JS) › woocommerce-amazon-s3-storage/local/bootstrap/setup.js:11:5 › Isolated Setup (TIME)
+✓  3 [test] Amazon S3 Storage (Run) › woocommerce-amazon-s3-storage/local/example.spec.js:9:5 › I can see my plugin menu (TIME)
+3 passed (TIME)
+Test artifacts being saved to: /tmp-normalized/qit-results-normalizedid
+Uploading zip...
+[30;42m                                                                                                                        [39;49m
+[30;42m [OK] Tests passed. Run 'qit e2e-report' to view the report.                                                            [39;49m
+[30;42m                                                                                                                        [39;49m
 Shutting down environment...

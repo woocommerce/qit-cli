@@ -43,7 +43,7 @@
             "type": "plugin",
             "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
             "version": "NORMALIZED_VERSION",
-            "action": "test",
+            "action": "bootstrap",
             "test_tags": [
                 "default"
             ]
@@ -76,7 +76,7 @@
             "slug": "woocommerce",
             "test_tag": "default",
             "type": "plugin",
-            "action": "test",
+            "action": "bootstrap",
             "path_in_php_container": "\/qit\/tests\/e2e\/woocommerce\/default",
             "path_in_host": "\/path\/normalized\/\/tmp-normalized\/tmp_qit_config-qit_custom_tests_NORMALIZED_ID\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/\/tests\/e2e\/woocommerce\/default",
             "path_in_host_original": ""
