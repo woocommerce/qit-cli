@@ -921,4 +921,41 @@ class PlaywrightOrchestrationTest extends QITTestCase {
 			$this->cleanup( $info['path_in_host'] );
 		}
 	}
+
+	public function test_multiple_plugins_no_shared_no_initial_setup() {
+		$test_infos = [
+			[
+				'slug'                  => 'test-plugin-a',
+				'test_tag'              => 'tag-a',
+				'type'                  => 'type-a',
+				'action'                => 'test',
+				'path_in_php_container' => 'container-a',
+				'path_in_host'          => sys_get_temp_dir() . '/test-plugin-a',
+			],
+			[
+				'slug'                  => 'test-plugin-b',
+				'test_tag'              => 'tag-b',
+				'type'                  => 'type-b',
+				'action'                => 'test',
+				'path_in_php_container' => 'container-b',
+				'path_in_host'          => sys_get_temp_dir() . '/test-plugin-b',
+			],
+		];
+
+		// Just ensure minimal environment: create directories, add test.spec.js files
+		foreach ( $test_infos as $info ) {
+			mkdir( $info['path_in_host'], 0777, true );
+			file_put_contents( $info['path_in_host'] . '/test.spec.js', '// dummy' );
+		}
+
+		$sut = $this->make_sut();
+		$projects = $sut->make_projects( $test_infos );
+		$this->assertMatchesJsonSnapshot( $projects );
+
+		// Cleanup
+		foreach ( $test_infos as $info ) {
+			unlink( $info['path_in_host'] . '/test.spec.js' );
+			rmdir( $info['path_in_host'] );
+		}
+	}
 }

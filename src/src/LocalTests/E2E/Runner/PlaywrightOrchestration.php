@@ -177,15 +177,17 @@ class PlaywrightOrchestration {
 
 		$last_operation = $last_setup;
 
-		// If needed, do a DB export after shared setup.
-		if ( $need_db_export && $last_operation ) {
+		// Perform a DB export now if we're going to need to restore the database state later
+		// (e.g., when there are multiple test phases or a shared teardown that depends on a known baseline).
+		if ( $need_db_export ) {
+			$dependencies   = $last_operation ? [ $last_operation ] : [];
 			$name           = $format_name( '[db export]' );
 			$projects[]     = [
 				'name'         => $name,
 				'testDir'      => '/qit/tests/e2e/scripts',
 				'testMatch'    => 'db-export.js',
 				'retries'      => 0,
-				'dependencies' => [ $last_operation ],
+				'dependencies' => $dependencies,
 				'use'          => [ 'browserName' => 'chromium' ],
 			];
 			$last_operation = $name;
