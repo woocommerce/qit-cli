@@ -42,15 +42,11 @@ trait SnapshotHelpers {
 				continue;
 			}
 
-			// Skip empty lines.
 			if ( trim( $line ) === '' ) {
 				continue;
 			}
 
-			/*
-			 * Skip docker pull output.
-			 */
-			if ( strpos( $line, 'Unable to find image') !== false ) {
+			if ( strpos( $line, 'Unable to find image' ) !== false ) {
 				$processing_docker_pull_output = true;
 				continue;
 			} elseif ( $processing_docker_pull_output && strpos( $line, 'Downloaded newer image for' ) !== false ) {
@@ -60,16 +56,18 @@ trait SnapshotHelpers {
 				continue;
 			}
 
-			// Normalize timings, eg "(8.9s)" or "(10.9s)", etc.
+			// Normalize timings (e.g. "(8.9s)" -> "(TIME)")
 			$line = preg_replace( '/\(\d+\.\d+s\)/', '(TIME)', $line );
-
-			// (235ms)
 			$line = preg_replace( '/\(\d+ms\)/', '(TIME)', $line );
 
-			// Normalize "woocommerce.8.8.5.zip" or "woocommerce.8.8.5-RC1.zip", etc to "woocommerce.VERSION.zip"
+			// Normalize WooCommerce zip names
 			$line = preg_replace( '/woocommerce\.[^ ]+\.zip/', 'woocommerce.VERSION.zip', $line );
 
-			// Normalize lines.
+			// Normalize npm install/audit lines
+			$line = preg_replace( '/added \d+ packages, and audited \d+ packages in \S+/', 'added N packages, and audited N packages in (TIME)', $line );
+			$line = preg_replace( '/\d+ packages are looking for funding/', 'N packages are looking for funding', $line );
+			$line = preg_replace( '/\d+ vulnerabilities \(\d+ moderate, \d+ high\)/', 'N vulnerabilities (N moderate, N high)', $line );
+
 			$normalized_spaces .= trim( $line ) . "\n";
 		}
 
