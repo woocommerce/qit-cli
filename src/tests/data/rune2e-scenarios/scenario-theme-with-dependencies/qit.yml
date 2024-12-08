@@ -1,0 +1,5 @@
+themes:
+  storefront:
+    source: "./storefront"
+    test_tags:
+      - "theme-test"

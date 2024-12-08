@@ -29,28 +29,69 @@ class RunE2ECommandTest extends QITTestCase {
 		App::when( RunE2ECommand::class )
 		   ->needs( WooExtensionsList::class )
 		   ->give( function () {
-			   // Resolve the constructor dependencies for WooExtensionsList from the container
 			   $cache        = App::make( Cache::class );
 			   $manager_sync = App::make( ManagerSync::class );
 
 			   return new class( $cache, $manager_sync ) extends WooExtensionsList {
+				   protected $theme_slugs = [
+					   'storefront',
+					   'deli-theme',
+					   'boutique',
+					   'blocksy',
+					   'hestia',
+					   'twentytwentyone',
+				   ];
+
 				   public function __construct( Cache $cache, ManagerSync $manager_sync ) {
-					   // Call parent constructor to properly initialize WooExtensionsList
 					   parent::__construct( $cache, $manager_sync );
 				   }
 
 				   public function get_woo_extension_slug_by_id( $id ): string {
-					   // Always return a known slug
-					   return 'woocommerce-amazon-s3-storage';
+					   // Assign different IDs for each known theme so we can detect them:
+					   switch ( $id ) {
+						   case 999:
+							   return 'storefront';
+						   case 998:
+							   return 'deli-theme';
+						   case 997:
+							   return 'boutique';
+						   case 996:
+							   return 'blocksy';
+						   case 995:
+							   return 'hestia';
+						   case 994:
+							   return 'twentytwentyone';
+					   }
+
+					   return 'woocommerce-amazon-s3-storage'; // default plugin
 				   }
 
 				   public function get_woo_extension_id_by_slug( $slug ): int {
-					   // Always return a known ID
-					   return 123;
+					   // Map each theme slug to a unique ID
+					   switch ( $slug ) {
+						   case 'storefront':
+							   return 999;
+						   case 'deli-theme':
+							   return 998;
+						   case 'boutique':
+							   return 997;
+						   case 'blocksy':
+							   return 996;
+						   case 'hestia':
+							   return 995;
+						   case 'twentytwentyone':
+							   return 994;
+					   }
+
+					   return 123; // default plugin ID
 				   }
 
 				   public function get_woo_extension_type( $id ): string {
-					   // Always return a known type (e.g. 'plugin')
+					   $slug = $this->get_woo_extension_slug_by_id( $id );
+					   if ( in_array( $slug, $this->theme_slugs, true ) ) {
+						   return 'theme';
+					   }
+
 					   return 'plugin';
 				   }
 			   };
@@ -434,11 +475,11 @@ class RunE2ECommandTest extends QITTestCase {
 	}
 
 	public function test_multiple_test_tags_from_config_and_cli() {
-		putenv('QIT_TESTING_ENV_CONFIG=1');
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
 
 		// Change to the new scenario directory.
 		$fixture_dir = $this->scenarios_dir . 'scenario-multiple-test-tags';
-		chdir($fixture_dir);
+		chdir( $fixture_dir );
 
 		// We pass the second argument "test" as comma-separated tags:
 		// "self-test-multiple-test-tags,self-test-multiple-test-tags-another"
@@ -452,30 +493,164 @@ class RunE2ECommandTest extends QITTestCase {
 		// it might fail or produce incorrect JSON.
 		// After you implement the fix to split comma-separated tags,
 		// this should pass and match the snapshot.
-		$this->assertCommandIsSuccessful($this->application_tester);
-		$this->assertMatchesJsonSnapshot($this->application_tester->getDisplay());
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
 	}
 
 	public function test_additional_plugin_multiple_test_tags() {
-		putenv('QIT_TESTING_ENV_CONFIG=1');
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
 
 		$fixture_dir = $this->scenarios_dir . 'scenario-additional-plugin-multiple-test-tags';
-		chdir($fixture_dir);
+		chdir( $fixture_dir );
 
 		// The SUT test tags come via CLI as comma-separated:
 		// "self-test-multiple-test-tags,self-test-multiple-test-tags-another"
 		// The additional plugin is also given via CLI, with :test: plus comma-separated tags:
 		// "woocommerce-progressive-discounts:test:self-test-extra-tag,self-test-extra-tag-2"
-		$this->application_tester->run([
+		$this->application_tester->run( [
 			'command'       => 'run:e2e',
 			'woo_extension' => 'woocommerce-amazon-s3-storage',
 			'test'          => 'self-test-multiple-test-tags,self-test-multiple-test-tags-another',
 			'--plugin'      => [
-				'woocommerce-progressive-discounts:test:self-test-extra-tag,self-test-extra-tag-2'
+				'woocommerce-progressive-discounts:test:self-test-extra-tag,self-test-extra-tag-2',
 			],
-		], [ 'capture_stderr_separately' => true ]);
+		], [ 'capture_stderr_separately' => true ] );
 
-		$this->assertCommandIsSuccessful($this->application_tester);
-		$this->assertMatchesJsonSnapshot($this->application_tester->getDisplay());
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+	}
+
+	public function test_theme_sut() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+
+		$fixture_dir = $this->scenarios_dir . 'scenario-theme-sut';
+		chdir( $fixture_dir );
+
+		// We know qit.yml defines the theme "storefront" as SUT.
+		// We'll run run:e2e with woo_extension = 'storefront'.
+		$this->application_tester->run( [
+			'command'       => 'run:e2e',
+			'woo_extension' => 'storefront', // This should now be detected as a theme SUT.
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+	}
+
+	public function test_plugin_and_theme_sut_theme() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+
+		$fixture_dir = $this->scenarios_dir . 'scenario-plugin-and-theme-sut';
+		chdir( $fixture_dir );
+
+		// qit.yml has both plugins and themes, we pick 'deli-theme' as SUT.
+		$this->application_tester->run( [
+			'command'       => 'run:e2e',
+			'woo_extension' => 'deli-theme',
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+	}
+
+	public function test_theme_with_dependencies() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+
+		$fixture_dir = $this->scenarios_dir . 'scenario-theme-with-dependencies';
+		chdir( $fixture_dir );
+
+		// storefront is the theme SUT, we run with --dependencies=bootstrap to apply dependencies
+		$this->application_tester->run( [
+			'command'        => 'run:e2e',
+			'woo_extension'  => 'storefront',
+			'--dependencies' => 'bootstrap',
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+	}
+
+	public function test_theme_with_additional_plugin() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+
+		$fixture_dir = $this->scenarios_dir . 'scenario-theme-with-additional-plugin';
+		chdir( $fixture_dir );
+
+		// deli-theme from qit.yml, add plugin via CLI
+		$this->application_tester->run( [
+			'command'       => 'run:e2e',
+			'woo_extension' => 'deli-theme',
+			'--plugin'      => [ 'woocommerce-extra-plugin:bootstrap' ],
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+	}
+
+	public function test_theme_with_cli_source_override() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+
+		$fixture_dir = $this->scenarios_dir . 'scenario-theme-with-cli-source';
+		chdir( $fixture_dir );
+
+		// boutique in qit.yml, override source via CLI
+		$this->application_tester->run( [
+			'command'       => 'run:e2e',
+			'woo_extension' => 'boutique',
+			'--source'      => './custom-boutique-theme',
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+	}
+
+	public function test_theme_only_config_no_cli() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+
+		$fixture_dir = $this->scenarios_dir . 'scenario-theme-only-config-no-cli';
+		chdir( $fixture_dir );
+
+		// hestia defined in qit.yml, no CLI overrides
+		$this->application_tester->run( [
+			'command'       => 'run:e2e',
+			'woo_extension' => 'hestia',
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+	}
+
+	public function test_theme_and_plugin_both_config() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+
+		$fixture_dir = $this->scenarios_dir . 'scenario-theme-and-plugin-both-config';
+		chdir( $fixture_dir );
+
+		// twentytwentyone is the theme in qit.yml, choose it as SUT
+		$this->application_tester->run( [
+			'command'       => 'run:e2e',
+			'woo_extension' => 'twentytwentyone',
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+	}
+
+	public function test_theme_with_tunnel() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+
+		$fixture_dir = $this->scenarios_dir . 'scenario-theme-with-tunnel';
+		chdir( $fixture_dir );
+
+		// blocksy defined in qit.yml, run with a tunnel
+		$this->application_tester->run( [
+			'command'       => 'run:e2e',
+			'woo_extension' => 'blocksy',
+			'--tunnel'      => 'cloudflared-binary',
+			'--json'        => true,
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
 	}
 }

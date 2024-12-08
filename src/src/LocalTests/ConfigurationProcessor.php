@@ -21,12 +21,13 @@ class ConfigurationProcessor {
 	/**
 	 * Process and merge configuration from qit.yml and CLI options into a final set of env:up options.
 	 *
-	 * @param InputInterface      $input
+	 * @param InputInterface $input
 	 * @param array<string,mixed> $env_up_options The partially processed env_up_options from RunE2ECommand.
+	 * @param string $sut_type Either 'plugin' or 'theme'.
 	 *
 	 * @return array<string,mixed> Final configuration suitable for passing to env:up (e.g., $env_up_options).
 	 */
-	public function process_configuration( InputInterface $input, array $env_up_options ): array {
+	public function process_configuration( InputInterface $input, array $env_up_options, string $sut_type ): array {
 		// If a config override is provided via CLI, set it.
 		if ( $input->getOption( 'config' ) ) {
 			App::setVar( 'QIT_CONFIG_OVERRIDE', $input->getOption( 'config' ) );
@@ -36,6 +37,9 @@ class ConfigurationProcessor {
 		$env_config = $this->config_loader->load_config();
 		if ( ! isset( $env_config['plugins'] ) || ! is_array( $env_config['plugins'] ) ) {
 			$env_config['plugins'] = [];
+		}
+		if ( ! isset( $env_config['themes'] ) || ! is_array( $env_config['themes'] ) ) {
+			$env_config['themes'] = [];
 		}
 
 		$woo_extension    = $input->getArgument( 'woo_extension' );
@@ -55,13 +59,19 @@ class ConfigurationProcessor {
 				$dependencies_opt,
 				$env_up_options,
 				$env_config,
-				$input
+				$input,
+				$sut_type
 			);
 		} else {
-			// No SUT: Just handle CLI plugins and skip dependencies.
+			// No SUT: Just handle CLI plugins/themes and skip dependencies.
 			$this->add_cli_plugins( $env_config, $input );
 			$this->normalize_plugins( $env_config );
-			$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
+			$this->normalize_themes( $env_config );
+			if ( $sut_type === 'theme' ) {
+				$env_up_options['--theme'] = array_values( $env_config['themes'] );
+			} else {
+				$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
+			}
 		}
 
 		$this->is_development = ! empty( $input->getOption( 'source' ) ) && file_exists( $input->getOption( 'source' ) );
@@ -75,15 +85,16 @@ class ConfigurationProcessor {
 	 * - Ensure action=test
 	 * - Apply dependencies
 	 * - Add CLI plugins
-	 * - Normalize all plugins
+	 * - Normalize all plugins/themes
 	 *
-	 * @param string|null         $woo_extension
-	 * @param string|null         $source
-	 * @param string|null         $test
-	 * @param string              $dependencies_option
+	 * @param string|null $woo_extension
+	 * @param string|null $source
+	 * @param string|null $test
+	 * @param string $dependencies_option
 	 * @param array<string,mixed> $env_up_options
 	 * @param array<string,mixed> $env_config
-	 * @param InputInterface      $input
+	 * @param InputInterface $input
+	 * @param string $sut_type
 	 *
 	 * @return void
 	 */
@@ -94,13 +105,19 @@ class ConfigurationProcessor {
 		$dependencies_option,
 		array &$env_up_options,
 		array &$env_config,
-		InputInterface $input
+		InputInterface $input,
+		string $sut_type
 	): void {
 		if ( empty( $woo_extension ) ) {
 			// If no woo_extension, there's no main SUT, so skip dependencies.
 			$this->add_cli_plugins( $env_config, $input );
 			$this->normalize_plugins( $env_config );
-			$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
+			$this->normalize_themes( $env_config );
+			if ( $sut_type === 'theme' ) {
+				$env_up_options['--theme'] = array_values( $env_config['themes'] );
+			} else {
+				$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
+			}
 
 			return;
 		}
@@ -130,28 +147,42 @@ class ConfigurationProcessor {
 			$sut_base['action'] = Extension::ACTIONS['test'];
 		}
 
-		$env_config['plugins'][ $woo_extension ] = $sut_base;
+		// Place SUT in themes if sut_type is 'theme', else in plugins
+		if ( $sut_type === 'theme' ) {
+			$env_config['themes'][ $woo_extension ] = $sut_base;
+		} else {
+			$env_config['plugins'][ $woo_extension ] = $sut_base;
+		}
 
 		$woo_extension_id = App::getVar( 'QIT_SUT' );
 
 		$this->apply_dependencies( $woo_extension_id, $dependencies_option, $env_up_options );
 		$this->add_cli_plugins( $env_config, $input );
 		$this->normalize_plugins( $env_config );
+		$this->normalize_themes( $env_config );
 
-		$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
+		if ( $sut_type === 'theme' ) {
+			$env_up_options['--theme'] = array_values( $env_config['themes'] );
+		} else {
+			$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
+		}
 	}
 
 	/**
 	 * Retrieve a base configuration for the SUT from qit.yml if present, otherwise return defaults.
 	 *
 	 * @param array<string,mixed> $env_config
-	 * @param string              $woo_extension
+	 * @param string $woo_extension
 	 *
 	 * @return array<string,mixed>
 	 */
 	protected function get_sut_base( array $env_config, string $woo_extension ): array {
 		if ( isset( $env_config['plugins'][ $woo_extension ] ) ) {
 			return $env_config['plugins'][ $woo_extension ];
+		}
+
+		if ( isset( $env_config['themes'][ $woo_extension ] ) ) {
+			return $env_config['themes'][ $woo_extension ];
 		}
 
 		// Default configuration if not defined in qit.yml.
@@ -166,7 +197,7 @@ class ConfigurationProcessor {
 	 * Merge CLI plugins into the env_config as objects.
 	 *
 	 * @param array<string,mixed> $env_config
-	 * @param InputInterface      $input
+	 * @param InputInterface $input
 	 *
 	 * @return void
 	 */
@@ -193,12 +224,14 @@ class ConfigurationProcessor {
 				}
 			}
 
+			// By default, we assume extensions go to plugins if not defined otherwise.
+			// This is consistent with original logic.
 			if ( ! isset( $env_config['plugins'] ) ) {
 				$env_config['plugins'] = [];
 			}
 
 			// If plugin not defined in qit.yml, create a new entry.
-			if ( ! isset( $env_config['plugins'][ $cli_slug ] ) ) {
+			if ( ! isset( $env_config['plugins'][ $cli_slug ] ) && ! isset( $env_config['themes'][ $cli_slug ] ) ) {
 				$env_config['plugins'][ $cli_slug ] = [
 					'slug'      => $cli_slug,
 					'source'    => $cli_slug,
@@ -206,14 +239,27 @@ class ConfigurationProcessor {
 					'action'    => $cli_action,
 				];
 			} else {
-				// Override tags if provided by CLI.
-				if ( ! empty( $cli_tags ) ) {
-					$env_config['plugins'][ $cli_slug ]['test_tags'] = $cli_tags;
-				} elseif ( empty( $env_config['plugins'][ $cli_slug ]['test_tags'] ) ) {
-					$env_config['plugins'][ $cli_slug ]['test_tags'] = [ 'default' ];
+				// If found in plugins
+				if ( isset( $env_config['plugins'][ $cli_slug ] ) ) {
+					if ( ! empty( $cli_tags ) ) {
+						$env_config['plugins'][ $cli_slug ]['test_tags'] = $cli_tags;
+					} elseif ( empty( $env_config['plugins'][ $cli_slug ]['test_tags'] ) ) {
+						$env_config['plugins'][ $cli_slug ]['test_tags'] = [ 'default' ];
+					}
+
+					$env_config['plugins'][ $cli_slug ]['action'] = $cli_action;
 				}
 
-				$env_config['plugins'][ $cli_slug ]['action'] = $cli_action;
+				// If found in themes
+				if ( isset( $env_config['themes'][ $cli_slug ] ) ) {
+					if ( ! empty( $cli_tags ) ) {
+						$env_config['themes'][ $cli_slug ]['test_tags'] = $cli_tags;
+					} elseif ( empty( $env_config['themes'][ $cli_slug ]['test_tags'] ) ) {
+						$env_config['themes'][ $cli_slug ]['test_tags'] = [ 'default' ];
+					}
+
+					$env_config['themes'][ $cli_slug ]['action'] = $cli_action;
+				}
 			}
 		}
 	}
@@ -263,10 +309,54 @@ class ConfigurationProcessor {
 	}
 
 	/**
+	 * Normalize all themes to ensure test_tags, action, slug, and source are properly set.
+	 *
+	 * @param array<string,mixed> $env_config
+	 *
+	 * @return void
+	 */
+	protected function normalize_themes( array &$env_config ): void {
+		if ( ! isset( $env_config['themes'] ) || ! is_array( $env_config['themes'] ) ) {
+			$env_config['themes'] = [];
+		}
+
+		foreach ( $env_config['themes'] as $theme_slug => &$theme_config ) {
+			if ( empty( $theme_config['test_tags'] ) ) {
+				$theme_config['test_tags'] = [ 'default' ];
+			} else {
+				$normalized_tags = [];
+				foreach ( (array) $theme_config['test_tags'] as $tag ) {
+					if ( strpos( $tag, ',' ) !== false ) {
+						$split_tags      = array_map( 'trim', explode( ',', $tag ) );
+						$normalized_tags = array_merge( $normalized_tags, $split_tags );
+					} else {
+						$normalized_tags[] = $tag;
+					}
+				}
+				$theme_config['test_tags'] = $normalized_tags;
+			}
+
+			if ( ! isset( $theme_config['action'] ) ) {
+				$theme_config['action'] = Extension::ACTIONS['test'];
+			}
+
+			if ( ! isset( $theme_config['slug'] ) ) {
+				$theme_config['slug'] = $theme_slug;
+			}
+
+			// Set a default source if none is specified.
+			if ( ! isset( $theme_config['source'] ) ) {
+				$theme_config['source'] = $theme_slug;
+			}
+		}
+		unset( $theme_config );
+	}
+
+	/**
 	 * Add dependencies as strings to --plugin (and php_extensions to --php_extension).
 	 *
-	 * @param int|null            $woo_extension_id
-	 * @param string              $dependencies_option
+	 * @param int|null $woo_extension_id
+	 * @param string $dependencies_option
 	 * @param array<string,mixed> $env_up_options
 	 *
 	 * @return void

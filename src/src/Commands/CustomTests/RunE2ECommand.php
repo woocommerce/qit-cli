@@ -289,7 +289,7 @@ class RunE2ECommand extends DynamicCommand {
 			App::setVar( 'QIT_SUT', (int) $woo_extension_id );
 		}
 
-		$env_up_options = $this->configuration_processor->process_configuration( $input, $env_up_options );
+		$env_up_options = $this->configuration_processor->process_configuration( $input, $env_up_options, $sut_type );
 
 		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
 		App::setVar( 'QIT_ENV_UP_OPTIONS', $env_up_options );

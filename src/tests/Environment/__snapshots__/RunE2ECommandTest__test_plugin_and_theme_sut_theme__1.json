@@ -1,0 +1,24 @@
+{
+    "--php_version": "7.4",
+    "--wp": "stable",
+    "--plugin": [],
+    "--theme": [
+        {
+            "slug": "deli-theme",
+            "source": "deli-theme",
+            "test_tags": [
+                "default"
+            ],
+            "action": "test"
+        }
+    ],
+    "--volume": [],
+    "--php_extension": [],
+    "--require": [],
+    "--object_cache": false,
+    "--skip_activating_plugins": false,
+    "--tunnel": "no_tunnel",
+    "--json": true,
+    "--env": [],
+    "--env_file": []
+}
