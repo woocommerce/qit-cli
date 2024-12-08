@@ -181,7 +181,8 @@ class PlaywrightRunner extends E2ERunner {
 				"{$test_to_run['path_in_host']}:{$test_to_run['path_in_php_container']}",
 			] );
 
-			if ( file_exists( "{$test_to_run['path_in_host']}/bootstrap/dependencies.json" ) ) {
+			// Only handle dependencies if action is test or bootstrap.
+			if ( ( $test_to_run['action'] === 'test' || $test_to_run['action'] === 'bootstrap' ) && file_exists( "{$test_to_run['path_in_host']}/bootstrap/dependencies.json" ) ) {
 				// Read the dependencies JSON and append.
 				$dependencies            = json_decode( file_get_contents( "{$test_to_run['path_in_host']}/bootstrap/dependencies.json" ), true );
 				$dependencies_to_install = array_merge( $dependencies_to_install, $dependencies );
