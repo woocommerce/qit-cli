@@ -3,6 +3,14 @@
     "--wp": "stable",
     "--plugin": [
         {
+            "source": ".\/woocommerce-known-plugin",
+            "test_tags": [
+                "default"
+            ],
+            "action": "bootstrap",
+            "slug": "woocommerce-known-plugin"
+        },
+        {
             "slug": "woocommerce-amazon-s3-storage",
             "source": "woocommerce-amazon-s3-storage",
             "test_tags": [

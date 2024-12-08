@@ -3,20 +3,20 @@
     "--wp": "stable",
     "--plugin": [
         {
+            "source": ".\/woocommerce-sample-plugin",
+            "action": "bootstrap",
+            "test_tags": [
+                ".\/woocommerce-sample-plugin-tests"
+            ],
+            "slug": "woocommerce-sample-plugin"
+        },
+        {
             "slug": "woocommerce-amazon-s3-storage",
             "source": "woocommerce-amazon-s3-storage",
             "test_tags": [
                 "default"
             ],
             "action": "test"
-        },
-        {
-            "slug": "woocommerce-sample-plugin",
-            "source": "woocommerce-sample-plugin",
-            "test_tags": [
-                "default"
-            ],
-            "action": "bootstrap"
         }
     ],
     "--theme": [],

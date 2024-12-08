@@ -4,12 +4,12 @@
     "--plugin": [],
     "--theme": [
         {
-            "slug": "boutique",
             "source": ".\/custom-boutique-theme",
             "test_tags": [
-                "default"
+                "cli-override-test"
             ],
-            "action": "test"
+            "action": "test",
+            "slug": "boutique"
         }
     ],
     "--volume": [],

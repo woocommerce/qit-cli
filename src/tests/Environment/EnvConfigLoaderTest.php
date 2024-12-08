@@ -18,7 +18,7 @@ class EnvConfigLoaderTest extends TestCase {
 	public function setUp(): void {
 		parent::setUp();
 		$this->configDir = __DIR__ . '/../data/env-config/';
-		App::setVar( 'QIT_CONFIG_LOADER_DIR', $this->configDir );
+		chdir( $this->configDir );
 
 		App::container()->when( EnvConfigLoader::class )
 		   ->needs( OutputInterface::class )

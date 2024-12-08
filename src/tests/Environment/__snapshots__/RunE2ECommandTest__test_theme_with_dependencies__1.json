@@ -4,12 +4,12 @@
     "--plugin": [],
     "--theme": [
         {
-            "slug": "storefront",
-            "source": "storefront",
+            "source": ".\/storefront",
             "test_tags": [
-                "default"
+                "theme-test"
             ],
-            "action": "test"
+            "action": "test",
+            "slug": "storefront"
         }
     ],
     "--volume": [],

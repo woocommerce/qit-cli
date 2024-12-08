@@ -3,20 +3,20 @@
     "--wp": "stable",
     "--plugin": [
         {
+            "source": ".\/woocommerce-no-action",
+            "test_tags": [
+                "custom-tag"
+            ],
+            "action": "bootstrap",
+            "slug": "woocommerce-no-action"
+        },
+        {
             "slug": "woocommerce-amazon-s3-storage",
             "source": "woocommerce-amazon-s3-storage",
             "test_tags": [
                 "default"
             ],
             "action": "test"
-        },
-        {
-            "slug": "woocommerce-no-action",
-            "source": "woocommerce-no-action",
-            "test_tags": [
-                "default"
-            ],
-            "action": "bootstrap"
         }
     ],
     "--theme": [],

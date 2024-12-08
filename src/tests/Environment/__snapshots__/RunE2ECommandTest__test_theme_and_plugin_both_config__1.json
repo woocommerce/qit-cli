@@ -4,12 +4,12 @@
     "--plugin": [],
     "--theme": [
         {
-            "slug": "twentytwentyone",
-            "source": "twentytwentyone",
+            "source": ".\/twentytwentyone-theme",
             "test_tags": [
-                "default"
+                "mixed-env"
             ],
-            "action": "test"
+            "action": "test",
+            "slug": "twentytwentyone"
         }
     ],
     "--volume": [],

@@ -3,22 +3,22 @@
     "--wp": "stable",
     "--plugin": [
         {
-            "slug": "woocommerce-amazon-s3-storage",
-            "source": "woocommerce-amazon-s3-storage",
+            "source": ".\/woocommerce-amazon-s3-storage",
             "test_tags": [
                 "self-test-multiple-test-tags",
                 "self-test-multiple-test-tags-another"
             ],
-            "action": "test"
+            "action": "test",
+            "slug": "woocommerce-amazon-s3-storage"
         },
         {
-            "slug": "woocommerce-progressive-discounts",
-            "source": "woocommerce-progressive-discounts",
+            "source": ".\/woocommerce-progressive-discounts",
             "test_tags": [
                 "self-test-extra-tag",
                 "self-test-extra-tag-2"
             ],
-            "action": "test"
+            "action": "test",
+            "slug": "woocommerce-progressive-discounts"
         }
     ],
     "--theme": [],

@@ -1,0 +1,5 @@
+themes:
+  storefront:
+    source: "./storefront-theme"
+    test_tags:
+      - "default"

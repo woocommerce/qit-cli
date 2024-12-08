@@ -227,11 +227,7 @@ class EnvConfigLoader {
 		 * - If both "qit.json" and "qit.yml" exists, throw.
 		 * - If both "qit.override.json" and "qit.override.yml" exists, throw.
 		 */
-		if ( defined( 'UNIT_TESTS' ) ) {
-			$working_directory = App::getVar( 'QIT_CONFIG_LOADER_DIR' );
-		} else {
-			$working_directory = getcwd();
-		}
+		$working_directory = getcwd();
 
 		$env_files          = [
 			'qit.json'  => file_exists( $working_directory . '/qit.json' ),
