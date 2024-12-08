@@ -5,11 +5,8 @@ Activating plugins...
 Environment ready.
 Moving must-use plugin of woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/local/bootstrap/mu-plugin.php
 Running E2E Tests
-added N packages, and audited N packages in (TIME)
+added 23 packages in 692ms
 N packages are looking for funding
-N vulnerabilities (N moderate, N high)
-Some issues need review, and may require choosing
-a different dependency.
 Running 3 tests using 1 worker
 ✓  1 [setup] Amazon S3 Storage (Shell) › scripts/bash.js:4:5 › Bash Script (TIME)
 ✓  2 [setup] Amazon S3 Storage (JS) › woocommerce-amazon-s3-storage/local/bootstrap/setup.js:11:5 › Isolated Setup (TIME)

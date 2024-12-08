@@ -58,8 +58,8 @@
     "nginx_port": "80",
     "sut_slug": "woocommerce-amazon-s3-storage",
     "sut_type": "plugin",
-    "sut_entrypoint": null,
-    "sut_path": null,
+    "sut_entrypoint": "woocommerce-amazon-s3-storage\/woocommerce-amazon-s3-storage.php",
+    "sut_path": "\/var\/www\/html\/wp-content\/plugins\/woocommerce-amazon-s3-storage\/woocommerce-amazon-s3-storage\/woocommerce-amazon-s3-storage.php",
     "sut_id": "123",
     "domain": "qitenvnginxENV_ID_NORMALIZED",
     "tests": [

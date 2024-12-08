@@ -242,6 +242,7 @@ class RunE2ECommand extends DynamicCommand {
 			}
 
 			$sut_type = $this->woo_extensions_list->get_woo_extension_type( $woo_extension_id );
+			putenv( "QIT_SUT=$woo_extension" ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
 
 		if ( $input->getOption( 'skip_activating_plugins' ) ) {

@@ -26,26 +26,40 @@ trait SnapshotHelpers {
 		$lines_to_remove = [
 			'First-time setup is pulling Docker images',
 			'Wrote debug contents to',
-			'npm',
 		];
 
 		$processing_docker_pull_output = false;
 
+		// Flags to handle npm-related lines.
+		// We will remove all npm lines and then add a single placeholder line once we detect at least one npm-related line.
+		$npm_lines_detected = false;
+
 		foreach ( explode( "\n", $actual ) as $line ) {
+			$trimmed_line = trim( $line );
+
+			// Skip empty lines
+			if ( $trimmed_line === '' ) {
+				continue;
+			}
+
+			// Skip lines known to be removed
+			$should_remove = false;
 			foreach ( $lines_to_remove as $to_remove ) {
 				if ( strpos( $line, $to_remove ) !== false ) {
-					continue 2;
+					$should_remove = true;
+					break;
 				}
 			}
-
-			if ( trim( $line ) === 'notice' ) {
+			if ( $should_remove ) {
 				continue;
 			}
 
-			if ( trim( $line ) === '' ) {
+			// Ignore lines with just 'notice'
+			if ( $trimmed_line === 'notice' ) {
 				continue;
 			}
 
+			// Handle Docker pulling images output
 			if ( strpos( $line, 'Unable to find image' ) !== false ) {
 				$processing_docker_pull_output = true;
 				continue;
@@ -56,19 +70,38 @@ trait SnapshotHelpers {
 				continue;
 			}
 
-			// Normalize timings (e.g. "(8.9s)" -> "(TIME)")
+			// Normalize timings
 			$line = preg_replace( '/\(\d+\.\d+s\)/', '(TIME)', $line );
 			$line = preg_replace( '/\(\d+ms\)/', '(TIME)', $line );
 
 			// Normalize WooCommerce zip names
 			$line = preg_replace( '/woocommerce\.[^ ]+\.zip/', 'woocommerce.VERSION.zip', $line );
 
-			// Normalize npm install/audit lines
-			$line = preg_replace( '/added \d+ packages, and audited \d+ packages in \S+/', 'added N packages, and audited N packages in (TIME)', $line );
-			$line = preg_replace( '/\d+ packages are looking for funding/', 'N packages are looking for funding', $line );
-			$line = preg_replace( '/\d+ vulnerabilities \(\d+ moderate, \d+ high\)/', 'N vulnerabilities (N moderate, N high)', $line );
+			// Detect and remove npm-related lines:
+			// For example:
+			// "added 23 packages in 4s", "N packages are looking for funding",
+			// "N vulnerabilities (N moderate, N high)", "some issues need review", etc.
+			// We'll replace them all with a single placeholder line after processing.
+			if (
+				strpos( $line, 'added ' ) !== false && strpos( $line, 'packages' ) !== false ||
+				strpos( $line, 'audited ' ) !== false ||
+				strpos( $line, 'packages are looking for funding' ) !== false ||
+				strpos( $line, 'vulnerabilities' ) !== false ||
+				strpos( $line, 'Some issues need review' ) !== false ||
+				// This also catches general npm lines if needed
+				strpos( $line, 'npm' ) !== false
+			) {
+				$npm_lines_detected = true;
+				continue;
+			}
 
+			// After removing npm lines and other variable lines, keep the rest
 			$normalized_spaces .= trim( $line ) . "\n";
+		}
+
+		// If npm lines were detected, add a standardized placeholder line to the final output.
+		if ( $npm_lines_detected ) {
+			$normalized_spaces .= "npm packages installed (normalized)\n";
 		}
 
 		$this->assertMatchesSnapshot( $normalized_spaces, $driver ?? new TextDriver() );
