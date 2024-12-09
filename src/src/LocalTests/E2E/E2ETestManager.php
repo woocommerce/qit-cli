@@ -67,6 +67,7 @@ class E2ETestManager {
 	 * @return int The exit status code.
 	 */
 	public function run_tests( E2EEnvInfo $env_info, string $test_mode, bool $bootstrap_only, ?string $shard = null ): int {
+		App::setVar( E2EEnvInfo::class, $env_info );
 		$test_result = TestResult::init_from( $env_info );
 
 		if ( empty( $env_info->tests ) ) {
