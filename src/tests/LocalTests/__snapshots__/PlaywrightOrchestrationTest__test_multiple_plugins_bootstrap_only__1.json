@@ -1,0 +1,76 @@
+[
+    {
+        "name": "[setup:shared] Bootstrap One (Shell)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "bootstrap-one",
+            "type": "Shared Setup for bootstrap-one (Bash)",
+            "file": "test-path-bootstrap-1\/bootstrap\/shared-setup.sh"
+        }
+    },
+    {
+        "name": "[setup:shared] Bootstrap Two (JS)",
+        "testDir": "test-path-bootstrap-2\/bootstrap",
+        "testMatch": "shared-setup.js",
+        "dependencies": [
+            "[setup:shared] Bootstrap One (Shell)"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "bootstrap-two"
+        }
+    },
+    {
+        "name": "[db export]",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "db-export.js",
+        "retries": 0,
+        "dependencies": [
+            "[setup:shared] Bootstrap Two (JS)"
+        ],
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "[db import]",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "db-import.js",
+        "dependencies": [
+            "[db export]"
+        ],
+        "retries": 0,
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "[teardown:shared] Bootstrap Two (JS)",
+        "testDir": "test-path-bootstrap-2\/bootstrap",
+        "testMatch": "shared-teardown.js",
+        "dependencies": [
+            "[db import]"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "bootstrap-two"
+        }
+    },
+    {
+        "name": "[teardown:shared] Bootstrap One (Shell)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [
+            "[teardown:shared] Bootstrap Two (JS)"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "bootstrap-one",
+            "type": "Shared Teardown for bootstrap-one (Bash)",
+            "file": "test-path-bootstrap-1\/bootstrap\/shared-teardown.sh"
+        }
+    }
+]

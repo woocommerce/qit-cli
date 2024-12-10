@@ -181,9 +181,10 @@ class PlaywrightRunner extends E2ERunner {
 				"{$test_to_run['path_in_host']}:{$test_to_run['path_in_php_container']}",
 			] );
 
-			if ( file_exists( "{$test_to_run['path_in_host']}/qit/dependencies.json" ) ) {
+			// Only handle dependencies if action is test or bootstrap.
+			if ( ( $test_to_run['action'] === 'test' || $test_to_run['action'] === 'bootstrap' ) && file_exists( "{$test_to_run['path_in_host']}/bootstrap/dependencies.json" ) ) {
 				// Read the dependencies JSON and append.
-				$dependencies            = json_decode( file_get_contents( "{$test_to_run['path_in_host']}/qit/dependencies.json" ), true );
+				$dependencies            = json_decode( file_get_contents( "{$test_to_run['path_in_host']}/bootstrap/dependencies.json" ), true );
 				$dependencies_to_install = array_merge( $dependencies_to_install, $dependencies );
 			}
 		}
@@ -280,6 +281,15 @@ class PlaywrightRunner extends E2ERunner {
 			 * Remove unnecessary brackets.
 			 */
 			$out = preg_replace( '/\((Shell|JS|PHP)\)]/', '($1)', $out );
+
+			// Fix "(Run)]" to "(Run)".
+			$out = preg_replace( '/\(Run\)\]/', '(Run)', $out );
+
+			// Fix "[db import] #X]" to "[db import] #X".
+			$out = preg_replace( '/(\[db import\] #[0-9]+)\]/', '$1', $out );
+
+			// Fix "[db export]]" to "[db export]".
+			$out = preg_replace( '/(\[db export\])\]/', '$1', $out );
 
 			$out = trim( $out );
 

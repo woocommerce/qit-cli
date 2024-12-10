@@ -10,19 +10,6 @@
     "php_extensions": [],
     "plugins": [
         {
-            "slug": "woocommerce",
-            "entrypoint": null,
-            "source": "woocommerce",
-            "downloaded_source": null,
-            "type": "plugin",
-            "handler": null,
-            "version": "NORMALIZED_VERSION",
-            "action": "bootstrap",
-            "test_tags": [
-                "default"
-            ]
-        },
-        {
             "slug": "woocommerce-amazon-s3-storage",
             "entrypoint": null,
             "source": "woocommerce-amazon-s3-storage",
@@ -33,6 +20,19 @@
             "action": "test",
             "test_tags": [
                 "\/tmp-normalized\/qit_scaffolded_e2e-NORMALIZED_ID"
+            ]
+        },
+        {
+            "slug": "woocommerce",
+            "entrypoint": null,
+            "source": "woocommerce",
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "NORMALIZED_VERSION",
+            "action": "bootstrap",
+            "test_tags": [
+                "default"
             ]
         }
     ],

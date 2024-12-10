@@ -1,0 +1,11 @@
+{
+    "plugins": [
+        "woocommerce-services"
+    ],
+    "themes": [
+        "storefront-child"
+    ],
+    "php_extensions": [
+        "intl"
+    ]
+}

@@ -18,13 +18,14 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\Extension;
+use QIT_CLI\LocalTests\ConfigurationProcessor;
 use QIT_CLI\LocalTests\E2E\E2ETestManager;
+use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\PluginDependencies;
 use QIT_CLI\Tunnel\TunnelRunner;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -57,6 +58,12 @@ class RunE2ECommand extends DynamicCommand {
 	/** @var PluginDependencies */
 	protected $dependencies;
 
+	/** @var ConfigurationProcessor */
+	protected $configuration_processor;
+
+	/** @var EnvironmentRunner */
+	protected $environment_runner;
+
 	protected static $defaultName = 'run:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/**
@@ -72,19 +79,21 @@ class RunE2ECommand extends DynamicCommand {
 	public function __construct(
 		E2EEnvironment $e2e_environment,
 		Cache $cache,
-		OutputInterface $output,
 		E2ETestManager $e2e_test_manager,
 		WooExtensionsList $woo_extensions_list,
 		LocalTestRunNotifier $test_run_notifier,
-		PluginDependencies $dependencies
+		PluginDependencies $dependencies,
+		ConfigurationProcessor $configuration_processor,
+		EnvironmentRunner $environment_runner
 	) {
-		$this->e2e_environment     = $e2e_environment;
-		$this->cache               = $cache;
-		$this->output              = $output;
-		$this->e2e_test_manager    = $e2e_test_manager;
-		$this->woo_extensions_list = $woo_extensions_list;
-		$this->test_run_notifier   = $test_run_notifier;
-		$this->dependencies        = $dependencies;
+		$this->e2e_environment         = $e2e_environment;
+		$this->cache                   = $cache;
+		$this->e2e_test_manager        = $e2e_test_manager;
+		$this->woo_extensions_list     = $woo_extensions_list;
+		$this->test_run_notifier       = $test_run_notifier;
+		$this->dependencies            = $dependencies;
+		$this->configuration_processor = $configuration_processor;
+		$this->environment_runner      = $environment_runner;
 
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
@@ -125,16 +134,17 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT.' )
 			->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional options and parameters to pass to Playwright, eg: "--retries=0", etc.' )
-			->addOption( 'dependencies', null, InputOption::VALUE_OPTIONAL, 'How to handle SUT dependencies. Possible values are: "activate", "bootstrap", "test", or "none"', Extension::ACTIONS['bootstrap'] )
-			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode. In this mode, you can start and view the tests running.' )
-			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run the environment for Codegen. In this mode, you can generate your test files.' )
-			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it up until you shut it down.' )
-			->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests.', [] );
+			->addOption( 'dependencies', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies of the SUT and additional plugins. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['bootstrap'] )
+			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode.' )
+			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen.' )
+			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
+		$this->prepare_output( $output );
+
 		if ( is_windows() ) {
-			$output->writeln( '<comment>To use run E2E Tests on Window, please use WSL. Check our guide here: https://qit.woo.com/docs/environment/getting-started#getting-started---windows</comment>' );
+			$output->writeln( '<comment>To run E2E Tests on Windows, please use WSL.</comment>' );
 
 			return Command::FAILURE;
 		}
@@ -149,7 +159,7 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::FAILURE;
 		}
 
-		// Check if option "--ui" is set. If it is, "--codegen" cannot be set. Also check the other way around, and set $test_mode accordingly.
+		// Determine test mode.
 		if ( $input->getOption( 'ui' ) && $input->getOption( 'codegen' ) ) {
 			$output->writeln( '<error>Cannot run tests in both "UI" and "Codegen" mode at the same time.</error>' );
 
@@ -169,7 +179,6 @@ class RunE2ECommand extends DynamicCommand {
 
 		$wait                = $input->getOption( 'up_only' ) || $test_mode === E2ETestManager::$test_modes['codegen'];
 		$woo_extension       = $input->getArgument( 'woo_extension' );
-		$test                = $input->getArgument( 'test' );
 		$woocommerce_version = $input->getOption( 'woo' );
 		$shard               = $input->getOption( 'shard' );
 		$update_snapshots    = $input->getOption( 'update_snapshots' );
@@ -177,21 +186,11 @@ class RunE2ECommand extends DynamicCommand {
 		$sut_action          = $input->getOption( 'sut_action' );
 		$this->parse_env_vars( $input->getOption( 'env' ) );
 
-		if ( empty( $input->getOption( 'source' ) ) ) {
-			$source = $woo_extension;
-		} else {
-			if ( file_exists( realpath( $input->getOption( 'source' ) ) ) ) {
-				$source = realpath( $input->getOption( 'source' ) );
-			} else {
-				$source = $input->getOption( 'source' );
-			}
-		}
-
-		// Prevent usage of "--woo" and "--plugin woocommerce" together.
+		// Prevent "--woo" and "--plugin woocommerce" usage together.
 		if ( ! empty( $woocommerce_version ) && ! empty( $input->getOption( 'plugin' ) ) ) {
 			foreach ( $input->getOption( 'plugin' ) as $p ) {
 				if ( $p === 'woocommerce' ) {
-					$output->writeln( '<error>Both "--woo" and "--plugin woocommerce" cannot be used at the same time. Please use one or another when running the test.</error>' );
+					$output->writeln( '<error>Cannot use both "--woo" and "--plugin woocommerce" together.</error>' );
 
 					return Command::INVALID;
 				}
@@ -211,25 +210,22 @@ class RunE2ECommand extends DynamicCommand {
 
 		App::setVar( 'pw_options', $pw_options );
 
-		// Validate the extension is set if needed.
+		// Validate extension parameter if needed.
 		if ( empty( $woo_extension ) ) {
-			if ( ! empty( $source ) ) {
-				$output->writeln( '<error>The extension parameter is required when the source parameter is set.</error>' );
-
-				return Command::INVALID;
-			}
-			if ( ! empty( $sut_action ) ) {
-				$output->writeln( '<error>The extension parameter is required when the sut_action parameter is set.</error>' );
+			if ( ! empty( $input->getOption( 'source' ) ) || ! empty( $sut_action ) ) {
+				$output->writeln( '<error>The extension parameter is required when source or sut_action is set.</error>' );
 
 				return Command::INVALID;
 			}
 			if ( ! $wait ) {
-				$output->writeln( '<error>The extension parameter is only optional in --up_only or --codegen modes.</error>' );
+				$output->writeln( '<error>The extension parameter is required unless in --up_only or --codegen mode.</error>' );
 
 				return Command::INVALID;
 			}
 		}
 
+		$woo_extension_id = null;
+		$sut_type         = null;
 		if ( ! empty( $woo_extension ) ) {
 			// Validate WooExtension.
 			try {
@@ -246,70 +242,35 @@ class RunE2ECommand extends DynamicCommand {
 			}
 
 			$sut_type = $this->woo_extensions_list->get_woo_extension_type( $woo_extension_id );
-
-			if ( ! empty( $test ) ) {
-				$woo_extension_extension_syntax = sprintf( '%s:%s:base64%s', $woo_extension, $sut_action, base64_encode( $test ) );
-			} else {
-				$woo_extension_extension_syntax = sprintf( '%s:%s', $woo_extension, $sut_action );
-			}
-
-			if ( $sut_type === 'theme' ) {
-				$env_up_options['--theme'][] = $woo_extension_extension_syntax;
-			} else {
-				$env_up_options['--plugin'][] = $woo_extension_extension_syntax;
-			}
-
-			if ( $input->getOption( 'dependencies' ) !== 'none' ) {
-				$dependencies_action = $input->getOption( 'dependencies' );
-
-				if ( ! in_array( $dependencies_action, Extension::ACTIONS, true ) ) {
-					$output->writeln( sprintf( '<error>Invalid dependencies action. Possible values are: none, %s.</error>', implode( ', ', Extension::ACTIONS ) ) );
-
-					return Command::INVALID;
-				}
-
-				/*
-				 * Todo: Also handle dependencies of additional WCCOM plugins passed as "--plugin".
-				 * For this, we need to parse the "--plugin" option array and see if we can resolve them as WCCOM IDs.
-				 * This is not needed for now for the Activation Test.
-				 */
-				$dependencies = $this->dependencies->get_plugin_and_php_ext_dependencies( $woo_extension_id, [] );
-
-				foreach ( $dependencies['php_extensions'] as $php_extension ) {
-					$env_up_options['--php_extension'][] = $php_extension;
-				}
-
-				foreach ( $dependencies['plugins'] as $plugin ) {
-					foreach ( $env_up_options['--plugin'] as $p ) {
-						// If the plugin is already in the list, skip it.
-						if ( strpos( $p, $plugin ) !== false ) {
-							continue 2;
-						}
-					}
-					$env_up_options['--plugin'][] = "$plugin:$dependencies_action";
-					$this->output->writeln( sprintf( 'Adding dependency: %s', $plugin ) );
-				}
-			}
+			putenv( "QIT_SUT=$woo_extension" ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
+
+		if ( $input->getOption( 'skip_activating_plugins' ) ) {
+			$this->e2e_environment->set_skip_activating_plugins( true );
+		}
+
+		if ( ! empty( $input->getOption( 'config' ) ) ) {
+			App::setVar( 'QIT_CONFIG_OVERRIDE', $input->getOption( 'config' ) );
+		}
+
+		// Previously we finalized the SUT definition and processed dependencies here.
+		// Now this is delegated to ConfigurationProcessor, so we remove that code.
 
 		if ( ! is_null( $shard ) ) {
 			if ( ! preg_match( '/^\d+\/\d+$/', $shard ) ) {
-				$output->writeln( '<error>Invalid shard format. Should be in the format current/total, eg: 1/5.</error>' );
+				$output->writeln( '<error>Invalid shard format. Should be current/total, e.g., 1/5.</error>' );
 
 				return Command::INVALID;
 			}
-
-			// Validate first part is higher than 0, and lower or equal to the second part.
 			[ $current, $total ] = explode( '/', $shard );
 			if ( $current <= 0 || $current > $total ) {
-				$output->writeln( '<error>Invalid shard format. First part should be higher than 0, and lower or equal to the second part.</error>' );
+				$output->writeln( '<error>Invalid shard format. current must be > 0 and <= total.</error>' );
 
 				return Command::INVALID;
 			}
 		}
 
-		$additional_volumes = [];
-
+		$additional_volumes         = [];
 		$env_up_options['--volume'] = $additional_volumes;
 		$env_up_options['--json']   = true;
 
@@ -323,22 +284,23 @@ class RunE2ECommand extends DynamicCommand {
 			$env_up_options['--object_cache'] = true;
 		}
 
-		// Invoke the "env:up" Command.
-		$env_up_command = $this->getApplication()->find( UpEnvironmentCommand::getDefaultName() );
-
-		// Schedule a catch-all for this environment to be terminated when this script ends (ungracefully).
 		$this->handle_termination();
 
-		$resource_stream = fopen( 'php://temp', 'w+' );
+		if ( ! empty( $woo_extension ) ) {
+			App::setVar( 'QIT_SUT', (int) $woo_extension_id );
+		}
 
-		/*
-		 * By default "run:e2e" configures the site URL in "container mode",
-		 * which means the site URL will be accessible by other containers
-		 * in the network, but not from host.
-		 *
-		 * If we run in "bootstrap_only" mode, we want to expose the site
-		 * URL to the host, so that the user can access it from the browser.
-		 */
+		$env_up_options = $this->configuration_processor->process_configuration( $input, $env_up_options, $sut_type );
+
+		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
+		App::setVar( 'QIT_ENV_UP_OPTIONS', $env_up_options );
+
+		if ( getenv( 'QIT_TESTING_ENV_CONFIG' ) ) {
+			$this->output->writeln( json_encode( $env_up_options, JSON_PRETTY_PRINT ) );
+
+			return Command::SUCCESS;
+		}
+
 		if ( $wait ) {
 			putenv( 'QIT_HIDE_SITE_INFO=0' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		} else {
@@ -347,74 +309,39 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		putenv( 'QIT_UP_AND_TEST=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-		putenv( sprintf( 'QIT_SUT=%s', $woo_extension ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-		putenv( sprintf( 'QIT_SUT_SOURCE=%s', $source ) ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-		if ( ! empty( $woo_extension_id ) ) {
-			App::setVar( 'QIT_SUT', (int) $woo_extension_id );
-		}
 
-		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
+		try {
+			/** @var E2EEnvInfo $env_info */
+			$env_info = $this->environment_runner->run_environment( $env_up_options );
 
-		App::setVar( 'QIT_ENV_UP_OPTIONS', $env_up_options );
-
-		$up_exit_status_code = $env_up_command->run(
-			new ArrayInput( $env_up_options ),
-			new StreamOutput( $resource_stream )
-		);
-
-		// Read from the stream.
-		$up_output = stream_get_contents( $resource_stream, - 1, 0 );
-
-		// If we receive this signal, we just pass the output through.
-		if ( $up_exit_status_code === 1337 ) {
-			$this->output->write( $up_output );
-
-			return Command::SUCCESS;
-		}
-
-		$env_json = json_decode( $up_output, true );
-
-		if ( ! is_array( $env_json ) || empty( $env_json['env_id'] ) ) {
-			$this->output->writeln( sprintf( '<error>Failed to parse the environment JSON. Output: %s</error>', $up_output ) );
+			if ( getenv( 'QIT_SELF_TEST' ) === 'env_info' ) {
+				$output->write( json_encode( $env_info ) );
+				return Command::SUCCESS;
+			}
+		} catch ( \Exception $e ) {
+			$this->output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
 			return Command::FAILURE;
 		}
 
-		/** @var E2EEnvInfo $env_info */
-		$env_info = E2EEnvInfo::from_array( $env_json );
+		putenv( 'QIT_HIDE_SITE_INFO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 
-		App::singleton( E2EEnvInfo::class, $env_info );
-
-		if ( ! empty( $woo_extension_id ) ) {
+		if ( $env_info instanceof E2EEnvInfo && ! empty( $woo_extension_id ) ) {
 			$env_info->sut_slug = $woo_extension;
 			$env_info->sut_id   = $woo_extension_id;
-			// @phan-suppress-next-line PhanPossiblyUndeclaredVariable
-			$env_info->sut_type = $sut_type; // @phpstan-ignore-line
-
-			if ( file_exists( $source ) ) {
-				$is_development = true;
-			} else {
-				$is_development = false;
-			}
+			$env_info->sut_type = $sut_type;
 
 			$this->test_run_notifier->notify_test_started(
 				$woo_extension_id,
 				$woocommerce_version ?? 'none',
 				$env_info,
-				$is_development,
+				$this->configuration_processor->is_development(),
 				$input->getOption( 'notify' )
 			);
 		}
 
-		// Store in $GLOBALS so that's available in the shutdown function.
 		$GLOBALS['env_to_shutdown'] = $env_info;
-
-		if ( $up_exit_status_code !== Command::SUCCESS ) {
-			$this->output->writeln( sprintf( '<error>Failed to start the environment. Output: %s</error>', stream_get_contents( $resource_stream, - 1, 0 ) ) );
-			Environment::down( $env_json['env_id'] );
-
-			return Command::FAILURE;
-		}
 
 		if ( getenv( 'QIT_SELF_TEST' ) === 'env_up' ) {
 			$output->write( json_encode( $env_info ) );
@@ -423,8 +350,7 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		$exit_status_code = $this->e2e_test_manager->run_tests( $env_info, $test_mode, $wait, $shard );
-
-		$io = new SymfonyStyle( $input, $output );
+		$io               = new SymfonyStyle( $input, $output );
 		$io->setDecorated( true );
 
 		if ( $exit_status_code === Command::SUCCESS ) {
@@ -446,23 +372,44 @@ class RunE2ECommand extends DynamicCommand {
 		}
 	}
 
+	/**
+	 * Prepare the output for JSON mode if needed.
+	 *
+	 * @param OutputInterface $output
+	 *
+	 * @return void
+	 */
+	protected function prepare_output( OutputInterface $output ): void {
+		$this->output = $output;
+
+		if ( App::getVar( 'QIT_JSON_MODE' ) === true || defined( 'UNIT_TESTS' ) ) {
+			// Ensure $output is a StreamOutput to call getStream().
+			if ( ! $output instanceof StreamOutput ) {
+				throw new \RuntimeException( 'QIT_JSON_MODE is set, but OutputInterface is not a StreamOutput.' );
+			}
+
+			$stream = $output->getStream();
+			if ( ! stream_filter_append( $stream, 'qit_json' ) ) {
+				exit( 152 );
+			}
+		}
+	}
+
 	public static function shutdown_test_run(): void {
 		static $did_shutdown = false;
-
 		if ( $did_shutdown ) {
 			return;
-		} else {
-			$did_shutdown = true;
 		}
+		$did_shutdown = true;
 
 		if ( App::getVar( 'QIT_JSON_MODE' ) !== true ) {
 			echo "\nShutting down environment...\n";
 		}
 
-		// Env not up or could not parse the "up" JSON.
 		if ( empty( $GLOBALS['env_to_shutdown'] ) || ! $GLOBALS['env_to_shutdown'] instanceof EnvInfo ) {
 			return;
 		}
+
 		try {
 			Environment::down( $GLOBALS['env_to_shutdown'] );
 		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
@@ -470,57 +417,24 @@ class RunE2ECommand extends DynamicCommand {
 		}
 	}
 
-	/**
-	 * This function will shut down the temporary environment
-	 * when the test finishes or is aborted.
-	 */
 	private function handle_termination(): void {
-		/*
-		 * PHP-handled termination, such as:
-		 * - Script finished executing.
-		 * - There was a fatal, an exception, etc.
-		 */
 		register_shutdown_function( static function () {
 			static::shutdown_test_run();
 		} );
 
-		/*
-		 * If "pcntl" extension is available, handle OS signals, such as:
-		 *
-		 * - Ctrl+C (SIGINT)
-		 * - kill (SIGTERM)
-		 *
-		 * This way if a test is running and the user kills the process
-		 * with "Ctrl+C" we can terminate the temporary environments.
-		 */
 		if ( function_exists( 'pcntl_signal' ) ) {
 			$signal_handler = static function (): void {
 				static::shutdown_test_run();
 				exit;
 			};
-
-			pcntl_signal( SIGINT, $signal_handler ); // Ctrl+C.
-			pcntl_signal( SIGTERM, $signal_handler ); // eg: kill 123, where "123" is the PID of this PHP process.
+			pcntl_signal( SIGINT, $signal_handler );
+			pcntl_signal( SIGTERM, $signal_handler );
 		}
 	}
 
-	/**
-	 * This function will validate the required options, categorize them
-	 * into options that are to be sent to "env:up" and the rest.
-	 *
-	 * This can then be used to pass to "env:up" the options that it needs,
-	 * while using the other options for the rest.
-	 *
-	 * @param InputInterface $input
-	 *
-	 * @return array<mixed>
-	 */
 	protected function parse_options( InputInterface $input, bool $filter_to_send = true ): array {
 		$options = parent::parse_options( $input, false );
 
-		// Iterate over all options of UpEnvironmentCommand
-		// Remote keys in $options array that are not part of the definition
-		// Notify user if that happens.
 		$up_command_option_names = array_map( function ( $option ) {
 			return $option->getName();
 		}, $this->getApplication()->find( UpEnvironmentCommand::getDefaultName() )->getDefinition()->getOptions() );
@@ -542,29 +456,23 @@ class RunE2ECommand extends DynamicCommand {
 	}
 
 	/**
-	 * We take the "--env" option as "--env FOO=bar" and convert it to ["FOO" => "bar"].
-	 *
-	 * @param array<string,string> $env_vars
+	 * @param array<string> $env_vars
 	 *
 	 * @return void
-	 *
-	 * @throws \RuntimeException If the environment variable format or name is invalid.
 	 */
 	protected function parse_env_vars( array $env_vars ): void {
 		$parsed_vars = [];
-
 		foreach ( $env_vars as $env_var ) {
 			$env_var = explode( '=', $env_var, 2 );
-
 			if ( count( $env_var ) !== 2 ) {
-				throw new \RuntimeException( 'Invalid environment variable format. Should be in the format "--env FOO=bar".' );
+				throw new \RuntimeException( 'Invalid environment variable format. Use "--env FOO=bar".' );
 			}
 
 			$key   = trim( $env_var[0] );
 			$value = trim( $env_var[1] );
 
 			if ( ! preg_match( '/^[A-Za-z0-9_]+$/', $key ) ) {
-				throw new \RuntimeException( 'Invalid environment variable name. Must contain only letters, numbers, and underscores.' );
+				throw new \RuntimeException( 'Invalid env var name. Letters, numbers, underscores only.' );
 			}
 
 			$parsed_vars[ $key ] = $value;

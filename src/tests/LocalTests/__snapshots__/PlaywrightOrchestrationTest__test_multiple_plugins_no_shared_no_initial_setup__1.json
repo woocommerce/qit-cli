@@ -1,0 +1,48 @@
+[
+    {
+        "name": "[db export]",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "db-export.js",
+        "retries": 0,
+        "dependencies": [],
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "[test] Test Plugin A (Run)",
+        "testDir": "container-a",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [
+            "[db export]"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-plugin-a"
+        }
+    },
+    {
+        "name": "[db import]",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "db-import.js",
+        "dependencies": [
+            "[test] Test Plugin A (Run)"
+        ],
+        "retries": 0,
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "[test] Test Plugin B (Run)",
+        "testDir": "container-b",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [
+            "[db import]"
+        ],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-plugin-b"
+        }
+    }
+]

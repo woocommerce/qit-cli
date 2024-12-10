@@ -1,0 +1,3 @@
+themes:
+  hestia:
+    source: "./hestia-theme"

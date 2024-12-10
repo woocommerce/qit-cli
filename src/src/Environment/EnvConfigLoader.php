@@ -21,6 +21,9 @@ class EnvConfigLoader {
 	/** @var PluginsAndThemesParser */
 	protected $plugins_and_themes_parser;
 
+	/** @var array<mixed>|null */
+	private $loaded_config = null;
+
 	public function __construct( Serializer $serializer, Cache $cache, OutputInterface $output, PluginsAndThemesParser $plugins_and_themes_parser ) {
 		$this->serializer                = $serializer;
 		$this->cache                     = $cache;
@@ -39,7 +42,7 @@ class EnvConfigLoader {
 			'overrides' => [],
 		]
 	): EnvInfo {
-		// Load the environment config file..
+		// Load the environment config file.
 		$env_config = $this->load_config();
 
 		// Check that config file doesn't contain disallowed keys.
@@ -74,6 +77,10 @@ class EnvConfigLoader {
 		}
 
 		$this->normalize_plural_to_singular( $env_config );
+
+		if ( App::offsetExists( 'QIT_FINAL_SUT_MODIFIED_CONFIG' ) ) { // @phan-suppress-current-line PhanUndeclaredClassReference
+			$env_config['plugin'] = App::getVar( 'QIT_FINAL_SUT_MODIFIED_CONFIG' );
+		}
 
 		// Plugins and Themes.
 		$env_config['plugin'] = $this->plugins_and_themes_parser->parse_extensions(
@@ -182,7 +189,11 @@ class EnvConfigLoader {
 	/**
 	 * @return array<mixed> Multidimensional array of scalars.
 	 */
-	public function load_config(): array {
+	public function load_config( bool $load_once = true ): array {
+		if ( $load_once && $this->loaded_config !== null && ( ! defined( 'UNIT_TESTS' ) || ! UNIT_TESTS ) ) {
+			return $this->loaded_config;
+		}
+
 		// If it's an override (user passed --config) parameter, load it and return.
 		if ( ! empty( App::getVar( 'QIT_CONFIG_OVERRIDE' ) ) ) {
 			$config_override = App::getVar( 'QIT_CONFIG_OVERRIDE' );
@@ -216,11 +227,7 @@ class EnvConfigLoader {
 		 * - If both "qit.json" and "qit.yml" exists, throw.
 		 * - If both "qit.override.json" and "qit.override.yml" exists, throw.
 		 */
-		if ( defined( 'UNIT_TESTS' ) ) {
-			$working_directory = App::getVar( 'QIT_CONFIG_LOADER_DIR' );
-		} else {
-			$working_directory = getcwd();
-		}
+		$working_directory = getcwd();
 
 		$env_files          = [
 			'qit.json'  => file_exists( $working_directory . '/qit.json' ),
@@ -287,6 +294,8 @@ class EnvConfigLoader {
 				throw new \InvalidArgumentException( 'Configuration contains non-scalar values.' );
 			}
 		}
+
+		$this->loaded_config = $env_config;
 
 		return $env_config;
 	}

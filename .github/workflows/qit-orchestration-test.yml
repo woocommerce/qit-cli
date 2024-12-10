@@ -33,10 +33,9 @@ jobs:
         run: composer install
 
       - name: Run Orchestration Tests
-        working-directory: src
         run: |
           cd _tests/orchestration
-          php ../../qit-cli.php run:e2e woocommerce-amazon-s3-storage -v
+          php ../../src/qit-cli.php run:e2e woocommerce-amazon-s3-storage -v
 
       - name: Get Report Path
         if: ${{ !cancelled() }}
@@ -50,4 +49,4 @@ jobs:
         with:
           name: orchestration-test-report
           path: ${{ env.REPORT_PATH }}
-          retention-days: 14
+          retention-days: 7

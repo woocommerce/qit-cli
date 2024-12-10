@@ -1,0 +1,5 @@
+plugins:
+  woocommerce-known-plugin:
+    source: ./woocommerce-known-plugin
+    test_tags:
+      - default

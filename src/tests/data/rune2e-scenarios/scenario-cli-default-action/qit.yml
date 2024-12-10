@@ -1,0 +1,5 @@
+plugins:
+  woocommerce-no-action:
+    source: ./woocommerce-no-action
+    test_tags:
+      - custom-tag

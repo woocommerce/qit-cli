@@ -1,0 +1,8 @@
+plugins:
+  woocommerce-sample-plugin:
+    source: "./woocommerce-sample-plugin"
+themes:
+  twentytwentyone:
+    source: "./twentytwentyone-theme"
+    test_tags:
+      - "mixed-env"

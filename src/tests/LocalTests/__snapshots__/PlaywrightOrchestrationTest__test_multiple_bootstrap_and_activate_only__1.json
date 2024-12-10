@@ -1,0 +1,67 @@
+[
+    {
+        "name": "[setup:shared] Bootstrap Only Plugin (PHP)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "php.js",
+        "dependencies": [],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "bootstrap-only-plugin",
+            "type": "Shared Setup for bootstrap-only-plugin (PHP)",
+            "file": "boot-only-container-path\/bootstrap\/shared-setup.php"
+        }
+    },
+    {
+        "name": "[db export]",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "db-export.js",
+        "retries": 0,
+        "dependencies": [
+            "[setup:shared] Bootstrap Only Plugin (PHP)"
+        ],
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "[activate] Activate Plugin Y",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [
+            "[db export]"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "activate-plugin-y",
+            "type": "Activate activate-plugin-y (Bash)",
+            "file": null,
+            "command": "wp plugin activate activate-plugin-y"
+        }
+    },
+    {
+        "name": "[db import]",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "db-import.js",
+        "dependencies": [
+            "[activate] Activate Plugin Y"
+        ],
+        "retries": 0,
+        "use": {
+            "browserName": "chromium"
+        }
+    },
+    {
+        "name": "[teardown:shared] Bootstrap Only Plugin (PHP)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "php.js",
+        "dependencies": [
+            "[db import]"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "bootstrap-only-plugin",
+            "type": "Shared Teardown for bootstrap-only-plugin (PHP)",
+            "file": "boot-only-container-path\/bootstrap\/shared-teardown.php"
+        }
+    }
+]

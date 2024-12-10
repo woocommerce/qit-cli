@@ -1,0 +1,5 @@
+themes:
+  boutique:
+    source: "./boutique-theme"
+    test_tags:
+      - "cli-override-test"

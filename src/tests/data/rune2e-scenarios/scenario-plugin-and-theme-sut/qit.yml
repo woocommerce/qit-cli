@@ -1,0 +1,11 @@
+plugins:
+  woocommerce-sample-plugin:
+    source: "./woocommerce-sample-plugin"
+    test_tags:
+      - "default"
+
+themes:
+  deli-theme:
+    source: "./deli-theme"
+    test_tags:
+      - "default"

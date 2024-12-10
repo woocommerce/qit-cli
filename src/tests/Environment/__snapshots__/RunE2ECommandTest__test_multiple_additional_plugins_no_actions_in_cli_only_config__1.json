@@ -1,0 +1,40 @@
+{
+    "--php_version": "7.4",
+    "--wp": "stable",
+    "--plugin": [
+        {
+            "slug": "woocommerce-amazon-s3-storage",
+            "source": "woocommerce-amazon-s3-storage",
+            "test_tags": [
+                "default"
+            ],
+            "action": "test"
+        },
+        {
+            "slug": "plugin-one",
+            "source": "plugin-one",
+            "test_tags": [
+                "default"
+            ],
+            "action": "bootstrap"
+        },
+        {
+            "slug": "plugin-two",
+            "source": "plugin-two",
+            "test_tags": [
+                "default"
+            ],
+            "action": "bootstrap"
+        }
+    ],
+    "--theme": [],
+    "--volume": [],
+    "--php_extension": [],
+    "--require": [],
+    "--object_cache": false,
+    "--skip_activating_plugins": false,
+    "--tunnel": "no_tunnel",
+    "--json": true,
+    "--env": [],
+    "--env_file": []
+}

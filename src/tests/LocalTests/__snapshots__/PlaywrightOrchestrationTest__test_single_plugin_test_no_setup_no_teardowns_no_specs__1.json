@@ -1,0 +1,12 @@
+[
+    {
+        "name": "[test] Test Plugin No Setup (Run)",
+        "testDir": "no-setup-container-path",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-plugin-no-setup"
+        }
+    }
+]

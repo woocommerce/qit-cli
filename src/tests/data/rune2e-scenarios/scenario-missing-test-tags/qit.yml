@@ -1,0 +1,3 @@
+plugins:
+  woocommerce-amazon-s3-storage:
+    source: ./woocommerce-amazon-s3-storage

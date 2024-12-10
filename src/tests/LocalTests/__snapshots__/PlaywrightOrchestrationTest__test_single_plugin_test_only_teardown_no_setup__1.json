@@ -1,0 +1,26 @@
+[
+    {
+        "name": "[test] Test Plugin Only Teardown (Run)",
+        "testDir": "teardown-only-container-path",
+        "testMatch": "**\/*.spec.js",
+        "dependencies": [],
+        "use": {
+            "browserName": "chromium",
+            "qitTestSlug": "test-plugin-only-teardown"
+        }
+    },
+    {
+        "name": "[teardown] Test Plugin Only Teardown (Shell)",
+        "testDir": "\/qit\/tests\/e2e\/scripts",
+        "testMatch": "bash.js",
+        "dependencies": [
+            "[test] Test Plugin Only Teardown (Run)"
+        ],
+        "retries": 0,
+        "use": {
+            "qitTestSlug": "test-plugin-only-teardown",
+            "type": "Isolated Teardown for test-plugin-only-teardown (Bash)",
+            "file": "teardown-only-container-path\/bootstrap\/teardown.sh"
+        }
+    }
+]

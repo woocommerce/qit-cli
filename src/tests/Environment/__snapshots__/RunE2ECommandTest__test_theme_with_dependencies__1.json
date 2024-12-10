@@ -1,0 +1,24 @@
+{
+    "--php_version": "7.4",
+    "--wp": "stable",
+    "--plugin": [],
+    "--theme": [
+        {
+            "source": ".\/storefront",
+            "test_tags": [
+                "theme-test"
+            ],
+            "action": "test",
+            "slug": "storefront"
+        }
+    ],
+    "--volume": [],
+    "--php_extension": [],
+    "--require": [],
+    "--object_cache": false,
+    "--skip_activating_plugins": false,
+    "--tunnel": "no_tunnel",
+    "--json": true,
+    "--env": [],
+    "--env_file": []
+}

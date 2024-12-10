@@ -13,66 +13,96 @@ trait SnapshotHelpers {
 		$actual = str_replace( '/tmp/', '/tmp-normalized/', $actual );
 		$actual = preg_replace( '/qit-results-[a-z0-9]+/', 'qit-results-normalizedid', $actual );
 
-		/*
-		 * "paratest" sets the "TEST_TOKEN" env var.
-		 * If this is not set, it means we are running in a normal PHPUnit environment.
-		 */
 		if ( empty( getenv( 'TEST_TOKEN' ) ) ) {
-			$actual = preg_replace( '/First-time setup is pulling Docker images and caching downloads. Subsequent runs will be faster.\n/', '', $actual );
+			$actual = preg_replace(
+				'/First-time setup is pulling Docker images and caching downloads. Subsequent runs will be faster.\n/',
+				'',
+				$actual
+			);
 		}
 
-		$normalized_spaces = '';
+		$lines = explode( "\n", $actual );
+
+		// Patterns that indicate npm-related lines, now more comprehensive:
+		$npm_patterns = [
+			'/added \d+ packages/',
+			'/packages are looking for funding/',
+			'/\d+ vulnerabilities \(\d+ moderate, \d+ high\)/',
+			'/Some issues need review/',
+			'/a different dependency\./',
+
+			// General catch-all for npm warnings, notices, etc.
+			'/^npm\s/i',
+
+			// More general matching for fund/audit lines:
+			'/npm fund/i',
+			'/npm audit/i',
+		];
 
 		$lines_to_remove = [
 			'First-time setup is pulling Docker images',
 			'Wrote debug contents to',
-			'npm',
+			'notice',
 		];
 
-		$processing_docker_pull_output = false;
+		$first_npm_line_index = null;
+		$processed            = [];
 
-		foreach ( explode( "\n", $actual ) as $line ) {
-			foreach ( $lines_to_remove as $to_remove ) {
-				if ( strpos( $line, $to_remove ) !== false ) {
-					continue 2;
+		foreach ( $lines as $index => $line ) {
+			// Check for removable lines
+			$should_remove = false;
+			foreach ( $lines_to_remove as $remove_str ) {
+				if ( strpos( $line, $remove_str ) !== false ) {
+					$should_remove = true;
+					break;
+				}
+			}
+			if ( $should_remove ) {
+				continue;
+			}
+
+			// Check if line is npm-related
+			$is_npm_line = false;
+			foreach ( $npm_patterns as $pattern ) {
+				if ( preg_match( $pattern, $line ) ) {
+					$is_npm_line = true;
+					break;
 				}
 			}
 
-			if ( trim( $line ) === 'notice' ) {
+			if ( $is_npm_line ) {
+				// Mark where we first encountered npm output
+				if ( $first_npm_line_index === null ) {
+					$first_npm_line_index = count( $processed );
+				}
+				// Skip adding this line
 				continue;
 			}
 
-			// Skip empty lines.
-			if ( trim( $line ) === '' ) {
-				continue;
-			}
-
-			/*
-			 * Skip docker pull output.
-			 */
-			if ( strpos( $line, 'Unable to find image') !== false ) {
-				$processing_docker_pull_output = true;
-				continue;
-			} elseif ( $processing_docker_pull_output && strpos( $line, 'Downloaded newer image for' ) !== false ) {
-				$processing_docker_pull_output = false;
-				continue;
-			} elseif ( $processing_docker_pull_output ) {
-				continue;
-			}
-
-			// Normalize timings, eg "(8.9s)" or "(10.9s)", etc.
+			// Normalize timings
 			$line = preg_replace( '/\(\d+\.\d+s\)/', '(TIME)', $line );
-
-			// (235ms)
 			$line = preg_replace( '/\(\d+ms\)/', '(TIME)', $line );
 
-			// Normalize "woocommerce.8.8.5.zip" or "woocommerce.8.8.5-RC1.zip", etc to "woocommerce.VERSION.zip"
+			// Normalize WooCommerce zip names
 			$line = preg_replace( '/woocommerce\.[^ ]+\.zip/', 'woocommerce.VERSION.zip', $line );
 
-			// Normalize lines.
-			$normalized_spaces .= trim( $line ) . "\n";
+			$processed[] = $line;
 		}
 
-		$this->assertMatchesSnapshot( $normalized_spaces, $driver ?? new TextDriver() );
+		// If npm lines were found, insert our normalized line
+		if ( $first_npm_line_index !== null ) {
+			array_splice( $processed, $first_npm_line_index, 0, [ 'npm packages installed (normalized)' ] );
+		}
+
+		// Trim lines.
+		$processed = array_map( 'trim', $processed );
+
+		// Remove empty lines.
+		$processed = array_filter( $processed );
+
+
+		$final_output = implode( "\n", $processed ) . "\n";
+
+		$this->assertMatchesSnapshot( $final_output, $driver ?? new TextDriver() );
 	}
 }

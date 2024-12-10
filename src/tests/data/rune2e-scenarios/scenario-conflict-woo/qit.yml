@@ -1,0 +1,7 @@
+plugins:
+  woocommerce:
+    source: ./woocommerce
+  woocommerce-amazon-s3-storage:
+    source: ./woocommerce-amazon-s3-storage
+    test_tags:
+      - ./woocommerce-amazon-s3-storage-tests

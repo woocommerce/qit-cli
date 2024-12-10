@@ -1,0 +1,5 @@
+plugins:
+  woocommerce-amazon-s3-storage:
+    source: ./original-source
+    test_tags:
+      - ./original-test-dir

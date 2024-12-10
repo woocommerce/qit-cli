@@ -1,0 +1,9 @@
+plugins:
+  woocommerce-amazon-s3-storage:
+    source: ./woocommerce-amazon-s3-storage
+    test_tags:
+      - default
+  woocommerce-progressive-discounts:
+    source: ./woocommerce-progressive-discounts
+    test_tags:
+      - already-defined
