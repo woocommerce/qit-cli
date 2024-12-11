@@ -704,4 +704,54 @@ class RunE2ECommandTest extends QITTestCase {
 		$this->assertCommandIsSuccessful( $this->application_tester );
 		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
 	}
+
+	public function test_numeric_id_config_snapshot() {
+		// This tells QIT to print out the config and return early with Command::SUCCESS.
+		putenv('QIT_TESTING_ENV_CONFIG=1');
+
+		// Switch to a known scenario directory. Adjust if needed.
+		$fixture_dir = $this->scenarios_dir . 'scenario-cli-only';
+		chdir($fixture_dir);
+
+		// Run the command using a numeric ID. We do not provide --source here.
+		// If the bug is present, the slug in the JSON will remain "2165910" instead of a proper slug.
+		$this->application_tester->run([
+			'command'       => 'run:e2e',
+			'woo_extension' => '2165910', // numeric ID
+			'--woo'         => '7.1',
+		]);
+
+		$output = $this->application_tester->getDisplay();
+
+		// The output here is the JSON of the env config. We'll snapshot it.
+		// If the slug is numeric, the snapshot will contain that numeric slug.
+		$this->assertMatchesJsonSnapshot($output);
+	}
+
+	public function test_numeric_id_with_source_config_snapshot() {
+		// This tells QIT to print out the config and return early.
+		putenv('QIT_TESTING_ENV_CONFIG=1');
+
+		$fixture_dir = $this->scenarios_dir . 'scenario-cli-only';
+		chdir($fixture_dir);
+
+		// Run the command using a numeric ID and also provide a --source.
+		// If the bug exists, you will again see a numeric slug in the JSON.
+		// If you fix the code, rerunning the test will fail snapshot matching, indicating the slug changed.
+		$this->application_tester->run([
+			'command'       => 'run:e2e',
+			'woo_extension' => '2165910', // numeric ID
+			'--woo'         => '7.1',
+			'--source'      => './woocommerce-shipping.zip',
+		]);
+
+		$output = $this->application_tester->getDisplay();
+
+		// Snapshot the JSON output.
+		$this->assertMatchesJsonSnapshot($output);
+	}
+
+
+
+
 }
