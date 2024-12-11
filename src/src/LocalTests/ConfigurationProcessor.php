@@ -21,33 +21,23 @@ class ConfigurationProcessor {
 	/**
 	 * Process and merge configuration from qit.yml and CLI options into a final set of env:up options.
 	 *
-	 * @param string|null         $woo_extension       The slug of the main extension under test, or null if none.
-	 * @param string|null         $test                The test tags or test directory specified for the SUT.
-	 * @param string|null         $source              The source for the SUT if provided.
-	 * @param string|null         $sut_action          The action to perform on the SUT.
-	 * @param string              $dependencies_option How to handle dependencies (e.g., bootstrap, none).
-	 * @param InputInterface      $input               The input interface for CLI arguments and options.
-	 * @param array<string,mixed> $env_up_options      The partially processed env_up_options from RunE2ECommand.
-	 * @param string              $sut_type            Either 'plugin' or 'theme'.
+	 * @param string|null         $woo_extension_slug The slug of the SUT if resolved from an ID, otherwise the original slug, or null if none.
+	 * @param InputInterface      $input              The input interface for CLI arguments and options.
+	 * @param array<string,mixed> $env_up_options     The partially processed env_up_options from RunE2ECommand.
+	 * @param string|null         $sut_type           Either 'plugin', 'theme', or null if no SUT.
 	 *
 	 * @return array<string,mixed> Final configuration suitable for passing to env:up (e.g., $env_up_options).
 	 */
 	public function process_configuration(
-		?string $woo_extension,
-		?string $test,
-		?string $source,
-		?string $sut_action,
-		string $dependencies_option,
+		?string $woo_extension_slug,
 		InputInterface $input,
 		array $env_up_options,
-		string $sut_type
+		?string $sut_type
 	): array {
-		// If a config override is provided via CLI, set it.
 		if ( $input->getOption( 'config' ) ) {
 			App::setVar( 'QIT_CONFIG_OVERRIDE', $input->getOption( 'config' ) );
 		}
 
-		// Load qit.yml config.
 		$env_config = $this->config_loader->load_config();
 		if ( ! isset( $env_config['plugins'] ) || ! is_array( $env_config['plugins'] ) ) {
 			$env_config['plugins'] = [];
@@ -56,11 +46,29 @@ class ConfigurationProcessor {
 			$env_config['themes'] = [];
 		}
 
-		$has_sut = ! empty( $woo_extension ) || ! empty( $source ) || ! empty( $sut_action );
+		$woo_extension_raw   = $input->getArgument( 'woo_extension' );
+		$test                = $input->getArgument( 'test' );
+		$source_option       = $input->getOption( 'source' );
+		$source              = ! empty( $source_option ) ? $source_option : '';
+		$sut_action          = $input->getOption( 'sut_action' );
+		$dependencies_option = $input->getOption( 'dependencies' ) ?? Extension::ACTIONS['bootstrap'];
+
+		// If original was numeric and no source provided, keep source as numeric ID.
+		if ( empty( $source ) && ! empty( $woo_extension_raw ) && is_numeric( $woo_extension_raw ) ) {
+			$source = $woo_extension_raw;
+		}
+
+		$has_sut = ! empty( $woo_extension_slug ) || ! empty( $source ) || ! empty( $sut_action );
+
+		// If no sut_type given, default to 'plugin'.
+		// This should not happen if we resolved correctly, but just in case.
+		if ( $sut_type === null ) {
+			$sut_type = 'plugin';
+		}
 
 		if ( $has_sut ) {
 			$this->finalize_sut_definition(
-				$woo_extension,
+				$woo_extension_slug,
 				$source,
 				$test,
 				$dependencies_option,
@@ -74,6 +82,7 @@ class ConfigurationProcessor {
 			$this->add_cli_plugins( $env_config, $input );
 			$this->normalize_plugins( $env_config );
 			$this->normalize_themes( $env_config );
+
 			if ( $sut_type === 'theme' ) {
 				$env_up_options['--theme'] = array_values( $env_config['themes'] );
 			} else {
@@ -81,7 +90,7 @@ class ConfigurationProcessor {
 			}
 		}
 
-		$this->is_development = ! empty( $source ) && file_exists( $source );
+		$this->is_development = ! empty( $source_option ) && file_exists( $source_option );
 
 		return $env_up_options;
 	}

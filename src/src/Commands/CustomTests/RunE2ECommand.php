@@ -177,13 +177,13 @@ class RunE2ECommand extends DynamicCommand {
 
 		App::setVar( 'TEST_MODE', $test_mode );
 
-		$wait                = $input->getOption( 'up_only' ) || $test_mode === E2ETestManager::$test_modes['codegen'];
-		$woo_extension       = $input->getArgument( 'woo_extension' );
+		$wait = $input->getOption( 'up_only' ) || $test_mode === E2ETestManager::$test_modes['codegen'];
+
+		$woo_extension_raw   = $input->getArgument( 'woo_extension' );
 		$woocommerce_version = $input->getOption( 'woo' );
 		$shard               = $input->getOption( 'shard' );
 		$update_snapshots    = $input->getOption( 'update_snapshots' );
 		$pw_options          = $input->getOption( 'pw_options' ) ?? '';
-		$sut_action          = $input->getOption( 'sut_action' );
 		$this->parse_env_vars( $input->getOption( 'env' ) );
 
 		// Prevent "--woo" and "--plugin woocommerce" usage together.
@@ -191,7 +191,6 @@ class RunE2ECommand extends DynamicCommand {
 			foreach ( $input->getOption( 'plugin' ) as $p ) {
 				if ( $p === 'woocommerce' ) {
 					$output->writeln( '<error>Cannot use both "--woo" and "--plugin woocommerce" together.</error>' );
-
 					return Command::INVALID;
 				}
 			}
@@ -211,41 +210,38 @@ class RunE2ECommand extends DynamicCommand {
 		App::setVar( 'pw_options', $pw_options );
 
 		// Validate extension parameter if needed.
-		if ( empty( $woo_extension ) ) {
-			if ( ! empty( $input->getOption( 'source' ) ) || ! empty( $sut_action ) ) {
+		if ( empty( $woo_extension_raw ) ) {
+			if ( ! empty( $input->getOption( 'source' ) ) || ! empty( $input->getOption( 'sut_action' ) ) ) {
 				$output->writeln( '<error>The extension parameter is required when source or sut_action is set.</error>' );
-
 				return Command::INVALID;
 			}
 			if ( ! $wait ) {
 				$output->writeln( '<error>The extension parameter is required unless in --up_only or --codegen mode.</error>' );
-
 				return Command::INVALID;
 			}
 		}
 
-		// Capture the original input before resolution.
-		$original_woo_extension = $input->getArgument('woo_extension');
+		$woo_extension_id   = null;
+		$woo_extension_slug = null;
+		$sut_type           = null;
 
-		$woo_extension_id = null;
-		$sut_type         = null;
-		if ( ! empty( $woo_extension ) ) {
+		if ( ! empty( $woo_extension_raw ) ) {
 			// Validate WooExtension.
 			try {
-				if ( is_numeric( $woo_extension ) ) {
-					$woo_extension_id = $woo_extension;
-					$woo_extension    = $this->woo_extensions_list->get_woo_extension_slug_by_id( $woo_extension );
+				if ( is_numeric( $woo_extension_raw ) ) {
+					$woo_extension_id   = (int) $woo_extension_raw;
+					$woo_extension_slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( $woo_extension_id );
 				} else {
-					$woo_extension_id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $woo_extension );
+					$woo_extension_slug = $woo_extension_raw;
+					$woo_extension_id   = $this->woo_extensions_list->get_woo_extension_id_by_slug( $woo_extension_slug );
 				}
 			} catch ( \Exception $e ) {
 				$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
-
 				return Command::INVALID;
 			}
 
 			$sut_type = $this->woo_extensions_list->get_woo_extension_type( $woo_extension_id );
-			putenv( "QIT_SUT=$woo_extension" ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+			putenv( "QIT_SUT=$woo_extension_slug" ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
 
 		if ( $input->getOption( 'skip_activating_plugins' ) ) {
@@ -256,19 +252,14 @@ class RunE2ECommand extends DynamicCommand {
 			App::setVar( 'QIT_CONFIG_OVERRIDE', $input->getOption( 'config' ) );
 		}
 
-		// Previously we finalized the SUT definition and processed dependencies here.
-		// Now this is delegated to ConfigurationProcessor, so we remove that code.
-
 		if ( ! is_null( $shard ) ) {
 			if ( ! preg_match( '/^\d+\/\d+$/', $shard ) ) {
 				$output->writeln( '<error>Invalid shard format. Should be current/total, e.g., 1/5.</error>' );
-
 				return Command::INVALID;
 			}
 			[ $current, $total ] = explode( '/', $shard );
 			if ( $current <= 0 || $current > $total ) {
 				$output->writeln( '<error>Invalid shard format. current must be > 0 and <= total.</error>' );
-
 				return Command::INVALID;
 			}
 		}
@@ -289,28 +280,13 @@ class RunE2ECommand extends DynamicCommand {
 
 		$this->handle_termination();
 
-		if ( ! empty( $woo_extension ) ) {
-			App::setVar( 'QIT_SUT', (int) $woo_extension_id );
+		if ( ! empty( $woo_extension_slug ) ) {
+			App::setVar( 'QIT_SUT', $woo_extension_id );
 		}
 
-		$resolved_woo_extension = $woo_extension;
-		$resolved_test          = $input->getArgument( 'test' );
-		$resolved_source        = $input->getOption( 'source' );
-		$resolved_sut_action    = $sut_action;
-		$resolved_dependencies  = $input->getOption( 'dependencies' ) ?? Extension::ACTIONS['bootstrap'];
-
-		// If no --source was provided and the original woo_extension was numeric,
-		// keep the source as the original numeric ID.
-		if ( empty( $resolved_source ) && is_numeric( $original_woo_extension ) ) {
-			$resolved_source = $original_woo_extension;
-		}
-
+		// Now just pass woo_extension_slug, input, env_up_options, sut_type to process_configuration.
 		$env_up_options = $this->configuration_processor->process_configuration(
-			$resolved_woo_extension,
-			$resolved_test,
-			$resolved_source,
-			$resolved_sut_action,
-			$resolved_dependencies,
+			$woo_extension_slug,
 			$input,
 			$env_up_options,
 			$sut_type
@@ -352,7 +328,7 @@ class RunE2ECommand extends DynamicCommand {
 		putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 
 		if ( $env_info instanceof E2EEnvInfo && ! empty( $woo_extension_id ) ) {
-			$env_info->sut_slug = $woo_extension;
+			$env_info->sut_slug = $woo_extension_slug;
 			$env_info->sut_id   = $woo_extension_id;
 			$env_info->sut_type = $sut_type;
 

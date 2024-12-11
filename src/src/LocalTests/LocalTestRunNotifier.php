@@ -53,7 +53,7 @@ class LocalTestRunNotifier {
 	/**
 	 * @suppress PhanTypeArraySuspicious
 	 */
-	public function notify_test_started( string $woo_extension_id, string $woocommerce_version, E2EEnvInfo $env_info, bool $is_development, bool $notify ): void {
+	public function notify_test_started( int $woo_extension_id, string $woocommerce_version, E2EEnvInfo $env_info, bool $is_development, bool $notify ): void {
 		App::setVar( 'NOTIFY_TEST_STARTED_RAN', true );
 
 		$additional_plugins = [];
