@@ -21,13 +21,27 @@ class ConfigurationProcessor {
 	/**
 	 * Process and merge configuration from qit.yml and CLI options into a final set of env:up options.
 	 *
-	 * @param InputInterface      $input
-	 * @param array<string,mixed> $env_up_options The partially processed env_up_options from RunE2ECommand.
-	 * @param string              $sut_type Either 'plugin' or 'theme'.
+	 * @param string|null         $woo_extension       The slug of the main extension under test, or null if none.
+	 * @param string|null         $test                The test tags or test directory specified for the SUT.
+	 * @param string|null         $source              The source for the SUT if provided.
+	 * @param string|null         $sut_action          The action to perform on the SUT.
+	 * @param string              $dependencies_option How to handle dependencies (e.g., bootstrap, none).
+	 * @param InputInterface      $input               The input interface for CLI arguments and options.
+	 * @param array<string,mixed> $env_up_options      The partially processed env_up_options from RunE2ECommand.
+	 * @param string              $sut_type            Either 'plugin' or 'theme'.
 	 *
 	 * @return array<string,mixed> Final configuration suitable for passing to env:up (e.g., $env_up_options).
 	 */
-	public function process_configuration( InputInterface $input, array $env_up_options, string $sut_type ): array {
+	public function process_configuration(
+		?string $woo_extension,
+		?string $test,
+		?string $source,
+		?string $sut_action,
+		string $dependencies_option,
+		InputInterface $input,
+		array $env_up_options,
+		string $sut_type
+	): array {
 		// If a config override is provided via CLI, set it.
 		if ( $input->getOption( 'config' ) ) {
 			App::setVar( 'QIT_CONFIG_OVERRIDE', $input->getOption( 'config' ) );
@@ -42,13 +56,6 @@ class ConfigurationProcessor {
 			$env_config['themes'] = [];
 		}
 
-		$woo_extension    = $input->getArgument( 'woo_extension' );
-		$test             = $input->getArgument( 'test' );
-		$source_option    = $input->getOption( 'source' );
-		$source           = ! empty( $source_option ) ? $source_option : '';
-		$sut_action       = $input->getOption( 'sut_action' );
-		$dependencies_opt = $input->getOption( 'dependencies' ) ?? Extension::ACTIONS['bootstrap'];
-
 		$has_sut = ! empty( $woo_extension ) || ! empty( $source ) || ! empty( $sut_action );
 
 		if ( $has_sut ) {
@@ -56,7 +63,7 @@ class ConfigurationProcessor {
 				$woo_extension,
 				$source,
 				$test,
-				$dependencies_opt,
+				$dependencies_option,
 				$env_up_options,
 				$env_config,
 				$input,
@@ -74,7 +81,7 @@ class ConfigurationProcessor {
 			}
 		}
 
-		$this->is_development = ! empty( $input->getOption( 'source' ) ) && file_exists( $input->getOption( 'source' ) );
+		$this->is_development = ! empty( $source ) && file_exists( $source );
 
 		return $env_up_options;
 	}

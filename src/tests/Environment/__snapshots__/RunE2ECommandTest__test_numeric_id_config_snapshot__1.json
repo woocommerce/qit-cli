@@ -4,7 +4,7 @@
     "--woo": "7.1",
     "--plugin": [
         {
-            "slug": "2165910",
+            "slug": "woocommerce-amazon-s3-storage",
             "source": "2165910",
             "test_tags": [
                 "default"

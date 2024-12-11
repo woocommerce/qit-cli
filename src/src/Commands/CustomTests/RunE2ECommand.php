@@ -224,6 +224,9 @@ class RunE2ECommand extends DynamicCommand {
 			}
 		}
 
+		// Capture the original input before resolution.
+		$original_woo_extension = $input->getArgument('woo_extension');
+
 		$woo_extension_id = null;
 		$sut_type         = null;
 		if ( ! empty( $woo_extension ) ) {
@@ -290,7 +293,28 @@ class RunE2ECommand extends DynamicCommand {
 			App::setVar( 'QIT_SUT', (int) $woo_extension_id );
 		}
 
-		$env_up_options = $this->configuration_processor->process_configuration( $input, $env_up_options, $sut_type );
+		$resolved_woo_extension = $woo_extension;
+		$resolved_test          = $input->getArgument( 'test' );
+		$resolved_source        = $input->getOption( 'source' );
+		$resolved_sut_action    = $sut_action;
+		$resolved_dependencies  = $input->getOption( 'dependencies' ) ?? Extension::ACTIONS['bootstrap'];
+
+		// If no --source was provided and the original woo_extension was numeric,
+		// keep the source as the original numeric ID.
+		if ( empty( $resolved_source ) && is_numeric( $original_woo_extension ) ) {
+			$resolved_source = $original_woo_extension;
+		}
+
+		$env_up_options = $this->configuration_processor->process_configuration(
+			$resolved_woo_extension,
+			$resolved_test,
+			$resolved_source,
+			$resolved_sut_action,
+			$resolved_dependencies,
+			$input,
+			$env_up_options,
+			$sut_type
+		);
 
 		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
 		App::setVar( 'QIT_ENV_UP_OPTIONS', $env_up_options );
