@@ -51,6 +51,10 @@ class ConfigurationProcessor {
 			$env_config['themes'] = [];
 		}
 
+		// Handle numeric keys in qit.yml for plugins before proceeding.
+		// If qit.yml has numeric keys, convert them to slug-based keys.
+		$this->normalize_numeric_qit_plugins( $env_config );
+
 		$woo_extension_raw   = $input->getArgument( 'woo_extension' );
 		$test                = $input->getArgument( 'test' );
 		$source_option       = $input->getOption( 'source' );
@@ -438,6 +442,39 @@ class ConfigurationProcessor {
 				$env_up_options['--plugin'][] = $formatted_plugin;
 			}
 		}
+	}
+
+	/**
+	 * Handle numeric keys found in qit.yml for plugins.
+	 * Convert them to slug-based keys while preserving source as numeric.
+	 *
+	 * @param array<string,mixed> $env_config
+	 * @return void
+	 */
+	protected function normalize_numeric_qit_plugins( array &$env_config ): void {
+		$updated_plugins = [];
+		foreach ( $env_config['plugins'] as $key => $cfg ) {
+			if ( is_numeric( $key ) ) {
+				try {
+					$resolved_slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $key );
+					// Keep original numeric ID as source if not set
+					if ( ! isset( $cfg['source'] ) ) {
+						$cfg['source'] = (string) $key;
+					}
+					// Use resolved slug as new key
+					$updated_plugins[$resolved_slug] = $cfg;
+				} catch ( \Exception $e ) {
+					// If fails, just keep numeric key as a slug
+					if ( ! isset( $cfg['source'] ) ) {
+						$cfg['source'] = (string) $key;
+					}
+					$updated_plugins[$key] = $cfg;
+				}
+			} else {
+				$updated_plugins[$key] = $cfg;
+			}
+		}
+		$env_config['plugins'] = $updated_plugins;
 	}
 
 	public function is_development(): bool {
