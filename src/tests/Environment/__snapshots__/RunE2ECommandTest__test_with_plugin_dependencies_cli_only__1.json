@@ -9,6 +9,22 @@
                 "default"
             ],
             "action": "test"
+        },
+        {
+            "slug": "woocommerce-gateway-stripe",
+            "source": "woocommerce-gateway-stripe",
+            "test_tags": [
+                "default"
+            ],
+            "action": "bootstrap"
+        },
+        {
+            "slug": "woocommerce-subscriptions",
+            "source": "woocommerce-subscriptions",
+            "test_tags": [
+                "default"
+            ],
+            "action": "bootstrap"
         }
     ],
     "--theme": [],

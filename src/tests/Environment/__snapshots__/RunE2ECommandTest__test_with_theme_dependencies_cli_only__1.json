@@ -9,6 +9,14 @@
                 "default"
             ],
             "action": "test"
+        },
+        {
+            "slug": "woocommerce-services",
+            "source": "woocommerce-services",
+            "test_tags": [
+                "default"
+            ],
+            "action": "bootstrap"
         }
     ],
     "--theme": [],
