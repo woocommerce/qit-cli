@@ -1,0 +1,25 @@
+{
+    "--php_version": "7.4",
+    "--wp": "stable",
+    "--woo": "7.1",
+    "--plugin": [
+        {
+            "slug": "woocommerce-shipping",
+            "source": "2165910",
+            "test_tags": [
+                "default"
+            ],
+            "action": "test"
+        }
+    ],
+    "--theme": [],
+    "--volume": [],
+    "--php_extension": [],
+    "--require": [],
+    "--object_cache": false,
+    "--skip_activating_plugins": false,
+    "--tunnel": "no_tunnel",
+    "--json": true,
+    "--env": [],
+    "--env_file": []
+}

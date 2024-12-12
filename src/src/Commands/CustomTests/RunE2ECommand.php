@@ -159,91 +159,32 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::FAILURE;
 		}
 
-		// Determine test mode.
-		if ( $input->getOption( 'ui' ) && $input->getOption( 'codegen' ) ) {
-			$output->writeln( '<error>Cannot run tests in both "UI" and "Codegen" mode at the same time.</error>' );
+		try {
+			[ $test_mode, $wait ] = $this->determine_test_mode( $input );
+		} catch ( \RuntimeException $e ) {
+			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
 			return Command::INVALID;
 		}
 
-		if ( $input->getOption( 'ui' ) ) {
-			$test_mode = E2ETestManager::$test_modes['ui'];
-		} elseif ( $input->getOption( 'codegen' ) ) {
-			putenv( 'QIT_CODEGEN=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-			$test_mode = E2ETestManager::$test_modes['codegen'];
-		} else {
-			$test_mode = E2ETestManager::$test_modes['headless'];
-		}
-
 		App::setVar( 'TEST_MODE', $test_mode );
 
-		$wait                = $input->getOption( 'up_only' ) || $test_mode === E2ETestManager::$test_modes['codegen'];
-		$woo_extension       = $input->getArgument( 'woo_extension' );
-		$woocommerce_version = $input->getOption( 'woo' );
-		$shard               = $input->getOption( 'shard' );
-		$update_snapshots    = $input->getOption( 'update_snapshots' );
-		$pw_options          = $input->getOption( 'pw_options' ) ?? '';
-		$sut_action          = $input->getOption( 'sut_action' );
+		$result = $this->validate_input( $input, $output, $wait );
+		if ( $result !== Command::SUCCESS ) {
+			return $result;
+		}
+
+		$this->configure_pw_options( $input );
+
 		$this->parse_env_vars( $input->getOption( 'env' ) );
 
-		// Prevent "--woo" and "--plugin woocommerce" usage together.
-		if ( ! empty( $woocommerce_version ) && ! empty( $input->getOption( 'plugin' ) ) ) {
-			foreach ( $input->getOption( 'plugin' ) as $p ) {
-				if ( $p === 'woocommerce' ) {
-					$output->writeln( '<error>Cannot use both "--woo" and "--plugin woocommerce" together.</error>' );
-
-					return Command::INVALID;
-				}
-			}
+		$woo_extension_raw = $input->getArgument( 'woo_extension' );
+		[ $woo_extension_id, $woo_extension_slug, $sut_type_or_code ] = $this->resolve_woo_extension( $woo_extension_raw, $output );
+		if ( $sut_type_or_code === Command::INVALID ) {
+			// Failed to resolve woo extension.
+			return Command::INVALID;
 		}
-
-		if ( ! empty( $pw_options ) ) {
-			// Remove wrapping double quotes if they exist.
-			if ( substr( $pw_options, 0, 1 ) === '"' && substr( $pw_options, - 1 ) === '"' ) {
-				$pw_options = substr( $pw_options, 1, - 1 );
-			}
-		}
-
-		if ( ! empty( $update_snapshots ) ) {
-			$pw_options .= ' --update-snapshots';
-		}
-
-		App::setVar( 'pw_options', $pw_options );
-
-		// Validate extension parameter if needed.
-		if ( empty( $woo_extension ) ) {
-			if ( ! empty( $input->getOption( 'source' ) ) || ! empty( $sut_action ) ) {
-				$output->writeln( '<error>The extension parameter is required when source or sut_action is set.</error>' );
-
-				return Command::INVALID;
-			}
-			if ( ! $wait ) {
-				$output->writeln( '<error>The extension parameter is required unless in --up_only or --codegen mode.</error>' );
-
-				return Command::INVALID;
-			}
-		}
-
-		$woo_extension_id = null;
-		$sut_type         = null;
-		if ( ! empty( $woo_extension ) ) {
-			// Validate WooExtension.
-			try {
-				if ( is_numeric( $woo_extension ) ) {
-					$woo_extension_id = $woo_extension;
-					$woo_extension    = $this->woo_extensions_list->get_woo_extension_slug_by_id( $woo_extension );
-				} else {
-					$woo_extension_id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $woo_extension );
-				}
-			} catch ( \Exception $e ) {
-				$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
-
-				return Command::INVALID;
-			}
-
-			$sut_type = $this->woo_extensions_list->get_woo_extension_type( $woo_extension_id );
-			putenv( "QIT_SUT=$woo_extension" ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-		}
+		$sut_type = $sut_type_or_code;
 
 		if ( $input->getOption( 'skip_activating_plugins' ) ) {
 			$this->e2e_environment->set_skip_activating_plugins( true );
@@ -253,21 +194,9 @@ class RunE2ECommand extends DynamicCommand {
 			App::setVar( 'QIT_CONFIG_OVERRIDE', $input->getOption( 'config' ) );
 		}
 
-		// Previously we finalized the SUT definition and processed dependencies here.
-		// Now this is delegated to ConfigurationProcessor, so we remove that code.
-
-		if ( ! is_null( $shard ) ) {
-			if ( ! preg_match( '/^\d+\/\d+$/', $shard ) ) {
-				$output->writeln( '<error>Invalid shard format. Should be current/total, e.g., 1/5.</error>' );
-
-				return Command::INVALID;
-			}
-			[ $current, $total ] = explode( '/', $shard );
-			if ( $current <= 0 || $current > $total ) {
-				$output->writeln( '<error>Invalid shard format. current must be > 0 and <= total.</error>' );
-
-				return Command::INVALID;
-			}
+		$shard = $input->getOption( 'shard' );
+		if ( $shard && preg_match( '/^\d+\/\d+$/', $shard ) ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
+			// Already validated above.
 		}
 
 		$additional_volumes         = [];
@@ -286,11 +215,16 @@ class RunE2ECommand extends DynamicCommand {
 
 		$this->handle_termination();
 
-		if ( ! empty( $woo_extension ) ) {
-			App::setVar( 'QIT_SUT', (int) $woo_extension_id );
+		if ( ! empty( $woo_extension_slug ) ) {
+			App::setVar( 'QIT_SUT', $woo_extension_id );
 		}
 
-		$env_up_options = $this->configuration_processor->process_configuration( $input, $env_up_options, $sut_type );
+		$env_up_options = $this->configuration_processor->process_configuration(
+			$woo_extension_slug,
+			$input,
+			$env_up_options,
+			$sut_type
+		);
 
 		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
 		App::setVar( 'QIT_ENV_UP_OPTIONS', $env_up_options );
@@ -316,6 +250,7 @@ class RunE2ECommand extends DynamicCommand {
 
 			if ( getenv( 'QIT_SELF_TEST' ) === 'env_info' ) {
 				$output->write( json_encode( $env_info ) );
+
 				return Command::SUCCESS;
 			}
 		} catch ( \Exception $e ) {
@@ -328,13 +263,13 @@ class RunE2ECommand extends DynamicCommand {
 		putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 
 		if ( $env_info instanceof E2EEnvInfo && ! empty( $woo_extension_id ) ) {
-			$env_info->sut_slug = $woo_extension;
+			$env_info->sut_slug = $woo_extension_slug;
 			$env_info->sut_id   = $woo_extension_id;
 			$env_info->sut_type = $sut_type;
 
 			$this->test_run_notifier->notify_test_started(
 				$woo_extension_id,
-				$woocommerce_version ?? 'none',
+				$input->getOption( 'woo' ) ?? 'none',
 				$env_info,
 				$this->configuration_processor->is_development(),
 				$input->getOption( 'notify' )
@@ -349,6 +284,7 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::SUCCESS;
 		}
 
+		$shard            = $input->getOption( 'shard' );
 		$exit_status_code = $this->e2e_test_manager->run_tests( $env_info, $test_mode, $wait, $shard );
 		$io               = new SymfonyStyle( $input, $output );
 		$io->setDecorated( true );
@@ -479,5 +415,124 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		App::setVar( 'QIT_PW_ENV_VARS', $parsed_vars );
+	}
+
+	/**
+	 * @param string|null     $woo_extension_raw
+	 * @param OutputInterface $output
+	 *
+	 * @return array{0:int|null,1:string|null,2:string|int|null} Array containing:
+	 *                                                            [woo_extension_id, woo_extension_slug, sut_type or Command::INVALID]
+	 */
+	private function resolve_woo_extension( ?string $woo_extension_raw, OutputInterface $output ): array {
+		if ( empty( $woo_extension_raw ) ) {
+			return [ null, null, null ]; // no extension provided.
+		}
+
+		try {
+			if ( is_numeric( $woo_extension_raw ) ) {
+				$woo_extension_id   = (int) $woo_extension_raw;
+				$woo_extension_slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( $woo_extension_id );
+			} else {
+				$woo_extension_slug = $woo_extension_raw;
+				$woo_extension_id   = $this->woo_extensions_list->get_woo_extension_id_by_slug( $woo_extension_slug );
+			}
+		} catch ( \Exception $e ) {
+			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+
+			return [ null, null, Command::INVALID ];
+		}
+
+		$sut_type = $this->woo_extensions_list->get_woo_extension_type( $woo_extension_id );
+		putenv( "QIT_SUT=$woo_extension_slug" ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+
+		return [ $woo_extension_id, $woo_extension_slug, $sut_type ];
+	}
+
+	/**
+	 * Determine the test mode and whether to wait.
+	 *
+	 * @param InputInterface $input
+	 *
+	 * @return array{0:string,1:bool} Returns an array where:
+	 *                                [0] = test_mode (string)
+	 *                                [1] = wait (bool)
+	 *
+	 * @throws \RuntimeException If both ui and codegen are set.
+	 */
+	private function determine_test_mode( InputInterface $input ): array {
+		if ( $input->getOption( 'ui' ) && $input->getOption( 'codegen' ) ) {
+			throw new \RuntimeException( 'Cannot run tests in both "UI" and "Codegen" mode at the same time.' );
+		}
+
+		if ( $input->getOption( 'ui' ) ) {
+			$test_mode = E2ETestManager::$test_modes['ui'];
+		} elseif ( $input->getOption( 'codegen' ) ) {
+			putenv( 'QIT_CODEGEN=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+			$test_mode = E2ETestManager::$test_modes['codegen'];
+		} else {
+			$test_mode = E2ETestManager::$test_modes['headless'];
+		}
+
+		$wait = $input->getOption( 'up_only' ) || $test_mode === E2ETestManager::$test_modes['codegen'];
+
+		return [ $test_mode, $wait ];
+	}
+
+	private function validate_input( InputInterface $input, OutputInterface $output, bool $wait ): int {
+		$woo     = $input->getOption( 'woo' );
+		$plugins = $input->getOption( 'plugin' );
+
+		if ( ! empty( $woo ) && ! empty( $plugins ) && in_array( 'woocommerce', $plugins, true ) ) {
+			$output->writeln( '<error>Cannot use both "--woo" and "--plugin woocommerce" together.</error>' );
+
+			return Command::INVALID;
+		}
+
+		$shard = $input->getOption( 'shard' );
+		if ( ! is_null( $shard ) ) {
+			if ( ! preg_match( '/^\d+\/\d+$/', $shard ) ) {
+				$output->writeln( '<error>Invalid shard format. Should be current/total, e.g., 1/5.</error>' );
+
+				return Command::INVALID;
+			}
+			[ $current, $total ] = explode( '/', $shard );
+			if ( $current <= 0 || $current > $total ) {
+				$output->writeln( '<error>Invalid shard format. current must be > 0 and <= total.</error>' );
+
+				return Command::INVALID;
+			}
+		}
+
+		$woo_extension_raw = $input->getArgument( 'woo_extension' );
+		if ( empty( $woo_extension_raw ) ) {
+			if ( ! empty( $input->getOption( 'source' ) ) || ! empty( $input->getOption( 'sut_action' ) ) ) {
+				$output->writeln( '<error>The extension parameter is required when source or sut_action is set.</error>' );
+
+				return Command::INVALID;
+			}
+			if ( ! $wait ) {
+				$output->writeln( '<error>The extension parameter is required unless in --up_only or --codegen mode.</error>' );
+
+				return Command::INVALID;
+			}
+		}
+
+		return Command::SUCCESS;
+	}
+
+	private function configure_pw_options( InputInterface $input ): void {
+		$pw_options = $input->getOption( 'pw_options' ) ?? '';
+		if ( ! empty( $pw_options ) ) {
+			if ( substr( $pw_options, 0, 1 ) === '"' && substr( $pw_options, - 1 ) === '"' ) {
+				$pw_options = substr( $pw_options, 1, - 1 );
+			}
+		}
+
+		if ( $input->getOption( 'update_snapshots' ) ) {
+			$pw_options .= ' --update-snapshots';
+		}
+
+		App::setVar( 'pw_options', $pw_options );
 	}
 }

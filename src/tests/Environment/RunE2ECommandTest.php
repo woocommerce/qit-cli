@@ -5,6 +5,7 @@ namespace QIT_CLI_Tests\Environment;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
+use QIT_CLI\LocalTests\ConfigurationProcessor;
 use QIT_CLI\ManagerSync;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI_Tests\QITTestCase;
@@ -25,77 +26,85 @@ class RunE2ECommandTest extends QITTestCase {
 	public function setUp(): void {
 		parent::setUp();
 
+		$mocked_woo_extension_list = function () {
+			$cache        = App::make( Cache::class );
+			$manager_sync = App::make( ManagerSync::class );
+
+			return new class( $cache, $manager_sync ) extends WooExtensionsList {
+				protected $theme_slugs = [
+					'storefront',
+					'deli-theme',
+					'boutique',
+					'blocksy',
+					'hestia',
+					'twentytwentyone',
+				];
+
+				public function __construct( Cache $cache, ManagerSync $manager_sync ) {
+					parent::__construct( $cache, $manager_sync );
+				}
+
+				public function get_woo_extension_slug_by_id( $id ): string {
+					// Assign different IDs for each known theme so we can detect them:
+					switch ( $id ) {
+						case 999:
+							return 'storefront';
+						case 998:
+							return 'deli-theme';
+						case 997:
+							return 'boutique';
+						case 996:
+							return 'blocksy';
+						case 995:
+							return 'hestia';
+						case 994:
+							return 'twentytwentyone';
+						case 2165910:
+							return 'woocommerce-shipping';
+					}
+
+					return 'woocommerce-amazon-s3-storage'; // default plugin
+				}
+
+				public function get_woo_extension_id_by_slug( $slug ): int {
+					// Map each theme slug to a unique ID
+					switch ( $slug ) {
+						case 'storefront':
+							return 999;
+						case 'deli-theme':
+							return 998;
+						case 'boutique':
+							return 997;
+						case 'blocksy':
+							return 996;
+						case 'hestia':
+							return 995;
+						case 'twentytwentyone':
+							return 994;
+					}
+
+					return 123; // default plugin ID
+				}
+
+				public function get_woo_extension_type( $id ): string {
+					$slug = $this->get_woo_extension_slug_by_id( $id );
+					if ( in_array( $slug, $this->theme_slugs, true ) ) {
+						return 'theme';
+					}
+
+					return 'plugin';
+				}
+			};
+		};
+
 		// Before instantiating RunE2ECommand, override the WooExtensionsList dependency:
 		App::when( RunE2ECommand::class )
 		   ->needs( WooExtensionsList::class )
-		   ->give( function () {
-			   $cache        = App::make( Cache::class );
-			   $manager_sync = App::make( ManagerSync::class );
+		   ->give( $mocked_woo_extension_list );
 
-			   return new class( $cache, $manager_sync ) extends WooExtensionsList {
-				   protected $theme_slugs = [
-					   'storefront',
-					   'deli-theme',
-					   'boutique',
-					   'blocksy',
-					   'hestia',
-					   'twentytwentyone',
-				   ];
-
-				   public function __construct( Cache $cache, ManagerSync $manager_sync ) {
-					   parent::__construct( $cache, $manager_sync );
-				   }
-
-				   public function get_woo_extension_slug_by_id( $id ): string {
-					   // Assign different IDs for each known theme so we can detect them:
-					   switch ( $id ) {
-						   case 999:
-							   return 'storefront';
-						   case 998:
-							   return 'deli-theme';
-						   case 997:
-							   return 'boutique';
-						   case 996:
-							   return 'blocksy';
-						   case 995:
-							   return 'hestia';
-						   case 994:
-							   return 'twentytwentyone';
-					   }
-
-					   return 'woocommerce-amazon-s3-storage'; // default plugin
-				   }
-
-				   public function get_woo_extension_id_by_slug( $slug ): int {
-					   // Map each theme slug to a unique ID
-					   switch ( $slug ) {
-						   case 'storefront':
-							   return 999;
-						   case 'deli-theme':
-							   return 998;
-						   case 'boutique':
-							   return 997;
-						   case 'blocksy':
-							   return 996;
-						   case 'hestia':
-							   return 995;
-						   case 'twentytwentyone':
-							   return 994;
-					   }
-
-					   return 123; // default plugin ID
-				   }
-
-				   public function get_woo_extension_type( $id ): string {
-					   $slug = $this->get_woo_extension_slug_by_id( $id );
-					   if ( in_array( $slug, $this->theme_slugs, true ) ) {
-						   return 'theme';
-					   }
-
-					   return 'plugin';
-				   }
-			   };
-		   } );
+		App::when( ConfigurationProcessor::class )
+		   ->needs( WooExtensionsList::class )
+		   ->give( $mocked_woo_extension_list );
 
 		// Mock the get-dependencies endpoint
 		App::setVar(
@@ -704,4 +713,113 @@ class RunE2ECommandTest extends QITTestCase {
 		$this->assertCommandIsSuccessful( $this->application_tester );
 		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
 	}
+
+	public function test_numeric_id_config_snapshot() {
+		// This tells QIT to print out the config and return early with Command::SUCCESS.
+		putenv('QIT_TESTING_ENV_CONFIG=1');
+
+		// Switch to a known scenario directory. Adjust if needed.
+		$fixture_dir = $this->scenarios_dir . 'scenario-cli-only';
+		chdir($fixture_dir);
+
+		// Run the command using a numeric ID. We do not provide --source here.
+		// If the bug is present, the slug in the JSON will remain "2165910" instead of a proper slug.
+		$this->application_tester->run([
+			'command'       => 'run:e2e',
+			'woo_extension' => '2165910', // numeric ID
+			'--woo'         => '7.1',
+		]);
+
+		$output = $this->application_tester->getDisplay();
+
+		// The output here is the JSON of the env config. We'll snapshot it.
+		// If the slug is numeric, the snapshot will contain that numeric slug.
+		$this->assertMatchesJsonSnapshot($output);
+	}
+
+	public function test_numeric_id_with_source_config_snapshot() {
+		// This tells QIT to print out the config and return early.
+		putenv('QIT_TESTING_ENV_CONFIG=1');
+
+		$fixture_dir = $this->scenarios_dir . 'scenario-cli-only';
+		chdir($fixture_dir);
+
+		// Run the command using a numeric ID and also provide a --source.
+		// If the bug exists, you will again see a numeric slug in the JSON.
+		// If you fix the code, rerunning the test will fail snapshot matching, indicating the slug changed.
+		$this->application_tester->run([
+			'command'       => 'run:e2e',
+			'woo_extension' => '2165910', // numeric ID
+			'--woo'         => '7.1',
+			'--source'      => './woocommerce-shipping.zip',
+		]);
+
+		$output = $this->application_tester->getDisplay();
+
+		// Snapshot the JSON output.
+		$this->assertMatchesJsonSnapshot($output);
+	}
+
+	public function test_numeric_plugin_id() {
+		putenv('QIT_TESTING_ENV_CONFIG=1');
+		chdir($this->scenarios_dir . 'scenario-cli-only');
+
+		// Depending on your environment, you might need to mock WooExtensionsList or ManagerSync.
+		// Here, we assume QIT CLI fetches extensions from manager and we have a mock scenario set.
+		App::setVar(
+			sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-extensions' ),
+			json_encode([
+				'extensions' => [
+					[
+						'id' => 2165910,
+						'slug' => 'woocommerce-shipping',
+						'type' => 'plugin'
+					]
+				]
+			])
+		);
+
+		$this->application_tester->run([
+			'command'       => 'run:e2e',
+			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'--plugin'      => ['2165910'],
+			'--woo'         => '7.1'
+		]);
+
+		$output = $this->application_tester->getDisplay();
+		$this->assertMatchesJsonSnapshot($output);
+	}
+
+	public function test_numeric_plugin_id_with_qit_config() {
+		putenv('QIT_TESTING_ENV_CONFIG=1');
+		$fixture_dir = $this->scenarios_dir . 'scenario-numeric-plugin-id-with-qit';
+		chdir($fixture_dir);
+
+		// Mock the manager extensions so that ID 2165910 maps to woocommerce-shipping.
+		App::setVar(
+			sprintf('mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-extensions'),
+			json_encode([
+				'extensions' => [
+					[
+						'id' => 2165910,
+						'slug' => 'woocommerce-shipping',
+						'type' => 'plugin'
+					]
+				]
+			])
+		);
+
+		// Run with qit.yml defined plus a numeric plugin ID from CLI.
+		$this->application_tester->run([
+			'command'       => 'run:e2e',
+			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'--woo'         => '7.1'
+		]);
+
+		$output = $this->application_tester->getDisplay();
+		$this->assertMatchesJsonSnapshot($output);
+	}
+
+
+
 }

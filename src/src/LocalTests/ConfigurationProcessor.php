@@ -5,35 +5,44 @@ namespace QIT_CLI\LocalTests;
 use QIT_CLI\App;
 use QIT_CLI\Environment\EnvConfigLoader;
 use QIT_CLI\Environment\Extension;
+use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Input\InputInterface;
 
 class ConfigurationProcessor {
 	/** @var EnvConfigLoader */
 	protected $config_loader;
 
+	/** @var WooExtensionsList */
+	protected $woo_extensions_list;
+
 	/** @var bool */
 	protected $is_development;
 
-	public function __construct( EnvConfigLoader $config_loader ) {
-		$this->config_loader = $config_loader;
+	public function __construct( EnvConfigLoader $config_loader, WooExtensionsList $woo_extensions_list ) {
+		$this->config_loader       = $config_loader;
+		$this->woo_extensions_list = $woo_extensions_list;
 	}
 
 	/**
 	 * Process and merge configuration from qit.yml and CLI options into a final set of env:up options.
 	 *
-	 * @param InputInterface      $input
-	 * @param array<string,mixed> $env_up_options The partially processed env_up_options from RunE2ECommand.
-	 * @param string              $sut_type Either 'plugin' or 'theme'.
+	 * @param string|null         $woo_extension_slug The slug of the SUT if resolved from an ID, otherwise the original slug, or null if none.
+	 * @param InputInterface      $input              The input interface for CLI arguments and options.
+	 * @param array<string,mixed> $env_up_options     The partially processed env_up_options from RunE2ECommand.
+	 * @param string|null         $sut_type           Either 'plugin', 'theme', or null if no SUT.
 	 *
 	 * @return array<string,mixed> Final configuration suitable for passing to env:up (e.g., $env_up_options).
 	 */
-	public function process_configuration( InputInterface $input, array $env_up_options, string $sut_type ): array {
-		// If a config override is provided via CLI, set it.
+	public function process_configuration(
+		?string $woo_extension_slug,
+		InputInterface $input,
+		array $env_up_options,
+		?string $sut_type
+	): array {
 		if ( $input->getOption( 'config' ) ) {
 			App::setVar( 'QIT_CONFIG_OVERRIDE', $input->getOption( 'config' ) );
 		}
 
-		// Load qit.yml config.
 		$env_config = $this->config_loader->load_config();
 		if ( ! isset( $env_config['plugins'] ) || ! is_array( $env_config['plugins'] ) ) {
 			$env_config['plugins'] = [];
@@ -42,21 +51,36 @@ class ConfigurationProcessor {
 			$env_config['themes'] = [];
 		}
 
-		$woo_extension    = $input->getArgument( 'woo_extension' );
-		$test             = $input->getArgument( 'test' );
-		$source_option    = $input->getOption( 'source' );
-		$source           = ! empty( $source_option ) ? $source_option : '';
-		$sut_action       = $input->getOption( 'sut_action' );
-		$dependencies_opt = $input->getOption( 'dependencies' ) ?? Extension::ACTIONS['bootstrap'];
+		// Handle numeric keys in qit.yml for plugins before proceeding.
+		// If qit.yml has numeric keys, convert them to slug-based keys.
+		$this->normalize_numeric_qit_plugins( $env_config );
 
-		$has_sut = ! empty( $woo_extension ) || ! empty( $source ) || ! empty( $sut_action );
+		$woo_extension_raw   = $input->getArgument( 'woo_extension' );
+		$test                = $input->getArgument( 'test' );
+		$source_option       = $input->getOption( 'source' );
+		$source              = ! empty( $source_option ) ? $source_option : '';
+		$sut_action          = $input->getOption( 'sut_action' );
+		$dependencies_option = $input->getOption( 'dependencies' ) ?? Extension::ACTIONS['bootstrap'];
+
+		// If original was numeric and no source provided, keep source as numeric ID.
+		if ( empty( $source ) && ! empty( $woo_extension_raw ) && is_numeric( $woo_extension_raw ) ) {
+			$source = $woo_extension_raw;
+		}
+
+		$has_sut = ! empty( $woo_extension_slug ) || ! empty( $source ) || ! empty( $sut_action );
+
+		// If no sut_type given, default to 'plugin'.
+		// This should not happen if we resolved correctly, but just in case.
+		if ( $sut_type === null ) {
+			$sut_type = 'plugin';
+		}
 
 		if ( $has_sut ) {
 			$this->finalize_sut_definition(
-				$woo_extension,
+				$woo_extension_slug,
 				$source,
 				$test,
-				$dependencies_opt,
+				$dependencies_option,
 				$env_up_options,
 				$env_config,
 				$input,
@@ -67,6 +91,7 @@ class ConfigurationProcessor {
 			$this->add_cli_plugins( $env_config, $input );
 			$this->normalize_plugins( $env_config );
 			$this->normalize_themes( $env_config );
+
 			if ( $sut_type === 'theme' ) {
 				$env_up_options['--theme'] = array_values( $env_config['themes'] );
 			} else {
@@ -74,7 +99,7 @@ class ConfigurationProcessor {
 			}
 		}
 
-		$this->is_development = ! empty( $input->getOption( 'source' ) ) && file_exists( $input->getOption( 'source' ) );
+		$this->is_development = ! empty( $source_option ) && file_exists( $source_option );
 
 		return $env_up_options;
 	}
@@ -208,10 +233,21 @@ class ConfigurationProcessor {
 		}
 
 		foreach ( $cli_plugins as $cli_plugin ) {
-			$parts      = explode( ':', $cli_plugin );
-			$cli_slug   = $parts[0];
-			$cli_action = Extension::ACTIONS['bootstrap'];
-			$cli_tags   = [];
+			$parts           = explode( ':', $cli_plugin );
+			$original_source = $parts[0];
+			$cli_slug        = $parts[0]; // This will be changed if numeric.
+			$cli_action      = Extension::ACTIONS['bootstrap'];
+			$cli_tags        = [];
+
+			// Handle numeric plugin IDs.
+			if ( is_numeric( $cli_slug ) ) {
+				try {
+					$resolved_slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $cli_slug );
+					$cli_slug      = $resolved_slug;
+				} catch ( \Exception $e ) {
+					throw new \RuntimeException( "Failed to resolve extension ID {$cli_slug}: " . $e->getMessage() );
+				}
+			}
 
 			if ( isset( $parts[1] ) && in_array( $parts[1], Extension::ACTIONS, true ) ) {
 				$cli_action = $parts[1];
@@ -234,7 +270,7 @@ class ConfigurationProcessor {
 			if ( ! isset( $env_config['plugins'][ $cli_slug ] ) && ! isset( $env_config['themes'][ $cli_slug ] ) ) {
 				$env_config['plugins'][ $cli_slug ] = [
 					'slug'      => $cli_slug,
-					'source'    => $cli_slug,
+					'source'    => $original_source,
 					'test_tags' => empty( $cli_tags ) ? [ 'default' ] : $cli_tags,
 					'action'    => $cli_action,
 				];
@@ -406,6 +442,39 @@ class ConfigurationProcessor {
 				$env_up_options['--plugin'][] = $formatted_plugin;
 			}
 		}
+	}
+
+	/**
+	 * Handle numeric keys found in qit.yml for plugins.
+	 * Convert them to slug-based keys while preserving source as numeric.
+	 *
+	 * @param array<string,mixed> $env_config
+	 * @return void
+	 */
+	protected function normalize_numeric_qit_plugins( array &$env_config ): void {
+		$updated_plugins = [];
+		foreach ( $env_config['plugins'] as $key => $cfg ) {
+			if ( is_numeric( $key ) ) {
+				try {
+					$resolved_slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $key );
+					// Keep original numeric ID as source if not set.
+					if ( ! isset( $cfg['source'] ) ) {
+						$cfg['source'] = (string) $key;
+					}
+					// Use resolved slug as new key.
+					$updated_plugins[ $resolved_slug ] = $cfg;
+				} catch ( \Exception $e ) {
+					// If fails, just keep numeric key as a slug.
+					if ( ! isset( $cfg['source'] ) ) {
+						$cfg['source'] = (string) $key;
+					}
+					$updated_plugins[ $key ] = $cfg;
+				}
+			} else {
+				$updated_plugins[ $key ] = $cfg;
+			}
+		}
+		$env_config['plugins'] = $updated_plugins;
 	}
 
 	public function is_development(): bool {
