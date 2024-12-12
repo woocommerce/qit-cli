@@ -3,20 +3,28 @@
     "--wp": "stable",
     "--plugin": [
         {
-            "source": ".\/woocommerce",
-            "test_tags": [
-                "activation"
-            ],
-            "action": "test",
-            "slug": "woocommerce"
-        },
-        {
-            "source": ".\/woocommerce-amazon-s3-storage",
+            "source": ".\/woocommerce-known-plugin",
             "test_tags": [
                 "pre-activation"
             ],
             "action": "bootstrap",
-            "slug": "woocommerce-amazon-s3-storage"
+            "slug": "woocommerce-known-plugin"
+        },
+        {
+            "slug": "some-other-plugin",
+            "source": "some-other-plugin",
+            "test_tags": [
+                "pre-activation"
+            ],
+            "action": "bootstrap"
+        },
+        {
+            "slug": "woocommerce",
+            "source": "woocommerce",
+            "test_tags": [
+                "activation"
+            ],
+            "action": "test"
         }
     ],
     "--theme": [],

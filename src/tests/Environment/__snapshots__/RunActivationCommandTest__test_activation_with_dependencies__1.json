@@ -3,20 +3,20 @@
     "--wp": "stable",
     "--plugin": [
         {
-            "source": ".\/woocommerce",
-            "test_tags": [
-                "activation"
-            ],
-            "action": "test",
-            "slug": "woocommerce"
-        },
-        {
             "source": ".\/woocommerce-amazon-s3-storage",
             "test_tags": [
                 "pre-activation"
             ],
             "action": "bootstrap",
             "slug": "woocommerce-amazon-s3-storage"
+        },
+        {
+            "slug": "woocommerce",
+            "source": "woocommerce",
+            "test_tags": [
+                "activation"
+            ],
+            "action": "test"
         }
     ],
     "--theme": [],

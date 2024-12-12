@@ -81,6 +81,10 @@ class RunActivationCommandTest extends QITTestCase {
 							return 995;
 						case 'twentytwentyone':
 							return 994;
+						case 'my-sut-plugin':
+							return 1234;
+						case 'some-dependency-plugin':
+							return 1111;
 					}
 
 					return 123; // default plugin ID
@@ -245,6 +249,69 @@ class RunActivationCommandTest extends QITTestCase {
 		$output = $this->application_tester->getDisplay();
 		$this->assertCommandIsSuccessful( $this->application_tester );
 		$this->assertMatchesJsonSnapshot( $output );
+	}
+
+	/**
+	 * Test the current behavior of run:activation with dependencies.
+	 * We expect to see the SUT and dependencies in the final JSON config.
+	 */
+	public function test_activation_plugin_with_dependencies() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+
+		// Mock the dependencies response only for this test.
+		App::setVar(
+			sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' ),
+			json_encode([
+				'plugins'        => [ 'some-dependency-plugin' ],
+				'themes'         => [],
+				'php_extensions' => [],
+			])
+		);
+
+		$fixture_dir = $this->scenarios_dir . 'scenario-activation-with-dependencies';
+		$this->assertDirectoryExists($fixture_dir);
+		chdir( $fixture_dir );
+
+		// Non-WooCommerce SUT scenario. "my-sut-plugin" should be defined in qit.yml
+		// This plugin is known by our mock WooExtensionsList (just one extra mapping):
+		// Minimal additional plugin: in the existing WooExtensionsList mock in setUp(),
+		// just add a line for 'my-sut-plugin' => 1234 if not already done.
+
+		$this->application_tester->run( [
+			'command'        => 'run:activation',
+			'woo_extension'  => 'my-sut-plugin', // non-Woo SUT
+			'--dependencies' => 'bootstrap',
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+
+		// Expected final JSON:
+		// - my-sut-plugin (SUT): action=bootstrap, test_tags=pre-activation
+		// - some-dependency-plugin (from dependencies): action=bootstrap, test_tags=pre-activation
+		// - woocommerce (added by RunActivationTestCommand): action=test, test_tags=activation
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+	}
+
+	/**
+	 * Test the current behavior of run:activation with additional plugins requested via CLI.
+	 * This ensures we see how additional plugins are assigned actions/test_tags by default.
+	 */
+	public function test_activation_with_additional_plugins() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+
+		$fixture_dir = $this->scenarios_dir . 'scenario-activation-with-additional-plugins';
+		$this->assertDirectoryExists($fixture_dir);
+		chdir( $fixture_dir );
+
+		// Add a plugin without explicit test_tags
+		$this->application_tester->run( [
+			'command'       => 'run:activation',
+			'woo_extension' => 'woocommerce-known-plugin',
+			'--plugin'      => [ 'some-other-plugin' ],
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
 	}
 
 	public function tearDown(): void {

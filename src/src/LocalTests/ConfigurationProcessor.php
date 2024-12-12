@@ -100,6 +100,40 @@ class ConfigurationProcessor {
 			}
 		}
 
+		if ( App::getVar( 'QIT_ACTIVATION_TEST' ) ) {
+			// We are in an activation test scenario.
+			// $activation_mode can be 'woo' or 'non-woo' depending on SUT type.
+
+			// Handle plugins.
+			if ( isset( $env_up_options['--plugin'] ) && is_array( $env_up_options['--plugin'] ) ) {
+				foreach ( $env_up_options['--plugin'] as &$plugin ) {
+					if ( isset( $plugin['slug'] ) && $plugin['slug'] === 'woocommerce' ) {
+						$plugin['action']    = Extension::ACTIONS['test'];
+						$plugin['test_tags'] = [ 'activation' ];
+					} else {
+						// Everything else is bootstrap/pre-activation.
+						$plugin['action']    = Extension::ACTIONS['bootstrap'];
+						$plugin['test_tags'] = [ 'pre-activation' ];
+					}
+				}
+				unset( $plugin );
+			}
+
+			// Handle themes similarly if needed.
+			if ( isset( $env_up_options['--theme'] ) && is_array( $env_up_options['--theme'] ) ) {
+				foreach ( $env_up_options['--theme'] as &$theme ) {
+					if ( isset( $theme['slug'] ) && $theme['slug'] === 'woocommerce' ) {
+						$theme['action']    = Extension::ACTIONS['test'];
+						$theme['test_tags'] = [ 'activation' ];
+					} else {
+						$theme['action']    = Extension::ACTIONS['bootstrap'];
+						$theme['test_tags'] = [ 'pre-activation' ];
+					}
+				}
+				unset( $theme );
+			}
+		}
+
 		$this->is_development = ! empty( $source_option ) && file_exists( $source_option );
 
 		return $env_up_options;
@@ -189,7 +223,7 @@ class ConfigurationProcessor {
 
 		$woo_extension_id = App::getVar( 'QIT_SUT' );
 
-		$this->apply_dependencies( $woo_extension_id, $dependencies_option, $env_up_options );
+		$this->apply_dependencies( $woo_extension_id, $dependencies_option, $env_up_options, $env_config );
 		$this->add_cli_plugins( $env_config, $input );
 		$this->normalize_plugins( $env_config );
 		$this->normalize_themes( $env_config );
@@ -397,15 +431,20 @@ class ConfigurationProcessor {
 	}
 
 	/**
-	 * Add dependencies as strings to --plugin (and php_extensions to --php_extension).
+	 * Add dependencies as strings to --plugin and their corresponding arrays to $env_config['plugins'],
+	 * and PHP extensions directly to $env_up_options['--php_extension'].
+	 *
+	 * By this point, $env_config should already be normalized by EnvConfigLoader, ensuring
+	 * that 'plugins' key is used consistently. No separate handling of 'plugin' vs 'plugins' is needed.
 	 *
 	 * @param int|null            $woo_extension_id
 	 * @param string              $dependencies_option
 	 * @param array<string,mixed> $env_up_options
+	 * @param array<string,mixed> $env_config
 	 *
 	 * @return void
 	 */
-	protected function apply_dependencies( $woo_extension_id, string $dependencies_option, array &$env_up_options ): void {
+	protected function apply_dependencies( ?int $woo_extension_id, string $dependencies_option, array &$env_up_options, array &$env_config ): void {
 		if ( empty( $woo_extension_id ) || $dependencies_option === 'none' ) {
 			return;
 		}
@@ -420,19 +459,23 @@ class ConfigurationProcessor {
 		if ( ! isset( $env_up_options['--plugin'] ) ) {
 			$env_up_options['--plugin'] = [];
 		}
+		if ( ! isset( $env_config['plugins'] ) || ! is_array( $env_config['plugins'] ) ) {
+			$env_config['plugins'] = [];
+		}
 
-		// Add PHP extensions if any.
+		// Add PHP extensions directly to $env_up_options['--php_extension'].
 		foreach ( $dependencies['php_extensions'] as $php_extension ) {
 			if ( ! in_array( $php_extension, $env_up_options['--php_extension'], true ) ) {
 				$env_up_options['--php_extension'][] = $php_extension;
 			}
 		}
 
-		// Add plugin dependencies as strings.
 		$woo_version = $env_up_options['--woo'] ?? null;
 
+		// Add plugin dependencies to both $env_up_options['--plugin'] and $env_config['plugins'].
 		foreach ( $dependencies['plugins'] as $dep_plugin ) {
 			if ( $woo_version && stripos( $dep_plugin, 'woocommerce:' ) !== false ) {
+				// Skip this dependency if a Woo version is specified and it conflicts.
 				continue;
 			}
 
@@ -446,8 +489,19 @@ class ConfigurationProcessor {
 			}
 
 			if ( ! $already_present ) {
+				// Append ":{$dependencies_option}" to ensure the correct action is assigned.
 				$formatted_plugin             = "{$dep_plugin}:{$dependencies_option}";
 				$env_up_options['--plugin'][] = $formatted_plugin;
+			}
+
+			// Ensure the plugin is also in $env_config['plugins'].
+			if ( ! isset( $env_config['plugins'][ $plugin_slug ] ) ) {
+				$env_config['plugins'][ $plugin_slug ] = [
+					'slug'      => $plugin_slug,
+					'source'    => $plugin_slug,
+					'test_tags' => [ 'default' ],
+					'action'    => $dependencies_option,
+				];
 			}
 		}
 	}
@@ -457,6 +511,7 @@ class ConfigurationProcessor {
 	 * Convert them to slug-based keys while preserving source as numeric.
 	 *
 	 * @param array<string,mixed> $env_config
+	 *
 	 * @return void
 	 */
 	protected function normalize_numeric_qit_plugins( array &$env_config ): void {

@@ -123,6 +123,8 @@ class RunActivationTestCommand extends Command {
 			$run_e2e_options['--very-verbose'] = true;
 		}
 
+		App::setVar( 'QIT_ACTIVATION_TEST', 'yes' );
+
 		$run_e2e_exit_code = $run_e2e_command->run(
 			new ArrayInput( $run_e2e_options ),
 			new StreamOutput( $resource_stream )

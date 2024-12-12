@@ -3,16 +3,24 @@
     "--wp": "stable",
     "--plugin": [
         {
-            "source": ".\/woocommerce-known-plugin",
+            "source": ".\/woocommerce-amazon-s3-storage",
             "test_tags": [
                 "pre-activation"
             ],
             "action": "bootstrap",
-            "slug": "woocommerce-known-plugin"
+            "slug": "woocommerce-amazon-s3-storage"
         },
         {
-            "slug": "extra-plugin",
-            "source": "extra-plugin",
+            "slug": "my-sut-plugin",
+            "source": "my-sut-plugin",
+            "test_tags": [
+                "pre-activation"
+            ],
+            "action": "bootstrap"
+        },
+        {
+            "slug": "some-dependency-plugin",
+            "source": "some-dependency-plugin",
             "test_tags": [
                 "pre-activation"
             ],

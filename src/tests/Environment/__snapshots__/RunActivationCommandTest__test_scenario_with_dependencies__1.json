@@ -11,6 +11,14 @@
             "slug": "woocommerce-amazon-s3-storage"
         },
         {
+            "slug": "some-dependency-plugin",
+            "source": "some-dependency-plugin",
+            "test_tags": [
+                "pre-activation"
+            ],
+            "action": "bootstrap"
+        },
+        {
             "slug": "woocommerce",
             "source": "woocommerce",
             "test_tags": [
