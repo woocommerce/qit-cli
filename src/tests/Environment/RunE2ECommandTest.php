@@ -5,6 +5,7 @@ namespace QIT_CLI_Tests\Environment;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
+use QIT_CLI\LocalTests\ConfigurationProcessor;
 use QIT_CLI\ManagerSync;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI_Tests\QITTestCase;
@@ -25,77 +26,85 @@ class RunE2ECommandTest extends QITTestCase {
 	public function setUp(): void {
 		parent::setUp();
 
+		$mocked_woo_extension_list = function () {
+			$cache        = App::make( Cache::class );
+			$manager_sync = App::make( ManagerSync::class );
+
+			return new class( $cache, $manager_sync ) extends WooExtensionsList {
+				protected $theme_slugs = [
+					'storefront',
+					'deli-theme',
+					'boutique',
+					'blocksy',
+					'hestia',
+					'twentytwentyone',
+				];
+
+				public function __construct( Cache $cache, ManagerSync $manager_sync ) {
+					parent::__construct( $cache, $manager_sync );
+				}
+
+				public function get_woo_extension_slug_by_id( $id ): string {
+					// Assign different IDs for each known theme so we can detect them:
+					switch ( $id ) {
+						case 999:
+							return 'storefront';
+						case 998:
+							return 'deli-theme';
+						case 997:
+							return 'boutique';
+						case 996:
+							return 'blocksy';
+						case 995:
+							return 'hestia';
+						case 994:
+							return 'twentytwentyone';
+						case 2165910:
+							return 'woocommerce-shipping';
+					}
+
+					return 'woocommerce-amazon-s3-storage'; // default plugin
+				}
+
+				public function get_woo_extension_id_by_slug( $slug ): int {
+					// Map each theme slug to a unique ID
+					switch ( $slug ) {
+						case 'storefront':
+							return 999;
+						case 'deli-theme':
+							return 998;
+						case 'boutique':
+							return 997;
+						case 'blocksy':
+							return 996;
+						case 'hestia':
+							return 995;
+						case 'twentytwentyone':
+							return 994;
+					}
+
+					return 123; // default plugin ID
+				}
+
+				public function get_woo_extension_type( $id ): string {
+					$slug = $this->get_woo_extension_slug_by_id( $id );
+					if ( in_array( $slug, $this->theme_slugs, true ) ) {
+						return 'theme';
+					}
+
+					return 'plugin';
+				}
+			};
+		};
+
 		// Before instantiating RunE2ECommand, override the WooExtensionsList dependency:
 		App::when( RunE2ECommand::class )
 		   ->needs( WooExtensionsList::class )
-		   ->give( function () {
-			   $cache        = App::make( Cache::class );
-			   $manager_sync = App::make( ManagerSync::class );
+		   ->give( $mocked_woo_extension_list );
 
-			   return new class( $cache, $manager_sync ) extends WooExtensionsList {
-				   protected $theme_slugs = [
-					   'storefront',
-					   'deli-theme',
-					   'boutique',
-					   'blocksy',
-					   'hestia',
-					   'twentytwentyone',
-				   ];
-
-				   public function __construct( Cache $cache, ManagerSync $manager_sync ) {
-					   parent::__construct( $cache, $manager_sync );
-				   }
-
-				   public function get_woo_extension_slug_by_id( $id ): string {
-					   // Assign different IDs for each known theme so we can detect them:
-					   switch ( $id ) {
-						   case 999:
-							   return 'storefront';
-						   case 998:
-							   return 'deli-theme';
-						   case 997:
-							   return 'boutique';
-						   case 996:
-							   return 'blocksy';
-						   case 995:
-							   return 'hestia';
-						   case 994:
-							   return 'twentytwentyone';
-					   }
-
-					   return 'woocommerce-amazon-s3-storage'; // default plugin
-				   }
-
-				   public function get_woo_extension_id_by_slug( $slug ): int {
-					   // Map each theme slug to a unique ID
-					   switch ( $slug ) {
-						   case 'storefront':
-							   return 999;
-						   case 'deli-theme':
-							   return 998;
-						   case 'boutique':
-							   return 997;
-						   case 'blocksy':
-							   return 996;
-						   case 'hestia':
-							   return 995;
-						   case 'twentytwentyone':
-							   return 994;
-					   }
-
-					   return 123; // default plugin ID
-				   }
-
-				   public function get_woo_extension_type( $id ): string {
-					   $slug = $this->get_woo_extension_slug_by_id( $id );
-					   if ( in_array( $slug, $this->theme_slugs, true ) ) {
-						   return 'theme';
-					   }
-
-					   return 'plugin';
-				   }
-			   };
-		   } );
+		App::when( ConfigurationProcessor::class )
+		   ->needs( WooExtensionsList::class )
+		   ->give( $mocked_woo_extension_list );
 
 		// Mock the get-dependencies endpoint
 		App::setVar(
@@ -780,6 +789,37 @@ class RunE2ECommandTest extends QITTestCase {
 		$output = $this->application_tester->getDisplay();
 		$this->assertMatchesJsonSnapshot($output);
 	}
+
+	public function test_numeric_plugin_id_with_qit_config() {
+		putenv('QIT_TESTING_ENV_CONFIG=1');
+		$fixture_dir = $this->scenarios_dir . 'scenario-numeric-plugin-id-with-qit';
+		chdir($fixture_dir);
+
+		// Mock the manager extensions so that ID 2165910 maps to woocommerce-shipping.
+		App::setVar(
+			sprintf('mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-extensions'),
+			json_encode([
+				'extensions' => [
+					[
+						'id' => 2165910,
+						'slug' => 'woocommerce-shipping',
+						'type' => 'plugin'
+					]
+				]
+			])
+		);
+
+		// Run with qit.yml defined plus a numeric plugin ID from CLI.
+		$this->application_tester->run([
+			'command'       => 'run:e2e',
+			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'--woo'         => '7.1'
+		]);
+
+		$output = $this->application_tester->getDisplay();
+		$this->assertMatchesJsonSnapshot($output);
+	}
+
 
 
 }

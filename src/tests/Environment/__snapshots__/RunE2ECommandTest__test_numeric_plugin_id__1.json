@@ -12,7 +12,7 @@
             "action": "test"
         },
         {
-            "slug": "2165910",
+            "slug": "woocommerce-shipping",
             "source": "2165910",
             "test_tags": [
                 "default"

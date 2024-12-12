@@ -5,17 +5,22 @@ namespace QIT_CLI\LocalTests;
 use QIT_CLI\App;
 use QIT_CLI\Environment\EnvConfigLoader;
 use QIT_CLI\Environment\Extension;
+use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Input\InputInterface;
 
 class ConfigurationProcessor {
 	/** @var EnvConfigLoader */
 	protected $config_loader;
 
+	/** @var WooExtensionsList */
+	protected $woo_extensions_list;
+
 	/** @var bool */
 	protected $is_development;
 
-	public function __construct( EnvConfigLoader $config_loader ) {
-		$this->config_loader = $config_loader;
+	public function __construct( EnvConfigLoader $config_loader, WooExtensionsList $woo_extensions_list ) {
+		$this->config_loader       = $config_loader;
+		$this->woo_extensions_list = $woo_extensions_list;
 	}
 
 	/**
@@ -224,10 +229,21 @@ class ConfigurationProcessor {
 		}
 
 		foreach ( $cli_plugins as $cli_plugin ) {
-			$parts      = explode( ':', $cli_plugin );
-			$cli_slug   = $parts[0];
-			$cli_action = Extension::ACTIONS['bootstrap'];
-			$cli_tags   = [];
+			$parts           = explode( ':', $cli_plugin );
+			$original_source = $parts[0];
+			$cli_slug        = $parts[0]; // This will be changed if numeric
+			$cli_action      = Extension::ACTIONS['bootstrap'];
+			$cli_tags        = [];
+
+			// Handle numeric plugin IDs
+			if ( is_numeric( $cli_slug ) ) {
+				try {
+					$resolved_slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $cli_slug );
+					$cli_slug      = $resolved_slug;
+				} catch ( \Exception $e ) {
+					throw new \RuntimeException( "Failed to resolve extension ID {$cli_slug}: " . $e->getMessage() );
+				}
+			}
 
 			if ( isset( $parts[1] ) && in_array( $parts[1], Extension::ACTIONS, true ) ) {
 				$cli_action = $parts[1];
@@ -250,7 +266,7 @@ class ConfigurationProcessor {
 			if ( ! isset( $env_config['plugins'][ $cli_slug ] ) && ! isset( $env_config['themes'][ $cli_slug ] ) ) {
 				$env_config['plugins'][ $cli_slug ] = [
 					'slug'      => $cli_slug,
-					'source'    => $cli_slug,
+					'source'    => $original_source,
 					'test_tags' => empty( $cli_tags ) ? [ 'default' ] : $cli_tags,
 					'action'    => $cli_action,
 				];
