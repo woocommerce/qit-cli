@@ -6,9 +6,9 @@
             "slug": "woocommerce-amazon-s3-storage",
             "source": "\/app\/src\/tests\/data\/rune2e-scenarios\/scenario-cli-only\/woocommerce-amazon-s3-storage",
             "test_tags": [
-                "default"
+                "pre-activation"
             ],
-            "action": "activate"
+            "action": "bootstrap"
         },
         {
             "slug": "woocommerce",

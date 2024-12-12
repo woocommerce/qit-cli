@@ -5,9 +5,9 @@
         {
             "source": ".\/woocommerce-amazon-s3-storage",
             "test_tags": [
-                ".\/woocommerce-amazon-s3-storage-tests"
+                "pre-activation"
             ],
-            "action": "activate",
+            "action": "bootstrap",
             "slug": "woocommerce-amazon-s3-storage"
         },
         {

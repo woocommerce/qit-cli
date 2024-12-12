@@ -5,9 +5,9 @@
         {
             "source": ".\/woocommerce-known-plugin",
             "test_tags": [
-                "default"
+                "pre-activation"
             ],
-            "action": "activate",
+            "action": "bootstrap",
             "slug": "woocommerce-known-plugin"
         },
         {
