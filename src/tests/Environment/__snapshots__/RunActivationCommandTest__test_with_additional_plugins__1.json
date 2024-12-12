@@ -7,7 +7,7 @@
             "test_tags": [
                 "default"
             ],
-            "action": "test",
+            "action": "activate",
             "slug": "woocommerce-known-plugin"
         },
         {

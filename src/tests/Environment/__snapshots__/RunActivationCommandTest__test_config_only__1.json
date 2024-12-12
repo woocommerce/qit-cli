@@ -7,7 +7,7 @@
             "test_tags": [
                 ".\/woocommerce-amazon-s3-storage-tests"
             ],
-            "action": "test",
+            "action": "activate",
             "slug": "woocommerce-amazon-s3-storage"
         },
         {

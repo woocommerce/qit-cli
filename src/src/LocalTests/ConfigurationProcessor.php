@@ -84,7 +84,8 @@ class ConfigurationProcessor {
 				$env_up_options,
 				$env_config,
 				$input,
-				$sut_type
+				$sut_type,
+				$sut_action
 			);
 		} else {
 			// No SUT: Just handle CLI plugins/themes and skip dependencies.
@@ -120,6 +121,7 @@ class ConfigurationProcessor {
 	 * @param array<string,mixed> $env_config
 	 * @param InputInterface      $input
 	 * @param string              $sut_type
+	 * @param string|null $sut_action The SUT action provided by CLI, if any (e.g. 'bootstrap' for activation tests).
 	 *
 	 * @return void
 	 */
@@ -131,7 +133,8 @@ class ConfigurationProcessor {
 		array &$env_up_options,
 		array &$env_config,
 		InputInterface $input,
-		string $sut_type
+		string $sut_type,
+		?string $sut_action
 	): void {
 		if ( empty( $woo_extension ) ) {
 			// If no woo_extension, there's no main SUT, so skip dependencies.
@@ -167,9 +170,14 @@ class ConfigurationProcessor {
 			}
 		}
 
-		// Ensure action is 'test' if not set.
-		if ( ! isset( $sut_base['action'] ) ) {
-			$sut_base['action'] = Extension::ACTIONS['test'];
+		// If sut_action is provided, use it instead of defaulting to test
+		// Otherwise, ensure action is 'test' if not set.
+		if ( ! empty( $sut_action ) ) {
+			$sut_base['action'] = $sut_action;
+		} else {
+			if ( ! isset( $sut_base['action'] ) ) {
+				$sut_base['action'] = Extension::ACTIONS['test'];
+			}
 		}
 
 		// Place SUT in themes if sut_type is 'theme', else in plugins.
