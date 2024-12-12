@@ -41,6 +41,6 @@ abstract class QITTestCase extends TestCase {
 		if ( ! empty( $error_output ) ) {
 			$this->fail( sprintf( 'Command failed with error output: %s', $error_output ) );
 		}
-		$application->assertCommandIsSuccessful();
+		$application->assertCommandIsSuccessful( $application->getDisplay() );
 	}
 }

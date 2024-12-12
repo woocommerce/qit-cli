@@ -1,0 +1,32 @@
+{
+    "--php_version": "7.4",
+    "--wp": "6.1",
+    "--plugin": [
+        {
+            "slug": "woocommerce-amazon-s3-storage",
+            "source": "\/app\/src\/tests\/data\/rune2e-scenarios\/scenario-cli-only\/woocommerce-amazon-s3-storage",
+            "test_tags": [
+                "default"
+            ],
+            "action": "test"
+        },
+        {
+            "slug": "woocommerce",
+            "source": "woocommerce",
+            "test_tags": [
+                "activation"
+            ],
+            "action": "test"
+        }
+    ],
+    "--theme": [],
+    "--volume": [],
+    "--php_extension": [],
+    "--require": [],
+    "--object_cache": false,
+    "--skip_activating_plugins": true,
+    "--tunnel": "no_tunnel",
+    "--json": true,
+    "--env": [],
+    "--env_file": []
+}

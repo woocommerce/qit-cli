@@ -39,7 +39,8 @@ class RunActivationTestCommand extends Command {
 			->reuseOption( RunE2ECommand::getDefaultName(), 'notify' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'php_extension' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'tunnel' )
-			->reuseOption( RunE2ECommand::getDefaultName(), 'require' );
+			->reuseOption( RunE2ECommand::getDefaultName(), 'require' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'dependencies' );
 
 		$this->addOption(
 			'json',
@@ -74,7 +75,8 @@ class RunActivationTestCommand extends Command {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
-		$run_e2e_command = $this->getApplication()->find( RunE2ECommand::getDefaultName() );
+		$run_e2e_command = App::make( RunE2ECommand::class );
+		$run_e2e_command->setApplication( $this->getApplication() );
 
 		$resource_stream = fopen( 'php://temp', 'w+' );
 
