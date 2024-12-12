@@ -235,11 +235,11 @@ class ConfigurationProcessor {
 		foreach ( $cli_plugins as $cli_plugin ) {
 			$parts           = explode( ':', $cli_plugin );
 			$original_source = $parts[0];
-			$cli_slug        = $parts[0]; // This will be changed if numeric
+			$cli_slug        = $parts[0]; // This will be changed if numeric.
 			$cli_action      = Extension::ACTIONS['bootstrap'];
 			$cli_tags        = [];
 
-			// Handle numeric plugin IDs
+			// Handle numeric plugin IDs.
 			if ( is_numeric( $cli_slug ) ) {
 				try {
 					$resolved_slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $cli_slug );
@@ -457,21 +457,21 @@ class ConfigurationProcessor {
 			if ( is_numeric( $key ) ) {
 				try {
 					$resolved_slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $key );
-					// Keep original numeric ID as source if not set
+					// Keep original numeric ID as source if not set.
 					if ( ! isset( $cfg['source'] ) ) {
 						$cfg['source'] = (string) $key;
 					}
-					// Use resolved slug as new key
-					$updated_plugins[$resolved_slug] = $cfg;
+					// Use resolved slug as new key.
+					$updated_plugins[ $resolved_slug ] = $cfg;
 				} catch ( \Exception $e ) {
-					// If fails, just keep numeric key as a slug
+					// If fails, just keep numeric key as a slug.
 					if ( ! isset( $cfg['source'] ) ) {
 						$cfg['source'] = (string) $key;
 					}
-					$updated_plugins[$key] = $cfg;
+					$updated_plugins[ $key ] = $cfg;
 				}
 			} else {
-				$updated_plugins[$key] = $cfg;
+				$updated_plugins[ $key ] = $cfg;
 			}
 		}
 		$env_config['plugins'] = $updated_plugins;
