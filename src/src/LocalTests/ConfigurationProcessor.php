@@ -121,7 +121,7 @@ class ConfigurationProcessor {
 	 * @param array<string,mixed> $env_config
 	 * @param InputInterface      $input
 	 * @param string              $sut_type
-	 * @param string|null $sut_action The SUT action provided by CLI, if any (e.g. 'bootstrap' for activation tests).
+	 * @param string|null         $sut_action The SUT action provided by CLI, if any (e.g. 'bootstrap' for activation tests).
 	 *
 	 * @return void
 	 */
