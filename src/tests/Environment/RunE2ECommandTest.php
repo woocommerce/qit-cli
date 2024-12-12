@@ -751,7 +751,35 @@ class RunE2ECommandTest extends QITTestCase {
 		$this->assertMatchesJsonSnapshot($output);
 	}
 
+	public function test_numeric_plugin_id() {
+		putenv('QIT_TESTING_ENV_CONFIG=1');
+		chdir($this->scenarios_dir . 'scenario-cli-only');
 
+		// Depending on your environment, you might need to mock WooExtensionsList or ManagerSync.
+		// Here, we assume QIT CLI fetches extensions from manager and we have a mock scenario set.
+		App::setVar(
+			sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-extensions' ),
+			json_encode([
+				'extensions' => [
+					[
+						'id' => 2165910,
+						'slug' => 'woocommerce-shipping',
+						'type' => 'plugin'
+					]
+				]
+			])
+		);
+
+		$this->application_tester->run([
+			'command'       => 'run:e2e',
+			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'--plugin'      => ['2165910'],
+			'--woo'         => '7.1'
+		]);
+
+		$output = $this->application_tester->getDisplay();
+		$this->assertMatchesJsonSnapshot($output);
+	}
 
 
 }
