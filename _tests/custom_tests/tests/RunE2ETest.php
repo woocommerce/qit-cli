@@ -205,15 +205,6 @@ JS;
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
-		// "Loading environment config from override parameter /tmp/qit-env-97d237784cddc7ec1341113ca364110d.json..." Normalize "97d237784cddc7ec1341113ca364110d".
-		$output = preg_replace( '/qit-env-[a-f0-9]{32}/', 'qit-env-<hash>', $output );
-
-		// "Slow test file: [woocommerce-amazon-s3-storage-local] › woocommerce-amazon-s3-storage/local/example.spec.js (7.1s)" Normalize "7.1s".
-		$output = preg_replace( '/\d+\.\d+s/', '<time>s', $output );
-
-		// Sometimes, for some reason, this has some spaces. "Consider splitting slow test files to speed up parallel execution"
-		$output = preg_replace( '#\s+Consider#', "\nConsider", $output );
-
 		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 

@@ -12,6 +12,7 @@ trait SnapshotHelpers {
 		$actual = str_replace( rtrim( sys_get_temp_dir(), '/' ) . '/', '/tmp-normalized/', $actual );
 		$actual = str_replace( '/tmp/', '/tmp-normalized/', $actual );
 		$actual = preg_replace( '/qit-results-[a-z0-9]+/', 'qit-results-normalizedid', $actual );
+		$actual = preg_replace( '/qit-env-[a-f0-9]{32}\.json/', 'qit-env-<hash>.json', $actual );
 
 		if ( empty( getenv( 'TEST_TOKEN' ) ) ) {
 			$actual = preg_replace(
