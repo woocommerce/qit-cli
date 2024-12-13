@@ -180,7 +180,7 @@ JS;
 			$draw->setFillColor( new \ImagickPixel( 'white' ) );
 
 			// Annotate the image with the watermark
-			$draw->annotate( 0, 0, 'Watermark' );
+			$draw->annotation( 0, 0, 'Watermark' );
 
 			// Draw the watermark on the image
 			$imagick->drawImage( $draw );
