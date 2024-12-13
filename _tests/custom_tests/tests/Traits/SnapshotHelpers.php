@@ -19,6 +19,8 @@ trait SnapshotHelpers {
 			'',
 			$actual
 		);
+		// Remove lines that are just a hex string followed by a colon (layer IDs)
+		$actual = preg_replace('/^[a-f0-9]+:\r?\n/m', '', $actual);
 
 		if ( empty( getenv( 'TEST_TOKEN' ) ) ) {
 			$actual = preg_replace(
