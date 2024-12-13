@@ -356,7 +356,7 @@ function run_test_runs( array $test_runs, $tests_based_on_custom_tests ) {
 
 			Context::$to_delete[] = "{$t['path']}/sut.zip";
 
-			if ( Context::$debug_mode ) {
+			if ( Context::$debug_mode && ! in_array( $test_type, $tests_based_on_custom_tests ) ) {
 				$args[] = '-vvv';
 			}
 
