@@ -8,9 +8,9 @@ on:
   # Manually
   workflow_dispatch:
   # On push to trunk
-  push:
-    branches:
-      - trunk
+  #push:
+  #  branches:
+  #    - trunk
 
 jobs:
   activation_tests:
