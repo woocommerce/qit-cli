@@ -351,7 +351,6 @@ function run_test_runs( array $test_runs, $tests_based_on_custom_tests ) {
 				'--wait',
 				'--json',
 				'--ignore-fail',
-				'-vvv',
 				"--zip={$t['path']}/sut.zip"
 			];
 
