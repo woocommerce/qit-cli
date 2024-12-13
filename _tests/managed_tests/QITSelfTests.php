@@ -444,10 +444,9 @@ function run_test_runs( array $test_runs, $tests_based_on_custom_tests ) {
 			];
 
 			$qit_process->setEnv( $env );
-
 			add_task_id_to_process( $qit_process, $t );
-
 			$qit_run_processes[] = $qit_process;
+			$GLOBALS['parallelOutput']->registerStartTime($qit_process);
 
 			$t['qit_process'] = $qit_process;
 		}
