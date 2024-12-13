@@ -171,18 +171,13 @@ JS;
 			$imagick = new \Imagick( $image_path );
 			$draw    = new \ImagickDraw();
 
-			// Set up the drawing attributes similar to the convert command
-			$draw->setGravity( \Imagick::GRAVITY_SOUTHEAST );
+			// Set fill color to black and remove any gravity or stroke settings
+			$draw->setFillColor( new \ImagickPixel( 'black' ) );
 
-			// Stroke and fill as per the original command
-			$draw->setStrokeColor( new \ImagickPixel( '#000C' ) );
-			$draw->setStrokeWidth( 2 );
-			$draw->setFillColor( new \ImagickPixel( 'white' ) );
+			// Draw a small 40x40 black rectangle at position (10,10)
+			$draw->rectangle( 10, 10, 50, 50 );
 
-			// Annotate the image with the watermark
-			$draw->annotation( 0, 0, 'Watermark' );
-
-			// Draw the watermark on the image
+			// Apply the drawing to the image
 			$imagick->drawImage( $draw );
 			$imagick->writeImage( $image_path );
 
