@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "",
+            "test_summary": "Errors: 300 Warnings: 42",
             "debug_log": "",
             "version": "0.1-test-version",
             "update_complete": true,
@@ -3461,7 +3461,41 @@
                             }
                         }
                     },
-                    "semgrep": [],
+                    "semgrep": {
+                        "totals": {
+                            "errors": 0,
+                            "warnings": 2,
+                            "fixable": 0
+                        },
+                        "files": {
+                            "\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
+                                "errors": 0,
+                                "warnings": 2,
+                                "messages": [
+                                    {
+                                        "line": 9,
+                                        "column": 15,
+                                        "type": "WARNING",
+                                        "message": "Potential SQLi due to user input used in DB sinks. esc_sql() is not considered a sanitizer as input\\ncould be used inside a statement w\\/o quote\\n",
+                                        "source": "audit.php.wp.security.sqli.input-in-sinks",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "codeFragment": "$wpdb->query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . $_GET[\'title\'] . \\"\';\\" ); \\/\\/ Bad."
+                                    },
+                                    {
+                                        "line": 125,
+                                        "column": 24,
+                                        "type": "WARNING",
+                                        "message": "Potential SQLi due to user input used in DB sinks. esc_sql() is not considered a sanitizer as input\\ncould be used inside a statement w\\/o quote\\n",
+                                        "source": "audit.php.wp.security.sqli.input-in-sinks",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "codeFragment": "\\t-> \\/*comment*\\/ query( \\"SELECT * FROM $wpdb->posts WHERE post_title LIKE \'\\" . $_GET[\'title\'] . \\"\';\\" ); \\/\\/ Bad."
+                                    }
+                                ]
+                            }
+                        }
+                    },
                     "composer_audit": [],
                     "npm_audit": [],
                     "wpscan_audit": []
