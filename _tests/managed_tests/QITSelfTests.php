@@ -521,12 +521,39 @@ function run_test_runs( array $test_runs, $tests_based_on_custom_tests ) {
 	}
 
 	if ( ! empty( $did_not_run ) ) {
-		echo "The following tests did not run:\n" . implode( "\n", array_map( function ( $test ) {
-				$header = $test['process']->getEnv()['qit_task_id'] ?? '';
-				$buffer = $test['json_buffer'];
+		echo "The following tests did not run:\n";
+		foreach ( $did_not_run as $test ) {
+			$process = $test['process'];
+			$header  = $process->getEnv()['qit_task_id'] ?? '';
+			$buffer  = $test['json_buffer'];
 
-				return "[$header]: Test did not run.\n" . ( ! empty( $buffer ) ? "JSON Buffer: $buffer\n" : '' );
-			}, $did_not_run ) );
+			echo "[$header]: Test did not run.\n";
+
+			// Add more details
+			echo "Command: " . $process->getCommandLine() . "\n";
+
+			// If the process ended, we can show the exit code
+			if ( ! $process->isRunning() ) {
+				echo "Exit code: " . $process->getExitCode() . "\n";
+			}
+
+			// Show any stderr output captured
+			$errorOutput = trim( $process->getErrorOutput() );
+			if ( ! empty( $errorOutput ) ) {
+				echo "Error output:\n" . $errorOutput . "\n";
+			} else {
+				echo "No error output.\n";
+			}
+
+			// Show JSON buffer if available
+			if ( ! empty( $buffer ) ) {
+				echo "JSON Buffer: $buffer\n";
+			}
+
+			// Show relevant environment variables
+			$env = $process->getEnv();
+			echo "Environment variables used:\n" . print_r( $env, true ) . "\n";
+		}
 		die( 1 );
 	}
 
