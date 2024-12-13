@@ -164,12 +164,27 @@ JS;
 
 		$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
 
-		// Check if ImageMagick command is available.
-		exec( "magick --version", $output, $return_var );
-		if ( $return_var === 0 ) {
-			// Modify the image using ImageMagick's convert command
+		if ( extension_loaded( 'imagick' ) ) {
 			$image_path = $scaffolded_dir . '/__snapshots__/activate-theme.spec.js/home.png';
-			exec( "magick $image_path -gravity southeast -stroke '#000C' -strokewidth 2 -annotate 0 'Watermark' -stroke none -fill white -annotate 0 'Watermark' $image_path" );
+
+			// Load the image into Imagick
+			$imagick = new \Imagick( $image_path );
+			$draw    = new \ImagickDraw();
+
+			// Set up the drawing attributes similar to the convert command
+			$draw->setGravity( \Imagick::GRAVITY_SOUTHEAST );
+
+			// Stroke and fill as per the original command
+			$draw->setStrokeColor( new \ImagickPixel( '#000C' ) );
+			$draw->setStrokeWidth( 2 );
+			$draw->setFillColor( new \ImagickPixel( 'white' ) );
+
+			// Annotate the image with the watermark
+			$draw->annotate( 0, 0, 'Watermark' );
+
+			// Draw the watermark on the image
+			$imagick->drawImage( $draw );
+			$imagick->writeImage( $image_path );
 
 			// Run the third time to check for snapshot failure.
 			$output = qit( [
@@ -182,7 +197,7 @@ JS;
 
 			$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
 		} else {
-			$this->markTestSkipped( 'ImageMagick convert command is not available.' );
+			$this->markTestSkipped( 'Imagick extension is not available.' );
 		}
 	}
 
