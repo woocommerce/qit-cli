@@ -34,7 +34,7 @@ class RequestBuilder {
 	protected $retry_429 = 5;
 
 	/** @var int */
-	protected $timeout_in_seconds = 15;
+	protected $timeout_in_seconds = 30;
 
 	public function __construct( string $url = '' ) {
 		$this->url = $url;
