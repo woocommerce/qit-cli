@@ -6,6 +6,10 @@ on:
     - cron: '0 23 * * *'
   # Manually
   workflow_dispatch:
+  # On push to trunk
+  push:
+    branches:
+      - trunk
 
 jobs:
   self_test_custom_test:
