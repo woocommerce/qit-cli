@@ -13,9 +13,9 @@ trait SnapshotHelpers {
 		$actual = str_replace( '/tmp/', '/tmp-normalized/', $actual );
 		$actual = preg_replace( '/qit-results-[a-z0-9]+/', 'qit-results-normalizedid', $actual );
 		$actual = preg_replace( '/qit-env-[a-f0-9]{32}\.json/', 'qit-env-<hash>.json', $actual );
-		// Remove all Docker pull-related lines regardless of image name
+		// Remove Docker pull-related lines
 		$actual = preg_replace(
-			'/^(?:Unable to find image .*?locally|.*Pulling fs layer.*|.*Verifying Checksum.*|.*Download complete.*|.*Pull complete.*|Digest:.*|Status: Downloaded newer image for .*?)\r?\n/m',
+			'/^(?:Unable to find image .*?locally|.*Pulling fs layer.*|.*Verifying Checksum.*|.*Download complete.*|.*Pull complete.*|Digest:.*|Status: Downloaded newer image for .*?|.*: Pulling from .*|.*Waiting.*)\r?\n/m',
 			'',
 			$actual
 		);
