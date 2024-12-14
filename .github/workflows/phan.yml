@@ -5,6 +5,10 @@ on:
       - 'src/**.php'
   workflow_dispatch:
 
+concurrency:
+  group: phan-tests-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   phan_tests:
     runs-on: ubuntu-latest
@@ -16,7 +20,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Restore Docker image using reusable workflow
+      - name: Reuse Docker restore & build
         uses: ./.github/workflows/restore-docker-cache.yml
         with:
           php-version: ${{ matrix.php }}

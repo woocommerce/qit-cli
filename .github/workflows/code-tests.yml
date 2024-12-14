@@ -5,17 +5,22 @@ on:
     paths:
       - 'src/**.php'
 
+concurrency:
+  group: code-tests-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   code_tests:
     name: Code tests
     runs-on: ubuntu-20.04
-    env:
-      DEFAULT_PHP_VERSION: 8.3
     steps:
-      - name: Restore Docker image using reusable workflow
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Reuse Docker restore & build
         uses: ./.github/workflows/restore-docker-cache.yml
         with:
-          php-version: ${{ env.DEFAULT_PHP_VERSION }}
+          php-version: 8.3  # Using default PHP version 8.3
 
       - uses: actions/cache@v3
         id: cache-composer
