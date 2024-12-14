@@ -22,8 +22,10 @@ runs:
       run: |
         docker build --build-arg CI=true --build-arg PHP_VERSION=${{ inputs.php-version }} -t qit-cli-tests:${{ inputs.php-version }} ./_build/docker/php
         docker save qit-cli-tests:${{ inputs.php-version }} -o qit-cli-tests-${{ inputs.php-version }}.tar
+      shell: bash
 
     - name: Load Docker image from cache
       if: steps.cache-docker.outputs.cache-hit == 'true'
       run: |
         docker load -i qit-cli-tests-${{ inputs.php-version }}.tar
+      shell: bash
