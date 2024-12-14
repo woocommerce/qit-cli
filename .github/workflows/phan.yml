@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   restore_docker_cache:
-    uses: ./.github/workflows/restore-docker-cache.yml@main
+    uses: ./.github/workflows/restore-docker-cache.yml
     with:
       php-version: ${{ matrix.php }}
 
