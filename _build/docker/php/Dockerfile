@@ -8,6 +8,9 @@ RUN apt-get update \
     && docker-php-ext-install zip pcntl \
     && docker-php-ext-enable zip pcntl
 
+# Install php-ast
+RUN pecl install ast && docker-php-ext-enable ast
+
 # Install Xdebug only if not in CI environment and PHP major version >= 8
 RUN if [ "$CI" != "true" ] && [ "${PHP_VERSION%%.*}" -ge 8 ]; then \
         pecl install xdebug && docker-php-ext-enable xdebug; \

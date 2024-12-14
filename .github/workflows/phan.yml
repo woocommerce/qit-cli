@@ -3,10 +3,52 @@ on:
   pull_request:
     paths:
       - 'src/**.php'
+  workflow_dispatch:
 
 jobs:
   phan_tests:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
+
     steps:
-      - name: Echo Bogus
-        run: echo "Bogus workflow to allow PR-based testing."
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Restore Docker image cache for qit-cli-tests:<version>
+      - name: Restore Docker image cache
+        uses: actions/cache@v3
+        id: cache-docker
+        with:
+          path: qit-cli-tests-${{ matrix.php }}.tar
+          key: ${{ runner.os }}-qit-cli-tests-${{ matrix.php }}-${{ hashFiles('_build/docker/php/**') }}
+
+      - name: Build Docker image if needed
+        if: steps.cache-docker.outputs.cache-hit != 'true'
+        run: |
+          docker build --build-arg CI=true --build-arg PHP_VERSION=${{ matrix.php }} -t qit-cli-tests:${{ matrix.php }} ./_build/docker/php
+          docker save qit-cli-tests:${{ matrix.php }} -o qit-cli-tests-${{ matrix.php }}.tar
+
+      - name: Load Docker image from cache
+        if: steps.cache-docker.outputs.cache-hit == 'true'
+        run: |
+          docker load -i qit-cli-tests-${{ matrix.php }}.tar
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v3
+        id: cache-composer
+        with:
+          path: src/vendor
+          key: ${{ runner.os }}-php-${{ matrix.php }}-${{ hashFiles('src/composer.lock') }}
+
+      - name: Composer install
+        if: steps.cache-composer.outputs.cache-hit != 'true'
+        run: |
+          cd src
+          composer install --no-interaction --no-suggest --prefer-dist
+
+      - name: Run Phan
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        run: make phan

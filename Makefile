@@ -20,22 +20,25 @@ DOCKER_USER ?= "$(shell id -u):$(shell id -g)"
 endif
 
 ## Run a command inside a PHP CLI Docker image built for a specific PHP_VERSION.
-## 1. Command to execute, e.g.: "./vendor/bin/phpcs"
+## 1. Command to execute, e.g.: "php /app/src/vendor/bin/phpcs"
 ## 2. Working dir (optional)
 define execPhpAlpine
-    @docker image inspect qit-cli-tests:$(PHP_VERSION) > /dev/null 2>&1 || \
-    (echo "Docker image not found. Building qit-cli-tests:$(PHP_VERSION)..." && \
-     docker build --build-arg CI=${CI} --build-arg PHP_VERSION=$(PHP_VERSION) -t qit-cli-tests:$(PHP_VERSION) ./_build/docker/php)
+	@docker image inspect qit-cli-tests:$(PHP_VERSION) > /dev/null 2>&1 || \
+	(echo "Docker image not found. Building qit-cli-tests:$(PHP_VERSION)..." && \
+	 docker build --build-arg CI=${CI} --build-arg PHP_VERSION=$(PHP_VERSION) -t qit-cli-tests:$(PHP_VERSION) ./_build/docker/php)
 
-    @docker run --rm \
-        --user $(DOCKER_USER) \
-        -v "${PWD}:/app" \
-        -v "${PWD}/_build/docker/php/ini/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini" \
-        --env QIT_HOME=/tmp \
-        --env PHP_IDE_CONFIG=serverName=qit_cli \
-        --workdir "$(2:=/)" \
-        qit-cli-tests:$(PHP_VERSION) \
-        bash -c "php -d xdebug.start_with_request=$(if $(filter 1,$(DEBUG)),yes,no) -d memory_limit=1G $(1)"
+	@docker run --rm \
+		--user $(DOCKER_USER) \
+		-v "${PWD}:/app" \
+		-v "${PWD}/_build/docker/php/ini/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini" \
+		--env QIT_HOME=/tmp \
+		--env PHP_IDE_CONFIG=serverName=qit_cli \
+		--env TARGET_PHP_VERSION=$(PHP_VERSION) \
+		--env PHAN_DISABLE_XDEBUG_WARN=1 \
+		--env PHAN_ALLOW_XDEBUG=1 \
+		--workdir "$(2:=/)" \
+		qit-cli-tests:$(PHP_VERSION) \
+		bash -c "$(1)"
 endef
 
 watch:
@@ -66,23 +69,36 @@ tests:
 	$(MAKE) phpunit
 	$(MAKE) phan
 
+tests-all:
+	$(MAKE) phpcs
+	$(MAKE) phpstan
+	$(MAKE) phpunit-all
+	$(MAKE) phan-all
+
 phpcbf:
-	$(call execPhpAlpine,/app/src/vendor/bin/phpcbf /app/src/qit-cli.php /app/src/src -s --standard=/app/src/.phpcs.xml.dist)
+	$(call execPhpAlpine,php /app/src/vendor/bin/phpcbf /app/src/qit-cli.php /app/src/src -s --standard=/app/src/.phpcs.xml.dist)
 
 phpcs:
 	$(MAKE) phpcbf || true
-	$(call execPhpAlpine,/app/src/vendor/bin/phpcs /app/src/qit-cli.php /app/src/src -s --standard=/app/src/.phpcs.xml.dist)
+	$(call execPhpAlpine,php /app/src/vendor/bin/phpcs /app/src/qit-cli.php /app/src/src -s --standard=/app/src/.phpcs.xml.dist)
 
+# Added --memory-limit=1G here
 phpstan:
-	$(call execPhpAlpine,/app/src/vendor/bin/phpstan -vvv analyse -c /app/src/phpstan.neon)
+	$(call execPhpAlpine,php /app/src/vendor/bin/phpstan -vvv analyse -c /app/src/phpstan.neon --memory-limit=1G)
 
 phpunit:
-	$(call execPhpAlpine,/app/src/vendor/bin/phpunit -c /app/src/phpunit.xml.dist $(ARGS))
+	$(call execPhpAlpine,php /app/src/vendor/bin/phpunit -c /app/src/phpunit.xml.dist $(ARGS),/app/src)
 
 phpunit-all:
 	@for ver in $(PHP_VERSIONS); do \
 		echo "Running PHPUnit on PHP $$ver..."; \
 		$(MAKE) phpunit PHP_VERSION=$$ver || exit 1; \
+	done
+
+phan-all:
+	@for ver in $(PHP_VERSIONS); do \
+		echo "Running Phan on PHP $$ver..."; \
+		$(MAKE) phan PHP_VERSION=$$ver || exit 1; \
 	done
 
 check-php-versions:
@@ -93,8 +109,11 @@ check-php-versions:
 		echo "-----------------------------------"; \
 	done
 
+rebuild-images:
+	@for ver in $(PHP_VERSIONS); do \
+		echo "Rebuilding qit-cli-tests:$$ver..."; \
+		docker build --no-cache --build-arg CI=${CI} --build-arg PHP_VERSION=$$ver -t qit-cli-tests:$$ver ./_build/docker/php || exit 1; \
+	done
+
 phan:
-	docker run --rm \
-		-v ${PWD}/src:/mnt/src \
-		-u "$$(id -u):$$(id -g)" \
-		phanphp/phan:latest $(ARGS)
+	$(call execPhpAlpine,php -d xdebug.mode=off /app/src/vendor/bin/phan $(ARGS),/app/src)
