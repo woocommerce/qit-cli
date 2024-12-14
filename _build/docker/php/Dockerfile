@@ -1,5 +1,4 @@
 # Use an ARG for the PHP version. Default to 8.3 if not provided.
-# Make a change to Dockerfile
 ARG PHP_VERSION=8.3
 FROM php:${PHP_VERSION}-cli
 
