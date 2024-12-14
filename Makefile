@@ -6,8 +6,10 @@
 ROOT ?= 0
 DEBUG ?= 0
 ARGS ?=
-PHP_VERSION ?= 8.3
 VERSION ?= qit_dev_build
+
+PHP_VERSIONS = 7.2 7.3 7.4 8.0 8.1 8.2 8.3 8.4
+PHP_VERSION ?= 8.3
 
 ifeq (1, $(ROOT))
 DOCKER_USER ?= "0:0"
@@ -76,6 +78,20 @@ phpstan:
 
 phpunit:
 	$(call execPhpAlpine,/app/src/vendor/bin/phpunit -c /app/src/phpunit.xml.dist $(ARGS))
+
+phpunit-all:
+	@for ver in $(PHP_VERSIONS); do \
+		echo "Running PHPUnit on PHP $$ver..."; \
+		$(MAKE) phpunit PHP_VERSION=$$ver || exit 1; \
+	done
+
+check-php-versions:
+	@for ver in $(PHP_VERSIONS); do \
+		echo "Checking PHP version in qit-cli-php-$$ver..."; \
+		docker image inspect qit-cli-php-$$ver >/dev/null 2>&1 || (echo "Image not found for $$ver, building..." && docker build --build-arg CI=${CI} --build-arg PHP_VERSION=$$ver -t qit-cli-php-$$ver ./_build/docker/php); \
+		docker run --rm qit-cli-php-$$ver php -v; \
+		echo "-----------------------------------"; \
+	done
 
 phan:
 	docker run --rm \
