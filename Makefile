@@ -81,11 +81,11 @@ PHPUNIT_CMD = vendor/bin/phpunit -c /app/src/phpunit.xml.dist $(ARGS)
 
 phpunit:
 ifeq ($(CI),true)
-	# In CI: run PHPUnit directly
-	cd src && vendor/bin/phpunit -c phpunit.xml.dist $(ARGS)
+	# In CI: run PHPUnit directly (assuming dependencies already installed)
+	cd src && ../vendor/bin/phpunit -c phpunit.xml.dist $(ARGS)
 else
-	# Locally: run via Docker
-	$(call execPhpAlpine,/app/src/vendor/bin/phpunit -c /app/src/phpunit.xml.dist $(ARGS))
+	# Locally: run PHPunit in Docker
+	$(call execPhpAlpine,$(PHPUNIT_CMD))
 endif
 
 phpunit-all:

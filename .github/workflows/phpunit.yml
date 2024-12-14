@@ -22,7 +22,6 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           coverage: none
-          extensions: zip
 
       - name: Cache composer dependencies
         uses: actions/cache@v3
