@@ -6,6 +6,7 @@
 ROOT ?= 0
 DEBUG ?= 0
 ARGS ?=
+PHP_VERSION ?= 8.3
 VERSION ?= qit_dev_build
 
 ifeq (1, $(ROOT))
@@ -17,16 +18,18 @@ endif
 ## Run a command inside an alpine PHP 8 CLI image.
 ## 1. Command to execute, eg: "./vendor/bin/phpcs" 2. Working dir (optional)
 define execPhpAlpine
-    @docker image inspect qit-cli-php-xdebug-pcntl > /dev/null 2>&1 || docker build --build-arg CI=${CI} -t qit-cli-php-xdebug-pcntl ./_build/docker/php83
-    docker run --rm \
+    @docker image inspect qit-cli-php-$(PHP_VERSION) > /dev/null 2>&1 || \
+    (echo "Docker image not found. Building qit-cli-php-$(PHP_VERSION)..." && \
+     docker build --build-arg CI=${CI} --build-arg PHP_VERSION=$(PHP_VERSION) -t qit-cli-php-$(PHP_VERSION) ./_build/docker/php)
+
+    @docker run --rm \
         --user $(DOCKER_USER) \
         -v "${PWD}:/app" \
-        -v "${PWD}/_build/docker/php83/ini/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini" \
+        -v "${PWD}/_build/docker/php/ini/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini" \
         --env QIT_HOME=/tmp \
         --env PHP_IDE_CONFIG=serverName=qit_cli \
         --workdir "$(2:=/)" \
-        --add-host host.docker.internal:host-gateway \
-        qit-cli-php-xdebug-pcntl \
+        qit-cli-php-$(PHP_VERSION) \
         bash -c "php -d xdebug.start_with_request=$(if $(filter 1,$(DEBUG)),yes,no) -d memory_limit=1G $(1)"
 endef
 
