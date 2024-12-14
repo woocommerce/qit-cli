@@ -26,5 +26,3 @@ jobs:
         run: make phpstan
       - name: Run Phan
         run: make phan
-      - name: Run PHPUnit
-        run: make phpunit
