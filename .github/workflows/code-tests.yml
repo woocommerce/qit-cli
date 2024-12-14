@@ -13,6 +13,9 @@ jobs:
   code_tests:
     runs-on: ubuntu-20.04
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Restore Docker Cache (default PHP 8.3)
         uses: ./.github/actions/restore-docker-cache
         with:
