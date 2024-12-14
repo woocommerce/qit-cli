@@ -1,0 +1,32 @@
+name: Restore Docker Image Cache
+on:
+  workflow_call:
+    inputs:
+      php-version:
+        required: true
+        type: string
+
+jobs:
+  restore-docker-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Restore Docker image cache
+        uses: actions/cache@v3
+        id: cache-docker
+        with:
+          path: qit-cli-tests-${{ inputs.php-version }}.tar
+          key: ${{ runner.os }}-qit-cli-tests-${{ inputs.php-version }}-${{ hashFiles('_build/docker/php/**') }}
+
+      - name: Build Docker image if needed
+        if: steps.cache-docker.outputs.cache-hit != 'true'
+        run: |
+          docker build --build-arg CI=true --build-arg PHP_VERSION=${{ inputs.php-version }} -t qit-cli-tests:${{ inputs.php-version }} ./_build/docker/php
+          docker save qit-cli-tests:${{ inputs.php-version }} -o qit-cli-tests-${{ inputs.php-version }}.tar
+
+      - name: Load Docker image from cache
+        if: steps.cache-docker.outputs.cache-hit == 'true'
+        run: |
+          docker load -i qit-cli-tests-${{ inputs.php-version }}.tar

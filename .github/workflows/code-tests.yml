@@ -12,29 +12,10 @@ jobs:
     env:
       DEFAULT_PHP_VERSION: 8.3
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # Attempt to restore cached Docker image tarball for the default PHP version
-      - name: Restore Docker image cache
-        uses: actions/cache@v3
-        id: cache-docker
+      - name: Restore Docker image using reusable workflow
+        uses: ./.github/workflows/restore-docker-cache.yml
         with:
-          path: qit-cli-tests-${{ env.DEFAULT_PHP_VERSION }}.tar
-          key: ${{ runner.os }}-qit-cli-tests-${{ env.DEFAULT_PHP_VERSION }}-${{ hashFiles('_build/docker/php/**') }}
-
-      # If not cached, build the Docker image for this default PHP version
-      - name: Build Docker image if needed
-        if: steps.cache-docker.outputs.cache-hit != 'true'
-        run: |
-          docker build --build-arg CI=true --build-arg PHP_VERSION=${{ env.DEFAULT_PHP_VERSION }} -t qit-cli-tests:${{ env.DEFAULT_PHP_VERSION }} ./_build/docker/php
-          docker save qit-cli-tests:${{ env.DEFAULT_PHP_VERSION }} -o qit-cli-tests-${{ env.DEFAULT_PHP_VERSION }}.tar
-
-      # If image is cached, load it
-      - name: Load Docker image from cache
-        if: steps.cache-docker.outputs.cache-hit == 'true'
-        run: |
-          docker load -i qit-cli-tests-${{ env.DEFAULT_PHP_VERSION }}.tar
+          php-version: ${{ env.DEFAULT_PHP_VERSION }}
 
       - uses: actions/cache@v3
         id: cache-composer
