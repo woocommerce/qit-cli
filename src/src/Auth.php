@@ -11,7 +11,7 @@ class Auth {
 	}
 
 	/**
-	 * @return string|null base64 encoded string of user:application_password, or null if not defined.
+	 * @return string|null base64 encoded string of "user:application_password", or null if not defined.
 	 */
 	public function get_partner_auth() {
 		// Migrate "application_password" to "qit_token" if it exists.
