@@ -1,0 +1,12 @@
+name: PHPUnit Tests
+on:
+  pull_request:
+    paths:
+      - 'src/**.php'
+
+jobs:
+  phpunit_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo Bogus
+        run: echo "Bogus workflow to allow PR-based testing."
