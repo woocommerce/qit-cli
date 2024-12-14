@@ -18,9 +18,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Reuse Docker restore & build
-        uses: ./.github/workflows/restore-docker-cache.yml
+        uses: ./.github/workflows/restore-docker-cache.yml@main
         with:
-          php-version: 8.3  # Using default PHP version 8.3
+          php-version: 8.3
 
       - uses: actions/cache@v3
         id: cache-composer
