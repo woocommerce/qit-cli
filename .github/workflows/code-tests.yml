@@ -10,17 +10,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  restore_docker_cache:
+    uses: ./.github/workflows/restore-docker-cache.yml@main
+    with:
+      php-version: "8.3"
+
   code_tests:
-    name: Code tests
     runs-on: ubuntu-20.04
+    needs: restore_docker_cache
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Reuse Docker restore & build
-        uses: ./.github/workflows/restore-docker-cache.yml@main
-        with:
-          php-version: 8.3
 
       - uses: actions/cache@v3
         id: cache-composer

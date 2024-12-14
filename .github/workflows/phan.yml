@@ -10,8 +10,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  restore_docker_cache:
+    uses: ./.github/workflows/restore-docker-cache.yml@main
+    with:
+      php-version: ${{ matrix.php }}
+
   phan_tests:
     runs-on: ubuntu-latest
+    needs: restore_docker_cache
     strategy:
       matrix:
         php: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4']
@@ -19,11 +25,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Reuse Docker restore & build
-        uses: ./.github/workflows/restore-docker-cache.yml@main
-        with:
-          php-version: ${{ matrix.php }}
 
       - name: Cache composer dependencies
         uses: actions/cache@v3
