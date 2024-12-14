@@ -101,36 +101,21 @@ class ConfigurationProcessor {
 		}
 
 		if ( App::getVar( 'QIT_ACTIVATION_TEST' ) ) {
-			// We are in an activation test scenario.
-			// $activation_mode can be 'woo' or 'non-woo' depending on SUT type.
+			foreach ( [ 'plugin', 'theme' ] as $type ) {
+				$key = "--$type";
 
-			// Handle plugins.
-			if ( isset( $env_up_options['--plugin'] ) && is_array( $env_up_options['--plugin'] ) ) {
-				foreach ( $env_up_options['--plugin'] as &$plugin ) {
-					if ( isset( $plugin['slug'] ) && $plugin['slug'] === 'woocommerce' ) {
-						$plugin['action']    = Extension::ACTIONS['test'];
-						$plugin['test_tags'] = [ 'activation' ];
-					} else {
-						// Everything else is bootstrap/pre-activation.
-						$plugin['action']    = Extension::ACTIONS['bootstrap'];
-						$plugin['test_tags'] = [ 'pre-activation' ];
+				if ( isset( $env_up_options[ $key ] ) && is_array( $env_up_options[ $key ] ) ) {
+					foreach ( $env_up_options[ $key ] as &$item ) {
+						if ( isset( $item['slug'] ) && $item['slug'] === 'woocommerce' ) {
+							$item['action']    = Extension::ACTIONS['test'];
+							$item['test_tags'] = [ 'activation' ];
+						} else {
+							$item['action']    = Extension::ACTIONS['bootstrap'];
+							$item['test_tags'] = [ 'pre-activation' ];
+						}
 					}
+					unset( $item );
 				}
-				unset( $plugin );
-			}
-
-			// Handle themes similarly if needed.
-			if ( isset( $env_up_options['--theme'] ) && is_array( $env_up_options['--theme'] ) ) {
-				foreach ( $env_up_options['--theme'] as &$theme ) {
-					if ( isset( $theme['slug'] ) && $theme['slug'] === 'woocommerce' ) {
-						$theme['action']    = Extension::ACTIONS['test'];
-						$theme['test_tags'] = [ 'activation' ];
-					} else {
-						$theme['action']    = Extension::ACTIONS['bootstrap'];
-						$theme['test_tags'] = [ 'pre-activation' ];
-					}
-				}
-				unset( $theme );
 			}
 		}
 
