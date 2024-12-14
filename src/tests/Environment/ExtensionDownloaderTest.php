@@ -82,12 +82,12 @@ class ExtensionDownloaderTest extends TestCase {
 
 	public function test_categorize_extensions() {
 		$plugins = [
-			$this->make_extension( 'plugin', slug: 'plugin1' ),
-			$this->make_extension( 'plugin', slug: 'plugin2' ),
+			$this->make_extension( 'plugin', 'plugin1' ),
+			$this->make_extension( 'plugin', 'plugin2' ),
 		];
 		$themes  = [
-			$this->make_extension( 'theme', slug: 'theme1' ),
-			$this->make_extension( 'theme', slug: 'theme2' ),
+			$this->make_extension( 'theme', 'theme1' ),
+			$this->make_extension( 'theme', 'theme2' ),
 		];
 
 		$this->assertMatchesJsonSnapshot( $this->sut->categorize_extensions( $plugins, $themes, '/tmp/cache/' ) );
@@ -95,34 +95,23 @@ class ExtensionDownloaderTest extends TestCase {
 
 	public function test_numeric_extensions() {
 		$plugins = [
-			$this->make_extension( 'plugin', slug: 'plugin1', source: '123' ),
-			$this->make_extension( 'plugin', slug: 'plugin2', source: '456' ),
+			$this->make_extension( 'plugin', 'plugin1', '123' ),
+			$this->make_extension( 'plugin', 'plugin2', '456' ),
 		];
 		$themes  = [
-			$this->make_extension( 'theme', slug: 'theme1', source: '789' ),
+			$this->make_extension( 'theme', 'theme1', '789' ),
 		];
 		$this->assertMatchesJsonSnapshot( $this->sut->categorize_extensions( $plugins, $themes, '/tmp/cache/' ) );
 	}
 
 	public function test_valid_ur_extensions() {
 		$plugins = [
-			$this->make_extension( 'plugin', source: 'http://example.com/plugin.zip' ),
-			$this->make_extension( 'plugin', source: 'https://example.com/plugin2.zip' ),
+			$this->make_extension( 'plugin', null, 'http://example.com/plugin.zip' ),
+			$this->make_extension( 'plugin', null, 'https://example.com/plugin2.zip' ),
 		];
 		$themes  = [];
 		$this->assertMatchesJsonSnapshot( $this->sut->categorize_extensions( $plugins, $themes, '/tmp/cache/' ) );
 	}
-
-	/*
-	public function test_invalid_url_extensions() {
-		$plugins = [
-			$this->make_extension( 'plugin', source: 'http://example.com/plugin' ),
-			$this->make_extension( 'plugin', source: 'https://example.com/plugin2.tar.gz' ),
-		];
-		$this->expectException( InvalidArgumentException::class );
-		$this->sut->categorize_extensions( $plugins, [], '/tmp/cache/' );
-	}
-	*/
 
 	public function test_file_path_extensions() {
 		$plugin1 = sys_get_temp_dir() . '/plugin';
@@ -136,20 +125,20 @@ class ExtensionDownloaderTest extends TestCase {
 		$this->to_delete = [ $plugin1, $plugin2, $theme1, $theme2 ];
 
 		$plugins = [
-			$this->make_extension( 'plugin', source: $plugin1 ),
-			$this->make_extension( 'plugin', source: $plugin2 ),
+			$this->make_extension( 'plugin', null, $plugin1 ),
+			$this->make_extension( 'plugin', null, $plugin2 ),
 		];
 		$themes  = [
-			$this->make_extension( 'theme', source: $theme1 ),
-			$this->make_extension( 'theme', source: $theme2 ),
+			$this->make_extension( 'theme', null, $theme1 ),
+			$this->make_extension( 'theme', null, $theme2 ),
 		];
 		$this->assertMatchesJsonSnapshot( $this->sut->categorize_extensions( $plugins, $themes, '/tmp/cache/' ) );
 	}
 
 	public function test_github_repository_string() {
 		$plugins = [
-			$this->make_extension( 'plugin', source: 'user/repository' ),
-			$this->make_extension( 'plugin', source: 'user2/repo2#branch' ),
+			$this->make_extension( 'plugin', null, 'user/repository' ),
+			$this->make_extension( 'plugin', null, 'user2/repo2#branch' ),
 		];
 		$this->expectException( InvalidArgumentException::class );
 		$this->sut->categorize_extensions( $plugins, [], '/tmp/cache/' );
@@ -157,10 +146,10 @@ class ExtensionDownloaderTest extends TestCase {
 
 	public function test_SSH_url() {
 		$plugins = [
-			$this->make_extension( 'plugin', source: 'ssh://example.com/plugin' ),
+			$this->make_extension( 'plugin', null, 'ssh://example.com/plugin' ),
 		];
 		$themes  = [
-			$this->make_extension( 'theme', source: 'ssh://example.com/theme' ),
+			$this->make_extension( 'theme', null, 'ssh://example.com/theme' ),
 		];
 		$this->expectException( InvalidArgumentException::class );
 		$this->sut->categorize_extensions( $plugins, $themes, '/tmp/cache/' );
@@ -168,15 +157,15 @@ class ExtensionDownloaderTest extends TestCase {
 
 	public function test_mixed_valid_and_invalid_extensions() {
 		$plugins = [
-			$this->make_extension( 'plugin', source: 'plugin' ),
-			$this->make_extension( 'plugin', source: 'http://validurl.com/plugin.zip' ),
-			$this->make_extension( 'plugin', source: 'invalidurl.com' ),
-			$this->make_extension( 'plugin', source: 'user/repo' ),
+			$this->make_extension( 'plugin', null, 'plugin' ),
+			$this->make_extension( 'plugin', null, 'http://validurl.com/plugin.zip' ),
+			$this->make_extension( 'plugin', null, 'invalidurl.com' ),
+			$this->make_extension( 'plugin', null, 'user/repo' ),
 		];
 		$themes  = [
-			$this->make_extension( 'theme', source: 'theme' ),
-			$this->make_extension( 'theme', source: '123' ),
-			$this->make_extension( 'theme', source: 'ssh://example.com/theme' ),
+			$this->make_extension( 'theme', null, 'theme' ),
+			$this->make_extension( 'theme', null, '123' ),
+			$this->make_extension( 'theme', null, 'ssh://example.com/theme' ),
 		];
 		$this->expectException( InvalidArgumentException::class );
 		$this->assertMatchesJsonSnapshot( $this->sut->categorize_extensions( $plugins, $themes, '/tmp/cache/' ) );
@@ -186,25 +175,14 @@ class ExtensionDownloaderTest extends TestCase {
 		$this->assertMatchesJsonSnapshot( $this->sut->categorize_extensions( [], [], '/tmp/cache/' ) );
 	}
 
-	/*
-	public function test_non_zip_urls_in_mixed_scenarios() {
-		$plugins = [
-			$this->make_extension( 'plugin', source: 'http://example.com/plugin' ),
-			$this->make_extension( 'plugin', source: 'https://example.com/plugin.zip' ),
-		];
-		$this->expectException( \InvalidArgumentException::class );
-		$this->sut->categorize_extensions( $plugins, [], '/tmp/cache/' );
-	}
-	*/
-
 	public function test_extensions_with_special_characters() {
 		$plugins = [
-			$this->make_extension( 'plugin', source: 'special_plugin@1.0' ),
-			$this->make_extension( 'plugin', source: 'another-plugin#version' ),
+			$this->make_extension( 'plugin', null, 'special_plugin@1.0' ),
+			$this->make_extension( 'plugin', null, 'another-plugin#version' ),
 		];
 		$themes  = [
-			$this->make_extension( 'theme', source: 'theme with spaces' ),
-			$this->make_extension( 'theme', source: 'theme_special*chars' ),
+			$this->make_extension( 'theme', null, 'theme with spaces' ),
+			$this->make_extension( 'theme', null, 'theme_special*chars' ),
 		];
 		$this->expectException( InvalidArgumentException::class );
 		$this->expectExceptionMessage( 'Could not find extension' );
@@ -213,22 +191,22 @@ class ExtensionDownloaderTest extends TestCase {
 
 	public function test_long_extension_names() {
 		$plugins = [
-			$this->make_extension( 'plugin', slug: 'this-is-a-very-long-plugin-name-that-might-exceed-typical-limits' ),
+			$this->make_extension( 'plugin', 'this-is-a-very-long-plugin-name-that-might-exceed-typical-limits' ),
 		];
 		$themes  = [
-			$this->make_extension( 'theme', slug: 'this-is-a-very-long-theme-name-that-might-exceed-typical-limits' ),
+			$this->make_extension( 'theme', 'this-is-a-very-long-theme-name-that-might-exceed-typical-limits' ),
 		];
 		$this->assertMatchesJsonSnapshot( $this->sut->categorize_extensions( $plugins, $themes, '/tmp/cache/' ) );
 	}
 
 	public function test_duplicate_entries() {
 		$plugins = [
-			$this->make_extension( 'plugin', slug: 'duplicate-plugin' ),
-			$this->make_extension( 'plugin', slug: 'duplicate-plugin' ),
+			$this->make_extension( 'plugin', 'duplicate-plugin' ),
+			$this->make_extension( 'plugin', 'duplicate-plugin' ),
 		];
 		$themes  = [
-			$this->make_extension( 'theme', slug: 'duplicate-theme' ),
-			$this->make_extension( 'theme', slug: 'duplicate-theme' ),
+			$this->make_extension( 'theme', 'duplicate-theme' ),
+			$this->make_extension( 'theme', 'duplicate-theme' ),
 		];
 		$this->expectException( InvalidArgumentException::class );
 		$this->expectExceptionMessage( 'Duplicate extension found.' );
@@ -237,21 +215,21 @@ class ExtensionDownloaderTest extends TestCase {
 
 	public function test_extensions_with_dot() {
 		$plugins = [
-			$this->make_extension( 'plugin', slug: 'plugin-v1.2.3' ),
-			$this->make_extension( 'plugin', slug: 'plugin-v4.5.6' ),
+			$this->make_extension( 'plugin', 'plugin-v1.2.3' ),
+			$this->make_extension( 'plugin', 'plugin-v4.5.6' ),
 		];
 		$themes  = [
-			$this->make_extension( 'theme', slug: 'theme-v7.8.9' ),
+			$this->make_extension( 'theme', 'theme-v7.8.9' ),
 		];
 		$this->assertMatchesJsonSnapshot( $this->sut->categorize_extensions( $plugins, $themes, '/tmp/cache/' ) );
 	}
 
 	public function test_mixed_extension_types_in_single_array() {
 		$plugins = [
-			$this->make_extension( 'plugin', source: '123' ),
-			$this->make_extension( 'plugin', source: 'https://example.com/plugin.zip' ),
-			$this->make_extension( 'plugin', source: '/path/to/plugin' ),
-			$this->make_extension( 'plugin', source: 'user/repository' ),
+			$this->make_extension( 'plugin', null, '123' ),
+			$this->make_extension( 'plugin', null, 'https://example.com/plugin.zip' ),
+			$this->make_extension( 'plugin', null, '/path/to/plugin' ),
+			$this->make_extension( 'plugin', null, 'user/repository' ),
 		];
 		$this->expectException( \InvalidArgumentException::class );
 		$this->sut->categorize_extensions( $plugins, [], '/tmp/cache/' );
@@ -259,12 +237,12 @@ class ExtensionDownloaderTest extends TestCase {
 
 	public function test_custom_handler() {
 		$plugins = [
-			$this->make_extension( 'plugin', slug: 'foo-custom-1' ),
-			$this->make_extension( 'plugin', slug: 'foo-custom-2' ),
+			$this->make_extension( 'plugin', 'foo-custom-1' ),
+			$this->make_extension( 'plugin', 'foo-custom-2' ),
 		];
 		$themes  = [
-			$this->make_extension( 'theme', slug: 'foo-custom-theme-1' ),
-			$this->make_extension( 'theme', slug: 'foo-custom-theme-2' ),
+			$this->make_extension( 'theme', 'foo-custom-theme-1' ),
+			$this->make_extension( 'theme', 'foo-custom-theme-2' ),
 		];
 		$this->assertMatchesJsonSnapshot( $this->sut->categorize_extensions( $plugins, $themes, '/tmp/cache/' ) );
 	}
