@@ -4,25 +4,54 @@ on:
   push:
     paths:
       - 'src/**.php'
+
 jobs:
   code_tests:
     name: Code tests
     runs-on: ubuntu-20.04
+    env:
+      DEFAULT_PHP_VERSION: 8.3
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      # Attempt to restore cached Docker image tarball for the default PHP version
+      - name: Restore Docker image cache
+        uses: actions/cache@v3
+        id: cache-docker
+        with:
+          path: qit-cli-tests-${{ env.DEFAULT_PHP_VERSION }}.tar
+          key: ${{ runner.os }}-qit-cli-tests-${{ env.DEFAULT_PHP_VERSION }}-${{ hashFiles('_build/docker/php/**') }}
+
+      # If not cached, build the Docker image for this default PHP version
+      - name: Build Docker image if needed
+        if: steps.cache-docker.outputs.cache-hit != 'true'
+        run: |
+          docker build --build-arg CI=true --build-arg PHP_VERSION=${{ env.DEFAULT_PHP_VERSION }} -t qit-cli-tests:${{ env.DEFAULT_PHP_VERSION }} ./_build/docker/php
+          docker save qit-cli-tests:${{ env.DEFAULT_PHP_VERSION }} -o qit-cli-tests-${{ env.DEFAULT_PHP_VERSION }}.tar
+
+      # If image is cached, load it
+      - name: Load Docker image from cache
+        if: steps.cache-docker.outputs.cache-hit == 'true'
+        run: |
+          docker load -i qit-cli-tests-${{ env.DEFAULT_PHP_VERSION }}.tar
+
       - uses: actions/cache@v3
         id: cache-composer
         with:
           path: src/vendor
           key: ${{ runner.os }}-${{ hashFiles('src/composer.lock') }}
+
       - name: Composer install
         if: steps.cache-composer.outputs.cache-hit != 'true'
         working-directory: src
         run: composer install
+
       - name: Run PHPCS
         run: make phpcs
+
       - name: Run PHPStan
         run: make phpstan
+
       - name: Run Phan
         run: make phan
