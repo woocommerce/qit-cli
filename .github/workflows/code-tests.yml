@@ -1,9 +1,9 @@
 name: QIT CLI Code tests
 on:
-  workflow_call:
-  push:
+  pull_request:
     paths:
       - 'src/**.php'
+  workflow_dispatch:
 
 concurrency:
   group: code-tests-${{ github.ref }}
