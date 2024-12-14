@@ -7,7 +7,6 @@ ROOT ?= 0
 DEBUG ?= 0
 ARGS ?=
 VERSION ?= qit_dev_build
-PHPUNIT_CMD = vendor/bin/phpunit -c /app/src/phpunit.xml.dist $(ARGS)
 
 PHP_VERSIONS = 7.2 7.3 7.4 8.0 8.1 8.2 8.3 8.4
 PHP_VERSION ?= 8.3
@@ -77,16 +76,8 @@ phpcs:
 phpstan:
 	$(call execPhpAlpine,/app/src/vendor/bin/phpstan -vvv analyse -c /app/src/phpstan.neon)
 
-PHPUNIT_CMD = vendor/bin/phpunit -c /app/src/phpunit.xml.dist $(ARGS)
-
 phpunit:
-ifeq ($(CI),true)
-	# In CI: run PHPUnit directly (assuming dependencies already installed)
-	cd src && ../vendor/bin/phpunit -c phpunit.xml.dist $(ARGS)
-else
-	# Locally: run PHPunit in Docker
-	$(call execPhpAlpine,$(PHPUNIT_CMD))
-endif
+	$(call execPhpAlpine,/app/src/vendor/bin/phpunit -c /app/src/phpunit.xml.dist $(ARGS))
 
 phpunit-all:
 	@for ver in $(PHP_VERSIONS); do \
