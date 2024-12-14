@@ -16,6 +16,7 @@
 #### Custom Tests
 
 [![QIT Self-Tests - Custom Tests](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-custom-test.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-custom-test.yml)
+[![QIT Orchestration Tests](https://github.com/woocommerce/qit-cli/actions/workflows/qit-orchestration-test.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-orchestration-test.yml)
 
 #### Test Environment
 
