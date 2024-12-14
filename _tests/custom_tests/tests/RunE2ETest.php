@@ -164,12 +164,22 @@ JS;
 
 		$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
 
-		// Check if ImageMagick command is available.
-		exec( "magick --version", $output, $return_var );
-		if ( $return_var === 0 ) {
-			// Modify the image using ImageMagick's convert command
+		if ( extension_loaded( 'imagick' ) ) {
 			$image_path = $scaffolded_dir . '/__snapshots__/activate-theme.spec.js/home.png';
-			exec( "magick $image_path -gravity southeast -stroke '#000C' -strokewidth 2 -annotate 0 'Watermark' -stroke none -fill white -annotate 0 'Watermark' $image_path" );
+
+			// Load the image into Imagick
+			$imagick = new \Imagick( $image_path );
+			$draw    = new \ImagickDraw();
+
+			// Set fill color to black and remove any gravity or stroke settings
+			$draw->setFillColor( new \ImagickPixel( 'black' ) );
+
+			// Draw a small 40x40 black rectangle at position (10,10)
+			$draw->rectangle( 10, 10, 50, 50 );
+
+			// Apply the drawing to the image
+			$imagick->drawImage( $draw );
+			$imagick->writeImage( $image_path );
 
 			// Run the third time to check for snapshot failure.
 			$output = qit( [
@@ -182,7 +192,7 @@ JS;
 
 			$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
 		} else {
-			$this->markTestSkipped( 'ImageMagick convert command is not available.' );
+			$this->markTestSkipped( 'Imagick extension is not available.' );
 		}
 	}
 
@@ -204,15 +214,6 @@ JS;
 		);
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
-
-		// "Loading environment config from override parameter /tmp/qit-env-97d237784cddc7ec1341113ca364110d.json..." Normalize "97d237784cddc7ec1341113ca364110d".
-		$output = preg_replace( '/qit-env-[a-f0-9]{32}/', 'qit-env-<hash>', $output );
-
-		// "Slow test file: [woocommerce-amazon-s3-storage-local] › woocommerce-amazon-s3-storage/local/example.spec.js (7.1s)" Normalize "7.1s".
-		$output = preg_replace( '/\d+\.\d+s/', '<time>s', $output );
-
-		// Sometimes, for some reason, this has some spaces. "Consider splitting slow test files to speed up parallel execution"
-		$output = preg_replace( '#\s+Consider#', "\nConsider", $output );
 
 		$this->assertMatchesNormalizedSnapshot( $output );
 	}

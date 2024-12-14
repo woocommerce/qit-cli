@@ -423,7 +423,13 @@ class QITE2ETestCase extends TestCase {
 							// Some things are fine to fail, we just normalize if needed.
 							continue;
 						}
-						$this->fail( 'Invalid value for key: ' . $k );
+						$this->fail(
+							sprintf(
+								'Invalid value encountered for key "%s". Value given: %s. Expected a value that passes the defined validation.',
+								$k,
+								var_export( $v, true )
+							)
+						);
 					}
 				}
 			}

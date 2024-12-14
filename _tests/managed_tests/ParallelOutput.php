@@ -33,7 +33,6 @@ class ParallelOutput {
 			$this->headers[ $taskId ]       = $process->getEnv()['qit_task_id'] . "\n";
 			$this->outputBuffer[ $taskId ]  = "";
 			$this->nonJsonOutput[ $taskId ] = $process->getEnv()['QIT_NON_JSON_OUTPUT'] ?? '';
-			$this->startTimes[ $taskId ]    = microtime( true );
 		}
 
 		if ( empty( $this->nonJsonOutput[ $taskId ] ) && ! empty( $process->getEnv()['QIT_NON_JSON_OUTPUT'] ) ) {
@@ -48,6 +47,14 @@ class ParallelOutput {
 		}
 
 		$this->updateProcessStatus( $process, $out );
+	}
+
+	public function registerStartTime( Process $process ) {
+		$taskId = $process->getEnv()['qit_task_id'];
+
+		if ( ! isset( $this->startTimes[ $taskId ] ) ) {
+			$this->startTimes[ $taskId ] = microtime( true );
+		}
 	}
 
 	protected function updateProcessStatus( Process $process, $output ) {
@@ -66,6 +73,11 @@ class ParallelOutput {
 	}
 
 	protected function formatStatusWithTime( $taskId, $status ) {
+		// If the start time for this task isn't set, default to zero.
+		if ( ! isset( $this->startTimes[ $taskId ] ) ) {
+			return "[0:00] $taskId $status";
+		}
+
 		$elapsed = max( 0, intval( microtime( true ) - $this->startTimes[ $taskId ] ) );
 		$minutes = floor( $elapsed / 60 );
 		$seconds = str_pad( (int) ceil( $elapsed % 60 ), 2, '0', STR_PAD_LEFT );

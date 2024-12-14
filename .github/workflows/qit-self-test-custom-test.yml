@@ -6,6 +6,10 @@ on:
     - cron: '0 23 * * *'
   # Manually
   workflow_dispatch:
+  # On push to trunk
+  push:
+    branches:
+      - trunk
 
 jobs:
   self_test_custom_test:
@@ -26,6 +30,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
+          extensions: imagick
           ini-values: sys_temp_dir=${{ github.workspace }}/tmp
 
       - name: Composer install
@@ -47,6 +52,8 @@ jobs:
 
       - name: Run tests in parallel
         working-directory: _tests/custom_tests
+        env:
+          QIT_NO_PULL: 1
         run: ./vendor/bin/phpunit
 
       - name: Upload results

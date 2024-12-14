@@ -12,6 +12,15 @@ trait SnapshotHelpers {
 		$actual = str_replace( rtrim( sys_get_temp_dir(), '/' ) . '/', '/tmp-normalized/', $actual );
 		$actual = str_replace( '/tmp/', '/tmp-normalized/', $actual );
 		$actual = preg_replace( '/qit-results-[a-z0-9]+/', 'qit-results-normalizedid', $actual );
+		$actual = preg_replace( '/qit-env-[a-f0-9]{32}\.json/', 'qit-env-<hash>.json', $actual );
+		// Remove Docker pull-related lines
+		$actual = preg_replace(
+			'/^(?:Unable to find image .*?locally|.*Pulling fs layer.*|.*Verifying Checksum.*|.*Download complete.*|.*Pull complete.*|Digest:.*|Status: Downloaded newer image for .*?|.*: Pulling from .*|.*Waiting.*)\r?\n/m',
+			'',
+			$actual
+		);
+		// Remove lines that are just a hex string followed by a colon (layer IDs)
+		$actual = preg_replace('/^[a-f0-9]+:\r?\n/m', '', $actual);
 
 		if ( empty( getenv( 'TEST_TOKEN' ) ) ) {
 			$actual = preg_replace(

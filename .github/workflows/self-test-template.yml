@@ -23,6 +23,8 @@ jobs:
       QIT_DISABLE_ONBOARDING: yes
 
     steps:
+      - name: Create tmp directory
+        run: mkdir -p ${{ github.workspace }}/tmp
       - name: Wait before request to avoid 429
         if: github.event_name != 'workflow_dispatch'
         run: |
@@ -103,4 +105,12 @@ jobs:
         working-directory: _tests/managed_tests
         env:
           QIT_WAIT_BEFORE_REQUEST: yes
-        run: php ./QITSelfTests.php run ${{ inputs.test_type }}
+        run: php ./QITSelfTests.php run ${{ inputs.test_type }} --debug
+
+      # After the tests run, upload all qit_non_json_ files (each test has its own)
+      - name: Upload all QIT non-JSON output files
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: qit-non-json-outputs
+          path: '/tmp/qit_non_json_*'
