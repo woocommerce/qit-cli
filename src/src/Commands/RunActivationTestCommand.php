@@ -39,7 +39,8 @@ class RunActivationTestCommand extends Command {
 			->reuseOption( RunE2ECommand::getDefaultName(), 'notify' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'php_extension' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'tunnel' )
-			->reuseOption( RunE2ECommand::getDefaultName(), 'require' );
+			->reuseOption( RunE2ECommand::getDefaultName(), 'require' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'dependencies' );
 
 		$this->addOption(
 			'json',
@@ -74,7 +75,8 @@ class RunActivationTestCommand extends Command {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
-		$run_e2e_command = $this->getApplication()->find( RunE2ECommand::getDefaultName() );
+		$run_e2e_command = App::make( RunE2ECommand::class );
+		$run_e2e_command->setApplication( $this->getApplication() );
 
 		$resource_stream = fopen( 'php://temp', 'w+' );
 
@@ -105,7 +107,8 @@ class RunActivationTestCommand extends Command {
 		$sut = $input->getArgument( 'woo_extension' );
 
 		if ( $sut !== 'woocommerce' ) {
-			$run_e2e_options['--sut_action']  = Extension::ACTIONS['activate'];
+			$run_e2e_options['--sut_action']  = Extension::ACTIONS['bootstrap'];
+			$run_e2e_options['test']          = 'pre-activation';
 			$run_e2e_options['woo_extension'] = $input->getArgument( 'woo_extension' );
 			$run_e2e_options['--plugin'][]    = 'woocommerce:test:activation';
 		} else {
@@ -119,6 +122,8 @@ class RunActivationTestCommand extends Command {
 		} elseif ( $output->isVeryVerbose() ) {
 			$run_e2e_options['--very-verbose'] = true;
 		}
+
+		App::setVar( 'QIT_ACTIVATION_TEST', 'yes' );
 
 		$run_e2e_exit_code = $run_e2e_command->run(
 			new ArrayInput( $run_e2e_options ),

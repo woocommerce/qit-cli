@@ -84,7 +84,8 @@ class ConfigurationProcessor {
 				$env_up_options,
 				$env_config,
 				$input,
-				$sut_type
+				$sut_type,
+				$sut_action
 			);
 		} else {
 			// No SUT: Just handle CLI plugins/themes and skip dependencies.
@@ -96,6 +97,25 @@ class ConfigurationProcessor {
 				$env_up_options['--theme'] = array_values( $env_config['themes'] );
 			} else {
 				$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
+			}
+		}
+
+		if ( App::getVar( 'QIT_ACTIVATION_TEST' ) ) {
+			foreach ( [ 'plugin', 'theme' ] as $type ) {
+				$key = "--$type";
+
+				if ( isset( $env_up_options[ $key ] ) && is_array( $env_up_options[ $key ] ) ) {
+					foreach ( $env_up_options[ $key ] as &$item ) {
+						if ( isset( $item['slug'] ) && $item['slug'] === 'woocommerce' ) {
+							$item['action']    = Extension::ACTIONS['test'];
+							$item['test_tags'] = [ 'activation' ];
+						} else {
+							$item['action']    = Extension::ACTIONS['bootstrap'];
+							$item['test_tags'] = [ 'pre-activation' ];
+						}
+					}
+					unset( $item );
+				}
 			}
 		}
 
@@ -120,6 +140,7 @@ class ConfigurationProcessor {
 	 * @param array<string,mixed> $env_config
 	 * @param InputInterface      $input
 	 * @param string              $sut_type
+	 * @param string|null         $sut_action The SUT action provided by CLI, if any (e.g. 'bootstrap' for activation tests).
 	 *
 	 * @return void
 	 */
@@ -131,7 +152,8 @@ class ConfigurationProcessor {
 		array &$env_up_options,
 		array &$env_config,
 		InputInterface $input,
-		string $sut_type
+		string $sut_type,
+		?string $sut_action
 	): void {
 		if ( empty( $woo_extension ) ) {
 			// If no woo_extension, there's no main SUT, so skip dependencies.
@@ -167,9 +189,14 @@ class ConfigurationProcessor {
 			}
 		}
 
-		// Ensure action is 'test' if not set.
-		if ( ! isset( $sut_base['action'] ) ) {
-			$sut_base['action'] = Extension::ACTIONS['test'];
+		// If sut_action is provided, use it instead of defaulting to test
+		// Otherwise, ensure action is 'test' if not set.
+		if ( ! empty( $sut_action ) ) {
+			$sut_base['action'] = $sut_action;
+		} else {
+			if ( ! isset( $sut_base['action'] ) ) {
+				$sut_base['action'] = Extension::ACTIONS['test'];
+			}
 		}
 
 		// Place SUT in themes if sut_type is 'theme', else in plugins.
@@ -181,7 +208,7 @@ class ConfigurationProcessor {
 
 		$woo_extension_id = App::getVar( 'QIT_SUT' );
 
-		$this->apply_dependencies( $woo_extension_id, $dependencies_option, $env_up_options );
+		$this->apply_dependencies( $woo_extension_id, $dependencies_option, $env_up_options, $env_config );
 		$this->add_cli_plugins( $env_config, $input );
 		$this->normalize_plugins( $env_config );
 		$this->normalize_themes( $env_config );
@@ -389,15 +416,20 @@ class ConfigurationProcessor {
 	}
 
 	/**
-	 * Add dependencies as strings to --plugin (and php_extensions to --php_extension).
+	 * Add dependencies as strings to --plugin and their corresponding arrays to $env_config['plugins'],
+	 * and PHP extensions directly to $env_up_options['--php_extension'].
+	 *
+	 * By this point, $env_config should already be normalized by EnvConfigLoader, ensuring
+	 * that 'plugins' key is used consistently. No separate handling of 'plugin' vs 'plugins' is needed.
 	 *
 	 * @param int|null            $woo_extension_id
 	 * @param string              $dependencies_option
 	 * @param array<string,mixed> $env_up_options
+	 * @param array<string,mixed> $env_config
 	 *
 	 * @return void
 	 */
-	protected function apply_dependencies( $woo_extension_id, string $dependencies_option, array &$env_up_options ): void {
+	protected function apply_dependencies( ?int $woo_extension_id, string $dependencies_option, array &$env_up_options, array &$env_config ): void {
 		if ( empty( $woo_extension_id ) || $dependencies_option === 'none' ) {
 			return;
 		}
@@ -412,19 +444,23 @@ class ConfigurationProcessor {
 		if ( ! isset( $env_up_options['--plugin'] ) ) {
 			$env_up_options['--plugin'] = [];
 		}
+		if ( ! isset( $env_config['plugins'] ) || ! is_array( $env_config['plugins'] ) ) {
+			$env_config['plugins'] = [];
+		}
 
-		// Add PHP extensions if any.
+		// Add PHP extensions directly to $env_up_options['--php_extension'].
 		foreach ( $dependencies['php_extensions'] as $php_extension ) {
 			if ( ! in_array( $php_extension, $env_up_options['--php_extension'], true ) ) {
 				$env_up_options['--php_extension'][] = $php_extension;
 			}
 		}
 
-		// Add plugin dependencies as strings.
 		$woo_version = $env_up_options['--woo'] ?? null;
 
+		// Add plugin dependencies to both $env_up_options['--plugin'] and $env_config['plugins'].
 		foreach ( $dependencies['plugins'] as $dep_plugin ) {
 			if ( $woo_version && stripos( $dep_plugin, 'woocommerce:' ) !== false ) {
+				// Skip this dependency if a Woo version is specified and it conflicts.
 				continue;
 			}
 
@@ -438,8 +474,19 @@ class ConfigurationProcessor {
 			}
 
 			if ( ! $already_present ) {
+				// Append ":{$dependencies_option}" to ensure the correct action is assigned.
 				$formatted_plugin             = "{$dep_plugin}:{$dependencies_option}";
 				$env_up_options['--plugin'][] = $formatted_plugin;
+			}
+
+			// Ensure the plugin is also in $env_config['plugins'].
+			if ( ! isset( $env_config['plugins'][ $plugin_slug ] ) ) {
+				$env_config['plugins'][ $plugin_slug ] = [
+					'slug'      => $plugin_slug,
+					'source'    => $plugin_slug,
+					'test_tags' => [ 'default' ],
+					'action'    => $dependencies_option,
+				];
 			}
 		}
 	}
@@ -449,6 +496,7 @@ class ConfigurationProcessor {
 	 * Convert them to slug-based keys while preserving source as numeric.
 	 *
 	 * @param array<string,mixed> $env_config
+	 *
 	 * @return void
 	 */
 	protected function normalize_numeric_qit_plugins( array &$env_config ): void {
