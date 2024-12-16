@@ -3,12 +3,12 @@
     "--wp": "stable",
     "--plugin": [
         {
-            "slug": "woocommerce-amazon-s3-storage",
             "source": ".\/overridden-source",
             "test_tags": [
                 "new-test-tag"
             ],
-            "action": "test"
+            "action": "test",
+            "slug": "woocommerce-amazon-s3-storage"
         }
     ],
     "--theme": [],

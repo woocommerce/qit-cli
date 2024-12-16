@@ -1,0 +1,8 @@
+{
+    "plugins": [
+        "some-dependency-plugin"
+    ],
+    "php_extensions": [
+        "gd"
+    ]
+}
