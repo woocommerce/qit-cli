@@ -361,7 +361,7 @@ class RunE2ECommand extends DynamicCommand {
 		if ( function_exists( 'pcntl_signal' ) ) {
 			$signal_handler = static function (): void {
 				static::shutdown_test_run();
-				exit;
+				exit( 0 );
 			};
 			pcntl_signal( SIGINT, $signal_handler );
 			pcntl_signal( SIGTERM, $signal_handler );

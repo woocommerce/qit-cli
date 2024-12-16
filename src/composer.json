@@ -27,7 +27,7 @@
     "symfony/console": "^5",
     "symfony/process": "^5",
     "symfony/filesystem": "^5",
-    "lucatume/di52": "^3",
+    "lucatume/di52": "^4",
     "stecman/symfony-console-completion": "^0.11.0",
     "composer/ca-bundle": "^1.4",
     "symfony/serializer": "^5",
@@ -37,9 +37,10 @@
   "require-dev": {
     "phpunit/phpunit": "^8",
     "phpstan/phpstan": "^1",
-    "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
+    "dealerdirect/phpcodesniffer-composer-installer": "^1",
     "wp-coding-standards/wpcs": "dev-develop",
     "phpcompatibility/php-compatibility": "^9",
-    "spatie/phpunit-snapshot-assertions": "^3.0"
+    "spatie/phpunit-snapshot-assertions": "^3.0",
+    "phan/phan": "^5.4"
   }
 }

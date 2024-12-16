@@ -3,10 +3,42 @@ on:
   pull_request:
     paths:
       - 'src/**.php'
+  workflow_dispatch:
+
+concurrency:
+  group: phpunit-tests-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   phpunit_tests:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [ '7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3', '8.4' ]
+
     steps:
-      - name: Echo Bogus
-        run: echo "Bogus workflow to allow PR-based testing."
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Restore Docker Cache
+        uses: ./.github/actions/restore-docker-cache
+        with:
+          php-version: ${{ matrix.php }}
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v3
+        id: cache-composer
+        with:
+          path: src/vendor
+          key: ${{ runner.os }}-php-${{ matrix.php }}-${{ hashFiles('src/composer.lock') }}
+
+      - name: Composer install
+        if: steps.cache-composer.outputs.cache-hit != 'true'
+        run: |
+          cd src
+          composer install --no-interaction --no-suggest --prefer-dist
+
+      - name: Run PHPUnit tests
+        env:
+          PHP_VERSION: ${{ matrix.php }}
+        run: make phpunit
