@@ -3,29 +3,29 @@
     "--wp": "stable",
     "--plugin": [
         {
-            "source": ".\/woocommerce-sample-plugin",
+            "slug": "woocommerce",
+            "source": "woocommerce",
             "test_tags": [
-                "default"
+                "activation"
             ],
-            "action": "bootstrap",
-            "slug": "woocommerce-sample-plugin"
+            "action": "test"
         }
     ],
     "--theme": [
         {
-            "source": ".\/deli-theme",
+            "source": ".\/storefront-theme",
             "test_tags": [
-                "default"
+                "pre-activation"
             ],
-            "action": "test",
-            "slug": "deli-theme"
+            "action": "bootstrap",
+            "slug": "storefront"
         }
     ],
     "--volume": [],
     "--php_extension": [],
     "--require": [],
     "--object_cache": false,
-    "--skip_activating_plugins": false,
+    "--skip_activating_plugins": true,
     "--tunnel": "no_tunnel",
     "--json": true,
     "--env": [],

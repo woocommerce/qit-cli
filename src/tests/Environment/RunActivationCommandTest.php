@@ -314,6 +314,22 @@ class RunActivationCommandTest extends QITTestCase {
 		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
 	}
 
+	public function test_theme_sut_activation() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+
+		$fixture_dir = $this->scenarios_dir . 'scenario-theme-activation';
+		$this->assertDirectoryExists( $fixture_dir );
+		chdir( $fixture_dir );
+
+		$this->application_tester->run( [
+			'command'       => 'run:activation',
+			'woo_extension' => 'storefront', // This is a known theme slug from your mock.
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+	}
+
 	public function tearDown(): void {
 		parent::tearDown();
 		putenv( 'QIT_TESTING_ENV_CONFIG' );

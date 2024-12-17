@@ -2,7 +2,14 @@
     "--php_version": "7.4",
     "--wp": "stable",
     "--plugin": [
-        "woocommerce-extra-plugin:bootstrap"
+        {
+            "slug": "woocommerce-extra-plugin",
+            "source": "woocommerce-extra-plugin",
+            "test_tags": [
+                "default"
+            ],
+            "action": "bootstrap"
+        }
     ],
     "--theme": [
         {

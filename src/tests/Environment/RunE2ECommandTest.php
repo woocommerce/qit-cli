@@ -820,6 +820,20 @@ class RunE2ECommandTest extends QITTestCase {
 		$this->assertMatchesJsonSnapshot($output);
 	}
 
+	public function test_theme_sut_with_additional_plugins() {
+		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
 
+		$fixture_dir = $this->scenarios_dir . 'scenario-theme-sut';
+		$this->assertDirectoryExists( $fixture_dir );
+		chdir( $fixture_dir );
 
+		$this->application_tester->run( [
+			'command'       => 'run:e2e',
+			'woo_extension' => 'storefront', // a theme SUT
+			'--plugin'      => [ 'woocommerce:test:activation' ], // triggers previous issue
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful( $this->application_tester );
+		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+	}
 }

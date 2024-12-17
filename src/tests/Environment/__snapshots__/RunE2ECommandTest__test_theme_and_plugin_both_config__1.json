@@ -1,7 +1,16 @@
 {
     "--php_version": "7.4",
     "--wp": "stable",
-    "--plugin": [],
+    "--plugin": [
+        {
+            "source": ".\/woocommerce-sample-plugin",
+            "test_tags": [
+                "default"
+            ],
+            "action": "bootstrap",
+            "slug": "woocommerce-sample-plugin"
+        }
+    ],
     "--theme": [
         {
             "source": ".\/twentytwentyone-theme",

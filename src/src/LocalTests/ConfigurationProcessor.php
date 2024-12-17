@@ -93,11 +93,8 @@ class ConfigurationProcessor {
 			$this->normalize_plugins( $env_config );
 			$this->normalize_themes( $env_config );
 
-			if ( $sut_type === 'theme' ) {
-				$env_up_options['--theme'] = array_values( $env_config['themes'] );
-			} else {
-				$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
-			}
+			$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
+			$env_up_options['--theme']  = array_values( $env_config['themes'] );
 		}
 
 		if ( App::getVar( 'QIT_ACTIVATION_TEST' ) ) {
@@ -160,11 +157,8 @@ class ConfigurationProcessor {
 			$this->add_cli_plugins( $env_config, $input );
 			$this->normalize_plugins( $env_config );
 			$this->normalize_themes( $env_config );
-			if ( $sut_type === 'theme' ) {
-				$env_up_options['--theme'] = array_values( $env_config['themes'] );
-			} else {
-				$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
-			}
+			$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
+			$env_up_options['--theme']  = array_values( $env_config['themes'] );
 
 			return;
 		}
@@ -213,11 +207,8 @@ class ConfigurationProcessor {
 		$this->normalize_plugins( $env_config );
 		$this->normalize_themes( $env_config );
 
-		if ( $sut_type === 'theme' ) {
-			$env_up_options['--theme'] = array_values( $env_config['themes'] );
-		} else {
-			$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
-		}
+		$env_up_options['--theme'] = array_values( $env_config['themes'] );
+		$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
 	}
 
 	/**

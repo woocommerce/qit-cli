@@ -3,22 +3,22 @@
     "--wp": "stable",
     "--plugin": [
         {
-            "source": ".\/woocommerce-sample-plugin",
+            "slug": "woocommerce",
+            "source": "woocommerce",
             "test_tags": [
-                "default"
+                "activation"
             ],
-            "action": "bootstrap",
-            "slug": "woocommerce-sample-plugin"
+            "action": "test"
         }
     ],
     "--theme": [
         {
-            "source": ".\/deli-theme",
+            "source": ".\/storefront-theme",
             "test_tags": [
                 "default"
             ],
             "action": "test",
-            "slug": "deli-theme"
+            "slug": "storefront"
         }
     ],
     "--volume": [],
