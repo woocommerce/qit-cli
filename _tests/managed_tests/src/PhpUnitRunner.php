@@ -97,7 +97,7 @@ PHP;
 			$human_friendly_test_result = test_result_parser( json_encode( $result ), $remove_from_snapshot );
 
 			if ( ! file_put_contents( $snapshot_filepath, $human_friendly_test_result ) ) {
-				echo "[Test {$test_run_id}]: Failed to write test output to file.\n";
+				maybe_echo( "[Test {$test_run_id}]: Failed to write test output to file.\n" );
 				$this->logger->log( "Failed to write human friendly result for test_run_id $test_run_id" );
 				throw new RuntimeException( 'Failed to write test output to file.' );
 			} else {
@@ -147,13 +147,13 @@ PHP;
 
 		try {
 			$phpunit_process->mustRun();
-			$resultMessage = trim($phpunit_process->getOutput());
-			$errorMessage  = trim($phpunit_process->getErrorOutput());
+			$resultMessage = trim( $phpunit_process->getOutput() );
+			$errorMessage  = trim( $phpunit_process->getErrorOutput() );
 
-			$this->logger->log("PHPUnit output for test_run_id $test_run_id:\n$resultMessage");
-			if (!empty($errorMessage)) {
-				$this->logger->log("PHPUnit error output for test_run_id $test_run_id:\n$errorMessage");
-				$this->liveOutput->addTestError($test_run_id, $errorMessage);
+			$this->logger->log( "PHPUnit output for test_run_id $test_run_id:\n$resultMessage" );
+			if ( ! empty( $errorMessage ) ) {
+				$this->logger->log( "PHPUnit error output for test_run_id $test_run_id:\n$errorMessage" );
+				$this->liveOutput->addTestError( $test_run_id, $errorMessage );
 			}
 
 			$combinedMessage = $resultMessage . ( $errorMessage ? "\n$errorMessage" : '' );
@@ -165,14 +165,14 @@ PHP;
 				$test_run['non_json_output_file'] ?? null,
 				$combinedMessage
 			);
-		} catch (ProcessFailedException $e) {
+		} catch ( ProcessFailedException $e ) {
 			$resultMessage = $phpunit_process->getOutput();
 			$errorMessage  = $phpunit_process->getErrorOutput();
 
-			$this->logger->log("PHPUnit failed for test_run_id $test_run_id. Output:\n$resultMessage");
-			if (!empty($errorMessage)) {
-				$this->logger->log("PHPUnit error output for test_run_id $test_run_id:\n$errorMessage");
-				$this->liveOutput->addTestError($test_run_id, $errorMessage);
+			$this->logger->log( "PHPUnit failed for test_run_id $test_run_id. Output:\n$resultMessage" );
+			if ( ! empty( $errorMessage ) ) {
+				$this->logger->log( "PHPUnit error output for test_run_id $test_run_id:\n$errorMessage" );
+				$this->liveOutput->addTestError( $test_run_id, $errorMessage );
 			}
 
 			$combinedMessage = $resultMessage . ( $errorMessage ? "\n$errorMessage" : '' );
@@ -184,7 +184,7 @@ PHP;
 				$test_run['non_json_output_file'] ?? null,
 				$combinedMessage
 			);
-			$this->failedTestsCount++;
+			$this->failedTestsCount ++;
 		}
 
 	}
@@ -200,6 +200,7 @@ PHP;
 	private function logDirectoryContents( string $dir ): void {
 		if ( ! is_dir( $dir ) ) {
 			$this->logger->log( "$dir does not exist or is not a directory." );
+
 			return;
 		}
 
