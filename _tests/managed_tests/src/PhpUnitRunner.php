@@ -67,41 +67,55 @@ PHP;
 		$remove_from_snapshot = $test_run['env']['QIT_REMOVE_FROM_SNAPSHOT'];
 
 		$snapshot_filepath = sprintf( '%s/%s.json', $qit_test_path, $test_function_name );
+		$reuse_json        = ( getenv( 'QIT_REUSE_JSON' ) === '1' );
 
-		if ( file_exists( $snapshot_filepath ) ) {
-			if ( ! unlink( $snapshot_filepath ) ) {
-				$this->logger->log( "Failed to delete snapshot file: $snapshot_filepath" );
-				throw new RuntimeException( "Failed to delete snapshot file: $snapshot_filepath" );
+		if ( $reuse_json && file_exists( $snapshot_filepath ) ) {
+			// If we are reusing JSON and it already exists, do not rewrite it
+			$this->logger->log( "Reusing existing JSON for test_run_id $test_run_id: $snapshot_filepath" );
+		} else {
+			// Otherwise, generate/update the snapshot file
+			if ( file_exists( $snapshot_filepath ) && ! $reuse_json ) {
+				if ( ! unlink( $snapshot_filepath ) ) {
+					$this->logger->log( "Failed to delete snapshot file: $snapshot_filepath" );
+					throw new RuntimeException( "Failed to delete snapshot file: $snapshot_filepath" );
+				} else {
+					$this->logger->log( "Deleted old snapshot file: $snapshot_filepath" );
+				}
+			}
+
+			$human_friendly_test_result = test_result_parser( json_encode( $result ), $remove_from_snapshot );
+
+			if ( ! file_put_contents( $snapshot_filepath, $human_friendly_test_result ) ) {
+				echo "[Test {$test_run_id}]: Failed to write test output to file.\n";
+				$this->logger->log( "Failed to write human friendly result for test_run_id $test_run_id" );
+				throw new RuntimeException( 'Failed to write test output to file.' );
 			} else {
-				$this->logger->log( "Deleted old snapshot file: $snapshot_filepath" );
+				$this->logger->log( "Wrote snapshot file: $snapshot_filepath" );
+			}
+
+			// If not reusing JSON, we add it to to_delete array
+			if ( ! $reuse_json ) {
+				Context::$to_delete[] = $snapshot_filepath;
 			}
 		}
 
-		$human_friendly_test_result = test_result_parser( json_encode( $result ), $remove_from_snapshot );
-
-		if ( ! file_put_contents( $snapshot_filepath, $human_friendly_test_result ) ) {
-			echo "[Test {$test_run_id}]: Failed to write test output to file.\n";
-			$this->logger->log( "Failed to write human friendly result for test_run_id $test_run_id" );
-			throw new RuntimeException( 'Failed to write test output to file.' );
-		} else {
-			$this->logger->log( "Wrote snapshot file: $snapshot_filepath" );
-		}
-
-		Context::$to_delete[] = $snapshot_filepath;
+		$test_file = __DIR__ . '/../tests/' . $this->generate_test_file_name( $test_run['type'] );
 
 		$args = [
 			__DIR__ . '/../vendor/bin/phpunit',
-			__DIR__ . '/../tests/' . $this->generate_test_file_name( $test_run['type'] ),
+			$test_file,
 			sprintf( '--filter=::%s$', $test_function_name ),
 			'--testdox',
 		];
 
 		if ( Context::$action === 'update' ) {
+			// According to Spatie docs this is correct for updating snapshots
 			$args[] = '-d';
 			$args[] = '--update-snapshots';
 		}
 
-		$this->logger->log( "Running PHPUnit: " . implode( ' ', $args ) );
+		$this->logger->log( "Running PHPUnit with command: " . implode( ' ', $args ) );
+
 		$phpunit_process = new Process( $args );
 		$phpunit_process->setTimeout( 1200 );
 		$phpunit_process->setIdleTimeout( 1200 );
@@ -109,24 +123,20 @@ PHP;
 		try {
 			$phpunit_process->mustRun();
 			$resultMessage = trim( $phpunit_process->getOutput() );
-			$this->logger->log( "PHPUnit output for test_run_id $test_run_id: $resultMessage" );
+
+			$this->logger->log( "PHPUnit output for test_run_id $test_run_id:\n$resultMessage" );
 
 			$success = true;
 			$this->liveOutput->setTestCompleted( $test_run_id, $success, $result['test_results_manager_url'] ?? null, $test_run['non_json_output_file'] ?? null, $resultMessage );
 		} catch ( ProcessFailedException $e ) {
-			$this->failedTestsCount++;
 			$resultMessage = $phpunit_process->getOutput();
+			$this->logger->log( "PHPUnit failed for test_run_id $test_run_id. Output:\n$resultMessage" );
+
 			echo "The test {$test_function_name} failed.\n";
 			$this->logger->log( "Test_run_id $test_run_id failed in PHPUnit: $resultMessage" );
-			$this->liveOutput->setTestCompleted(
-				$test_run_id,
-				false,
-				$result['test_results_manager_url'] ?? null,
-				$test_run['non_json_output_file'] ?? null,
-				$resultMessage
-			);
+			$this->liveOutput->setTestCompleted( $test_run_id, false, $result['test_results_manager_url'] ?? null, $test_run['non_json_output_file'] ?? null, $resultMessage );
+			$this->failedTestsCount ++;
 		}
-
 	}
 
 	public function getFailedTestsCount(): int {

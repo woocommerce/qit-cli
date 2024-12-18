@@ -35,6 +35,67 @@ class QitRunner {
 	}
 
 	private function start_test_run( array &$t, string $test_type, array $tests_based_on_custom_tests, array &$allTests ) {
+		// Generate test_function_name BEFORE qit run, so we can reuse JSON if QIT_REUSE_JSON=1
+		$normalized_t = $t;
+		unset( $normalized_t['path'] );
+		$normalized_t['type'] = str_replace( '-', '_', $normalized_t['type'] );
+
+		$t['test_function_name'] = sprintf(
+			'test_%s_%s_woo%s_php%s_wp%s_%s',
+			$normalized_t['type'],
+			$t['slug'],
+			str_replace( '.', '', $t['woo'] ),
+			str_replace( '.', '', $t['php'] ),
+			str_replace( '.', '', $t['wp'] ),
+			md5( json_encode( $normalized_t ) )
+		);
+
+		$qit_test_path     = $t['path'];
+		$snapshot_filepath = sprintf( '%s/%s.json', $qit_test_path, $t['test_function_name'] );
+
+		// Check QIT_REUSE_JSON and existing file
+		$reuse_json = ( getenv( 'QIT_REUSE_JSON' ) === '1' );
+		if ( $reuse_json && file_exists( $snapshot_filepath ) ) {
+			// Re-use the existing JSON, skip QIT run
+			$this->logger->log( "QIT_REUSE_JSON=1 and JSON exists for {$t['test_function_name']}, skipping QIT run." );
+
+			// Assign a fake test_run_id
+			// Just generate a stable ID from the test_function_name hash
+			$t['test_run_id'] = hexdec( substr( md5( $t['test_function_name'] ), 0, 6 ) );
+			if ( $t['test_run_id'] <= 0 ) {
+				$t['test_run_id'] = rand( 100000, 999999 );
+			}
+
+			// Set environment vars as usual
+			$t['env'] = [
+				'QIT_TEST_PATH'            => $t['path'],
+				'QIT_TEST_TYPE'            => $test_type,
+				'QIT_TEST_FUNCTION_NAME'   => $t['test_function_name'],
+				'QIT_RAN_TEST'             => false,
+				'QIT_REMOVE_FROM_SNAPSHOT' => $t['remove_from_snapshot'],
+				'QIT_NON_JSON_OUTPUT'      => $t['non_json_output_file'] ?? tempnam( sys_get_temp_dir(), 'qit_non_json_' ),
+				'QIT_POLL_INTERVAL'        => 15,
+				'QIT_MAX_ATTEMPTS'         => 1, // not needed since we skip polling
+			];
+
+			$this->liveOutput->addTest( $t['test_run_id'], "[REUSE_JSON] {$t['type']} {$t['slug']}" );
+
+			// Immediately handle "final" as if QIT succeeded
+			// Create a fake result array
+			$result = [
+				'update_complete'          => true,
+				'status'                   => 'success',
+				'test_results_manager_url' => '',
+			];
+
+			// Run PHPUnit directly
+			$this->handle_qit_response_final( $t, $result, 'success' );
+
+			// Do not add to polling, we are done
+			return;
+		}
+
+		// If not reusing JSON, run QIT
 		$php      = ( new PhpExecutableFinder() )->find( false );
 		$qit      = realpath( __DIR__ . '/../../../src/qit-cli.php' );
 		$sut_slug = $t['sut_slug'];
@@ -97,22 +158,7 @@ class QitRunner {
 		$t['test_run_id'] = $json['test_run_id'];
 		$this->logger->log( "Test run started with ID: " . $t['test_run_id'] );
 
-		$normalized_t         = $t;
-		unset( $normalized_t['path'] );
-		$normalized_t['type'] = str_replace( '-', '_', $normalized_t['type'] );
-
-		$t['test_function_name'] = sprintf(
-			'test_%s_%s_woo%s_php%s_wp%s_%s',
-			$normalized_t['type'],
-			$t['slug'],
-			str_replace( '.', '', $t['woo'] ),
-			str_replace( '.', '', $t['php'] ),
-			str_replace( '.', '', $t['wp'] ),
-			md5( json_encode( $normalized_t ) )
-		);
-
-		$t['non_json_output_file'] = tempnam( sys_get_temp_dir(), 'qit_non_json_' );
-
+		// Set environment vars
 		$poll_interval = 15;
 		$max_attempts  = ( strpos( $normalized_t['type'], 'woo_e2e' ) !== false ) ? 240 : 60;
 
@@ -122,7 +168,7 @@ class QitRunner {
 			'QIT_TEST_FUNCTION_NAME'   => $t['test_function_name'],
 			'QIT_RAN_TEST'             => false,
 			'QIT_REMOVE_FROM_SNAPSHOT' => $t['remove_from_snapshot'],
-			'QIT_NON_JSON_OUTPUT'      => $t['non_json_output_file'],
+			'QIT_NON_JSON_OUTPUT'      => $t['non_json_output_file'] ?? tempnam( sys_get_temp_dir(), 'qit_non_json_' ),
 			'QIT_POLL_INTERVAL'        => $poll_interval,
 			'QIT_MAX_ATTEMPTS'         => $max_attempts,
 		];
@@ -187,7 +233,7 @@ class QitRunner {
 					if ( isset( $tr['update_complete'] ) && $tr['update_complete'] === true ) {
 						echo "Test run ID {$tid} finished with status: {$status}\n";
 						$this->logger->log( "Test_run_id $tid completed. Handling final response..." );
-						$this->handle_qit_response_final( $allTests[$tid], $tr, $status );
+						$this->handle_qit_response_final( $allTests[ $tid ], $tr, $status );
 						$completed_tests[] = $tid;
 					} else {
 						$this->liveOutput->setTestStatus( $tid, $status );
@@ -202,7 +248,7 @@ class QitRunner {
 				unset( $allTests[ $tid ] );
 			}
 
-			// Unknown tests are considered still in progress for attempts tracking
+			// Unknown tests
 			foreach ( $unknown_tests as $tid ) {
 				$still_in_progress[] = $tid;
 			}
@@ -210,7 +256,7 @@ class QitRunner {
 			// Decrement max_attempts for still in progress tests
 			foreach ( $still_in_progress as $tid ) {
 				if ( isset( $allTests[ $tid ] ) ) {
-					$allTests[ $tid ]['max_attempts']--;
+					$allTests[ $tid ]['max_attempts'] --;
 					if ( $allTests[ $tid ]['max_attempts'] <= 0 ) {
 						$this->logger->log( "Test_run_id {$tid} timed out" );
 						$this->liveOutput->addTestError( $tid, "Did not finish in time." );
@@ -221,18 +267,18 @@ class QitRunner {
 			}
 
 			if ( ! empty( $allTests ) ) {
-				$someTest          = reset( $allTests );
-				$sleep_interval    = $someTest['poll_interval'];
+				$someTest       = reset( $allTests );
+				$sleep_interval = $someTest['poll_interval'];
 				$this->logger->log( "Sleeping for $sleep_interval seconds before next poll." );
 				sleep( $sleep_interval );
 			}
 		}
 
 		echo "All tests completed.\n";
-		$this->logger->log("All tests completed. Preparing final summary.");
+		$this->logger->log( "All tests completed. Preparing final summary." );
 
 		$failures = $this->phpUnitRunner->getFailedTestsCount();
-		$this->liveOutput->printFinalSummary($failures);
+		$this->liveOutput->printFinalSummary( $failures );
 
 		if ( $failures > 0 ) {
 			exit( 1 );
@@ -242,10 +288,10 @@ class QitRunner {
 	}
 
 	private function handle_qit_response_final( array $test_run, array $result, string $qit_status ): void {
-		// Store the raw QIT result status (e.g., "failed" or "success") before snapshot verification
-		$this->liveOutput->setQitRawStatus($test_run['test_run_id'], $qit_status);
+		// Store the raw QIT status
+		$this->liveOutput->setQitRawStatus( $test_run['test_run_id'], $qit_status );
 
-		// Now run the PHPUnit test which verifies the snapshot
+		// Run PHPUnit snapshot verification
 		$this->phpUnitRunner->run_phpunit_test( $test_run, $result );
 	}
 

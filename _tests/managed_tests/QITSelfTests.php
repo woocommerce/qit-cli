@@ -34,9 +34,10 @@ $phpUnitRunner = new PhpUnitRunner( $logger, $liveOutput );
 
 // Register shutdown cleanup
 register_shutdown_function( function () use ( $logger ) {
-	$to_delete = array_unique( Context::$to_delete );
+	$to_delete  = array_unique( Context::$to_delete );
+	$reuse_json = ( getenv( 'QIT_REUSE_JSON' ) === '1' );
 	foreach ( $to_delete as $file ) {
-		if ( file_exists( $file ) ) {
+		if ( ! $reuse_json && file_exists( $file ) ) {
 			if ( ! unlink( $file ) ) {
 				$logger->log( "Failed to delete file: $file" );
 				throw new RuntimeException( "Failed to delete file: $file" );
