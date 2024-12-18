@@ -12,10 +12,10 @@
 use Jack\Symfony\ProcessManager;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\PhpExecutableFinder;
-use Symfony\Component\Process\Pipes\PipesInterface;
 use Symfony\Component\Process\Process;
 
 require_once __DIR__ . '/ProcessManagerFork.php';
+require_once __DIR__ . '/QITLiveOutput.php';
 
 // These test types cannot run in parallel.
 $tests_based_on_custom_tests = [ 'activation' ];
@@ -30,10 +30,6 @@ class Context {
 
 	public static $to_delete = [];
 
-	/*
-	 * To run tests in QIT, we need to assign the results to a plugin in the Marketplace.
-	 * We use the extension "woocommerce-product-feeds" and theme "storefront", because they're owned by the test user in Staging.
-	 */
 	public static $extension_slug = 'woocommerce-product-feeds';
 	public static $theme_slug = 'bistro';
 }
@@ -68,7 +64,6 @@ Context::$running_test_based_on_custom_test = ! is_null( Context::$test_types ) 
 # Comma-separated list of scenarios to run, eg: no_op,no_op_php82,delete_products
 if ( isset( $params[3] ) ) {
 	Context::$scenarios = array_map( 'trim', explode( ',', $params[3] ) );
-	// Filter any values that start with "--".
 	Context::$scenarios = array_filter( Context::$scenarios, static function ( $v ) {
 		return strpos( $v, "--" ) !== 0;
 	} );
@@ -83,12 +78,10 @@ if ( isset( $params[3] ) ) {
 Context::$env_filters = [];
 
 foreach (
-	// Check for "--env_filter=<KEY>=<VALUE>"
 	array_filter( $params, static function ( $param ) {
 		return strpos( $param, '--env_filter=' ) === 0;
 	} ) as $env_filter
 ) {
-	// Remove the '--env_filter=' prefix and then split the remaining string by '='
 	[ $key, $value ] = explode( '=', substr( $env_filter, 13 ), 2 );
 
 	if ( array_key_exists( $key, Context::$env_filters ) ) {
@@ -100,7 +93,6 @@ foreach (
 }
 
 require_once __DIR__ . '/test-result-parser.php';
-require_once __DIR__ . '/ParallelOutput.php';
 
 register_shutdown_function( function () {
 	$to_delete = array_unique( Context::$to_delete );
@@ -118,7 +110,7 @@ try {
 
 	require_once __DIR__ . '/vendor/autoload.php';
 
-	$GLOBALS['parallelOutput'] = new ParallelOutput();
+	$GLOBALS['qitLiveOutput'] = new QITLiveOutput();
 
 	$test_types = get_test_types();
 
@@ -127,14 +119,12 @@ try {
 			return in_array( basename( $test_type_path ), Context::$test_types, true );
 		} );
 	} else {
-		// Remove tests based on custom tests if no specific test type is defined.
 		$test_types = array_filter( $test_types, function ( $test_type_path ) use ( $tests_based_on_custom_tests ) {
 			return ! in_array( basename( $test_type_path ), $tests_based_on_custom_tests, true );
 		} );
 
-		// If anything is removed, print what was removed.
 		if ( count( $test_types ) !== count( get_test_types() ) ) {
-			$GLOBALS['parallelOutput']->addRawOutput( sprintf( "Skipping tests based on custom tests, which must run in a dedicated process: \n - %s", implode( "\n - ", array_map( 'basename', array_diff( get_test_types(), $test_types ) ) ) ) );
+			echo sprintf( "Skipping tests based on custom tests, which must run in a dedicated process: \n - %s", implode( "\n - ", array_map( 'basename', array_diff( get_test_types(), $test_types ) ) ) ) . "\n";
 		}
 	}
 
@@ -150,12 +140,7 @@ try {
 
 	run_test_runs( generate_test_runs( $test_types ), $tests_based_on_custom_tests );
 } catch ( \Exception $e ) {
-	if ( isset( $GLOBALS['parallelOutput'] ) && $GLOBALS['parallelOutput'] instanceof ParallelOutput ) {
-		$GLOBALS['parallelOutput']->addRawOutput( $e->getMessage() );
-	} else {
-		echo $e->getMessage();
-	}
-	echo "Exiting by exception\n";
+	echo $e->getMessage() . "\nExiting by exception\n";
 	die( 1 );
 }
 
@@ -174,18 +159,11 @@ function validate_context(): void {
 	}
 }
 
-/**
- * @return array<string> The list of test types.
- */
 function get_test_types(): array {
 	$test_types = [];
-	$ignore     = [
-		'vendor',
-		'tests'
-	];
+	$ignore     = [ 'vendor', 'tests' ];
 
 	$it = new DirectoryIterator( __DIR__ );
-	/** @var DirectoryIterator $file */
 	foreach ( $it as $file ) {
 		if ( $file->isDir() && ! $file->isDot() && ! in_array( $file->getBaseName(), $ignore, true ) ) {
 			$test_types[] = $file->getPathname();
@@ -195,15 +173,9 @@ function get_test_types(): array {
 	return $test_types;
 }
 
-/**
- * @param string $path The path to a test type directory.
- *
- * @return array<string> The list of tests in the given test type.
- */
 function get_tests_in_test_type( string $path ) {
 	$tests = [];
 	$it    = new DirectoryIterator( $path );
-	/** @var DirectoryIterator $file */
 	foreach ( $it as $file ) {
 		if ( $file->isDir() && ! $file->isDot() ) {
 			if ( stripos( $file->getBasename(), '-' ) !== false ) {
@@ -222,19 +194,18 @@ function generate_test_runs( array $test_types ): array {
 	foreach ( $test_types as $test_type ) {
 		$tests_to_run[ basename( $test_type ) ] = [];
 		foreach ( get_tests_in_test_type( $test_type ) as $test ) {
-			// If we defined a single test to run, skip those that are not it.
 			if ( ! is_null( Context::$scenarios ) ) {
 				if ( ! in_array( basename( $test ), Context::$scenarios ) ) {
-					$GLOBALS['parallelOutput']->addRawOutput( sprintf( "Skipping %s, running only %s\n", basename( $test ), implode( ',', Context::$scenarios ) ) );
+					echo sprintf( "Skipping %s, running only %s\n", basename( $test ), implode( ',', Context::$scenarios ) );
 					continue;
 				}
 			}
 
 			$env = require $test . '/env.php';
 
-			$wp_versions = isset( $env['wp'] ) ? explode( ',', $env['wp'] ) : [ '' ];  // default to empty string if no versions.
-			$woo_versions = isset( $env['woo'] ) ? explode( ',', $env['woo'] ) : [ '' ];  // default to empty string if no versions.
-			$php_versions = isset( $env['php'] ) ? explode( ',', $env['php'] ) : [ '' ];  // default to empty string if no versions.
+			$wp_versions  = isset( $env['wp'] ) ? explode( ',', $env['wp'] ) : [ '' ];
+			$woo_versions = isset( $env['woo'] ) ? explode( ',', $env['woo'] ) : [ '' ];
+			$php_versions = isset( $env['php'] ) ? explode( ',', $env['php'] ) : [ '' ];
 
 			foreach ( $wp_versions as $wp_version ) {
 				foreach ( $woo_versions as $woo_version ) {
@@ -275,7 +246,7 @@ function generate_test_runs( array $test_types ): array {
 							}
 
 							if ( ! $env_matches ) {
-								$GLOBALS['parallelOutput']->addRawOutput( sprintf( "Skipping %s, does not match env filters\n", basename( $test ) ) );
+								echo sprintf( "Skipping %s, does not match env filters\n", basename( $test ) );
 								continue;
 							}
 						}
@@ -304,7 +275,7 @@ function generate_test_runs( array $test_types ): array {
 function add_task_id_to_process( Process $process, array $test_run ) {
 	$task_id_parts = [
 		sprintf( "[%s -", ucwords( $test_run['type'] ) ),
-		sprintf( "%s]", $test_run['slug'] )
+		sprintf( "%s]", $test_run['slug'] ),
 	];
 
 	if ( ! empty( $test_run['php'] ) ) {
@@ -321,22 +292,15 @@ function add_task_id_to_process( Process $process, array $test_run ) {
 	}
 
 	$task_id = implode( ' ', $task_id_parts ) . ": ";
-
 	$process->setEnv( array_merge( $process->getEnv(), [ 'qit_task_id' => $task_id ] ) );
 }
 
-function copy_task_id_to_process( Process $process_with_task_id, Process $process_without_task_id ) {
-	$process_without_task_id->setEnv( array_merge( $process_without_task_id->getEnv(), [ 'qit_task_id' => $process_with_task_id->getEnv()['qit_task_id'] ] ) );
-}
-
-function run_test_runs( array $test_runs, $tests_based_on_custom_tests ) {
+function run_test_runs( array $test_runs, array $tests_based_on_custom_tests ) {
 	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
 		generate_zips( $test_type_test_runs );
 	}
 
-	$qit_run_processes = [];
-
-	// Dispatch all tests in parallel using the qit binary.
+	// Run all tests and collect them
 	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
 		foreach ( $test_type_test_runs as &$t ) {
 			$php      = ( new PhpExecutableFinder() )->find( false );
@@ -345,13 +309,11 @@ function run_test_runs( array $test_runs, $tests_based_on_custom_tests ) {
 
 			$args = [
 				$php,
-				// Run QIT with Xdebug disabled to avoid "Max concurrent settings" on PHPStorm from bottlenecking parallelism.
 				$qit,
 				"run:$test_type",
-				'--wait',
 				'--json',
 				'--ignore-fail',
-				"--zip={$t['path']}/sut.zip"
+				"--zip={$t['path']}/sut.zip",
 			];
 
 			Context::$to_delete[] = "{$t['path']}/sut.zip";
@@ -365,29 +327,14 @@ function run_test_runs( array $test_runs, $tests_based_on_custom_tests ) {
 			}
 
 			if ( ! empty( $t['wp'] ) ) {
-				if ( in_array( $test_type, $tests_based_on_custom_tests ) ) {
-					$args[] = "--wp={$t['wp']}";
-				} else {
-					$args[] = "--wordpress_version={$t['wp']}";
-				}
+				$args[] = "--wordpress_version={$t['wp']}";
 			}
 
 			if ( ! empty( $t['woo'] ) ) {
-				if ( in_array( $test_type, $tests_based_on_custom_tests ) ) {
-					$args[] = "--woo={$t['woo']}";
-				} else {
-					$args[] = "--woocommerce_version={$t['woo']}";
-				}
-			}
-
-			if ( in_array( $test_type, $tests_based_on_custom_tests ) ) {
-				// $args[] = "--no_upload_report";
+				$args[] = "--woocommerce_version={$t['woo']}";
 			}
 
 			if ( ! empty( $t['features'] ) ) {
-				if ( ! is_array( $t['features'] ) ) {
-					throw new \LogicException( 'Features must be an array.' );
-				}
 				foreach ( $t['features'] as $f ) {
 					$args[] = "--optional_features=$f";
 				}
@@ -402,18 +349,26 @@ function run_test_runs( array $test_runs, $tests_based_on_custom_tests ) {
 			$args[] = $sut_slug;
 
 			$qit_process = new Process( $args );
-			$GLOBALS['parallelOutput']->addRawOutput( sprintf( "\nRunning command: %s", $qit_process->getCommandLine() ) );
+			echo "\nRunning command: " . $qit_process->getCommandLine() . "\n";
 
-			$qit_process->setTimeout( null ); // Let QIT CLI handle the timeouts.
+			$qit_process->setTimeout( null );
+
+			add_task_id_to_process( $qit_process, $t );
+
+			$qit_process->mustRun();
+			$output = trim( $qit_process->getOutput() );
+
+			$json = json_decode( $output, true );
+			if ( json_last_error() !== JSON_ERROR_NONE || empty( $json['test_run_id'] ) ) {
+				throw new RuntimeException( "Failed to get valid JSON test_run_id from qit run command:\n$output" );
+			}
+
+			$t['test_run_id'] = $json['test_run_id'];
 
 			$normalized_t = $t;
 			unset( $normalized_t['path'] );
 			$normalized_t['type'] = str_replace( '-', '_', $normalized_t['type'] );
 
-			/*
-			 * Here we need a unique name that is human-readable, so that we can easily identify the test in the output.
-			 * We use the md5 of the test data to make sure it's unique.
-			 */
 			$t['test_function_name'] = sprintf(
 				'test_%s_%s_woo%s_php%s_wp%s_%s',
 				$normalized_t['type'],
@@ -421,19 +376,22 @@ function run_test_runs( array $test_runs, $tests_based_on_custom_tests ) {
 				str_replace( '.', '', $t['woo'] ),
 				str_replace( '.', '', $t['php'] ),
 				str_replace( '.', '', $t['wp'] ),
-				md5( json_encode( $normalized_t )
-				)
+				md5( json_encode( $normalized_t ) )
 			);
-			
+
 			$t['non_json_output_file'] = tempnam( sys_get_temp_dir(), 'qit_non_json_' );
 
-			$poll_interval = rand( 20, 40 );
-
+			// Set poll intervals and attempts based on test type.
+			// Normal tests: ~30m max => 30m / 30s = 60 attempts
+			// Woo-e2e tests: ~2h max => 120m / 0.5 min = 240 attempts
+			$poll_interval = 30; // 30 seconds per attempt
 			if ( strpos( $normalized_t['type'], 'e2e' ) !== false ) {
-				$poll_interval = rand( 60, 90 );
+				$max_attempts = 240; // 2h
+			} else {
+				$max_attempts = 60; // 30m
 			}
 
-			$env = [
+			$t['env'] = [
 				'QIT_TEST_PATH'            => $t['path'],
 				'QIT_TEST_TYPE'            => $test_type,
 				'QIT_TEST_FUNCTION_NAME'   => $t['test_function_name'],
@@ -441,128 +399,102 @@ function run_test_runs( array $test_runs, $tests_based_on_custom_tests ) {
 				'QIT_REMOVE_FROM_SNAPSHOT' => $t['remove_from_snapshot'],
 				'QIT_NON_JSON_OUTPUT'      => $t['non_json_output_file'],
 				'QIT_POLL_INTERVAL'        => $poll_interval,
+				'QIT_MAX_ATTEMPTS'         => $max_attempts,
 			];
 
-			$qit_process->setEnv( $env );
-			add_task_id_to_process( $qit_process, $t );
-			$qit_run_processes[] = $qit_process;
-			$GLOBALS['parallelOutput']->registerStartTime($qit_process);
-
-			$t['qit_process'] = $qit_process;
+			$GLOBALS['qitLiveOutput']->addTest( $t['test_run_id'], $qit_process->getEnv()['qit_task_id'] ?? "[{$t['type']}] {$t['slug']}" );
 		}
 	}
 
+	// After running all tests, generate PHPUnit files
 	foreach ( $test_runs as $test_type => &$test_type_test_runs ) {
 		generate_phpunit_files( $test_type, $test_type_test_runs );
 	}
 
-	$qit_run_processes_manager = new ProcessManagerFork();
-
-	$GLOBALS['parallelOutput']->addRawOutput( sprintf( "\nRunning %d tests in parallel...\n", count( $qit_run_processes ) ) );
-
-	$json_buffer  = [];
-	$failed_tests = [];
-
-	$max_parallel = Context::$running_test_based_on_custom_test ? 1 : 20;
-
-	$qit_run_processes_manager->runParallel( $qit_run_processes, $max_parallel, 10000, function ( string $type, string $out, Process $process ) use ( &$failed_tests, &$json_buffer ) {
-		/*
-		 * Callback function for handling process output.
-		 * Outputs are chunked to 16kb, requiring special handling for large JSON outputs.
-		 */
-
-		// Initialize the JSON buffer. We will only need it if the JSON exceeds 16kb.
-		if ( ! array_key_exists( $process->getPid(), $json_buffer ) ) {
-			$json_buffer[ $process->getPid() ] = '';
-		}
-
-		// If there is something in the JSON buffer, consider all subsequent outputs as part of the same JSON.
-		if ( ! empty( $json_buffer[ $process->getPid() ] ) ) {
-			$json_buffer[ $process->getPid() ] .= $out;
-		}
-
-		// If the JSON buffer is valid JSON, then we can process it.
-		if ( ! is_null( json_decode( $json_buffer[ $process->getPid() ], true ) ) ) {
-			handle_qit_response( $process, $json_buffer[ $process->getPid() ], $failed_tests );
-
-			return;
-		}
-
-		/*
-		 * If we got here, it means the JSON buffer is not a valid JSON, so there is three possibilities:
-		 * 1. It's either not a JSON, eg: "Running test..."
-		 * 2. It's a chunked JSON part that exceeds 16kb, eg: "{"test":"test1","result":"passed"...(more than 16kb)
-		 * 3. It's a full JSON that fits into the 16kb chunk, eg: "{"test":"test1","result":"passed","snapshot":"..."})
-		 */
-		$json_out = json_decode( $out, true );
-
-		if ( is_null( $json_out ) && strlen( $out ) < PipesInterface::CHUNK_SIZE * 0.9 ) {
-			// Scenario 1: Not a JSON.
-			$GLOBALS['parallelOutput']->processOutputCallback( $out, $process );
-		} elseif ( is_null( $json_out ) && strlen( $out ) > PipesInterface::CHUNK_SIZE * 0.9 ) {
-			// Scenario 2: Possibly a chunked JSON.
-			$json_buffer[ $process->getPid() ] .= $out;
-		} elseif ( ! is_null( $json_out ) ) {
-			// Scenario 3: Full JSON that fits the chunk.
-			handle_qit_response( $process, $out, $failed_tests );
-		}
-	}, 10 );
-
-	$did_not_run = [];
-
-	foreach ( $qit_run_processes as $qit_process ) {
-		if ( ! $qit_process->getEnv()['QIT_RAN_TEST'] ) {
-			$did_not_run[] = [
-				'process'     => $qit_process,
-				'json_buffer' => $json_buffer[ $qit_process->getPid() ] ?? '',
-			];
+	// Flatten all tests into a single array for parallel polling
+	$allTests = [];
+	foreach ( $test_runs as $test_type => $test_type_test_runs ) {
+		foreach ( $test_type_test_runs as $t ) {
+			// Store per-test max attempts as well
+			$t['max_attempts'] = $t['env']['QIT_MAX_ATTEMPTS'];
+			$allTests[]        = $t;
 		}
 	}
 
-	if ( ! empty( $did_not_run ) ) {
-		echo "The following tests did not run:\n";
-		foreach ( $did_not_run as $test ) {
-			$process = $test['process'];
-			$header  = $process->getEnv()['qit_task_id'] ?? '';
-			$buffer  = $test['json_buffer'];
+	// Poll all tests together using get-multiple
+	while ( ! empty( $allTests ) ) {
+		$test_run_ids = array_map( function ( $test ) {
+			return $test['test_run_id'];
+		}, $allTests );
 
-			echo "[$header]: Test did not run.\n";
+		$ids_param = implode( ',', $test_run_ids );
 
-			// Add more details
-			echo "Command: " . $process->getCommandLine() . "\n";
+		$get_process = new Process( [
+			( new PhpExecutableFinder() )->find( false ),
+			realpath( __DIR__ . '/../../src/qit-cli.php' ),
+			'get-multiple',
+			'--json',
+			$ids_param,
+		] );
 
-			// If the process ended, we can show the exit code
-			if ( ! $process->isRunning() ) {
-				echo "Exit code: " . $process->getExitCode() . "\n";
+		$get_process->run();
+		$get_output  = trim( $get_process->getOutput() );
+		$result_json = json_decode( $get_output, true );
+
+		if ( json_last_error() !== JSON_ERROR_NONE || ! is_array( $result_json ) ) {
+			// Mark all as unknown
+			foreach ( $allTests as $key => $test ) {
+				$GLOBALS['qitLiveOutput']->setTestStatus( $test['test_run_id'], 'unknown' );
+				echo "Failed to parse JSON or invalid response for test_run_id {$test['test_run_id']}.\n";
+				// Decrement attempts
+				$allTests[ $key ]['max_attempts'] --;
 			}
+		} else {
+			// Update each test from the single response
+			foreach ( $allTests as $key => $test ) {
+				$test_run_id = $test['test_run_id'];
+				if ( ! isset( $result_json[ $test_run_id ] ) || ! isset( $result_json[ $test_run_id ]['status'] ) ) {
+					$GLOBALS['qitLiveOutput']->setTestStatus( $test_run_id, 'unknown' );
+					echo "No status in response for test_run_id {$test_run_id}.\n";
+					$allTests[ $key ]['max_attempts'] --;
+					continue;
+				}
 
-			// Show any stderr output captured
-			$errorOutput = trim( $process->getErrorOutput() );
-			if ( ! empty( $errorOutput ) ) {
-				echo "Error output:\n" . $errorOutput . "\n";
-			} else {
-				echo "No error output.\n";
+				$tr     = $result_json[ $test_run_id ];
+				$status = $tr['status'];
+
+				if ( isset( $tr['update_complete'] ) && $tr['update_complete'] === true ) {
+					// Test finished
+					echo "Test run ID {$test_run_id} finished with status: {$status}\n";
+					handle_qit_response_final( $test, $tr );
+					unset( $allTests[ $key ] );
+				} else {
+					// Still in progress
+					$GLOBALS['qitLiveOutput']->setTestStatus( $test_run_id, $status );
+					echo "Test run ID {$test_run_id} status: {$status}, still polling...\n";
+					$allTests[ $key ]['max_attempts'] --;
+				}
 			}
-
-			// Show JSON buffer if available
-			if ( ! empty( $buffer ) ) {
-				echo "JSON Buffer: $buffer\n";
-			}
-
-			// Show relevant environment variables
-			$env = $process->getEnv();
-			echo "Environment variables used:\n" . print_r( $env, true ) . "\n";
 		}
-		die( 1 );
+
+		// Remove any tests that ran out of attempts.
+		foreach ( $allTests as $key => $test ) {
+			if ( $test['max_attempts'] <= 0 ) {
+				$GLOBALS['qitLiveOutput']->addTestError( $test['test_run_id'], "Did not finish in time." );
+				echo "Test run ID {$test['test_run_id']} did not finish in time.\n";
+				unset( $allTests[ $key ] );
+			}
+		}
+
+		if ( ! empty( $allTests ) ) {
+			// Sleep before next polling round
+			// Use the poll interval from the first test (they all have same intervals anyway)
+			$sleep_interval = $allTests[ array_key_first( $allTests ) ]['env']['QIT_POLL_INTERVAL'];
+			sleep( $sleep_interval );
+		}
 	}
 
-	if ( ! empty( $failed_tests ) ) {
-		echo "The following tests failed:\n";
-		foreach ( $failed_tests as $failed_test ) {
-			echo $failed_test->getMessage() . "\n";
-		}
-		die( 1 );
-	}
+	echo "All tests completed.\n";
 }
 
 function make_test_result_json_filename( Process $process ): string {
@@ -577,15 +509,13 @@ function generate_test_file_name( string $test_type ) {
 	return ucfirst( str_replace( '-', '', $test_type ) ) . 'Test.php';
 }
 
-function handle_qit_response( Process $qit_process, string $out, array &$failed_tests ): void {
-	$result = json_decode( $out, true );
+function handle_qit_response_final( array $test_run, array $result ): void {
+	$qit_test_path        = $test_run['env']['QIT_TEST_PATH'];
+	$remove_from_snapshot = $test_run['env']['QIT_REMOVE_FROM_SNAPSHOT'];
+	$test_function_name   = $test_run['env']['QIT_TEST_FUNCTION_NAME'];
+	$test_run_id          = $test_run['test_run_id'];
 
-	/*
-	 * Here we received a JSON output, so it must be the result.
-	 * - Save the output in a file.
-	 * - Run the PHPUnit test.
-	 */
-	$snapshot_filepath = make_test_result_json_filepath( $qit_process );
+	$snapshot_filepath = sprintf( '%s/%s.json', $qit_test_path, $test_function_name );
 
 	if ( file_exists( $snapshot_filepath ) ) {
 		if ( ! unlink( $snapshot_filepath ) ) {
@@ -593,29 +523,20 @@ function handle_qit_response( Process $qit_process, string $out, array &$failed_
 		}
 	}
 
-	$human_friendly_test_result = test_result_parser( $out, $qit_process->getEnv()['QIT_REMOVE_FROM_SNAPSHOT'] );
+	$human_friendly_test_result = test_result_parser( json_encode( $result ), $remove_from_snapshot );
 
 	if ( ! file_put_contents( $snapshot_filepath, $human_friendly_test_result ) ) {
-		echo "[Process {$qit_process->getPid()}]: Failed to write test output to file.\n";
+		echo "[Test {$test_run['test_run_id']}]: Failed to write test output to file.\n";
 		throw new RuntimeException( 'Failed to write test output to file.' );
 	}
 
 	Context::$to_delete[] = $snapshot_filepath;
 
-	// Run the test itself.
-	//php ./vendor/bin/phpunit tests/ActivationTest.php --filter=test_php81_activation -d --update-snapshots
 	$args = [
 		__DIR__ . '/vendor/bin/phpunit',
-		__DIR__ . '/tests/' . generate_test_file_name( $qit_process->getEnv()['QIT_TEST_TYPE'] ),
-		/*
-		 * Match a single test method by regex.
-		 * Example test method: TestNamespace\TestCaseClass::testMethod
-		 * Example regex: --filter=::testMethod$
-		 * The "$" at the end is so that it does an exact match. For instance, the above regex would not match:
-		 * TestNamespace\TestCaseClass::testMethodPhp82
-		 */
-		sprintf( '--filter=::%s$', $qit_process->getEnv()['QIT_TEST_FUNCTION_NAME'] ),
-		'--testdox', // Nice formatting.
+		__DIR__ . '/tests/' . generate_test_file_name( $test_run['type'] ),
+		sprintf( '--filter=::%s$', $test_function_name ),
+		'--testdox',
 	];
 
 	if ( Context::$action === 'update' ) {
@@ -624,44 +545,37 @@ function handle_qit_response( Process $qit_process, string $out, array &$failed_
 	}
 
 	$phpunit_process = new Process( $args );
-	$phpunit_process->setTimeout(1200);
-	$phpunit_process->setIdleTimeout(1200);
-
-
-	copy_task_id_to_process( $qit_process, $phpunit_process );
-
-	// echo "[INFO] Preparing to run test: {$phpunit_process->getCommandLine()}\n";
+	$phpunit_process->setTimeout( 1200 );
+	$phpunit_process->setIdleTimeout( 1200 );
 
 	try {
 		$phpunit_process->mustRun();
-		$GLOBALS['parallelOutput']->processOutputCallback( $phpunit_process->getOutput(), $phpunit_process );
-	} catch ( ProcessFailedException $e ) {
-		$failed_tests[] = $e;
-		$GLOBALS['parallelOutput']->processOutputCallback( $phpunit_process->getOutput(), $phpunit_process );
-	} finally {
-		$qit_process->setEnv( array_merge( $qit_process->getEnv(), [ 'QIT_RAN_TEST' => true, ] ) );
-	}
+		$resultMessage = trim( $phpunit_process->getOutput() );
 
-	$GLOBALS['parallelOutput']->processOutputCallback( "\n\nTest Report: " . $result['test_results_manager_url'] . "\n", $phpunit_process );
+		$success = true; // If mustRun() didn't throw, test passed.
+		$GLOBALS['qitLiveOutput']->setTestCompleted( $test_run_id, $success, $result['test_results_manager_url'] ?? null, $test_run['non_json_output_file'] ?? null, $resultMessage );
+	} catch ( ProcessFailedException $e ) {
+		$resultMessage = $phpunit_process->getOutput();
+		echo "The test {$test_function_name} failed.\n";
+		$GLOBALS['qitLiveOutput']->setTestCompleted( $test_run_id, false, $result['test_results_manager_url'] ?? null, $test_run['non_json_output_file'] ?? null, $resultMessage );
+		die( 1 );
+	}
 }
 
 function generate_phpunit_files( string $test_type, array &$test_runs ): void {
-	$name = str_replace( '.php', '', generate_test_file_name( $test_type ) );
+	$name     = str_replace( '.php', '', generate_test_file_name( $test_type ) );
 	$filepath = __DIR__ . '/tests/' . generate_test_file_name( $test_type );
 	$tests    = '';
 
 	foreach ( $test_runs as &$test_run ) {
-		$json_name = make_test_result_json_filename( $test_run['qit_process'] );
+		$json_name = $test_run['test_function_name'] . '.json';
+		$tests     .= <<<PHP
 
-		$tests .= <<<PHP
-
-	public function {$test_run['test_function_name']}() {
-		\$this->assertMatchesSnapshot( \$this->validate_and_normalize( __DIR__ . '/../{$test_run['type']}/{$test_run['slug']}/$json_name' ) );
-	}
+    public function {$test_run['test_function_name']}() {
+        \$this->assertMatchesSnapshot( \$this->validate_and_normalize( __DIR__ . '/../{$test_run['type']}/{$test_run['slug']}/$json_name' ) );
+    }
 PHP;
-
 	}
-
 
 	$test_file = <<<PHP
 <?php
@@ -672,7 +586,7 @@ use QITE2E\QITE2ETestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
 class $name extends QITE2ETestCase {
-	use MatchesSnapshots;
+    use MatchesSnapshots;
 $tests
 }
 PHP;
@@ -696,7 +610,7 @@ function generate_zips( array $test_type_test_runs ) {
 		$slug = $t['sut_slug'];
 
 		if ( in_array( md5( $path . $slug ), $generated_zips, true ) ) {
-			$GLOBALS['parallelOutput']->addRawOutput( "[INFO] Skipping zip generation for test in {$t['path']} (Another test in same dir already zipped)\n" );
+			echo "[INFO] Skipping zip generation for test in {$t['path']} (Another test in same dir already zipped)\n";
 			continue;
 		}
 
@@ -718,11 +632,8 @@ function generate_zips( array $test_type_test_runs ) {
 			"rm -f sut.zip && zip -r sut.zip $slug",
 		];
 
-
-		$zip_process = new Symfony\Component\Process\Process( $args );
-
+		$zip_process = new Process( $args );
 		add_task_id_to_process( $zip_process, $t );
-
 		$zip_processes[] = $zip_process;
 	}
 
@@ -733,12 +644,10 @@ function generate_zips( array $test_type_test_runs ) {
 		25,
 		10000,
 		function ( string $type, string $out, Process $process ) {
-			// Pass the output to the ParallelOutput instance
-			$GLOBALS['parallelOutput']->processOutputCallback( $out, $process );
+			echo $out;
 		}
 	);
 
-	// Validate all of them finished successfully.
 	foreach ( $zip_processes as $zip_process ) {
 		if ( ! $zip_process->isSuccessful() ) {
 			throw new RuntimeException( "Failed to create zip file for test: {$zip_process->getEnv()['qit_task_id']}" );
