@@ -130,6 +130,7 @@ PHP;
 		];
 
 		if ( Context::$action === 'update' ) {
+			$args[] = '-d';
 			$args[] = '--update-snapshots';
 		}
 
