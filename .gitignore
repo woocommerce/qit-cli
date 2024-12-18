@@ -37,3 +37,5 @@ _tests/custom_tests/.env.staging
 _tests/custom_tests/.env.local
 
 _tests/custom_tests/.env.bk
+
+_tests/managed_tests/mass-test.log

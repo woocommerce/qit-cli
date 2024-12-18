@@ -60,6 +60,7 @@ class QITLiveOutput {
 
 		echo "──────────────────────────────────────────────────────────────────────\n";
 		echo " QIT Parallel Test Runner\n";
+		echo " (Verbose logs are being written to mass-test.log)\n";
 		echo "──────────────────────────────────────────────────────────────────────\n\n";
 
 		$elapsed = intval( microtime( true ) - $this->startTime );
