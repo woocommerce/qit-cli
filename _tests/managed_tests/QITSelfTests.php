@@ -14,6 +14,14 @@ require_once __DIR__ . '/src/ProcessManagerFork.php';
 require_once __DIR__ . '/src/QITLiveOutput.php';
 require_once __DIR__ . '/src/test-result-parser.php';
 
+$isCI = ! empty( getenv( 'CI' ) );
+
+function maybe_echo( $message ) {
+	if ( ! empty( getenv( 'CI' ) ) ) {
+		echo $message;
+	}
+}
+
 $logger = new Logger( __DIR__ . '/mass-test.log' );
 $config = new Config( $argv, $logger );
 $config->parse();
