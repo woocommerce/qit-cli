@@ -174,9 +174,6 @@ class QITLiveOutput {
 		return sprintf( "[%s] %s: %s", $duration, $testInfo['displayName'], $testInfo['status'] );
 	}
 
-	/**
-	 * Updated printFinalSummary to produce final output with numbering as requested.
-	 */
 	public function printFinalSummary( int $phpUnitFailedCount ) {
 		if ( ! $this->isCI ) {
 			if ( stripos( PHP_OS, 'WIN' ) === 0 ) {
@@ -196,9 +193,9 @@ class QITLiveOutput {
 			$displayName = $info['displayName'];
 			$rawStatus   = $info['qit_raw_status'] ?? 'unknown';
 
-			// Map raw status to (success)/(failed)/(unknown)
-			// Assume 'success' or 'failed' from QIT. If something else, treat as failed for safety.
-			$finalRawResult = ($rawStatus === 'success') ? 'success' : ( ($rawStatus === 'failed') ? 'failed' : 'unknown' );
+			// Map raw status to success/failed/unknown
+			$finalRawResult = ( $rawStatus === 'success' ) ? 'success'
+				: ( ( $rawStatus === 'failed' ) ? 'failed' : 'unknown' );
 
 			echo "[{$index}] {$displayName}: : completed ({$finalRawResult})\n";
 
@@ -215,12 +212,19 @@ class QITLiveOutput {
 			$index       = $info['test_index'];
 			$displayName = $info['displayName'];
 
-			// If status is 'completed success', snapshot matches. If 'completed failed', snapshot did not match.
-			if ( $info['status'] === 'completed success' ) {
+			$isSuccess = ( $info['status'] === 'completed success' );
+			if ( $isSuccess ) {
 				echo "✔ [{$index}] {$displayName}: : Snapshot matches\n";
 			} else {
 				echo "✖ [{$index}] {$displayName}: : Snapshot did NOT match\n";
 				$finalFailures ++;
+
+				// Always show entire PHPUnit output for failing tests
+				if ( ! empty( $info['resultMessage'] ) ) {
+					$this->printIndentedOutput( $info['resultMessage'] );
+				} else {
+					echo "  (No additional output available)\n";
+				}
 			}
 
 			if ( ! empty( $info['errors'] ) ) {
@@ -240,4 +244,13 @@ class QITLiveOutput {
 
 		echo "\nFor more details, see mass-test.log.\n";
 	}
+
+	private function printIndentedOutput( string $output ) {
+		$lines = explode( "\n", $output );
+		foreach ( $lines as $line ) {
+			echo "    $line\n";
+		}
+	}
+
+
 }
