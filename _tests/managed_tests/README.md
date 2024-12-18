@@ -40,3 +40,14 @@ That's it, now you can run `php QitSelfTests.php run performance` to run the tes
 
 - `./vendor/bin/phpunit ./tests/self_test`
 - Or `./vendor/bin/phpunit -d --update-snapshots ./tests/self_test`
+
+## Files
+
+- **Context:** Holds application state.
+- **Logger:** For logging messages to a file.
+- **Config:** Parses and sets up configuration and context.
+- **Validator:** Ensures environment and parameters are valid.
+- **TestManager:** Discovers test types, filters them, and generates test runs.
+- **ZipManager:** Handles creation of zip files for the SUT.
+- **PhpUnitRunner:** Generates PHPUnit test files and runs PHPUnit against test results.
+- **QitRunner:** Interacts with the QIT CLI to start tests, poll their status, and finalize them.
