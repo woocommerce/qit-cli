@@ -57,8 +57,8 @@ class TestManager {
 			if ( count( $test_types ) !== count( $this->get_test_types() ) ) {
 				$removed = array_diff( $this->get_test_types(), $test_types );
 				$this->logger->log( "Skipping tests based on custom tests: " . implode( ',', array_map( 'basename', $removed ) ) );
-				echo sprintf( "Skipping tests based on custom tests, which must run in a dedicated process: \n - %s",
-						implode( "\n - ", array_map( 'basename', $removed ) ) ) . "\n";
+				maybe_echo( sprintf( "Skipping tests based on custom tests, which must run in a dedicated process: \n - %s",
+						implode( "\n - ", array_map( 'basename', $removed ) ) ) . "\n" );
 			}
 		}
 
@@ -93,7 +93,7 @@ class TestManager {
 				if ( ! is_null( Context::$scenarios ) ) {
 					if ( ! in_array( basename( $test ), Context::$scenarios ) ) {
 						$this->logger->log( "Skipping " . basename( $test ) . " not in scenarios" );
-						echo sprintf( "Skipping %s, running only %s\n", basename( $test ), implode( ',', Context::$scenarios ) );
+						maybe_echo( sprintf( "Skipping %s, running only %s\n", basename( $test ), implode( ',', Context::$scenarios ) ) );
 						continue;
 					}
 				}
@@ -112,7 +112,7 @@ class TestManager {
 
 							if ( ! $this->env_filters_match( $env, $wp_version, $woo_version, $php_version ) ) {
 								$this->logger->log( "Skipping " . basename( $test ) . " does not match env filters" );
-								echo sprintf( "Skipping %s, does not match env filters\n", basename( $test ) );
+								maybe_echo( sprintf( "Skipping %s, does not match env filters\n", basename( $test ) ) );
 								continue;
 							}
 

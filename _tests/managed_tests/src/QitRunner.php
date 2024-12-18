@@ -142,7 +142,7 @@ class QitRunner {
 		$this->logger->log( "Running test run command: " . implode( ' ', $args ) );
 		$args[]      = $sut_slug;
 		$qit_process = new Process( $args );
-		echo "\nRunning command: " . $qit_process->getCommandLine() . "\n";
+		maybe_echo( "\nRunning command: " . $qit_process->getCommandLine() . "\n" );
 		$qit_process->setTimeout( null );
 		$this->add_task_id_to_process( $qit_process, $t );
 		$qit_process->mustRun();
@@ -212,7 +212,7 @@ class QitRunner {
 				$this->logger->log( "get-multiple returned invalid JSON. Marking all as unknown." );
 				foreach ( $allTests as $tid => $test ) {
 					$this->liveOutput->setTestStatus( $tid, 'unknown' );
-					echo "Failed to parse JSON for test_run_id {$tid}.\n";
+					maybe_echo( "Failed to parse JSON for test_run_id {$tid}.\n" );
 					$unknown_tests[] = $tid;
 				}
 			} else {
@@ -221,7 +221,7 @@ class QitRunner {
 					if ( ! isset( $result_json[ $tid ] ) || ! isset( $result_json[ $tid ]['status'] ) ) {
 						$this->logger->log( "No status in response for test_run_id $tid" );
 						$this->liveOutput->setTestStatus( $tid, 'unknown' );
-						echo "No status in response for test_run_id {$tid}.\n";
+						maybe_echo( "No status in response for test_run_id {$tid}.\n" );
 						$unknown_tests[] = $tid;
 						continue;
 					}
@@ -231,13 +231,13 @@ class QitRunner {
 					$this->logger->log( "Test_run_id $tid has status: $status" );
 
 					if ( isset( $tr['update_complete'] ) && $tr['update_complete'] === true ) {
-						echo "Test run ID {$tid} finished with status: {$status}\n";
+						maybe_echo( "Test run ID {$tid} finished with status: {$status}\n" );
 						$this->logger->log( "Test_run_id $tid completed. Handling final response..." );
 						$this->handle_qit_response_final( $allTests[ $tid ], $tr, $status );
 						$completed_tests[] = $tid;
 					} else {
 						$this->liveOutput->setTestStatus( $tid, $status );
-						echo "Test run ID {$tid} status: {$status}, still polling...\n";
+						maybe_echo( "Test run ID {$tid} status: {$status}, still polling...\n" );
 						$still_in_progress[] = $tid;
 					}
 				}
@@ -258,7 +258,7 @@ class QitRunner {
 					if ( $allTests[ $tid ]['max_attempts'] <= 0 ) {
 						$this->logger->log( "Test_run_id {$tid} timed out" );
 						$this->liveOutput->addTestError( $tid, "Did not finish in time." );
-						echo "Test run ID {$tid} did not finish in time.\n";
+						maybe_echo( "Test run ID {$tid} did not finish in time.\n" );
 						unset( $allTests[ $tid ] );
 					}
 				}
@@ -280,7 +280,7 @@ class QitRunner {
 			}
 		}
 
-		echo "All tests completed.\n";
+		maybe_echo( "All tests completed.\n" );
 		$this->logger->log( "All tests completed. Preparing final summary." );
 
 		$failures = $this->phpUnitRunner->getFailedTestsCount();

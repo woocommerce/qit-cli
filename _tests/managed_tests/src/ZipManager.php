@@ -20,7 +20,7 @@ class ZipManager {
 			$slug = $t['sut_slug'];
 
 			if ( in_array( md5( $path . $slug ), $generated_zips, true ) ) {
-				echo "[INFO] Skipping zip generation for test in {$t['path']} (Already zipped)\n";
+				maybe_echo( "[INFO] Skipping zip generation for test in {$t['path']} (Already zipped)\n" );
 				$this->logger->log( "Skipping zip for $slug in $path, already done" );
 				continue;
 			}
@@ -55,7 +55,7 @@ class ZipManager {
 			25,
 			10000,
 			function ( string $type, string $out, Process $process ) {
-				echo $out;
+				maybe_echo( $out );
 				$this->logger->log( "Zip output: " . $out );
 			}
 		);
