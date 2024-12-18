@@ -4,10 +4,15 @@ class QITLiveOutput {
 	private $testsState = []; // key: test_run_id
 	private $startTime;
 	private $isCI;
+	private $timeToNextPoll = null;
 
 	public function __construct() {
 		$this->startTime = microtime( true );
 		$this->isCI      = getenv( 'CI' ) === 'true';
+	}
+
+	public function setTimeToNextPoll( ?int $seconds ) {
+		$this->timeToNextPoll = $seconds;
 	}
 
 	public function addTest( string $testId, string $displayName ) {
@@ -67,7 +72,6 @@ class QITLiveOutput {
 
 	public function renderOutput() {
 		if ( ! $this->isCI ) {
-			// Clear screen for better live view
 			if ( stripos( PHP_OS, 'WIN' ) === 0 ) {
 				system( 'cls' );
 			} else {
@@ -85,8 +89,14 @@ class QITLiveOutput {
 		$seconds = str_pad( $elapsed % 60, 2, '0', STR_PAD_LEFT );
 		echo "Elapsed Time: [{$minutes}:{$seconds}]\n\n";
 
+		// Display next poll info
+		if ( $this->timeToNextPoll !== null ) {
+			echo "Next poll in: {$this->timeToNextPoll} second" . ( $this->timeToNextPoll === 1 ? '' : 's' ) . "...\n\n";
+		}
+
 		if ( empty( $this->testsState ) ) {
 			echo "No tests currently registered.\n";
+
 			return;
 		}
 
@@ -158,6 +168,7 @@ class QITLiveOutput {
 
 	private function summaryLine( array $testInfo ): string {
 		$duration = $this->computeDuration( $testInfo );
+
 		return sprintf( "[%s] %s: %s", $duration, $testInfo['displayName'], $testInfo['status'] );
 	}
 

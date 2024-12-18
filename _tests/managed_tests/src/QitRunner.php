@@ -243,12 +243,10 @@ class QitRunner {
 				}
 			}
 
-			// Remove completed tests
 			foreach ( $completed_tests as $tid ) {
 				unset( $allTests[ $tid ] );
 			}
 
-			// Unknown tests
 			foreach ( $unknown_tests as $tid ) {
 				$still_in_progress[] = $tid;
 			}
@@ -269,8 +267,16 @@ class QitRunner {
 			if ( ! empty( $allTests ) ) {
 				$someTest       = reset( $allTests );
 				$sleep_interval = $someTest['poll_interval'];
-				$this->logger->log( "Sleeping for $sleep_interval seconds before next poll." );
-				sleep( $sleep_interval );
+
+				// Instead of sleeping once, sleep in a loop and update the countdown
+				for ( $i = $sleep_interval; $i > 0; $i -- ) {
+					$this->liveOutput->setTimeToNextPoll( $i );
+					$this->liveOutput->renderOutput();
+					sleep( 1 );
+				}
+				// After finishing the countdown, clear the next poll display
+				$this->liveOutput->setTimeToNextPoll( null );
+				$this->liveOutput->renderOutput();
 			}
 		}
 
