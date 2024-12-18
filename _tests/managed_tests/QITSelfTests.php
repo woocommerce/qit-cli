@@ -429,7 +429,7 @@ function run_test_runs( array $test_runs, array $tests_based_on_custom_tests ) {
 			}
 
 			$t['env'] = [
-				'c'            => $t['path'],
+				'QIT_TEST_PATH'            => $t['path'],
 				'QIT_TEST_TYPE'            => $test_type,
 				'QIT_TEST_FUNCTION_NAME'   => $t['test_function_name'],
 				'QIT_RAN_TEST'             => false,
