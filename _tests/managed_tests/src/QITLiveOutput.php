@@ -174,54 +174,50 @@ class QITLiveOutput {
 
 	public function printFinalSummary( int $phpUnitFailedCount ) {
 		if ( ! $this->isCI ) {
-			if ( stripos( PHP_OS, 'WIN' ) === 0 ) {
-				system( 'cls' );
-			} else {
-				system( 'clear' );
-			}
+			system( 'clear' );
 		}
 
-		maybe_echo( "──────────────────────────────────────────────────────────────────────\n" );
-		maybe_echo( " QIT Parallel Test Runner - Final Summary\n" );
-		maybe_echo( "──────────────────────────────────────────────────────────────────────\n\n" );
+		echo "──────────────────────────────────────────────────────────────────────\n";
+		echo " QIT Parallel Test Runner - Final Summary\n";
+		echo "──────────────────────────────────────────────────────────────────────\n\n";
 
-		maybe_echo( "QIT Test Results (Raw):\n" );
+		echo "QIT Test Results (Raw):\n";
 		foreach ( $this->testsState as $testId => $info ) {
 			$raw    = $info['qit_raw_status'] ?? 'unknown';
 			$label  = $info['displayName'];
 			$report = $info['reportUrl'] ? "\n  Test Report: {$info['reportUrl']}" : '';
 			// Just show 'success' or 'fail' raw
-			maybe_echo( "$label: completed ($raw)$report\n" );
+			echo "$label: completed ($raw)$report\n";
 		}
 
-		maybe_echo( "\nNote: Raw QIT results do not determine the final outcome. Snapshot tests are the final check.\n\n" );
+		echo "\nNote: Raw QIT results do not determine the final outcome. Snapshot tests are the final check.\n\n";
 
-		maybe_echo( "PHPUnit Verification (Snapshots):\n" );
+		echo "PHPUnit Verification (Snapshots):\n";
 		$finalFailures = 0;
 		foreach ( $this->testsState as $testId => $info ) {
 			$label = $info['displayName'];
 			if ( $info['status'] === 'completed success' ) {
-				maybe_echo( "✔ $label: Snapshot matches\n" );
+				echo "✔ $label: Snapshot matches\n";
 			} else {
-				maybe_echo( "✖ $label: Snapshot did NOT match\n" );
+				echo "✖ $label: Snapshot did NOT match\n";
 				$finalFailures ++;
 			}
 
 			if ( ! empty( $info['errors'] ) ) {
 				foreach ( $info['errors'] as $err ) {
-					maybe_echo( "  Error: $err\n" );
+					echo "  Error: $err\n";
 				}
 			}
 		}
 
-		maybe_echo( "\nAll snapshots have been verified.\n\n" );
+		echo "\nAll snapshots have been verified.\n\n";
 
 		if ( $phpUnitFailedCount > 0 || $finalFailures > 0 ) {
-			maybe_echo( "Some snapshots failed. Final outcome: ❌\n" );
+			echo "Some snapshots failed. Final outcome: ❌\n";
 		} else {
-			maybe_echo( "All snapshots matched! Final outcome: ✅\n" );
+			echo "All snapshots matched! Final outcome: ✅\n";
 		}
 
-		maybe_echo( "\nFor more details, see mass-test.log.\n" );
+		echo "\nFor more details, see mass-test.log.\n";
 	}
 }

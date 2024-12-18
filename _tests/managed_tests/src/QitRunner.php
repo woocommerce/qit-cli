@@ -8,7 +8,7 @@ class QitRunner {
 	private $phpUnitRunner;
 	private $liveOutput;
 
-	public function __construct( Logger $logger, PhpUnitRunner $phpUnitRunner, $liveOutput ) {
+	public function __construct( Logger $logger, PhpUnitRunner $phpUnitRunner, QITLiveOutput $liveOutput ) {
 		$this->logger        = $logger;
 		$this->phpUnitRunner = $phpUnitRunner;
 		$this->liveOutput    = $liveOutput;
