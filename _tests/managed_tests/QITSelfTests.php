@@ -17,7 +17,8 @@ require_once __DIR__ . '/src/test-result-parser.php';
 $isCI = ! empty( getenv( 'CI' ) );
 
 function maybe_echo( $message ) {
-	if ( ! empty( getenv( 'CI' ) ) ) {
+	global $isCI;
+	if ( ! $isCI ) {
 		echo $message;
 	}
 }
@@ -58,7 +59,7 @@ register_shutdown_function( function () use ( $logger ) {
 } );
 
 // --- Stage 1: Preparation ---
-clear_screen();
+system( 'clear' );
 maybe_echo( "──────────────────────────────────────────────────────────────────────\n" );
 maybe_echo( " QIT Test Runner - Stage 1: Preparing Tests\n" );
 maybe_echo( " (Verbose logs: mass-test.log)\n" );
@@ -75,7 +76,7 @@ maybe_echo( "\nPreparation complete. Moving on to running QIT tests...\n" );
 sleep( 2 );
 
 // --- Stage 2: Running QIT Tests ---
-clear_screen();
+system( 'clear' );
 maybe_echo( "──────────────────────────────────────────────────────────────────────\n" );
 maybe_echo( " QIT Test Runner - Stage 2: Executing Tests on QIT\n" );
 maybe_echo( " (Verbose logs: mass-test.log)\n" );
@@ -95,12 +96,3 @@ try {
 // If we reach here, QitRunner has completed polling and printed the final summary (Stage 3 is integrated in the QitRunner final summary print).
 
 exit;
-
-// Helper function to clear screen
-function clear_screen() {
-	if ( stripos( PHP_OS, 'WIN' ) === 0 ) {
-		system( 'cls' );
-	} else {
-		system( 'clear' );
-	}
-}
