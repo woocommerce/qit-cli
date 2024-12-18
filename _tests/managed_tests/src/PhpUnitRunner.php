@@ -109,7 +109,6 @@ PHP;
 			}
 		}
 
-		// Print the JSON content we're using
 		$this->logger->log( "Printing JSON content from $snapshot_filepath:" );
 		$json_content = @file_get_contents( $snapshot_filepath );
 		if ( $json_content !== false ) {
@@ -127,12 +126,10 @@ PHP;
 			sprintf( '--filter=::%s$', $test_function_name ),
 			'--testdox',
 			'-v',
-			'--debug',
-			'--no-coverage',
+			'--no-coverage', // remove --debug
 		];
 
 		if ( Context::$action === 'update' ) {
-			$args[] = '-d';
 			$args[] = '--update-snapshots';
 		}
 
@@ -152,17 +149,14 @@ PHP;
 			$resultMessage = trim($phpunit_process->getOutput());
 			$errorMessage  = trim($phpunit_process->getErrorOutput());
 
-			// Log both outputs
 			$this->logger->log("PHPUnit output for test_run_id $test_run_id:\n$resultMessage");
 			if (!empty($errorMessage)) {
 				$this->logger->log("PHPUnit error output for test_run_id $test_run_id:\n$errorMessage");
-				// Show error directly in the live output
 				$this->liveOutput->addTestError($test_run_id, $errorMessage);
 			}
 
 			$combinedMessage = $resultMessage . ( $errorMessage ? "\n$errorMessage" : '' );
 
-			// Mark test as completed successfully or with warnings
 			$this->liveOutput->setTestCompleted(
 				$test_run_id,
 				true,
@@ -177,7 +171,6 @@ PHP;
 			$this->logger->log("PHPUnit failed for test_run_id $test_run_id. Output:\n$resultMessage");
 			if (!empty($errorMessage)) {
 				$this->logger->log("PHPUnit error output for test_run_id $test_run_id:\n$errorMessage");
-				// Show error directly in the live output as well
 				$this->liveOutput->addTestError($test_run_id, $errorMessage);
 			}
 
@@ -206,57 +199,11 @@ PHP;
 	private function logDirectoryContents( string $dir ): void {
 		if ( ! is_dir( $dir ) ) {
 			$this->logger->log( "$dir does not exist or is not a directory." );
-
 			return;
 		}
 
 		$cmd    = "ls -la " . escapeshellarg( $dir );
 		$output = shell_exec( $cmd );
 		$this->logger->log( "Directory listing for $dir:\n$output" );
-	}
-
-	private function findDiffFiles( string $dir, string $test_function_name ): array {
-		if ( ! is_dir( $dir ) ) {
-			return [];
-		}
-
-		$files = scandir( $dir );
-		if ( $files === false ) {
-			return [];
-		}
-
-		$diff_files = [];
-		foreach ( $files as $file ) {
-			$fullPath = $dir . '/' . $file;
-			if ( strpos( $file, $test_function_name ) !== false && ( strpos( $file, '.diff' ) !== false || strpos( $file, '.failed' ) !== false ) ) {
-				$diff_files[] = $fullPath;
-			}
-		}
-
-		return $diff_files;
-	}
-
-	private function findSnapFiles( string $dir, string $test_function_name ): array {
-		if ( ! is_dir( $dir ) ) {
-			return [];
-		}
-
-		$files = scandir( $dir );
-		if ( $files === false ) {
-			return [];
-		}
-
-		$snap_files = [];
-		foreach ( $files as $file ) {
-			$fullPath = $dir . '/' . $file;
-			// Spatie snapshots often use a naming convention like:
-			// ClassName__testMethod__1.php
-			// We can just match on $test_function_name and .php files that aren't diff or failed
-			if ( strpos( $file, $test_function_name ) !== false && strpos( $file, '__1.php' ) !== false ) {
-				$snap_files[] = $fullPath;
-			}
-		}
-
-		return $snap_files;
 	}
 }

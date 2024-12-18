@@ -49,18 +49,50 @@ register_shutdown_function( function () use ( $logger ) {
 	$logger->log( "Script shutdown" );
 } );
 
+// --- Stage 1: Preparation ---
+clear_screen();
+echo "──────────────────────────────────────────────────────────────────────\n";
+echo " QIT Test Runner - Stage 1: Preparing Tests\n";
+echo " (Verbose logs: mass-test.log)\n";
+echo "──────────────────────────────────────────────────────────────────────\n\n";
+
+echo "Filtering scenarios:\n";
+// The filtering messages were already printed by the script during scenario filtering
+// If you want more explicit info, you could add it here.
+
+echo "\nGenerating ZIP packages:\n";
+$zipManager->generate_zips( $tests_to_run['woo-api'] ?? [] );
+
+echo "\nPreparation complete. Moving on to running QIT tests...\n";
+sleep( 2 );
+
+// --- Stage 2: Running QIT Tests ---
+clear_screen();
+echo "──────────────────────────────────────────────────────────────────────\n";
+echo " QIT Test Runner - Stage 2: Executing Tests on QIT\n";
+echo " (Verbose logs: mass-test.log)\n";
+echo "──────────────────────────────────────────────────────────────────────\n\n";
+
+echo "Dispatching tests to QIT infrastructure...\n";
+
 $qitRunner = new QitRunner( $logger, $phpUnitRunner, $liveOutput );
-
-// Generate zips
-foreach ( $tests_to_run as $test_type => $test_type_test_runs ) {
-	$zipManager->generate_zips( $test_type_test_runs );
-}
-
-// Run tests
 try {
 	$qitRunner->run_test_runs( $tests_to_run, $tests_based_on_custom_tests );
 } catch ( \Exception $e ) {
 	$logger->log( "Exception: " . $e->getMessage() );
 	echo $e->getMessage() . "\nExiting by exception\n";
 	die( 1 );
+}
+
+// If we reach here, QitRunner has completed polling and printed the final summary (Stage 3 is integrated in the QitRunner final summary print).
+
+exit;
+
+// Helper function to clear screen
+function clear_screen() {
+	if ( stripos( PHP_OS, 'WIN' ) === 0 ) {
+		system( 'cls' );
+	} else {
+		system( 'clear' );
+	}
 }

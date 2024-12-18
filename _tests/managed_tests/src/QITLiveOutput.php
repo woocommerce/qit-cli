@@ -29,6 +29,9 @@ class QITLiveOutput {
 		if ( ! isset( $this->testsState[ $testId ] ) ) {
 			return;
 		}
+		if ( $status === 'running' || $status === 'dispatched' ) {
+			$status = 'running...';
+		}
 		$this->testsState[ $testId ]['status'] = $status;
 		$this->renderOutput();
 	}
@@ -38,8 +41,8 @@ class QITLiveOutput {
 		if ( ! isset( $this->testsState[ $testId ] ) ) {
 			return;
 		}
-		// This status now reflects the final snapshot verification result
-		$this->testsState[ $testId ]['status']            = $success ? 'completed (success)' : 'completed (failed)';
+		// Now simpler status wording
+		$this->testsState[ $testId ]['status']            = $success ? 'completed success' : 'completed failed';
 		$this->testsState[ $testId ]['endTime']           = microtime( true );
 		$this->testsState[ $testId ]['reportUrl']         = $reportUrl;
 		$this->testsState[ $testId ]['nonJsonOutputPath'] = $nonJsonOutputPath;
@@ -55,7 +58,6 @@ class QITLiveOutput {
 		$this->renderOutput();
 	}
 
-	// Set the raw QIT result before snapshot verification
 	public function setQitRawStatus( string $testId, string $qitStatus ) {
 		if ( ! isset( $this->testsState[ $testId ] ) ) {
 			return;
@@ -85,7 +87,6 @@ class QITLiveOutput {
 
 		if ( empty( $this->testsState ) ) {
 			echo "No tests currently registered.\n";
-
 			return;
 		}
 
@@ -122,9 +123,9 @@ class QITLiveOutput {
 			$finalLine = $this->summaryLine( $testInfo );
 			echo $finalLine . "\n";
 
-			if ( $testInfo['status'] === 'completed (success)' ) {
+			if ( $testInfo['status'] === 'completed success' ) {
 				$successCount ++;
-			} elseif ( $testInfo['status'] === 'completed (failed)' ) {
+			} elseif ( $testInfo['status'] === 'completed failed' ) {
 				$failCount ++;
 			}
 		}
@@ -157,12 +158,10 @@ class QITLiveOutput {
 
 	private function summaryLine( array $testInfo ): string {
 		$duration = $this->computeDuration( $testInfo );
-
 		return sprintf( "[%s] %s: %s", $duration, $testInfo['displayName'], $testInfo['status'] );
 	}
 
 	public function printFinalSummary( int $phpUnitFailedCount ) {
-		// Clear screen for final summary
 		if ( ! $this->isCI ) {
 			if ( stripos( PHP_OS, 'WIN' ) === 0 ) {
 				system( 'cls' );
@@ -175,38 +174,28 @@ class QITLiveOutput {
 		echo " QIT Parallel Test Runner - Final Summary\n";
 		echo "──────────────────────────────────────────────────────────────────────\n\n";
 
-		// Print QIT raw results first
 		echo "QIT Test Results (Raw):\n";
 		foreach ( $this->testsState as $testId => $info ) {
 			$raw    = $info['qit_raw_status'] ?? 'unknown';
 			$label  = $info['displayName'];
 			$report = $info['reportUrl'] ? "\n  Test Report: {$info['reportUrl']}" : '';
+			// Just show 'success' or 'fail' raw
 			echo "$label: completed ($raw)$report\n";
 		}
 
-		echo "\nNote: The above \"failed\" or \"passed\" statuses are raw QIT results.\n";
-		echo "They do not determine the final outcome. The final check is done by PHPUnit snapshot tests.\n\n";
+		echo "\nNote: Raw QIT results do not determine the final outcome. Snapshot tests are the final check.\n\n";
 
-		// Now print the final snapshot verification results
 		echo "PHPUnit Verification (Snapshots):\n";
 		$finalFailures = 0;
 		foreach ( $this->testsState as $testId => $info ) {
 			$label = $info['displayName'];
-			// status after PHPUnit is "completed (success)" or "completed (failed)"
-			if ( $info['status'] === 'completed (success)' ) {
-				echo "✔ $label: Snapshot matches expected output\n";
+			if ( $info['status'] === 'completed success' ) {
+				echo "✔ $label: Snapshot matches\n";
 			} else {
-				if ( strpos( $info['status'], 'failed' ) !== false ) {
-					echo "✖ $label: Snapshot did NOT match expected output\n";
-					$finalFailures ++;
-				} else {
-					// if it never completed, treat it as failed
-					echo "✖ $label: No final snapshot result (not completed)\n";
-					$finalFailures ++;
-				}
+				echo "✖ $label: Snapshot did NOT match\n";
+				$finalFailures ++;
 			}
 
-			// Print any errors recorded for this test
 			if ( ! empty( $info['errors'] ) ) {
 				foreach ( $info['errors'] as $err ) {
 					echo "  Error: $err\n";
@@ -221,5 +210,7 @@ class QITLiveOutput {
 		} else {
 			echo "All snapshots matched! Final outcome: ✅\n";
 		}
+
+		echo "\nFor more details, see mass-test.log.\n";
 	}
 }
