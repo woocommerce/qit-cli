@@ -153,7 +153,9 @@ class QitRunner {
 
 			$get_process->run();
 			$get_output = trim( $get_process->getOutput() );
-			$this->logger->log( "get-multiple output: $get_output" );
+			if ( getenv( 'QIT_VERBOSE_SELF_TEST_LOG' ) ) {
+				$this->logger->log( "get-multiple output: $get_output" );
+			}
 			$result_json = json_decode( $get_output, true );
 
 			$still_in_progress = [];
