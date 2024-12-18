@@ -421,8 +421,8 @@ function run_test_runs( array $test_runs, array $tests_based_on_custom_tests ) {
 
 			$t['non_json_output_file'] = tempnam( sys_get_temp_dir(), 'qit_non_json_' );
 
-			$poll_interval = 30; // 30s
-			if ( strpos( $normalized_t['type'], 'e2e' ) !== false ) {
+			$poll_interval = 15; // 15s
+			if ( strpos( $normalized_t['type'], 'woo-e2e' ) !== false ) {
 				$max_attempts = 240; // 2h
 			} else {
 				$max_attempts = 60; // 30m
