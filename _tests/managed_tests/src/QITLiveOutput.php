@@ -15,7 +15,11 @@ class QITLiveOutput {
 		$this->timeToNextPoll = $seconds;
 	}
 
-	public function addTest( string $testId, string $displayName ) {
+	/**
+	 * Modified addTest signature:
+	 * Now it accepts $testIndex and $testData as arguments.
+	 */
+	public function addTest( string $testId, string $displayName, int $testIndex, array $testData ) {
 		$this->testsState[ $testId ] = [
 			'displayName'       => $displayName,
 			'status'            => '-', // Intermediate status
@@ -25,7 +29,9 @@ class QITLiveOutput {
 			'nonJsonOutputPath' => null,
 			'resultMessage'     => null,
 			'errors'            => [],
-			'qit_raw_status'    => null, // Will hold raw QIT test status ('failed', 'passed', etc.)
+			'qit_raw_status'    => null, // Will hold raw QIT test status ('success', 'failed', etc.)
+			'test_index'        => $testIndex,
+			'test_data'         => $testData,
 		];
 		$this->renderOutput();
 	}
@@ -41,12 +47,10 @@ class QITLiveOutput {
 		$this->renderOutput();
 	}
 
-	// Called after snapshot verification is done
 	public function setTestCompleted( string $testId, bool $success, ?string $reportUrl = null, ?string $nonJsonOutputPath = null, ?string $resultMessage = null ) {
 		if ( ! isset( $this->testsState[ $testId ] ) ) {
 			return;
 		}
-		// Now simpler status wording
 		$this->testsState[ $testId ]['status']            = $success ? 'completed success' : 'completed failed';
 		$this->testsState[ $testId ]['endTime']           = microtime( true );
 		$this->testsState[ $testId ]['reportUrl']         = $reportUrl;
@@ -89,14 +93,12 @@ class QITLiveOutput {
 		$seconds = str_pad( $elapsed % 60, 2, '0', STR_PAD_LEFT );
 		maybe_echo( "Elapsed Time: [{$minutes}:{$seconds}]\n\n" );
 
-		// Display next poll info
 		if ( $this->timeToNextPoll !== null ) {
 			maybe_echo( "Next poll in: {$this->timeToNextPoll} second" . ( $this->timeToNextPoll === 1 ? '' : 's' ) . "...\n\n" );
 		}
 
 		if ( empty( $this->testsState ) ) {
 			maybe_echo( "No tests currently registered.\n" );
-
 			return;
 		}
 
@@ -172,9 +174,16 @@ class QITLiveOutput {
 		return sprintf( "[%s] %s: %s", $duration, $testInfo['displayName'], $testInfo['status'] );
 	}
 
+	/**
+	 * Updated printFinalSummary to produce final output with numbering as requested.
+	 */
 	public function printFinalSummary( int $phpUnitFailedCount ) {
 		if ( ! $this->isCI ) {
-			system( 'clear' );
+			if ( stripos( PHP_OS, 'WIN' ) === 0 ) {
+				system( 'cls' );
+			} else {
+				system( 'clear' );
+			}
 		}
 
 		echo "──────────────────────────────────────────────────────────────────────\n";
@@ -183,11 +192,19 @@ class QITLiveOutput {
 
 		echo "QIT Test Results (Raw):\n";
 		foreach ( $this->testsState as $testId => $info ) {
-			$raw    = $info['qit_raw_status'] ?? 'unknown';
-			$label  = $info['displayName'];
-			$report = $info['reportUrl'] ? "\n  Test Report: {$info['reportUrl']}" : '';
-			// Just show 'success' or 'fail' raw
-			echo "$label: completed ($raw)$report\n";
+			$index       = $info['test_index'];
+			$displayName = $info['displayName'];
+			$rawStatus   = $info['qit_raw_status'] ?? 'unknown';
+
+			// Map raw status to (success)/(failed)/(unknown)
+			// Assume 'success' or 'failed' from QIT. If something else, treat as failed for safety.
+			$finalRawResult = ($rawStatus === 'success') ? 'success' : ( ($rawStatus === 'failed') ? 'failed' : 'unknown' );
+
+			echo "[{$index}] {$displayName}: : completed ({$finalRawResult})\n";
+
+			if ( $info['reportUrl'] ) {
+				echo "  Test Report: {$info['reportUrl']}\n";
+			}
 		}
 
 		echo "\nNote: Raw QIT results do not determine the final outcome. Snapshot tests are the final check.\n\n";
@@ -195,11 +212,14 @@ class QITLiveOutput {
 		echo "PHPUnit Verification (Snapshots):\n";
 		$finalFailures = 0;
 		foreach ( $this->testsState as $testId => $info ) {
-			$label = $info['displayName'];
+			$index       = $info['test_index'];
+			$displayName = $info['displayName'];
+
+			// If status is 'completed success', snapshot matches. If 'completed failed', snapshot did not match.
 			if ( $info['status'] === 'completed success' ) {
-				echo "✔ $label: Snapshot matches\n";
+				echo "✔ [{$index}] {$displayName}: : Snapshot matches\n";
 			} else {
-				echo "✖ $label: Snapshot did NOT match\n";
+				echo "✖ [{$index}] {$displayName}: : Snapshot did NOT match\n";
 				$finalFailures ++;
 			}
 

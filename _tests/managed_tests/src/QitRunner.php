@@ -7,6 +7,7 @@ class QitRunner {
 	private $logger;
 	private $phpUnitRunner;
 	private $liveOutput;
+	private $testIndex = 1; // Added a counter for tests.
 
 	public function __construct( Logger $logger, PhpUnitRunner $phpUnitRunner, QITLiveOutput $liveOutput ) {
 		$this->logger        = $logger;
@@ -53,6 +54,9 @@ class QitRunner {
 		$qit_test_path     = $t['path'];
 		$snapshot_filepath = sprintf( '%s/%s.json', $qit_test_path, $t['test_function_name'] );
 
+		// Assign a test index for numbering
+		$t['test_index'] = $this->testIndex++;
+
 		// Check QIT_REUSE_JSON and existing file
 		$reuse_json = ( getenv( 'QIT_REUSE_JSON' ) === '1' );
 		if ( $reuse_json && file_exists( $snapshot_filepath ) ) {
@@ -60,7 +64,6 @@ class QitRunner {
 			$this->logger->log( "QIT_REUSE_JSON=1 and JSON exists for {$t['test_function_name']}, skipping QIT run." );
 
 			// Assign a fake test_run_id
-			// Just generate a stable ID from the test_function_name hash
 			$t['test_run_id'] = hexdec( substr( md5( $t['test_function_name'] ), 0, 6 ) );
 			if ( $t['test_run_id'] <= 0 ) {
 				$t['test_run_id'] = rand( 100000, 999999 );
@@ -75,23 +78,21 @@ class QitRunner {
 				'QIT_REMOVE_FROM_SNAPSHOT' => $t['remove_from_snapshot'],
 				'QIT_NON_JSON_OUTPUT'      => $t['non_json_output_file'] ?? tempnam( sys_get_temp_dir(), 'qit_non_json_' ),
 				'QIT_POLL_INTERVAL'        => 15,
-				'QIT_MAX_ATTEMPTS'         => 1, // not needed since we skip polling
+				'QIT_MAX_ATTEMPTS'         => 1,
 			];
 
-			$this->liveOutput->addTest( $t['test_run_id'], "[REUSE_JSON] {$t['type']} {$t['slug']}" );
+			// Add test to live output with its index
+			$this->liveOutput->addTest( $t['test_run_id'], "[REUSE_JSON] {$t['type']} {$t['slug']}", $t['test_index'], $t );
 
 			// Immediately handle "final" as if QIT succeeded
-			// Create a fake result array
 			$result = [
 				'update_complete'          => true,
 				'status'                   => 'success',
 				'test_results_manager_url' => '',
 			];
 
-			// Run PHPUnit directly
 			$this->handle_qit_response_final( $t, $result, 'success' );
 
-			// Do not add to polling, we are done
 			return;
 		}
 
@@ -176,7 +177,8 @@ class QitRunner {
 		$t['max_attempts']  = $max_attempts;
 		$t['poll_interval'] = $poll_interval;
 
-		$this->liveOutput->addTest( $t['test_run_id'], $qit_process->getEnv()['qit_task_id'] ?? "[{$t['type']}] {$t['slug']}" );
+		// Add test to live output with index
+		$this->liveOutput->addTest( $t['test_run_id'], $qit_process->getEnv()['qit_task_id'] ?? "[{$t['type']}] {$t['slug']}", $t['test_index'], $t );
 
 		// Store by test_run_id as the key
 		$allTests[ $t['test_run_id'] ] = $t;
