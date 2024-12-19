@@ -24,8 +24,11 @@ class QITLiveOutput {
 	}
 
 	public function addTest( string $testId, string $displayName, int $testIndex, array $testData ) {
+		// Ensure no trailing colon or space
+		$displayName = rtrim( $displayName, ": " );
+
 		$this->testsState[ $testId ] = [
-			'displayName'         => rtrim( $displayName, ':' ), // Ensure no trailing colon
+			'displayName'         => $displayName,
 			'status'              => '-',
 			'startTime'           => microtime( true ),
 			'endTime'             => null,
@@ -144,13 +147,15 @@ class QITLiveOutput {
 
 			$status      = $testInfo['status'];
 			$duration    = $this->computeDuration( $testInfo );
-			$displayName = rtrim( $testInfo['displayName'], ':' );
+			$displayName = rtrim( $testInfo['displayName'], ': ' );
 
-			if ( $status === 'just started' ) {
-				$mainLine = "[{$duration}] {$displayName} {$status}";
-			} else {
-				$mainLine = "[{$duration}] {$displayName}: {$status}";
+			if ( $status === '-' ) {
+				$status = 'just started';
 			}
+
+			// Use a colon only if not "just started"
+			$separator = ( $status === 'just started' ) ? ' ' : ': ';
+			$mainLine  = "[{$duration}] {$displayName}{$separator}{$status}";
 
 			maybe_echo( $mainLine . "\n" );
 			$displayedLines[] = $mainLine;
@@ -312,13 +317,11 @@ class QITLiveOutput {
 		if ( $status === '-' ) {
 			$status = 'just started';
 		}
-		$displayName = rtrim( $testInfo['displayName'], ':' );
+		$displayName = rtrim( $testInfo['displayName'], ': ' );
 
-		if ( $status === 'just started' ) {
-			return "[{$duration}] {$displayName} {$status}";
-		} else {
-			return "[{$duration}] {$displayName}: {$status}";
-		}
+		$separator = ( $status === 'just started' ) ? ' ' : ': ';
+
+		return "[{$duration}] {$displayName}{$separator}{$status}";
 	}
 
 	private function printIndentedOutput( string $output ) {

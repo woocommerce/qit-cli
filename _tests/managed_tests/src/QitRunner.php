@@ -55,7 +55,7 @@ class QitRunner {
 		$snapshot_filepath = sprintf( '%s/%s.json', $qit_test_path, $t['test_function_name'] );
 
 		// Assign a test index for numbering
-		$t['test_index'] = $this->testIndex++;
+		$t['test_index'] = $this->testIndex ++;
 
 		// Check QIT_REUSE_JSON and existing file
 		$reuse_json = ( getenv( 'QIT_REUSE_JSON' ) === '1' );
@@ -232,6 +232,13 @@ class QitRunner {
 					$status = $tr['status'];
 					$this->logger->log( "Test_run_id $tid has status: $status" );
 
+					// If we have the test_results_manager_url now, update test data so the URL shows up early
+					if ( ! empty( $tr['test_results_manager_url'] ) ) {
+						$this->liveOutput->updateTestData( $tid, [
+							'test_results_manager_url' => $tr['test_results_manager_url'],
+						] );
+					}
+
 					if ( isset( $tr['update_complete'] ) && $tr['update_complete'] === true ) {
 						maybe_echo( "Test run ID {$tid} finished with status: {$status}\n" );
 						$this->logger->log( "Test_run_id $tid completed. Handling final response..." );
@@ -299,7 +306,7 @@ class QitRunner {
 		// Store the raw QIT status
 		$this->liveOutput->setQitRawStatus( $test_run['test_run_id'], $qit_status );
 
-		// Run PHPUnit snapshot verification
+		// Run PHPUnit snapshot verification at the end
 		$this->phpUnitRunner->run_phpunit_test( $test_run, $result );
 	}
 
