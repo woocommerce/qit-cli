@@ -67,9 +67,10 @@ maybe_echo( "──────────────────────�
 
 maybe_echo( "Filtering scenarios:\n" );
 // The filtering messages were already printed by the script during scenario filtering
-// If you want more explicit info, you could add it here.
 
 maybe_echo( "\nGenerating ZIP packages:\n" );
+
+// Adjusted line here: If $tests_to_run['woo-api'] is not set or empty, it will just return without error
 $zipManager->generate_zips( $tests_to_run['woo-api'] ?? [] );
 
 maybe_echo( "\nPreparation complete. Moving on to running QIT tests...\n" );
@@ -93,6 +94,6 @@ try {
 	die( 1 );
 }
 
-// If we reach here, QitRunner has completed polling and printed the final summary (Stage 3 is integrated in the QitRunner final summary print).
+// If we reach here, QitRunner has completed polling and printed the final summary
 
 exit;
