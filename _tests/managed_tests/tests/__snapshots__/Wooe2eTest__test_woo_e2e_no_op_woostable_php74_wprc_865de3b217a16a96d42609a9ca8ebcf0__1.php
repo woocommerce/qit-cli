@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "448 total, 384 passed, 0 failed, 64 skipped.",
+            "test_summary": "427 total, 381 passed, 0 failed, 46 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -46,31 +46,14 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 87,
-                "numPendingTestSuites": 24,
-                "numTotalTestSuites": 111,
+                "numPassedTestSuites": 85,
+                "numPendingTestSuites": 23,
+                "numTotalTestSuites": 108,
                 "numFailedTests": 0,
-                "numPassedTests": 384,
-                "numPendingTests": 64,
-                "numTotalTests": 448,
+                "numPassedTests": 381,
+                "numPendingTests": 46,
+                "numTotalTests": 427,
                 "testResults": [
-                    {
-                        "file": "activate-and-setup\\/basic-setup.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Store owner can finish initial store setup": [
-                                {
-                                    "title": "can enable tax rates and calculations",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can configure permalink settings",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
                     {
                         "file": "activate-and-setup\\/core-profiler.spec.js",
                         "status": "passed",
@@ -93,19 +76,6 @@
                                 },
                                 {
                                     "title": "Can connect to WooCommerce.com",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "activate-and-setup\\/setup-onboarding.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Store owner can login and make sure WooCommerce is activated": [
-                                {
-                                    "title": "can make sure WooCommerce is activated.",
                                     "status": "passed"
                                 }
                             ]
@@ -299,7 +269,7 @@
                     {
                         "file": "customize-store\\/assembler\\/color-picker.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Assembler -> Color Pickers": [
                                 {
@@ -307,72 +277,8 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Color palette Blueberry Sorbet should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Ancient Bronze should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Crimson Tide should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Purple Twilight should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Green Thumb should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Golden Haze should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Golden Indigo should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Arctic Dawn should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Raspberry Chocolate should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Canary should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Ice should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Rustic Rosewood should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Cinnamon Latte should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Lightning should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Aquamarine Night should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Charcoal should be applied",
-                                    "status": "pending"
-                                },
-                                {
                                     "title": "Color palette Slate should be applied",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Color picker should be focused when a color is picked",
@@ -687,7 +593,7 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Clicking on \\"View store\\" should go to the store home page in a new page",
+                                    "title": "Clicking on \\"View store\\" should go to the store home page",
                                     "status": "passed"
                                 },
                                 {
@@ -1589,7 +1495,7 @@
                     {
                         "file": "merchant\\/product-reviews.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Product Reviews": [
                                 {
@@ -1618,7 +1524,7 @@
                                 },
                                 {
                                     "title": "can reply to a product review",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete a product review",
@@ -2929,26 +2835,9 @@
                                 }
                             ]
                         }
-                    },
-                    {
-                        "file": "smoke-tests\\/update-woocommerce.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "WooCommerce update": [
-                                {
-                                    "title": "can update WooCommerce to \\"undefined\\"",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can run the database update",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
                     }
                 ],
-                "summary": "448 total, 384 passed, 0 failed, 64 skipped."
+                "summary": "427 total, 381 passed, 0 failed, 46 skipped."
             }
         },
         {
