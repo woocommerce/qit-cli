@@ -5,10 +5,18 @@ class QITLiveOutput {
 	private $startTime;
 	private $isCI;
 	private $timeToNextPoll = null;
+	private $isUpdateAction = false; // Detect update mode
 
 	public function __construct() {
 		$this->startTime = microtime( true );
 		$this->isCI      = ( getenv( 'CI' ) === 'true' );
+
+		// Detect if we are in update mode
+		if ( function_exists( 'getenv' ) && getenv( 'QIT_ACTION' ) === 'update' ) {
+			$this->isUpdateAction = true;
+		} elseif ( class_exists( 'Context' ) && isset( Context::$action ) && Context::$action === 'update' ) {
+			$this->isUpdateAction = true;
+		}
 	}
 
 	public function setTimeToNextPoll( ?int $seconds ) {
@@ -17,7 +25,7 @@ class QITLiveOutput {
 
 	public function addTest( string $testId, string $displayName, int $testIndex, array $testData ) {
 		$this->testsState[ $testId ] = [
-			'displayName'         => $displayName,
+			'displayName'         => rtrim( $displayName, ':' ), // Ensure no trailing colon
 			'status'              => '-',
 			'startTime'           => microtime( true ),
 			'endTime'             => null,
@@ -28,9 +36,25 @@ class QITLiveOutput {
 			'qit_raw_status'      => null,
 			'test_index'          => $testIndex,
 			'test_data'           => $testData,
-			'final_display_lines' => [],  // Will store the final displayed lines for this test
+			'final_display_lines' => [],
 		];
+
+		// If test_results_manager_url known at addTest time, set it
+		if ( ! empty( $testData['test_results_manager_url'] ) ) {
+			$this->testsState[ $testId ]['reportUrl'] = $testData['test_results_manager_url'];
+		}
+
 		$this->renderOutput();
+	}
+
+	public function updateTestData( string $testId, array $newData ) {
+		if ( isset( $this->testsState[ $testId ] ) ) {
+			$this->testsState[ $testId ]['test_data'] = array_merge( $this->testsState[ $testId ]['test_data'], $newData );
+			if ( ! empty( $newData['test_results_manager_url'] ) ) {
+				$this->testsState[ $testId ]['reportUrl'] = $newData['test_results_manager_url'];
+			}
+			$this->renderOutput();
+		}
 	}
 
 	public function setTestStatus( string $testId, string $status ) {
@@ -39,6 +63,8 @@ class QITLiveOutput {
 		}
 		if ( $status === 'running' || $status === 'dispatched' ) {
 			$status = 'running...';
+		} elseif ( $status === '-' ) {
+			$status = 'just started';
 		}
 		$this->testsState[ $testId ]['status'] = $status;
 		$this->renderOutput();
@@ -48,9 +74,17 @@ class QITLiveOutput {
 		if ( ! isset( $this->testsState[ $testId ] ) ) {
 			return;
 		}
-		$this->testsState[ $testId ]['status']            = $success ? 'completed success' : 'completed failed';
-		$this->testsState[ $testId ]['endTime']           = microtime( true );
-		$this->testsState[ $testId ]['reportUrl']         = $reportUrl;
+		$this->testsState[ $testId ]['status']  = $success
+			? ( $this->isUpdateAction ? 'completed updated' : 'completed success' )
+			: 'completed failed';
+		$this->testsState[ $testId ]['endTime'] = microtime( true );
+
+		if ( $reportUrl ) {
+			$this->testsState[ $testId ]['reportUrl'] = $reportUrl;
+		} elseif ( empty( $this->testsState[ $testId ]['reportUrl'] ) && ! empty( $this->testsState[ $testId ]['test_data']['test_results_manager_url'] ) ) {
+			$this->testsState[ $testId ]['reportUrl'] = $this->testsState[ $testId ]['test_data']['test_results_manager_url'];
+		}
+
 		$this->testsState[ $testId ]['nonJsonOutputPath'] = $nonJsonOutputPath;
 		$this->testsState[ $testId ]['resultMessage']     = $resultMessage;
 		$this->renderOutput();
@@ -69,6 +103,7 @@ class QITLiveOutput {
 			return;
 		}
 		$this->testsState[ $testId ]['qit_raw_status'] = $qitStatus;
+		$this->renderOutput();
 	}
 
 	public function renderOutput() {
@@ -100,31 +135,33 @@ class QITLiveOutput {
 			return;
 		}
 
-		// We'll build final displayed lines for each test here as we go
 		foreach ( $this->testsState as $testId => &$testInfo ) {
 			$displayedLines = [];
 
-			$status   = $testInfo['status'];
-			$duration = $this->computeDuration( $testInfo );
+			if ( empty( $testInfo['reportUrl'] ) && ! empty( $testInfo['test_data']['test_results_manager_url'] ) ) {
+				$testInfo['reportUrl'] = $testInfo['test_data']['test_results_manager_url'];
+			}
 
-			// If status is '-', no colon
-			$mainLine = $status === '-'
-				? sprintf( "[%s] %s %s", $duration, $testInfo['displayName'], $status )
-				: sprintf( "[%s] %s: %s", $duration, $testInfo['displayName'], $status );
+			$status      = $testInfo['status'];
+			$duration    = $this->computeDuration( $testInfo );
+			$displayName = rtrim( $testInfo['displayName'], ':' );
+
+			if ( $status === 'just started' ) {
+				$mainLine = "[{$duration}] {$displayName} {$status}";
+			} else {
+				$mainLine = "[{$duration}] {$displayName}: {$status}";
+			}
 
 			maybe_echo( $mainLine . "\n" );
 			$displayedLines[] = $mainLine;
 
+			if ( ! empty( $testInfo['reportUrl'] ) ) {
+				$reportLine = "  Test Report: " . $testInfo['reportUrl'];
+				maybe_echo( $reportLine . "\n" );
+				$displayedLines[] = $reportLine;
+			}
+
 			if ( strpos( $status, 'completed' ) !== false ) {
-				if ( $testInfo['reportUrl'] ) {
-					// DO NOT print test report here in final lines (Item 2: test report only in final summary)
-					// We do show it in running output currently, but now we understand from item 1 and 2:
-					// Actually we don't want to show it now. Let's remove printing here.
-					// If previously we printed it, now we must NOT print it here to fulfill item #2 requirement.
-					// Just comment out the printing here:
-					// maybe_echo("  Test Report: " . $testInfo['reportUrl'] . "\n");
-					// We won't print it now. Only in final summary.
-				}
 				if ( ! empty( $testInfo['resultMessage'] ) ) {
 					$isFailure = ( strpos( $status, 'failed' ) !== false );
 					if ( $isFailure ) {
@@ -158,11 +195,9 @@ class QITLiveOutput {
 				}
 			}
 
-			// Store these final displayed lines for future final summary
-			// Item 1: We need to store these final lines so final summary can replicate them
 			$testInfo['final_display_lines'] = $displayedLines;
 		}
-		unset( $testInfo ); // break reference
+		unset( $testInfo );
 
 		maybe_echo( "\n──────────────────────────────────────────────────────────────────────\n" );
 		maybe_echo( "Summary Section:\n" );
@@ -175,7 +210,7 @@ class QITLiveOutput {
 			$finalLine = $this->summaryLine( $info );
 			maybe_echo( $finalLine . "\n" );
 
-			if ( $info['status'] === 'completed success' ) {
+			if ( $info['status'] === 'completed success' || $info['status'] === 'completed updated' ) {
 				$successCount ++;
 			} elseif ( $info['status'] === 'completed failed' ) {
 				$failCount ++;
@@ -213,15 +248,8 @@ class QITLiveOutput {
 
 		echo "QIT Test Results (Raw):\n";
 		foreach ( $this->testsState as $info ) {
-			// Item 1: We now have 'final_display_lines' stored.
-			// We just print them exactly as stored.
 			foreach ( $info['final_display_lines'] as $line ) {
 				echo $line . "\n";
-			}
-
-			// Item 2: After replaying these lines, now we print the Test Report line if available
-			if ( ! empty( $info['reportUrl'] ) ) {
-				echo "  Test Report: {$info['reportUrl']}\n";
 			}
 		}
 
@@ -230,18 +258,15 @@ class QITLiveOutput {
 		echo "PHPUnit Verification (Snapshots):\n";
 		$finalFailures = 0;
 		foreach ( $this->testsState as $info ) {
-			$isSuccess = ( $info['status'] === 'completed success' );
-			// Use final_display_lines to find the main line for snapshot status line:
-			// The main test line is always first in final_display_lines
+			$isSuccess    = ( $info['status'] === 'completed success' || $info['status'] === 'completed updated' );
 			$mainTestLine = $info['final_display_lines'][0] ?? '[Unknown test line]';
-			// Extracting test info from main line is complex; we trust we have displayName etc.
-			// For simplicity, let's replicate the snapshot logic from before:
+
 			if ( $isSuccess ) {
-				echo "✔ $mainTestLine Snapshot matches\n";
+				$snapshotLine = $this->isUpdateAction ? "Snapshot updated (please review)" : "Snapshot matches";
+				echo "✔ $mainTestLine $snapshotLine\n";
 			} else {
 				echo "✖ $mainTestLine Snapshot did NOT match\n";
 				$finalFailures ++;
-
 				if ( ! empty( $info['resultMessage'] ) ) {
 					$this->printIndentedOutput( $info['resultMessage'] );
 				} else {
@@ -259,9 +284,13 @@ class QITLiveOutput {
 		echo "\nAll snapshots have been verified.\n\n";
 
 		if ( $phpUnitFailedCount > 0 || $finalFailures > 0 ) {
-			echo "Some snapshots failed. Final outcome: ❌\n";
+			echo "Some snapshots still failed. Final outcome: ❌\n";
 		} else {
-			echo "All snapshots matched! Final outcome: ✅\n";
+			if ( $this->isUpdateAction ) {
+				echo "Snapshots have been updated. Please review the updated snapshots to ensure they match expectations. Final outcome: ⚠\n";
+			} else {
+				echo "All snapshots matched! Final outcome: ✅\n";
+			}
 		}
 
 		echo "\nFor more details, see mass-test.log.\n";
@@ -281,9 +310,14 @@ class QITLiveOutput {
 		$duration = $this->computeDuration( $testInfo );
 		$status   = $testInfo['status'];
 		if ( $status === '-' ) {
-			return "[{$duration}] {$testInfo['displayName']} {$status}";
+			$status = 'just started';
+		}
+		$displayName = rtrim( $testInfo['displayName'], ':' );
+
+		if ( $status === 'just started' ) {
+			return "[{$duration}] {$displayName} {$status}";
 		} else {
-			return "[{$duration}] {$testInfo['displayName']}: {$status}";
+			return "[{$duration}] {$displayName}: {$status}";
 		}
 	}
 
@@ -306,7 +340,6 @@ class QITLiveOutput {
 
 	private function successIgnorePatterns(): array {
 		return [
-			'/^Test Report:/i',
 			'/^Result:$/i',
 			'/^PHPUnit \d+\.\d+\.\d+ by Sebastian Bergmann and contributors\./i',
 			'/^Runtime:/i',
@@ -339,7 +372,6 @@ class QITLiveOutput {
 				}
 			}
 			if ( ! $known ) {
-				// Unknown line, highlight in red if not in CI
 				if ( ! $this->isCI ) {
 					$trimmed = "\033[1;31m$trimmed\033[0m";
 				}

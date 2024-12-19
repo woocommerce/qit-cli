@@ -120,13 +120,19 @@ PHP;
 		$this->logger->log( "Snapshot directory contents BEFORE PHPUnit:" );
 		$this->logDirectoryContents( $snapshotDir );
 
+		if ( ! empty( $result['test_results_manager_url'] ) ) {
+			$this->liveOutput->updateTestData( $test_run_id, [
+				'test_results_manager_url' => $result['test_results_manager_url'],
+			] );
+		}
+
 		$args = [
 			__DIR__ . '/../vendor/bin/phpunit',
 			$test_file,
 			sprintf( '--filter=::%s$', $test_function_name ),
 			'--testdox',
 			'-v',
-			'--no-coverage', // remove --debug
+			'--no-coverage',
 		];
 
 		if ( Context::$action === 'update' ) {
