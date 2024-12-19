@@ -5,7 +5,6 @@ use Symfony\Component\Process\Process;
 
 class ZipManager {
 	private $logger;
-	private $tests_based_on_custom_tests;
 
 	public function __construct( Logger $logger ) {
 		$this->logger = $logger;
@@ -15,6 +14,7 @@ class ZipManager {
 		$this->logger->log( "Generating zips for tests" );
 		$zip_processes = [];
 		$generated_zips = [];
+
 		foreach ( $test_type_test_runs as $t ) {
 			$path = $t['path'];
 			$slug = $t['sut_slug'];
@@ -49,11 +49,18 @@ class ZipManager {
 			$zip_processes[] = $zip_process;
 		}
 
+		if ( count( $zip_processes ) === 0 ) {
+			// No zip tasks to run
+			$this->logger->log( "No zip tasks found. Skipping parallel run." );
+
+			return;
+		}
+
 		$zip_processes_manager = new ProcessManager();
 		$zip_processes_manager->runParallel(
 			$zip_processes,
-			25,
-			10000,
+			25,     // Max parallel processes
+			10000,  // Timeout in seconds
 			function ( string $type, string $out, Process $process ) {
 				maybe_echo( $out );
 				$this->logger->log( "Zip output: " . $out );
