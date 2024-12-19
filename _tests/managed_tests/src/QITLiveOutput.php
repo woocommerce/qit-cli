@@ -8,28 +8,24 @@ class QITLiveOutput {
 
 	public function __construct() {
 		$this->startTime = microtime( true );
-		$this->isCI      = getenv( 'CI' ) === 'true';
+		$this->isCI      = ( getenv( 'CI' ) === 'true' );
 	}
 
 	public function setTimeToNextPoll( ?int $seconds ) {
 		$this->timeToNextPoll = $seconds;
 	}
 
-	/**
-	 * Modified addTest signature:
-	 * Now it accepts $testIndex and $testData as arguments.
-	 */
 	public function addTest( string $testId, string $displayName, int $testIndex, array $testData ) {
 		$this->testsState[ $testId ] = [
 			'displayName'       => $displayName,
-			'status'            => '-', // Intermediate status
+			'status'            => '-',
 			'startTime'         => microtime( true ),
 			'endTime'           => null,
 			'reportUrl'         => null,
 			'nonJsonOutputPath' => null,
 			'resultMessage'     => null,
 			'errors'            => [],
-			'qit_raw_status'    => null, // Will hold raw QIT test status ('success', 'failed', etc.)
+			'qit_raw_status'    => null,
 			'test_index'        => $testIndex,
 			'test_data'         => $testData,
 		];
@@ -99,6 +95,7 @@ class QITLiveOutput {
 
 		if ( empty( $this->testsState ) ) {
 			maybe_echo( "No tests currently registered.\n" );
+
 			return;
 		}
 
@@ -112,8 +109,22 @@ class QITLiveOutput {
 				if ( $testInfo['reportUrl'] ) {
 					maybe_echo( "  Test Report: " . $testInfo['reportUrl'] . "\n" );
 				}
-				if ( $testInfo['resultMessage'] ) {
-					maybe_echo( "  Result: " . $testInfo['resultMessage'] . "\n" );
+				if ( ! empty( $testInfo['resultMessage'] ) ) {
+					$isFailure = ( strpos( $status, 'failed' ) !== false );
+					if ( $isFailure ) {
+						// Failure: print raw output
+						maybe_echo( "  Result:\n" );
+						$this->printIndentedOutput( $testInfo['resultMessage'] );
+					} else {
+						// Success: filter known lines
+						$filtered = $this->filterSuccessOutput( $testInfo['resultMessage'] );
+						if ( ! empty( $filtered ) ) {
+							maybe_echo( "  Result:\n" );
+							foreach ( $filtered as $fline ) {
+								maybe_echo( "    $fline\n" );
+							}
+						}
+					}
 				}
 			}
 
@@ -193,11 +204,10 @@ class QITLiveOutput {
 			$displayName = $info['displayName'];
 			$rawStatus   = $info['qit_raw_status'] ?? 'unknown';
 
-			// Map raw status to success/failed/unknown
 			$finalRawResult = ( $rawStatus === 'success' ) ? 'success'
 				: ( ( $rawStatus === 'failed' ) ? 'failed' : 'unknown' );
 
-			echo "[{$index}] {$displayName}: : completed ({$finalRawResult})\n";
+			echo "[{$index}] {$displayName}: completed ({$finalRawResult})\n";
 
 			if ( $info['reportUrl'] ) {
 				echo "  Test Report: {$info['reportUrl']}\n";
@@ -214,12 +224,11 @@ class QITLiveOutput {
 
 			$isSuccess = ( $info['status'] === 'completed success' );
 			if ( $isSuccess ) {
-				echo "✔ [{$index}] {$displayName}: : Snapshot matches\n";
+				echo "✔ [{$index}] {$displayName}: Snapshot matches\n";
 			} else {
-				echo "✖ [{$index}] {$displayName}: : Snapshot did NOT match\n";
+				echo "✖ [{$index}] {$displayName}: Snapshot did NOT match\n";
 				$finalFailures ++;
 
-				// Always show entire PHPUnit output for failing tests
 				if ( ! empty( $info['resultMessage'] ) ) {
 					$this->printIndentedOutput( $info['resultMessage'] );
 				} else {
@@ -252,5 +261,49 @@ class QITLiveOutput {
 		}
 	}
 
+	private function successIgnorePatterns(): array {
+		return [
+			'/^Test Report:/i',
+			'/^Result:$/i',
+			'/^PHPUnit \d+\.\d+\.\d+ by Sebastian Bergmann and contributors\./i',
+			'/^Runtime:/i',
+			'/^Wooapi \(QITE2E\\\\Wooapi\)/i',
+			'/^\s*✔ /i',
+			'/^Normalizing debug_log\.count/i',
+			'/^Time: \d+ ms, Memory: \d+\.\d+ MB/i',
+			'/^OK \(\d+ test, \d+ assertions\)/i',
+			'/^OK, but incomplete, skipped, or risky tests!/i',
+			'/^Tests: \d+, Assertions: \d+, .*$/i',
+		];
+	}
 
+	private function filterSuccessOutput( string $output ): array {
+		$lines  = explode( "\n", $output );
+		$result = [];
+
+		$knownPatterns = $this->successIgnorePatterns();
+
+		foreach ( $lines as $line ) {
+			$trimmed = rtrim( $line );
+			if ( $trimmed === '' ) {
+				continue; // remove empty lines
+			}
+			$known = false;
+			foreach ( $knownPatterns as $pattern ) {
+				if ( preg_match( $pattern, $trimmed ) ) {
+					$known = true;
+					break;
+				}
+			}
+			if ( ! $known ) {
+				// Unknown line, highlight in red if not in CI
+				if ( ! $this->isCI ) {
+					$trimmed = "\033[1;31m$trimmed\033[0m";
+				}
+				$result[] = $trimmed;
+			}
+		}
+
+		return $result;
+	}
 }
