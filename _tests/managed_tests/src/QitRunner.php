@@ -210,13 +210,9 @@ class QitRunner {
 			$completed_tests   = [];
 			$unknown_tests     = [];
 
-			if ( json_last_error() !== JSON_ERROR_NONE || ! is_array( $result_json ) ) {
-				$this->logger->log( "get-multiple returned invalid JSON. Marking all as unknown." );
-				foreach ( $allTests as $tid => $test ) {
-					$this->liveOutput->setTestStatus( $tid, 'unknown' );
-					maybe_echo( "Failed to parse JSON for test_run_id {$tid}.\n" );
-					$unknown_tests[] = $tid;
-				}
+			if (json_last_error() !== JSON_ERROR_NONE || ! is_array($result_json)) {
+				$this->logger->log("get-multiple returned invalid JSON:\n" . $get_output);
+				throw new RuntimeException( "Failed to parse JSON from get-multiple. Raw output:\n" . $get_output . "\n Error output:\n . {$get_process->getErrorOutput()}" );
 			} else {
 				$this->logger->log( "get-multiple keys returned: " . implode( ',', array_keys( $result_json ) ) );
 				foreach ( $allTests as $tid => $test ) {
