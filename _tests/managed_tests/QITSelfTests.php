@@ -70,8 +70,11 @@ maybe_echo( "Filtering scenarios:\n" );
 
 maybe_echo( "\nGenerating ZIP packages:\n" );
 
-// Adjusted line here: If $tests_to_run['woo-api'] is not set or empty, it will just return without error
-$zipManager->generate_zips( $tests_to_run['woo-api'] ?? [] );
+// Generate zips for all test types found
+foreach ( $tests_to_run as $type => $runs ) {
+	maybe_echo( "\nGenerating ZIP packages for $type:\n" );
+	$zipManager->generate_zips( $runs );
+}
 
 maybe_echo( "\nPreparation complete. Moving on to running QIT tests...\n" );
 sleep( 2 );
