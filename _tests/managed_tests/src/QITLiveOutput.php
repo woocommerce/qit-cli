@@ -17,17 +17,18 @@ class QITLiveOutput {
 
 	public function addTest( string $testId, string $displayName, int $testIndex, array $testData ) {
 		$this->testsState[ $testId ] = [
-			'displayName'       => $displayName,
-			'status'            => '-',
-			'startTime'         => microtime( true ),
-			'endTime'           => null,
-			'reportUrl'         => null,
-			'nonJsonOutputPath' => null,
-			'resultMessage'     => null,
-			'errors'            => [],
-			'qit_raw_status'    => null,
-			'test_index'        => $testIndex,
-			'test_data'         => $testData,
+			'displayName'         => $displayName,
+			'status'              => '-',
+			'startTime'           => microtime( true ),
+			'endTime'             => null,
+			'reportUrl'           => null,
+			'nonJsonOutputPath'   => null,
+			'resultMessage'       => null,
+			'errors'              => [],
+			'qit_raw_status'      => null,
+			'test_index'          => $testIndex,
+			'test_data'           => $testData,
+			'final_display_lines' => [],  // Will store the final displayed lines for this test
 		];
 		$this->renderOutput();
 	}
@@ -99,29 +100,50 @@ class QITLiveOutput {
 			return;
 		}
 
-		foreach ( $this->testsState as $testId => $testInfo ) {
+		// We'll build final displayed lines for each test here as we go
+		foreach ( $this->testsState as $testId => &$testInfo ) {
+			$displayedLines = [];
+
 			$status   = $testInfo['status'];
 			$duration = $this->computeDuration( $testInfo );
-			$line     = sprintf( "[%s] %s: %s", $duration, $testInfo['displayName'], $status );
-			maybe_echo( $line . "\n" );
+
+			// If status is '-', no colon
+			$mainLine = $status === '-'
+				? sprintf( "[%s] %s %s", $duration, $testInfo['displayName'], $status )
+				: sprintf( "[%s] %s: %s", $duration, $testInfo['displayName'], $status );
+
+			maybe_echo( $mainLine . "\n" );
+			$displayedLines[] = $mainLine;
 
 			if ( strpos( $status, 'completed' ) !== false ) {
 				if ( $testInfo['reportUrl'] ) {
-					maybe_echo( "  Test Report: " . $testInfo['reportUrl'] . "\n" );
+					// DO NOT print test report here in final lines (Item 2: test report only in final summary)
+					// We do show it in running output currently, but now we understand from item 1 and 2:
+					// Actually we don't want to show it now. Let's remove printing here.
+					// If previously we printed it, now we must NOT print it here to fulfill item #2 requirement.
+					// Just comment out the printing here:
+					// maybe_echo("  Test Report: " . $testInfo['reportUrl'] . "\n");
+					// We won't print it now. Only in final summary.
 				}
 				if ( ! empty( $testInfo['resultMessage'] ) ) {
 					$isFailure = ( strpos( $status, 'failed' ) !== false );
 					if ( $isFailure ) {
-						// Failure: print raw output
 						maybe_echo( "  Result:\n" );
-						$this->printIndentedOutput( $testInfo['resultMessage'] );
+						$displayedLines[] = "  Result:";
+						$indented         = $this->indentedOutputLines( $testInfo['resultMessage'] );
+						foreach ( $indented as $l ) {
+							maybe_echo( $l . "\n" );
+							$displayedLines[] = $l;
+						}
 					} else {
-						// Success: filter known lines
 						$filtered = $this->filterSuccessOutput( $testInfo['resultMessage'] );
 						if ( ! empty( $filtered ) ) {
 							maybe_echo( "  Result:\n" );
+							$displayedLines[] = "  Result:";
 							foreach ( $filtered as $fline ) {
-								maybe_echo( "    $fline\n" );
+								$lineToPrint = "    $fline";
+								maybe_echo( $lineToPrint . "\n" );
+								$displayedLines[] = $lineToPrint;
 							}
 						}
 					}
@@ -130,10 +152,17 @@ class QITLiveOutput {
 
 			if ( ! empty( $testInfo['errors'] ) ) {
 				foreach ( $testInfo['errors'] as $err ) {
-					maybe_echo( "  Error: $err\n" );
+					$errorLine = "  Error: $err";
+					maybe_echo( $errorLine . "\n" );
+					$displayedLines[] = $errorLine;
 				}
 			}
+
+			// Store these final displayed lines for future final summary
+			// Item 1: We need to store these final lines so final summary can replicate them
+			$testInfo['final_display_lines'] = $displayedLines;
 		}
+		unset( $testInfo ); // break reference
 
 		maybe_echo( "\n──────────────────────────────────────────────────────────────────────\n" );
 		maybe_echo( "Summary Section:\n" );
@@ -142,13 +171,13 @@ class QITLiveOutput {
 		$successCount = 0;
 		$failCount    = 0;
 
-		foreach ( $this->testsState as $testId => $testInfo ) {
-			$finalLine = $this->summaryLine( $testInfo );
+		foreach ( $this->testsState as $info ) {
+			$finalLine = $this->summaryLine( $info );
 			maybe_echo( $finalLine . "\n" );
 
-			if ( $testInfo['status'] === 'completed success' ) {
+			if ( $info['status'] === 'completed success' ) {
 				$successCount ++;
-			} elseif ( $testInfo['status'] === 'completed failed' ) {
+			} elseif ( $info['status'] === 'completed failed' ) {
 				$failCount ++;
 			}
 		}
@@ -169,22 +198,6 @@ class QITLiveOutput {
 		}
 	}
 
-	private function computeDuration( array $testInfo ): string {
-		$start   = $testInfo['startTime'] ?? $this->startTime;
-		$end     = $testInfo['endTime'] ?? microtime( true );
-		$elapsed = max( 0, intval( $end - $start ) );
-		$minutes = floor( $elapsed / 60 );
-		$seconds = str_pad( $elapsed % 60, 2, '0', STR_PAD_LEFT );
-
-		return "{$minutes}:{$seconds}";
-	}
-
-	private function summaryLine( array $testInfo ): string {
-		$duration = $this->computeDuration( $testInfo );
-
-		return sprintf( "[%s] %s: %s", $duration, $testInfo['displayName'], $testInfo['status'] );
-	}
-
 	public function printFinalSummary( int $phpUnitFailedCount ) {
 		if ( ! $this->isCI ) {
 			if ( stripos( PHP_OS, 'WIN' ) === 0 ) {
@@ -199,17 +212,15 @@ class QITLiveOutput {
 		echo "──────────────────────────────────────────────────────────────────────\n\n";
 
 		echo "QIT Test Results (Raw):\n";
-		foreach ( $this->testsState as $testId => $info ) {
-			$index       = $info['test_index'];
-			$displayName = $info['displayName'];
-			$rawStatus   = $info['qit_raw_status'] ?? 'unknown';
+		foreach ( $this->testsState as $info ) {
+			// Item 1: We now have 'final_display_lines' stored.
+			// We just print them exactly as stored.
+			foreach ( $info['final_display_lines'] as $line ) {
+				echo $line . "\n";
+			}
 
-			$finalRawResult = ( $rawStatus === 'success' ) ? 'success'
-				: ( ( $rawStatus === 'failed' ) ? 'failed' : 'unknown' );
-
-			echo "[{$index}] {$displayName}: completed ({$finalRawResult})\n";
-
-			if ( $info['reportUrl'] ) {
+			// Item 2: After replaying these lines, now we print the Test Report line if available
+			if ( ! empty( $info['reportUrl'] ) ) {
 				echo "  Test Report: {$info['reportUrl']}\n";
 			}
 		}
@@ -218,15 +229,17 @@ class QITLiveOutput {
 
 		echo "PHPUnit Verification (Snapshots):\n";
 		$finalFailures = 0;
-		foreach ( $this->testsState as $testId => $info ) {
-			$index       = $info['test_index'];
-			$displayName = $info['displayName'];
-
+		foreach ( $this->testsState as $info ) {
 			$isSuccess = ( $info['status'] === 'completed success' );
+			// Use final_display_lines to find the main line for snapshot status line:
+			// The main test line is always first in final_display_lines
+			$mainTestLine = $info['final_display_lines'][0] ?? '[Unknown test line]';
+			// Extracting test info from main line is complex; we trust we have displayName etc.
+			// For simplicity, let's replicate the snapshot logic from before:
 			if ( $isSuccess ) {
-				echo "✔ [{$index}] {$displayName}: Snapshot matches\n";
+				echo "✔ $mainTestLine Snapshot matches\n";
 			} else {
-				echo "✖ [{$index}] {$displayName}: Snapshot did NOT match\n";
+				echo "✖ $mainTestLine Snapshot did NOT match\n";
 				$finalFailures ++;
 
 				if ( ! empty( $info['resultMessage'] ) ) {
@@ -254,11 +267,41 @@ class QITLiveOutput {
 		echo "\nFor more details, see mass-test.log.\n";
 	}
 
+	private function computeDuration( array $testInfo ): string {
+		$start   = $testInfo['startTime'] ?? $this->startTime;
+		$end     = $testInfo['endTime'] ?? microtime( true );
+		$elapsed = max( 0, intval( $end - $start ) );
+		$minutes = floor( $elapsed / 60 );
+		$seconds = str_pad( $elapsed % 60, 2, '0', STR_PAD_LEFT );
+
+		return "{$minutes}:{$seconds}";
+	}
+
+	private function summaryLine( array $testInfo ): string {
+		$duration = $this->computeDuration( $testInfo );
+		$status   = $testInfo['status'];
+		if ( $status === '-' ) {
+			return "[{$duration}] {$testInfo['displayName']} {$status}";
+		} else {
+			return "[{$duration}] {$testInfo['displayName']}: {$status}";
+		}
+	}
+
 	private function printIndentedOutput( string $output ) {
 		$lines = explode( "\n", $output );
 		foreach ( $lines as $line ) {
 			echo "    $line\n";
 		}
+	}
+
+	private function indentedOutputLines( string $output ): array {
+		$result = [];
+		$lines  = explode( "\n", $output );
+		foreach ( $lines as $line ) {
+			$result[] = "    $line";
+		}
+
+		return $result;
 	}
 
 	private function successIgnorePatterns(): array {
