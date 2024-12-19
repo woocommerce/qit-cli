@@ -62,7 +62,7 @@
                             "Coupons API tests": [
                                 {
                                     "title": "can create a coupon",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can retrieve a coupon",
