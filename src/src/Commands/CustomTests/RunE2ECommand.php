@@ -217,6 +217,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		if ( ! empty( $woo_extension_slug ) ) {
 			App::setVar( 'QIT_SUT', $woo_extension_id );
+			App::setVar( 'QIT_SUT_SLUG', $woo_extension_slug );
 		}
 
 		$env_up_options = $this->configuration_processor->process_configuration(

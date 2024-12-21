@@ -16,13 +16,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use function QIT_CLI\get_manager_url;
 
 class CustomTestsDownloader {
-	/** @var OutputInterface $output */
+	/** @var OutputInterface */
 	protected $output;
 
-	/** @var Zipper $zipper */
+	/** @var Zipper */
 	protected $zipper;
 
-	/** @var ExtensionDownloader $extension_downloader */
+	/** @var ExtensionDownloader */
 	protected $extension_downloader;
 
 	public function __construct(
@@ -72,12 +72,9 @@ class CustomTestsDownloader {
 			foreach ( $extension->test_tags as $k => $test_tag ) {
 				$original_path = null;
 
-				/*
-				 * Sometimes a user might do "woocommerce:test:activation" and have a directory named "activation" in the same
-				 * working directory. In this scenario, emit a warning and use the published test tag.
-				 */
+				// Check if local test directory/file conflicts with remote test tag.
 				if ( file_exists( $test_tag ) ) {
-					if ( ! empty( $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ] ) ) { // @phpstan-ignore-line
+					if ( ! empty( $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ] ) ) {
 						$this->output->writeln( sprintf(
 							'Conflict detected: Test tag "%s" exists both locally and remotely. The remote test tag will be used for the extension "%s".',
 							$test_tag,
@@ -86,7 +83,7 @@ class CustomTestsDownloader {
 					}
 				}
 
-				if ( isset( $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ] ) ) { // @phpstan-ignore-line
+				if ( isset( $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ] ) ) {
 					$custom_test_url       = $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ];
 					$custom_test_file_name = md5( $custom_test_url ) . '.zip';
 					$custom_test_file_path = "$cache_dir/tests/$test_type/$custom_test_file_name";
@@ -105,6 +102,7 @@ class CustomTestsDownloader {
 					$zip_file           = $custom_test_file_path;
 					$processed_test_tag = $test_tag;
 				} elseif ( file_exists( $test_tag ) ) {
+					// Local test directory or file.
 					if ( is_dir( $test_tag ) ) {
 						$original_path = $test_tag;
 						$zip_file      = tempnam( sys_get_temp_dir(), 'qit_' ) . '.zip';
@@ -151,51 +149,61 @@ class CustomTestsDownloader {
 	}
 
 	/**
-	 * @param array<\QIT_CLI\Environment\Extension> $extensions
+	 * Fetch custom test info from the new "download-tests" endpoint.
+	 *
+	 * @param array<Extension> $extensions
 	 *
 	 * @return array<string, array{
-	 *     url: string,
-	 *     version: string,
 	 *     slug: string,
 	 *     tests: array{
-	 *          e2e: string
+	 *          e2e?: array<string, string>
 	 *      }
-	 *   }> Each key in the array represents a plugin identifier (e.g., 'plugin-foo').
+	 *   }>
 	 */
 	protected function get_custom_tests_info( array $extensions ): array {
-		$test_tags_to_fetch          = [];
-		$extensions_to_get_tests_for = [];
+		$test_tags_to_fetch = [];
 
 		foreach ( $extensions as $ext ) {
 			foreach ( $ext->test_tags as $test_tag ) {
 				$test_tags_to_fetch[] = "{$ext->slug}:{$test_tag}";
-				if ( ! in_array( $ext->slug, $extensions_to_get_tests_for, true ) ) {
-					$extensions_to_get_tests_for[] = $ext->slug;
-				}
 			}
 		}
 
-		if ( empty( $extensions_to_get_tests_for ) ) {
+		if ( empty( $test_tags_to_fetch ) ) {
 			return [];
 		}
 
 		$start    = microtime( true );
-		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/download-urls' ) )
+		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/custom-test-download-urls' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
-				'extensions'    => $extensions_to_get_tests_for,
-				'test_tags'     => implode( ',', $test_tags_to_fetch ),
-				'download_type' => 'tests',
+				'test_tags' => $test_tags_to_fetch,
 			] )
 			->request();
+
 		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( sprintf( 'Fetched custom test checksums for %d extensions from QIT in %f seconds.', count( $extensions ), microtime( true ) - $start ) );
+			$this->output->writeln( sprintf(
+				'Fetched custom test checksums for %d extensions from QIT in %f seconds.',
+				count( $extensions ),
+				microtime( true ) - $start
+			) );
 		}
 
 		$download_urls = json_decode( $response, true );
 
-		if ( ! is_array( $download_urls ) || empty( $download_urls['urls'] ) || ! is_array( $download_urls['urls'] ) ) {
-			throw new \RuntimeException( 'No download URLs received.' );
+		// Handle errors from QIT Manager.
+		if ( ! is_array( $download_urls ) ) {
+			throw new \RuntimeException( 'No valid JSON response from QIT Manager.' );
+		}
+
+		if ( isset( $download_urls['code'] ) && $download_urls['code'] === 'rest_forbidden' && ! empty( $download_urls['message'] ) ) {
+			// The manager returned permission errors.
+			throw new \RuntimeException( $download_urls['message'] );
+		}
+
+		if ( empty( $download_urls['urls'] ) || ! is_array( $download_urls['urls'] ) ) {
+			// If no tests found and no error code, just return empty array.
+			return [];
 		}
 
 		return $download_urls['urls'];
