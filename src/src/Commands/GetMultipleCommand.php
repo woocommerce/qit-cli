@@ -30,7 +30,7 @@ class GetMultipleCommand extends Command {
 		$test_run_ids = array_filter( array_map( 'trim', explode( ',', $test_run_ids ) ) );
 
 		if ( empty( $test_run_ids ) ) {
-			$output->writeln( "<error>No test_run_ids provided.</error>" );
+			$output->writeln( '<error>No test_run_ids provided.</error>' );
 
 			return Command::FAILURE;
 		}
@@ -56,13 +56,13 @@ class GetMultipleCommand extends Command {
 		}
 
 		// Determine exit codes for each test run and choose the "worst" one.
-		// Mapping from status to code:
+		// Mapping from status to code.
 		$status_map        = [
 			'success' => 0,
 			'failed'  => 1,
 			'warning' => 2,
 		];
-		$default_exit_code = 3; // Others
+		$default_exit_code = 3; // Others.
 		$overall_exit_code = 0; // If all success, 0. If any fail/warn, that sets a higher code.
 
 		$check_finished = $input->getOption( 'check_finished' );
@@ -92,7 +92,7 @@ class GetMultipleCommand extends Command {
 				}
 			}
 
-			// All tests finished
+			// All tests finished.
 			return Command::SUCCESS;
 		}
 
@@ -106,7 +106,7 @@ class GetMultipleCommand extends Command {
 
 			if ( $open_browser && isset( $tr['test_results_manager_url'] ) ) {
 				$output->writeln( "<info>Test Run ID {$test_run_id}:</info>" );
-				$output->writeln( "<info>To view this test run, please open this URL:</info>" );
+				$output->writeln( '<info>To view this test run, please open this URL:</info>' );
 				$output->writeln( $tr['test_results_manager_url'] );
 
 				try {
@@ -120,7 +120,7 @@ class GetMultipleCommand extends Command {
 				continue; // No need to show table if we are opening in browser.
 			}
 
-			// Prepare data for table display
+			// Prepare data for table display.
 			$display_data = $this->prepare_table_data( $tr );
 
 			$output->writeln( "<info>Test Run ID {$test_run_id}:</info>" );
@@ -137,7 +137,16 @@ class GetMultipleCommand extends Command {
 		return $overall_exit_code;
 	}
 
-	protected function determine_exit_code( array $test_run, array $status_map, int $default ): int {
+	/**
+	 * Determine the exit code from the test run.
+	 *
+	 * @param array<string,mixed> $test_run
+	 * @param array<string,int>   $status_map
+	 * @param int                 $default
+	 *
+	 * @return int
+	 */
+	protected function determine_exit_code( array $test_run, array $status_map, int $default ): int { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.defaultFound
 		$status = $test_run['status'] ?? '';
 		if ( isset( $status_map[ $status ] ) ) {
 			return $status_map[ $status ];
@@ -146,8 +155,25 @@ class GetMultipleCommand extends Command {
 		return $default;
 	}
 
+	/**
+	 * Prepare table data for console output.
+	 *
+	 * @param array<string,mixed> $test_run
+	 *
+	 * @return array<string,mixed>
+	 */
 	protected function prepare_table_data( array $test_run ): array {
-		$columns_to_hide = [ 'test_result_aws_expiration', 'test_results_manager_expiration', 'test_result_json', 'event', 'client', 'run_id', 'send_notifications', 'update_complete', 'ai_suggestion_status' ];
+		$columns_to_hide = [
+			'test_result_aws_expiration',
+			'test_results_manager_expiration',
+			'test_result_json',
+			'event',
+			'client',
+			'run_id',
+			'send_notifications',
+			'update_complete',
+			'ai_suggestion_status',
+		];
 
 		foreach ( $test_run as $test_key => &$v ) {
 			// Remove empty columns.
@@ -173,7 +199,7 @@ class GetMultipleCommand extends Command {
 
 			switch ( $test_key ) {
 				case 'is_development':
-					// If set and not empty => Yes
+					// If set and not empty => Yes.
 					$test_run[ $test_key ] = 'Yes';
 					break;
 				case 'test_results_manager_url':
@@ -182,7 +208,6 @@ class GetMultipleCommand extends Command {
 					break;
 			}
 		}
-
 		unset( $v );
 
 		// Rename keys: underscore to space, ucwords.
