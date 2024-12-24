@@ -38,4 +38,4 @@ _tests/custom_tests/.env.local
 
 _tests/custom_tests/.env.bk
 
-_tests/managed_tests/mass-test.log
+_tests/managed_tests/last-self-test.log

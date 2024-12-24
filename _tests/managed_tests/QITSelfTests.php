@@ -10,7 +10,6 @@ require_once __DIR__ . '/src/TestManager.php';
 require_once __DIR__ . '/src/ZipManager.php';
 require_once __DIR__ . '/src/PhpUnitRunner.php';
 require_once __DIR__ . '/src/QitRunner.php';
-require_once __DIR__ . '/src/ProcessManagerFork.php';
 require_once __DIR__ . '/src/QITLiveOutput.php';
 require_once __DIR__ . '/src/test-result-parser.php';
 
@@ -23,7 +22,7 @@ function maybe_echo( $message ) {
 	}
 }
 
-$logger = new Logger( __DIR__ . '/mass-test.log' );
+$logger = new Logger( __DIR__ . '/last-self-test.log' );
 $config = new Config( $argv, $logger );
 $config->parse();
 
@@ -62,7 +61,7 @@ register_shutdown_function( function () use ( $logger ) {
 system( 'clear' );
 maybe_echo( "──────────────────────────────────────────────────────────────────────\n" );
 maybe_echo( " QIT Test Runner - Stage 1: Preparing Tests\n" );
-maybe_echo( " (Verbose logs: mass-test.log)\n" );
+maybe_echo( " (Verbose logs: last-self-test.log)\n" );
 maybe_echo( "──────────────────────────────────────────────────────────────────────\n\n" );
 
 maybe_echo( "Filtering scenarios:\n" );
@@ -83,7 +82,7 @@ sleep( 2 );
 system( 'clear' );
 maybe_echo( "──────────────────────────────────────────────────────────────────────\n" );
 maybe_echo( " QIT Test Runner - Stage 2: Executing Tests on QIT\n" );
-maybe_echo( " (Verbose logs: mass-test.log)\n" );
+maybe_echo( " (Verbose logs: last-self-test.log)\n" );
 maybe_echo( "──────────────────────────────────────────────────────────────────────\n\n" );
 
 maybe_echo( "Dispatching tests to QIT infrastructure...\n" );

@@ -119,8 +119,8 @@ class QITLiveOutput {
 		}
 
 		maybe_echo( "──────────────────────────────────────────────────────────────────────\n" );
-		maybe_echo( " QIT Parallel Test Runner\n" );
-		maybe_echo( " (Verbose logs are being written to mass-test.log)\n" );
+		maybe_echo( " QIT Self Test Runner\n" );
+		maybe_echo( " (Verbose logs are being written to last-self-test.log)\n" );
 		maybe_echo( "──────────────────────────────────────────────────────────────────────\n\n" );
 
 		$elapsed = intval( microtime( true ) - $this->startTime );
@@ -248,7 +248,7 @@ class QITLiveOutput {
 		}
 
 		echo "──────────────────────────────────────────────────────────────────────\n";
-		echo " QIT Parallel Test Runner - Final Summary\n";
+		echo " QIT Self Test Runner - Final Summary\n";
 		echo "──────────────────────────────────────────────────────────────────────\n\n";
 
 		echo "QIT Test Results (Raw):\n";
@@ -298,7 +298,7 @@ class QITLiveOutput {
 			}
 		}
 
-		echo "\nFor more details, see mass-test.log.\n";
+		echo "\nFor more details, see last-self-test.log.\n";
 	}
 
 	private function computeDuration( array $testInfo ): string {
@@ -344,6 +344,7 @@ class QITLiveOutput {
 	private function successIgnorePatterns(): array {
 		return [
 			'/^Result:$/i',
+			'/^[A-Za-z0-9_-]+ \(QITE2E\\\\[A-Za-z0-9_\\\\-]+\)$/i',
 			'/^PHPUnit \d+\.\d+\.\d+ by Sebastian Bergmann and contributors\./i',
 			'/^Runtime:/i',
 			'/^Wooapi \(QITE2E\\\\Wooapi\)/i',
