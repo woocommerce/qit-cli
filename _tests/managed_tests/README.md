@@ -120,7 +120,7 @@ Only matches scenarios where `env.php` indicates WP 6.3 **and** PHP 8.0.
   ```bash
   php QITSelfTests.php --debug
   ```
-  Increases verbosity in the logs (`mass-test.log` or similar).
+  Increases verbosity in the logs (`last-self-test.log` or similar).
 
 ---
 
@@ -171,6 +171,6 @@ Only matches scenarios where `env.php` indicates WP 6.3 **and** PHP 8.0.
    ```
 
 3. **Log Output**:  
-   A detailed log is written each time in the same directory (e.g., `mass-test.log`), containing verbose debug info.
+   A detailed log is written each time in the same directory (e.g., `last-self-test.log`), containing verbose debug info.
 
 ---
