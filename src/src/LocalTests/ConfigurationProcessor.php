@@ -207,7 +207,7 @@ class ConfigurationProcessor {
 		$this->normalize_plugins( $env_config );
 		$this->normalize_themes( $env_config );
 
-		$env_up_options['--theme'] = array_values( $env_config['themes'] );
+		$env_up_options['--theme']  = array_values( $env_config['themes'] );
 		$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
 	}
 

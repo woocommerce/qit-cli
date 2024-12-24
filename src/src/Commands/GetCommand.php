@@ -142,6 +142,7 @@ class GetCommand extends Command {
 		}
 
 		$table = new Table( $output );
+		$table->setColumnMaxWidth( 1, 80 );
 		$table
 			->setHorizontal()
 			->setStyle( 'compact' )
