@@ -10,7 +10,6 @@ require_once __DIR__ . '/src/TestManager.php';
 require_once __DIR__ . '/src/ZipManager.php';
 require_once __DIR__ . '/src/PhpUnitRunner.php';
 require_once __DIR__ . '/src/QitRunner.php';
-require_once __DIR__ . '/src/ProcessManagerFork.php';
 require_once __DIR__ . '/src/QITLiveOutput.php';
 require_once __DIR__ . '/src/test-result-parser.php';
 

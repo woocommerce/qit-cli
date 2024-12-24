@@ -1,6 +1,5 @@
 <?php
 
-use Jack\Symfony\ProcessManager;
 use Symfony\Component\Process\Process;
 
 class ZipManager {
@@ -12,7 +11,7 @@ class ZipManager {
 
 	public function generate_zips( array $test_type_test_runs ) {
 		$this->logger->log( "Generating zips for tests" );
-		$zip_processes = [];
+		$zip_processes  = [];
 		$generated_zips = [];
 
 		foreach ( $test_type_test_runs as $t ) {
@@ -51,26 +50,23 @@ class ZipManager {
 
 		if ( count( $zip_processes ) === 0 ) {
 			// No zip tasks to run
-			$this->logger->log( "No zip tasks found. Skipping parallel run." );
+			$this->logger->log( "No zip tasks found. Skipping zip generation." );
 
 			return;
 		}
 
-		$zip_processes_manager = new ProcessManager();
-		$zip_processes_manager->runParallel(
-			$zip_processes,
-			25,     // Max parallel processes
-			10000,  // Timeout in seconds
-			function ( string $type, string $out, Process $process ) {
-				maybe_echo( $out );
-				$this->logger->log( "Zip output: " . $out );
-			}
-		);
-
+		// Run each process sequentially
 		foreach ( $zip_processes as $zip_process ) {
+			$zip_process->run( function ( string $type, string $buffer ) {
+				maybe_echo( $buffer );
+				$this->logger->log( "Zip output: " . $buffer );
+			} );
+
 			if ( ! $zip_process->isSuccessful() ) {
 				$this->logger->log( "Zip failed for: " . $zip_process->getEnv()['qit_task_id'] );
-				throw new RuntimeException( "Failed to create zip file for test: {$zip_process->getEnv()['qit_task_id']}" );
+				throw new RuntimeException(
+					"Failed to create zip file for test: {$zip_process->getEnv()['qit_task_id']}"
+				);
 			} else {
 				$this->logger->log( "Zip succeeded for: " . $zip_process->getEnv()['qit_task_id'] );
 			}

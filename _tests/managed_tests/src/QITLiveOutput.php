@@ -119,7 +119,7 @@ class QITLiveOutput {
 		}
 
 		maybe_echo( "──────────────────────────────────────────────────────────────────────\n" );
-		maybe_echo( " QIT Parallel Test Runner\n" );
+		maybe_echo( " QIT Self Test Runner\n" );
 		maybe_echo( " (Verbose logs are being written to mass-test.log)\n" );
 		maybe_echo( "──────────────────────────────────────────────────────────────────────\n\n" );
 
@@ -248,7 +248,7 @@ class QITLiveOutput {
 		}
 
 		echo "──────────────────────────────────────────────────────────────────────\n";
-		echo " QIT Parallel Test Runner - Final Summary\n";
+		echo " QIT Self Test Runner - Final Summary\n";
 		echo "──────────────────────────────────────────────────────────────────────\n\n";
 
 		echo "QIT Test Results (Raw):\n";
