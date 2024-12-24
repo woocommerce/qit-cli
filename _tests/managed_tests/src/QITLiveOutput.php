@@ -344,6 +344,7 @@ class QITLiveOutput {
 	private function successIgnorePatterns(): array {
 		return [
 			'/^Result:$/i',
+			'/^[A-Za-z0-9_-]+ \(QITE2E\\\\[A-Za-z0-9_\\\\-]+\)$/i',
 			'/^PHPUnit \d+\.\d+\.\d+ by Sebastian Bergmann and contributors\./i',
 			'/^Runtime:/i',
 			'/^Wooapi \(QITE2E\\\\Wooapi\)/i',
