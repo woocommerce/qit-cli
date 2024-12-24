@@ -125,6 +125,7 @@ class GetMultipleCommand extends Command {
 
 			$output->writeln( "<info>Test Run ID {$test_run_id}:</info>" );
 			$table = new Table( $output );
+			$table->setColumnMaxWidth( 1, 80 );
 			$table
 				->setHorizontal()
 				->setStyle( 'compact' )
