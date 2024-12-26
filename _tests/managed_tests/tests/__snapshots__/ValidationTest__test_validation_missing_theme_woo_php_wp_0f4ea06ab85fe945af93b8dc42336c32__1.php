@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 0 Warnings: 5",
+            "test_summary": "Errors: 0 Warnings: 7",
             "debug_log": "",
             "version": "1.0.15",
             "update_complete": true,
@@ -51,10 +51,12 @@
                     "Tested up to": false,
                     "WC requires at least": false,
                     "WC tested up to": false,
-                    "Woo": false
+                    "Woo": false,
+                    "License": false
                 },
                 "features": [],
-                "has_outdated_templates": false
+                "has_outdated_templates": false,
+                "has_readme": false
             }
         }
     ]

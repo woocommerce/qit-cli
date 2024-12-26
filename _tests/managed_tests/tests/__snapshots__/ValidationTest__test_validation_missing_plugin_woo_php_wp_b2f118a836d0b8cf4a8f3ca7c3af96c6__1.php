@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 0 Warnings: 5",
+            "test_summary": "Errors: 0 Warnings: 7",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -51,7 +51,8 @@
                     "Tested up to": false,
                     "WC requires at least": false,
                     "WC tested up to": false,
-                    "Woo": false
+                    "Woo": false,
+                    "License": false
                 },
                 "features": {
                     "compatible": [],
@@ -65,10 +66,13 @@
                         "site_visibility_badge",
                         "hpos_fts_indexes",
                         "remote_logging",
-                        "custom_order_tables"
+                        "email_improvements",
+                        "custom_order_tables",
+                        "cost_of_goods_sold"
                     ]
                 },
-                "has_outdated_templates": false
+                "has_outdated_templates": false,
+                "has_readme": false
             }
         }
     ]
