@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "427 total, 381 passed, 0 failed, 46 skipped.",
+            "test_summary": "415 total, 374 passed, 1 failed, 40 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,38 +45,24 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 85,
-                "numPendingTestSuites": 23,
-                "numTotalTestSuites": 108,
-                "numFailedTests": 0,
-                "numPassedTests": 381,
-                "numPendingTests": 46,
-                "numTotalTests": 427,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 80,
+                "numPendingTestSuites": 20,
+                "numTotalTestSuites": 101,
+                "numFailedTests": 1,
+                "numPassedTests": 374,
+                "numPendingTests": 40,
+                "numTotalTests": 415,
                 "testResults": [
                     {
-                        "file": "activate-and-setup\\/core-profiler.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
+                        "file": "activate-and-setup\\/stats-overview.spec.js",
+                        "status": "failed",
+                        "has_pending": false,
                         "tests": {
-                            "Store owner can complete the core profiler": [
+                            "WooCommerce Home": [
                                 {
-                                    "title": "Can complete the core profiler skipping extension install",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Can complete the core profiler installing default extensions",
-                                    "status": "pending"
-                                }
-                            ],
-                            "Store owner can skip the core profiler": [
-                                {
-                                    "title": "Can click skip guided setup",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Can connect to WooCommerce.com",
-                                    "status": "passed"
+                                    "title": "Can access Analytics Reports from Stats Overview",
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -197,10 +183,6 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Introduction can be dismissed",
-                                    "status": "passed"
-                                },
-                                {
                                     "title": "Learning section can be expanded",
                                     "status": "passed"
                                 }
@@ -283,14 +265,6 @@
                                 {
                                     "title": "Color picker should be focused when a color is picked",
                                     "status": "passed"
-                                },
-                                {
-                                    "title": "Selected color palette should be applied on the frontend",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Create \\"your own\\" pickers should be visible",
-                                    "status": "passed"
                                 }
                             ]
                         }
@@ -356,10 +330,6 @@
                         "tests": {
                             "Assembler -> Full composability": [
                                 {
-                                    "title": "The list of categories should be displayed",
-                                    "status": "passed"
-                                },
-                                {
                                     "title": "Clicking on \\"Design your homepage\\" should open the Intro sidebar by default",
                                     "status": "passed"
                                 },
@@ -389,10 +359,6 @@
                                 },
                                 {
                                     "title": "Clicking the \\"Add patterns\\" button on the No Blocks view should add a default pattern",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking opt-in new patterns should be available",
                                     "status": "passed"
                                 }
                             ]
@@ -430,10 +396,6 @@
                         "tests": {
                             "Assembler -> Homepage": [
                                 {
-                                    "title": "Available homepage should be displayed",
-                                    "status": "pending"
-                                },
-                                {
                                     "title": "The selected homepage should be focused when is clicked",
                                     "status": "pending"
                                 },
@@ -448,19 +410,11 @@
                             ],
                             "Homepage tracking banner": [
                                 {
-                                    "title": "Should show the \\"Want more patterns?\\" banner with the PTK API unavailable message",
-                                    "status": "passed"
-                                },
-                                {
                                     "title": "Should show the \\"Want more patterns?\\" banner with the Opt-in message when tracking is not allowed",
                                     "status": "passed"
                                 },
                                 {
                                     "title": "Should show the \\"Want more patterns?\\" banner with the offline message when the user is offline and tracking is not allowed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Should not show the \\"Want more patterns?\\" banner when tracking is allowed",
                                     "status": "passed"
                                 }
                             ]
@@ -494,10 +448,6 @@
                                 },
                                 {
                                     "title": "Logo should be visible after header update",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Enabling the \\"use as site icon\\" option should set the image as the site icon",
                                     "status": "passed"
                                 },
                                 {
@@ -560,7 +510,7 @@
                     {
                         "file": "customize-store\\/loading-screen\\/loading-screen.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Assembler - Loading Page": [
                                 {
@@ -573,7 +523,7 @@
                                 },
                                 {
                                     "title": "should hide loading screen and steps on subsequent runs",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -647,32 +597,6 @@
                             "can use an analytics command": [
                                 {
                                     "title": "can use an analytics command",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "merchant\\/create-cart-block.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Transform Classic Cart To Cart Block": [
-                                {
-                                    "title": "can transform classic cart to cart block",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "merchant\\/create-checkout-block.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Transform Classic Checkout To Checkout Block": [
-                                {
-                                    "title": "can transform classic checkout to checkout block",
                                     "status": "passed"
                                 }
                             ]
@@ -761,12 +685,12 @@
                     {
                         "file": "merchant\\/create-product-brand.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Merchant can add brands": [
                                 {
                                     "title": "Merchant can add brands",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -844,7 +768,7 @@
                     {
                         "file": "merchant\\/create-shipping-zones.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Shipping Settings - Add new shipping zone": [
                                 {
@@ -871,40 +795,14 @@
                             "Verifies shipping options from customer perspective": [
                                 {
                                     "title": "allows customer to benefit from a free Local pickup if on Mayne Island",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "allows customer to benefit from a free Free shipping if in BC",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "allows customer to pay for a Flat rate shipping method",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "merchant\\/create-woocommerce-blocks.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Add WooCommerce Blocks Into Page": [
-                                {
-                                    "title": "can insert all WooCommerce blocks into page",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "merchant\\/create-woocommerce-patterns.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Add WooCommerce Patterns Into Page": [
-                                {
-                                    "title": "can insert WooCommerce patterns into page",
                                     "status": "passed"
                                 }
                             ]
@@ -916,10 +814,6 @@
                         "has_pending": false,
                         "tests": {
                             "Merchant > Customer List": [
-                                {
-                                    "title": "Merchant can view a list of all customers, filter and download",
-                                    "status": "passed"
-                                },
                                 {
                                     "title": "Merchant can view a single customer",
                                     "status": "passed"
@@ -1671,10 +1565,6 @@
                             ],
                             "General tab > Create product": [
                                 {
-                                    "title": "can create a simple product",
-                                    "status": "passed"
-                                },
-                                {
                                     "title": "can not create a product with duplicated SKU",
                                     "status": "pending"
                                 },
@@ -1749,20 +1639,6 @@
                                 },
                                 {
                                     "title": "can enable the block product editor",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "merchant\\/products\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "General tab": [],
-                            "General tab > Linked product": [
-                                {
-                                    "title": "can create a product with linked products",
                                     "status": "passed"
                                 }
                             ]
@@ -1903,6 +1779,59 @@
                         }
                     },
                     {
+                        "file": "merchant\\/settings-email.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "WooCommerce Email Settings": [
+                                {
+                                    "title": "See email preview with a feature flag",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Email sender options live change in email preview",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Live preview when changing email settings",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Send email preview",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "See specific email preview with a feature flag",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "See email image url field with a feature flag",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Choose image in email image url field",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "See new color settings with a feature flag",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "See font family setting with a feature flag",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "See updated footer text field with a feature flag",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Reset color palette with a feature flag",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/settings-general.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1958,23 +1887,6 @@
                                 },
                                 {
                                     "title": "can remove tax classes",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "merchant\\/settings-woo-com.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "WooCommerce woo.com Settings": [
-                                {
-                                    "title": "can enable analytics tracking",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can enable marketplace suggestions",
                                     "status": "passed"
                                 }
                             ]
@@ -2777,19 +2689,6 @@
                         }
                     },
                     {
-                        "file": "shopper\\/shop-products-filter-by-price.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Filter items in the shop by product price": [
-                                {
-                                    "title": "filter products by prices on the created page",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "shopper\\/shop-search-browse-sort.spec.js",
                         "status": "passed",
                         "has_pending": true,
@@ -2822,22 +2721,9 @@
                                 }
                             ]
                         }
-                    },
-                    {
-                        "file": "shopper\\/wordpress-post.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "logged-in customer can comment on a post": [
-                                {
-                                    "title": "logged-in customer can comment on a post",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
                     }
                 ],
-                "summary": "427 total, 381 passed, 0 failed, 46 skipped."
+                "summary": "415 total, 374 passed, 1 failed, 40 skipped."
             }
         },
         {
