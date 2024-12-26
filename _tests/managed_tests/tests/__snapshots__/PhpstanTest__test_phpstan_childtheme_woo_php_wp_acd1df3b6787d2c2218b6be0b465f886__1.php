@@ -50,7 +50,7 @@
                     "file_errors": 2
                 },
                 "files": {
-                    "\\/home\\/runner\\/work\\/qit-runner-staging\\/qit-runner-staging\\/ci\\/themes\\/bistro\\/index.php": {
+                    "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/themes\\/bistro\\/index.php": {
                         "errors": 2,
                         "messages": [
                             {
