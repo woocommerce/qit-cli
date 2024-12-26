@@ -53,7 +53,7 @@
                             "fixable": 1
                         },
                         "files": {
-                            "\\/home\\/runner\\/work\\/qit-runner-staging\\/qit-runner-staging\\/ci\\/themes\\/bistro\\/front-page.php": {
+                            "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/themes\\/bistro\\/front-page.php": {
                                 "errors": 13,
                                 "warnings": 5,
                                 "messages": [

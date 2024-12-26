@@ -127,6 +127,7 @@ class QITE2ETestCase extends TestCase {
 
 					// Normalize tests running on "staging-compatibility" to "compatibility".
 					$value = str_replace( 'staging-compatibility', 'compatibility', $value );
+					$value = str_replace( 'qit-runner-staging', 'qit-runner', $value );
 
 					// Normalize the repo.
 					$value = str_replace( 'compatibility-dashboard', 'qit-runner', $value );
