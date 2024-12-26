@@ -35,6 +35,31 @@ class QitRunner {
 		$this->poll_tests( $allTests );
 	}
 
+	private function get_test_timeout_settings( string $test_type ): array {
+		switch ( $test_type ) {
+			case 'woo_e2e':
+				// 2 hours total
+				$timeout_in_seconds = 2 * 60 * 60;  // 2 hours = 7200 seconds
+				$poll_interval      = 15;           // poll every 15s
+				break;
+
+			default:
+				// 15 minutes total by default
+				$timeout_in_seconds = 15 * 60;  // 15 minutes = 900 seconds
+				$poll_interval      = 15;       // poll every 15s
+				break;
+		}
+
+		// Calculate how many times we’ll attempt polling before giving up.
+		$max_attempts = (int) ( $timeout_in_seconds / $poll_interval );
+
+		return [
+			'timeout_in_seconds' => $timeout_in_seconds,
+			'poll_interval'      => $poll_interval,
+			'max_attempts'       => $max_attempts,
+		];
+	}
+
 	private function start_test_run( array &$t, string $test_type, array $tests_based_on_custom_tests, array &$allTests ) {
 		// Generate test_function_name BEFORE qit run, so we can reuse JSON if QIT_REUSE_JSON=1
 		$normalized_t = $t;
@@ -159,9 +184,11 @@ class QitRunner {
 		$t['test_run_id'] = $json['test_run_id'];
 		$this->logger->log( "Test run started with ID: " . $t['test_run_id'] );
 
-		// Set environment vars
-		$poll_interval = 15;
-		$max_attempts  = ( strpos( $normalized_t['type'], 'woo_e2e' ) !== false ) ? 240 : 60;
+		$timeout_settings = $this->get_test_timeout_settings( $normalized_t['type'] );
+
+		// We destructure these for clarity:
+		$poll_interval = $timeout_settings['poll_interval'];
+		$max_attempts  = $timeout_settings['max_attempts'];
 
 		$t['env'] = [
 			'QIT_TEST_PATH'            => $t['path'],
