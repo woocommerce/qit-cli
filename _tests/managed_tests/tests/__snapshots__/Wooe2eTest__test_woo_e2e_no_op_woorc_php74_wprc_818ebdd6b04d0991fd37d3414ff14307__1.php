@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "415 total, 374 passed, 1 failed, 40 skipped.",
+            "test_summary": "415 total, 374 passed, 0 failed, 41 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,24 +45,24 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 80,
-                "numPendingTestSuites": 20,
+                "numPendingTestSuites": 21,
                 "numTotalTestSuites": 101,
-                "numFailedTests": 1,
+                "numFailedTests": 0,
                 "numPassedTests": 374,
-                "numPendingTests": 40,
+                "numPendingTests": 41,
                 "numTotalTests": 415,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/stats-overview.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Home": [
                                 {
                                     "title": "Can access Analytics Reports from Stats Overview",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2723,7 +2723,7 @@
                         }
                     }
                 ],
-                "summary": "415 total, 374 passed, 1 failed, 40 skipped."
+                "summary": "415 total, 374 passed, 0 failed, 41 skipped."
             }
         },
         {
