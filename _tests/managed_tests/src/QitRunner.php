@@ -270,10 +270,6 @@ class QitRunner {
 		$t['timeout_in_seconds'] = $timeout_settings['timeout_in_seconds'];
 		$t['poll_interval']      = $timeout_settings['poll_interval'];
 
-		// We destructure these for clarity:
-		$poll_interval = $timeout_settings['poll_interval'];
-		$max_attempts  = $timeout_settings['max_attempts'];
-
 		$t['env'] = [
 			'QIT_TEST_PATH'            => $t['path'],
 			'QIT_TEST_TYPE'            => $test_type,
