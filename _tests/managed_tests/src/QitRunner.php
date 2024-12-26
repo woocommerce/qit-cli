@@ -212,41 +212,59 @@ class QitRunner {
 	}
 
 	private function poll_tests( array $allTests ) {
-		$this->logger->log( "Start polling all tests together..." );
+		$this->logger->log( "Start polling all tests in chunks of 20..." );
+
+		// Keep going while we still have tests in progress.
 		while ( ! empty( $allTests ) ) {
 			$test_run_ids = array_keys( $allTests );
-			$ids_param    = implode( ',', $test_run_ids );
 
-			$this->logger->log( "Polling with get-multiple for IDs: $ids_param" );
-			$get_process = new Process( [
-				( new PhpExecutableFinder() )->find( false ),
-				realpath( __DIR__ . '/../../../src/qit-cli.php' ),
-				'get-multiple',
-				'--json',
-				$ids_param,
-			] );
+			// Break all test IDs into chunks of up to 20
+			$chunks = array_chunk( $test_run_ids, 20 );
 
-			$get_process->run();
-			$get_output = trim( $get_process->getOutput() );
-			if ( getenv( 'QIT_VERBOSE_SELF_TEST_LOG' ) ) {
-				$this->logger->log( "get-multiple output: $get_output" );
-			}
-			$result_json = json_decode( $get_output, true );
+			foreach ( $chunks as $chunk ) {
+				// Build the comma-separated list of test_run_ids for this chunk
+				$ids_param = implode( ',', $chunk );
+				$this->logger->log( "Polling with get-multiple for chunk: $ids_param" );
 
-			$still_in_progress = [];
-			$completed_tests   = [];
-			$unknown_tests     = [];
+				$get_process = new Process( [
+					( new PhpExecutableFinder() )->find( false ),
+					realpath( __DIR__ . '/../../../src/qit-cli.php' ),
+					'get-multiple',
+					'--json',
+					$ids_param,
+				] );
 
-			if (json_last_error() !== JSON_ERROR_NONE || ! is_array($result_json)) {
-				$this->logger->log("get-multiple returned invalid JSON:\n" . $get_output);
-				throw new RuntimeException( "Failed to parse JSON from get-multiple. Raw output:\n" . $get_output . "\n Error output:\n . {$get_process->getErrorOutput()}" );
-			} else {
+				$get_process->run();
+				$get_output = trim( $get_process->getOutput() );
+
+				// Parse JSON
+				$result_json = json_decode( $get_output, true );
+
+				if ( json_last_error() !== JSON_ERROR_NONE || ! is_array( $result_json ) ) {
+					$this->logger->log( "get-multiple returned invalid JSON:\n" . $get_output );
+					throw new RuntimeException(
+						"Failed to parse JSON from get-multiple. Raw output:\n" . $get_output .
+						"\n Error output:\n" . $get_process->getErrorOutput()
+					);
+				}
+
 				$this->logger->log( "get-multiple keys returned: " . implode( ',', array_keys( $result_json ) ) );
-				foreach ( $allTests as $tid => $test ) {
+
+				$completed_tests   = [];
+				$still_in_progress = [];
+				$unknown_tests     = [];
+
+				// Process results for each test_run_id in the chunk
+				foreach ( $chunk as $tid ) {
+					if ( ! isset( $allTests[ $tid ] ) ) {
+						// Might already have been removed. Continue.
+						continue;
+					}
+
+					// If the JSON response did not have an entry or status for this test ID, mark as unknown
 					if ( ! isset( $result_json[ $tid ] ) || ! isset( $result_json[ $tid ]['status'] ) ) {
 						$this->logger->log( "No status in response for test_run_id $tid" );
 						$this->liveOutput->setTestStatus( $tid, 'unknown' );
-						maybe_echo( "No status in response for test_run_id {$tid}.\n" );
 						$unknown_tests[] = $tid;
 						continue;
 					}
@@ -255,7 +273,7 @@ class QitRunner {
 					$status = $tr['status'];
 					$this->logger->log( "Test_run_id $tid has status: $status" );
 
-					// If we have the test_results_manager_url now, update test data so the URL shows up early
+					// If we have a test_results_manager_url, update it so it shows up in real-time
 					if ( ! empty( $tr['test_results_manager_url'] ) ) {
 						$this->liveOutput->updateTestData( $tid, [
 							'test_results_manager_url' => $tr['test_results_manager_url'],
@@ -263,52 +281,40 @@ class QitRunner {
 					}
 
 					if ( isset( $tr['update_complete'] ) && $tr['update_complete'] === true ) {
-						maybe_echo( "Test run ID {$tid} finished with status: {$status}\n" );
+						// Completed
 						$this->logger->log( "Test_run_id $tid completed. Handling final response..." );
 						$this->handle_qit_response_final( $allTests[ $tid ], $tr, $status );
 						$completed_tests[] = $tid;
 					} else {
+						// Still in progress
 						$this->liveOutput->setTestStatus( $tid, $status );
-						maybe_echo( "Test run ID {$tid} status: {$status}, still polling...\n" );
 						$still_in_progress[] = $tid;
 					}
+				} // end foreach chunk test_run_id
+
+				// Remove completed from $allTests
+				foreach ( $completed_tests as $tid ) {
+					unset( $allTests[ $tid ] );
 				}
-			}
 
-			foreach ( $completed_tests as $tid ) {
-				unset( $allTests[ $tid ] );
-			}
-
-			foreach ( $unknown_tests as $tid ) {
-				$still_in_progress[] = $tid;
-			}
-
-			// Decrement max_attempts for still in progress tests
-			foreach ( $still_in_progress as $tid ) {
-				if ( isset( $allTests[ $tid ] ) ) {
-					$allTests[ $tid ]['max_attempts'] --;
-					if ( $allTests[ $tid ]['max_attempts'] <= 0 ) {
-						$this->logger->log( "Test_run_id {$tid} timed out" );
-						$this->liveOutput->addTestError( $tid, "Did not finish in time." );
-						maybe_echo( "Test run ID {$tid} did not finish in time.\n" );
-						unset( $allTests[ $tid ] );
+				// Decrement max_attempts for still in progress & unknown
+				// If they time out, remove them
+				$to_check = array_merge( $still_in_progress, $unknown_tests );
+				foreach ( $to_check as $tid ) {
+					if ( isset( $allTests[ $tid ] ) ) {
+						$allTests[ $tid ]['max_attempts'] --;
+						if ( $allTests[ $tid ]['max_attempts'] <= 0 ) {
+							$this->logger->log( "Test_run_id {$tid} timed out." );
+							$this->liveOutput->addTestError( $tid, "Did not finish in time." );
+							unset( $allTests[ $tid ] );
+						}
 					}
 				}
-			}
 
-			if ( ! empty( $allTests ) ) {
-				$someTest       = reset( $allTests );
-				$sleep_interval = $someTest['poll_interval'];
-
-				// Instead of sleeping once, sleep in a loop and update the countdown
-				for ( $i = $sleep_interval; $i > 0; $i -- ) {
-					$this->liveOutput->setTimeToNextPoll( $i );
-					$this->liveOutput->renderOutput();
-					sleep( 1 );
+				// After processing this chunk, sleep at least 3 seconds before fetching the next chunk.
+				if ( ! empty( $allTests ) ) {
+					sleep( 3 );
 				}
-				// After finishing the countdown, clear the next poll display
-				$this->liveOutput->setTimeToNextPoll( null );
-				$this->liveOutput->renderOutput();
 			}
 		}
 
