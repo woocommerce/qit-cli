@@ -9,7 +9,7 @@ These self-tests validate that the **Quality Insights Toolkit (QIT)** flags expe
   - The script packages each scenario’s System Under Test (SUT) into a ZIP (unless reusing JSON snapshots).
 
 2. **Dispatch**
-  - The script uses `/home/lucas/automattic/qit-cli/qit` to **run** each scenario test asynchronously, collecting `test_run_id`s.
+  - The script uses `qit` to **run** each scenario test asynchronously, collecting `test_run_id`s.
 
 3. **Polling**
   - Once dispatch is complete, the script periodically calls `qit get-multiple <test_run_id, ...>` to retrieve the status for all tests until each finishes.
@@ -26,7 +26,7 @@ These self-tests validate that the **Quality Insights Toolkit (QIT)** flags expe
 ## Directory Layout
 
 ```
-/home/lucas/automattic/qit-cli/
+
 ├── qit            (the QIT binary)
 └── _tests/
     └── managed_tests/
@@ -63,7 +63,7 @@ These self-tests validate that the **Quality Insights Toolkit (QIT)** flags expe
 
 ## Running Tests
 
-1. **Navigate** to `/home/lucas/automattic/qit-cli/_tests/managed_tests`.
+1. **Navigate** to `_tests/managed_tests`.
 2. **Execute** the test script:
    ```bash
    php QITSelfTests.php
@@ -71,7 +71,7 @@ These self-tests validate that the **Quality Insights Toolkit (QIT)** flags expe
    By default, this:
   - Scans test types and scenarios.
   - Generates ZIPs for each SUT.
-  - Dispatches tests to the local QIT CLI at `/home/lucas/automattic/qit-cli/qit`.
+  - Dispatches tests to the local QIT CLI at `qit`.
   - Polls for test results until done.
   - Uses PHPUnit snapshots to verify results.
 
@@ -142,7 +142,7 @@ Only matches scenarios where `env.php` indicates WP 6.3 **and** PHP 8.0.
 ## Adding a New Test
 
 1. **Create a Test-Type Directory**  
-   For example: `performance/` inside `/home/lucas/automattic/qit-cli/_tests/managed_tests/`.
+   For example: `performance/` inside `_tests/managed_tests/`.
 
 2. **Add a Scenario**
    ```bash
@@ -162,7 +162,7 @@ Only matches scenarios where `env.php` indicates WP 6.3 **and** PHP 8.0.
 ## Common Questions
 
 1. **“QIT binary not found”**:  
-   Make sure `/home/lucas/automattic/qit-cli/qit` exists and is accessible. The script checks that location via `Validator.php`.
+   Make sure `qit` exists and is accessible. The script checks that location via `Validator.php`.
 
 2. **Reusing Existing JSON**:  
    If you want to skip the actual QIT run and just re-check local snapshots:
