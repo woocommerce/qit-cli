@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "415 total, 374 passed, 0 failed, 41 skipped.",
+            "test_summary": "415 total, 373 passed, 0 failed, 42 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -50,8 +50,8 @@
                 "numPendingTestSuites": 21,
                 "numTotalTestSuites": 101,
                 "numFailedTests": 0,
-                "numPassedTests": 374,
-                "numPendingTests": 41,
+                "numPassedTests": 373,
+                "numPendingTests": 42,
                 "numTotalTests": 415,
                 "testResults": [
                     {
@@ -1794,7 +1794,7 @@
                                 },
                                 {
                                     "title": "Live preview when changing email settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Send email preview",
@@ -2723,7 +2723,7 @@
                         }
                     }
                 ],
-                "summary": "415 total, 374 passed, 0 failed, 41 skipped."
+                "summary": "415 total, 373 passed, 0 failed, 42 skipped."
             }
         },
         {

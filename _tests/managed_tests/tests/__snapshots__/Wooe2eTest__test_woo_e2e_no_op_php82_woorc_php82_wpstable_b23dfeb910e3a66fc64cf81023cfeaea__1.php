@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "415 total, 373 passed, 1 failed, 41 skipped.",
+            "test_summary": "415 total, 373 passed, 0 failed, 42 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,13 +45,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 80,
                 "numPendingTestSuites": 21,
                 "numTotalTestSuites": 101,
-                "numFailedTests": 1,
+                "numFailedTests": 0,
                 "numPassedTests": 373,
-                "numPendingTests": 41,
+                "numPendingTests": 42,
                 "numTotalTests": 415,
                 "testResults": [
                     {
@@ -1780,7 +1780,7 @@
                     },
                     {
                         "file": "merchant\\/settings-email.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "WooCommerce Email Settings": [
@@ -1794,7 +1794,7 @@
                                 },
                                 {
                                     "title": "Live preview when changing email settings",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Send email preview",
@@ -2723,7 +2723,7 @@
                         }
                     }
                 ],
-                "summary": "415 total, 373 passed, 1 failed, 41 skipped."
+                "summary": "415 total, 373 passed, 0 failed, 42 skipped."
             }
         },
         {
