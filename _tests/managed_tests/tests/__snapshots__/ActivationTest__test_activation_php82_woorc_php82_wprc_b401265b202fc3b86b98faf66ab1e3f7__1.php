@@ -15,7 +15,7 @@
                 "woocommerce"
             ],
             "test_log": "",
-            "status": "warning",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -36,7 +36,7 @@
             "test_results_manager_expiration": 1234567890,
             "test_summary": "",
             "version": "",
-            "update_complete": false,
+            "update_complete": true,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
             "workflow_id": "",
@@ -47,13 +47,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 2,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 1,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 2,
-                "numFailedTests": 0,
-                "numPassedTests": 12,
-                "numPendingTests": 0,
+                "numFailedTests": 1,
+                "numPassedTests": 8,
+                "numPendingTests": 3,
                 "numTotalTests": 12,
                 "testResults": [
                     {
@@ -71,8 +71,8 @@
                     },
                     {
                         "file": "woocommerce\\/activation\\/activation.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
+                        "status": "failed",
+                        "has_pending": true,
                         "tests": {
                             "woocommerce\\/activation\\/activation.spec.js": [
                                 {
@@ -105,25 +105,25 @@
                                 },
                                 {
                                     "title": "Add Product Cart",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "Can Place Order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Deactivate Plugin",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Activate Other Theme",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 2 passed, 2 total | Tests: 0 skipped, 0 failed, 12 passed, 12 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 1 passed, 2 total | Tests: 3 skipped, 1 failed, 8 passed, 12 total."
             }
         },
         {
@@ -139,16 +139,16 @@
                         "message": "Function utf8_encode() is deprecated",
                         "type": "deprecated",
                         "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:37",
-                        "count": 13
+                        "count": 2
                     }
                 ],
                 "debug_log": [
                     {
-                        "count": "150",
+                        "count": "100",
                         "message": "PHP Deprecated: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 28"
                     },
                     {
-                        "count": "13",
+                        "count": "2",
                         "message": "PHP Deprecated: Function utf8_encode() is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 37"
                     }
                 ]
