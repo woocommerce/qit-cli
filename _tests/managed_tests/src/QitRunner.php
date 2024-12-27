@@ -209,7 +209,7 @@ class QitRunner {
 		/*
 		 * If debug mode is enabled and the test isn't custom, add verbosity.
 		 */
-		if ( Context::$debug_mode && ! in_array( $test_type, $tests_based_on_custom_tests ) ) {
+		if ( Context::$debug_mode && ! in_array( $test_type, $tests_based_on_custom_tests, true ) ) {
 			$args[] = '-vvv';
 		}
 
@@ -220,10 +220,19 @@ class QitRunner {
 			$args[] = "--php_version={$t['php']}";
 		}
 		if ( ! empty( $t['wp'] ) ) {
-			$args[] = "--wordpress_version={$t['wp']}";
+			if ( in_array( $test_type, $tests_based_on_custom_tests, true ) ) {
+				$args[] = "--wp={$t['wp']}";
+			} else {
+				$args[] = "--wordpress_version={$t['wp']}";
+			}
 		}
+
 		if ( ! empty( $t['woo'] ) ) {
-			$args[] = "--woocommerce_version={$t['woo']}";
+			if ( in_array( $test_type, $tests_based_on_custom_tests, true ) ) {
+				$args[] = "--woo={$t['woo']}";
+			} else {
+				$args[] = "--woocommerce_version={$t['woo']}";
+			}
 		}
 		if ( ! empty( $t['features'] ) ) {
 			foreach ( $t['features'] as $f ) {
