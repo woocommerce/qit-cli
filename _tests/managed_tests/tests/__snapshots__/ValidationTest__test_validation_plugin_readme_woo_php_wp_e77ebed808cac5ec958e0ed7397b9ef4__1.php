@@ -51,7 +51,8 @@
                     "Tested up to": "5.8",
                     "WC requires at least": "5.8",
                     "WC tested up to": "5.8",
-                    "Woo": false
+                    "Woo": false,
+                    "License": "GPLv2 or later"
                 },
                 "features": {
                     "compatible": [],
@@ -65,10 +66,13 @@
                         "site_visibility_badge",
                         "hpos_fts_indexes",
                         "remote_logging",
-                        "custom_order_tables"
+                        "email_improvements",
+                        "custom_order_tables",
+                        "cost_of_goods_sold"
                     ]
                 },
-                "has_outdated_templates": false
+                "has_outdated_templates": false,
+                "has_readme": true
             }
         }
     ]

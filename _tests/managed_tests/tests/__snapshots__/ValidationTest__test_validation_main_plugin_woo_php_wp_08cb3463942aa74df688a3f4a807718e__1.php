@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "warning",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 0 Warnings: 0",
+            "test_summary": "Errors: 0 Warnings: 2",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -51,7 +51,8 @@
                     "Tested up to": "5.8",
                     "WC requires at least": "5.8",
                     "WC tested up to": "5.8",
-                    "Woo": false
+                    "Woo": false,
+                    "License": false
                 },
                 "features": {
                     "compatible": [],
@@ -65,10 +66,13 @@
                         "site_visibility_badge",
                         "hpos_fts_indexes",
                         "remote_logging",
-                        "custom_order_tables"
+                        "email_improvements",
+                        "custom_order_tables",
+                        "cost_of_goods_sold"
                     ]
                 },
-                "has_outdated_templates": false
+                "has_outdated_templates": false,
+                "has_readme": false
             }
         }
     ]

@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "448 total, 384 passed, 0 failed, 64 skipped.",
+            "test_summary": "427 total, 363 passed, 18 failed, 46 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,32 +45,15 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 87,
-                "numPendingTestSuites": 24,
-                "numTotalTestSuites": 111,
-                "numFailedTests": 0,
-                "numPassedTests": 384,
-                "numPendingTests": 64,
-                "numTotalTests": 448,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 84,
+                "numPendingTestSuites": 23,
+                "numTotalTestSuites": 108,
+                "numFailedTests": 18,
+                "numPassedTests": 363,
+                "numPendingTests": 46,
+                "numTotalTests": 427,
                 "testResults": [
-                    {
-                        "file": "activate-and-setup\\/basic-setup.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Store owner can finish initial store setup": [
-                                {
-                                    "title": "can enable tax rates and calculations",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can configure permalink settings",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
                     {
                         "file": "activate-and-setup\\/core-profiler.spec.js",
                         "status": "passed",
@@ -93,19 +76,6 @@
                                 },
                                 {
                                     "title": "Can connect to WooCommerce.com",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "activate-and-setup\\/setup-onboarding.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Store owner can login and make sure WooCommerce is activated": [
-                                {
-                                    "title": "can make sure WooCommerce is activated.",
                                     "status": "passed"
                                 }
                             ]
@@ -299,7 +269,7 @@
                     {
                         "file": "customize-store\\/assembler\\/color-picker.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Assembler -> Color Pickers": [
                                 {
@@ -307,72 +277,8 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Color palette Blueberry Sorbet should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Ancient Bronze should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Crimson Tide should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Purple Twilight should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Green Thumb should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Golden Haze should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Golden Indigo should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Arctic Dawn should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Raspberry Chocolate should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Canary should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Ice should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Rustic Rosewood should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Cinnamon Latte should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Lightning should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Aquamarine Night should be applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Color palette Charcoal should be applied",
-                                    "status": "pending"
-                                },
-                                {
                                     "title": "Color palette Slate should be applied",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Color picker should be focused when a color is picked",
@@ -687,7 +593,7 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "Clicking on \\"View store\\" should go to the store home page in a new page",
+                                    "title": "Clicking on \\"View store\\" should go to the store home page",
                                     "status": "passed"
                                 },
                                 {
@@ -1243,81 +1149,81 @@
                     },
                     {
                         "file": "merchant\\/order-search.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "WooCommerce Orders > Search orders": [
                                 {
                                     "title": "can search for order by order id",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can search for order containing \\"James\\" as the billing first name",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Doe\\" as the billing last name",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Automattic\\" as the billing company name",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can search for order containing \\"address1\\" as the billing first address",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can search for order containing \\"address2\\" as the billing second address",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can search for order containing \\"San Francisco\\" as the billing city name",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can search for order containing \\"94107\\" as the billing post code",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can search for order containing \\"john.doe.ordersearch@example.com\\" as the billing email",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can search for order containing \\"123456789\\" as the billing phone",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can search for order containing \\"CA\\" as the billing state",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Tim\\" as the shipping first name",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Clark\\" as the shipping last name",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Oxford Ave\\" as the shipping first address",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Linwood Ave\\" as the shipping second address",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Buffalo\\" as the shipping city name",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can search for order containing \\"14201\\" as the shipping post code",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Wanted Product\\" as the shipping item name",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -1589,7 +1495,7 @@
                     {
                         "file": "merchant\\/product-reviews.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Product Reviews": [
                                 {
@@ -1618,7 +1524,7 @@
                                 },
                                 {
                                     "title": "can reply to a product review",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete a product review",
@@ -2929,26 +2835,9 @@
                                 }
                             ]
                         }
-                    },
-                    {
-                        "file": "smoke-tests\\/update-woocommerce.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "WooCommerce update": [
-                                {
-                                    "title": "can update WooCommerce to \\"undefined\\"",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can run the database update",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
                     }
                 ],
-                "summary": "448 total, 384 passed, 0 failed, 64 skipped."
+                "summary": "427 total, 363 passed, 18 failed, 46 skipped."
             }
         },
         {
