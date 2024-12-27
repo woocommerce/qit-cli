@@ -1,42 +1,176 @@
-## Quality Insights Toolkit self-tests
+# QIT Self-Tests
 
-This directory contains self-tests for the Quality Insights Toolkit.
+These self-tests validate that the **Quality Insights Toolkit (QIT)** flags expected issues for various WordPress environments and configurations.
 
-The self-tests uses Snapshot Testing to validate that the QIT flags the expected issues given a certain input.
+## Overview
 
-### Self-tests
-- Each directory is a test-type self-test, except for "vendor" and "tests" folders, eg: `activation`, `security`, `e2e`, etc.
-- Each test-type self-test can contain multiple tests, eg: `activation/test-1`, `activation/test-2`, etc.
-- Each test has a `env.php` file, with parameters used for the test, such as PHP, WooCommerce and WordPress versions, eg: `activation/test-1/env.php`.
+1. **Discovery & Packaging**
+  - Each **test type** (e.g., `activation`, `security`, `woo-e2e`) has one or more **test scenarios** (e.g., `test-1`, `scenario-a`).
+  - The script packages each scenario’s System Under Test (SUT) into a ZIP (unless reusing JSON snapshots).
 
-### Running the self-tests
+2. **Dispatch**
+  - The script uses `qit` to **run** each scenario test asynchronously, collecting `test_run_id`s.
 
-This is the runner for the self-tests. When you run `php QitSelfTests.php run`, it will:
+3. **Polling**
+  - Once dispatch is complete, the script periodically calls `qit get-multiple <test_run_id, ...>` to retrieve the status for all tests until each finishes.
 
-- For each test type directory (eg: `activation`)
-  - For each test (eg: `activation/test-1`)
-    - Create the zip of the SUT
-    - Create a PHPUnit test file
-    - Dispatch a QIT test with `--wait` and `--json` parameters
-    - Compare the JSON result with a previously saved snapshot
+4. **Snapshot Verification**
+  - Each test’s final JSON output is compared against a **snapshot** with PHPUnit.
+  - Mismatches fail, unless snapshots are being updated.
 
-If the JSON result is different from the snapshot, the test will fail. All tests are dispatched in parallel, and the results are processed as they come in. When a result is available, it will compare the JSON result with a previously saved snapshot.
+5. **Final Summary**
+  - A pass/fail summary appears. If any test fails, the script exits with a non-zero code.
 
-### Regenerating snapshots
-To re-generate the Snapshots, run `php QitSelfTests.php update`
+---
 
-### Running only a single test type
-To run only a single test type, run `php QitSelfTests.php run TEST_TYPE`. For example, to run only the `activation` tests, run `php QitSelfTests.php run activation`. You can also `update` instead of `run`.
+## Directory Layout
 
-### How to create a new test
-- Create a new directory with the test type, eg: `performance`.
-- Create a new directory for the test, eg: `performance/test-1`.
-- Create a new `env.php` file with the parameters for the test, eg: `performance/test-1/env.php`. Copy the file format from existing tests.
-- Create the SUT plugin directory with the plugin files to test, eg: `performance/test-1/{SLUG}`, where `{SLUG}` follows the same convention as existing tests.
+```
 
-That's it, now you can run `php QitSelfTests.php run performance` to run the test. Validate that the snapshot is correct, and commit the snapshot.
+├── qit            (the QIT binary)
+└── _tests/
+    └── managed_tests/
+        ├── QITSelfTests.php        (main script)
+        ├── src/
+        │   ├── Context.php
+        │   ├── Logger.php
+        │   ├── Config.php
+        │   ├── Validator.php
+        │   ├── TestManager.php
+        │   ├── ZipManager.php
+        │   ├── PhpUnitRunner.php
+        │   ├── QitRunner.php
+        │   ├── QITLiveOutput.php
+        │   └── test-result-parser.php
+        ├── activation/
+        │   ├── test-1/
+        │   │   ├── env.php
+        │   │   ├── ...
+        │   └── test-2/
+        │       └── env.php
+        ├── security/
+        │   └── scenario-a/
+        │       └── env.php
+        └── woo-e2e/
+            ├── scenario-1/
+            └── scenario-2/
+```
 
-## Running the self-tests
+- **`QITSelfTests.php`** is the primary entry point for running or updating tests.
+- Each **test type** directory (e.g., `activation/`) contains one or more subdirectories, each representing a scenario (with an `env.php` and SUT files).
 
-- `./vendor/bin/phpunit ./tests/self_test`
-- Or `./vendor/bin/phpunit -d --update-snapshots ./tests/self_test`
+---
+
+## Running Tests
+
+1. **Navigate** to `_tests/managed_tests`.
+2. **Execute** the test script:
+   ```bash
+   php QITSelfTests.php
+   ```
+   By default, this:
+  - Scans test types and scenarios.
+  - Generates ZIPs for each SUT.
+  - Dispatches tests to the local QIT CLI at `qit`.
+  - Polls for test results until done.
+  - Uses PHPUnit snapshots to verify results.
+
+### Update Snapshots
+
+```bash
+php QITSelfTests.php update
+```
+Any snapshot mismatches are replaced with new snapshots (e.g., for changed output). Review and commit them if correct.
+
+### Filter by Test Type
+
+```bash
+php QITSelfTests.php run activation
+```
+Runs only the `activation` tests. Multiple types can be comma-separated:
+```bash
+php QITSelfTests.php run activation,security
+```
+
+### Filter by Scenario
+
+```bash
+php QITSelfTests.php run activation test-1
+```
+Runs **only** `activation/test-1`.
+
+### Environment Filters
+
+```bash
+php QITSelfTests.php run activation test-1 --env_filter=wp=6.3 --env_filter=php=8.0
+```
+Only matches scenarios where `env.php` indicates WP 6.3 **and** PHP 8.0.
+
+---
+
+## Additional Options
+
+- **`QIT_SKIP_E2E=yes`**  
+  Excludes the `woo-e2e` test type.
+
+- **`QIT_REUSE_JSON=1`**  
+  Skips dispatching to QIT and reuses existing JSON for local snapshot checks. This is useful to work on tht self-test script itself, as in how it parses the result JSON, etc. Run it once to generate the JSON results, run it again to re-use them.
+
+- **Debug Logging**
+  ```bash
+  php QITSelfTests.php --debug
+  ```
+  Increases verbosity in the logs (`last-self-test.log` or similar).
+
+---
+
+## Files Breakdown
+
+- **Context.php**: Maintains global state (test types to run, debug mode, etc.).
+- **Logger.php**: Logs script operations to a file.
+- **Config.php**: Parses CLI parameters (`--debug`, `--env_filter`, etc.).
+- **Validator.php**: Checks for the QIT binary and other prerequisites.
+- **TestManager.php**: Gathers test directories and scenarios, applying filters if needed.
+- **ZipManager.php**: Creates `.zip` packages for each scenario.
+- **PhpUnitRunner.php**: Generates and runs snapshot test files using PHPUnit.
+- **QitRunner.php**: Dispatches tests (collects `test_run_id`) and polls them via `qit get-multiple`.
+- **QITLiveOutput.php**: Handles interactive output, displaying test statuses and final summary.
+- **test-result-parser.php**: Normalizes or removes sensitive data from raw JSON before snapshot comparison.
+
+---
+
+## Adding a New Test
+
+1. **Create a Test-Type Directory**  
+   For example: `performance/` inside `_tests/managed_tests/`.
+
+2. **Add a Scenario**
+   ```bash
+   performance/test-1/env.php
+   performance/test-1/<SUT files...>
+   ```
+   `env.php` defines environment parameters (PHP version, WP version, etc.).
+
+3. **Run It**
+   ```bash
+   php QITSelfTests.php run performance
+   ```
+   It’ll be zipped, dispatched, polled, and the JSON verified against a snapshot.
+
+---
+
+## Common Questions
+
+1. **“QIT binary not found”**:  
+   Make sure `qit` exists and is accessible. The script checks that location via `Validator.php`.
+
+2. **Reusing Existing JSON**:  
+   If you want to skip the actual QIT run and just re-check local snapshots:
+   ```bash
+   QIT_REUSE_JSON=1 php QITSelfTests.php update
+   ```
+
+3. **Log Output**:  
+   A detailed log is written each time in the same directory (e.g., `last-self-test.log`), containing verbose debug info.
+
+---

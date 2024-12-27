@@ -4,7 +4,7 @@ namespace QITE2E;
 
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../test-result-parser.php';
+require_once __DIR__ . '/../src/test-result-parser.php';
 
 class QITE2ETestCase extends TestCase {
 	public function validate_and_normalize( string $file_path, ?callable $callback = null ): string {
