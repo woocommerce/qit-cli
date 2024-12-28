@@ -146,6 +146,8 @@ class PlaywrightRunner extends E2ERunner {
 			'-v',
 			$env_info->temporary_env . '/playwright/qitHelpers.js:/qitHelpers/qitHelpers.js',
 			'-v',
+			$results_dir . '/ctrf:/qit/results/ctrf',
+			'-v',
 			$env_info->temporary_env . '/playwright/test-info.json:/qitHelpers/test-info.json', // Contains information about the test, such as the SUT slug, type, etc.
 			'-v',
 			$env_info->temporary_env . '/playwright/qitHelpers-package.json:/qitHelpers/package.json',

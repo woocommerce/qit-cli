@@ -138,6 +138,7 @@ class LocalTestRunNotifier {
 		$results_dir = $test_result->get_results_dir();
 
 		$result_file               = $results_dir . '/result.json';
+		$ctrf_file                 = $results_dir . '/ctrf/ctrf-report.json';
 		$qm_logs_path              = $results_dir . '/logs';
 		$test_result_json_original = '';
 
@@ -164,6 +165,16 @@ class LocalTestRunNotifier {
 			$result_json               = $this->playwright_to_puppeteer_converter->convert_pw_to_puppeteer( json_decode( $result_json, true ) );
 		} else {
 			$result_json = [];
+		}
+
+		if ( file_exists( $ctrf_file ) ) {
+			$ctrf_json = json_decode( file_get_contents( $ctrf_file ), true );
+
+			if ( ! empty( $ctrf_json ) ) {
+				$ctrf_json = $ctrf_json;
+			}
+		} else {
+			$ctrf_json = [];
 		}
 
 		if ( file_exists( $results_dir . '/debug.log' ) ) {
@@ -235,6 +246,7 @@ class LocalTestRunNotifier {
 			'bootstrap_log'             => json_encode( $test_result->bootstrap ),
 			'debug_log'                 => json_encode( $debug_log ),
 			'status'                    => $status,
+			'ctrf_json'                 => $ctrf_json,
 		];
 
 		$r = App::make( RequestBuilder::class )
