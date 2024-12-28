@@ -53,6 +53,15 @@ class PlaywrightRunner extends E2ERunner {
 			}
 		}
 
+		// Pre-create "ctrf" directory.
+		$ctrf_dir = $results_dir . '/ctrf';
+
+		if ( ! file_exists( $ctrf_dir ) ) {
+			if ( ! mkdir( $ctrf_dir, 0755, true ) ) {
+				throw new \RuntimeException( sprintf( 'Could not create the CTRF directory: %s', $ctrf_dir ) );
+			}
+		}
+
 		// Special settings for running self-tests.
 		if ( getenv( 'QIT_SELF_TESTS' ) ) {
 			if ( ! isset( $env_info->playwright_config['reportSlowTests'] ) ) {
