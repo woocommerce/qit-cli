@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "427 total, 363 passed, 18 failed, 46 skipped.",
+            "test_summary": "427 total, 381 passed, 0 failed, 46 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,12 +45,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 84,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 85,
                 "numPendingTestSuites": 23,
                 "numTotalTestSuites": 108,
-                "numFailedTests": 18,
-                "numPassedTests": 363,
+                "numFailedTests": 0,
+                "numPassedTests": 381,
                 "numPendingTests": 46,
                 "numTotalTests": 427,
                 "testResults": [
@@ -1149,81 +1149,81 @@
                     },
                     {
                         "file": "merchant\\/order-search.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "WooCommerce Orders > Search orders": [
                                 {
                                     "title": "can search for order by order id",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"James\\" as the billing first name",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Doe\\" as the billing last name",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Automattic\\" as the billing company name",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"address1\\" as the billing first address",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"address2\\" as the billing second address",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"San Francisco\\" as the billing city name",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"94107\\" as the billing post code",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"john.doe.ordersearch@example.com\\" as the billing email",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"123456789\\" as the billing phone",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"CA\\" as the billing state",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Tim\\" as the shipping first name",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Clark\\" as the shipping last name",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Oxford Ave\\" as the shipping first address",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Linwood Ave\\" as the shipping second address",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Buffalo\\" as the shipping city name",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"14201\\" as the shipping post code",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can search for order containing \\"Wanted Product\\" as the shipping item name",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2837,7 +2837,7 @@
                         }
                     }
                 ],
-                "summary": "427 total, 363 passed, 18 failed, 46 skipped."
+                "summary": "427 total, 381 passed, 0 failed, 46 skipped."
             }
         },
         {
