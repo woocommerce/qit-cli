@@ -33,6 +33,7 @@
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
             "test_summary": "Delete_Products Normalized Summary",
+            "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -40,19 +41,10 @@
             "workflow_id": "1234567890",
             "runner": "normalized",
             "test_media": [],
-            "test_result_json_extracted": "{EXTRACTED}",
-            "debug_log_extracted": "{EXTRACTED}"
+            "test_result_json_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": []
-        },
-        {
-            "debug_log": [
-                {
-                    "count": "0",
-                    "message": "Debug log is ignored for woo-e2e\\/delete_products tests."
-                }
-            ]
         }
     ]
 ]';
