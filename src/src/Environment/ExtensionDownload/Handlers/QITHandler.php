@@ -40,6 +40,18 @@ class QITHandler extends Handler {
 			) );
 		}
 
+		/**
+		 * @param array<string, array{
+		 *     slug: string,
+		 *     url: string,
+		 *     version: string
+		 * }> $download_urls Array where the key is the 'Requested slug' and each value is an
+		 *                  array with 'slug' (resolved slug), 'url', and 'version'.
+		 *
+		 * Eg, difference between requested slug and resolved slug:
+		 * Requested slug: --plugins product-bundles
+		 * Resolved slug: woocommerce-product-bundles
+		 */
 		$download_urls = json_decode( $response, true );
 
 		// Handle errors from QIT Manager.

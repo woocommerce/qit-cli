@@ -16,13 +16,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use function QIT_CLI\get_manager_url;
 
 class CustomTestsDownloader {
-	/** @var OutputInterface */
+	/** @var OutputInterface $output */
 	protected $output;
 
-	/** @var Zipper */
+	/** @var Zipper $zipper */
 	protected $zipper;
 
-	/** @var ExtensionDownloader */
+	/** @var ExtensionDownloader $extension_downloader */
 	protected $extension_downloader;
 
 	public function __construct(
@@ -158,7 +158,7 @@ class CustomTestsDownloader {
 	 *     tests: array{
 	 *          e2e?: array<string, string>
 	 *      }
-	 *   }>
+	 *   }> Array keys are plugin identifiers (e.g., 'plugin-foo').
 	 */
 	protected function get_custom_tests_info( array $extensions ): array {
 		$test_tags_to_fetch = [];
