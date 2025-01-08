@@ -33,7 +33,12 @@
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
             "test_summary": "Delete_Products Normalized Summary",
-            "debug_log": "",
+            "debug_log": [
+                {
+                    "count": "0",
+                    "message": "Debug log is ignored for woo-e2e\\/delete_products tests."
+                }
+            ],
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",

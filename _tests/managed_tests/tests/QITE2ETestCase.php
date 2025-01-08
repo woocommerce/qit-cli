@@ -217,10 +217,6 @@ class QITE2ETestCase extends TestCase {
 			],
 			'debug_log'                       => [
 				'normalize' => function ( $value ) use ( $file_path ) {
-					if ( ! is_array( $value ) ) {
-						return $value;
-					}
-
 					if ( stripos( $file_path, 'woo-e2e/delete_products' ) !== false || stripos( $file_path, 'woo-api/delete_products' ) !== false ) {
 						return [
 							[
@@ -228,6 +224,10 @@ class QITE2ETestCase extends TestCase {
 								'message' => 'Debug log is ignored for woo-e2e/delete_products tests.',
 							],
 						];
+					}
+
+					if ( ! is_array( $value ) ) {
+						return $value;
 					}
 
 					$normalize_custom_tests_debug_log = function ( $debug_log ) {
