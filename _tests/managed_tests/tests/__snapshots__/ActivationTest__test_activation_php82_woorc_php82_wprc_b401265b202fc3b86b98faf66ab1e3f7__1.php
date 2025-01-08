@@ -36,7 +36,7 @@
             "test_results_manager_expiration": 1234567890,
             "test_summary": "",
             "version": "",
-            "update_complete": false,
+            "update_complete": true,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
             "workflow_id": "",

@@ -20,6 +20,7 @@ use QIT_CLI\Commands\Environment\ExecEnvironmentCommand;
 use QIT_CLI\Commands\Environment\ListEnvironmentCommand;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Commands\GetCommand;
+use QIT_CLI\Commands\GetMultipleCommand;
 use QIT_CLI\Commands\ListCommand;
 use QIT_CLI\Commands\OpenCommand;
 use QIT_CLI\Commands\Partner\AddPartner;
@@ -244,8 +245,9 @@ if ( $is_connected_to_backend ) {
 	// List tests runs.
 	$application->add( $container->make( ListCommand::class ) );
 
-	// Get a single test run.
+	// Get a single or multiple test runs.
 	$application->add( $container->make( GetCommand::class ) );
+	$application->add( $container->make( GetMultipleCommand::class ) );
 
 	// Open a test run result in the browser.
 	$application->add( $container->make( OpenCommand::class ) );

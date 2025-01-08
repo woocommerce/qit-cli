@@ -4,7 +4,7 @@ namespace QITE2E;
 
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../test-result-parser.php';
+require_once __DIR__ . '/../src/test-result-parser.php';
 
 class QITE2ETestCase extends TestCase {
 	public function validate_and_normalize( string $file_path, ?callable $callback = null ): string {
@@ -127,6 +127,7 @@ class QITE2ETestCase extends TestCase {
 
 					// Normalize tests running on "staging-compatibility" to "compatibility".
 					$value = str_replace( 'staging-compatibility', 'compatibility', $value );
+					$value = str_replace( 'qit-runner-staging', 'qit-runner', $value );
 
 					// Normalize the repo.
 					$value = str_replace( 'compatibility-dashboard', 'qit-runner', $value );
@@ -216,10 +217,6 @@ class QITE2ETestCase extends TestCase {
 			],
 			'debug_log'                       => [
 				'normalize' => function ( $value ) use ( $file_path ) {
-					if ( ! is_array( $value ) ) {
-						return $value;
-					}
-
 					if ( stripos( $file_path, 'woo-e2e/delete_products' ) !== false || stripos( $file_path, 'woo-api/delete_products' ) !== false ) {
 						return [
 							[
@@ -227,6 +224,10 @@ class QITE2ETestCase extends TestCase {
 								'message' => 'Debug log is ignored for woo-e2e/delete_products tests.',
 							],
 						];
+					}
+
+					if ( ! is_array( $value ) ) {
+						return $value;
 					}
 
 					$normalize_custom_tests_debug_log = function ( $debug_log ) {

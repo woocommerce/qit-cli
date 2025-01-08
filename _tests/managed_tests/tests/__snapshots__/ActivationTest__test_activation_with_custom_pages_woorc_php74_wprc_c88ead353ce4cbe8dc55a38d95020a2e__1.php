@@ -36,7 +36,7 @@
             "test_results_manager_expiration": 1234567890,
             "test_summary": "",
             "version": "",
-            "update_complete": false,
+            "update_complete": true,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
             "workflow_id": "",
@@ -64,7 +64,7 @@
                         "JavaScript Console Log": [
                             "Console warning: Console Warning in custom page.",
                             "Console error: Console Error in custom page.",
-                            "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/normalized\\/wp-admin\\/admin.php?page=plugin-a:212:223\\""
+                            "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/normalized\\/wp-admin\\/admin.php?page=plugin-a:213:223\\""
                         ]
                     }
                 },
