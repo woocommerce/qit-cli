@@ -114,6 +114,7 @@ class PrepareQMLog {
 	public function extract_error_info( array $lines ): array {
 		$fatal_errors = [];
 		foreach ( $lines as $line ) {
+			// Match "PHP Fatal error"
 			preg_match( '/PHP Fatal error: (.*?) in (.*?) on line (\d+)/', $line, $matches1 );
 
 			if (
@@ -130,6 +131,7 @@ class PrepareQMLog {
 				continue;
 			}
 
+			// Match alternate "PHP Fatal error" format
 			preg_match( '/PHP Fatal error: (.*?) in (.*?):(\d+)/', $line, $matches2 );
 
 			if (
@@ -141,6 +143,42 @@ class PrepareQMLog {
 					'message' => $matches2[1],
 					'file'    => str_replace( '/var/www/html/', '', $matches2[2] ),
 					'line'    => $matches2[3],
+				];
+
+				continue;
+			}
+
+			// Match "PHP Parse error"
+			preg_match( '/PHP Parse error: (.*?) in (.*?) on line (\d+)/', $line, $matches3 );
+
+			if (
+				isset( $matches3[1] ) &&
+				isset( $matches3[2] ) &&
+				isset( $matches3[3] )
+			) {
+				$fatal_errors[] = [
+					'message' => $matches3[1],
+					'file'    => str_replace( '/var/www/html/', '', $matches3[2] ),
+					'line'    => $matches3[3],
+				];
+
+				continue;
+			}
+
+			// Match "Uncaught Exception"
+			preg_match( '/Fatal error: Uncaught (.+?): (.*?) in (.*?) on line (\d+)/', $line, $matches4 );
+
+			if (
+				isset( $matches4[1] ) &&
+				isset( $matches4[2] ) &&
+				isset( $matches4[3] ) &&
+				isset( $matches4[4] )
+			) {
+				$fatal_errors[] = [
+					'exception' => $matches4[1],
+					'message'   => $matches4[2],
+					'file'      => str_replace( '/var/www/html/', '', $matches4[3] ),
+					'line'      => $matches4[4],
 				];
 
 				continue;
