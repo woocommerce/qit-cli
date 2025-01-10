@@ -162,24 +162,6 @@ class PrepareQMLog {
 				continue;
 			}
 
-			preg_match( '/Fatal error: Uncaught (.+?): (.*?) in (.*?) on line (\d+)/', $line, $matches4 );
-
-			if (
-				isset( $matches4[1] ) &&
-				isset( $matches4[2] ) &&
-				isset( $matches4[3] ) &&
-				isset( $matches4[4] )
-			) {
-				$fatal_errors[] = [
-					'exception' => $matches4[1],
-					'message'   => $matches4[2],
-					'file'      => str_replace( '/var/www/html/', '', $matches4[3] ),
-					'line'      => $matches4[4],
-				];
-
-				continue;
-			}
-
 			$this->output->writeln( "Error parsing line: $line" );
 		}
 
