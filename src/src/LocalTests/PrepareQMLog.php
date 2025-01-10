@@ -114,7 +114,6 @@ class PrepareQMLog {
 	public function extract_error_info( array $lines ): array {
 		$fatal_errors = [];
 		foreach ( $lines as $line ) {
-			// Match "PHP Fatal error"
 			preg_match( '/PHP Fatal error: (.*?) in (.*?) on line (\d+)/', $line, $matches1 );
 
 			if (
@@ -131,7 +130,6 @@ class PrepareQMLog {
 				continue;
 			}
 
-			// Match alternate "PHP Fatal error" format
 			preg_match( '/PHP Fatal error: (.*?) in (.*?):(\d+)/', $line, $matches2 );
 
 			if (
@@ -148,7 +146,6 @@ class PrepareQMLog {
 				continue;
 			}
 
-			// Match "PHP Parse error"
 			preg_match( '/PHP Parse error: (.*?) in (.*?) on line (\d+)/', $line, $matches3 );
 
 			if (
@@ -165,7 +162,6 @@ class PrepareQMLog {
 				continue;
 			}
 
-			// Match "Uncaught Exception"
 			preg_match( '/Fatal error: Uncaught (.+?): (.*?) in (.*?) on line (\d+)/', $line, $matches4 );
 
 			if (
