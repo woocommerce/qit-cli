@@ -92,7 +92,7 @@ class PrepareQMLog {
 		if ( $handle ) {
 
 			while ( ( $line = fgets( $handle ) ) !== false ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
-				if ( str_contains( $line, 'PHP Fatal error:' ) ) {
+				if ( str_contains( $line, 'PHP Fatal error:' ) || str_contains( $line, 'PHP Parse error:' ) ) {
 					$lines[] = $line;
 				}
 			}
@@ -114,35 +114,45 @@ class PrepareQMLog {
 	public function extract_error_info( array $lines ): array {
 		$fatal_errors = [];
 		foreach ( $lines as $line ) {
-			preg_match( '/PHP Fatal error: (.*?) in (.*?) on line (\d+)/', $line, $matches1 );
+			// First pattern: `on line X`
+			preg_match(
+				'/PHP (Fatal|Parse) error: (.*?) in (.*?) on line (\d+)/',
+				$line,
+				$matches1
+			);
 
 			if (
 				isset( $matches1[1] ) &&
 				isset( $matches1[2] ) &&
-				isset( $matches1[3] )
+				isset( $matches1[3] ) &&
+				isset( $matches1[4] )
 			) {
 				$fatal_errors[] = [
-					'message' => $matches1[1],
-					'file'    => str_replace( '/var/www/html/', '', $matches1[2] ),
-					'line'    => $matches1[3],
+					'message' => $matches1[2],
+					'file'    => str_replace( '/var/www/html/', '', $matches1[3] ),
+					'line'    => $matches1[4],
 				];
-
 				continue;
 			}
 
-			preg_match( '/PHP Fatal error: (.*?) in (.*?):(\d+)/', $line, $matches2 );
+			// Second pattern: `in path:line`
+			preg_match(
+				'/PHP (Fatal|Parse) error: (.*?) in (.*?):(\d+)/',
+				$line,
+				$matches2
+			);
 
 			if (
 				isset( $matches2[1] ) &&
 				isset( $matches2[2] ) &&
-				isset( $matches2[3] )
+				isset( $matches2[3] ) &&
+				isset( $matches2[4] )
 			) {
 				$fatal_errors[] = [
-					'message' => $matches2[1],
-					'file'    => str_replace( '/var/www/html/', '', $matches2[2] ),
-					'line'    => $matches2[3],
+					'message' => $matches2[2],
+					'file'    => str_replace( '/var/www/html/', '', $matches2[3] ),
+					'line'    => $matches2[4],
 				];
-
 				continue;
 			}
 
