@@ -114,7 +114,7 @@ class PrepareQMLog {
 	public function extract_error_info( array $lines ): array {
 		$fatal_errors = [];
 		foreach ( $lines as $line ) {
-			// First pattern: `on line X`
+			// First pattern: `on line X`.
 			preg_match(
 				'/PHP (Fatal|Parse) error: (.*?) in (.*?) on line (\d+)/',
 				$line,
@@ -135,7 +135,7 @@ class PrepareQMLog {
 				continue;
 			}
 
-			// Second pattern: `in path:line`
+			// Second pattern: `in path:line`.
 			preg_match(
 				'/PHP (Fatal|Parse) error: (.*?) in (.*?):(\d+)/',
 				$line,
