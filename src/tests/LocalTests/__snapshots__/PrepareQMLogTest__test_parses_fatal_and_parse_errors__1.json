@@ -1,7 +1,7 @@
 [
     {
         "message": " syntax error, unexpected '|', expecting variable (T_VARIABLE)",
-        "file": "wp-content\/plugins\/kymvex-inv-alert\/vendor\/phpunit\/phpunit\/src\/Framework\/Assert\/Functions.php",
+        "file": "wp-content\/plugins\/foo-slug\/vendor\/phpunit\/phpunit\/src\/Framework\/Assert\/Functions.php",
         "line": "83"
     },
     {
@@ -11,7 +11,7 @@
     },
     {
         "message": " Uncaught Exception: Foo",
-        "file": "wp-content\/plugins\/kymvex-inv-alert\/kymvex-inv-alert.php",
+        "file": "wp-content\/plugins\/foo-slug\/foo-slug.php",
         "line": "29"
     }
 ]
