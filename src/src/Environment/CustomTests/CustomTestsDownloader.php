@@ -149,36 +149,40 @@ class CustomTestsDownloader {
 	}
 
 	/**
-	 * Fetch custom test info from the new "download-tests" endpoint.
+	 * Fetch custom test info from the Manager endpoint, sending a friendly JSON structure:
+	 * {
+	 *   "extensions": [
+	 *     { "slug": "<slug1>", "tags": ["tagA","tagB"] },
+	 *     { "slug": "<slug2>", "tags": ["tagC"] }
+	 *   ]
+	 * }
 	 *
 	 * @param array<Extension> $extensions
 	 *
 	 * @return array<string, array{
 	 *     slug: string,
-	 *     tests: array{
-	 *          e2e?: array<string, string>
-	 *      }
-	 *   }> Array keys are plugin identifiers (e.g., 'plugin-foo').
+	 *     tests: array<string, array<string,string>>
+	 * }> e.g. [ "slug" => ["slug"=>"slug","tests"=>[...]], ...]
 	 */
 	protected function get_custom_tests_info( array $extensions ): array {
-		$test_tags_to_fetch = [];
+		$payload = [ 'extensions' => [] ];
 
 		foreach ( $extensions as $ext ) {
-			foreach ( $ext->test_tags as $test_tag ) {
-				$test_tags_to_fetch[] = "{$ext->slug}:{$test_tag}";
-			}
+			$payload['extensions'][] = [
+				'slug' => $ext->slug,
+				'tags' => array_values( $ext->test_tags ),
+			];
 		}
 
-		if ( empty( $test_tags_to_fetch ) ) {
+		if ( empty( $payload['extensions'] ) ) {
 			return [];
 		}
 
-		$start    = microtime( true );
+		$start = microtime( true );
+
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/custom-test-download-urls' ) )
 			->with_method( 'POST' )
-			->with_post_body( [
-				'test_tags' => $test_tags_to_fetch,
-			] )
+			->with_post_body( $payload )
 			->request();
 
 		if ( $this->output->isVerbose() ) {
