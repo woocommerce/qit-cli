@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "415 total, 373 passed, 0 failed, 42 skipped.",
+            "test_summary": "414 total, 372 passed, 0 failed, 42 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -50,9 +50,9 @@
                 "numPendingTestSuites": 21,
                 "numTotalTestSuites": 101,
                 "numFailedTests": 0,
-                "numPassedTests": 373,
+                "numPassedTests": 372,
                 "numPendingTests": 42,
-                "numTotalTests": 415,
+                "numTotalTests": 414,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/stats-overview.spec.js",
@@ -497,7 +497,7 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "it shows the \\"non default block theme\\" banner when the theme is a block theme different than TT4",
+                                    "title": "it shows the \\"non default block theme\\" banner when the theme is a block theme different than TT4 and redirects to the editor",
                                     "status": "passed"
                                 },
                                 {
@@ -1902,12 +1902,6 @@
                                     "title": "can create a new Customer",
                                     "status": "passed"
                                 }
-                            ],
-                            "can create a new Shop manager": [
-                                {
-                                    "title": "can create a new Shop manager",
-                                    "status": "passed"
-                                }
                             ]
                         }
                     },
@@ -2723,7 +2717,7 @@
                         }
                     }
                 ],
-                "summary": "415 total, 373 passed, 0 failed, 42 skipped."
+                "summary": "414 total, 372 passed, 0 failed, 42 skipped."
             }
         },
         {
