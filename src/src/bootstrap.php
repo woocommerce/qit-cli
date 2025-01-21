@@ -86,7 +86,7 @@ $application = new class( 'Quality Insights Toolkit CLI', App::getVar( 'CLI_VERS
 	}
 };
 $application->setAutoExit( true );
-$application->setCatchExceptions( true );
+$application->setCatchExceptions( false );
 $application->find( 'completion' )->setHidden( true );
 $application->find( 'list' )->setHidden( true );
 $container->singleton( Application::class, $application );
