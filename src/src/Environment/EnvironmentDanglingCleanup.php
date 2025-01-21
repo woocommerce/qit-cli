@@ -285,7 +285,7 @@ class EnvironmentDanglingCleanup {
 		$running_environments = $this->environment_monitor->get();
 
 		// List the running containers.
-		$list_process = new Process( [ 'docker', 'container', 'ls', '--format=json', '--filter=status=running', '--filter=name=qit_env_' ] );
+		$list_process = new Process( [ 'docker', 'container', 'ls', '--format=json', '--filter=status=running', '--filter=status=created', '--filter=name=qit_env_' ] );
 		$list_process->run();
 		$containers_output = $list_process->getOutput();
 

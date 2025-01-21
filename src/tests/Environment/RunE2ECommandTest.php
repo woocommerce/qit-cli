@@ -836,4 +836,20 @@ class RunE2ECommandTest extends QITTestCase {
 		$this->assertCommandIsSuccessful( $this->application_tester );
 		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
 	}
+
+	public function test_unknown_wporg_test_tag() {
+		putenv('QIT_TESTING_ENV_CONFIG=1');
+
+		$fixture_dir = $this->scenarios_dir . 'scenario-unknown-wporg-test-tag';
+		chdir($fixture_dir);
+
+		$this->application_tester->run( [
+			'command'       => 'run:e2e',
+			'woo_extension' => 'storefront',
+			'--plugin'      => [ 'unknown-wporg-plugin:rc' ],
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertCommandIsSuccessful($this->application_tester);
+		$this->assertMatchesJsonSnapshot($this->application_tester->getDisplay());
+	}
 }

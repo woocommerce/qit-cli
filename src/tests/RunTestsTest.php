@@ -65,11 +65,17 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 	public function test_run_with_additional_plugins_invalid() {
 		App::setVar( sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/enqueue-woo-e2e' ), 'NULL_RESPONSE' );
 
-		$this->application_tester->run( [
-			'command'                  => 'run:woo-e2e',
-			'woo_extension'            => 'non-existing-extension',
-		], [ 'capture_stderr_separately' => true ] );
+		$this->expectException( \RuntimeException::class );
 
-		$this->assertStringContainsString('Could not find Woo Extension with slug non-existing-extension.', $this->application_tester->getErrorOutput() );
+		try {
+			$this->application_tester->run( [
+				'command'       => 'run:woo-e2e',
+				'woo_extension' => 'non-existing-extension',
+			], [ 'capture_stderr_separately' => true ] );
+		} catch ( \Exception $e ) {
+			$this->assertStringContainsString('Could not find Woo Extension with slug non-existing-extension.', $e->getMessage() );
+
+			throw $e;
+		}
 	}
 }
