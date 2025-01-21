@@ -271,10 +271,6 @@
                         "tests": {
                             "Order Search API tests": [
                                 {
-                                    "title": "can search by orderId",
-                                    "status": "passed"
-                                },
-                                {
                                     "title": "can search by billing first name",
                                     "status": "passed"
                                 },
@@ -324,6 +320,10 @@
                                 },
                                 {
                                     "title": "can search by shipping state",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can search by orderId",
                                     "status": "passed"
                                 },
                                 {
