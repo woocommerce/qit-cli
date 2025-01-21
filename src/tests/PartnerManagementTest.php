@@ -120,14 +120,21 @@ class PartnerManagementTest extends QITTestCase {
 		// staging_user.
 		$this->assertMatchesJsonSnapshot( $this->get_snapshot_friendly_cache() );
 
-		// Try to switch to local Partner while on Staging environment, fail.
-		$this->application_tester->run( [
-			'command' => SwitchPartner::getDefaultName(),
-			'user'    => 'local_user',
-		], [ 'capture_stderr_separately' => true ] );
+		$caught = false;
 
-		$this->assertEquals( 1, $this->application_tester->getStatusCode() );
-		$this->assertStringContainsString( 'Cannot switch to backend', $this->application_tester->getErrorOutput() );
+		// Try to switch to local Partner while on Staging environment, fail.
+		try {
+			$this->application_tester->run( [
+				'command' => SwitchPartner::getDefaultName(),
+				'user'    => 'local_user',
+			], [ 'capture_stderr_separately' => true ] );
+		} catch ( \Exception $e ) {
+			$caught = true;
+
+			$this->assertStringContainsString( 'Cannot switch to backend', $e->getMessage() );
+		}
+
+		$this->assertTrue( $caught );
 
 		// Switch to "local" environment.
 		$this->application_tester->run( [

@@ -244,7 +244,7 @@ class RequestBuilder {
 				);
 				break;
 			default:
-				$curl_parameters[ CURLOPT_HTTPHEADER ] = $this->additional_headers;
+				$curl_parameters[ CURLOPT_HTTPHEADER ]    = $this->additional_headers;
 				$curl_parameters[ CURLOPT_CUSTOMREQUEST ] = $this->method;
 				break;
 		}
@@ -325,8 +325,8 @@ class RequestBuilder {
 					sprintf( '%s (Status code: %s, Expected: %s, Request URL: %s)',
 						$error_message,
 						$response_status_code,
-					implode( ', ', $this->expected_status_codes ),
-					$this->url
+						implode( ', ', $this->expected_status_codes ),
+						$this->url
 					),
 					$response_status_code
 				);
