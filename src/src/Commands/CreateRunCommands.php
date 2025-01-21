@@ -252,9 +252,8 @@ class CreateRunCommands extends DynamicCommandCreator {
 					return Command::SUCCESS;
 				}
 
-				$output->writeln( sprintf( '<info>Test started on the QIT Servers!</info>' ) );
+				$output->writeln( sprintf( '<info>Test started on QIT servers!</info>' ) );
 				$table = new Table( $output );
-				$table->setColumnMaxWidth( 1, 80 );
 				$table
 					->setHorizontal()
 					->setStyle( 'compact' )
