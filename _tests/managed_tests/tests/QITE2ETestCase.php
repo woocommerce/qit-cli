@@ -289,15 +289,19 @@ class QITE2ETestCase extends TestCase {
 					return $value;
 				},
 				'validate'  => static function ( $value ) {
-					if ( empty( trim( $value ) ) ) {
+					if ( is_string( $value ) ) {
+						$value = trim( $value );
+					}
+
+					if ( empty( $value ) ) {
 						return true;
 					}
-					
+
 					if ( is_array( $value ) ) {
 						$value = json_encode( $value );
 					}
 
-					return ( null !== json_decode( $value ) );
+					return ! is_null( json_decode( $value ) );
 				},
 			],
 			'debug_log'                       => [
