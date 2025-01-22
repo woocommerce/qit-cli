@@ -53,6 +53,15 @@ class PlaywrightRunner extends E2ERunner {
 			}
 		}
 
+		// Pre-create "ctrf" directory.
+		$ctrf_dir = $results_dir . '/ctrf';
+
+		if ( ! file_exists( $ctrf_dir ) ) {
+			if ( ! mkdir( $ctrf_dir, 0755, true ) ) {
+				throw new \RuntimeException( sprintf( 'Could not create the CTRF directory: %s', $ctrf_dir ) );
+			}
+		}
+
 		// Special settings for running self-tests.
 		if ( getenv( 'QIT_SELF_TESTS' ) ) {
 			if ( ! isset( $env_info->playwright_config['reportSlowTests'] ) ) {
@@ -145,6 +154,8 @@ class PlaywrightRunner extends E2ERunner {
 			$env_info->temporary_env . '/test-media:/qit/tests/e2e/test-media',
 			'-v',
 			$env_info->temporary_env . '/playwright/qitHelpers.js:/qitHelpers/qitHelpers.js',
+			'-v',
+			$results_dir . '/ctrf:/qit/results/ctrf',
 			'-v',
 			$env_info->temporary_env . '/playwright/test-info.json:/qitHelpers/test-info.json', // Contains information about the test, such as the SUT slug, type, etc.
 			'-v',
