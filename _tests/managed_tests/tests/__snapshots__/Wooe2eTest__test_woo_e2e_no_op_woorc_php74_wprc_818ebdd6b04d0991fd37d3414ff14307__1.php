@@ -8082,7 +8082,7 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Open \\"Edit product\\" page of product id 399",
+                                    "name": "Open \\"Edit product\\" page of product id <ID>",
                                     "status": "passed"
                                 },
                                 {
@@ -8312,7 +8312,7 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Open \\"Edit product\\" page of product id 404",
+                                    "name": "Open \\"Edit product\\" page of product id <ID>",
                                     "status": "passed"
                                 },
                                 {
@@ -8379,7 +8379,7 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Open \\"Edit product\\" page of product id 405",
+                                    "name": "Open \\"Edit product\\" page of product id <ID>",
                                     "status": "passed"
                                 },
                                 {

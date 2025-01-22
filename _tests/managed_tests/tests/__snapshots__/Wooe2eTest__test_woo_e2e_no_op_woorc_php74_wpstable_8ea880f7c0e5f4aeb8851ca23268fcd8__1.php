@@ -8082,7 +8082,7 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Open \\"Edit product\\" page of product id 399",
+                                    "name": "Open \\"Edit product\\" page of product id <ID>",
                                     "status": "passed"
                                 },
                                 {
@@ -8312,7 +8312,7 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Open \\"Edit product\\" page of product id 404",
+                                    "name": "Open \\"Edit product\\" page of product id <ID>",
                                     "status": "passed"
                                 },
                                 {
@@ -8379,7 +8379,7 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Open \\"Edit product\\" page of product id 405",
+                                    "name": "Open \\"Edit product\\" page of product id <ID>",
                                     "status": "passed"
                                 },
                                 {
@@ -12327,8 +12327,8 @@
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/my-account-addresses.spec.js",
-                            "retries": 1,
-                            "flaky": true,
+                            "retries": 0,
+                            "flaky": false,
                             "steps": [],
                             "suite": "ui > shopper\\/my-account-addresses.spec.js > Customer can manage addresses in My Account > Addresses page",
                             "extra": {

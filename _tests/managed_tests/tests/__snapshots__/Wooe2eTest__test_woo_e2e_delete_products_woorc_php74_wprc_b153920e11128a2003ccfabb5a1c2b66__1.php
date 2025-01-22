@@ -46,10 +46,14 @@
             "workflow_id": "1234567890",
             "runner": "normalized",
             "test_media": [],
-            "test_result_json_extracted": "{EXTRACTED}"
+            "test_result_json_extracted": "{EXTRACTED}",
+            "ctrf_json_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": []
+        },
+        {
+            "ctrf_json": []
         }
     ]
 ]';

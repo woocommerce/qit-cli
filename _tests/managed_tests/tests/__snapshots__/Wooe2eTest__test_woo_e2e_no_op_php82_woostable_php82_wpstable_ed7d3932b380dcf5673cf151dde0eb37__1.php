@@ -7878,7 +7878,7 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Open \\"Edit product\\" page of product id 392",
+                                    "name": "Open \\"Edit product\\" page of product id <ID>",
                                     "status": "passed"
                                 },
                                 {
@@ -8108,7 +8108,7 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Open \\"Edit product\\" page of product id 397",
+                                    "name": "Open \\"Edit product\\" page of product id <ID>",
                                     "status": "passed"
                                 },
                                 {
@@ -8175,7 +8175,7 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Open \\"Edit product\\" page of product id 398",
+                                    "name": "Open \\"Edit product\\" page of product id <ID>",
                                     "status": "passed"
                                 },
                                 {
