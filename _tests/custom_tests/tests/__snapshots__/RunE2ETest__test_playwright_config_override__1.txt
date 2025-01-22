@@ -17,6 +17,7 @@ Slow test file: [setup] Amazon S3 Storage (Shell) › scripts/bash.js (TIME)
 Slow test file: [setup] Amazon S3 Storage (JS) › woocommerce-amazon-s3-storage/local/bootstrap/setup.js (TIME)
 Consider splitting slow test files to speed up parallel execution
 3 passed (TIME)
+playwright-ctrf-json-reporter: successfully written ctrf json to /qit/results/ctrf/ctrf-report.json
 Test artifacts being saved to: /tmp-normalized/qit-results-normalizedid
 Uploading zip...
 [30;42m                                                                                                                        [39;49m
