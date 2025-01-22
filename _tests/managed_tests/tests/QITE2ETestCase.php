@@ -101,7 +101,7 @@ class QITE2ETestCase extends TestCase {
 					return true;
 				},
 			],
-			'event' => [
+			'event'                           => [
 				'normalize' => static function ( $value ) use ( $file_path ) {
 					if ( in_array( $value, [ 'ci_run', 'local_run' ], true ) ) {
 						return 'local_or_ci_run_normalized';
@@ -152,7 +152,7 @@ class QITE2ETestCase extends TestCase {
 					return ! is_null( json_decode( $value ) );
 				},
 			],
-			'test_media' => [
+			'test_media'                      => [
 				'normalize' => static function ( $value ) {
 					foreach ( $value as &$test_media ) {
 						// Normalize the path to a filename.
@@ -181,9 +181,10 @@ class QITE2ETestCase extends TestCase {
 							}
 						}
 					}
+
 					return $value;
 				},
-				'validate' => static function ( $value ) {
+				'validate'  => static function ( $value ) {
 					foreach ( $value as $test_media ) {
 						// Parse $test_media['path'] as a filepath, and validate that the extension is either "jpg" or "webm".
 						$extension = pathinfo( $test_media['path'], PATHINFO_EXTENSION );
@@ -213,6 +214,73 @@ class QITE2ETestCase extends TestCase {
 					}
 
 					return true;
+				},
+			],
+			'ctrf_json'                       => [
+				'normalize' => static function ( $value ) use ( $file_path ) {
+					// 1) Convert to JSON if it's an array, so we can run string replacements
+					$array_mode = false;
+					if ( is_array( $value ) ) {
+						$array_mode = true;
+						$value      = json_encode( $value );
+					}
+
+					$value = preg_replace( '/\[\d{2}-\w{3}-\d{4} \d{2}:\d{2}:\d{2} UTC\]/', '[TIMESTAMP]', $value );
+					$value = str_replace( 'staging-compatibility', 'compatibility', $value );
+					$value = str_replace( 'qit-runner-staging', 'qit-runner', $value );
+					$value = str_replace( 'compatibility-dashboard', 'qit-runner', $value );
+
+					// 3) Decode back to array so we can walk the structure
+					if ( $array_mode ) {
+						$value = json_decode( $value, true );
+					}
+
+					// 4) If this file is "delete_products" type, optionally skip or override
+					if ( stripos( $file_path, 'delete_products' ) !== false ) {
+						return [];
+					}
+
+					// 5) Now traverse the CTRF JSON to normalize ephemeral fields
+					if ( isset( $value['results'] ) && is_array( $value['results'] ) ) {
+						// 5a) Summary-level ephemeral data
+						if ( isset( $value['results']['summary'] ) && is_array( $value['results']['summary'] ) ) {
+							if ( isset( $value['results']['summary']['start'] ) ) {
+								$value['results']['summary']['start'] = 1111111111; // Or any placeholder
+							}
+							if ( isset( $value['results']['summary']['stop'] ) ) {
+								$value['results']['summary']['stop'] = 2222222222; // Or any placeholder
+							}
+						}
+
+						// 5b) Test-level ephemeral data
+						if ( isset( $value['results']['tests'] ) && is_array( $value['results']['tests'] ) ) {
+							foreach ( $value['results']['tests'] as &$test ) {
+								if ( isset( $test['start'] ) ) {
+									$test['start'] = 1111111111;
+								}
+								if ( isset( $test['stop'] ) ) {
+									$test['stop'] = 2222222222;
+								}
+								if ( isset( $test['duration'] ) ) {
+									$test['duration'] = 999; // e.g. a fixed duration
+								}
+								if ( isset( $test['filePath'] ) ) {
+									$test['filePath'] = '/normalized/path/' . basename( $test['filePath'] );
+								}
+							}
+							unset( $test );
+						}
+					}
+
+					return $value;
+				},
+				'validate'  => static function ( $value ) {
+					// Quick validation: ensure it's valid JSON (or an array convertible to JSON)
+					if ( is_array( $value ) ) {
+						$value = json_encode( $value );
+					}
+
+					return ( null !== json_decode( $value ) );
 				},
 			],
 			'debug_log'                       => [
@@ -258,11 +326,11 @@ class QITE2ETestCase extends TestCase {
 						}
 
 						// Sort the normalized array for consistent ordering
-						usort($normalized, function($a, $b) {
-							return strcmp($a['message'], $b['message'])
-								?: strcmp($a['type'], $b['type'])
-									?: strcmp($a['file_line'], $b['file_line']);
-						});
+						usort( $normalized, function ( $a, $b ) {
+							return strcmp( $a['message'], $b['message'] )
+								?: strcmp( $a['type'], $b['type'] )
+									?: strcmp( $a['file_line'], $b['file_line'] );
+						} );
 
 						return $normalized;
 					};
@@ -365,6 +433,7 @@ class QITE2ETestCase extends TestCase {
 						} else {
 							// If it's not valid JSON, return false
 							echo "json_decode error: " . json_last_error_msg() . "\n";
+
 							return false;
 						}
 					}
@@ -375,11 +444,13 @@ class QITE2ETestCase extends TestCase {
 						$value = json_encode( $value );
 						if ( $value === false ) {
 							echo "json_encode error: " . json_last_error_msg() . "\n";
+
 							return false;
 						}
 					} else {
 						// If $value is neither an array nor a valid JSON string
 						echo "Value is neither an array nor a valid JSON string.\n";
+
 						return false;
 					}
 
@@ -440,7 +511,7 @@ class QITE2ETestCase extends TestCase {
 
 		return test_result_parser( $json );
 	}
-	
+
 	/*
 	 * Normalize PHP debug logs captured during test runs.
 	 *
