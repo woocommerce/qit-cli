@@ -289,7 +289,10 @@ class QITE2ETestCase extends TestCase {
 					return $value;
 				},
 				'validate'  => static function ( $value ) {
-					// Quick validation: ensure it's valid JSON (or an array convertible to JSON)
+					if ( empty( trim( $value ) ) ) {
+						return true;
+					}
+					
 					if ( is_array( $value ) ) {
 						$value = json_encode( $value );
 					}
