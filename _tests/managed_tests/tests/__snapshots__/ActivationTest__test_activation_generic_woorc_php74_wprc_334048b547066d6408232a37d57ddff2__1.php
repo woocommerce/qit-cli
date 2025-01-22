@@ -43,6 +43,7 @@
             "runner": "",
             "test_media": [],
             "test_result_json_extracted": "{EXTRACTED}",
+            "ctrf_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
         {
@@ -124,6 +125,255 @@
                     }
                 ],
                 "summary": "Test Suites: 0 skipped, 1 failed, 1 passed, 2 total | Tests: 3 skipped, 1 failed, 8 passed, 12 total."
+            }
+        },
+        {
+            "ctrf_json": {
+                "results": {
+                    "tool": {
+                        "name": "playwright"
+                    },
+                    "summary": {
+                        "tests": 12,
+                        "passed": 8,
+                        "failed": 1,
+                        "pending": 0,
+                        "skipped": 3,
+                        "other": 0,
+                        "start": 1111111111,
+                        "stop": 2222222222,
+                        "suites": 0
+                    },
+                    "tests": [
+                        {
+                            "name": "Bash Script",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/bash.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "[setup] Woocommerce (Shell) > scripts\\/bash.js",
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "Isolated Setup for woocommerce (Bash)",
+                                        "description": "Running bash script for plugin: woocommerce"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Activate Plugins",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/activation.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "Visit wp-admin pages added by the plugin",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/activation.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "Activate Theme",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/activation.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "Setup Local Pickup",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/activation.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "Set up Cash On Delivery Payment Method",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/activation.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "Create a Product",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/activation.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "Create a Simple Order",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/activation.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "slow"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Add Product Cart",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toContainText with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toContainText with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:615:69",
+                            "rawStatus": "failed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/activation.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "Can Place Order",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/activation.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "Deactivate Plugin",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/activation.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "Activate Other Theme",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/activation.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        }
+                    ]
+                }
             }
         },
         {
