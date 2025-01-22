@@ -4,6 +4,7 @@ on:
     paths:
       - 'src/**.php'
   workflow_dispatch:
+  workflow_call:
 
 concurrency:
   group: code-tests-${{ github.ref }}

@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "415 total, 373 passed, 0 failed, 42 skipped.",
+            "test_summary": "421 total, 379 passed, 0 failed, 42 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -46,23 +46,50 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 80,
+                "numPassedTestSuites": 84,
                 "numPendingTestSuites": 21,
-                "numTotalTestSuites": 101,
+                "numTotalTestSuites": 105,
                 "numFailedTests": 0,
-                "numPassedTests": 373,
+                "numPassedTests": 379,
                 "numPendingTests": 42,
-                "numTotalTests": 415,
+                "numTotalTests": 421,
                 "testResults": [
+                    {
+                        "file": "activate-and-setup\\/core-profiler.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Store owner can complete the core profiler": [
+                                {
+                                    "title": "Can complete the core profiler skipping extension install",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Can complete the core profiler installing default extensions",
+                                    "status": "pending"
+                                }
+                            ],
+                            "Store owner can skip the core profiler": [
+                                {
+                                    "title": "Can click skip guided setup",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Can connect to WooCommerce.com",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
                     {
                         "file": "activate-and-setup\\/stats-overview.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Home": [
                                 {
                                     "title": "Can access Analytics Reports from Stats Overview",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -156,28 +183,11 @@
                         }
                     },
                     {
-                        "file": "admin-marketing\\/coupons.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Coupons page": [
-                                {
-                                    "title": "A user can view the coupons overview without it crashing",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "admin-marketing\\/overview.spec.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Marketing page": [
-                                {
-                                    "title": "A user can view the Marketing > Overview page without it crashing",
-                                    "status": "passed"
-                                },
                                 {
                                     "title": "Marketing Overview page have relevant content",
                                     "status": "passed"
@@ -497,7 +507,7 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "it shows the \\"non default block theme\\" banner when the theme is a block theme different than TT4",
+                                    "title": "it shows the \\"non default block theme\\" banner when the theme is a block theme different than TT4 and redirects to the editor",
                                     "status": "passed"
                                 },
                                 {
@@ -510,7 +520,7 @@
                     {
                         "file": "customize-store\\/loading-screen\\/loading-screen.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Assembler - Loading Page": [
                                 {
@@ -520,10 +530,6 @@
                                 {
                                     "title": "should redirect to intro page in case of errors",
                                     "status": "passed"
-                                },
-                                {
-                                    "title": "should hide loading screen and steps on subsequent runs",
-                                    "status": "pending"
                                 }
                             ]
                         }
@@ -809,11 +815,41 @@
                         }
                     },
                     {
+                        "file": "merchant\\/create-woocommerce-blocks.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Add WooCommerce Blocks Into Page": [
+                                {
+                                    "title": "can insert all WooCommerce blocks into page",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/create-woocommerce-patterns.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Add WooCommerce Patterns Into Page": [
+                                {
+                                    "title": "can insert WooCommerce patterns into page",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/customer-list.spec.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Merchant > Customer List": [
+                                {
+                                    "title": "Merchant can view a list of all customers, filter and download",
+                                    "status": "passed"
+                                },
                                 {
                                     "title": "Merchant can view a single customer",
                                     "status": "passed"
@@ -1565,6 +1601,10 @@
                             ],
                             "General tab > Create product": [
                                 {
+                                    "title": "can create a simple product",
+                                    "status": "pending"
+                                },
+                                {
                                     "title": "can not create a product with duplicated SKU",
                                     "status": "pending"
                                 },
@@ -1640,6 +1680,20 @@
                                 {
                                     "title": "can enable the block product editor",
                                     "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/products\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "General tab": [],
+                            "General tab > Linked product": [
+                                {
+                                    "title": "can create a product with linked products",
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1794,7 +1848,7 @@
                                 },
                                 {
                                     "title": "Live preview when changing email settings",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Send email preview",
@@ -1900,12 +1954,6 @@
                             "can create a new Customer": [
                                 {
                                     "title": "can create a new Customer",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can create a new Shop manager": [
-                                {
-                                    "title": "can create a new Shop manager",
                                     "status": "passed"
                                 }
                             ]
@@ -2721,9 +2769,22 @@
                                 }
                             ]
                         }
+                    },
+                    {
+                        "file": "shopper\\/wordpress-post.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "logged-in customer can comment on a post": [
+                                {
+                                    "title": "logged-in customer can comment on a post",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
                     }
                 ],
-                "summary": "415 total, 373 passed, 0 failed, 42 skipped."
+                "summary": "421 total, 379 passed, 0 failed, 42 skipped."
             }
         },
         {

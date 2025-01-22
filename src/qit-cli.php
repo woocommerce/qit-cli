@@ -4,6 +4,7 @@ use lucatume\DI52\Container;
 use QIT_CLI\App;
 use QIT_CLI\IO\Output;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 try {
 	define( 'QIT_ABSPATH', __DIR__ );
@@ -20,6 +21,7 @@ try {
 	// Handle CLI request.
 	exit( $application->run() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 } catch ( \Exception $e ) {
-	App::make( Output::class )->writeln( "<error>{$e->getMessage()}</error>" );
+	$io = new SymfonyStyle( App::make( \QIT_CLI\IO\Input::class ), App::make( Output::class ) );
+	$io->error( $e->getMessage() );
 	exit( 1 );
 }

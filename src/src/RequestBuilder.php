@@ -36,6 +36,9 @@ class RequestBuilder {
 	/** @var int */
 	protected $timeout_in_seconds = 30;
 
+	/** @var array<string> */
+	protected $additional_headers = [];
+
 	public function __construct( string $url = '' ) {
 		$this->url = $url;
 	}
@@ -128,6 +131,19 @@ class RequestBuilder {
 		return $this;
 	}
 
+
+	/**
+	 * Allows adding your own headers (like "Header-Name: value").
+	 *
+	 * @param string[] $headers
+	 * @return $this
+	 */
+	public function with_additional_headers( array $headers ): self {
+		// Merge them into our $additional_headers property.
+		$this->additional_headers = array_merge( $this->additional_headers, $headers );
+		return $this;
+	}
+
 	public function request(): string {
 		retry_request: // phpcs:ignore Generic.PHP.DiscourageGoto.Found
 		if ( defined( 'UNIT_TESTS' ) ) {
@@ -180,6 +196,13 @@ class RequestBuilder {
 			$curl_parameters[ CURLOPT_VERBOSE ] = true;
 		}
 
+		if ( ! empty( getenv( 'QIT_CUSTOM_HEADERS' ) ) ) {
+			// Comma-separated list of headers.
+			$parsed_env_headers = array_map( 'trim', explode( ',', getenv( 'QIT_CUSTOM_HEADERS' ) ) );
+
+			$this->additional_headers = array_merge( $this->additional_headers, $parsed_env_headers );
+		}
+
 		$this->post_body['client'] = 'qit_cli';
 
 		$proxied = false;
@@ -206,17 +229,22 @@ class RequestBuilder {
 		switch ( $this->method ) {
 			case 'GET':
 				// no-op.
+				$curl_parameters[ CURLOPT_HTTPHEADER ] = $this->additional_headers;
 				break;
 			case 'POST':
 				$json_data                             = json_encode( $this->post_body );
 				$curl_parameters[ CURLOPT_POST ]       = true;
 				$curl_parameters[ CURLOPT_POSTFIELDS ] = $json_data;
-				$curl_parameters[ CURLOPT_HTTPHEADER ] = [
-					'Content-Type: application/json',
-					'Content-Length: ' . strlen( $json_data ),
-				];
+				$curl_parameters[ CURLOPT_HTTPHEADER ] = array_merge(
+					[
+						'Content-Type: application/json',
+						'Content-Length: ' . strlen( $json_data ),
+					],
+					$this->additional_headers
+				);
 				break;
 			default:
+				$curl_parameters[ CURLOPT_HTTPHEADER ]    = $this->additional_headers;
 				$curl_parameters[ CURLOPT_CUSTOMREQUEST ] = $this->method;
 				break;
 		}
@@ -294,17 +322,16 @@ class RequestBuilder {
 
 			if ( App::make( OutputInterface::class )->isVerbose() ) {
 				throw new NetworkErrorException(
-					sprintf( 'Error: %s (Status code: %s, Expected: %s)',
+					sprintf( '%s (Status code: %s, Expected: %s, Request URL: %s)',
 						$error_message,
 						$response_status_code,
-					implode( ', ', $this->expected_status_codes ) ),
+						implode( ', ', $this->expected_status_codes ),
+						$this->url
+					),
 					$response_status_code
 				);
 			} else {
-				throw new NetworkErrorException(
-					sprintf( 'Error: %s (%s) (Requested URL: %s)', $error_message, $response_status_code, $this->url ),
-					$response_status_code
-				);
+				throw new NetworkErrorException( $error_message );
 			}
 		}
 
@@ -370,7 +397,7 @@ class RequestBuilder {
 		if ( $curl_error ) {
 			// Delete the potentially partially written file.
 			unlink( $file_path );
-			throw new \RuntimeException( 'Curl error: ' . $curl_error );
+			throw new \RuntimeException( 'Curl ' . $curl_error );
 		}
 	}
 
