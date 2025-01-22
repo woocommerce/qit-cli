@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "421 total, 379 passed, 0 failed, 42 skipped.",
+            "test_summary": "421 total, 378 passed, 0 failed, 43 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -51,8 +51,8 @@
                 "numPendingTestSuites": 21,
                 "numTotalTestSuites": 105,
                 "numFailedTests": 0,
-                "numPassedTests": 379,
-                "numPendingTests": 42,
+                "numPassedTests": 378,
+                "numPendingTests": 43,
                 "numTotalTests": 421,
                 "testResults": [
                     {
@@ -63,7 +63,7 @@
                             "Store owner can complete the core profiler": [
                                 {
                                     "title": "Can complete the core profiler skipping extension install",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can complete the core profiler installing default extensions",
@@ -2785,7 +2785,7 @@
                         }
                     }
                 ],
-                "summary": "421 total, 379 passed, 0 failed, 42 skipped."
+                "summary": "421 total, 378 passed, 0 failed, 43 skipped."
             }
         },
         {
@@ -2796,10 +2796,10 @@
                     },
                     "summary": {
                         "tests": 421,
-                        "passed": 379,
+                        "passed": 378,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 42,
+                        "skipped": 43,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -2808,45 +2808,24 @@
                     "tests": [
                         {
                             "name": "Can complete the core profiler skipping extension install",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/core-profiler.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Intro page and opt in to data sharing",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "User profile information",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Business Information",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Extensions -- do not install any",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Confirm that core profiler was completed and no extensions installed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Confirm that information from core profiler saved",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "ui > activate-and-setup\\/core-profiler.spec.js > Store owner can complete the core profiler",
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -8103,7 +8082,7 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Open \\"Edit product\\" page of product id 394",
+                                    "name": "Open \\"Edit product\\" page of product id 399",
                                     "status": "passed"
                                 },
                                 {
@@ -8333,7 +8312,7 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Open \\"Edit product\\" page of product id 399",
+                                    "name": "Open \\"Edit product\\" page of product id 404",
                                     "status": "passed"
                                 },
                                 {
@@ -8400,7 +8379,7 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Open \\"Edit product\\" page of product id 400",
+                                    "name": "Open \\"Edit product\\" page of product id 405",
                                     "status": "passed"
                                 },
                                 {
@@ -10067,8 +10046,8 @@
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-shipping.spec.js",
-                            "retries": 1,
-                            "flaky": true,
+                            "retries": 0,
+                            "flaky": false,
                             "steps": [
                                 {
                                     "name": "Add shipping zone",

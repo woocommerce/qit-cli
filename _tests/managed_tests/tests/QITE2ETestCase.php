@@ -267,6 +267,20 @@ class QITE2ETestCase extends TestCase {
 								if ( isset( $test['filePath'] ) ) {
 									$test['filePath'] = '/normalized/path/' . basename( $test['filePath'] );
 								}
+								if ( isset( $test['retries'] ) ) {
+									$test['retries'] = 0;
+								}
+								if ( isset( $test['flaky'] ) ) {
+									$test['flaky'] = false;
+								}
+								if ( isset( $test['steps'] ) && is_array( $test['steps'] ) ) {
+									foreach ( $test['steps'] as &$step ) {
+										if ( isset( $step['name'] ) ) {
+											$step['name'] = preg_replace( '/id\s*\d+/i', 'id <ID>', $step['name'] );
+										}
+									}
+									unset( $step );
+								}
 							}
 							unset( $test );
 						}

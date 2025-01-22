@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "421 total, 378 passed, 1 failed, 42 skipped.",
+            "test_summary": "421 total, 378 passed, 0 failed, 43 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -46,24 +46,24 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 84,
                 "numPendingTestSuites": 21,
                 "numTotalTestSuites": 105,
-                "numFailedTests": 1,
+                "numFailedTests": 0,
                 "numPassedTests": 378,
-                "numPendingTests": 42,
+                "numPendingTests": 43,
                 "numTotalTests": 421,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/core-profiler.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Store owner can complete the core profiler": [
                                 {
                                     "title": "Can complete the core profiler skipping extension install",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can complete the core profiler installing default extensions",
@@ -2785,7 +2785,7 @@
                         }
                     }
                 ],
-                "summary": "421 total, 378 passed, 1 failed, 42 skipped."
+                "summary": "421 total, 378 passed, 0 failed, 43 skipped."
             }
         },
         {
@@ -2797,9 +2797,9 @@
                     "summary": {
                         "tests": 421,
                         "passed": 378,
-                        "failed": 1,
+                        "failed": 0,
                         "pending": 0,
-                        "skipped": 42,
+                        "skipped": 43,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -2808,47 +2808,24 @@
                     "tests": [
                         {
                             "name": "Can complete the core profiler skipping extension install",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'textbox\', { name: \'Australia \\u2014 Northern Territory\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'textbox\', { name: \'Australia \\u2014 Northern Territory\' })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'textbox\', { name: \'Australia \\u2014 Northern Territory\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'textbox\', { name: \'Australia \\u2014 Northern Territory\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/activate-and-setup\\/core-profiler.spec.js:176:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/activate-and-setup\\/core-profiler.spec.js:170:4",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/core-profiler.spec.js",
-                            "retries": 1,
+                            "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Intro page and opt in to data sharing",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "User profile information",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Business Information",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Extensions -- do not install any",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Confirm that core profiler was completed and no extensions installed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Confirm that information from core profiler saved",
-                                    "status": "failed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "ui > activate-and-setup\\/core-profiler.spec.js > Store owner can complete the core profiler",
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -8105,7 +8082,7 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Open \\"Edit product\\" page of product id 394",
+                                    "name": "Open \\"Edit product\\" page of product id 399",
                                     "status": "passed"
                                 },
                                 {
@@ -8335,7 +8312,7 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Open \\"Edit product\\" page of product id 399",
+                                    "name": "Open \\"Edit product\\" page of product id 404",
                                     "status": "passed"
                                 },
                                 {
@@ -8402,7 +8379,7 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Open \\"Edit product\\" page of product id 400",
+                                    "name": "Open \\"Edit product\\" page of product id 405",
                                     "status": "passed"
                                 },
                                 {
@@ -10069,8 +10046,8 @@
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-shipping.spec.js",
-                            "retries": 1,
-                            "flaky": true,
+                            "retries": 0,
+                            "flaky": false,
                             "steps": [
                                 {
                                     "name": "Add shipping zone",
@@ -12350,8 +12327,8 @@
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/my-account-addresses.spec.js",
-                            "retries": 0,
-                            "flaky": false,
+                            "retries": 1,
+                            "flaky": true,
                             "steps": [],
                             "suite": "ui > shopper\\/my-account-addresses.spec.js > Customer can manage addresses in My Account > Addresses page",
                             "extra": {
