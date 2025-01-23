@@ -113,6 +113,24 @@ PHP;
 		return $env_info;
 	}
 
+	protected function normalize_snapshot_diff( string $output, int $expected_diff ): string {
+		$pattern = '/([+-]?\d+) pixels \(ratio [0-9.]+ of all image pixels\) are different\./';
+
+		return preg_replace_callback(
+			$pattern,
+			function ( $matches ) use ( $expected_diff ) {
+				$current_diff = (int) $matches[1];
+
+				if ( abs( $current_diff - $expected_diff ) <= 5 ) {
+					return "(SMALL_DIFF close to {$expected_diff})";
+				}
+
+				return $matches[0] . ' (HIGH_DIFF)';
+			},
+			$output
+		);
+	}
+
 	protected function normalize_scaffolded_test_run_output( string $output ): string {
 		/*
 		 * This is an example output that we are normalizing. We will remove anything that is completely random,

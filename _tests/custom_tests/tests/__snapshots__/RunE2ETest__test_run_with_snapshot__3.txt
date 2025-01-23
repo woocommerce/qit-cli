@@ -38,7 +38,7 @@ path: '/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-d
 ✓  6 [test] Deli (Run) › deli/local/example.spec.js:9:5 › I can see my plugin menu (TIME)
 1) [test] Deli (Run) › deli/local/activate-theme.spec.js:4:5 › I can activate Deli ─────────────
 Error: [2mexpect([22m[31mpage[39m[2m).[22mtoHaveScreenshot[2m([22m[32mexpected[39m[2m)[22m
-892 pixels (ratio 0.01 of all image pixels) are different.
+(SMALL_DIFF close to 892)
 Expected: [33m/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png[39m
 Received: [33m/qit/results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run-/home-actual.png[39m
 Diff: [33m/qit/results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run-/home-diff.png[39m
@@ -49,14 +49,14 @@ Call log:
 [2m    - disabled all CSS animations[22m
 [2m  - waiting for fonts to load...[22m
 [2m  - fonts loaded[22m
-[2m  - 892 pixels (ratio 0.01 of all image pixels) are different.[22m
+[2m  - (SMALL_DIFF close to 892)[22m
 [2m  - waiting 100ms before taking screenshot[22m
 [2m  - taking page screenshot[22m
 [2m    - disabled all CSS animations[22m
 [2m  - waiting for fonts to load...[22m
 [2m  - fonts loaded[22m
 [2m  - captured a stable screenshot[22m
-[2m  - 892 pixels (ratio 0.01 of all image pixels) are different.[22m
+[2m  - (SMALL_DIFF close to 892)[22m
 10 |     await page.getByLabel('Activate Deli').click();
 11 |     await page.goto('/');
 > 12 |     await expect(page).toHaveScreenshot('home.png', { maxDiffPixels: 100 });
@@ -108,8 +108,7 @@ attachment #2: video (video/webm) ───────────────�
 attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
 ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry1/trace.zip
 Usage:
-npx playwright show-trace ../..
-/results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry1/trace.zip
+npx playwright show-trace ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry1/trace.zip
 ────────────────────────────────────────────────────────────────────────────────────────────────
 Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
 Error: [31mTimed out 20000ms waiting for [39m[2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m

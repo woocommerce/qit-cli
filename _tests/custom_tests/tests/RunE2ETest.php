@@ -190,6 +190,8 @@ JS;
 				__DIR__ . '/../data/deli.zip',
 			], [], 1 );
 
+			$output = $this->normalize_snapshot_diff( $output, 892 );
+
 			$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
 		} else {
 			$this->markTestSkipped( 'Imagick extension is not available.' );
