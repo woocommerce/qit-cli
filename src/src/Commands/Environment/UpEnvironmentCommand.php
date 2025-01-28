@@ -5,6 +5,7 @@ namespace QIT_CLI\Commands\Environment;
 use Dotenv\Dotenv;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\ExtensionSetResolver;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Environment\EnvConfigLoader;
@@ -69,6 +70,10 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests from a file.', [] )
 			->setAliases( [ 'env:start' ]
 			);
+
+		DynamicCommandCreator::add_schema_to_command( $this, $schemas['activation'], [], [
+			'extension_set',
+		] );
 
 		$options_example = [];
 
@@ -251,6 +256,11 @@ HELP
 		}
 
 		$env_info = App::make( EnvConfigLoader::class )->init_env_info( $options_to_env_info );
+
+		// Parse the extension set here.
+		if ( ! empty( $options_to_env_info['overrides']['extension_set'] ) ) {
+			$env_info = App::make( ExtensionSetResolver::class )->resolve( $env_info, $options_to_env_info );
+		}
 
 		if ( $tunnel !== 'no_tunnel' ) {
 			try {
