@@ -57,50 +57,50 @@ class ExtensionSetResolver {
 	* @param array<string,array<string,mixed>> $options_to_env_info The parsed options containing possible extension sets
 	* @return EnvInfo The updated environment info object with resolved extensions
 	*/
-		public function resolve( EnvInfo $env_info, array $options_to_env_info ): EnvInfo {
-			// Check if we have any extension sets to process
-			if ( empty( $options_to_env_info['overrides']['extension_set'] ) ) {
-				return $env_info;
-			}
-	
-			// Get the extension set name
-			$set_name = $options_to_env_info['overrides']['extension_set'];
-	
-			// Get the extensions for this set
-			$extensions = $this->get_extension_set( $set_name );
-	
-			// If no extensions found, return original env info
-			if ( empty( $extensions ) ) {
-				return $env_info;
-			}
-	
-			// Track existing plugin slugs to avoid duplicates
-			$existing_slugs = array_map(
-				function( $plugin ) {
-					return $plugin->slug;
-				},
-				$env_info->plugins
-			);
-	
-			// Convert extensions to array format for parser
-			$extensions_to_parse = array_map(function($extension) {
-				return ['slug' => $extension];
-			}, $extensions);
-
-			// Parse extensions using the parser
-			$parsed_extensions = $this->plugins_and_themes_parser->parse_extensions(
-				$extensions_to_parse,
-				Extension::TYPES['plugin'],
-				Extension::ACTIONS['activate']
-			);
-
-			// Add each parsed extension that isn't already in the plugins list
-			foreach ( $parsed_extensions as $extension ) {
-				if ( ! in_array( $extension->slug, $existing_slugs, true ) ) {
-					$env_info->plugins[] = $extension;
-				}
-			}
-	
+	public function resolve( EnvInfo $env_info, array $options_to_env_info ): EnvInfo {
+		// Check if we have any extension sets to process
+		if ( empty( $options_to_env_info['overrides']['extension_set'] ) ) {
 			return $env_info;
+		}
+
+		// Get the extension set name
+		$set_name = $options_to_env_info['overrides']['extension_set'];
+
+		// Get the extensions for this set
+		$extensions = $this->get_extension_set( $set_name );
+
+		// If no extensions found, return original env info
+		if ( empty( $extensions ) ) {
+			return $env_info;
+		}
+
+		// Track existing plugin slugs to avoid duplicates
+		$existing_slugs = array_map(
+			function( $plugin ) {
+				return $plugin->slug;
+			},
+			$env_info->plugins
+		);
+
+		// Convert extensions to array format for parser
+		$extensions_to_parse = array_map(function($extension) {
+			return ['slug' => $extension];
+		}, $extensions);
+
+		// Parse extensions using the parser
+		$parsed_extensions = $this->plugins_and_themes_parser->parse_extensions(
+			$extensions_to_parse,
+			Extension::TYPES['plugin'],
+			Extension::ACTIONS['activate']
+		);
+
+		// Add each parsed extension that isn't already in the plugins list
+		foreach ( $parsed_extensions as $extension ) {
+			if ( ! in_array( $extension->slug, $existing_slugs, true ) ) {
+				$env_info->plugins[] = $extension;
+			}
+		}
+
+		return $env_info;
 	}
 }
