@@ -39,3 +39,5 @@ _tests/custom_tests/.env.local
 _tests/custom_tests/.env.bk
 
 _tests/managed_tests/last-self-test.log
+
+src/tests/data/sync.json

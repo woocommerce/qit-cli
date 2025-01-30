@@ -20,6 +20,8 @@ abstract class DynamicCommandCreator {
 	 * @return void
 	 */
 	public static function add_schema_to_command( Command $command, array $schema, array $exceptions = [], array $whitelist = [] ): void {
+		$added_whitelist_props = [];
+
 		if ( ! empty( $schema['description'] ) ) {
 			$command->setDescription( $schema['description'] );
 		}
@@ -110,6 +112,22 @@ abstract class DynamicCommandCreator {
 						$description,
 						$default
 					);
+
+				if ( ! empty( $whitelist ) && in_array( $property_name, $whitelist, true ) ) {
+					$added_whitelist_props[] = $property_name;
+				}
+			}
+		}
+
+		if ( ! empty( $whitelist ) ) {
+			$diff = array_diff( $whitelist, $added_whitelist_props );
+			if ( ! empty( $diff ) ) {
+				throw new \RuntimeException(
+					sprintf(
+						'These whitelisted properties were not found in the schema: %s',
+						implode( ', ', $diff )
+					)
+				);
 			}
 		}
 	}
