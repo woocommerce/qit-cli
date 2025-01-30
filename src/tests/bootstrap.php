@@ -8,6 +8,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\NullOutput;
 use function QIT_CLI\get_manager_url;
 
+echo "Fetching latest sync.json from production QIT Manager... ";
+require_once __DIR__ . '/data/pull-sync-json.php';
+echo "Done.\n";
+
 define( 'UNIT_TESTS', true );
 
 function qit_tests_reset_config_dir() {
