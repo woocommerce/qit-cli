@@ -19,6 +19,13 @@ else
 DOCKER_USER ?= "$(shell id -u):$(shell id -g)"
 endif
 
+ifeq ($(DEBUG),1)
+XDEBUG_FLAGS = -d xdebug.mode=debug -d xdebug.start_with_request=yes
+else
+XDEBUG_FLAGS = -d xdebug.mode=off
+endif
+
+
 ## Run a command inside a PHP CLI Docker image built for a specific PHP_VERSION.
 ## 1. Command to execute, e.g.: "php /app/src/vendor/bin/phpcs"
 ## 2. Working dir (optional)
@@ -37,8 +44,9 @@ define execPhpAlpine
 		--env PHAN_DISABLE_XDEBUG_WARN=1 \
 		--env PHAN_ALLOW_XDEBUG=1 \
 		--workdir "$(2:=/)" \
+		--add-host=host.docker.internal:host-gateway \
 		qit-cli-tests:$(PHP_VERSION) \
-		bash -c "$(1)"
+		bash -c "php $(XDEBUG_FLAGS) $(1)"
 endef
 
 watch:
@@ -76,18 +84,18 @@ tests-all:
 	$(MAKE) phan-all
 
 phpcbf:
-	$(call execPhpAlpine,php /app/src/vendor/bin/phpcbf /app/src/qit-cli.php /app/src/src -s --standard=/app/src/.phpcs.xml.dist)
+	$(call execPhpAlpine,/app/src/vendor/bin/phpcbf /app/src/qit-cli.php /app/src/src -s --standard=/app/src/.phpcs.xml.dist)
 
 phpcs:
 	$(MAKE) phpcbf || true
-	$(call execPhpAlpine,php /app/src/vendor/bin/phpcs /app/src/qit-cli.php /app/src/src -s --standard=/app/src/.phpcs.xml.dist)
+	$(call execPhpAlpine,/app/src/vendor/bin/phpcs /app/src/qit-cli.php /app/src/src -s --standard=/app/src/.phpcs.xml.dist)
 
 # Added --memory-limit=1G here
 phpstan:
-	$(call execPhpAlpine,php /app/src/vendor/bin/phpstan -vvv analyse -c /app/src/phpstan.neon --memory-limit=1G)
+	$(call execPhpAlpine,/app/src/vendor/bin/phpstan -vvv analyse -c /app/src/phpstan.neon --memory-limit=1G)
 
 phpunit:
-	$(call execPhpAlpine,php /app/src/vendor/bin/phpunit -c /app/src/phpunit.xml.dist $(ARGS),/app/src)
+	$(call execPhpAlpine,/app/src/vendor/bin/phpunit -c /app/src/phpunit.xml.dist $(ARGS),/app/src)
 
 phpunit-all:
 	@for ver in $(PHP_VERSIONS); do \
@@ -116,4 +124,4 @@ rebuild-images:
 	done
 
 phan:
-	$(call execPhpAlpine,php -d xdebug.mode=off /app/src/vendor/bin/phan $(ARGS),/app/src)
+	$(call execPhpAlpine,/app/src/vendor/bin/phan $(ARGS),/app/src)
