@@ -42,6 +42,7 @@
             "workflow_id": "",
             "runner": "",
             "test_media": [],
+            "extension_set": "",
             "test_result_json_extracted": "{EXTRACTED}",
             "ctrf_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
