@@ -42,6 +42,7 @@
             "workflow_id": "1234567890",
             "runner": "normalized",
             "test_media": [],
+            "extension_set": "",
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {
