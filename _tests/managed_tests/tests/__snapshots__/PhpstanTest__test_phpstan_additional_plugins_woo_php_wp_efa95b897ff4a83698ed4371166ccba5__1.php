@@ -14,7 +14,7 @@
                 "7623964": {
                     "id": 7623964,
                     "host": "wccom",
-                    "name": "Google Listings & Ads"
+                    "name": "Google"
                 }
             },
             "additional_wp_plugins": [],
