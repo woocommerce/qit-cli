@@ -10,7 +10,13 @@
             "php_version": "7.4",
             "max_php_version": "",
             "min_php_version": "",
-            "additional_woo_plugins": [],
+            "additional_woo_plugins": {
+                "7623964": {
+                    "id": 7623964,
+                    "host": "wccom",
+                    "name": "Google Listings & Ads"
+                }
+            },
             "additional_wp_plugins": [],
             "test_log": "",
             "ctrf_json": "",
@@ -20,10 +26,10 @@
             "is_development": true,
             "send_notifications": false,
             "woo_extension": {
-                "id": 1822936,
+                "id": 18619,
                 "host": "wccom",
-                "name": "Bistro",
-                "type": "theme"
+                "name": "Google Product Feed",
+                "type": "plugin"
             },
             "client": "qit_cli",
             "event": "cli_development_extension_test",
@@ -33,9 +39,9 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 0, File Errors: 3",
+            "test_summary": "Errors: 0, File Errors: 2",
             "debug_log": "",
-            "version": "1.0.15",
+            "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
@@ -50,31 +56,24 @@
             "test_result_json": {
                 "totals": {
                     "errors": 0,
-                    "file_errors": 3
+                    "file_errors": 2
                 },
                 "files": {
-                    "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/themes\\/bistro\\/index.php": {
-                        "errors": 3,
+                    "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
+                        "errors": 2,
                         "messages": [
                             {
-                                "message": "Instantiated class Bar not found.",
-                                "line": 17,
-                                "ignorable": true,
-                                "tip": "Learn more at https:\\/\\/phpstan.org\\/user-guide\\/discovering-symbols",
-                                "identifier": "class.notFound"
-                            },
-                            {
-                                "message": "Result of function example_return_void (void) is used.",
-                                "line": 18,
-                                "ignorable": true,
-                                "identifier": "function.void"
-                            },
-                            {
-                                "message": "Access to an undefined property Foo::$bar.",
+                                "message": "Call to an undefined method Automattic\\\\WooCommerce\\\\GoogleListingsAndAds\\\\Container::someNonExistentMethod().",
                                 "line": 22,
                                 "ignorable": true,
-                                "tip": "Learn more: https:\\/\\/phpstan.org\\/blog\\/solving-phpstan-access-to-undefined-property",
-                                "identifier": "property.notFound"
+                                "identifier": "method.notFound"
+                            },
+                            {
+                                "message": "Function call_to_undefined_funtion not found.",
+                                "line": 25,
+                                "ignorable": true,
+                                "tip": "Learn more at https:\\/\\/phpstan.org\\/user-guide\\/discovering-symbols",
+                                "identifier": "function.notFound"
                             }
                         ]
                     }

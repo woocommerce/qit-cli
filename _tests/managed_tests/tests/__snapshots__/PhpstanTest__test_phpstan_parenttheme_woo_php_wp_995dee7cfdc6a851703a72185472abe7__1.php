@@ -43,6 +43,7 @@
             "runner": "normalized",
             "test_media": [],
             "extension_set": "",
+            "phpstan_level": 2,
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {
