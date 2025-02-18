@@ -416,6 +416,10 @@ class QITE2ETestCase extends TestCase {
 							$normalized_debug_log[] = array_map( 'strval', $debug_log );
 						}
 
+						if ( ! is_array( $value ) ) {
+							$normalized_debug_log = [];
+						}
+
 						// Sort alphabetically by message.
 						usort( $normalized_debug_log, function ( $a, $b ) {
 							return strcmp( $a['message'], $b['message'] );
