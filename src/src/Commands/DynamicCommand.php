@@ -27,7 +27,7 @@ abstract class DynamicCommand extends Command {
 		foreach ( $options as $option ) {
 			$name  = $option->getName();
 			$value = $input->getOption( $name );
-			if ( $option->isValueRequired() && empty( $value ) ) {
+			if ( $option->isValueRequired() && ( is_null( $value ) || $value === '' ) ) {
 				throw new \InvalidArgumentException( sprintf( 'The required option "%s" is not set. Run the command with --help for more information.', $name ) );
 			}
 		}
