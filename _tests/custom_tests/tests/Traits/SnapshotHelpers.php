@@ -63,6 +63,7 @@ trait SnapshotHelpers {
 			'First-time setup is pulling Docker images',
 			'Wrote debug contents to',
 			'notice',
+			'high severity vulnerabilities',
 		];
 
 		$first_npm_line_index = null;
