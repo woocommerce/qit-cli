@@ -3,18 +3,24 @@
         {
             "test_run_id": 123456,
             "run_id": 123456,
-            "test_type": "validation",
-            "test_type_display": "Validation",
+            "test_type": "phpstan",
+            "test_type_display": "PHPStan",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "7.4",
             "max_php_version": "",
             "min_php_version": "",
-            "additional_woo_plugins": [],
+            "additional_woo_plugins": {
+                "7623964": {
+                    "id": 7623964,
+                    "host": "wccom",
+                    "name": "Google"
+                }
+            },
             "additional_wp_plugins": [],
             "test_log": "",
             "ctrf_json": "",
-            "status": "warning",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -33,7 +39,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 0 Warnings: 7",
+            "test_summary": "Errors: 0, File Errors: 2",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -43,41 +49,36 @@
             "runner": "normalized",
             "test_media": [],
             "extension_set": "",
-            "phpstan_level": null,
+            "phpstan_level": 2,
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
-                "headers": {
-                    "Requires PHP": false,
-                    "Requires at least": false,
-                    "Tested up to": false,
-                    "WC requires at least": false,
-                    "WC tested up to": false,
-                    "Woo": false,
-                    "License": false
+                "totals": {
+                    "errors": 0,
+                    "file_errors": 2
                 },
-                "features": {
-                    "compatible": [],
-                    "incompatible": [],
-                    "uncertain": [
-                        "analytics",
-                        "product_block_editor",
-                        "cart_checkout_blocks",
-                        "rate_limit_checkout",
-                        "marketplace",
-                        "order_attribution",
-                        "site_visibility_badge",
-                        "hpos_fts_indexes",
-                        "hpos_datastore_caching",
-                        "remote_logging",
-                        "email_improvements",
-                        "custom_order_tables",
-                        "cost_of_goods_sold"
-                    ]
+                "files": {
+                    "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
+                        "errors": 2,
+                        "messages": [
+                            {
+                                "message": "Call to an undefined method Automattic\\\\WooCommerce\\\\GoogleListingsAndAds\\\\Container::someNonExistentMethod().",
+                                "line": 22,
+                                "ignorable": true,
+                                "identifier": "method.notFound"
+                            },
+                            {
+                                "message": "Function call_to_undefined_funtion not found.",
+                                "line": 25,
+                                "ignorable": true,
+                                "tip": "Learn more at https:\\/\\/phpstan.org\\/user-guide\\/discovering-symbols",
+                                "identifier": "function.notFound"
+                            }
+                        ]
+                    }
                 },
-                "has_outdated_templates": false,
-                "has_readme": false
+                "errors": []
             }
         }
     ]

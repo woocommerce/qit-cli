@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 0, File Errors: 2",
+            "test_summary": "Errors: 0, File Errors: 3",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -42,13 +42,15 @@
             "workflow_id": "1234567890",
             "runner": "normalized",
             "test_media": [],
+            "extension_set": "",
+            "phpstan_level": 2,
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
                 "totals": {
                     "errors": 0,
-                    "file_errors": 2
+                    "file_errors": 3
                 },
                 "files": {
                     "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/not-vendor\\/src\\/Baz.php": {
@@ -57,17 +59,27 @@
                             {
                                 "message": "Instantiated class NotAVendor\\\\SomeOtherUnexistingClassThatPHPStanShouldFlag not found.",
                                 "line": 11,
-                                "ignorable": true
+                                "ignorable": true,
+                                "tip": "Learn more at https:\\/\\/phpstan.org\\/user-guide\\/discovering-symbols",
+                                "identifier": "class.notFound"
                             }
                         ]
                     },
                     "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                        "errors": 1,
+                        "errors": 2,
                         "messages": [
+                            {
+                                "message": "Call to an undefined method SomePrefixedVendor\\\\Bar::get_bar().",
+                                "line": 15,
+                                "ignorable": true,
+                                "identifier": "method.notFound"
+                            },
                             {
                                 "message": "Instantiated class SomeUnexistingClassThatPHPStanShouldFlag not found.",
                                 "line": 20,
-                                "ignorable": true
+                                "ignorable": true,
+                                "tip": "Learn more at https:\\/\\/phpstan.org\\/user-guide\\/discovering-symbols",
+                                "identifier": "class.notFound"
                             }
                         ]
                     }

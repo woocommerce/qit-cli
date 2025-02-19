@@ -148,7 +148,11 @@ abstract class EnvInfo implements \JsonSerializable {
 					'env_file',
 				];
 
-				$ignore_keys = array_merge( $boilerplate_keys, $non_overridable_keys );
+				$handled_elsewhere_keys = [
+					'extension_set',
+				];
+
+				$ignore_keys = array_merge( $boilerplate_keys, $non_overridable_keys, $handled_elsewhere_keys );
 
 				if ( in_array( $key, $ignore_keys, true ) ) {
 					continue;

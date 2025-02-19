@@ -14,7 +14,7 @@
     "manager_sync_v@QIT_CLI_VERSION@": {
         "expire": 1234567890,
         "value": {
-            "latest_cli_version": "0.4.2",
+            "latest_cli_version": "0.8.2",
             "minimum_cli_version": "0.3.2",
             "enforce_latest": true,
             "test_types": {
@@ -27,7 +27,9 @@
                 "woo-api": "woo-api",
                 "woo-e2e": "woo-e2e",
                 "e2e": "e2e",
-                "api": "api"
+                "api": "api",
+                "validation": "validation",
+                "plugin-check": "plugin-check"
             },
             "wccom_url": "https:\/\/woocommerce.com",
             "schemas": {
@@ -45,27 +47,28 @@
                             "type": "integer"
                         },
                         "wordpress_version": {
-                            "default": "6.4.3",
+                            "default": "X.X.X",
                             "description": "The WordPress version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "6.5-RC1",
-                                "6.1.5",
-                                "6.2.4",
-                                "6.3.3",
-                                "6.4.3",
+                                "6.4.5",
+                                "6.5.5",
+                                "6.6.2",
+                                "6.7.1",
                                 "stable",
                                 "rc"
                             ]
                         },
                         "woocommerce_version": {
-                            "default": "8.6.1",
+                            "default": "X.X.X",
                             "description": "The WooCommerce version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "8.7.0-rc.1",
-                                "8.6.0",
-                                "8.6.1",
+                                "9.7.0-beta.1",
+                                "9.5.0",
+                                "9.5.1",
+                                "9.5.2",
+                                "9.6.0",
                                 "stable",
                                 "rc"
                             ]
@@ -94,7 +97,54 @@
                         },
                         "is_product_update": {
                             "description": "Whether this is a product update test run.",
-                            "type": "boolean"
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "additional_plugins": {
+                            "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
+                        "additional_woo_plugins": {
+                            "description": "[Deprecated] A comma-separated list of Additional WooCommerce Extension IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "integer",
+                                "minimum": 1
+                            }
+                        },
+                        "additional_wordpress_plugins": {
+                            "description": "[Deprecated] A comma-separated list of Additional WordPress plugin slugs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
+                        "phpstan_level": {
+                            "description": "The PHPStan level to use for the test run.",
+                            "type": "integer",
+                            "required": true,
+                            "default": 2,
+                            "enum": [
+                                0,
+                                1,
+                                2,
+                                3,
+                                4,
+                                5,
+                                6,
+                                7,
+                                8,
+                                9,
+                                10
+                            ]
                         }
                     }
                 },
@@ -112,33 +162,34 @@
                             "type": "integer"
                         },
                         "wordpress_version": {
-                            "default": "6.4.3",
+                            "default": "X.X.X",
                             "description": "The WordPress version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "6.5-RC1",
-                                "6.1.5",
-                                "6.2.4",
-                                "6.3.3",
-                                "6.4.3",
+                                "6.4.5",
+                                "6.5.5",
+                                "6.6.2",
+                                "6.7.1",
                                 "stable",
                                 "rc"
                             ]
                         },
                         "woocommerce_version": {
-                            "default": "8.6.1",
+                            "default": "X.X.X",
                             "description": "The WooCommerce version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "8.7.0-rc.1",
-                                "8.6.0",
-                                "8.6.1",
+                                "9.7.0-beta.1",
+                                "9.5.0",
+                                "9.5.1",
+                                "9.5.2",
+                                "9.6.0",
                                 "stable",
                                 "rc"
                             ]
                         },
                         "php_version": {
-                            "default": "7.4",
+                            "default": "X.X.X",
                             "description": "The PHP version to use in the test.",
                             "type": "string",
                             "enum": [
@@ -146,7 +197,8 @@
                                 "8.0",
                                 "8.1",
                                 "8.2",
-                                "8.3"
+                                "8.3",
+                                "8.4"
                             ]
                         },
                         "optional_features": {
@@ -190,7 +242,8 @@
                         },
                         "is_product_update": {
                             "description": "Whether this is a product update test run.",
-                            "type": "boolean"
+                            "type": "boolean",
+                            "default": false
                         }
                     }
                 },
@@ -208,41 +261,44 @@
                             "type": "integer"
                         },
                         "wordpress_version": {
-                            "default": "6.4.3",
+                            "default": "X.X.X",
                             "description": "The WordPress version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "6.5-RC1",
-                                "6.1.5",
-                                "6.2.4",
-                                "6.3.3",
-                                "6.4.3",
+                                "6.4.5",
+                                "6.5.5",
+                                "6.6.2",
+                                "6.7.1",
                                 "stable",
                                 "rc"
                             ]
                         },
                         "woocommerce_version": {
-                            "default": "8.6.1",
+                            "default": "X.X.X",
                             "description": "The WooCommerce version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "8.7.0-rc.1",
-                                "8.6.0",
-                                "8.6.1",
+                                "9.7.0-beta.1",
+                                "9.5.0",
+                                "9.5.1",
+                                "9.5.2",
+                                "9.6.0",
                                 "stable",
                                 "rc"
                             ]
                         },
                         "php_version": {
-                            "default": "7.4",
-                            "description": "The PHP version to use in the test.",
+                            "default": "",
+                            "description": "The PHP version to use in the test. Defaults to \"Requires PHP\" header in plugin or 7.4 if not set.",
                             "type": "string",
                             "enum": [
                                 "7.4",
                                 "8.0",
                                 "8.1",
                                 "8.2",
-                                "8.3"
+                                "8.3",
+                                "8.4",
+                                ""
                             ]
                         },
                         "optional_features": {
@@ -286,7 +342,24 @@
                         },
                         "is_product_update": {
                             "description": "Whether this is a product update test run.",
-                            "type": "boolean"
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "extension_set": {
+                            "description": "The predefined set of extensions to include in the test.",
+                            "type": "string",
+                            "enum": [
+                                "compatibility"
+                            ]
+                        },
+                        "additional_plugins": {
+                            "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
                         }
                     }
                 },
@@ -327,7 +400,8 @@
                         },
                         "is_product_update": {
                             "description": "Whether this is a product update test run.",
-                            "type": "boolean"
+                            "type": "boolean",
+                            "default": false
                         }
                     }
                 },
@@ -368,10 +442,11 @@
                         },
                         "is_product_update": {
                             "description": "Whether this is a product update test run.",
-                            "type": "boolean"
+                            "type": "boolean",
+                            "default": false
                         },
                         "min_php_version": {
-                            "default": "7.2",
+                            "default": "X.X.X",
                             "description": "The minimum PHP version to test an extension's compatibility against.",
                             "type": "string",
                             "enum": [
@@ -381,11 +456,12 @@
                                 "8.0",
                                 "8.1",
                                 "8.2",
-                                "8.3"
+                                "8.3",
+                                "8.4"
                             ]
                         },
                         "max_php_version": {
-                            "default": "8.3",
+                            "default": "X.X.X",
                             "description": "The maximum PHP version to test an extension's compatibility against.",
                             "type": "string",
                             "enum": [
@@ -395,7 +471,8 @@
                                 "8.0",
                                 "8.1",
                                 "8.2",
-                                "8.3"
+                                "8.3",
+                                "8.4"
                             ]
                         }
                     }
@@ -437,7 +514,8 @@
                         },
                         "is_product_update": {
                             "description": "Whether this is a product update test run.",
-                            "type": "boolean"
+                            "type": "boolean",
+                            "default": false
                         },
                         "whitelist_paths": {
                             "description": "Paths to whitelist from malware scan.",
@@ -462,41 +540,44 @@
                             "type": "integer"
                         },
                         "wordpress_version": {
-                            "default": "6.4.3",
+                            "default": "X.X.X",
                             "description": "The WordPress version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "6.5-RC1",
-                                "6.1.5",
-                                "6.2.4",
-                                "6.3.3",
-                                "6.4.3",
+                                "6.4.5",
+                                "6.5.5",
+                                "6.6.2",
+                                "6.7.1",
                                 "stable",
                                 "rc"
                             ]
                         },
                         "woocommerce_version": {
-                            "default": "8.6.1",
+                            "default": "X.X.X",
                             "description": "The WooCommerce version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "8.7.0-rc.1",
-                                "8.6.0",
-                                "8.6.1",
+                                "9.7.0-beta.1",
+                                "9.5.0",
+                                "9.5.1",
+                                "9.5.2",
+                                "9.6.0",
                                 "stable",
                                 "rc"
                             ]
                         },
                         "php_version": {
-                            "default": "7.4",
-                            "description": "The PHP version to use in the test.",
+                            "default": "",
+                            "description": "The PHP version to use in the test. Defaults to \"Requires PHP\" header in plugin or 7.4 if not set.",
                             "type": "string",
                             "enum": [
                                 "7.4",
                                 "8.0",
                                 "8.1",
                                 "8.2",
-                                "8.3"
+                                "8.3",
+                                "8.4",
+                                ""
                             ]
                         },
                         "optional_features": {
@@ -540,7 +621,15 @@
                         },
                         "is_product_update": {
                             "description": "Whether this is a product update test run.",
-                            "type": "boolean"
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "extension_set": {
+                            "description": "The predefined set of extensions to include in the test.",
+                            "type": "string",
+                            "enum": [
+                                "compatibility"
+                            ]
                         },
                         "additional_plugins": {
                             "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
@@ -585,41 +674,44 @@
                             "type": "integer"
                         },
                         "wordpress_version": {
-                            "default": "6.4.3",
+                            "default": "X.X.X",
                             "description": "The WordPress version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "6.5-RC1",
-                                "6.1.5",
-                                "6.2.4",
-                                "6.3.3",
-                                "6.4.3",
+                                "6.4.5",
+                                "6.5.5",
+                                "6.6.2",
+                                "6.7.1",
                                 "stable",
                                 "rc"
                             ]
                         },
                         "woocommerce_version": {
-                            "default": "8.6.1",
+                            "default": "X.X.X",
                             "description": "The WooCommerce version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "8.7.0-rc.1",
-                                "8.6.0",
-                                "8.6.1",
+                                "9.7.0-beta.1",
+                                "9.5.0",
+                                "9.5.1",
+                                "9.5.2",
+                                "9.6.0",
                                 "stable",
                                 "rc"
                             ]
                         },
                         "php_version": {
-                            "default": "7.4",
-                            "description": "The PHP version to use in the test.",
+                            "default": "",
+                            "description": "The PHP version to use in the test. Defaults to \"Requires PHP\" header in plugin or 7.4 if not set.",
                             "type": "string",
                             "enum": [
                                 "7.4",
                                 "8.0",
                                 "8.1",
                                 "8.2",
-                                "8.3"
+                                "8.3",
+                                "8.4",
+                                ""
                             ]
                         },
                         "optional_features": {
@@ -662,7 +754,15 @@
                         },
                         "is_product_update": {
                             "description": "Whether this is a product update test run.",
-                            "type": "boolean"
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "extension_set": {
+                            "description": "The predefined set of extensions to include in the test.",
+                            "type": "string",
+                            "enum": [
+                                "compatibility"
+                            ]
                         },
                         "additional_plugins": {
                             "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
@@ -695,7 +795,7 @@
                 },
                 "e2e": {
                     "title": "E2ETest",
-                    "description": "Enqueue your custom E2E tests.",
+                    "description": "Run your custom E2E tests.",
                     "context": [
                         "view"
                     ],
@@ -707,33 +807,34 @@
                             "type": "integer"
                         },
                         "wordpress_version": {
-                            "default": "6.4.3",
+                            "default": "X.X.X",
                             "description": "The WordPress version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "6.5-RC1",
-                                "6.1.5",
-                                "6.2.4",
-                                "6.3.3",
-                                "6.4.3",
+                                "6.4.5",
+                                "6.5.5",
+                                "6.6.2",
+                                "6.7.1",
                                 "stable",
                                 "rc"
                             ]
                         },
                         "woocommerce_version": {
-                            "default": "8.6.1",
+                            "default": "X.X.X",
                             "description": "The WooCommerce version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "8.7.0-rc.1",
-                                "8.6.0",
-                                "8.6.1",
+                                "9.7.0-beta.1",
+                                "9.5.0",
+                                "9.5.1",
+                                "9.5.2",
+                                "9.6.0",
                                 "stable",
                                 "rc"
                             ]
                         },
                         "php_version": {
-                            "default": "7.4",
+                            "default": "X.X.X",
                             "description": "The PHP version to use in the test.",
                             "type": "string",
                             "enum": [
@@ -741,7 +842,8 @@
                                 "8.0",
                                 "8.1",
                                 "8.2",
-                                "8.3"
+                                "8.3",
+                                "8.4"
                             ]
                         },
                         "optional_features": {
@@ -785,10 +887,20 @@
                         },
                         "is_product_update": {
                             "description": "Whether this is a product update test run.",
-                            "type": "boolean"
+                            "type": "boolean",
+                            "default": false
                         },
-                        "additional_plugins": {
+                        "plugins": {
                             "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
+                        "themes": {
+                            "description": "A comma-separated list of additional themes to install in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
                             "type": "array",
                             "uniqueItems": true,
                             "items": {
@@ -815,13 +927,13 @@
                             }
                         },
                         "compatibility": {
-                            "description": "Controls the scope of compatibility checks when additional plugins are specified. Accepts two values:\n      1. \"sut\" (default): Runs only the end-to-end tests of the plugin under test (SUT). This option is used to verify that your plugin functions correctly in the presence of other plugins on the same site.\n      2. \"all\": Runs custom end-to-end tests for all specified plugins that have custom tests. This extends the check to ensure not only that your plugin operates as expected with other plugins active, but also that these other plugins function correctly with your plugin active. Note: Be cautious when using this option as flaky tests in other plugins may lead to unreliable results.",
+                            "description": "Controls the scope of compatibility checks when additional plugins are specified. Accepts two values:\n      1. \"default\": Bootstraps all plugins and runs the tests of your plugin.\n      2. \"full\": Bootstraps all plugins and runs the tests of all plugins that have tests.",
                             "type": "string",
                             "required": "true",
-                            "default": "sut",
+                            "default": "default",
                             "enum": [
-                                "sut",
-                                "all"
+                                "default",
+                                "full"
                             ]
                         }
                     }
@@ -840,33 +952,34 @@
                             "type": "integer"
                         },
                         "wordpress_version": {
-                            "default": "6.4.3",
+                            "default": "X.X.X",
                             "description": "The WordPress version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "6.5-RC1",
-                                "6.1.5",
-                                "6.2.4",
-                                "6.3.3",
-                                "6.4.3",
+                                "6.4.5",
+                                "6.5.5",
+                                "6.6.2",
+                                "6.7.1",
                                 "stable",
                                 "rc"
                             ]
                         },
                         "woocommerce_version": {
-                            "default": "8.6.1",
+                            "default": "X.X.X",
                             "description": "The WooCommerce version to use in the test.",
                             "type": "string",
                             "enum": [
-                                "8.7.0-rc.1",
-                                "8.6.0",
-                                "8.6.1",
+                                "9.7.0-beta.1",
+                                "9.5.0",
+                                "9.5.1",
+                                "9.5.2",
+                                "9.6.0",
                                 "stable",
                                 "rc"
                             ]
                         },
                         "php_version": {
-                            "default": "7.4",
+                            "default": "X.X.X",
                             "description": "The PHP version to use in the test.",
                             "type": "string",
                             "enum": [
@@ -874,7 +987,8 @@
                                 "8.0",
                                 "8.1",
                                 "8.2",
-                                "8.3"
+                                "8.3",
+                                "8.4"
                             ]
                         },
                         "optional_features": {
@@ -918,7 +1032,15 @@
                         },
                         "is_product_update": {
                             "description": "Whether this is a product update test run.",
-                            "type": "boolean"
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "extension_set": {
+                            "description": "The predefined set of extensions to include in the test.",
+                            "type": "string",
+                            "enum": [
+                                "compatibility"
+                            ]
                         },
                         "additional_plugins": {
                             "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
@@ -946,6 +1068,118 @@
                                 "type": "string",
                                 "minimum": 1
                             }
+                        }
+                    }
+                },
+                "validation": {
+                    "title": "validationTest",
+                    "description": "Enqueue Validation tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer"
+                        },
+                        "php_version": {
+                            "default": "",
+                            "description": "The PHP version to use in the test. Defaults to \"Requires PHP\" header in plugin or 7.4 if not set.",
+                            "type": "string",
+                            "enum": [
+                                "7.4",
+                                "8.0",
+                                "8.1",
+                                "8.2",
+                                "8.3",
+                                "8.4",
+                                ""
+                            ]
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        },
+                        "is_product_update": {
+                            "description": "Whether this is a product update test run.",
+                            "type": "boolean",
+                            "default": false
+                        }
+                    }
+                },
+                "plugin-check": {
+                    "title": "pluginCheckTest",
+                    "description": "Enqueue Plugin Check tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer"
+                        },
+                        "php_version": {
+                            "default": "",
+                            "description": "The PHP version to use in the test. Defaults to \"Requires PHP\" header in plugin or 7.4 if not set.",
+                            "type": "string",
+                            "enum": [
+                                "7.4",
+                                "8.0",
+                                "8.1",
+                                "8.2",
+                                "8.3",
+                                "8.4",
+                                ""
+                            ]
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        },
+                        "is_product_update": {
+                            "description": "Whether this is a product update test run.",
+                            "type": "boolean",
+                            "default": false
                         }
                     }
                 },
@@ -977,17 +1211,40 @@
                                 "woo-api": "woo-api",
                                 "woo-e2e": "woo-e2e",
                                 "e2e": "e2e",
-                                "api": "api"
+                                "api": "api",
+                                "validation": "validation",
+                                "plugin-check": "plugin-check"
                             }
+                        },
+                        "notify": {
+                            "required": true,
+                            "description": "Whether to send notifications to developers about the results of this mass test run.",
+                            "type": "boolean"
+                        },
+                        "group": {
+                            "default": "",
+                            "description": "Group or release tag for grouping mass tests.",
+                            "type": "string"
+                        },
+                        "test_stage": {
+                            "default": "",
+                            "description": "Test stage for grouping mass tests.",
+                            "type": "string",
+                            "enums": [
+                                "pre",
+                                "full"
+                            ]
                         },
                         "woocommerce_version": {
                             "description": "The WoooCommerce version to use in the test.",
                             "default": "stable",
                             "type": "string",
                             "enum": [
-                                "8.7.0-rc.1",
-                                "8.6.0",
-                                "8.6.1",
+                                "9.7.0-beta.1",
+                                "9.5.0",
+                                "9.5.1",
+                                "9.5.2",
+                                "9.6.0",
                                 "stable",
                                 "rc"
                             ]
@@ -997,11 +1254,10 @@
                             "default": "stable",
                             "type": "string",
                             "enum": [
-                                "6.5-RC1",
-                                "6.1.5",
-                                "6.2.4",
-                                "6.3.3",
-                                "6.4.3",
+                                "6.4.5",
+                                "6.5.5",
+                                "6.6.2",
+                                "6.7.1",
                                 "stable",
                                 "rc"
                             ]
@@ -1009,17 +1265,18 @@
                         "php_version": {
                             "description": "The PHP version to use in the test.",
                             "type": "string",
-                            "default": "7.4",
+                            "default": "X.X.X",
                             "enum": [
                                 "7.4",
                                 "8.0",
                                 "8.1",
                                 "8.2",
-                                "8.3"
+                                "8.3",
+                                "8.4"
                             ]
                         },
                         "min_php_version": {
-                            "default": "7.2",
+                            "default": "X.X.X",
                             "description": "The minimum PHP version to use in a PHPCompatibility.",
                             "type": "string",
                             "enum": [
@@ -1029,11 +1286,12 @@
                                 "8.0",
                                 "8.1",
                                 "8.2",
-                                "8.3"
+                                "8.3",
+                                "8.4"
                             ]
                         },
                         "max_php_version": {
-                            "default": "8.3",
+                            "default": "X.X.X",
                             "description": "The maximum PHP version to use in a PHPCompatibility.",
                             "type": "string",
                             "enum": [
@@ -1043,7 +1301,8 @@
                                 "8.0",
                                 "8.1",
                                 "8.2",
-                                "8.3"
+                                "8.3",
+                                "8.4"
                             ]
                         },
                         "whitelist_paths": {
@@ -1071,7 +1330,7 @@
                             }
                         },
                         "additional_plugins": {
-                            "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, WooCommerce.com Product Slugs or WooCommerce.com Product IDs.",
                             "type": "array",
                             "uniqueItems": true,
                             "items": {
@@ -1131,6 +1390,13 @@
                                 "plugin",
                                 "theme"
                             ]
+                        },
+                        "extension_set": {
+                            "description": "The predefined set of extensions to include in the mass test.",
+                            "type": "string",
+                            "enum": [
+                                "compatibility"
+                            ]
                         }
                     }
                 }
@@ -1163,21 +1429,42 @@
             ],
             "environments": {
                 "e2e": {
-                    "url": "http:\/\/qit.test:8081\/wp-content\/uploads\/environments\/72ca30b988998cd65f18330a06e06db4.zip",
-                    "checksum": "72ca30b988998cd65f18330a06e06db4"
+                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/c1a78950ca0eb8a23f8706955681bf02.zip",
+                    "checksum": "c1a78950ca0eb8a23f8706955681bf02",
+                    "zip_checksum": 19091
                 }
             },
             "versions": {
                 "woocommerce": {
-                    "stable": "8.6.1",
-                    "rc": "8.7.0-rc.1"
+                    "stable": "X.X.X",
+                    "rc": "X.X.X",
+                    "rc_unsynced": "X.X.X"
                 },
                 "wordpress": {
-                    "stable": "6.4.3",
-                    "rc": "6.5-RC1"
+                    "stable": "X.X.X",
+                    "rc": "X.X.X"
                 }
             },
-            "hide_e2e": false
+            "hide_e2e": false,
+            "playwright_version": "X.X.X",
+            "extension_sets": {
+                "compatibility": [
+                    "gift-cards",
+                    "woocommerce-product-add-ons",
+                    "woocommerce-min-max-quantities",
+                    "woocommerce-product-bundles",
+                    "woocommerce-product-recommendations",
+                    "woocommerce-payments",
+                    "automatewoo",
+                    "woocommerce-shipping",
+                    "woocommerce-subscriptions",
+                    "woocommerce-composite-products",
+                    "woocommerce-services",
+                    "woocommerce-google-analytics-integration",
+                    "mailpoet",
+                    "jetpack"
+                ]
+            }
         }
     }
 }

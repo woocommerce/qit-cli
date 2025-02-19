@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 0, File Errors: 2",
+            "test_summary": "Errors: 0, File Errors: 4",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -42,27 +42,45 @@
             "workflow_id": "1234567890",
             "runner": "normalized",
             "test_media": [],
+            "extension_set": "",
+            "phpstan_level": 2,
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
                 "totals": {
                     "errors": 0,
-                    "file_errors": 2
+                    "file_errors": 4
                 },
                 "files": {
                     "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                        "errors": 2,
+                        "errors": 4,
                         "messages": [
                             {
                                 "message": "Instantiated class Bar not found.",
                                 "line": 21,
-                                "ignorable": true
+                                "ignorable": true,
+                                "tip": "Learn more at https:\\/\\/phpstan.org\\/user-guide\\/discovering-symbols",
+                                "identifier": "class.notFound"
                             },
                             {
                                 "message": "Result of function example_return_void (void) is used.",
                                 "line": 22,
-                                "ignorable": true
+                                "ignorable": true,
+                                "identifier": "function.void"
+                            },
+                            {
+                                "message": "Access to an undefined property Foo::$bar.",
+                                "line": 26,
+                                "ignorable": true,
+                                "tip": "Learn more: https:\\/\\/phpstan.org\\/blog\\/solving-phpstan-access-to-undefined-property",
+                                "identifier": "property.notFound"
+                            },
+                            {
+                                "message": "Call to an undefined static method WP_CLI::someNonExistingMethod().",
+                                "line": 36,
+                                "ignorable": true,
+                                "identifier": "staticMethod.notFound"
                             }
                         ]
                     }

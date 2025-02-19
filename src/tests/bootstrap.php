@@ -8,6 +8,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\NullOutput;
 use function QIT_CLI\get_manager_url;
 
+echo "Fetching latest sync.json from production QIT Manager... ";
+require_once __DIR__ . '/data/pull-sync-json.php';
+echo "Done.\n";
+
 define( 'UNIT_TESTS', true );
 
 function qit_tests_reset_config_dir() {
@@ -80,22 +84,27 @@ foreach ( $it as $file ) {
 		}
 
 		if ( is_null( $namespace ) || is_null( $class ) ) {
+			echo "Skipping file without namespace or class: {$file->getPathname()}\n";
 			continue;
 		}
 
 		$fqdn = sprintf( '%s\\%s', $namespace, $class );
 
 		if ( ! class_exists( $fqdn ) ) {
+			echo "Skipping non-existing class: $fqdn\n";
 			continue;
 		}
 
 		if ( ! ( new ReflectionClass( $fqdn ) )->isSubclassOf( Command::class ) ) {
+			echo "Skipping non-command: $fqdn\n";
 			continue;
 		}
 		if ( ! ( new ReflectionClass( $fqdn ) )->isInstantiable() ) {
+			echo "Skipping non-instantiable command: $fqdn\n";
 			continue;
 		}
 		if ( is_null( $fqdn::getDefaultName() ) ) {
+			echo "Skipping command without default name: $fqdn\n";
 			continue;
 		}
 
@@ -106,6 +115,8 @@ foreach ( $it as $file ) {
 			} catch ( Exception $e ) {
 				$failed_to_build[] = $fqdn;
 			}
+		} else {
+			echo "Skipping already added command: $fqdn\n";
 		}
 	}
 }

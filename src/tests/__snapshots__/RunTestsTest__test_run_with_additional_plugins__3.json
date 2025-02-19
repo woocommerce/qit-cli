@@ -2,9 +2,9 @@
     "url": "https:\/\/qit.woo.com\/wp-json\/cd\/v1\/enqueue-woo-e2e",
     "method": "POST",
     "post_body": {
-        "wordpress_version": "6.4.3",
-        "woocommerce_version": "8.6.1",
-        "php_version": "7.4",
+        "wordpress_version": "X.X.X",
+        "woocommerce_version": "X.X.X",
+        "php_version": "",
         "optional_features": [],
         "additional_plugins": "456,baz-extension",
         "woo_id": 123,

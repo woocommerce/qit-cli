@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 0, File Errors: 2",
+            "test_summary": "Errors: 0, File Errors: 3",
             "debug_log": "",
             "version": "1.0.15",
             "update_complete": true,
@@ -42,27 +42,39 @@
             "workflow_id": "1234567890",
             "runner": "normalized",
             "test_media": [],
+            "extension_set": "",
+            "phpstan_level": 2,
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
                 "totals": {
                     "errors": 0,
-                    "file_errors": 2
+                    "file_errors": 3
                 },
                 "files": {
                     "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/themes\\/bistro\\/index.php": {
-                        "errors": 2,
+                        "errors": 3,
                         "messages": [
                             {
                                 "message": "Instantiated class Bar not found.",
                                 "line": 17,
-                                "ignorable": true
+                                "ignorable": true,
+                                "tip": "Learn more at https:\\/\\/phpstan.org\\/user-guide\\/discovering-symbols",
+                                "identifier": "class.notFound"
                             },
                             {
                                 "message": "Result of function example_return_void (void) is used.",
                                 "line": 18,
-                                "ignorable": true
+                                "ignorable": true,
+                                "identifier": "function.void"
+                            },
+                            {
+                                "message": "Access to an undefined property Foo::$bar.",
+                                "line": 22,
+                                "ignorable": true,
+                                "tip": "Learn more: https:\\/\\/phpstan.org\\/blog\\/solving-phpstan-access-to-undefined-property",
+                                "identifier": "property.notFound"
                             }
                         ]
                     }
