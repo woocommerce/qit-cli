@@ -77,5 +77,6 @@
     "sut_id": null,
     "domain": "localhost",
     "tests": [],
-    "playwright_config": []
+    "playwright_config": [],
+    "pw_test_tag": ""
 }
