@@ -208,7 +208,9 @@ class PlaywrightRunner extends E2ERunner {
 
 		$options = App::getVar( 'pw_options', '' );
 
-		$options .= ' --grep @' . $env_info->pw_test_tag;
+		if ( ! empty( $env_info->pw_test_tag ) ) {
+			$options .= ' --grep @' . $env_info->pw_test_tag;
+		}
 
 		if ( $test_mode === 'headed' ) {
 			$options .= ' --headed --ui-port=8086 --ui-host=0.0.0.0';
