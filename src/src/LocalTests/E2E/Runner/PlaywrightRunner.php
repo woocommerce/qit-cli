@@ -208,7 +208,7 @@ class PlaywrightRunner extends E2ERunner {
 
 		$options = App::getVar( 'pw_options', '' );
 
-		$options .= ' --grep "@' . $env_info->pw_test_tag . '"';
+		$options .= ' --grep @' . $env_info->pw_test_tag;
 
 		if ( $test_mode === 'headed' ) {
 			$options .= ' --headed --ui-port=8086 --ui-host=0.0.0.0';
@@ -235,6 +235,8 @@ class PlaywrightRunner extends E2ERunner {
 			"cd /qit/tests/e2e $dependencies_command" .
 			"npx playwright test $options --config /qit/tests/e2e/qit-playwright.config.js $shard 2>&1",
 		] );
+
+		$this->output->writeln( "npx playwright test $options --config /qit/tests/e2e/qit-playwright.config.js $shard 2>&1" );
 
 		// Make sure the Playwright image is up-to-date.
 		App::make( Docker::class )->maybe_pull_image( "automattic/qit-runner-playwright:$playwright_version_to_use" );
