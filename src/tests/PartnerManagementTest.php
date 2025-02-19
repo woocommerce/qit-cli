@@ -50,7 +50,27 @@ class PartnerManagementTest extends QITTestCase {
 		 * suitable for snapshot testing.
 		 */
 
-		return preg_replace( '#"expire":\s?\d+,#', '"expire": 1234567890,', $json );
+		$json = preg_replace( '#"expire":\s?\d+,#', '"expire": 1234567890,', $json );
+
+		// Normalize known keys if the value looks like a version.
+		$version_keys = '/"(wordpress_version|woocommerce_version|stable|rc|rc_unsynced|default|playwright_version)":\s?"([^"]+)"/';
+
+		$json = preg_replace_callback( $version_keys, function ( $matches ) {
+			$key   = $matches[1];
+			$value = $matches[2];
+
+			// Simple check: starts with digits, then optionally .digits repeated,
+			// then optionally a dash with alphanumeric parts (beta, rc, etc).
+			$isVersion = preg_match( '/^\d+(?:\.\d+)*(?:-[A-Za-z0-9.\-_]+)?$/', $value );
+
+			if ( $isVersion ) {
+				$value = 'X.X.X';
+			}
+
+			return "\"{$key}\": \"{$value}\"";
+		}, $json );
+
+		return $json;
 	}
 
 	public function test_add_partner() {
