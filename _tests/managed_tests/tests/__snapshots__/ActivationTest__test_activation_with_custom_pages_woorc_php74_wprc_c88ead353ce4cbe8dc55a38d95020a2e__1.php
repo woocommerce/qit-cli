@@ -100,6 +100,7 @@
                 }
             ],
             "extension_set": "",
+            "phpstan_level": null,
             "test_result_json_extracted": "{EXTRACTED}",
             "ctrf_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
