@@ -54,4 +54,7 @@ class E2EEnvInfo extends EnvInfo {
 
 	/** @var array<mixed>> */
 	public $playwright_config = [];
+
+	/** @var string The playwright test tag to be executed*/
+	public $pw_test_tag = '';
 }
