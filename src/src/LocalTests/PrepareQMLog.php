@@ -2,6 +2,8 @@
 
 namespace QIT_CLI\LocalTests;
 
+use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+
 use Symfony\Component\Console\Output\OutputInterface;
 
 class PrepareQMLog {
@@ -168,7 +170,7 @@ class PrepareQMLog {
 	 * @param string $directory
 	 * @return array<string,mixed>
 	 */
-	public function summarize_qm_logs( string $directory ): array {
+	public function summarize_qm_logs( string $directory, string $sut_slug ): array {
 		$data            = $this->read_json_data( $directory );
 		$summarized_data = [];
 
@@ -179,6 +181,25 @@ class PrepareQMLog {
 		foreach ( $data as $hash => $logs ) {
 			foreach ( $logs as $type => $type_logs ) {
 				foreach ( $type_logs as $info ) {
+					// Ignore some compatbility extension set issues.
+
+					// Ignore a deprecation warning from Jetpack about itself.
+					$is_jetpack_geo_deprecation = stripos( $info['message'], 'Class Jetpack_Geo_Location is' ) !== false;
+
+					// Ignore a deprecated core filter for now, since subs and payments both include it in shared code.
+					// Only if we're not testing one of those though.
+					$is_woocommerce_get_price_deprecation = stripos( $info['message'], 'Use woocommerce_product_get_price instead' ) !== false;
+					$is_testing_payments_or_subs = in_array( $sut_slug, [ 'woocommerce-payments', 'woocommerce-subscriptions' ], true );
+
+					if (
+						$is_jetpack_geo_deprecation
+						|| ( $is_woocommerce_get_price_deprecation && ! $is_testing_payments_or_subs )
+					) {
+						continue;
+					}
+
+					// End compatibility extension set issues.
+	
 					$info_summary = [
 						'message'   => $info['message'],
 						'type'      => $type,
@@ -247,11 +268,12 @@ class PrepareQMLog {
 	 * @param string $results_dir
 	 * @return array<string,mixed>
 	 */
-	public function prepare_qm_logs( string $results_dir ): array {
+	public function prepare_qm_logs( string $results_dir, E2EEnvInfo $env_info ): array {
+		$sut_slug       = $env_info->sut_slug;
 		$qm_logs_path   = $results_dir . '/logs';
 		$debug_log_path = $results_dir . '/debug.log';
 		$debug_log      = $this->summarize_debug_logs( $debug_log_path );
-		$qm_log         = $this->summarize_qm_logs( $qm_logs_path );
+		$qm_log         = $this->summarize_qm_logs( $qm_logs_path, $sut_slug );
 
 		if ( empty( $debug_log ) && empty( $qm_log ) ) {
 			return [];
