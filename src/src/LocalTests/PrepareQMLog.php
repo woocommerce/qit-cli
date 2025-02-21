@@ -186,15 +186,7 @@ class PrepareQMLog {
 					// Ignore a deprecation warning from Jetpack about itself.
 					$is_jetpack_geo_deprecation = stripos( $info['message'], 'Class Jetpack_Geo_Location is' ) !== false;
 
-					// Ignore a deprecated core filter for now, since subs and payments both include it in shared code.
-					// Only if we're not testing one of those though.
-					$is_woocommerce_get_price_deprecation = stripos( $info['message'], 'Use woocommerce_product_get_price instead' ) !== false;
-					$is_testing_payments_or_subs = in_array( $sut_slug, [ 'woocommerce-payments', 'woocommerce-subscriptions' ], true );
-
-					if (
-						$is_jetpack_geo_deprecation
-						|| ( $is_woocommerce_get_price_deprecation && ! $is_testing_payments_or_subs )
-					) {
+					if ( $is_jetpack_geo_deprecation ) {
 						continue;
 					}
 
