@@ -339,6 +339,8 @@ class Docker {
 
 		$docker  = $this->find_docker();
 		$process = new Process( [ $docker, 'pull', $image_name ] );
+		$process->setTimeout( 600 );
+		$process->setIdleTimeout( 600 );
 		$process->run();
 
 		$this->cache->set( 'did_pull_' . $image_name, true, DAY_IN_SECONDS );
