@@ -352,6 +352,14 @@
                                 "compatibility"
                             ]
                         },
+                        "test_variation": {
+                            "description": "The test variation to run.",
+                            "type": "string",
+                            "enum": [
+                                "basic",
+                                ""
+                            ]
+                        },
                         "additional_plugins": {
                             "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
                             "type": "array",
