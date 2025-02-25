@@ -1,38 +1,16 @@
 <?php
 
 /**
- * Script: add_keys_to_snapshots.php
- * 
- * This script modifies PHPUnit snapshot files by inserting specific JSON keys
- * in a structured "add this key after this key with this value" format.
- * 
- * ✅ **Preserves PHPUnit snapshot formatting**
- * ✅ **Explicitly defines key order and values**
- * ✅ **Works recursively for nested structures**
- * ✅ **Only modifies files that need changes, making Git commits clean**
- *
- * Usage:
- * ```
- * php add_keys_to_snapshots.php
- * ```
- *
- * Example:
- * - Before:
- * ```json
- * {
- *   "phpstan_level": null,
- *   "test_result_json_extracted": "{EXTRACTED}"
- * }
- * ```
- * - After:
- * ```json
- * {
- *   "phpstan_level": null,
- *   "test_variation": "example_value",
- *   "test_result_json_extracted": "{EXTRACTED}"
- * }
- * ```
+ * Add keys to snapshots without having to re-run all tests.
  */
+
+// Define the keys to add and their values
+$keysToAdd = [
+	"test_variation" => [
+		"after" => "phpstan_level",
+		"value" => ""
+	]
+];
 
 $snapshotsDir = 'tests/__snapshots__';
 
@@ -74,14 +52,6 @@ function insertKeys(&$array, $keysToAdd) {
         }
     }
 }
-
-// Define the keys to add and their values
-$keysToAdd = [
-    "test_variation" => [
-        "after" => "phpstan_level",
-        "value" => ""
-    ]
-];
 
 foreach ($snapshotFiles as $file) {
     echo "Processing: $file\n";
