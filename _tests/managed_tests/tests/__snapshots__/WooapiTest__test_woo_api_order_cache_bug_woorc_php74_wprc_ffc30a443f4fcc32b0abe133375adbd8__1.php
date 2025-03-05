@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "258 total, 255 passed, 0 failed, 3 skipped.",
+            "test_summary": "270 total, 266 passed, 0 failed, 4 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -50,14 +50,115 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 18,
-                "numPendingTestSuites": 2,
-                "numTotalTestSuites": 20,
+                "numPassedTestSuites": 22,
+                "numPendingTestSuites": 3,
+                "numTotalTestSuites": 25,
                 "numFailedTests": 0,
-                "numPassedTests": 255,
-                "numPendingTests": 3,
-                "numTotalTests": 258,
+                "numPassedTests": 266,
+                "numPendingTests": 4,
+                "numTotalTests": 270,
                 "testResults": [
+                    {
+                        "file": "..\\/fixtures\\/token.teardown.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "remove consumer key": [
+                                {
+                                    "title": "remove consumer key",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "..\\/fixtures\\/install-wc.setup.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Install WC using WC Beta Tester": [
+                                {
+                                    "title": "Install WC using WC Beta Tester",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "..\\/fixtures\\/auth.setup.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "authenticate admin": [
+                                {
+                                    "title": "authenticate admin",
+                                    "status": "passed"
+                                }
+                            ],
+                            "authenticate customer": [
+                                {
+                                    "title": "authenticate customer",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "..\\/fixtures\\/token.setup.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "generate consumer key": [
+                                {
+                                    "title": "generate consumer key",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "..\\/fixtures\\/site.setup.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "configure HPOS": [
+                                {
+                                    "title": "configure HPOS",
+                                    "status": "passed"
+                                }
+                            ],
+                            "convert Cart and Checkout pages to shortcode": [
+                                {
+                                    "title": "convert Cart and Checkout pages to shortcode",
+                                    "status": "passed"
+                                }
+                            ],
+                            "disable coming soon": [
+                                {
+                                    "title": "disable coming soon",
+                                    "status": "passed"
+                                }
+                            ],
+                            "disable onboarding wizard": [
+                                {
+                                    "title": "disable onboarding wizard",
+                                    "status": "passed"
+                                }
+                            ],
+                            "determine if multisite": [
+                                {
+                                    "title": "determine if multisite",
+                                    "status": "passed"
+                                }
+                            ],
+                            "general settings": [
+                                {
+                                    "title": "general settings",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
                     {
                         "file": "api-tests\\/coupons\\/coupons.test.js",
                         "status": "passed",
@@ -1064,6 +1165,12 @@
                                     "status": "passed"
                                 }
                             ],
+                            "Settings API tests: CRUD > List all Email settings options with Email Improvements feature enabled": [
+                                {
+                                    "title": "can retrieve all email settings with Email Improvements feature enabled",
+                                    "status": "passed"
+                                }
+                            ],
                             "Settings API tests: CRUD > List all Advanced settings options": [
                                 {
                                     "title": "can retrieve all advanced settings",
@@ -1388,7 +1495,7 @@
                         }
                     }
                 ],
-                "summary": "258 total, 255 passed, 0 failed, 3 skipped."
+                "summary": "270 total, 266 passed, 0 failed, 4 skipped."
             }
         },
         {
@@ -1398,17 +1505,220 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 258,
-                        "passed": 255,
+                        "tests": 270,
+                        "passed": 266,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 3,
+                        "skipped": 4,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
                         "suites": 0
                     },
                     "tests": [
+                        {
+                            "name": "remove consumer key",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/token.teardown.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "consumer token teardown > ..\\/fixtures\\/token.teardown.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "Install WC using WC Beta Tester",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/install-wc.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "install wc > ..\\/fixtures\\/install-wc.setup.js",
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "description": "Skipping installing WC using WC Beta Tester; INSTALL_WC not found."
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "authenticate admin",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/auth.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "global authentication > ..\\/fixtures\\/auth.setup.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "authenticate customer",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/auth.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "global authentication > ..\\/fixtures\\/auth.setup.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "generate consumer key",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/token.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "consumer token setup > ..\\/fixtures\\/token.setup.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "configure HPOS",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/site.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "convert Cart and Checkout pages to shortcode",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/site.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "disable coming soon",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/site.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "disable onboarding wizard",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/site.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "determine if multisite",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/site.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "general settings",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/site.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
                         {
                             "name": "can create a coupon",
                             "status": "passed",
@@ -5076,6 +5386,24 @@
                             }
                         },
                         {
+                            "name": "can retrieve all email settings with Email Improvements feature enabled",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/settings-crud.test.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Email settings options with Email Improvements feature enabled",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
                             "name": "can retrieve all advanced settings",
                             "status": "passed",
                             "duration": 999,
@@ -6075,6 +6403,14 @@
                     {
                         "count": "600",
                         "message": "PHP Notice: $order is Automattic\\\\WooCommerce\\\\Admin\\\\Overrides\\\\Order as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 41"
+                    },
+                    {
+                        "count": "1",
+                        "message": "PHP Notice: Function wpdb::prepare was called incorrectly. The query argument of wpdb::prepare() must have a placeholder. Please see Debugging in WordPress for more information. (This message was added in version 3.9.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6121"
+                    },
+                    {
+                        "count": "4",
+                        "message": "WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near \')\' at line 1 for query DELETE FROM wp_options WHERE option_name IN ( ) made by do_action(\'wp_ajax_as_async_request_queue_runner\'), WP_Hook->do_action, WP_Hook->apply_filters, WP_Async_Request->maybe_handle, ActionScheduler_AsyncRequest_QueueRunner->handle, do_action(\'action_scheduler_run_queue\'), WP_Hook->do_action, WP_Hook->apply_filters, ActionScheduler_QueueRunner->run, ActionScheduler_QueueRunner->do_batch, ActionScheduler_Abstract_QueueRunner->process_action, ActionScheduler_Action->execute, do_action_ref_array(\'wc_delete_related_product_transients_async\'), WP_Hook->do_action, WP_Hook->apply_filters, wc_delete_related_product_transients, _wc_delete_transients"
                     }
                 ]
             }
