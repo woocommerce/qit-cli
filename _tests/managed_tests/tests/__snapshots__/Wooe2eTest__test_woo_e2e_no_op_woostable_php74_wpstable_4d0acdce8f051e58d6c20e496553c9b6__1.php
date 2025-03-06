@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "414 total, 372 passed, 0 failed, 42 skipped.",
+            "test_summary": "421 total, 378 passed, 0 failed, 43 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -50,23 +50,50 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 80,
+                "numPassedTestSuites": 84,
                 "numPendingTestSuites": 21,
-                "numTotalTestSuites": 101,
+                "numTotalTestSuites": 105,
                 "numFailedTests": 0,
-                "numPassedTests": 372,
-                "numPendingTests": 42,
-                "numTotalTests": 414,
+                "numPassedTests": 378,
+                "numPendingTests": 43,
+                "numTotalTests": 421,
                 "testResults": [
+                    {
+                        "file": "activate-and-setup\\/core-profiler.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Store owner can complete the core profiler": [
+                                {
+                                    "title": "Can complete the core profiler skipping extension install",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "Can complete the core profiler installing default extensions",
+                                    "status": "pending"
+                                }
+                            ],
+                            "Store owner can skip the core profiler": [
+                                {
+                                    "title": "Can click skip guided setup",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Can connect to WooCommerce.com",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
                     {
                         "file": "activate-and-setup\\/stats-overview.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Home": [
                                 {
                                     "title": "Can access Analytics Reports from Stats Overview",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -160,28 +187,11 @@
                         }
                     },
                     {
-                        "file": "admin-marketing\\/coupons.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Coupons page": [
-                                {
-                                    "title": "A user can view the coupons overview without it crashing",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "admin-marketing\\/overview.spec.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Marketing page": [
-                                {
-                                    "title": "A user can view the Marketing > Overview page without it crashing",
-                                    "status": "passed"
-                                },
                                 {
                                     "title": "Marketing Overview page have relevant content",
                                     "status": "passed"
@@ -514,7 +524,7 @@
                     {
                         "file": "customize-store\\/loading-screen\\/loading-screen.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Assembler - Loading Page": [
                                 {
@@ -524,10 +534,6 @@
                                 {
                                     "title": "should redirect to intro page in case of errors",
                                     "status": "passed"
-                                },
-                                {
-                                    "title": "should hide loading screen and steps on subsequent runs",
-                                    "status": "pending"
                                 }
                             ]
                         }
@@ -813,11 +819,41 @@
                         }
                     },
                     {
+                        "file": "merchant\\/create-woocommerce-blocks.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Add WooCommerce Blocks Into Page": [
+                                {
+                                    "title": "can insert all WooCommerce blocks into page",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/create-woocommerce-patterns.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Add WooCommerce Patterns Into Page": [
+                                {
+                                    "title": "can insert WooCommerce patterns into page",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/customer-list.spec.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Merchant > Customer List": [
+                                {
+                                    "title": "Merchant can view a list of all customers, filter and download",
+                                    "status": "passed"
+                                },
                                 {
                                     "title": "Merchant can view a single customer",
                                     "status": "passed"
@@ -1569,6 +1605,10 @@
                             ],
                             "General tab > Create product": [
                                 {
+                                    "title": "can create a simple product",
+                                    "status": "pending"
+                                },
+                                {
                                     "title": "can not create a product with duplicated SKU",
                                     "status": "pending"
                                 },
@@ -1644,6 +1684,20 @@
                                 {
                                     "title": "can enable the block product editor",
                                     "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/products\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "General tab": [],
+                            "General tab > Linked product": [
+                                {
+                                    "title": "can create a product with linked products",
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1798,7 +1852,7 @@
                                 },
                                 {
                                     "title": "Live preview when changing email settings",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Send email preview",
@@ -2719,9 +2773,22 @@
                                 }
                             ]
                         }
+                    },
+                    {
+                        "file": "shopper\\/wordpress-post.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "logged-in customer can comment on a post": [
+                                {
+                                    "title": "logged-in customer can comment on a post",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
                     }
                 ],
-                "summary": "414 total, 372 passed, 0 failed, 42 skipped."
+                "summary": "421 total, 378 passed, 0 failed, 43 skipped."
             }
         },
         {
@@ -2731,11 +2798,11 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 414,
-                        "passed": 372,
+                        "tests": 421,
+                        "passed": 378,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 42,
+                        "skipped": 43,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -2743,7 +2810,7 @@
                     },
                     "tests": [
                         {
-                            "name": "Can access Analytics Reports from Stats Overview",
+                            "name": "Can complete the core profiler skipping extension install",
                             "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
@@ -2751,17 +2818,128 @@
                             "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/stats-overview.spec.js",
+                            "filePath": "\\/normalized\\/path\\/core-profiler.spec.js",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "ui > activate-and-setup\\/stats-overview.spec.js > WooCommerce Home",
+                            "suite": "ui > activate-and-setup\\/core-profiler.spec.js > Store owner can complete the core profiler",
                             "extra": {
                                 "annotations": [
                                     {
                                         "type": "skip"
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "Can complete the core profiler installing default extensions",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-profiler.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "ui > activate-and-setup\\/core-profiler.spec.js > Store owner can complete the core profiler",
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Can click skip guided setup",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-profiler.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Confirm that the store is in coming soon mode after skipping the core profiler",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "ui > activate-and-setup\\/core-profiler.spec.js > Store owner can skip the core profiler",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "Can connect to WooCommerce.com",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-profiler.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Go to WC Home and make sure the total sales is visible",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Go to the extensions tab and connect store",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Check that we are sent to wp.com",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "ui > activate-and-setup\\/core-profiler.spec.js > Store owner can skip the core profiler",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "Can access Analytics Reports from Stats Overview",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/stats-overview.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Navigate to the WooCommerce Home page",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Navigate to Revenue Report",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Navigate to Orders Report",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Navigate to Analytics Overview",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "ui > activate-and-setup\\/stats-overview.spec.js > WooCommerce Home",
+                            "extra": {
+                                "annotations": []
                             }
                         },
                         {
@@ -3252,46 +3430,6 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "ui > admin-analytics\\/analytics.spec.js > Analytics pages",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "A user can view the coupons overview without it crashing",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/coupons.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > admin-marketing\\/coupons.spec.js > Coupons page",
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "A user can view the Marketing > Overview page without it crashing",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/overview.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > admin-marketing\\/overview.spec.js > Marketing page",
                             "extra": {
                                 "annotations": []
                             }
@@ -4296,28 +4434,6 @@
                             "suite": "ui > customize-store\\/loading-screen\\/loading-screen.spec.js > Assembler - Loading Page",
                             "extra": {
                                 "annotations": []
-                            }
-                        },
-                        {
-                            "name": "should hide loading screen and steps on subsequent runs",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/loading-screen.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > customize-store\\/loading-screen\\/loading-screen.spec.js > Assembler - Loading Page",
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
                             }
                         },
                         {
@@ -5433,6 +5549,94 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "ui > merchant\\/create-shipping-zones.spec.js > Verifies shipping options from customer perspective",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "can insert all WooCommerce blocks into page",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/create-woocommerce-blocks.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "ui > merchant\\/create-woocommerce-blocks.spec.js > Add WooCommerce Blocks Into Page",
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "can insert WooCommerce patterns into page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/create-woocommerce-patterns.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Insert Hero Product 3 Split pattern",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Featured Category Cover Image pattern",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "ui > merchant\\/create-woocommerce-patterns.spec.js > Add WooCommerce Patterns Into Page",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "Merchant can view a list of all customers, filter and download",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/customer-list.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Go to the customers reports page",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Check that the customers are displayed in the list",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Check that the customer list can be filtered by first name",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Hide and display columns",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Download the customer list",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "ui > merchant\\/customer-list.spec.js > Merchant > Customer List",
                             "extra": {
                                 "annotations": []
                             }
@@ -8690,6 +8894,28 @@
                             }
                         },
                         {
+                            "name": "can create a simple product",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "ui > merchant\\/products\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Create product",
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
+                            }
+                        },
+                        {
                             "name": "can not create a product with duplicated SKU",
                             "status": "skipped",
                             "duration": 999,
@@ -8948,6 +9174,28 @@
                             "suite": "ui > merchant\\/products\\/block-editor\\/enable-block-product-editor.spec.js > Enable block product editor > Enabled",
                             "extra": {
                                 "annotations": []
+                            }
+                        },
+                        {
+                            "name": "can create a product with linked products",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/linked-product-tab-product-block-editor.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "ui > merchant\\/products\\/block-editor\\/linked-product-tab-product-block-editor.spec.js > General tab > Linked product",
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -9591,11 +9839,11 @@
                         },
                         {
                             "name": "Live preview when changing email settings",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
@@ -9604,11 +9852,7 @@
                             "steps": [],
                             "suite": "ui > merchant\\/settings-email.spec.js > WooCommerce Email Settings",
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
+                                "annotations": []
                             }
                         },
                         {
@@ -12565,6 +12809,24 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "ui > shopper\\/shop-title-after-deletion.spec.js",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "logged-in customer can comment on a post",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/wordpress-post.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "ui > shopper\\/wordpress-post.spec.js",
                             "extra": {
                                 "annotations": []
                             }
