@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "414 total, 372 passed, 0 failed, 42 skipped.",
+            "test_summary": "421 total, 304 passed, 30 failed, 87 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -49,24 +49,51 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 80,
-                "numPendingTestSuites": 21,
-                "numTotalTestSuites": 101,
-                "numFailedTests": 0,
-                "numPassedTests": 372,
-                "numPendingTests": 42,
-                "numTotalTests": 414,
+                "numFailedTestSuites": 12,
+                "numPassedTestSuites": 59,
+                "numPendingTestSuites": 35,
+                "numTotalTestSuites": 105,
+                "numFailedTests": 30,
+                "numPassedTests": 304,
+                "numPendingTests": 87,
+                "numTotalTests": 421,
                 "testResults": [
+                    {
+                        "file": "activate-and-setup\\/core-profiler.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Store owner can complete the core profiler": [
+                                {
+                                    "title": "Can complete the core profiler skipping extension install",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "Can complete the core profiler installing default extensions",
+                                    "status": "pending"
+                                }
+                            ],
+                            "Store owner can skip the core profiler": [
+                                {
+                                    "title": "Can click skip guided setup",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Can connect to WooCommerce.com",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
                     {
                         "file": "activate-and-setup\\/stats-overview.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Home": [
                                 {
                                     "title": "Can access Analytics Reports from Stats Overview",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -160,28 +187,11 @@
                         }
                     },
                     {
-                        "file": "admin-marketing\\/coupons.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Coupons page": [
-                                {
-                                    "title": "A user can view the coupons overview without it crashing",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "admin-marketing\\/overview.spec.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Marketing page": [
-                                {
-                                    "title": "A user can view the Marketing > Overview page without it crashing",
-                                    "status": "passed"
-                                },
                                 {
                                     "title": "Marketing Overview page have relevant content",
                                     "status": "passed"
@@ -304,7 +314,7 @@
                     },
                     {
                         "file": "customize-store\\/assembler\\/footer.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Assembler -> Footers": [
@@ -322,7 +332,7 @@
                                 },
                                 {
                                     "title": "Picking a footer should trigger an update on the site preview",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -370,7 +380,7 @@
                     },
                     {
                         "file": "customize-store\\/assembler\\/header.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Assembler -> headers": [
@@ -388,7 +398,7 @@
                                 },
                                 {
                                     "title": "Picking a header should trigger an update on the site preview",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -426,7 +436,7 @@
                     },
                     {
                         "file": "customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Assembler -> Logo Picker": [
@@ -436,7 +446,7 @@
                                 },
                                 {
                                     "title": "Selecting an image should update the site preview",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "Changing the image width should update the site preview and the frontend",
@@ -514,7 +524,7 @@
                     {
                         "file": "customize-store\\/loading-screen\\/loading-screen.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Assembler - Loading Page": [
                                 {
@@ -524,10 +534,6 @@
                                 {
                                     "title": "should redirect to intro page in case of errors",
                                     "status": "passed"
-                                },
-                                {
-                                    "title": "should hide loading screen and steps on subsequent runs",
-                                    "status": "pending"
                                 }
                             ]
                         }
@@ -662,13 +668,13 @@
                     },
                     {
                         "file": "merchant\\/create-page.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Can create a new page": [
                                 {
                                     "title": "can create new page",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -813,11 +819,41 @@
                         }
                     },
                     {
+                        "file": "merchant\\/create-woocommerce-blocks.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Add WooCommerce Blocks Into Page": [
+                                {
+                                    "title": "can insert all WooCommerce blocks into page",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/create-woocommerce-patterns.spec.js",
+                        "status": "failed",
+                        "has_pending": false,
+                        "tests": {
+                            "Add WooCommerce Patterns Into Page": [
+                                {
+                                    "title": "can insert WooCommerce patterns into page",
+                                    "status": "failed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "merchant\\/customer-list.spec.js",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Merchant > Customer List": [
+                                {
+                                    "title": "Merchant can view a list of all customers, filter and download",
+                                    "status": "passed"
+                                },
                                 {
                                     "title": "Merchant can view a single customer",
                                     "status": "passed"
@@ -1569,6 +1605,10 @@
                             ],
                             "General tab > Create product": [
                                 {
+                                    "title": "can create a simple product",
+                                    "status": "pending"
+                                },
+                                {
                                     "title": "can not create a product with duplicated SKU",
                                     "status": "pending"
                                 },
@@ -1644,6 +1684,20 @@
                                 {
                                     "title": "can enable the block product editor",
                                     "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "merchant\\/products\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "General tab": [],
+                            "General tab > Linked product": [
+                                {
+                                    "title": "can create a product with linked products",
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1798,7 +1852,7 @@
                                 },
                                 {
                                     "title": "Live preview when changing email settings",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Send email preview",
@@ -1898,13 +1952,13 @@
                     },
                     {
                         "file": "merchant\\/users-create.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "can create a new Customer": [
                                 {
                                     "title": "can create a new Customer",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -1942,17 +1996,17 @@
                     },
                     {
                         "file": "shopper\\/account-email-receiving.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": true,
                         "tests": {
                             "Shopper Account Email Receiving": [
                                 {
                                     "title": "should receive an email when creating an account",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "should receive an email when password reset initiated from admin",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "Shopper Password Reset Email Receiving": [
@@ -1978,63 +2032,63 @@
                     },
                     {
                         "file": "shopper\\/cart-block-calculate-shipping.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Cart Block Calculate Shipping": [
                                 {
                                     "title": "allows customer to calculate Free Shipping in cart block if in Netherlands",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "allows customer to calculate Flat rate and Local pickup in cart block if in Portugal",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "should show correct total cart block price after updating quantity",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "should show correct total cart block price with 2 different products and flat rate\\/local pickup",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "shopper\\/cart-block-coupons.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Cart Block Applying Coupons": [
                                 {
                                     "title": "allows cart block to apply coupon of any type",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "allows cart block to apply multiple coupons",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "prevents cart block applying same coupon twice",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "prevents cart block applying coupon with usage limit",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "shopper\\/cart-block.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Cart Block page": [
                                 {
                                     "title": "can see empty cart, add and remove simple & cross sell product, increase to max quantity",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2070,51 +2124,51 @@
                     },
                     {
                         "file": "shopper\\/cart-checkout-block-calculate-tax.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Shopper Cart & Checkout Block Tax Display": [
                                 {
                                     "title": "can create Cart Block page",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can create Checkout Block page",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "that inclusive tax is displayed properly in block-based Cart & Checkout pages",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "that exclusive tax is displayed properly in block-based Cart & Checkout pages",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "Shopper Cart & Checkout Block Tax Rounding": [
                                 {
                                     "title": "that tax rounding is present at subtotal level in block-based Cart & Checkout pages",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "that tax rounding is off at subtotal level in block-based Cart & Checkout pages",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "Shopper Cart & Checkout Block Tax Levels": [
                                 {
                                     "title": "that applying taxes in cart block of 4 different levels calculates properly",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "that applying taxes in block-based Cart & Checkout of 2 different levels (2 excluded) calculates properly",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "Shipping Cart & Checkout Block Tax": [
                                 {
                                     "title": "that tax is applied in Cart Block to shipping as well as order",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2313,25 +2367,25 @@
                     },
                     {
                         "file": "shopper\\/checkout-block-coupons.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Checkout Block Applying Coupons": [
                                 {
                                     "title": "allows checkout block to apply coupon of any type",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "allows checkout block to apply multiple coupons",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "prevents checkout block applying same coupon twice",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "prevents checkout block applying coupon with usage limit",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2344,27 +2398,27 @@
                             "Checkout Block page": [
                                 {
                                     "title": "can see empty checkout block page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to choose available payment methods",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to fill shipping details",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to fill different shipping and billing details",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to fill shipping details and toggle different billing",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can choose different shipping types in the checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
@@ -2380,7 +2434,7 @@
                                 },
                                 {
                                     "title": "can create an account during checkout with custom password",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2388,12 +2442,12 @@
                     {
                         "file": "shopper\\/checkout-create-account.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Shopper Checkout Create Account": [
                                 {
                                     "title": "can create an account during checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2401,12 +2455,12 @@
                     {
                         "file": "shopper\\/checkout-login.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Shopper Checkout Login Account": [
                                 {
                                     "title": "can login to an existing account during checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2419,23 +2473,23 @@
                             "Checkout page": [
                                 {
                                     "title": "should display cart items in order review",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to choose available payment methods",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to fill billing details",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "warn when customer is missing required details",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows customer to fill shipping details",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "allows guest customer to place an order",
@@ -2451,20 +2505,20 @@
                     {
                         "file": "shopper\\/dashboard-access.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Customer-role users are blocked from accessing the WP Dashboard.": [
                                 {
                                     "title": "Customer is redirected from WP Admin home back to the My Account page.",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Customer is redirected from WP Admin profile page back to the My Account page.",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Customer is redirected from WP Admin using ajax query param back to the My Account page.",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2472,27 +2526,27 @@
                     {
                         "file": "shopper\\/launch-your-store.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Launch Your Store front end - logged out": [],
                             "Launch Your Store front end - logged out > Block Theme (Twenty Twenty Four)": [
                                 {
                                     "title": "Entire site coming soon mode (function () { [native code] })",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Store only coming soon mode (function () { [native code] })",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Launch Your Store front end - logged out > Classic Theme (Storefront)": [
                                 {
                                     "title": "Entire site coming soon mode (function () { [native code] })",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Store only coming soon mode (function () { [native code] })",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2513,16 +2567,16 @@
                     {
                         "file": "shopper\\/my-account-addresses.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Customer can manage addresses in My Account > Addresses page": [
                                 {
                                     "title": "can add billing address from my account",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can add shipping address from my account",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2530,12 +2584,12 @@
                     {
                         "file": "shopper\\/my-account-create-account.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Shopper My Account Create Account": [
                                 {
                                     "title": "can create a new account via my account",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2543,12 +2597,12 @@
                     {
                         "file": "shopper\\/my-account-downloads.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Customer can manage downloadable file in My Account > Downloads page": [
                                 {
                                     "title": "can see downloadable file and click to download it",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2556,12 +2610,12 @@
                     {
                         "file": "shopper\\/my-account-pay-order.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Customer can pay for their order through My Account": [
                                 {
                                     "title": "allows customer to pay for their order in My Account",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2569,12 +2623,12 @@
                     {
                         "file": "shopper\\/my-account.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "My account page": [
                                 {
                                     "title": "allows customer to login and navigate",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2582,12 +2636,12 @@
                     {
                         "file": "shopper\\/order-email-receiving.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Shopper Order Email Receiving": [
                                 {
                                     "title": "should receive order email after purchasing an item",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2600,7 +2654,7 @@
                             "Grouped Product Page": [
                                 {
                                     "title": "should be able to add grouped products to the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should be able to remove grouped products from the cart",
@@ -2612,16 +2666,16 @@
                     {
                         "file": "shopper\\/product-simple.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Single Product Page": [
                                 {
                                     "title": "should be able to post a review and see it after",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should be able to see product description",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2629,24 +2683,24 @@
                     {
                         "file": "shopper\\/product-tags-attributes.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Browse product tags and attributes from the product page": [
                                 {
                                     "title": "should see shop catalog with all its products",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should see and sort tags page with all the products",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should see and sort attributes page with all its products",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can see products showcase",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2659,7 +2713,7 @@
                             "Variable Product Page": [
                                 {
                                     "title": "should be able to add variation products to the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should be able to remove variation products from the cart",
@@ -2669,19 +2723,19 @@
                             "Shopper > Update variable product": [
                                 {
                                     "title": "Shopper can change variable attributes to the same value",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Shopper can change attributes to combination with dimensions and weight",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Shopper can change variable product attributes to variation with a different price",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Shopper can reset variations",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2694,11 +2748,11 @@
                             "Search, browse by categories and sort items in the shop": [
                                 {
                                     "title": "should let user search the store",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should let user browse products by categories",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should let user sort the products in the shop",
@@ -2710,18 +2764,31 @@
                     {
                         "file": "shopper\\/shop-title-after-deletion.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Check the title of the shop page after the page has been deleted": [
                                 {
                                     "title": "Check the title of the shop page after the page has been deleted",
-                                    "status": "passed"
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "shopper\\/wordpress-post.spec.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "logged-in customer can comment on a post": [
+                                {
+                                    "title": "logged-in customer can comment on a post",
+                                    "status": "pending"
                                 }
                             ]
                         }
                     }
                 ],
-                "summary": "414 total, 372 passed, 0 failed, 42 skipped."
+                "summary": "421 total, 304 passed, 30 failed, 87 skipped."
             }
         },
         {
@@ -2731,11 +2798,11 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 414,
-                        "passed": 372,
-                        "failed": 0,
+                        "tests": 368,
+                        "passed": 304,
+                        "failed": 30,
                         "pending": 0,
-                        "skipped": 42,
+                        "skipped": 34,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -2743,7 +2810,7 @@
                     },
                     "tests": [
                         {
-                            "name": "Can access Analytics Reports from Stats Overview",
+                            "name": "Can complete the core profiler skipping extension install",
                             "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
@@ -2751,17 +2818,128 @@
                             "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/stats-overview.spec.js",
+                            "filePath": "\\/normalized\\/path\\/core-profiler.spec.js",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "ui > activate-and-setup\\/stats-overview.spec.js > WooCommerce Home",
+                            "suite": "ui > activate-and-setup\\/core-profiler.spec.js > Store owner can complete the core profiler",
                             "extra": {
                                 "annotations": [
                                     {
                                         "type": "skip"
                                     }
                                 ]
+                            }
+                        },
+                        {
+                            "name": "Can complete the core profiler installing default extensions",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-profiler.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "ui > activate-and-setup\\/core-profiler.spec.js > Store owner can complete the core profiler",
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "Can click skip guided setup",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-profiler.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Confirm that the store is in coming soon mode after skipping the core profiler",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "ui > activate-and-setup\\/core-profiler.spec.js > Store owner can skip the core profiler",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "Can connect to WooCommerce.com",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-profiler.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Go to WC Home and make sure the total sales is visible",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Go to the extensions tab and connect store",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Check that we are sent to wp.com",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "ui > activate-and-setup\\/core-profiler.spec.js > Store owner can skip the core profiler",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "Can access Analytics Reports from Stats Overview",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/stats-overview.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Navigate to the WooCommerce Home page",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Navigate to Revenue Report",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Navigate to Orders Report",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Navigate to Analytics Overview",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "ui > activate-and-setup\\/stats-overview.spec.js > WooCommerce Home",
+                            "extra": {
+                                "annotations": []
                             }
                         },
                         {
@@ -3257,46 +3435,6 @@
                             }
                         },
                         {
-                            "name": "A user can view the coupons overview without it crashing",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/coupons.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > admin-marketing\\/coupons.spec.js > Coupons page",
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "A user can view the Marketing > Overview page without it crashing",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/overview.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > admin-marketing\\/overview.spec.js > Marketing page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
                             "name": "Marketing Overview page have relevant content",
                             "status": "passed",
                             "duration": 999,
@@ -3658,11 +3796,13 @@
                         },
                         {
                             "name": "Picking a footer should trigger an update on the site preview",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.waitFor: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().locator(\'footer div.wc-blocks-footer-pattern\') to be visible\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.waitFor: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().locator(\'footer div.wc-blocks-footer-pattern\') to be visible\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/footer.spec.js:170:25",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/footer.spec.js",
@@ -3874,11 +4014,13 @@
                         },
                         {
                             "name": "Picking a header should trigger an update on the site preview",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.getAttribute: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().locator(\'header div.wc-blocks-header-pattern\')\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.getAttribute: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().locator(\'header div.wc-blocks-header-pattern\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/header.spec.js:170:26",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/header.spec.js",
@@ -4012,11 +4154,13 @@
                         },
                         {
                             "name": "Selecting an image should update the site preview",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().locator(\'header img.custom-logo\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().locator(\'header img.custom-logo\')\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().locator(\'header img.custom-logo\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().locator(\'header img.custom-logo\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js:130:6",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
@@ -4296,28 +4440,6 @@
                             "suite": "ui > customize-store\\/loading-screen\\/loading-screen.spec.js > Assembler - Loading Page",
                             "extra": {
                                 "annotations": []
-                            }
-                        },
-                        {
-                            "name": "should hide loading screen and steps on subsequent runs",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/loading-screen.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > customize-store\\/loading-screen\\/loading-screen.spec.js > Assembler - Loading Page",
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
                             }
                         },
                         {
@@ -4759,11 +4881,13 @@
                         },
                         {
                             "name": "can create new page",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/merchant\\/create-page.spec.js:26:4",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-page.spec.js",
@@ -5433,6 +5557,87 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "ui > merchant\\/create-shipping-zones.spec.js > Verifies shipping options from customer perspective",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "can insert all WooCommerce blocks into page",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/create-woocommerce-blocks.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "ui > merchant\\/create-woocommerce-blocks.spec.js > Add WooCommerce Blocks Into Page",
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "can insert WooCommerce patterns into page",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/merchant\\/create-woocommerce-patterns.spec.js:47:4",
+                            "rawStatus": "failed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/create-woocommerce-patterns.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "ui > merchant\\/create-woocommerce-patterns.spec.js > Add WooCommerce Patterns Into Page",
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "Merchant can view a list of all customers, filter and download",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/customer-list.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Go to the customers reports page",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Check that the customers are displayed in the list",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Check that the customer list can be filtered by first name",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Hide and display columns",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Download the customer list",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "ui > merchant\\/customer-list.spec.js > Merchant > Customer List",
                             "extra": {
                                 "annotations": []
                             }
@@ -8424,6 +8629,34 @@
                             "flaky": false,
                             "steps": [
                                 {
+                                    "name": "Create variable product for individual edit test",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Create variable product for bulk edit test",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Create variable product for \\"delete all\\" test",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Create variable product for \\"manage stock\\" test",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Create variable product for \\"variation defaults\\" test",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Create variable product with 1 variation for \\"remove variation\\" test",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Hide variable product tour",
+                                    "status": "passed"
+                                },
+                                {
                                     "name": "Go to the \\"Edit product\\" page.",
                                     "status": "passed"
                                 },
@@ -8690,6 +8923,28 @@
                             }
                         },
                         {
+                            "name": "can create a simple product",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "ui > merchant\\/products\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Create product",
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
+                            }
+                        },
+                        {
                             "name": "can not create a product with duplicated SKU",
                             "status": "skipped",
                             "duration": 999,
@@ -8948,6 +9203,28 @@
                             "suite": "ui > merchant\\/products\\/block-editor\\/enable-block-product-editor.spec.js > Enable block product editor > Enabled",
                             "extra": {
                                 "annotations": []
+                            }
+                        },
+                        {
+                            "name": "can create a product with linked products",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/linked-product-tab-product-block-editor.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "ui > merchant\\/products\\/block-editor\\/linked-product-tab-product-block-editor.spec.js > General tab > Linked product",
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -9591,11 +9868,11 @@
                         },
                         {
                             "name": "Live preview when changing email settings",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
@@ -9604,11 +9881,7 @@
                             "steps": [],
                             "suite": "ui > merchant\\/settings-email.spec.js > WooCommerce Email Settings",
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
+                                "annotations": []
                             }
                         },
                         {
@@ -9926,11 +10199,13 @@
                         },
                         {
                             "name": "can create a new Customer",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'button\', { name: \'Add New User\' })\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'button\', { name: \'Add New User\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/merchant\\/users-create.spec.js:41:63\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/merchant\\/users-create.spec.js:29:3",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/users-create.spec.js",
@@ -9939,19 +10214,7 @@
                             "steps": [
                                 {
                                     "name": "create a new user",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the new user is displayed in users list",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify you can access the new user edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the new user can login",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "suite": "ui > merchant\\/users-create.spec.js",
@@ -10085,26 +10348,19 @@
                         },
                         {
                             "name": "should receive an email when creating an account",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveTitle\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\':root\')\\nExpected pattern: \\u001b[32m\\/Add New User\\/\\u001b[39m\\nReceived string:  \\u001b[31m\\"Add User \\u2039 WooCommerce Core E2E Test Suite \\u2014 WordPress\\"\\u001b[39m\\nCall log:\\n\\u001b[2m  - expect.toHaveTitle with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\':root\')\\u001b[22m\\n\\u001b[2m    34 \\u00d7 locator resolved to <html lang=\\"en-US\\" class=\\"wp-toolbar\\">\\u2026<\\/html>\\u001b[22m\\n\\u001b[2m       - unexpected value \\"Add User \\u2039 WooCommerce Core E2E Test Suite \\u2014 WordPress\\"\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveTitle\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\':root\')\\nExpected pattern: \\u001b[32m\\/Add New User\\/\\u001b[39m\\nReceived string:  \\u001b[31m\\"Add User \\u2039 WooCommerce Core E2E Test Suite \\u2014 WordPress\\"\\u001b[39m\\nCall log:\\n\\u001b[2m  - expect.toHaveTitle with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\':root\')\\u001b[22m\\n\\u001b[2m    34 \\u00d7 locator resolved to <html lang=\\"en-US\\" class=\\"wp-toolbar\\">\\u2026<\\/html>\\u001b[22m\\n\\u001b[2m       - unexpected value \\"Add User \\u2039 WooCommerce Core E2E Test Suite \\u2014 WordPress\\"\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/account-email-receiving.spec.js:62:25",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/account-email-receiving.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "create a new user",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify that the email was sent",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "ui > shopper\\/account-email-receiving.spec.js > Shopper Account Email Receiving",
                             "extra": {
                                 "annotations": []
@@ -10112,34 +10368,19 @@
                         },
                         {
                             "name": "should receive an email when password reset initiated from admin",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveTitle\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\':root\')\\nExpected pattern: \\u001b[32m\\/Add New User\\/\\u001b[39m\\nReceived string:  \\u001b[31m\\"Add User \\u2039 WooCommerce Core E2E Test Suite \\u2014 WordPress\\"\\u001b[39m\\nCall log:\\n\\u001b[2m  - expect.toHaveTitle with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\':root\')\\u001b[22m\\n\\u001b[2m    34 \\u00d7 locator resolved to <html lang=\\"en-US\\" class=\\"wp-toolbar\\">\\u2026<\\/html>\\u001b[22m\\n\\u001b[2m       - unexpected value \\"Add User \\u2039 WooCommerce Core E2E Test Suite \\u2014 WordPress\\"\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveTitle\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\':root\')\\nExpected pattern: \\u001b[32m\\/Add New User\\/\\u001b[39m\\nReceived string:  \\u001b[31m\\"Add User \\u2039 WooCommerce Core E2E Test Suite \\u2014 WordPress\\"\\u001b[39m\\nCall log:\\n\\u001b[2m  - expect.toHaveTitle with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\':root\')\\u001b[22m\\n\\u001b[2m    34 \\u00d7 locator resolved to <html lang=\\"en-US\\" class=\\"wp-toolbar\\">\\u2026<\\/html>\\u001b[22m\\n\\u001b[2m       - unexpected value \\"Add User \\u2039 WooCommerce Core E2E Test Suite \\u2014 WordPress\\"\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/account-email-receiving.spec.js:125:25",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/account-email-receiving.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "create a new user",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify that no email was sent on account creation",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "initiate password reset from admin",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify that the email was sent",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "ui > shopper\\/account-email-receiving.spec.js > Shopper Account Email Receiving",
                             "extra": {
                                 "annotations": []
@@ -10187,11 +10428,13 @@
                         },
                         {
                             "name": "allows customer to calculate Free Shipping in cart block if in Netherlands",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at Object.cartBlockPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-block-calculate-shipping.spec.js:31:3)",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-calculate-shipping.spec.js",
@@ -10205,11 +10448,13 @@
                         },
                         {
                             "name": "allows customer to calculate Flat rate and Local pickup in cart block if in Portugal",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at Object.cartBlockPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-block-calculate-shipping.spec.js:31:3)",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-calculate-shipping.spec.js",
@@ -10223,11 +10468,13 @@
                         },
                         {
                             "name": "should show correct total cart block price after updating quantity",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at Object.cartBlockPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-block-calculate-shipping.spec.js:31:3)",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-calculate-shipping.spec.js",
@@ -10241,11 +10488,13 @@
                         },
                         {
                             "name": "should show correct total cart block price with 2 different products and flat rate\\/local pickup",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at Object.cartBlockPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-block-calculate-shipping.spec.js:31:3)",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-calculate-shipping.spec.js",
@@ -10259,11 +10508,13 @@
                         },
                         {
                             "name": "allows cart block to apply coupon of any type",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-block-coupons.spec.js:46:3)",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
@@ -10277,11 +10528,13 @@
                         },
                         {
                             "name": "allows cart block to apply multiple coupons",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-block-coupons.spec.js:46:3)",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
@@ -10295,11 +10548,13 @@
                         },
                         {
                             "name": "prevents cart block applying same coupon twice",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-block-coupons.spec.js:46:3)",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
@@ -10313,11 +10568,13 @@
                         },
                         {
                             "name": "prevents cart block applying coupon with usage limit",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-block-coupons.spec.js:46:3)",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
@@ -10331,11 +10588,13 @@
                         },
                         {
                             "name": "can see empty cart, add and remove simple & cross sell product, increase to max quantity",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-block.spec.js:89:5",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block.spec.js",
@@ -10439,11 +10698,13 @@
                         },
                         {
                             "name": "can create Cart Block page",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:132:4",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-block-calculate-tax.spec.js",
@@ -10457,11 +10718,13 @@
                         },
                         {
                             "name": "can create Checkout Block page",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:140:4",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-block-calculate-tax.spec.js",
@@ -10475,11 +10738,13 @@
                         },
                         {
                             "name": "that inclusive tax is displayed properly in block-based Cart & Checkout pages",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block d21f8d0d\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block d21f8d0d\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block d21f8d0d\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block d21f8d0d\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:157:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:153:4",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-block-calculate-tax.spec.js",
@@ -10488,11 +10753,7 @@
                             "steps": [
                                 {
                                     "name": "Load cart page and confirm price display",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and confirm price display",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "suite": "ui > shopper\\/cart-checkout-block-calculate-tax.spec.js > Shopper Cart & Checkout Block Tax Display",
@@ -10502,11 +10763,13 @@
                         },
                         {
                             "name": "that exclusive tax is displayed properly in block-based Cart & Checkout pages",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 77f4d1f6\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 77f4d1f6\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 77f4d1f6\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 77f4d1f6\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:220:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:216:4",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-block-calculate-tax.spec.js",
@@ -10515,11 +10778,7 @@
                             "steps": [
                                 {
                                     "name": "Load cart page and confirm price display",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and confirm price display",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "suite": "ui > shopper\\/cart-checkout-block-calculate-tax.spec.js > Shopper Cart & Checkout Block Tax Display",
@@ -10529,11 +10788,13 @@
                         },
                         {
                             "name": "that tax rounding is present at subtotal level in block-based Cart & Checkout pages",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 6e5a76f1\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 6e5a76f1\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 6e5a76f1\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 6e5a76f1\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:389:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:385:4",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-block-calculate-tax.spec.js",
@@ -10542,11 +10803,7 @@
                             "steps": [
                                 {
                                     "name": "Load cart page and confirm price display",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and confirm price display",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "suite": "ui > shopper\\/cart-checkout-block-calculate-tax.spec.js > Shopper Cart & Checkout Block Tax Rounding",
@@ -10556,11 +10813,13 @@
                         },
                         {
                             "name": "that tax rounding is off at subtotal level in block-based Cart & Checkout pages",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block e9cb6e8e\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block e9cb6e8e\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block e9cb6e8e\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block e9cb6e8e\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:450:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:446:4",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-block-calculate-tax.spec.js",
@@ -10569,11 +10828,7 @@
                             "steps": [
                                 {
                                     "name": "Load cart page and confirm price display",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and confirm price display",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "suite": "ui > shopper\\/cart-checkout-block-calculate-tax.spec.js > Shopper Cart & Checkout Block Tax Rounding",
@@ -10583,11 +10838,13 @@
                         },
                         {
                             "name": "that applying taxes in cart block of 4 different levels calculates properly",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 6d99d212\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 6d99d212\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 6d99d212\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 6d99d212\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:690:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:686:4",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-block-calculate-tax.spec.js",
@@ -10596,11 +10853,7 @@
                             "steps": [
                                 {
                                     "name": "Load cart page and confirm price display",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and confirm price display",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "suite": "ui > shopper\\/cart-checkout-block-calculate-tax.spec.js > Shopper Cart & Checkout Block Tax Levels",
@@ -10610,11 +10863,13 @@
                         },
                         {
                             "name": "that applying taxes in block-based Cart & Checkout of 2 different levels (2 excluded) calculates properly",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 27d788ef\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 27d788ef\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 27d788ef\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 27d788ef\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:777:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:773:4",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-block-calculate-tax.spec.js",
@@ -10623,11 +10878,7 @@
                             "steps": [
                                 {
                                     "name": "Load cart page and confirm price display",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and confirm price display",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "suite": "ui > shopper\\/cart-checkout-block-calculate-tax.spec.js > Shopper Cart & Checkout Block Tax Levels",
@@ -10637,11 +10888,13 @@
                         },
                         {
                             "name": "that tax is applied in Cart Block to shipping as well as order",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 32d546ef\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 32d546ef\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 32d546ef\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 32d546ef\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:947:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:943:4",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-block-calculate-tax.spec.js",
@@ -10650,11 +10903,7 @@
                             "steps": [
                                 {
                                     "name": "Load cart page and confirm price display",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and confirm price display",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "suite": "ui > shopper\\/cart-checkout-block-calculate-tax.spec.js > Shipping Cart & Checkout Block Tax",
@@ -11496,11 +11745,13 @@
                         },
                         {
                             "name": "allows checkout block to apply coupon of any type",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/checkout-block-coupons.spec.js:46:3)",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-block-coupons.spec.js",
@@ -11514,11 +11765,13 @@
                         },
                         {
                             "name": "allows checkout block to apply multiple coupons",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/checkout-block-coupons.spec.js:46:3)",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-block-coupons.spec.js",
@@ -11532,11 +11785,13 @@
                         },
                         {
                             "name": "prevents checkout block applying same coupon twice",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/checkout-block-coupons.spec.js:46:3)",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-block-coupons.spec.js",
@@ -11550,11 +11805,13 @@
                         },
                         {
                             "name": "prevents checkout block applying coupon with usage limit",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/checkout-block-coupons.spec.js:46:3)",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-block-coupons.spec.js",
@@ -11565,1009 +11822,6 @@
                             "extra": {
                                 "annotations": []
                             }
-                        },
-                        {
-                            "name": "can see empty checkout block page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-block.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout-block.spec.js > Checkout Block page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "allows customer to choose available payment methods",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-block.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout-block.spec.js > Checkout Block page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "allows customer to fill shipping details",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-block.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout-block.spec.js > Checkout Block page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "allows customer to fill different shipping and billing details",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-block.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout-block.spec.js > Checkout Block page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "allows customer to fill shipping details and toggle different billing",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-block.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout-block.spec.js > Checkout Block page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "can choose different shipping types in the checkout",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-block.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout-block.spec.js > Checkout Block page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "allows guest customer to place an order",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-block.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout-block.spec.js > Checkout Block page",
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "allows existing customer to place an order",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-block.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout-block.spec.js > Checkout Block page",
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "can create an account during checkout",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-block.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout-block.spec.js > Checkout Block page",
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "can create an account during checkout with custom password",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-block.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout-block.spec.js > Checkout Block page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "can create an account during checkout",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-create-account.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout-create-account.spec.js > Shopper Checkout Create Account",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "can login to an existing account during checkout",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-login.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout-login.spec.js > Shopper Checkout Login Account",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "should display cart items in order review",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout.spec.js > Checkout page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "allows customer to choose available payment methods",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout.spec.js > Checkout page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "allows customer to fill billing details",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout.spec.js > Checkout page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "warn when customer is missing required details",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout.spec.js > Checkout page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "allows customer to fill shipping details",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout.spec.js > Checkout page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "allows guest customer to place an order",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout.spec.js > Checkout page",
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "allows existing customer to place order",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout.spec.js > Checkout page",
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Customer is redirected from WP Admin home back to the My Account page.",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/dashboard-access.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/dashboard-access.spec.js > Customer-role users are blocked from accessing the WP Dashboard.",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "Customer is redirected from WP Admin profile page back to the My Account page.",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/dashboard-access.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/dashboard-access.spec.js > Customer-role users are blocked from accessing the WP Dashboard.",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "Customer is redirected from WP Admin using ajax query param back to the My Account page.",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/dashboard-access.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/dashboard-access.spec.js > Customer-role users are blocked from accessing the WP Dashboard.",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "Entire site coming soon mode (function () { [native code] })",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/launch-your-store.spec.js > Launch Your Store front end - logged out > Block Theme (Twenty Twenty Four)",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "Store only coming soon mode (function () { [native code] })",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/launch-your-store.spec.js > Launch Your Store front end - logged out > Block Theme (Twenty Twenty Four)",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "Entire site coming soon mode (function () { [native code] })",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/launch-your-store.spec.js > Launch Your Store front end - logged out > Classic Theme (Storefront)",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "Store only coming soon mode (function () { [native code] })",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/launch-your-store.spec.js > Launch Your Store front end - logged out > Classic Theme (Storefront)",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "can see empty customized mini cart, add and remove product, increase to max quantity, calculate tax and see redirection",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/mini-cart.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/mini-cart.spec.js > Mini Cart block page",
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "can add billing address from my account",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/my-account-addresses.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/my-account-addresses.spec.js > Customer can manage addresses in My Account > Addresses page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "can add shipping address from my account",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/my-account-addresses.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/my-account-addresses.spec.js > Customer can manage addresses in My Account > Addresses page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "can create a new account via my account",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/my-account-create-account.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/my-account-create-account.spec.js > Shopper My Account Create Account",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "can see downloadable file and click to download it",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/my-account-downloads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/my-account-downloads.spec.js > Customer can manage downloadable file in My Account > Downloads page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "allows customer to pay for their order in My Account",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/my-account-pay-order.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/my-account-pay-order.spec.js > Customer can pay for their order through My Account",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "allows customer to login and navigate",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/my-account.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "customer can navigate to Orders page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "customer can navigate to Downloads page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "customer can navigate to Addresses page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "customer can navigate to Account details page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "ui > shopper\\/my-account.spec.js > My account page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "should receive order email after purchasing an item",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-email-receiving.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/order-email-receiving.spec.js > Shopper Order Email Receiving",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "should be able to add grouped products to the cart",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-grouped.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/product-grouped.spec.js > Grouped Product Page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "should be able to remove grouped products from the cart",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-grouped.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/product-grouped.spec.js > Grouped Product Page",
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "should be able to post a review and see it after",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-simple.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/product-simple.spec.js > Single Product Page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "should be able to see product description",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-simple.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/product-simple.spec.js > Single Product Page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "should see shop catalog with all its products",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/product-tags-attributes.spec.js > Browse product tags and attributes from the product page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "should see and sort tags page with all the products",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/product-tags-attributes.spec.js > Browse product tags and attributes from the product page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "should see and sort attributes page with all its products",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/product-tags-attributes.spec.js > Browse product tags and attributes from the product page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "can see products showcase",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/product-tags-attributes.spec.js > Browse product tags and attributes from the product page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "should be able to add variation products to the cart",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/product-variable.spec.js > Variable Product Page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "should be able to remove variation products from the cart",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/product-variable.spec.js > Variable Product Page",
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Shopper can change variable attributes to the same value",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/product-variable.spec.js > Shopper > Update variable product",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "Shopper can change attributes to combination with dimensions and weight",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/product-variable.spec.js > Shopper > Update variable product",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "Shopper can change variable product attributes to variation with a different price",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/product-variable.spec.js > Shopper > Update variable product",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "Shopper can reset variations",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/product-variable.spec.js > Shopper > Update variable product",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "should let user search the store",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/shop-search-browse-sort.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to the shop and perform the search",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "ui > shopper\\/shop-search-browse-sort.spec.js > Search, browse by categories and sort items in the shop",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "should let user browse products by categories",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/shop-search-browse-sort.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to the shop and browse by the category",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Ensure the category page contains all the relevant products",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "ui > shopper\\/shop-search-browse-sort.spec.js > Search, browse by categories and sort items in the shop",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "should let user sort the products in the shop",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/shop-search-browse-sort.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/shop-search-browse-sort.spec.js > Search, browse by categories and sort items in the shop",
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "Check the title of the shop page after the page has been deleted",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/shop-title-after-deletion.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/shop-title-after-deletion.spec.js",
-                            "extra": {
-                                "annotations": []
-                            }
                         }
                     ]
                 }
@@ -12575,7 +11829,16 @@
         },
         {
             "debug_log": {
-                "generic": []
+                "generic": [
+                    {
+                        "count": "75",
+                        "message": "PHP Warning: Invalid argument supplied for foreach() in \\/var\\/www\\/html\\/wp-includes\\/rest-api.php on line 902"
+                    },
+                    {
+                        "count": "75",
+                        "message": "PHP Warning: array_intersect_key(): Expected parameter 1 to be an array, null given in \\/var\\/www\\/html\\/wp-includes\\/rest-api.php on line 901"
+                    }
+                ]
             }
         }
     ]
