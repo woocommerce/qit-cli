@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "400 total, 391 passed, 5 failed, 4 skipped.",
+            "test_summary": "400 total, 391 passed, 0 failed, 9 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -49,13 +49,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 5,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 95,
-                "numPendingTestSuites": 2,
+                "numPendingTestSuites": 7,
                 "numTotalTestSuites": 102,
-                "numFailedTests": 5,
+                "numFailedTests": 0,
                 "numPassedTests": 391,
-                "numPendingTests": 4,
+                "numPendingTests": 9,
                 "numTotalTests": 400,
                 "testResults": [
                     {
@@ -1221,8 +1221,8 @@
                     },
                     {
                         "file": "email\\/settings-email.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Email Settings": [
                                 {
@@ -1239,7 +1239,7 @@
                                 },
                                 {
                                     "title": "Send email preview",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "See specific email preview",
@@ -1439,8 +1439,8 @@
                     },
                     {
                         "file": "onboarding\\/onboarding-wizard.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Store owner can complete the core profiler": [
                                 {
@@ -1449,7 +1449,7 @@
                                 },
                                 {
                                     "title": "Can complete the core profiler installing default extensions",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "Store owner can skip the core profiler": [
@@ -1656,8 +1656,8 @@
                     },
                     {
                         "file": "order\\/order-refund.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
@@ -1666,7 +1666,7 @@
                                 },
                                 {
                                     "title": "can delete an issued refund",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
@@ -2060,13 +2060,13 @@
                     },
                     {
                         "file": "product\\/create-product-attributes.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "can add custom product attributes": [
                                 {
                                     "title": "can add custom product attributes",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2282,8 +2282,8 @@
                     },
                     {
                         "file": "product\\/product-reviews.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Product Reviews": [],
                             "Product Reviews > Merchant manages reviews": [
@@ -2313,7 +2313,7 @@
                                 },
                                 {
                                     "title": "can reply to a product review",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete a product review",
@@ -2741,7 +2741,7 @@
                         }
                     }
                 ],
-                "summary": "400 total, 391 passed, 5 failed, 4 skipped."
+                "summary": "400 total, 391 passed, 0 failed, 9 skipped."
             }
         },
         {
@@ -2753,9 +2753,9 @@
                     "summary": {
                         "tests": 400,
                         "passed": 391,
-                        "failed": 5,
+                        "failed": 0,
                         "pending": 0,
-                        "skipped": 4,
+                        "skipped": 9,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -7047,13 +7047,11 @@
                         },
                         {
                             "name": "Send email preview",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'dialog\').locator(\'text=Error sending test email. Please try again.\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'dialog\').locator(\'text=Error sending test email. Please try again.\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'dialog\').locator(\'text=Error sending test email. Please try again.\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'dialog\').locator(\'text=Error sending test email. Please try again.\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email\\/settings-email.spec.js:209:27",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
@@ -7062,7 +7060,11 @@
                             "steps": [],
                             "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -7649,39 +7651,24 @@
                         },
                         {
                             "name": "Can complete the core profiler installing default extensions",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.check: Timeout 2000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.woocommerce-profiler-plugins-plugin-card[data-slug=\\"google-listings-and-ads\\"]\').getByRole(\'checkbox\')\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.check: Timeout 2000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.woocommerce-profiler-plugins-plugin-card[data-slug=\\"google-listings-and-ads\\"]\').getByRole(\'checkbox\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/onboarding-wizard.spec.js:323:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/onboarding-wizard.spec.js:281:4",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Intro page and opt in to data sharing",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "User profile information",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Business Information",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Extensions -- install some suggested extensions",
-                                    "status": "failed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > onboarding\\/onboarding-wizard.spec.js > Store owner can complete the core profiler",
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -8331,13 +8318,11 @@
                         },
                         {
                             "name": "can delete an issued refund",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'td.refunded-total\')\\nExpected: \\u001b[32m0\\u001b[39m\\nReceived: \\u001b[31m2\\u001b[39m\\nCall log:\\n\\u001b[2m  - expect.toHaveCount with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'td.refunded-total\')\\u001b[22m\\n\\u001b[2m    24 \\u00d7 locator resolved to 2 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"2\\"\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'td.refunded-total\')\\nExpected: \\u001b[32m0\\u001b[39m\\nReceived: \\u001b[31m2\\u001b[39m\\nCall log:\\n\\u001b[2m  - expect.toHaveCount with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'td.refunded-total\')\\u001b[22m\\n\\u001b[2m    24 \\u00d7 locator resolved to 2 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"2\\"\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-refund.spec.js:139:56",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-refund.spec.js",
@@ -8346,7 +8331,11 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-refund.spec.js > WooCommerce Orders > Refund an order",
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -9825,139 +9814,24 @@
                         },
                         {
                             "name": "can add custom product attributes",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: page.waitForResponse: Timeout 20000ms exceeded while waiting for event \\"response\\"",
-                            "trace": "TimeoutError: page.waitForResponse: Timeout 20000ms exceeded while waiting for event \\"response\\"\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/create-product-attributes.spec.js:160:39\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/create-product-attributes.spec.js:157:13",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-product-attributes.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Open \\"Edit product\\" page of product id <ID>",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Go to the \\"Attributes\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Add the attribute \\"Colour\\" with values \\"Red | Green\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type \\"Colour\\" in the \\"Attribute name\\" input field.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type the attribute values \\"Red | Green\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Visible on the product page\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Used for variations\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \\"Save attributes\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Wait for the tour\'s dismissal to be saved",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Wait for the loading overlay to disappear.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Add the attribute \\"Size\\" with values \\"Small | Medium\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \'Add new\'.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type \\"Size\\" in the \\"Attribute name\\" input field.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type the attribute values \\"Small | Medium\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Visible on the product page\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Used for variations\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \\"Save attributes\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Wait for the tour\'s dismissal to be saved",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Wait for the loading overlay to disappear.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Add the attribute \\"Logo\\" with values \\"Woo | WordPress\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \'Add new\'.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type \\"Logo\\" in the \\"Attribute name\\" input field.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type the attribute values \\"Woo | WordPress\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Visible on the product page\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Used for variations\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \\"Save attributes\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Wait for the tour\'s dismissal to be saved",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Wait for the loading overlay to disappear.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Update product",
-                                    "status": "failed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/create-product-attributes.spec.js",
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -11181,13 +11055,11 @@
                         },
                         {
                             "name": "can reply to a product review",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: locator.hover: Error: strict mode violation: getByRole(\'link\', { name: \'Dismiss\' }) resolved to 2 elements:\\n    1) <a class=\\"woocommerce-message-close notice-dismiss\\" href=\\"\\/wp-admin\\/edit.php?post_type=product&page=product-reviews&wc-hide-notice=no_secure_connection&_wc_notice_nonce=e78c2b93d0\\">Dismiss<\\/a> aka getByRole(\'link\', { name: \'\\uf153 Dismiss\' }).first()\\n    2) <a class=\\"woocommerce-message-close notice-dismiss\\" href=\\"\\/wp-admin\\/edit.php?post_type=product&page=product-reviews&wc-hide-notice=pinterest-for-woocommerce%2Fpinterest-for-woocommerce.php-woocommerce-untested&_wc_notice_nonce=e78c2b93d0\\">Dismiss<\\/a> aka getByRole(\'link\', { name: \'\\uf153 Dismiss\' }).nth(1)\\n\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#comment-120\')\\u001b[22m\\n",
-                            "trace": "Error: locator.hover: Error: strict mode violation: getByRole(\'link\', { name: \'Dismiss\' }) resolved to 2 elements:\\n    1) <a class=\\"woocommerce-message-close notice-dismiss\\" href=\\"\\/wp-admin\\/edit.php?post_type=product&page=product-reviews&wc-hide-notice=no_secure_connection&_wc_notice_nonce=e78c2b93d0\\">Dismiss<\\/a> aka getByRole(\'link\', { name: \'\\uf153 Dismiss\' }).first()\\n    2) <a class=\\"woocommerce-message-close notice-dismiss\\" href=\\"\\/wp-admin\\/edit.php?post_type=product&page=product-reviews&wc-hide-notice=pinterest-for-woocommerce%2Fpinterest-for-woocommerce.php-woocommerce-untested&_wc_notice_nonce=e78c2b93d0\\">Dismiss<\\/a> aka getByRole(\'link\', { name: \'\\uf153 Dismiss\' }).nth(1)\\n\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#comment-120\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-reviews.spec.js:268:20",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-reviews.spec.js",
@@ -11196,7 +11068,11 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Merchant manages reviews",
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -12570,10 +12446,6 @@
                     {
                         "count": "1",
                         "message": "PHP Deprecated: Function Automattic\\\\WooCommerce\\\\Admin\\\\WCAdminHelper::is_store_page is deprecated since version 9.8.0! Use is_current_page_store_page instead. in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6114"
-                    },
-                    {
-                        "count": "1",
-                        "message": "WordPress database error Deadlock found when trying to get lock; try restarting transaction for query \\nINSERT INTO wp_actionscheduler_actions ( `hook`, `status`, `scheduled_date_gmt`, `scheduled_date_local`, `schedule`, `group_id`, `priority`, `args` )\\n\\nSELECT \'mailpoet\\/cron\\/daemon-trigger\', \'pending\', \'2025-03-06 17:46:49\', \'2025-03-06 17:46:49\', \'O:32:\\\\ActionScheduler_IntervalSchedule\\\\:5:{s:22:\\\\\\\\0*\\\\0scheduled_timestamp\\\\;i:1741283209;s:18:\\\\\\\\0*\\\\0first_timestamp\\\\;i:1741283209;s:13:\\\\\\\\0*\\\\0recurrence\\\\;i:120;s:49:\\\\\\\\0ActionScheduler_IntervalSchedule\\\\0start_timestamp\\\\;i:1741283209;s:53:\\\\\\\\0ActionScheduler_IntervalSchedule\\\\0interval_in_seconds\\\\;i:120;}\', 9, 10, \'[]\' FROM DUAL\\n\\nWHERE ( \\n\\nSELECT action_id FROM wp_actionscheduler_actions\\n\\nWHERE status IN ( \'pending\', \'in-progress\' )\\n\\nAND hook = \'mailpoet\\/cron\\/daemon-trigger\'\\n\\nAND `group_id` = 9\\n\\n LIMIT 1 ) IS NULL made by require(\'wp-blog-header.php\'), require_once(\'wp-load.php\'), require_once(\'wp-config.php\'), require_once(\'wp-settings.php\'), do_action(\'init\'), WP_Hook->do_action, WP_Hook->apply_filters, MailPoet\\\\Config\\\\Initializer->initialize, MailPoet\\\\Config\\\\Initializer->setupCronTrigger, MailPoet\\\\Cron\\\\CronTrigger->init, MailPoet\\\\Cron\\\\DaemonActionSchedulerRunner->init, MailPoet\\\\Cron\\\\ActionScheduler\\\\Actions\\\\DaemonTrigger->init, MailPoet\\\\Cron\\\\ActionScheduler\\\\ActionScheduler->scheduleRecurringAction, as_schedule_recurring_action, ActionScheduler_ActionFactory->create, ActionScheduler_ActionFactory->store_unique_action, ActionScheduler_DBStore->save_unique_action, ActionScheduler_DBStore->save_action_to_db"
                     }
                 ]
             }
