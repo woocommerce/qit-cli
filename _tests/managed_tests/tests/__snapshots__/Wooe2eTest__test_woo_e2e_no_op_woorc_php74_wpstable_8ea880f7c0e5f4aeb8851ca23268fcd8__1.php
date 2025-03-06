@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "400 total, 388 passed, 7 failed, 5 skipped.",
+            "test_summary": "400 total, 391 passed, 5 failed, 4 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -49,13 +49,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 7,
-                "numPassedTestSuites": 93,
-                "numPendingTestSuites": 3,
+                "numFailedTestSuites": 5,
+                "numPassedTestSuites": 95,
+                "numPendingTestSuites": 2,
                 "numTotalTestSuites": 102,
-                "numFailedTests": 7,
-                "numPassedTests": 388,
-                "numPendingTests": 5,
+                "numFailedTests": 5,
+                "numPassedTests": 391,
+                "numPendingTests": 4,
                 "numTotalTests": 400,
                 "testResults": [
                     {
@@ -460,7 +460,7 @@
                     },
                     {
                         "file": "checkout\\/checkout.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "guest can checkout paying with cash on delivery on classic checkout": [
@@ -508,7 +508,7 @@
                             "customer can login at checkout and place the order with a different shipping address blocks checkout": [
                                 {
                                     "title": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "existing customer can update the billing address and place the order with direct bank transfer on classic checkout": [
@@ -2236,8 +2236,8 @@
                     },
                     {
                         "file": "product\\/product-import-csv.spec.js",
-                        "status": "failed",
-                        "has_pending": true,
+                        "status": "passed",
+                        "has_pending": false,
                         "tests": {
                             "Import Products from a CSV file": [
                                 {
@@ -2246,11 +2246,11 @@
                                 },
                                 {
                                     "title": "can upload the CSV file and import products",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can override the existing products via CSV import",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2741,7 +2741,7 @@
                         }
                     }
                 ],
-                "summary": "400 total, 388 passed, 7 failed, 5 skipped."
+                "summary": "400 total, 391 passed, 5 failed, 4 skipped."
             }
         },
         {
@@ -2752,10 +2752,10 @@
                     },
                     "summary": {
                         "tests": 400,
-                        "passed": 388,
-                        "failed": 7,
+                        "passed": 391,
+                        "failed": 5,
                         "pending": 0,
-                        "skipped": 5,
+                        "skipped": 4,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -4218,13 +4218,11 @@
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByText(\'Your order has been received\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByText(\'Your order has been received\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByText(\'Your order has been received\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByText(\'Your order has been received\')\\u001b[22m\\n\\n    at placeOrder (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js:94:4)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js:427:4",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
@@ -10871,13 +10869,11 @@
                         },
                         {
                             "name": "can upload the CSV file and import products",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: ENOENT: no such file or directory, stat \'\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/tests\\/e2e-pw\\/test-data\\/sample_products.csv\'",
-                            "trace": "Error: ENOENT: no such file or directory, stat \'\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/tests\\/e2e-pw\\/test-data\\/sample_products.csv\'\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js:196:4",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
@@ -10891,11 +10887,11 @@
                         },
                         {
                             "name": "can override the existing products via CSV import",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
@@ -11189,8 +11185,8 @@
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: locator.hover: Error: strict mode violation: getByRole(\'link\', { name: \'Dismiss\' }) resolved to 2 elements:\\n    1) <a class=\\"woocommerce-message-close notice-dismiss\\" href=\\"\\/wp-admin\\/edit.php?post_type=product&page=product-reviews&wc-hide-notice=no_secure_connection&_wc_notice_nonce=efdcb75b6e\\">Dismiss<\\/a> aka getByRole(\'link\', { name: \'\\uf153 Dismiss\' }).first()\\n    2) <a class=\\"woocommerce-message-close notice-dismiss\\" href=\\"\\/wp-admin\\/edit.php?post_type=product&page=product-reviews&wc-hide-notice=pinterest-for-woocommerce%2Fpinterest-for-woocommerce.php-woocommerce-untested&_wc_notice_nonce=efdcb75b6e\\">Dismiss<\\/a> aka getByRole(\'link\', { name: \'\\uf153 Dismiss\' }).nth(1)\\n\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#comment-117\')\\u001b[22m\\n",
-                            "trace": "Error: locator.hover: Error: strict mode violation: getByRole(\'link\', { name: \'Dismiss\' }) resolved to 2 elements:\\n    1) <a class=\\"woocommerce-message-close notice-dismiss\\" href=\\"\\/wp-admin\\/edit.php?post_type=product&page=product-reviews&wc-hide-notice=no_secure_connection&_wc_notice_nonce=efdcb75b6e\\">Dismiss<\\/a> aka getByRole(\'link\', { name: \'\\uf153 Dismiss\' }).first()\\n    2) <a class=\\"woocommerce-message-close notice-dismiss\\" href=\\"\\/wp-admin\\/edit.php?post_type=product&page=product-reviews&wc-hide-notice=pinterest-for-woocommerce%2Fpinterest-for-woocommerce.php-woocommerce-untested&_wc_notice_nonce=efdcb75b6e\\">Dismiss<\\/a> aka getByRole(\'link\', { name: \'\\uf153 Dismiss\' }).nth(1)\\n\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#comment-117\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-reviews.spec.js:268:20",
+                            "message": "Error: locator.hover: Error: strict mode violation: getByRole(\'link\', { name: \'Dismiss\' }) resolved to 2 elements:\\n    1) <a class=\\"woocommerce-message-close notice-dismiss\\" href=\\"\\/wp-admin\\/edit.php?post_type=product&page=product-reviews&wc-hide-notice=no_secure_connection&_wc_notice_nonce=e78c2b93d0\\">Dismiss<\\/a> aka getByRole(\'link\', { name: \'\\uf153 Dismiss\' }).first()\\n    2) <a class=\\"woocommerce-message-close notice-dismiss\\" href=\\"\\/wp-admin\\/edit.php?post_type=product&page=product-reviews&wc-hide-notice=pinterest-for-woocommerce%2Fpinterest-for-woocommerce.php-woocommerce-untested&_wc_notice_nonce=e78c2b93d0\\">Dismiss<\\/a> aka getByRole(\'link\', { name: \'\\uf153 Dismiss\' }).nth(1)\\n\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#comment-120\')\\u001b[22m\\n",
+                            "trace": "Error: locator.hover: Error: strict mode violation: getByRole(\'link\', { name: \'Dismiss\' }) resolved to 2 elements:\\n    1) <a class=\\"woocommerce-message-close notice-dismiss\\" href=\\"\\/wp-admin\\/edit.php?post_type=product&page=product-reviews&wc-hide-notice=no_secure_connection&_wc_notice_nonce=e78c2b93d0\\">Dismiss<\\/a> aka getByRole(\'link\', { name: \'\\uf153 Dismiss\' }).first()\\n    2) <a class=\\"woocommerce-message-close notice-dismiss\\" href=\\"\\/wp-admin\\/edit.php?post_type=product&page=product-reviews&wc-hide-notice=pinterest-for-woocommerce%2Fpinterest-for-woocommerce.php-woocommerce-untested&_wc_notice_nonce=e78c2b93d0\\">Dismiss<\\/a> aka getByRole(\'link\', { name: \'\\uf153 Dismiss\' }).nth(1)\\n\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#comment-120\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-reviews.spec.js:268:20",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -12577,7 +12573,7 @@
                     },
                     {
                         "count": "1",
-                        "message": "WordPress database error Deadlock found when trying to get lock; try restarting transaction for query \\nINSERT INTO wp_actionscheduler_actions ( `hook`, `status`, `scheduled_date_gmt`, `scheduled_date_local`, `schedule`, `group_id`, `priority`, `args` )\\n\\nSELECT \'mailpoet\\/cron\\/daemon-trigger\', \'pending\', \'2025-03-06 01:52:32\', \'2025-03-06 01:52:32\', \'O:32:\\\\ActionScheduler_IntervalSchedule\\\\:5:{s:22:\\\\\\\\0*\\\\0scheduled_timestamp\\\\;i:1741225952;s:18:\\\\\\\\0*\\\\0first_timestamp\\\\;i:1741225952;s:13:\\\\\\\\0*\\\\0recurrence\\\\;i:120;s:49:\\\\\\\\0ActionScheduler_IntervalSchedule\\\\0start_timestamp\\\\;i:1741225952;s:53:\\\\\\\\0ActionScheduler_IntervalSchedule\\\\0interval_in_seconds\\\\;i:120;}\', 9, 10, \'[]\' FROM DUAL\\n\\nWHERE ( \\n\\nSELECT action_id FROM wp_actionscheduler_actions\\n\\nWHERE status IN ( \'pending\', \'in-progress\' )\\n\\nAND hook = \'mailpoet\\/cron\\/daemon-trigger\'\\n\\nAND `group_id` = 9\\n\\n LIMIT 1 ) IS NULL made by require(\'wp-blog-header.php\'), require_once(\'wp-load.php\'), require_once(\'wp-config.php\'), require_once(\'wp-settings.php\'), do_action(\'init\'), WP_Hook->do_action, WP_Hook->apply_filters, MailPoet\\\\Config\\\\Initializer->initialize, MailPoet\\\\Config\\\\Initializer->setupCronTrigger, MailPoet\\\\Cron\\\\CronTrigger->init, MailPoet\\\\Cron\\\\DaemonActionSchedulerRunner->init, MailPoet\\\\Cron\\\\ActionScheduler\\\\Actions\\\\DaemonTrigger->init, MailPoet\\\\Cron\\\\ActionScheduler\\\\ActionScheduler->scheduleRecurringAction, as_schedule_recurring_action, ActionScheduler_ActionFactory->create, ActionScheduler_ActionFactory->store_unique_action, ActionScheduler_DBStore->save_unique_action, ActionScheduler_DBStore->save_action_to_db"
+                        "message": "WordPress database error Deadlock found when trying to get lock; try restarting transaction for query \\nINSERT INTO wp_actionscheduler_actions ( `hook`, `status`, `scheduled_date_gmt`, `scheduled_date_local`, `schedule`, `group_id`, `priority`, `args` )\\n\\nSELECT \'mailpoet\\/cron\\/daemon-trigger\', \'pending\', \'2025-03-06 17:46:49\', \'2025-03-06 17:46:49\', \'O:32:\\\\ActionScheduler_IntervalSchedule\\\\:5:{s:22:\\\\\\\\0*\\\\0scheduled_timestamp\\\\;i:1741283209;s:18:\\\\\\\\0*\\\\0first_timestamp\\\\;i:1741283209;s:13:\\\\\\\\0*\\\\0recurrence\\\\;i:120;s:49:\\\\\\\\0ActionScheduler_IntervalSchedule\\\\0start_timestamp\\\\;i:1741283209;s:53:\\\\\\\\0ActionScheduler_IntervalSchedule\\\\0interval_in_seconds\\\\;i:120;}\', 9, 10, \'[]\' FROM DUAL\\n\\nWHERE ( \\n\\nSELECT action_id FROM wp_actionscheduler_actions\\n\\nWHERE status IN ( \'pending\', \'in-progress\' )\\n\\nAND hook = \'mailpoet\\/cron\\/daemon-trigger\'\\n\\nAND `group_id` = 9\\n\\n LIMIT 1 ) IS NULL made by require(\'wp-blog-header.php\'), require_once(\'wp-load.php\'), require_once(\'wp-config.php\'), require_once(\'wp-settings.php\'), do_action(\'init\'), WP_Hook->do_action, WP_Hook->apply_filters, MailPoet\\\\Config\\\\Initializer->initialize, MailPoet\\\\Config\\\\Initializer->setupCronTrigger, MailPoet\\\\Cron\\\\CronTrigger->init, MailPoet\\\\Cron\\\\DaemonActionSchedulerRunner->init, MailPoet\\\\Cron\\\\ActionScheduler\\\\Actions\\\\DaemonTrigger->init, MailPoet\\\\Cron\\\\ActionScheduler\\\\ActionScheduler->scheduleRecurringAction, as_schedule_recurring_action, ActionScheduler_ActionFactory->create, ActionScheduler_ActionFactory->store_unique_action, ActionScheduler_DBStore->save_unique_action, ActionScheduler_DBStore->save_action_to_db"
                     }
                 ]
             }
