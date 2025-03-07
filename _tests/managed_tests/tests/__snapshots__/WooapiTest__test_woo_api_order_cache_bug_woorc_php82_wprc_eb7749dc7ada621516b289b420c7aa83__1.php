@@ -6406,7 +6406,7 @@
                     },
                     {
                         "count": "1",
-                        "message": "PHP Notice: Function wpdb::prepare was called incorrectly. The query argument of wpdb::prepare() must have a placeholder. Please see Debugging in WordPress for more information. (This message was added in version 3.9.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6121"
+                        "message": "PHP Notice: Function wpdb::prepare was called incorrectly. The query argument of wpdb::prepare() must have a placeholder. Please see Debugging in WordPress for more information. (This message was added in version 3.9.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6114"
                     },
                     {
                         "count": "4",
