@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "421 total, 304 passed, 30 failed, 87 skipped.",
+            "test_summary": "421 total, 301 passed, 30 failed, 90 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -49,13 +49,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 12,
-                "numPassedTestSuites": 59,
-                "numPendingTestSuites": 35,
+                "numFailedTestSuites": 13,
+                "numPassedTestSuites": 58,
+                "numPendingTestSuites": 36,
                 "numTotalTestSuites": 105,
                 "numFailedTests": 30,
-                "numPassedTests": 304,
-                "numPendingTests": 87,
+                "numPassedTests": 301,
+                "numPendingTests": 90,
                 "numTotalTests": 421,
                 "testResults": [
                     {
@@ -205,21 +205,21 @@
                     },
                     {
                         "file": "admin-tasks\\/payment.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Payment setup task": [
                                 {
                                     "title": "Saving valid bank account transfer details enables the payment method",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "Can visit the payment setup task from the homescreen if the setup wizard has been skipped",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "Enabling cash on delivery enables the payment method",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2368,7 +2368,7 @@
                     {
                         "file": "shopper\\/checkout-block-coupons.spec.js",
                         "status": "failed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Checkout Block Applying Coupons": [
                                 {
@@ -2377,15 +2377,15 @@
                                 },
                                 {
                                     "title": "allows checkout block to apply multiple coupons",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "prevents checkout block applying same coupon twice",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "prevents checkout block applying coupon with usage limit",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2788,7 +2788,7 @@
                         }
                     }
                 ],
-                "summary": "421 total, 304 passed, 30 failed, 87 skipped."
+                "summary": "421 total, 301 passed, 30 failed, 90 skipped."
             }
         },
         {
@@ -2798,8 +2798,8 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 368,
-                        "passed": 304,
+                        "tests": 365,
+                        "passed": 301,
                         "failed": 30,
                         "pending": 0,
                         "skipped": 34,
@@ -3472,11 +3472,13 @@
                         },
                         {
                             "name": "Saving valid bank account transfer details enables the payment method",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveClass\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'\\/\\/tr[@data-gateway_id=\\"bacs\\"]\\/td[@class=\\"status\\"]\\/a\')\\nExpected string: \\u001b[32m\\"wc-payment-gateway-method-toggle-enabled\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toHaveClass with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'\\/\\/tr[@data-gateway_id=\\"bacs\\"]\\/td[@class=\\"status\\"]\\/a\')\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveClass\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'\\/\\/tr[@data-gateway_id=\\"bacs\\"]\\/td[@class=\\"status\\"]\\/a\')\\nExpected string: \\u001b[32m\\"wc-payment-gateway-method-toggle-enabled\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toHaveClass with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'\\/\\/tr[@data-gateway_id=\\"bacs\\"]\\/td[@class=\\"status\\"]\\/a\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/admin-tasks\\/payment.spec.js:95:6",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/payment.spec.js",
@@ -3490,11 +3492,13 @@
                         },
                         {
                             "name": "Can visit the payment setup task from the homescreen if the setup wizard has been skipped",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.woocommerce-layout__header-wrapper > h1\')\\nExpected string: \\u001b[32m\\"Get paid\\"\\u001b[39m\\nReceived string: \\u001b[31m\\"WooCommerce Settings\\"\\u001b[39m\\nCall log:\\n\\u001b[2m  - expect.toHaveText with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.woocommerce-layout__header-wrapper > h1\')\\u001b[22m\\n\\u001b[2m    30 \\u00d7 locator resolved to <h1 data-wp-c16t=\\"true\\" data-wp-component=\\"Text\\" class=\\"components-truncate components-text woocommerce-layout__header-heading woocommerce-layout__header-left-align css-ouin5l e19lxcc00\\">\\u2026<\\/h1>\\u001b[22m\\n\\u001b[2m       - unexpected value \\"WooCommerce Settings\\"\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.woocommerce-layout__header-wrapper > h1\')\\nExpected string: \\u001b[32m\\"Get paid\\"\\u001b[39m\\nReceived string: \\u001b[31m\\"WooCommerce Settings\\"\\u001b[39m\\nCall log:\\n\\u001b[2m  - expect.toHaveText with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.woocommerce-layout__header-wrapper > h1\')\\u001b[22m\\n\\u001b[2m    30 \\u00d7 locator resolved to <h1 data-wp-c16t=\\"true\\" data-wp-component=\\"Text\\" class=\\"components-truncate components-text woocommerce-layout__header-heading woocommerce-layout__header-left-align css-ouin5l e19lxcc00\\">\\u2026<\\/h1>\\u001b[22m\\n\\u001b[2m       - unexpected value \\"WooCommerce Settings\\"\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/admin-tasks\\/payment.spec.js:108:6",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/payment.spec.js",
@@ -3508,11 +3512,13 @@
                         },
                         {
                             "name": "Enabling cash on delivery enables the payment method",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveClass\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'\\/\\/tr[@data-gateway_id=\\"cod\\"]\\/td[@class=\\"status\\"]\\/a\')\\nExpected string: \\u001b[32m\\"wc-payment-gateway-method-toggle-enabled\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toHaveClass with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'\\/\\/tr[@data-gateway_id=\\"cod\\"]\\/td[@class=\\"status\\"]\\/a\')\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveClass\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'\\/\\/tr[@data-gateway_id=\\"cod\\"]\\/td[@class=\\"status\\"]\\/a\')\\nExpected string: \\u001b[32m\\"wc-payment-gateway-method-toggle-enabled\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toHaveClass with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'\\/\\/tr[@data-gateway_id=\\"cod\\"]\\/td[@class=\\"status\\"]\\/a\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/admin-tasks\\/payment.spec.js:151:6",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/payment.spec.js",
@@ -8629,34 +8635,6 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Create variable product for individual edit test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create variable product for bulk edit test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create variable product for \\"delete all\\" test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create variable product for \\"manage stock\\" test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create variable product for \\"variation defaults\\" test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create variable product with 1 variation for \\"remove variation\\" test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Hide variable product tour",
-                                    "status": "passed"
-                                },
-                                {
                                     "name": "Go to the \\"Edit product\\" page.",
                                     "status": "passed"
                                 },
@@ -10742,8 +10720,8 @@
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block d21f8d0d\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block d21f8d0d\' })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block d21f8d0d\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block d21f8d0d\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:157:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:153:4",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block ed97ea49\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block ed97ea49\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block ed97ea49\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block ed97ea49\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:157:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:153:4",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -10767,8 +10745,8 @@
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 77f4d1f6\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 77f4d1f6\' })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 77f4d1f6\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 77f4d1f6\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:220:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:216:4",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 47163c9c\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 47163c9c\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 47163c9c\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 47163c9c\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:220:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:216:4",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -10792,8 +10770,8 @@
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 6e5a76f1\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 6e5a76f1\' })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 6e5a76f1\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 6e5a76f1\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:389:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:385:4",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 1fb2d00a\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 1fb2d00a\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 1fb2d00a\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 1fb2d00a\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:389:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:385:4",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -10817,8 +10795,8 @@
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block e9cb6e8e\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block e9cb6e8e\' })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block e9cb6e8e\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block e9cb6e8e\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:450:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:446:4",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 95f0a653\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 95f0a653\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 95f0a653\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 95f0a653\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:450:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:446:4",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -10842,8 +10820,8 @@
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 6d99d212\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 6d99d212\' })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 6d99d212\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 6d99d212\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:690:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:686:4",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block b3af7464\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block b3af7464\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block b3af7464\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block b3af7464\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:690:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:686:4",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -10867,8 +10845,8 @@
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 27d788ef\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 27d788ef\' })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 27d788ef\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 27d788ef\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:777:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:773:4",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block c0c9b638\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block c0c9b638\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block c0c9b638\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block c0c9b638\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:777:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:773:4",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -10892,8 +10870,8 @@
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 32d546ef\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 32d546ef\' })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 32d546ef\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 32d546ef\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:947:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:943:4",
+                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 562aa3be\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 562aa3be\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Cart Block 562aa3be\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Cart Block 562aa3be\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:947:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/cart-checkout-block-calculate-tax.spec.js:943:4",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -11762,66 +11740,6 @@
                             "extra": {
                                 "annotations": []
                             }
-                        },
-                        {
-                            "name": "allows checkout block to apply multiple coupons",
-                            "status": "failed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/checkout-block-coupons.spec.js:46:3)",
-                            "rawStatus": "failed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-block-coupons.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout-block-coupons.spec.js > Checkout Block Applying Coupons",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "prevents checkout block applying same coupon twice",
-                            "status": "failed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/checkout-block-coupons.spec.js:46:3)",
-                            "rawStatus": "failed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-block-coupons.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout-block-coupons.spec.js > Checkout Block Applying Coupons",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "prevents checkout block applying coupon with usage limit",
-                            "status": "failed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Add title\').or(getByLabel(\'Block: Title\'))\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:24:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shopper\\/checkout-block-coupons.spec.js:46:3)",
-                            "rawStatus": "failed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-block-coupons.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > shopper\\/checkout-block-coupons.spec.js > Checkout Block Applying Coupons",
-                            "extra": {
-                                "annotations": []
-                            }
                         }
                     ]
                 }
@@ -11831,11 +11749,11 @@
             "debug_log": {
                 "generic": [
                     {
-                        "count": "75",
+                        "count": "50",
                         "message": "PHP Warning: Invalid argument supplied for foreach() in \\/var\\/www\\/html\\/wp-includes\\/rest-api.php on line 902"
                     },
                     {
-                        "count": "75",
+                        "count": "50",
                         "message": "PHP Warning: array_intersect_key(): Expected parameter 1 to be an array, null given in \\/var\\/www\\/html\\/wp-includes\\/rest-api.php on line 901"
                     }
                 ]

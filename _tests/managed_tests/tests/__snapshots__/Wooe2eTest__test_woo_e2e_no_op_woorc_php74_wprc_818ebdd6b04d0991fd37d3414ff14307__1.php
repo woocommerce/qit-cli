@@ -3391,6 +3391,26 @@
                             "flaky": false,
                             "steps": [
                                 {
+                                    "name": "Send GET request to get the current user id",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Send POST request to reset all sections",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Assert response status is OK",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Verify that sections were reset",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Initialize locators",
+                                    "status": "passed"
+                                },
+                                {
                                     "name": "Go to Analytics > Overview",
                                     "status": "passed"
                                 },

@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "421 total, 375 passed, 3 failed, 43 skipped.",
+            "test_summary": "421 total, 378 passed, 0 failed, 43 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -49,12 +49,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 83,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 84,
                 "numPendingTestSuites": 21,
                 "numTotalTestSuites": 105,
-                "numFailedTests": 3,
-                "numPassedTests": 375,
+                "numFailedTests": 0,
+                "numPassedTests": 378,
                 "numPendingTests": 43,
                 "numTotalTests": 421,
                 "testResults": [
@@ -205,21 +205,21 @@
                     },
                     {
                         "file": "admin-tasks\\/payment.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Payment setup task": [
                                 {
                                     "title": "Saving valid bank account transfer details enables the payment method",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Can visit the payment setup task from the homescreen if the setup wizard has been skipped",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Enabling cash on delivery enables the payment method",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2788,7 +2788,7 @@
                         }
                     }
                 ],
-                "summary": "421 total, 375 passed, 3 failed, 43 skipped."
+                "summary": "421 total, 378 passed, 0 failed, 43 skipped."
             }
         },
         {
@@ -2799,8 +2799,8 @@
                     },
                     "summary": {
                         "tests": 421,
-                        "passed": 375,
-                        "failed": 3,
+                        "passed": 378,
+                        "failed": 0,
                         "pending": 0,
                         "skipped": 43,
                         "other": 0,
@@ -3472,13 +3472,11 @@
                         },
                         {
                             "name": "Saving valid bank account transfer details enables the payment method",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveClass\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'\\/\\/tr[@data-gateway_id=\\"bacs\\"]\\/td[@class=\\"status\\"]\\/a\')\\nExpected string: \\u001b[32m\\"wc-payment-gateway-method-toggle-enabled\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toHaveClass with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'\\/\\/tr[@data-gateway_id=\\"bacs\\"]\\/td[@class=\\"status\\"]\\/a\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveClass\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'\\/\\/tr[@data-gateway_id=\\"bacs\\"]\\/td[@class=\\"status\\"]\\/a\')\\nExpected string: \\u001b[32m\\"wc-payment-gateway-method-toggle-enabled\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toHaveClass with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'\\/\\/tr[@data-gateway_id=\\"bacs\\"]\\/td[@class=\\"status\\"]\\/a\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/admin-tasks\\/payment.spec.js:95:6",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/payment.spec.js",
@@ -3492,13 +3490,11 @@
                         },
                         {
                             "name": "Can visit the payment setup task from the homescreen if the setup wizard has been skipped",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.woocommerce-layout__header-wrapper > h1\')\\nExpected string: \\u001b[32m\\"Get paid\\"\\u001b[39m\\nReceived string: \\u001b[31m\\"WooCommerce Settings\\"\\u001b[39m\\nCall log:\\n\\u001b[2m  - expect.toHaveText with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.woocommerce-layout__header-wrapper > h1\')\\u001b[22m\\n\\u001b[2m    31 \\u00d7 locator resolved to <h1 data-wp-c16t=\\"true\\" data-wp-component=\\"Text\\" class=\\"components-truncate components-text woocommerce-layout__header-heading woocommerce-layout__header-left-align css-bc6pwz e19lxcc00\\">\\u2026<\\/h1>\\u001b[22m\\n\\u001b[2m       - unexpected value \\"WooCommerce Settings\\"\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.woocommerce-layout__header-wrapper > h1\')\\nExpected string: \\u001b[32m\\"Get paid\\"\\u001b[39m\\nReceived string: \\u001b[31m\\"WooCommerce Settings\\"\\u001b[39m\\nCall log:\\n\\u001b[2m  - expect.toHaveText with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.woocommerce-layout__header-wrapper > h1\')\\u001b[22m\\n\\u001b[2m    31 \\u00d7 locator resolved to <h1 data-wp-c16t=\\"true\\" data-wp-component=\\"Text\\" class=\\"components-truncate components-text woocommerce-layout__header-heading woocommerce-layout__header-left-align css-bc6pwz e19lxcc00\\">\\u2026<\\/h1>\\u001b[22m\\n\\u001b[2m       - unexpected value \\"WooCommerce Settings\\"\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/admin-tasks\\/payment.spec.js:108:6",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/payment.spec.js",
@@ -3512,13 +3508,11 @@
                         },
                         {
                             "name": "Enabling cash on delivery enables the payment method",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveClass\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'\\/\\/tr[@data-gateway_id=\\"cod\\"]\\/td[@class=\\"status\\"]\\/a\')\\nExpected string: \\u001b[32m\\"wc-payment-gateway-method-toggle-enabled\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toHaveClass with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'\\/\\/tr[@data-gateway_id=\\"cod\\"]\\/td[@class=\\"status\\"]\\/a\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveClass\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'\\/\\/tr[@data-gateway_id=\\"cod\\"]\\/td[@class=\\"status\\"]\\/a\')\\nExpected string: \\u001b[32m\\"wc-payment-gateway-method-toggle-enabled\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toHaveClass with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'\\/\\/tr[@data-gateway_id=\\"cod\\"]\\/td[@class=\\"status\\"]\\/a\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/admin-tasks\\/payment.spec.js:151:6",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/payment.spec.js",
