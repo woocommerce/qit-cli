@@ -11516,34 +11516,6 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Create variable product for individual edit test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create variable product for bulk edit test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create variable product for \\"delete all\\" test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create variable product for \\"manage stock\\" test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create variable product for \\"variation defaults\\" test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create variable product with 1 variation for \\"remove variation\\" test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Hide variable product tour",
-                                    "status": "passed"
-                                },
-                                {
                                     "name": "Go to the \\"Edit product\\" page.",
                                     "status": "passed"
                                 },
