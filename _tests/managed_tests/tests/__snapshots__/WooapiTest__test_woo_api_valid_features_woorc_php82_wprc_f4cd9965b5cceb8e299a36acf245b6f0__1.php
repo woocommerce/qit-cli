@@ -6409,7 +6409,7 @@
                         "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                     },
                     {
-                        "count": "8",
+                        "count": "17",
                         "message": "WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near \')\' at line 1 for query DELETE FROM wp_options WHERE option_name IN ( ) made by do_action(\'wp_ajax_as_async_request_queue_runner\'), WP_Hook->do_action, WP_Hook->apply_filters, WP_Async_Request->maybe_handle, ActionScheduler_AsyncRequest_QueueRunner->handle, do_action(\'action_scheduler_run_queue\'), WP_Hook->do_action, WP_Hook->apply_filters, ActionScheduler_QueueRunner->run, ActionScheduler_QueueRunner->do_batch, ActionScheduler_Abstract_QueueRunner->process_action, ActionScheduler_Action->execute, do_action_ref_array(\'wc_delete_related_product_transients_async\'), WP_Hook->do_action, WP_Hook->apply_filters, wc_delete_related_product_transients, _wc_delete_transients"
                     }
                 ]
