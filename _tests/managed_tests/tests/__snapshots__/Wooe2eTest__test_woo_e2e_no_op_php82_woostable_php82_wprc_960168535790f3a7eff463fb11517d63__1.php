@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "421 total, 378 passed, 0 failed, 43 skipped.",
+            "test_summary": "418 total, 375 passed, 0 failed, 43 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -50,13 +50,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 84,
+                "numPassedTestSuites": 83,
                 "numPendingTestSuites": 21,
-                "numTotalTestSuites": 105,
+                "numTotalTestSuites": 104,
                 "numFailedTests": 0,
-                "numPassedTests": 378,
+                "numPassedTests": 375,
                 "numPendingTests": 43,
-                "numTotalTests": 421,
+                "numTotalTests": 418,
                 "testResults": [
                     {
                         "file": "activate-and-setup\\/core-profiler.spec.js",
@@ -198,27 +198,6 @@
                                 },
                                 {
                                     "title": "Learning section can be expanded",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "admin-tasks\\/payment.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Payment setup task": [
-                                {
-                                    "title": "Saving valid bank account transfer details enables the payment method",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Can visit the payment setup task from the homescreen if the setup wizard has been skipped",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Enabling cash on delivery enables the payment method",
                                     "status": "passed"
                                 }
                             ]
@@ -2788,7 +2767,7 @@
                         }
                     }
                 ],
-                "summary": "421 total, 378 passed, 0 failed, 43 skipped."
+                "summary": "418 total, 375 passed, 0 failed, 43 skipped."
             }
         },
         {
@@ -2798,8 +2777,8 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 421,
-                        "passed": 378,
+                        "tests": 418,
+                        "passed": 375,
                         "failed": 0,
                         "pending": 0,
                         "skipped": 43,
@@ -3466,60 +3445,6 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "ui > admin-marketing\\/overview.spec.js > Marketing page",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "Saving valid bank account transfer details enables the payment method",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/payment.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > admin-tasks\\/payment.spec.js > Payment setup task",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "Can visit the payment setup task from the homescreen if the setup wizard has been skipped",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/payment.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > admin-tasks\\/payment.spec.js > Payment setup task",
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "Enabling cash on delivery enables the payment method",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/payment.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "ui > admin-tasks\\/payment.spec.js > Payment setup task",
                             "extra": {
                                 "annotations": []
                             }
