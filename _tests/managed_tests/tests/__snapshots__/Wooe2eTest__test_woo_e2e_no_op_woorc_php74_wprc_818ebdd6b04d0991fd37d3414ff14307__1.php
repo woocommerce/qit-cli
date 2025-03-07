@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "400 total, 363 passed, 28 failed, 9 skipped.",
+            "test_summary": "400 total, 391 passed, 0 failed, 9 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -49,12 +49,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 12,
-                "numPassedTestSuites": 83,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 95,
                 "numPendingTestSuites": 7,
                 "numTotalTestSuites": 102,
-                "numFailedTests": 28,
-                "numPassedTests": 363,
+                "numFailedTests": 0,
+                "numPassedTests": 391,
                 "numPendingTests": 9,
                 "numTotalTests": 400,
                 "testResults": [
@@ -441,111 +441,111 @@
                     },
                     {
                         "file": "cart\\/cart.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "check classic cart": [
                                 {
                                     "title": "check classic cart",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "check blocks cart": [
                                 {
                                     "title": "check blocks cart",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "checkout\\/checkout.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "guest can checkout paying with cash on delivery on classic checkout": [
                                 {
                                     "title": "guest can checkout paying with cash on delivery on classic checkout",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "guest can checkout paying with cash on delivery on blocks checkout": [
                                 {
                                     "title": "guest can checkout paying with cash on delivery on blocks checkout",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "guest can create an account at checkout on classic checkout": [
                                 {
                                     "title": "guest can create an account at checkout on classic checkout",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "guest can create an account at checkout on blocks checkout": [
                                 {
                                     "title": "guest can create an account at checkout on blocks checkout",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "logged in customer can checkout with default addresses and direct bank transfer on classic checkout": [
                                 {
                                     "title": "logged in customer can checkout with default addresses and direct bank transfer on classic checkout",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "logged in customer can checkout with default addresses and direct bank transfer on blocks checkout": [
                                 {
                                     "title": "logged in customer can checkout with default addresses and direct bank transfer on blocks checkout",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "customer can login at checkout and place the order with a different shipping address classic checkout": [
                                 {
                                     "title": "customer can login at checkout and place the order with a different shipping address classic checkout",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "customer can login at checkout and place the order with a different shipping address blocks checkout": [
                                 {
                                     "title": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "existing customer can update the billing address and place the order with direct bank transfer on classic checkout": [
                                 {
                                     "title": "existing customer can update the billing address and place the order with direct bank transfer on classic checkout",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "existing customer can update the billing address and place the order with direct bank transfer on blocks checkout": [
                                 {
                                     "title": "existing customer can update the billing address and place the order with direct bank transfer on blocks checkout",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "coupons\\/cart-block-coupons.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Cart Block Applying Coupons": [
                                 {
                                     "title": "allows cart block to apply coupon of any type",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "allows cart block to apply multiple coupons",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "prevents cart block applying same coupon twice",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "prevents cart block applying coupon with usage limit",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -638,25 +638,25 @@
                     },
                     {
                         "file": "coupons\\/checkout-block-coupons.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Checkout Block Applying Coupons": [
                                 {
                                     "title": "allows checkout block to apply coupon of any type",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "allows checkout block to apply multiple coupons",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "prevents checkout block applying same coupon twice",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "prevents checkout block applying coupon with usage limit",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -820,7 +820,7 @@
                     },
                     {
                         "file": "customize-store\\/assembler\\/footer.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Assembler -> Footers": [
@@ -838,7 +838,7 @@
                                 },
                                 {
                                     "title": "Picking a footer should trigger an update on the site preview",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -886,7 +886,7 @@
                     },
                     {
                         "file": "customize-store\\/assembler\\/header.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Assembler -> headers": [
@@ -904,7 +904,7 @@
                                 },
                                 {
                                     "title": "Picking a header should trigger an update on the site preview",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -942,7 +942,7 @@
                     },
                     {
                         "file": "customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Assembler -> Logo Picker": [
@@ -952,7 +952,7 @@
                                 },
                                 {
                                     "title": "Selecting an image should update the site preview",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Changing the image width should update the site preview and the frontend",
@@ -1120,26 +1120,26 @@
                     },
                     {
                         "file": "editor\\/create-woocommerce-blocks.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Add WooCommerce Blocks Into Page": [
                                 {
                                     "title": "can insert all WooCommerce blocks into page",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "editor\\/create-woocommerce-patterns.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Add WooCommerce Patterns Into Page": [
                                 {
                                     "title": "can insert WooCommerce patterns into page",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2364,7 +2364,7 @@
                     },
                     {
                         "file": "product\\/product-tags-attributes.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Browse product tags and attributes from the product page": [
@@ -2382,7 +2382,7 @@
                                 },
                                 {
                                     "title": "can see products showcase",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2659,13 +2659,13 @@
                     },
                     {
                         "file": "user\\/users-create.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "can create a new Customer": [
                                 {
                                     "title": "can create a new Customer",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2703,13 +2703,13 @@
                     },
                     {
                         "file": "wp-core\\/create-page.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "Can create a new page": [
                                 {
                                     "title": "can create new page",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2741,7 +2741,7 @@
                         }
                     }
                 ],
-                "summary": "400 total, 363 passed, 28 failed, 9 skipped."
+                "summary": "400 total, 391 passed, 0 failed, 9 skipped."
             }
         },
         {
@@ -2752,8 +2752,8 @@
                     },
                     "summary": {
                         "tests": 400,
-                        "passed": 363,
-                        "failed": 28,
+                        "passed": 391,
+                        "failed": 0,
                         "pending": 0,
                         "skipped": 9,
                         "other": 0,
@@ -3391,26 +3391,6 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Send GET request to get the current user id",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Initialize locators",
-                                    "status": "passed"
-                                },
-                                {
                                     "name": "Go to Analytics > Overview",
                                     "status": "passed"
                                 },
@@ -4018,19 +3998,46 @@
                         },
                         {
                             "name": "check classic cart",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at createBlocksPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:45:3)\\n    at createBlocksCartPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:63:2)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/cart.spec.js:124:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "empty cart is displayed",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "one product in cart is displayed",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can increase quantity",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can add another product to cart",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can proceed to checkout and return",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can remove the first product",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can remove the last product",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "e2e > cart\\/cart.spec.js",
                             "extra": {
                                 "annotations": []
@@ -4038,19 +4045,46 @@
                         },
                         {
                             "name": "check blocks cart",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at createBlocksPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:45:3)\\n    at createBlocksCartPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:63:2)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/cart.spec.js:124:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "empty cart is displayed",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "one product in cart is displayed",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can increase quantity",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can add another product to cart",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can proceed to checkout and return",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can remove the first product",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can remove the last product",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "e2e > cart\\/cart.spec.js",
                             "extra": {
                                 "annotations": []
@@ -4058,13 +4092,11 @@
                         },
                         {
                             "name": "guest can checkout paying with cash on delivery on classic checkout",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at createBlocksPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:45:3)\\n    at createBlocksCheckoutPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:54:2)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js:150:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
@@ -4078,13 +4110,11 @@
                         },
                         {
                             "name": "guest can checkout paying with cash on delivery on blocks checkout",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at createBlocksPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:45:3)\\n    at createBlocksCheckoutPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:54:2)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js:150:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
@@ -4098,13 +4128,11 @@
                         },
                         {
                             "name": "guest can create an account at checkout on classic checkout",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at createBlocksPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:45:3)\\n    at createBlocksCheckoutPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:54:2)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js:150:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
@@ -4118,13 +4146,11 @@
                         },
                         {
                             "name": "guest can create an account at checkout on blocks checkout",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at createBlocksPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:45:3)\\n    at createBlocksCheckoutPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:54:2)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js:150:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
@@ -4138,13 +4164,11 @@
                         },
                         {
                             "name": "logged in customer can checkout with default addresses and direct bank transfer on classic checkout",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at createBlocksPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:45:3)\\n    at createBlocksCheckoutPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:54:2)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js:150:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
@@ -4158,13 +4182,11 @@
                         },
                         {
                             "name": "logged in customer can checkout with default addresses and direct bank transfer on blocks checkout",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at createBlocksPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:45:3)\\n    at createBlocksCheckoutPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:54:2)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js:150:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
@@ -4178,13 +4200,11 @@
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address classic checkout",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at createBlocksPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:45:3)\\n    at createBlocksCheckoutPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:54:2)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js:150:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
@@ -4198,13 +4218,11 @@
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at createBlocksPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:45:3)\\n    at createBlocksCheckoutPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:54:2)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js:150:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
@@ -4218,13 +4236,11 @@
                         },
                         {
                             "name": "existing customer can update the billing address and place the order with direct bank transfer on classic checkout",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at createBlocksPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:45:3)\\n    at createBlocksCheckoutPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:54:2)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js:150:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
@@ -4238,13 +4254,11 @@
                         },
                         {
                             "name": "existing customer can update the billing address and place the order with direct bank transfer on blocks checkout",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at createBlocksPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:45:3)\\n    at createBlocksCheckoutPage (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/pages.js:54:2)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js:150:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
@@ -4258,13 +4272,11 @@
                         },
                         {
                             "name": "allows cart block to apply coupon of any type",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/coupons\\/cart-block-coupons.spec.js:51:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
@@ -4278,13 +4290,11 @@
                         },
                         {
                             "name": "allows cart block to apply multiple coupons",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/coupons\\/cart-block-coupons.spec.js:51:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
@@ -4298,13 +4308,11 @@
                         },
                         {
                             "name": "prevents cart block applying same coupon twice",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/coupons\\/cart-block-coupons.spec.js:51:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
@@ -4318,13 +4326,11 @@
                         },
                         {
                             "name": "prevents cart block applying coupon with usage limit",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/coupons\\/cart-block-coupons.spec.js:51:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
@@ -4770,13 +4776,11 @@
                         },
                         {
                             "name": "allows checkout block to apply coupon of any type",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/coupons\\/checkout-block-coupons.spec.js:51:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-block-coupons.spec.js",
@@ -4790,13 +4794,11 @@
                         },
                         {
                             "name": "allows checkout block to apply multiple coupons",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/coupons\\/checkout-block-coupons.spec.js:51:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-block-coupons.spec.js",
@@ -4810,13 +4812,11 @@
                         },
                         {
                             "name": "prevents checkout block applying same coupon twice",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/coupons\\/checkout-block-coupons.spec.js:51:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-block-coupons.spec.js",
@@ -4830,13 +4830,11 @@
                         },
                         {
                             "name": "prevents checkout block applying coupon with usage limit",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at Object.page (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/coupons\\/checkout-block-coupons.spec.js:51:3)",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-block-coupons.spec.js",
@@ -5780,13 +5778,11 @@
                         },
                         {
                             "name": "Picking a footer should trigger an update on the site preview",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().locator(\'footer div.wc-blocks-footer-pattern\') to be visible\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.waitFor: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().locator(\'footer div.wc-blocks-footer-pattern\') to be visible\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/footer.spec.js:171:25",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/footer.spec.js",
@@ -5998,13 +5994,11 @@
                         },
                         {
                             "name": "Picking a header should trigger an update on the site preview",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.getAttribute: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().locator(\'header div.wc-blocks-header-pattern\')\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.getAttribute: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().locator(\'header div.wc-blocks-header-pattern\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/header.spec.js:171:26",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/header.spec.js",
@@ -6138,13 +6132,11 @@
                         },
                         {
                             "name": "Selecting an image should update the site preview",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().locator(\'header img.custom-logo\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().locator(\'header img.custom-logo\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().locator(\'header img.custom-logo\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().locator(\'header img.custom-logo\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js:131:6",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
@@ -6626,19 +6618,114 @@
                         },
                         {
                             "name": "can insert all WooCommerce blocks into page",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/create-woocommerce-blocks.spec.js:163:4",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-woocommerce-blocks.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "Insert Active Filters block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert All Reviews block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Best Sellers block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Cross-Sells block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Customer account block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Featured Category block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Featured Product block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Featured Products block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Filter by Attribute block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Filter by Price block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Filter by Rating block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Filter by Stock block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Hand-Picked Products block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert New Arrivals block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert On Sale Products block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Product Categories List block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Product Collection block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Product Search block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Reviews by Category block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Reviews by Product block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Single Product block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Store Notices block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Top Rated Products block",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Upsells block",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "e2e > editor\\/create-woocommerce-blocks.spec.js > Add WooCommerce Blocks Into Page",
                             "extra": {
                                 "annotations": []
@@ -6646,19 +6733,26 @@
                         },
                         {
                             "name": "can insert WooCommerce patterns into page",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/create-woocommerce-patterns.spec.js:52:4",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-woocommerce-patterns.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "Insert Hero Product 3 Split pattern",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Insert Featured Category Cover Image pattern",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "e2e > editor\\/create-woocommerce-patterns.spec.js > Add WooCommerce Patterns Into Page",
                             "extra": {
                                 "annotations": []
@@ -11145,13 +11239,11 @@
                         },
                         {
                             "name": "can see products showcase",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.fill: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'textbox\', { name: \'Add Title\' })\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.fill: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'textbox\', { name: \'Add Title\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-tags-attributes.spec.js:296:6",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.js",
@@ -12128,13 +12220,11 @@
                         },
                         {
                             "name": "can create a new Customer",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'button\', { name: \'Add New User\' })\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'button\', { name: \'Add New User\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-create.spec.js:46:63\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-create.spec.js:34:3",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/users-create.spec.js",
@@ -12143,7 +12233,19 @@
                             "steps": [
                                 {
                                     "name": "create a new user",
-                                    "status": "failed"
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "verify the new user is displayed in users list",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "verify you can access the new user edit page",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "verify the new user can login",
+                                    "status": "passed"
                                 }
                             ],
                             "suite": "e2e > user\\/users-create.spec.js",
@@ -12277,13 +12379,11 @@
                         },
                         {
                             "name": "can create new page",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\\/Add title|Block: Title\\/)\\u001b[22m\\n\\n    at fillPageTitle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/editor.js:20:20)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/wp-core\\/create-page.spec.js:31:4",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-page.spec.js",
@@ -12345,15 +12445,7 @@
                 "generic": [
                     {
                         "count": "1",
-                        "message": "PHP Deprecated: Function Automattic\\\\WooCommerce\\\\Admin\\\\WCAdminHelper::is_store_page is deprecated since version 9.8.0! Use is_current_page_store_page instead. in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6121"
-                    },
-                    {
-                        "count": "100",
-                        "message": "PHP Warning: Invalid argument supplied for foreach() in \\/var\\/www\\/html\\/wp-includes\\/rest-api.php on line 902"
-                    },
-                    {
-                        "count": "100",
-                        "message": "PHP Warning: array_intersect_key(): Expected parameter 1 to be an array, null given in \\/var\\/www\\/html\\/wp-includes\\/rest-api.php on line 901"
+                        "message": "PHP Deprecated: Function Automattic\\\\WooCommerce\\\\Admin\\\\WCAdminHelper::is_store_page is deprecated since version 9.8.0! Use is_current_page_store_page instead. in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6114"
                     }
                 ]
             }
