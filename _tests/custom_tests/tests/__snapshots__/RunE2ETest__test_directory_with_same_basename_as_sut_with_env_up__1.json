@@ -82,5 +82,6 @@
             "path_in_host_original": ""
         }
     ],
-    "playwright_config": []
+    "playwright_config": [],
+    "pw_test_tag": ""
 }

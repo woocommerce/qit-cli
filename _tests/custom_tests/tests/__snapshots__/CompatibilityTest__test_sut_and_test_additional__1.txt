@@ -5,6 +5,7 @@ Activating plugins...
 Environment ready.
 Moving must-use plugin of woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/local/bootstrap/mu-plugin.php
 Moving must-use plugin of woocommerce /qit/tests/e2e/woocommerce/self-test-sut-and-test-additional/bootstrap/mu-plugin.php
+npx playwright test --trace on --config /qit/tests/e2e/qit-playwright.config.js  2>&1
 Running E2E Tests
 Running 8 tests using 1 worker
 ✓  1 [db export] › scripts/db-export.js:5:5 › Database Export (TIME)

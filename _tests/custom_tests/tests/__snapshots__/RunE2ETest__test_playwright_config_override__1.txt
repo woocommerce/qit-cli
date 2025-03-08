@@ -7,6 +7,7 @@ Installing WordPress...
 Activating plugins...
 Environment ready.
 Moving must-use plugin of woocommerce-amazon-s3-storage /qit/tests/e2e/woocommerce-amazon-s3-storage/local/bootstrap/mu-plugin.php
+npx playwright test --trace on --config /qit/tests/e2e/qit-playwright.config.js  2>&1
 Running E2E Tests
 Running 3 tests using 1 worker
 ✓  1 [setup] Amazon S3 Storage (Shell) › scripts/bash.js:4:5 › Bash Script (TIME)

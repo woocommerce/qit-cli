@@ -4,6 +4,7 @@ Installing WordPress...
 Activating plugins...
 Environment ready.
 Moving must-use plugin of deli /qit/tests/e2e/deli/local/bootstrap/mu-plugin.php
+npx playwright test --trace on --config /qit/tests/e2e/qit-playwright.config.js  2>&1
 Running E2E Tests
 Running 4 tests using 1 worker
 ✓  1 [setup] Deli (Shell) › scripts/bash.js:4:5 › Bash Script (TIME)
@@ -11,7 +12,7 @@ Running 4 tests using 1 worker
 ✘  3 [test] Deli (Run) › deli/local/activate-theme.spec.js:4:5 › I can activate Deli (TIME)
 could not read file /qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-actual.png Error: ENOENT: no such file or directory, open '/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-actual.png'
 at open (node:internal/fs/promises:639:25)
-at readFile (node:internal/fs/promises:1242:14) {
+at readFile (node:internal/fs/promises:1246:14) {
 errno: -2,
 code: 'ENOENT',
 syscall: 'open',
@@ -19,7 +20,7 @@ path: '/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-a
 }
 could not read file /qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-expected.png Error: ENOENT: no such file or directory, open '/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-expected.png'
 at open (node:internal/fs/promises:639:25)
-at readFile (node:internal/fs/promises:1242:14) {
+at readFile (node:internal/fs/promises:1246:14) {
 errno: -2,
 code: 'ENOENT',
 syscall: 'open',
@@ -27,7 +28,7 @@ path: '/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-e
 }
 could not read file /qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-diff.png Error: ENOENT: no such file or directory, open '/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-diff.png'
 at open (node:internal/fs/promises:639:25)
-at readFile (node:internal/fs/promises:1242:14) {
+at readFile (node:internal/fs/promises:1246:14) {
 errno: -2,
 code: 'ENOENT',
 syscall: 'open',

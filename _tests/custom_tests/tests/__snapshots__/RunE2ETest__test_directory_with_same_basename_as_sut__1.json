@@ -50,5 +50,6 @@
     "sut_id": "123",
     "domain": "qitenvnginxENV_ID_NORMALIZED",
     "tests": [],
-    "playwright_config": []
+    "playwright_config": [],
+    "pw_test_tag": ""
 }
