@@ -17,8 +17,8 @@ class ExtensionSetResolver {
 	protected $plugins_and_themes_parser;
 
 	public function __construct( Cache $cache, ManagerSync $manager_sync, PluginsAndThemesParser $plugins_and_themes_parser ) {
-		$this->cache = $cache;
-		$this->manager_sync = $manager_sync;
+		$this->cache                     = $cache;
+		$this->manager_sync              = $manager_sync;
 		$this->plugins_and_themes_parser = $plugins_and_themes_parser;
 	}
 
@@ -49,14 +49,14 @@ class ExtensionSetResolver {
 	}
 
 	/**
-	* Update the env info by resolving any extension sets to extensions.
-	* Looks for extension_set in options, resolves them to actual extensions,
-	* and adds any non-duplicate extensions to the env info plugins list.
-	*
-	* @param EnvInfo $env_info The current environment info object.
-	* @param array<string,array<string,mixed>> $options_to_env_info The parsed options containing possible extension sets.
-	* @return EnvInfo The updated environment info object with resolved extensions
-	*/
+	 * Update the env info by resolving any extension sets to extensions.
+	 * Looks for extension_set in options, resolves them to actual extensions,
+	 * and adds any non-duplicate extensions to the env info plugins list.
+	 *
+	 * @param EnvInfo                           $env_info The current environment info object.
+	 * @param array<string,array<string,mixed>> $options_to_env_info The parsed options containing possible extension sets.
+	 * @return EnvInfo The updated environment info object with resolved extensions
+	 */
 	public function resolve( EnvInfo $env_info, array $options_to_env_info ): EnvInfo {
 		// Check if we have any extension sets to process.
 		if ( empty( $options_to_env_info['overrides']['extension_set'] ) ) {
@@ -76,15 +76,15 @@ class ExtensionSetResolver {
 
 		// Track existing plugin slugs to avoid duplicates.
 		$existing_slugs = array_map(
-			function( $plugin ) {
+			function ( $plugin ) {
 				return $plugin->slug;
 			},
 			$env_info->plugins
 		);
 
 		// Convert extensions to array format for parser.
-		$extensions_to_parse = array_map(function($extension) {
-			return ['slug' => $extension];
+		$extensions_to_parse = array_map(function ( $extension ) {
+			return [ 'slug' => $extension ];
 		}, $extensions);
 
 		// Parse extensions using the parser.
