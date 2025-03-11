@@ -93,7 +93,22 @@ class GetCommand extends Command {
 			return $exit_status_code;
 		}
 
-		$columns_to_hide = [ 'test_result_aws_expiration', 'test_results_manager_expiration', 'test_result_json', 'event', 'client', 'run_id', 'send_notifications', 'update_complete', 'ai_suggestion_status' ];
+		$columns_to_hide = [
+			'test_result_aws_expiration',
+			'test_results_manager_expiration',
+			'test_result_json',
+			'event',
+			'client',
+			'run_id',
+			'send_notifications',
+			'update_complete',
+			'ai_suggestion_status',
+			'ctrf_json',
+			'debug_log',
+			'test_type',
+			'runner',
+			'workflow_id',
+		];
 
 		// Prepare the data to be rendered.
 		foreach ( $test_run as $test_key => &$v ) {
@@ -142,13 +157,12 @@ class GetCommand extends Command {
 		}
 
 		$table = new Table( $output );
-		$table->setColumnMaxWidth( 1, 80 );
 		$table
 			->setHorizontal()
 			->setStyle( 'compact' )
 			->setHeaders( array_keys( $test_run ) )
 			->setRows( [ $test_run ] );
-		$table->render();
+	$table->render();
 
 		return $exit_status_code;
 	}
