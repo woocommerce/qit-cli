@@ -162,7 +162,7 @@ class GetCommand extends Command {
 			->setStyle( 'compact' )
 			->setHeaders( array_keys( $test_run ) )
 			->setRows( [ $test_run ] );
-	$table->render();
+		$table->render();
 
 		return $exit_status_code;
 	}

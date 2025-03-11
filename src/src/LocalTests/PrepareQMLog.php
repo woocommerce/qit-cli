@@ -191,7 +191,7 @@ class PrepareQMLog {
 					}
 
 					// End compatibility extension set issues.
-	
+
 					$info_summary = [
 						'message'   => $info['message'],
 						'type'      => $type,

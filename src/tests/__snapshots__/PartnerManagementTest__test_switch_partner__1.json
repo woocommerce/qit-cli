@@ -1475,8 +1475,8 @@
             "playwright_version": "X.X.X",
             "extension_sets": {
                 "compatibility": [
-                    "gift-cards",
-                    "woocommerce-product-add-ons",
+                    "woocommerce-gift-cards",
+                    "woocommerce-product-addons",
                     "woocommerce-min-max-quantities",
                     "woocommerce-product-bundles",
                     "woocommerce-product-recommendations",
