@@ -9,128 +9,186 @@ use QIT_CLI\RequestBuilder;
 use QIT_CLI\Zipper;
 use function QIT_CLI\get_manager_url;
 
+/**
+ * This handler queries the QIT Manager to retrieve download URLs for
+ * WordPress.org or WooCommerce.com extensions.
+ */
 class QITHandler extends Handler {
+	/**
+	 * Fills in each Extension object’s version/source by requesting
+	 * download info from the Manager.
+	 *
+	 * @param Extension[] $extensions
+	 *
+	 * @throws \RuntimeException If there's an issue retrieving or parsing URLs.
+	 */
 	public function populate_extension_versions( array $extensions ): void {
-		$output                 = App::make( Output::class );
-		$extensions_to_download = array_filter( $extensions, function ( Extension $v ) {
-			return ! file_exists( $v->downloaded_source );
-		} );
+		$output = App::make( Output::class );
 
-		$extensions_to_download_slugs = implode( ',', array_map( function ( $v ) {
-			return $v->slug;
-		}, $extensions_to_download ) );
+		// Filter out any extensions we've already downloaded.
+		$extensions_to_download = array_filter(
+			$extensions,
+			static function ( Extension $ext ) {
+				return ! file_exists( $ext->downloaded_source );
+			}
+		);
 
-		if ( empty( $extensions_to_download_slugs ) ) {
+		// If there's nothing to download, skip the request entirely.
+		if ( empty( $extensions_to_download ) ) {
 			return;
 		}
 
-		$start    = microtime( true );
+		// Build a comma-separated list of slugs for "extensions".
+		$slugs             = array_map(
+			static function ( Extension $ext ) {
+				return $ext->slug;
+			},
+			$extensions_to_download
+		);
+		$extensions_string = implode( ',', $slugs );
+
+		// Also build a slug=>type map so the Manager knows how to treat each slug.
+		// For example: [ 'woocommerce' => 'plugin', 'storefront' => 'theme' ].
+		$types_map = [];
+		foreach ( $extensions_to_download as $ext ) {
+			$types_map[ $ext->slug ] = $ext->type;
+		}
+
+		$start = microtime( true );
+
+		// Send the old "extensions" plus our new "types" map.
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/download-urls' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
 				'sut_slug'   => App::getVar( 'QIT_SUT_SLUG', '' ),
-				'extensions' => $extensions_to_download_slugs,
+				'extensions' => $extensions_string,
+				'types'      => $types_map,
 			] )
 			->request();
+
 		if ( $output->isVerbose() ) {
 			$output->writeln( sprintf(
 				'Fetched versions for %d extensions from QIT in %f seconds.',
-				count( $extensions ),
+				count( $extensions_to_download ),
 				microtime( true ) - $start
 			) );
 		}
 
 		/**
-		 * @param array<string, array{
-		 *     slug: string,
-		 *     url: string,
-		 *     version: string
-		 * }> $download_urls Array where the key is the 'Requested slug' and each value is an
-		 *                  array with 'slug' (resolved slug), 'url', and 'version'.
+		 * The response should be JSON of the form:
+		 * {
+		 *   "urls": {
+		 *     "some-slug": { "slug":"...", "url":"...", "version":"..." },
+		 *     ...
+		 *   }
+		 * }
 		 *
-		 * Eg, difference between requested slug and resolved slug:
-		 * Requested slug: --plugins product-bundles
-		 * Resolved slug: woocommerce-product-bundles
+		 * Or an error shape like:
+		 * {
+		 *   "code": "...",
+		 *   "message": "..."
+		 * }
 		 */
 		$download_urls = json_decode( $response, true );
 
-		// Handle errors from QIT Manager.
 		if ( ! is_array( $download_urls ) ) {
 			throw new \RuntimeException( 'No valid JSON response from QIT Manager.' );
 		}
 
-		// If the Manager returned an error code and message, just throw it.
 		if ( isset( $download_urls['code'], $download_urls['message'] ) ) {
 			throw new \RuntimeException( $download_urls['message'] );
 		}
 
-		// If no URLs returned, it's likely the Manager already returned a scenario message in code/message above.
-		// If we got here without a code/message but still no urls, something unexpected happened.
 		if ( empty( $download_urls['urls'] ) || ! is_array( $download_urls['urls'] ) ) {
-			throw new \RuntimeException( 'No download URLs received from QIT Manager. Please ensure your extension is recognized or check if QIT Manager provided an error.' );
+			throw new \RuntimeException(
+				'No download URLs received from QIT Manager. ' .
+				'Please ensure your extension is recognized or check if the Manager provided an error.'
+			);
 		}
 
 		$urls = $download_urls['urls'];
 
-		// Ensure all requested have a download URL.
-		foreach ( $extensions as $e ) {
-			if ( ! array_key_exists( $e->slug, $urls ) || empty( $urls[ $e->slug ]['url'] ) ) {
-				// The Manager should have returned a scenario-based error before this point.
-				// If we get here, it means the response is incomplete/unexpected.
-				throw new \RuntimeException( sprintf( 'No download URL found for extension "%s".', $e->slug ) );
+		// Match them up with the original $extensions array.
+		foreach ( $extensions as $ext ) {
+			// If already downloaded (or not in $extensions_to_download), skip.
+			if ( file_exists( $ext->downloaded_source ) ) {
+				continue;
 			}
 
-			$e->slug    = $urls[ $e->slug ]['slug'];
-			$e->version = $urls[ $e->slug ]['version'];
-			$e->source  = $urls[ $e->slug ]['url'];
+			$original_slug = $ext->slug;
+			if ( ! array_key_exists( $original_slug, $urls ) ) {
+				throw new \RuntimeException(
+					sprintf( 'No download URL found for extension "%s".', $original_slug )
+				);
+			}
+
+			// Update the extension with the resolved slug, version, and direct download URL.
+			$ext->slug    = $urls[ $original_slug ]['slug'];
+			$ext->version = $urls[ $original_slug ]['version'];
+			$ext->source  = $urls[ $original_slug ]['url'];
 		}
 	}
 
 	/**
-	 * @param array<\QIT_CLI\Environment\Extension> $extensions
-	 * @param string                                $cache_dir
+	 * Downloads each required Extension if not already cached.
 	 *
-	 * @throws \RuntimeException If an error occurs during downloading or file handling.
+	 * @param Extension[] $extensions
+	 * @param string      $cache_dir
+	 *
+	 * @throws \RuntimeException On download error or invalid ZIP.
 	 */
 	public function maybe_download_extensions( array $extensions, string $cache_dir ): void {
 		$output = App::make( Output::class );
 
-		foreach ( $extensions as $e ) {
-			if ( ! empty( $e->downloaded_source ) ) {
-				// Extension already handled (possibly by a custom handler).
+		foreach ( $extensions as $ext ) {
+			// Skip if already handled.
+			if ( ! empty( $ext->downloaded_source ) ) {
 				continue;
 			}
 
-			$cache_file = $this->make_cache_path( $cache_dir, $e->type, $e->slug, $e->version, $e->source );
+			// Construct a unique path for caching based on type, slug, version, and source.
+			$cache_file = $this->make_cache_path(
+				$cache_dir,
+				$ext->type,
+				$ext->slug,
+				$ext->version,
+				$ext->source
+			);
 
-			// Cache hit?
+			// Check if we already have it cached locally.
 			if ( file_exists( $cache_file ) ) {
 				if ( $output->isVeryVerbose() ) {
-					$output->writeln( "Using cached {$e->type} {$e->slug}." );
+					$output->writeln( "Using cached {$ext->type} {$ext->slug}." );
 				}
-				$e->downloaded_source = $cache_file;
-
+				$ext->downloaded_source = $cache_file;
 				continue;
 			} else {
 				if ( $output->isVeryVerbose() ) {
-					$output->writeln( "Cache miss on {$e->type} {$e->slug}." );
+					$output->writeln( "Cache miss on {$ext->type} {$ext->slug}." );
 				}
 			}
 
-			if ( empty( $e->source ) ) {
-				throw new \RuntimeException( 'No download URL found for ' . $e->slug );
+			// Ensure we have a valid download URL from the populate_extension_versions step.
+			if ( empty( $ext->source ) ) {
+				throw new \RuntimeException( 'No download URL found for ' . $ext->slug );
 			}
 
-			RequestBuilder::download_file( $e->source, $cache_file );
+			// Actually download the ZIP file to $cache_file.
+			RequestBuilder::download_file( $ext->source, $cache_file );
 
+			// Validate the ZIP.
 			try {
 				App::make( Zipper::class )->validate_zip( $cache_file );
 			} catch ( \Exception $exception ) {
+				// Clean up the partial/corrupt download.
 				unlink( $cache_file );
-				throw new \RuntimeException( sprintf( 'Could not download zip file from URL %s.', $e->source ) );
+				throw new \RuntimeException(
+					sprintf( 'Could not download zip file from URL %s.', $ext->source )
+				);
 			}
 
-			$e->downloaded_source = $cache_file;
+			// Mark it as downloaded.
+			$ext->downloaded_source = $cache_file;
 		}
 	}
 }
