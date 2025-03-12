@@ -38,8 +38,8 @@ class QITHandler extends Handler {
 			return;
 		}
 
-		// Build a comma-separated list of slugs for "extensions"
-		$slugs = array_map(
+		// Build a comma-separated list of slugs for "extensions".
+		$slugs             = array_map(
 			static function ( Extension $ext ) {
 				return $ext->slug;
 			},
@@ -48,7 +48,7 @@ class QITHandler extends Handler {
 		$extensions_string = implode( ',', $slugs );
 
 		// Also build a slug=>type map so the Manager knows how to treat each slug.
-		// For example: [ 'woocommerce' => 'plugin', 'storefront' => 'theme' ]
+		// For example: [ 'woocommerce' => 'plugin', 'storefront' => 'theme' ].
 		$types_map = [];
 		foreach ( $extensions_to_download as $ext ) {
 			$types_map[ $ext->slug ] = $ext->type;
@@ -83,7 +83,7 @@ class QITHandler extends Handler {
 		 *   }
 		 * }
 		 *
-		 * or an error shape like:
+		 * Or an error shape like:
 		 * {
 		 *   "code": "...",
 		 *   "message": "..."
@@ -135,7 +135,7 @@ class QITHandler extends Handler {
 	 * @param Extension[] $extensions
 	 * @param string      $cache_dir
 	 *
-	 * @throws \RuntimeException on download error or invalid ZIP
+	 * @throws \RuntimeException On download error or invalid ZIP.
 	 */
 	public function maybe_download_extensions( array $extensions, string $cache_dir ): void {
 		$output = App::make( Output::class );
@@ -173,21 +173,21 @@ class QITHandler extends Handler {
 				throw new \RuntimeException( 'No download URL found for ' . $ext->slug );
 			}
 
-			// Actually download the ZIP file to $cache_file
+			// Actually download the ZIP file to $cache_file.
 			RequestBuilder::download_file( $ext->source, $cache_file );
 
-			// Validate the ZIP
+			// Validate the ZIP.
 			try {
 				App::make( Zipper::class )->validate_zip( $cache_file );
 			} catch ( \Exception $exception ) {
-				// Clean up the partial/corrupt download
+				// Clean up the partial/corrupt download.
 				unlink( $cache_file );
 				throw new \RuntimeException(
 					sprintf( 'Could not download zip file from URL %s.', $ext->source )
 				);
 			}
 
-			// Mark it as downloaded
+			// Mark it as downloaded.
 			$ext->downloaded_source = $cache_file;
 		}
 	}
