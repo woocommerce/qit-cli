@@ -2,8 +2,6 @@
 
 namespace QIT_CLI\LocalTests;
 
-use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
-
 use Symfony\Component\Console\Output\OutputInterface;
 
 class PrepareQMLog {
@@ -170,7 +168,7 @@ class PrepareQMLog {
 	 * @param string $directory
 	 * @return array<string,mixed>
 	 */
-	public function summarize_qm_logs( string $directory, string $sut_slug ): array {
+	public function summarize_qm_logs( string $directory ): array {
 		$data            = $this->read_json_data( $directory );
 		$summarized_data = [];
 
@@ -260,12 +258,11 @@ class PrepareQMLog {
 	 * @param string $results_dir
 	 * @return array<string,mixed>
 	 */
-	public function prepare_qm_logs( string $results_dir, E2EEnvInfo $env_info ): array {
-		$sut_slug       = $env_info->sut_slug;
+	public function prepare_qm_logs( string $results_dir ): array {
 		$qm_logs_path   = $results_dir . '/logs';
 		$debug_log_path = $results_dir . '/debug.log';
 		$debug_log      = $this->summarize_debug_logs( $debug_log_path );
-		$qm_log         = $this->summarize_qm_logs( $qm_logs_path, $sut_slug );
+		$qm_log         = $this->summarize_qm_logs( $qm_logs_path );
 
 		if ( empty( $debug_log ) && empty( $qm_log ) ) {
 			return [];

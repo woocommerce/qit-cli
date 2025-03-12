@@ -195,7 +195,7 @@ class LocalTestRunNotifier {
 		if ( $use_query_monitor_logs ) {
 			$this->output->writeln( 'Parsing Query Monitor Logs' );
 
-			$debug_log['qm_logs'] = $this->prepare_qm_log->prepare_qm_logs( $results_dir, App::getVar( E2EEnvInfo::class ) );
+			$debug_log['qm_logs'] = $this->prepare_qm_log->prepare_qm_logs( $results_dir );
 		}
 
 		/**
