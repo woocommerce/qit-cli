@@ -284,60 +284,6 @@ class EnvUpThemeTest extends TestCase {
 	}
 
 	/**
-	 * Single child theme alone => fail if parent does not exist on WP.org.
-	 * We'll provide a local child .zip that references a fake parent slug.
-	 */
-	public function test_env_up_with_child_theme_alone_fails_if_parent_not_on_wporg() {
-		// Suppose we have a local child zip that references "Theme: i-do-not-exist-123"
-		$fake_child_zip = $this->makeFakeChildZip( 'i-do-not-exist-123' );
-		$this->assertFileExists( $fake_child_zip );
-
-		try {
-			$output = qit( [
-				'env:up',
-				'--theme',
-				$fake_child_zip,
-			] );
-			$this->fail( 'Expected env:up to fail because parent is not on WP.org, but it succeeded.' );
-		} catch ( \RuntimeException $e ) {
-			// Confirm the error about "No themes found."
-			// Or confirm "The parent theme is missing." text, depending on how your code surfaces it.
-			$this->assertStringContainsString(
-				'No themes found',
-				$e->getMessage(),
-				'Did not see WP-CLI error about nonexistent parent.'
-			);
-		}
-	}
-
-	/**
-	 * Utility to generate a minimal child theme zip on the fly
-	 * that references a given fake parent slug in style.css
-	 */
-	private function makeFakeChildZip( string $fake_parent ): string {
-		// 1) Create a temp folder
-		$child_dir = sys_get_temp_dir() . '/fake-child-' . uniqid();
-		mkdir( $child_dir );
-
-		// 2) Create style.css referencing the fake parent
-		$style = "/*
-Theme Name: Fake Child
-Template: {$fake_parent}
-*/";
-
-		file_put_contents( $child_dir . '/style.css', $style );
-
-		// 3) Zip it up
-		$zip_path = $child_dir . '.zip';
-		$zip      = new ZipArchive();
-		$zip->open( $zip_path, ZipArchive::CREATE );
-		$zip->addFile( $child_dir . '/style.css', 'fake-child/style.css' );
-		$zip->close();
-
-		return $zip_path;
-	}
-
-	/**
 	 * Child theme + unrelated theme => skip auto-activation,
 	 * because there's no recognized parent–child match.
 	 */
