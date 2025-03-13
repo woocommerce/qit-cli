@@ -5,6 +5,7 @@ namespace QIT_CLI\Environment\Environments\E2E;
 use QIT_CLI\App;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\Environment;
+use QIT_CLI\Environment\Environments\ThemeActivation;
 use QIT_CLI\Environment\EnvUpChecker;
 use QIT_CLI\Environment\PluginActivationReportRenderer;
 use QIT_CLI\Tunnel\TunnelRunner;
@@ -109,17 +110,12 @@ class E2EEnvironment extends Environment {
 
 		// Activate theme.
 		if ( ! $this->skip_activating_plugins ) {
-			// If exactly one theme was passed, activate it.
-			if ( count( $this->env_info->themes ) === 1 ) {
-				$first_theme = array_shift( $this->env_info->themes );
-
-				$this->output->writeln( "<info>Activating theme: {$first_theme->slug}</info>" );
-				$activate_output = $this->docker->run_inside_docker(
-					$this->env_info,
-					[ 'bash', '-c', sprintf( 'wp theme activate %s', escapeshellarg( $first_theme->slug ) ) ]
-				);
-				$this->output->writeln( $activate_output );
-			}
+			$theme_activation = new ThemeActivation(
+				$this->env_info,
+				$this->docker,
+				$this->output
+			);
+			$theme_activation->auto_activate_themes();
 		}
 	}
 

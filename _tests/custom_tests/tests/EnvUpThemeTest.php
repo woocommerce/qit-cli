@@ -4,8 +4,8 @@ use PHPUnit\Framework\TestCase;
 use QIT\SelfTests\CustomTests\Traits\SnapshotHelpers;
 
 /**
- * Tests for verifying single-theme auto-activation, multiple themes, and
- * various theme install sources (WP.org, local paths, etc.).
+ * Tests for verifying single-theme auto-activation, multiple themes,
+ * child–parent logic, and local zips.
  */
 class EnvUpThemeTest extends TestCase {
 	use SnapshotHelpers;
@@ -17,13 +17,26 @@ class EnvUpThemeTest extends TestCase {
 	 */
 	private $storefront_local_path;
 
+	/**
+	 * Where we'll store deli.zip locally (a Storefront child theme).
+	 *
+	 * @var string
+	 */
+	private $deli_local_path;
+
 	protected function setUp(): void {
 		parent::setUp();
-		$this->storefront_local_path = sys_get_temp_dir() . '/storefront.zip';
 
-		// If it's not already present, download it once before these tests:
+		// Download both Storefront & Deli into /tmp/
+		$this->storefront_local_path = sys_get_temp_dir() . '/storefront.zip';
+		$this->deli_local_path       = sys_get_temp_dir() . '/deli.zip';
+
+		// Download once per test run (if they aren’t present already).
 		if ( ! file_exists( $this->storefront_local_path ) ) {
 			$this->download_storefront_zip();
+		}
+		if ( ! file_exists( $this->deli_local_path ) ) {
+			$this->download_deli_zip();
 		}
 	}
 
@@ -35,8 +48,6 @@ class EnvUpThemeTest extends TestCase {
 
 	/**
 	 * Download the Storefront zip from WP.org to a local file.
-	 *
-	 * Adjust if you need special error handling, retries, etc.
 	 */
 	private function download_storefront_zip(): void {
 		$url          = 'https://downloads.wordpress.org/theme/storefront.zip';
@@ -52,8 +63,25 @@ class EnvUpThemeTest extends TestCase {
 	}
 
 	/**
+	 * Download the Deli child theme zip from WP.org to a local file.
+	 * (Deli version might change; if so, update the URL accordingly).
+	 */
+	private function download_deli_zip(): void {
+		$url          = 'https://downloads.wordpress.org/theme/deli.zip';
+		$zip_contents = @file_get_contents( $url );
+		if ( ! $zip_contents ) {
+			$this->markTestSkipped( 'Could not download Deli from ' . $url );
+
+			return;
+		}
+
+		file_put_contents( $this->deli_local_path, $zip_contents );
+		$this->assertFileExists( $this->deli_local_path, 'Failed writing deli.zip to temp directory.' );
+	}
+
+	/**
 	 * Single theme from the WP.org URL => auto-activate.
-	 * (Uses the direct link, no local file.)
+	 * (Uses the direct link for Storefront, no local file.)
 	 */
 	public function test_env_up_with_one_url_theme_auto_activates() {
 		$url = 'https://downloads.wordpress.org/theme/storefront.zip';
@@ -68,7 +96,6 @@ class EnvUpThemeTest extends TestCase {
 		$json = json_decode( $output, true );
 		$this->assertArrayHasKey( 'env_id', $json, 'No env_id in the QIT JSON output.' );
 
-		// Inspect installed themes:
 		$theme_list = qit( [
 			'env:exec',
 			'--env_id',
@@ -76,20 +103,16 @@ class EnvUpThemeTest extends TestCase {
 			'wp theme list --fields=name,status',
 		] );
 
-		// We expect "storefront" to appear (the exact folder name might be "storefront").
+		// Expect "storefront" to appear and be active
 		$this->assertStringContainsString( 'storefront', $theme_list );
-		// Should be active:
 		$this->assertStringContainsString( 'active', $theme_list );
 	}
 
 	/**
-	 * Single theme from a local .zip => auto-activate.
-	 * We already downloaded storefront.zip in setUp().
+	 * Single theme from a local .zip => auto-activate Storefront.
 	 */
-	public function test_env_up_with_one_local_file_theme_auto_activates() {
-		if ( ! file_exists( $this->storefront_local_path ) ) {
-			$this->markTestSkipped( 'storefront.zip not found locally.' );
-		}
+	public function test_env_up_with_one_local_file_theme_auto_activates_storefront() {
+		$this->assertFileExists( $this->storefront_local_path, 'Storefront zip missing in setUp.' );
 
 		$output = qit( [
 			'env:up',
@@ -101,7 +124,6 @@ class EnvUpThemeTest extends TestCase {
 		$json = json_decode( $output, true );
 		$this->assertArrayHasKey( 'env_id', $json, 'No env_id in the QIT JSON output.' );
 
-		// Inspect installed themes:
 		$theme_list = qit( [
 			'env:exec',
 			'--env_id',
@@ -109,9 +131,8 @@ class EnvUpThemeTest extends TestCase {
 			'wp theme list --fields=name,status',
 		] );
 
-		// We expect "storefront" to appear.
+		// We expect "storefront" to appear and be active
 		$this->assertStringContainsString( 'storefront', $theme_list );
-		// Should be active:
 		$this->assertStringContainsString( 'active', $theme_list );
 	}
 
@@ -123,7 +144,7 @@ class EnvUpThemeTest extends TestCase {
 			'env:up',
 			'--json',
 			'--theme',
-			'storefront',
+			$this->storefront_local_path,
 			'--theme',
 			'twentytwentyone',
 		] );
@@ -144,8 +165,8 @@ class EnvUpThemeTest extends TestCase {
 	}
 
 	/**
-	 * No themes passed => no special QIT auto-activation.
-	 * The default WP theme might still appear as active, but not "storefront".
+	 * No themes passed => no special auto-activation from QIT.
+	 * The default WP theme might be active instead.
 	 */
 	public function test_env_up_with_no_themes_does_not_activate_theme() {
 		$output = qit( [
@@ -161,8 +182,7 @@ class EnvUpThemeTest extends TestCase {
 			'wp theme list --fields=name,status',
 		] );
 
-		// Expect some WP default theme (maybe "twentytwentythree") to be active,
-		// but definitely not "storefront" from QIT auto-activation.
+		// "storefront" definitely not active
 		$this->assertStringNotContainsString( 'storefront', $theme_list );
 	}
 
@@ -174,7 +194,7 @@ class EnvUpThemeTest extends TestCase {
 			'env:up',
 			'--json',
 			'--theme',
-			'storefront',
+			$this->storefront_local_path,
 			'--skip_activating_plugins',
 		] );
 		$json   = json_decode( $output, true );
@@ -186,8 +206,136 @@ class EnvUpThemeTest extends TestCase {
 			'wp theme list --fields=name,status',
 		] );
 
-		// storefront is installed but not active
+		// Storefront installed but not active
 		$this->assertStringContainsString( 'storefront', $theme_list );
 		$this->assertStringContainsString( 'inactive', $theme_list );
+	}
+
+	/**
+	 * Single child + single parent => should auto-activate child.
+	 * We use local zips for both Deli (child) and Storefront (parent).
+	 */
+	public function test_env_up_with_child_theme_and_parent_auto_activates_child() {
+		$this->assertFileExists( $this->storefront_local_path, 'Storefront zip missing.' );
+		$this->assertFileExists( $this->deli_local_path, 'Deli zip missing.' );
+
+		$output = qit( [
+			'env:up',
+			'--json',
+			'--theme',
+			$this->storefront_local_path, // parent
+			'--theme',
+			$this->deli_local_path,       // child
+		] );
+
+		$json = json_decode( $output, true );
+		$this->assertArrayHasKey( 'env_id', $json, 'No env_id in JSON output (env:up may have failed)' );
+
+		$theme_list = qit( [
+			'env:exec',
+			'--env_id',
+			$json['env_id'],
+			'wp theme list --fields=name,status',
+		] );
+
+		// Expect "storefront" (parent) installed but inactive
+		$this->assertStringContainsString( 'storefront', $theme_list, 'Storefront not installed' );
+		$this->assertStringNotContainsString( 'storefront    active', $theme_list, 'Parent should remain inactive' );
+
+		// Deli (child) auto-activated
+		$this->assertStringContainsString( 'deli', $theme_list, 'Deli not installed' );
+		$this->assertStringContainsString( 'active', $theme_list, 'Expected Deli to be active' );
+	}
+
+	/**
+	 * Single child theme alone => WP-CLI fails if parent is missing.
+	 * Here we only pass the Deli zip.
+	 */
+	public function test_env_up_with_child_theme_alone_fails_if_parent_missing() {
+		$this->assertFileExists( $this->deli_local_path, 'Deli zip missing.' );
+
+		try {
+			// Only passing Deli => missing parent => CLI should fail
+			$output = qit( [
+				'env:up',
+				'--theme',
+				$this->deli_local_path,
+			] );
+			// If it didn't fail, that's unexpected:
+			$this->fail( 'Expected env:up to fail because Deli’s parent is missing, but it succeeded!' );
+		} catch ( \RuntimeException $e ) {
+			// Confirm the error message about missing parent
+			$this->assertStringContainsString(
+				'The parent theme is missing. Please install the "storefront" parent theme.',
+				$e->getMessage(),
+				'Did not see expected WP-CLI error about missing parent.'
+			);
+		}
+	}
+
+	/**
+	 * Child theme + unrelated theme => skip auto-activation,
+	 * because there's no recognized parent–child match.
+	 */
+	public function test_env_up_with_child_and_unrelated_theme_skips_activation() {
+		$output = qit( [
+			'env:up',
+			'--json',
+			'--theme',
+			$this->deli_local_path,
+			'--theme',
+			'twentytwentyone',
+		] );
+
+		$json = json_decode( $output, true );
+		$this->assertArrayHasKey( 'env_id', $json );
+
+		$theme_list = qit( [
+			'env:exec',
+			'--env_id',
+			$json['env_id'],
+			'wp theme list --fields=name,status'
+		] );
+
+		// Child theme won't appear at all because it's broken (no parent).
+		// We only see 'twentytwentyone' (installed, "inactive" or possibly "broken" if it’s missing something).
+		// But at least we know we didn't forcibly activate twentytwentyone.
+
+		$this->assertStringContainsString( 'twentytwentyone', $theme_list, 'Unrelated theme not installed.' );
+		$this->assertStringNotContainsString( 'twentytwentyone    active', $theme_list, 'Unrelated theme should remain inactive.' );
+	}
+
+	/**
+	 * Child + parent, but --skip_activating_plugins => skip theme activation
+	 */
+	public function test_env_up_with_child_theme_and_skip_activating_plugins_flag_skips_child_activation() {
+		$this->assertFileExists( $this->storefront_local_path, 'Storefront zip missing.' );
+		$this->assertFileExists( $this->deli_local_path, 'Deli zip missing.' );
+
+		$output = qit( [
+			'env:up',
+			'--json',
+			'--theme',
+			$this->storefront_local_path,
+			'--theme',
+			$this->deli_local_path,
+			'--skip_activating_plugins', // Also disables theme auto-activation
+		] );
+
+		$json = json_decode( $output, true );
+		$this->assertArrayHasKey( 'env_id', $json );
+
+		$theme_list = qit( [
+			'env:exec',
+			'--env_id',
+			$json['env_id'],
+			'wp theme list --fields=name,status',
+		] );
+
+		// Both installed, but inactive
+		$this->assertStringContainsString( 'storefront', $theme_list );
+		$this->assertStringContainsString( 'deli', $theme_list );
+
+		$this->assertStringContainsString( 'inactive', $theme_list, 'Expected all themes to remain inactive due to --skip_activating_plugins.' );
 	}
 }
