@@ -45,11 +45,6 @@ class EnvConfigLoader {
 		// Load the environment config file.
 		$env_config = $this->load_config();
 
-		// If user didn’t define "scripts" in the file, default to empty.
-		if ( ! isset( $env_config['scripts'] ) ) {
-			$env_config['scripts'] = [];
-		}
-
 		// Check that config file doesn't contain disallowed keys.
 		foreach ( EnvInfo::$not_user_configurable as $d ) {
 			if ( array_key_exists( $d, $env_config ) ) {
@@ -185,10 +180,13 @@ class EnvConfigLoader {
 		}
 
 		// Scripts.
-		if ( ! empty( $options['overrides']['scripts'] ) ) {
-			foreach ( $options['overrides']['scripts'] as $hook_name => $script ) {
+		if ( ! empty( $options['overrides']['script'] ) ) {
+			foreach ( $options['overrides']['script'] as $hook_name => $script ) {
+				if ( ! array_key_exists( 'script', $env_config ) ) {
+					$env_config['script'] = [];
+				}
 				// Replace or set the entire script.
-				$env_config['scripts'][ $hook_name ] = $script;
+				$env_config['script'][ $hook_name ] = $script;
 			}
 		}
 
@@ -360,7 +358,7 @@ class EnvConfigLoader {
 		 *  - bar
 		 * On the config file, and --plugin foo --plugin bar in the CLI parameters.
 		 */
-		$plurals = [ 'plugins', 'themes', 'volumes', 'php_extensions' ];
+		$plurals = [ 'plugins', 'themes', 'volumes', 'php_extensions', 'scripts' ];
 
 		// Convert scalars to arrays.
 		foreach ( $plurals as $plural ) {
@@ -399,7 +397,7 @@ class EnvConfigLoader {
 		 * plugin: foo
 		 * On the config file, and --plugins foo in the CLI parameters.
 		 */
-		$singulars = [ 'plugin', 'theme', 'volume', 'php_extension' ];
+		$singulars = [ 'plugin', 'theme', 'volume', 'php_extension', 'script' ];
 
 		// Normalize singular to plural. If it already exists, throw.
 		foreach ( $singulars as $singular ) {

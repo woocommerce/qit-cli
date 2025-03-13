@@ -5,6 +5,7 @@ namespace QIT_CLI\Commands\Environment;
 use Dotenv\Dotenv;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\ExtensionSetResolver;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
@@ -68,7 +69,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use. Valid options: ' . implode( ', ', array_keys( TunnelRunner::$tunnel_map ) ), 'no_tunnel' )
 			->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests.', [] )
 			->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests from a file.', [] )
-			->addOption( 'scripts', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Define or override environment hook scripts, e.g. --scripts env_started=./foo.sh' )
+			->addOption( 'script', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Define or override environment hook scripts, e.g. --script ./startup.sh or --script env_down=./teardown.sh. Allowed actions: ' . implode( ', ', Environment::$script_hooks ) )
 			->setAliases( [ 'env:start' ]
 			);
 
@@ -311,18 +312,53 @@ HELP
 	 * @return void
 	 */
 	protected function parse_scripts( InputInterface $input, array &$options_to_env_info ): void {
-		$scripts = $input->getOption( 'scripts' ); // e.g. ["env_started=./foo.sh", "env_stopped=./bar.sh"].
-		if ( ! empty( $scripts ) ) {
-			foreach ( $scripts as $script ) {
-				// Expect "hookName=scriptOrCommand".
-				$parts = explode( '=', $script, 2 );
-				if ( count( $parts ) !== 2 ) {
-					throw new \RuntimeException( 'Invalid format for --scripts. Use --scripts env_started=./foo.sh, etc.' );
-				}
-				[ $hook_name, $script ] = $parts;
+		$scripts = $input->getOption( 'script' );
+		if ( empty( $scripts ) ) {
+			return;
+		}
 
-				$options_to_env_info['overrides']['scripts'][ $hook_name ] = $script;
+		foreach ( $scripts as $script_item ) {
+			// Check for "hookName=scriptOrCommand" format.
+			$parts = explode( '=', $script_item, 2 );
+
+			// If there's exactly 1 part, assume "env_started" => that part.
+			// e.g. if user typed: --scripts ./only-one-script.sh.
+			if ( count( $parts ) === 1 ) {
+				$script_or_path = $parts[0];
+				if ( ! $script_or_path ) {
+					throw new \RuntimeException(
+						'Invalid --script argument: cannot be empty. ' .
+						'Use --script ./foo.sh, or --script env_start=./foo.sh.'
+					);
+				}
+				$hook_name = Environment::$script_hooks['env_started'];
+				$script    = $script_or_path;
+			} elseif ( count( $parts ) === 2 ) {
+				[ $hook_name, $script ] = $parts;
+				if ( ! $hook_name ) {
+					throw new \RuntimeException(
+						'Invalid --script argument: missing hook name before "=". ' .
+						'Use --script env_started=./foo.sh, etc.'
+					);
+				}
+				if ( ! $script ) {
+					throw new \RuntimeException(
+						'Invalid --script argument: missing script/command after "=".'
+					);
+				}
+				// Check if $hook_name is valid.
+				if ( ! array_key_exists( $hook_name, Environment::$script_hooks ) ) {
+					throw new \RuntimeException(
+						'Invalid hook name in --script argument. Allowed actions: ' . implode( ', ', Environment::$script_hooks )
+					);
+				}
+			} else {
+				throw new \RuntimeException(
+					'Use --script ./foo.sh, or --script env_start=./foo.sh.'
+				);
 			}
+
+			$options_to_env_info['overrides']['script'][ $hook_name ] = $script;
 		}
 	}
 

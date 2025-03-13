@@ -60,6 +60,14 @@ abstract class Environment {
 	/** @var string "up" if just spinning up the environment, "up_and_test" if running for a custom test. */
 	protected $type;
 
+	/**
+	 * @var array<string> What hooks are available for scripting.
+	 */
+	public static $script_hooks = [
+		'env_started' => 'env_started',
+		'env_stopped' => 'env_stopped',
+	];
+
 	public function __construct(
 		EnvironmentDownloader $environment_downloader,
 		Cache $cache,
@@ -124,6 +132,8 @@ abstract class Environment {
 		// Start the benchmark.
 		$start = microtime( true );
 
+		$this->prepare_scripts();
+
 		$this->environment_downloader->maybe_download( $this->get_name() );
 		$this->maybe_create_cache_dir();
 		$this->copy_environment();
@@ -148,7 +158,7 @@ abstract class Environment {
 		if ( ! empty( $this->env_info->scripts['env_started'] ) ) {
 			$this->output->writeln( '<info>Running env_started script...</info>' );
 			$script = $this->env_info->scripts['env_started'];
-			$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', $script ] );
+			$this->output->writeln( $this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', "cd /var/www/html && $script" ] ) );
 		}
 
 		if ( $this->output->isVerbose() ) {
@@ -156,6 +166,24 @@ abstract class Environment {
 		}
 
 		$this->additional_output();
+	}
+
+	protected function prepare_scripts(): void {
+		foreach ( $this->env_info->scripts as $hook => &$cmd ) {
+			if ( file_exists( $cmd ) && is_file( $cmd ) ) {
+				@chmod( $cmd, 0755 );
+
+				$original_name  = basename( $cmd );
+				$prefixed_name  = '.qit-lifecycle-' . $original_name;
+				$container_path = "/var/www/html/{$prefixed_name}";
+
+				// Add volume to mount local script into container.
+				$this->env_info->volumes[ $container_path ] = $cmd;
+
+				// Update $cmd to reflect the new, in-container path.
+				$cmd = "./{$prefixed_name}";
+			}
+		}
 	}
 
 	/**
@@ -325,7 +353,7 @@ abstract class Environment {
 		if ( ! empty( $env_info->scripts['env_stopped'] ) ) {
 			$script = $env_info->scripts['env_stopped'];
 			$output->writeln( '<info>Running env_stopped script...</info>' );
-			App::make( Docker::class )->run_inside_docker( $env_info, [ '/bin/bash', '-c', $script ] );
+			$output->writeln( App::make( Docker::class )->run_inside_docker( $env_info, [ '/bin/bash', '-c', "cd /var/www/html && $script" ] ) );
 		}
 
 		if ( ! file_exists( $env_info->temporary_env ) ) {
