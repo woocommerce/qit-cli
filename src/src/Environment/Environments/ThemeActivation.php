@@ -54,8 +54,35 @@ class ThemeActivation {
 				break;
 
 			case 1:
-				$this->activate_single_theme( $theme_slugs[0] );
-				break;
+				$child_slug  = $theme_slugs[0];
+				$parent_slug = $this->detect_parent_template( $child_slug );
+
+				if ( $parent_slug ) {
+					$this->output->writeln(
+						"<comment>Theme '{$child_slug}' is a child of '{$parent_slug}'. Installing parent from WordPress.org...</comment>"
+					);
+
+					// Attempt to install parent from WordPress.org inside the container..
+					$install_output = $this->docker->run_inside_docker(
+						$this->env_info,
+						[
+							'bash',
+							'-c',
+							// --force ensures WP-CLI will reinstall if the theme is partially present.
+							sprintf( 'wp theme install %s --force', escapeshellarg( $parent_slug ) ),
+						]
+					);
+
+					$this->output->writeln( $install_output );
+
+					// Now that parent is presumably installed, activate the child as usual.
+					$this->activate_single_theme( $child_slug );
+				} else {
+					// If not a child, just activate the single theme.
+					$this->activate_single_theme( $child_slug );
+				}
+
+				return;
 
 			case 2:
 				$this->maybe_activate_parent_child( $theme_slugs );
