@@ -68,6 +68,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use. Valid options: ' . implode( ', ', array_keys( TunnelRunner::$tunnel_map ) ), 'no_tunnel' )
 			->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests.', [] )
 			->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests from a file.', [] )
+			->addOption( 'action', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Define or override environment lifecycle hook scripts, e.g. --action env_started=./foo.sh' )
 			->setAliases( [ 'env:start' ]
 			);
 
@@ -247,6 +248,8 @@ HELP
 			}
 		}
 
+		$this->parse_actions( $input, $options_to_env_info );
+
 		if ( $skip_activating_plugins ) {
 			$this->e2e_environment->set_skip_activating_plugins( true );
 		}
@@ -299,6 +302,28 @@ HELP
 		}
 
 		return Command::SUCCESS;
+	}
+
+	/**
+	 * @param InputInterface $input
+	 * @param array<mixed>   $options_to_env_info
+	 *
+	 * @return void
+	 */
+	protected function parse_actions( InputInterface $input, array &$options_to_env_info ): void {
+		$action_flags = $input->getOption( 'action' ); // e.g. ["env_started=./foo.sh", "env_stopped=./bar.sh"].
+		if ( ! empty( $action_flags ) ) {
+			foreach ( $action_flags as $flag ) {
+				// Expect "hookName=scriptOrCommand".
+				$parts = explode( '=', $flag, 2 );
+				if ( count( $parts ) !== 2 ) {
+					throw new \RuntimeException( 'Invalid format for --action. Use env_started=./foo.sh, etc.' );
+				}
+				[ $hook_name, $script ] = $parts;
+
+				$options_to_env_info['overrides']['actions'][ $hook_name ] = $script;
+			}
+		}
 	}
 
 	protected function parse_options( InputInterface $input, bool $filter_to_send = true ): array {

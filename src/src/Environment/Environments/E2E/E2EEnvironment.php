@@ -117,6 +117,12 @@ class E2EEnvironment extends Environment {
 			);
 			$theme_activation->auto_activate_themes();
 		}
+
+		if ( ! empty( $this->env_info->actions['env_started'] ) ) {
+			$this->output->writeln( '<info>Running env_started action...</info>' );
+			$script = $this->env_info->actions['env_started'];
+			$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', $script ] );
+		}
 	}
 
 	protected function additional_output(): void {

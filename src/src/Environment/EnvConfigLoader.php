@@ -45,6 +45,11 @@ class EnvConfigLoader {
 		// Load the environment config file.
 		$env_config = $this->load_config();
 
+		// If user didn’t define "actions" in the file, default to empty.
+		if ( ! isset( $env_config['actions'] ) ) {
+			$env_config['actions'] = [];
+		}
+
 		// Check that config file doesn't contain disallowed keys.
 		foreach ( EnvInfo::$not_user_configurable as $d ) {
 			if ( array_key_exists( $d, $env_config ) ) {
@@ -176,6 +181,14 @@ class EnvConfigLoader {
 				case 'woo':
 					$value = EnvironmentVersionResolver::resolve_woo( $value, $env_config['plugin'] );
 					break;
+			}
+		}
+
+		// Actions.
+		if ( ! empty( $options['overrides']['actions'] ) ) {
+			foreach ( $options['overrides']['actions'] as $hook_name => $script ) {
+				// Replace or set the entire action.
+				$env_config['actions'][ $hook_name ] = $script;
 			}
 		}
 

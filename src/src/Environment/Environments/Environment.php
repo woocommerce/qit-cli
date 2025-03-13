@@ -316,6 +316,12 @@ abstract class Environment {
 		$output              = $output ?? App::make( OutputInterface::class );
 		$environment_monitor = App::make( EnvironmentMonitor::class );
 
+		if ( ! empty( $env_info->actions['env_stopped'] ) ) {
+			$script = $env_info->actions['env_stopped'];
+			$output->writeln( '<info>Running env_stopped action...</info>' );
+			App::make( Docker::class )->run_inside_docker( $env_info, [ '/bin/bash', '-c', $script ] );
+		}
+
 		if ( ! file_exists( $env_info->temporary_env ) ) {
 			if ( $output->isVerbose() ) {
 				$output->writeln( sprintf( 'Tried to stop environment %s, but it does not exist.', $env_info->temporary_env ) );
