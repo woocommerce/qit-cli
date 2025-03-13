@@ -105,7 +105,7 @@ JS;
 			__DIR__ . '/../data/deli.zip',
 			'--theme',
 			'storefront',
-			'--skip_activating_plugins'
+			'--skip_activating_themes',
 		] );
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
@@ -146,7 +146,7 @@ JS;
 			__DIR__ . '/../data/deli.zip',
 			'--theme',
 			'storefront',
-			'--skip_activating_plugins',
+			'--skip_activating_themes',
 			'--update_snapshots',
 		] );
 
@@ -162,7 +162,7 @@ JS;
 			__DIR__ . '/../data/deli.zip',
 			'--theme',
 			'storefront',
-			'--skip_activating_plugins',
+			'--skip_activating_themes',
 		] );
 
 		$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
@@ -193,7 +193,7 @@ JS;
 				__DIR__ . '/../data/deli.zip',
 				'--theme',
 				'storefront',
-				'--skip_activating_plugins',
+				'--skip_activating_themes',
 			], [], 1 );
 
 			$output = $this->normalize_snapshot_diff( $output, 892 );
