@@ -4,6 +4,7 @@
     "created_at": 1711651749,
     "status": "pending",
     "env_id": "123456",
+    "scripts": [],
     "volumes": [],
     "docker_images": [],
     "docker_network": null,

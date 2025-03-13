@@ -4,6 +4,7 @@
     "created_at": 123,
     "status": "running",
     "env_id": "Normalized",
+    "scripts": [],
     "volumes": [],
     "docker_images": [
         "test1",
