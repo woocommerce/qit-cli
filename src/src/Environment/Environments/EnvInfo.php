@@ -38,6 +38,9 @@ abstract class EnvInfo implements \JsonSerializable {
 	/** @var string */
 	public $env_id;
 
+	/** @var array<string> */
+	public $scripts = [];
+
 	/**
 	 * Holds an array of volume mappings, where each key is a container path and its value is the corresponding local path.
 	 *

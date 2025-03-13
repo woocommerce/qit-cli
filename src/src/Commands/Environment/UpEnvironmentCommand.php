@@ -68,7 +68,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use. Valid options: ' . implode( ', ', array_keys( TunnelRunner::$tunnel_map ) ), 'no_tunnel' )
 			->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests.', [] )
 			->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests from a file.', [] )
-			->addOption( 'action', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Define or override environment lifecycle hook scripts, e.g. --action env_started=./foo.sh' )
+			->addOption( 'scripts', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Define or override environment hook scripts, e.g. --scripts env_started=./foo.sh' )
 			->setAliases( [ 'env:start' ]
 			);
 
@@ -248,7 +248,7 @@ HELP
 			}
 		}
 
-		$this->parse_actions( $input, $options_to_env_info );
+		$this->parse_scripts( $input, $options_to_env_info );
 
 		if ( $skip_activating_plugins ) {
 			$this->e2e_environment->set_skip_activating_plugins( true );
@@ -310,18 +310,18 @@ HELP
 	 *
 	 * @return void
 	 */
-	protected function parse_actions( InputInterface $input, array &$options_to_env_info ): void {
-		$action_flags = $input->getOption( 'action' ); // e.g. ["env_started=./foo.sh", "env_stopped=./bar.sh"].
-		if ( ! empty( $action_flags ) ) {
-			foreach ( $action_flags as $flag ) {
+	protected function parse_scripts( InputInterface $input, array &$options_to_env_info ): void {
+		$scripts = $input->getOption( 'scripts' ); // e.g. ["env_started=./foo.sh", "env_stopped=./bar.sh"].
+		if ( ! empty( $scripts ) ) {
+			foreach ( $scripts as $script ) {
 				// Expect "hookName=scriptOrCommand".
-				$parts = explode( '=', $flag, 2 );
+				$parts = explode( '=', $script, 2 );
 				if ( count( $parts ) !== 2 ) {
-					throw new \RuntimeException( 'Invalid format for --action. Use env_started=./foo.sh, etc.' );
+					throw new \RuntimeException( 'Invalid format for --scripts. Use --scripts env_started=./foo.sh, etc.' );
 				}
 				[ $hook_name, $script ] = $parts;
 
-				$options_to_env_info['overrides']['actions'][ $hook_name ] = $script;
+				$options_to_env_info['overrides']['scripts'][ $hook_name ] = $script;
 			}
 		}
 	}

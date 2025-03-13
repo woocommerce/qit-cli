@@ -145,6 +145,12 @@ abstract class Environment {
 		$this->up_docker_compose();
 		$this->post_up();
 
+		if ( ! empty( $this->env_info->scripts['env_started'] ) ) {
+			$this->output->writeln( '<info>Running env_started script...</info>' );
+			$script = $this->env_info->scripts['env_started'];
+			$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', $script ] );
+		}
+
 		if ( $this->output->isVerbose() ) {
 			$this->output->writeln( 'Server started in ' . round( microtime( true ) - $start, 2 ) . ' seconds' );
 		}
@@ -316,9 +322,9 @@ abstract class Environment {
 		$output              = $output ?? App::make( OutputInterface::class );
 		$environment_monitor = App::make( EnvironmentMonitor::class );
 
-		if ( ! empty( $env_info->actions['env_stopped'] ) ) {
-			$script = $env_info->actions['env_stopped'];
-			$output->writeln( '<info>Running env_stopped action...</info>' );
+		if ( ! empty( $env_info->scripts['env_stopped'] ) ) {
+			$script = $env_info->scripts['env_stopped'];
+			$output->writeln( '<info>Running env_stopped script...</info>' );
 			App::make( Docker::class )->run_inside_docker( $env_info, [ '/bin/bash', '-c', $script ] );
 		}
 

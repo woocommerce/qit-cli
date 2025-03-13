@@ -45,9 +45,9 @@ class EnvConfigLoader {
 		// Load the environment config file.
 		$env_config = $this->load_config();
 
-		// If user didn’t define "actions" in the file, default to empty.
-		if ( ! isset( $env_config['actions'] ) ) {
-			$env_config['actions'] = [];
+		// If user didn’t define "scripts" in the file, default to empty.
+		if ( ! isset( $env_config['scripts'] ) ) {
+			$env_config['scripts'] = [];
 		}
 
 		// Check that config file doesn't contain disallowed keys.
@@ -184,11 +184,11 @@ class EnvConfigLoader {
 			}
 		}
 
-		// Actions.
-		if ( ! empty( $options['overrides']['actions'] ) ) {
-			foreach ( $options['overrides']['actions'] as $hook_name => $script ) {
-				// Replace or set the entire action.
-				$env_config['actions'][ $hook_name ] = $script;
+		// Scripts.
+		if ( ! empty( $options['overrides']['scripts'] ) ) {
+			foreach ( $options['overrides']['scripts'] as $hook_name => $script ) {
+				// Replace or set the entire script.
+				$env_config['scripts'][ $hook_name ] = $script;
 			}
 		}
 
