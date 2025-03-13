@@ -200,8 +200,10 @@ HELP
 
 		$woo                     = $input->getOption( 'woo' );
 		$skip_activating_plugins = $input->getOption( 'skip_activating_plugins' );
+		$skip_activating_themes  = $input->getOption( 'skip_activating_themes' );
 		$input->setOption( 'woo', null );
 		$input->setOption( 'skip_activating_plugins', null );
+		$input->setOption( 'skip_activating_themes', null );
 		$this->parse_env_vars( $input->getOption( 'env' ), $input->getOption( 'env_file' ) );
 
 		$tunnel = TunnelRunner::get_tunnel_value( $input );
@@ -252,7 +254,7 @@ HELP
 			$this->e2e_environment->set_skip_activating_plugins( true );
 		}
 
-		if ( $input->getOption( 'skip_activating_themes' ) ) {
+		if ( $skip_activating_themes ) {
 			$this->e2e_environment->set_skip_activating_themes( true );
 		}
 

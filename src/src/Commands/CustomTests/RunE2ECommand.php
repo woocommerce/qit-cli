@@ -193,6 +193,10 @@ class RunE2ECommand extends DynamicCommand {
 			$this->e2e_environment->set_skip_activating_plugins( true );
 		}
 
+		if ( $input->getOption( 'skip_activating_themes' ) ) {
+			$this->e2e_environment->set_skip_activating_themes( true );
+		}
+
 		if ( ! empty( $input->getOption( 'config' ) ) ) {
 			App::setVar( 'QIT_CONFIG_OVERRIDE', $input->getOption( 'config' ) );
 		}

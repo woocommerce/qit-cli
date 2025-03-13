@@ -187,15 +187,15 @@ class EnvUpThemeTest extends TestCase {
 	}
 
 	/**
-	 * If --skip_activating_plugins is used, that also prevents theme activation.
+	 * If --skip_activating_themes is used, that also prevents theme activation.
 	 */
-	public function test_env_up_with_skip_activating_plugins_does_not_activate_theme() {
+	public function test_env_up_with_skip_activating_themes_does_not_activate_theme() {
 		$output = qit( [
 			'env:up',
 			'--json',
 			'--theme',
 			$this->storefront_local_path,
-			'--skip_activating_plugins',
+			'--skip_activating_themes',
 		] );
 		$json   = json_decode( $output, true );
 
@@ -248,29 +248,93 @@ class EnvUpThemeTest extends TestCase {
 	}
 
 	/**
-	 * Single child theme alone => WP-CLI fails if parent is missing.
-	 * Here we only pass the Deli zip.
+	 * Single child theme alone => success if parent is on WP.org,
+	 * because QIT auto-installs the parent inside Docker.
 	 */
-	public function test_env_up_with_child_theme_alone_fails_if_parent_missing() {
+	public function test_env_up_with_child_theme_alone_succeeds_if_parent_on_wporg() {
+		// "deli" references "storefront" in style.css. Both are on WP.org.
 		$this->assertFileExists( $this->deli_local_path, 'Deli zip missing.' );
 
+		$output = qit( [
+			'env:up',
+			'--json',
+			'--theme',
+			$this->deli_local_path,  // only pass the child
+		] );
+
+		// If we reach here, the environment was created successfully
+		$json = json_decode( $output, true );
+		$this->assertArrayHasKey( 'env_id', $json, 'No env_id in output, env:up may have failed unexpectedly.' );
+
+		// Check that child is active and parent is installed
+		$theme_list = qit( [
+			'env:exec',
+			'--env_id',
+			$json['env_id'],
+			'wp theme list --fields=name,status',
+		] );
+
+		// Expect storefront installed (parent) but inactive
+		$this->assertStringContainsString( 'storefront', $theme_list, 'Storefront was not installed automatically' );
+		$this->assertStringNotContainsString( 'storefront    active', $theme_list, 'Parent theme should not be activated' );
+
+		// Expect deli installed and active
+		$this->assertStringContainsString( 'deli', $theme_list );
+		$this->assertStringContainsString( 'active', $theme_list, 'Deli child theme should be active' );
+	}
+
+	/**
+	 * Single child theme alone => fail if parent does not exist on WP.org.
+	 * We'll provide a local child .zip that references a fake parent slug.
+	 */
+	public function test_env_up_with_child_theme_alone_fails_if_parent_not_on_wporg() {
+		// Suppose we have a local child zip that references "Theme: i-do-not-exist-123"
+		$fake_child_zip = $this->makeFakeChildZip( 'i-do-not-exist-123' );
+		$this->assertFileExists( $fake_child_zip );
+
 		try {
-			// Only passing Deli => missing parent => CLI should fail
 			$output = qit( [
 				'env:up',
 				'--theme',
-				$this->deli_local_path,
+				$fake_child_zip,
 			] );
-			// If it didn't fail, that's unexpected:
-			$this->fail( 'Expected env:up to fail because Deli’s parent is missing, but it succeeded!' );
+			$this->fail( 'Expected env:up to fail because parent is not on WP.org, but it succeeded.' );
 		} catch ( \RuntimeException $e ) {
-			// Confirm the error message about missing parent
+			// Confirm the error about "No themes found."
+			// Or confirm "The parent theme is missing." text, depending on how your code surfaces it.
 			$this->assertStringContainsString(
-				'The parent theme is missing. Please install the "storefront" parent theme.',
+				'No themes found',
 				$e->getMessage(),
-				'Did not see expected WP-CLI error about missing parent.'
+				'Did not see WP-CLI error about nonexistent parent.'
 			);
 		}
+	}
+
+	/**
+	 * Utility to generate a minimal child theme zip on the fly
+	 * that references a given fake parent slug in style.css
+	 */
+	private function makeFakeChildZip( string $fake_parent ): string {
+		// 1) Create a temp folder
+		$child_dir = sys_get_temp_dir() . '/fake-child-' . uniqid();
+		mkdir( $child_dir );
+
+		// 2) Create style.css referencing the fake parent
+		$style = "/*
+Theme Name: Fake Child
+Template: {$fake_parent}
+*/";
+
+		file_put_contents( $child_dir . '/style.css', $style );
+
+		// 3) Zip it up
+		$zip_path = $child_dir . '.zip';
+		$zip      = new ZipArchive();
+		$zip->open( $zip_path, ZipArchive::CREATE );
+		$zip->addFile( $child_dir . '/style.css', 'fake-child/style.css' );
+		$zip->close();
+
+		return $zip_path;
 	}
 
 	/**
@@ -306,9 +370,9 @@ class EnvUpThemeTest extends TestCase {
 	}
 
 	/**
-	 * Child + parent, but --skip_activating_plugins => skip theme activation
+	 * Child + parent, but --skip_activating_themes => skip theme activation
 	 */
-	public function test_env_up_with_child_theme_and_skip_activating_plugins_flag_skips_child_activation() {
+	public function test_env_up_with_child_theme_and_skip_activating_themes_flag_skips_child_activation() {
 		$this->assertFileExists( $this->storefront_local_path, 'Storefront zip missing.' );
 		$this->assertFileExists( $this->deli_local_path, 'Deli zip missing.' );
 
@@ -319,7 +383,7 @@ class EnvUpThemeTest extends TestCase {
 			$this->storefront_local_path,
 			'--theme',
 			$this->deli_local_path,
-			'--skip_activating_plugins', // Also disables theme auto-activation
+			'--skip_activating_themes', // Also disables theme auto-activation
 		] );
 
 		$json = json_decode( $output, true );
@@ -336,6 +400,6 @@ class EnvUpThemeTest extends TestCase {
 		$this->assertStringContainsString( 'storefront', $theme_list );
 		$this->assertStringContainsString( 'deli', $theme_list );
 
-		$this->assertStringContainsString( 'inactive', $theme_list, 'Expected all themes to remain inactive due to --skip_activating_plugins.' );
+		$this->assertStringContainsString( 'inactive', $theme_list, 'Expected all themes to remain inactive due to --skip_activating_themes.' );
 	}
 }
