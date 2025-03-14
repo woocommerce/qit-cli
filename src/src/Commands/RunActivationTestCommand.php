@@ -42,7 +42,9 @@ class RunActivationTestCommand extends Command {
 			->reuseOption( RunE2ECommand::getDefaultName(), 'require' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'extension_set' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'dependencies' )
-			->reuseOption( RunE2ECommand::getDefaultName(), 'pw_test_tag' );
+			->reuseOption( RunE2ECommand::getDefaultName(), 'pw_test_tag' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'group' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'group-identifier' );
 
 		$this->addOption(
 			'json',

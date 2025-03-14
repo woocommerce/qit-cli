@@ -62,7 +62,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 	 * @return void
 	 */
 	protected function register_command_by_schema( Application $application, string $test_type, array $schema ): void {
-		$command = new class( $test_type, $this->auth, $this->upload, $this->woo_extensions_list ) extends DynamicCommand {
+		$command = new class( $test_type, $this->auth, $this->upload, $this->woo_extensions_list, $this->cache ) extends DynamicCommand {
 			/** @var Auth $auth */
 			protected $auth;
 
@@ -75,11 +75,15 @@ class CreateRunCommands extends DynamicCommandCreator {
 			/** @var Upload $upload */
 			protected $upload;
 
-			public function __construct( string $test_type, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list ) {
+			/** @var Cache $cache */
+			protected $cache;
+
+			public function __construct( string $test_type, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list, Cache $cache ) {
 				$this->auth                = $auth;
 				$this->test_type           = $test_type;
 				$this->woo_extensions_list = $woo_extensions_list;
 				$this->upload              = $upload;
+				$this->cache               = $cache;
 				parent::__construct();
 			}
 
@@ -142,6 +146,34 @@ class CreateRunCommands extends DynamicCommandCreator {
 					}
 
 					$options['additional_woo_plugins'] = implode( ',', $additional_woo_plugins );
+				}
+
+				if ( $input->getOption( 'group' ) ) {
+					$group = $this->cache->get( 'group' );
+
+					if ( empty( $group ) ) {
+						$group = [
+							'tests' => [],
+						];
+					}
+
+					$test = [
+						'type'   => $this->test_type,
+						'params' => [
+							'client' => 'qit_clis',
+						],
+					];
+
+					foreach ( $options as $key => $value ) {
+						$test['params'][ $key ] = $value;
+					}
+					$group['tests'][] = $test;
+
+					$this->cache->set( 'group', $group, 3600 );
+
+					$output->writeln( sprintf( '<info>Group successfully enqueued.</info>' ) );
+
+					return Command::SUCCESS;
 				}
 
 				try {
@@ -324,6 +356,14 @@ class CreateRunCommands extends DynamicCommandCreator {
 			'i',
 			InputOption::VALUE_NEGATABLE,
 			'(Optional) If set, exit status code will be zero even if test fails. (requires "--wait")',
+			false
+		);
+
+		$command->addOption(
+			'group',
+			'g',
+			InputOption::VALUE_NEGATABLE,
+			'(Optional) Register the test run into a group.',
 			false
 		);
 
