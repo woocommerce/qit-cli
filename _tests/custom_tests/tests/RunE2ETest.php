@@ -85,9 +85,6 @@ import qit from '/qitHelpers';
 test('I can activate Deli', async ({ page }) => {
     await qit.loginAsAdmin(page);
     await page.getByRole('link', { name: 'Appearance' }).click();
-    await expect(page.getByRole('cell', { name: 'Deli' })).toBeVisible();
-    await page.getByRole('link', { name: 'Install Parent Theme' }).click();
-    await page.getByRole('link', { name: 'Activate “Storefront”' }).click();
     await page.getByLabel('Activate Deli').click();
     await page.goto('/');
 });
@@ -106,6 +103,9 @@ JS;
 			$scaffolded_dir,
 			'--source',
 			__DIR__ . '/../data/deli.zip',
+			'--theme',
+			'storefront',
+			'--skip_activating_themes',
 		] );
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
@@ -124,9 +124,6 @@ import qit from '/qitHelpers';
 test('I can activate Deli', async ({ page }) => {
     await qit.loginAsAdmin(page);
     await page.getByRole('link', { name: 'Appearance' }).click();
-    await expect(page.getByRole('cell', { name: 'Deli' })).toBeVisible();
-    await page.getByRole('link', { name: 'Install Parent Theme' }).click();
-    await page.getByRole('link', { name: 'Activate “Storefront”' }).click();
     await page.getByLabel('Activate Deli').click();
     await page.goto('/');
     await expect(page).toHaveScreenshot('home.png', { maxDiffPixels: 100 });
@@ -147,6 +144,9 @@ JS;
 			$scaffolded_dir,
 			'--source',
 			__DIR__ . '/../data/deli.zip',
+			'--theme',
+			'storefront',
+			'--skip_activating_themes',
 			'--update_snapshots',
 		] );
 
@@ -160,6 +160,9 @@ JS;
 			$scaffolded_dir,
 			'--source',
 			__DIR__ . '/../data/deli.zip',
+			'--theme',
+			'storefront',
+			'--skip_activating_themes',
 		] );
 
 		$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
@@ -188,6 +191,9 @@ JS;
 				$scaffolded_dir,
 				'--source',
 				__DIR__ . '/../data/deli.zip',
+				'--theme',
+				'storefront',
+				'--skip_activating_themes',
 			], [], 1 );
 
 			$output = $this->normalize_snapshot_diff( $output, 892 );

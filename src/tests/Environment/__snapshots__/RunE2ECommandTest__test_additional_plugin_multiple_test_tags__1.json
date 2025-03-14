@@ -27,6 +27,7 @@
     "--require": [],
     "--object_cache": false,
     "--skip_activating_plugins": false,
+    "--skip_activating_themes": false,
     "--tunnel": "no_tunnel",
     "--json": true,
     "--env": [],

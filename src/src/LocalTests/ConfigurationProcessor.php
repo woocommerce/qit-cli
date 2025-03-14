@@ -155,6 +155,16 @@ class ConfigurationProcessor {
 		if ( empty( $woo_extension ) ) {
 			// If no woo_extension, there's no main SUT, so skip dependencies.
 			$this->add_cli_plugins( $env_config, $input );
+
+			$cli_themes = $input->getOption( 'theme' ) ?? [];
+			foreach ( $cli_themes as $theme_item ) {
+				$env_config['themes'][ $theme_item ] = [
+					'slug'   => $theme_item,
+					'source' => $theme_item,
+					'action' => Extension::ACTIONS['bootstrap'],
+				];
+			}
+
 			$this->normalize_plugins( $env_config );
 			$this->normalize_themes( $env_config );
 			$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
@@ -204,6 +214,16 @@ class ConfigurationProcessor {
 
 		$this->apply_dependencies( $woo_extension_id, $dependencies_option, $env_up_options, $env_config );
 		$this->add_cli_plugins( $env_config, $input );
+
+		$cli_themes = $input->getOption( 'theme' ) ?? [];
+		foreach ( $cli_themes as $theme_item ) {
+			$env_config['themes'][ $theme_item ] = [
+				'slug'   => $theme_item,
+				'source' => $theme_item,
+				'action' => Extension::ACTIONS['bootstrap'],
+			];
+		}
+
 		$this->normalize_plugins( $env_config );
 		$this->normalize_themes( $env_config );
 

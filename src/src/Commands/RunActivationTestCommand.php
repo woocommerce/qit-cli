@@ -86,6 +86,7 @@ class RunActivationTestCommand extends Command {
 
 		$run_e2e_options['--pw_options']              = '--retries=0';
 		$run_e2e_options['--skip_activating_plugins'] = true;
+		$run_e2e_options['--skip_activating_themes']  = true;
 
 		foreach ( $this->reused_options as $reused_option ) {
 			if ( $reused_option === 'tunnel' ) {
