@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class GroupClearCommand extends Command {
-	protected static $defaultName = 'group:clear';
+	protected static $defaultName = 'group:clear'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/** @var Cache */
 	protected $cache;

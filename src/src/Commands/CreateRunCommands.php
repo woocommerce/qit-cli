@@ -160,7 +160,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 					$test = [
 						'type'   => $this->test_type,
 						'params' => [
-							'client' => 'qit_clis',
+							'client' => 'qit_cli',
 						],
 					];
 

@@ -13,7 +13,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
 class GroupRunCommand extends Command {
-	protected static $defaultName = 'group:run';
+	protected static $defaultName = 'group:run'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/** @var Cache */
 	protected $cache;
@@ -83,11 +83,11 @@ class GroupRunCommand extends Command {
 
 			$output->writeln( '<info>Group enqueued on QIT servers!</info>' );
 
-			if ( $response_data['group_id'] ) {
+			if ( isset( $response_data['group_id'] ) ) {
 				$output->writeln( sprintf( '<info>Group ID: %s</info>', $response_data['group_id'] ) );
 			}
 
-			if ( $response_data['group_identifier'] ) {
+			if ( isset( $response_data['group_identifier'] ) ) {
 				$output->writeln( sprintf( '<info>Group Identifier: %s</info>', $response_data['group_identifier'] ) );
 			}
 
