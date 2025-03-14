@@ -139,9 +139,7 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'dependencies', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies of the SUT and additional plugins. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['bootstrap'] )
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode.' )
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen.' )
-			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' )
-			->addOption( 'group', 'g', InputOption::VALUE_OPTIONAL, 'Register the test run into a group.', null )
-			->addOption( 'group-identifier', 'gi', InputOption::VALUE_OPTIONAL, 'Identifier for the group.', null );
+			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
