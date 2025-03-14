@@ -26,12 +26,19 @@ class E2EEnvironment extends Environment {
 	/** @var bool */
 	protected $skip_activating_plugins = false;
 
+	/** @var bool */
+	protected $skip_activating_themes = false;
+
 	public function get_name(): string {
 		return 'e2e';
 	}
 
 	public function set_skip_activating_plugins( bool $skip_activating_plugins ): void {
 		$this->skip_activating_plugins = $skip_activating_plugins;
+	}
+
+	public function set_skip_activating_themes( bool $skip_activating_themes ): void {
+		$this->skip_activating_themes = $skip_activating_themes;
 	}
 
 	protected function post_generate_docker_compose(): void {
@@ -109,7 +116,7 @@ class E2EEnvironment extends Environment {
 		}
 
 		// Activate theme.
-		if ( ! $this->skip_activating_plugins ) {
+		if ( ! $this->skip_activating_themes ) {
 			$theme_activation = new ThemeActivation(
 				$this->env_info,
 				$this->docker,

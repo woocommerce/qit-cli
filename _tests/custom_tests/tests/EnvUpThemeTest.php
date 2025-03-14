@@ -187,15 +187,15 @@ class EnvUpThemeTest extends TestCase {
 	}
 
 	/**
-	 * If --skip_activating_plugins is used, that also prevents theme activation.
+	 * If --skip_activating_themes is used, that also prevents theme activation.
 	 */
-	public function test_env_up_with_skip_activating_plugins_does_not_activate_theme() {
+	public function test_env_up_with_skip_activating_themes_does_not_activate_theme() {
 		$output = qit( [
 			'env:up',
 			'--json',
 			'--theme',
 			$this->storefront_local_path,
-			'--skip_activating_plugins',
+			'--skip_activating_themes',
 		] );
 		$json   = json_decode( $output, true );
 
@@ -248,29 +248,39 @@ class EnvUpThemeTest extends TestCase {
 	}
 
 	/**
-	 * Single child theme alone => WP-CLI fails if parent is missing.
-	 * Here we only pass the Deli zip.
+	 * Single child theme alone => success if parent is on WP.org,
+	 * because QIT auto-installs the parent inside Docker.
 	 */
-	public function test_env_up_with_child_theme_alone_fails_if_parent_missing() {
+	public function test_env_up_with_child_theme_alone_succeeds_if_parent_on_wporg() {
+		// "deli" references "storefront" in style.css. Both are on WP.org.
 		$this->assertFileExists( $this->deli_local_path, 'Deli zip missing.' );
 
-		try {
-			// Only passing Deli => missing parent => CLI should fail
-			$output = qit( [
-				'env:up',
-				'--theme',
-				$this->deli_local_path,
-			] );
-			// If it didn't fail, that's unexpected:
-			$this->fail( 'Expected env:up to fail because Deli’s parent is missing, but it succeeded!' );
-		} catch ( \RuntimeException $e ) {
-			// Confirm the error message about missing parent
-			$this->assertStringContainsString(
-				'The parent theme is missing. Please install the "storefront" parent theme.',
-				$e->getMessage(),
-				'Did not see expected WP-CLI error about missing parent.'
-			);
-		}
+		$output = qit( [
+			'env:up',
+			'--json',
+			'--theme',
+			$this->deli_local_path,  // only pass the child
+		] );
+
+		// If we reach here, the environment was created successfully
+		$json = json_decode( $output, true );
+		$this->assertArrayHasKey( 'env_id', $json, 'No env_id in output, env:up may have failed unexpectedly.' );
+
+		// Check that child is active and parent is installed
+		$theme_list = qit( [
+			'env:exec',
+			'--env_id',
+			$json['env_id'],
+			'wp theme list --fields=name,status',
+		] );
+
+		// Expect storefront installed (parent) but inactive
+		$this->assertStringContainsString( 'storefront', $theme_list, 'Storefront was not installed automatically' );
+		$this->assertStringNotContainsString( 'storefront    active', $theme_list, 'Parent theme should not be activated' );
+
+		// Expect deli installed and active
+		$this->assertStringContainsString( 'deli', $theme_list );
+		$this->assertStringContainsString( 'active', $theme_list, 'Deli child theme should be active' );
 	}
 
 	/**
@@ -306,9 +316,9 @@ class EnvUpThemeTest extends TestCase {
 	}
 
 	/**
-	 * Child + parent, but --skip_activating_plugins => skip theme activation
+	 * Child + parent, but --skip_activating_themes => skip theme activation
 	 */
-	public function test_env_up_with_child_theme_and_skip_activating_plugins_flag_skips_child_activation() {
+	public function test_env_up_with_child_theme_and_skip_activating_themes_flag_skips_child_activation() {
 		$this->assertFileExists( $this->storefront_local_path, 'Storefront zip missing.' );
 		$this->assertFileExists( $this->deli_local_path, 'Deli zip missing.' );
 
@@ -319,7 +329,7 @@ class EnvUpThemeTest extends TestCase {
 			$this->storefront_local_path,
 			'--theme',
 			$this->deli_local_path,
-			'--skip_activating_plugins', // Also disables theme auto-activation
+			'--skip_activating_themes', // Also disables theme auto-activation
 		] );
 
 		$json = json_decode( $output, true );
@@ -336,6 +346,6 @@ class EnvUpThemeTest extends TestCase {
 		$this->assertStringContainsString( 'storefront', $theme_list );
 		$this->assertStringContainsString( 'deli', $theme_list );
 
-		$this->assertStringContainsString( 'inactive', $theme_list, 'Expected all themes to remain inactive due to --skip_activating_plugins.' );
+		$this->assertStringContainsString( 'inactive', $theme_list, 'Expected all themes to remain inactive due to --skip_activating_themes.' );
 	}
 }

@@ -125,6 +125,7 @@ class RunE2ECommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'config' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'object_cache' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'skip_activating_plugins' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'skip_activating_themes' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'tunnel' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'json' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'volume' )
@@ -190,6 +191,10 @@ class RunE2ECommand extends DynamicCommand {
 
 		if ( $input->getOption( 'skip_activating_plugins' ) ) {
 			$this->e2e_environment->set_skip_activating_plugins( true );
+		}
+
+		if ( $input->getOption( 'skip_activating_themes' ) ) {
+			$this->e2e_environment->set_skip_activating_themes( true );
 		}
 
 		if ( ! empty( $input->getOption( 'config' ) ) ) {

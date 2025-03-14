@@ -40,34 +40,64 @@ class ThemeActivation {
 	 * WP-CLI will handle errors if a parent is missing.
 	 */
 	public function auto_activate_themes(): void {
-		$theme_slugs = array_map(
-			static function ( $ext ) {
-				return $ext->slug;
-			},
-			$this->env_info->themes
-		);
+		$theme_slugs = array_map( static function ( $ext ) {
+			return $ext->slug;
+		}, $this->env_info->themes );
 
 		$count = count( $theme_slugs );
 
 		switch ( $count ) {
 			case 0:
-				break;
+				return;
 
 			case 1:
-				$this->activate_single_theme( $theme_slugs[0] );
-				break;
+				$child_slug  = $theme_slugs[0];
+				$parent_slug = $this->detect_parent_template( $child_slug );
+
+				if ( $parent_slug ) {
+					$this->output->writeln(
+						"<comment>Theme '{$child_slug}' is a child of '{$parent_slug}'.</comment>"
+					);
+
+					try {
+						$install_output = $this->docker->run_inside_docker(
+							$this->env_info,
+							[
+								'bash',
+								'-c',
+								sprintf( 'wp theme install %s --force', escapeshellarg( $parent_slug ) ),
+							]
+						);
+
+						$this->output->writeln( $install_output );
+						$this->activate_single_theme( $child_slug );
+					} catch ( \RuntimeException $e ) {
+						$this->output->writeln(
+							'<comment>Could not find the parent theme on WP.org. ' .
+							'Skipping child activation. Please provide the parent theme as well.</comment>'
+						);
+					}
+				} else {
+					// Not a child => just activate.
+					$this->activate_single_theme( $child_slug );
+				}
+
+				return;
 
 			case 2:
 				$this->maybe_activate_parent_child( $theme_slugs );
-				break;
+
+				return;
 
 			default:
 				$this->output->writeln(
 					"<comment>Theme auto-activation skipped: {$count} themes provided.</comment>"
 				);
-				break;
+
+				return;
 		}
 	}
+
 
 	/**
 	 * If exactly one slug, just run "wp theme activate".

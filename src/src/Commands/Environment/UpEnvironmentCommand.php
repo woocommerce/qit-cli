@@ -65,6 +65,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->addOption( 'config', null, InputOption::VALUE_OPTIONAL, '(Optional) QIT config file to use.' )
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
+			->addOption( 'skip_activating_themes', 'st', InputOption::VALUE_NONE, 'Skip activating themes in the environment.' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
 			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use. Valid options: ' . implode( ', ', array_keys( TunnelRunner::$tunnel_map ) ), 'no_tunnel' )
 			->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests.', [] )
@@ -201,8 +202,10 @@ HELP
 
 		$woo                     = $input->getOption( 'woo' );
 		$skip_activating_plugins = $input->getOption( 'skip_activating_plugins' );
+		$skip_activating_themes  = $input->getOption( 'skip_activating_themes' );
 		$input->setOption( 'woo', null );
 		$input->setOption( 'skip_activating_plugins', null );
+		$input->setOption( 'skip_activating_themes', null );
 		$this->parse_env_vars( $input->getOption( 'env' ), $input->getOption( 'env_file' ) );
 
 		$tunnel = TunnelRunner::get_tunnel_value( $input );
@@ -253,6 +256,10 @@ HELP
 
 		if ( $skip_activating_plugins ) {
 			$this->e2e_environment->set_skip_activating_plugins( true );
+		}
+
+		if ( $skip_activating_themes ) {
+			$this->e2e_environment->set_skip_activating_themes( true );
 		}
 
 		if ( ! empty( $input->getOption( 'config' ) ) ) {
