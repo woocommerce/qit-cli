@@ -133,29 +133,19 @@ class PluginsAndThemesParser {
 	 *   5) Otherwise, fallback to pathinfo filename.
 	 */
 	protected function infer_slug_from_source( string $source ): string {
-		// 1. Check if $source has a URL scheme (like http://, ftp://, etc.)
-		$scheme = parse_url( $source, PHP_URL_SCHEME );
-
-		if ( $scheme && strlen( $scheme ) === 1 ) {
-			// It's probably a Windows drive letter like C: or D:
-			// Treat it like a local path by clearing $scheme.
-			$scheme = null;
-		}
-
-		// If there's a scheme...
-		if ( $scheme !== null ) {
-			// 2. Enforce only http(s)
-			if ( ! in_array( strtolower( $scheme ), [ 'http', 'https' ], true ) ) {
-				throw new \Exception( "Only http(s) protocol is supported. Provided: '{$scheme}'." );
-			}
-
-			// 3. If it’s http(s), parse it like a remote URL:
+		// 1) If it starts with http:// or https:// → remote URL
+		if ( preg_match( '/^https?:\/\//i', $source ) ) {
 			$filename = pathinfo( \QIT_CLI\normalize_path( $source ), PATHINFO_FILENAME );
 			if ( empty( $filename ) ) {
 				throw new \Exception( "Could not infer slug from remote source '{$source}'." );
 			}
 
 			return $filename;
+		} else {
+			// Throw on any other protocol.
+			if ( preg_match( '/^\w{2,}:\/\//', $source ) ) {
+				throw new \Exception( "Only http(s) protocol is supported. Provided: '{$source}'" );
+			}
 		}
 
 		// 2) If it contains slash/backslash, treat it as potential local file.
