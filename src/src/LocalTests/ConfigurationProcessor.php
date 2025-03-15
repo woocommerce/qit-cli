@@ -524,7 +524,7 @@ class ConfigurationProcessor {
 
 		foreach ( $env_config['plugins'] as $key => $cfg ) {
 			// If the *value* is just a string, convert it to an array so we can safely do $cfg['source'], etc.
-			// e.g. "woocommerce" => [ 'slug' => 'woocommerce', 'source' => 'woocommerce' ]
+			// e.g. "woocommerce" => [ 'slug' => 'woocommerce', 'source' => 'woocommerce' ].
 			if ( is_string( $cfg ) ) {
 				$cfg = [
 					'slug'   => $cfg,
@@ -533,7 +533,7 @@ class ConfigurationProcessor {
 			}
 
 			if ( is_numeric( $key ) ) {
-				// Then the *key* is numeric. We try to look up a slug from the numeric ID:
+				// Then the *key* is numeric. We try to look up a slug from the numeric ID.
 				try {
 					$resolved_slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $key );
 					// Keep original numeric ID as source if not set.
