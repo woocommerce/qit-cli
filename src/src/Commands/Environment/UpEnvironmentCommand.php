@@ -292,7 +292,7 @@ HELP
 		if ( getenv( 'QIT_SELF_TEST' ) === 'env_info' ) {
 			$output->write( json_encode( $env_info ) );
 
-			return 1337;
+			return 137;
 		}
 
 		// "up_and_test" is when we are using an environment to run a custom test. "up" is spinning up the environment on-demand.

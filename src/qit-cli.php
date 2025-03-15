@@ -21,6 +21,11 @@ try {
 	// Handle CLI request.
 	exit( $application->run() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 } catch ( \Exception $e ) {
+	$container->setVar( 'QIT_JSON_MODE', true );
+	if ( App::offsetGet( 'QIT_JSON_MODE' ) === true ) {
+		// If JSON mode is enabled, output the error as JSON.
+		\QIT_CLI\JsonOutput::output_throwable_as_json( $e );
+	}
 	$io = new SymfonyStyle( App::make( \QIT_CLI\IO\Input::class ), App::make( Output::class ) );
 	$io->error( $e->getMessage() );
 	exit( 1 );
