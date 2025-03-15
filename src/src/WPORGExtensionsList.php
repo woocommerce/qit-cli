@@ -2,13 +2,6 @@
 
 namespace QIT_CLI;
 
-use QIT_CLI\Exceptions\NetworkErrorException;
-use QIT_CLI\RequestBuilder;
-
-/**
- * A replacement for the old WPORGExtensionsList that used wp_remote_get().
- * Now it uses QIT_CLI\RequestBuilder for HTTP requests.
- */
 class WPORGExtensionsList {
 	/**
 	 * @var string
