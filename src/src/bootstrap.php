@@ -114,6 +114,7 @@ $container->singleton( EnvConfigLoader::class );
 
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 
+require_once __DIR__ . '/json-filter.php';
 
 if ( in_array( '--json', $GLOBALS['argv'], true ) ) {
 	App::make( \QIT_CLI\JsonOutput::class )->init( $container );

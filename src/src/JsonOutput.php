@@ -2,6 +2,7 @@
 
 namespace QIT_CLI;
 
+use lucatume\DI52\Container;
 use QIT_CLI\IO\Output;
 
 /**
@@ -13,22 +14,15 @@ class JsonOutput {
 	/**
 	 * Call this once in your bootstrap to set up JSON error handlers and filters.
 	 */
-	public static function init( $container ): void {
+	public static function init( Container $container ): void {
 		set_exception_handler( [ self::class, 'handle_exception' ] );
-		set_error_handler( [ self::class, 'handle_error' ] );
+		set_error_handler( [ self::class, 'handle_error' ] ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler
 		register_shutdown_function( [ self::class, 'handle_shutdown' ] );
-
-		// Register our 'qit_json' filter.
-		if ( ! stream_filter_register( 'qit_json', QIT_JSON_Filter::class ) ) {
-			exit( 151 );
-		}
 
 		$container->setVar( 'QIT_JSON_MODE', true );
 
-		/** @var \QIT_CLI\IO\Output $output */
-		$output = App::make( Output::class );
-
-		if ( ! stream_filter_append( $output->getStream(), 'qit_json' ) ) {
+		/* @phan-suppress-next-line PhanUndeclaredMethod */
+		if ( ! stream_filter_append( App::make( Output::class )->getStream(), 'qit_json' ) ) { // @phpstan-ignore-line method.notFound
 			exit( 152 );
 		}
 	}
@@ -43,14 +37,14 @@ class JsonOutput {
 	/**
 	 * Error handler: convert a PHP error into an ErrorException, then JSON.
 	 */
-	public static function handle_error( $severity, $message, $file, $line ): bool {
-		if ( ! ( error_reporting() & $severity ) ) {
-			// This error is suppressed by current error_reporting settings
+	public static function handle_error( int $severity, string $message, string $file, int $line ): bool {
+		if ( ! ( error_reporting() & $severity ) ) { // phpcs:ignore
+			// This error is suppressed by current error_reporting settings.
 			return false;
 		}
 		self::output_throwable_as_json( new \ErrorException( $message, 0, $severity, $file, $line ) );
 
-		return true; // We handled it
+		return true; // We handled it.
 	}
 
 	/**
@@ -85,30 +79,8 @@ class JsonOutput {
 			],
 		];
 
-		// Echo valid JSON
+		// Echo valid JSON.
 		echo json_encode( $error_data ), "\n";
 		exit( 1 );
-	}
-}
-
-/**
- * Stream filter that only passes valid JSON, discarding or logging anything else.
- */
-class QIT_JSON_Filter extends \php_user_filter {
-	public function filter( $in, $out, &$consumed, $closing ): int {
-		while ( $bucket = stream_bucket_make_writeable( $in ) ) {
-			if ( null !== json_decode( $bucket->data ) ) {
-				// Data is valid JSON, pass it on
-				$consumed += $bucket->datalen;
-				stream_bucket_append( $out, $bucket );
-			} else {
-				// Not valid JSON, optionally log to file
-				if ( ! empty( getenv( 'QIT_NON_JSON_OUTPUT' ) ) ) {
-					file_put_contents( getenv( 'QIT_NON_JSON_OUTPUT' ), $bucket->data, FILE_APPEND );
-				}
-			}
-		}
-
-		return PSFS_PASS_ON;
 	}
 }
