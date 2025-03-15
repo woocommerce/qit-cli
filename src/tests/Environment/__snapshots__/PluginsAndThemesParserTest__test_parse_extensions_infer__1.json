@@ -2,7 +2,7 @@
     {
         "slug": "qit-beaver",
         "entrypoint": null,
-        "source": "\\\\network-share\\plugins\\qit-beaver.zip",
+        "source": "C:\\Program Files\\example\\qit-beaver.zip",
         "downloaded_source": null,
         "type": "plugin",
         "handler": null,

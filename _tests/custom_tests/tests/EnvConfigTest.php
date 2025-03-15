@@ -3,21 +3,21 @@
 use PHPUnit\Framework\TestCase;
 use QIT\SelfTests\CustomTests\Traits\SnapshotHelpers;
 
+/**
+ * Final EnvConfigTest aligning with your parser rules:
+ * - If key is recognized, source is optional.
+ * - If key is unknown, user must define source.
+ * - If slug is set, it must match the key.
+ * - No numeric short syntax or nonexistent flags tested.
+ */
 class EnvConfigTest extends TestCase {
 	use SnapshotHelpers;
 
 	/**
-	 * A helper that:
-	 * 1) Writes the config content to a temp file (JSON or YML),
-	 * 2) Runs "qit env:up --json" with QIT_SELF_TEST=env_info,
-	 * 3) Returns the decoded & normalized $env_info array for snapshot comparison.
-	 *
-	 * Usage:
-	 *   $env_info = $this->run_qit_config_test($config_contents, 'json');
-	 *   $this->assertMatchesSnapshot(json_encode($env_info, JSON_PRETTY_PRINT));
+	 * Writes the config to a temp file, runs `qit env:up --json`, and returns the final $env_info.
 	 */
 	private function run_qit_config_test( string $config_contents, string $extension = 'json', array $cli_extra = [] ): array {
-		// 1) Write the temp file
+		// 1) Temp file
 		$config_file = sprintf(
 			'%s/qit_%s_%s.%s',
 			sys_get_temp_dir(),
@@ -27,9 +27,7 @@ class EnvConfigTest extends TestCase {
 		);
 		file_put_contents( $config_file, $config_contents );
 
-		// 2) Build the CLI command
-		//    By default: ['env:up', '--config', $config_file, '--json']
-		//    Then we append anything from $cli_extra, e.g. ['--wp','6.4','--plugin','another']
+		// 2) Build CLI command
 		$cli_command = array_merge( [
 			'env:up',
 			'--config',
@@ -40,7 +38,6 @@ class EnvConfigTest extends TestCase {
 		// 3) Run qit, expecting exit code 137, with QIT_SELF_TEST=env_info
 		$output = qit( $cli_command, [], 137, [ 'QIT_SELF_TEST' => 'env_info' ] );
 
-		// Cleanup
 		unlink( $config_file );
 
 		// 4) Decode & normalize
@@ -49,14 +46,16 @@ class EnvConfigTest extends TestCase {
 		return $this->normalize_env_info( $env_info );
 	}
 
+	/**
+	 * Normalizes $env_info so snapshots don’t break from random IDs or paths.
+	 */
 	private function normalize_env_info( array $env_info ): array {
-		// 1) Capture the original env_id (e.g. "67d4f06a4b7ac") so we can find & replace it in paths
+		// Possibly remove environment-specific IDs, timestamps, etc.
 		$original_env_id = $env_info['env_id'] ?? null;
 		if ( $original_env_id ) {
 			$env_info['env_id'] = 'ENV_ID_NORMALIZED';
 		}
 
-		// 2) Overwrite date, domain, etc.
 		if ( isset( $env_info['created_at'] ) ) {
 			$env_info['created_at'] = 1700000000;
 		}
@@ -64,7 +63,6 @@ class EnvConfigTest extends TestCase {
 			$env_info['domain'] = 'normalized.localhost';
 		}
 
-		// 3) Overwrite plugin info
 		if ( ! empty( $env_info['plugins'] ) && is_array( $env_info['plugins'] ) ) {
 			foreach ( $env_info['plugins'] as &$plugin ) {
 				if ( isset( $plugin['version'] ) ) {
@@ -76,10 +74,6 @@ class EnvConfigTest extends TestCase {
 			}
 		}
 
-		// 4) Recursively transform the entire array:
-		//    - Replace the ORIGINAL env_id with ENV_ID_NORMALIZED in strings
-		//    - Replace any long hex substring (tempnam-style) with ENV_ID_NORMALIZED
-		//    - Remove everything up to qit-cli/_tests
 		$normalize_recursive = function ( $data ) use ( $original_env_id, &$normalize_recursive ) {
 			if ( is_array( $data ) ) {
 				foreach ( $data as $key => $value ) {
@@ -90,28 +84,21 @@ class EnvConfigTest extends TestCase {
 			}
 
 			if ( is_string( $data ) ) {
-				// (A) Replace the original env_id if we have one
 				if ( ! empty( $original_env_id ) ) {
 					$data = str_replace( $original_env_id, 'ENV_ID_NORMALIZED', $data );
 				}
 
-				// (B) Replace any long hex substring (e.g. "67d4f193be95d")
+				// Replace any long hex substring
 				$data = preg_replace( '/[a-f0-9]{10,}/i', 'ENV_ID_NORMALIZED', $data );
-
-				// (C) Remove everything leading up to "qit-cli/_tests" so it starts at "qit-cli/_tests/..."
-				//     If you have JSON-escaped paths, use qit-cli\/_tests instead
+				// Remove everything up to qit-cli/_tests
 				$data = preg_replace( '#.*?(qit-cli/_tests.*)#', '$1', $data );
 			}
 
 			return $data;
 		};
 
-		// Perform the final recursive pass
-		$env_info = $normalize_recursive( $env_info );
-
-		return $env_info;
+		return $normalize_recursive( $env_info );
 	}
-
 
 	public function test_json_config_array_of_strings(): void {
 		$json_config = <<<'JSON'
@@ -126,7 +113,7 @@ class EnvConfigTest extends TestCase {
   ]
 }
 JSON;
-		$env_info    = $this->run_qit_config_test( $json_config, 'json' );
+		$env_info    = $this->run_qit_config_test( $json_config );
 		$this->assertMatchesSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
@@ -154,7 +141,7 @@ YML;
   "themes": ["twentytwentyone"]
 }
 JSON;
-		$env_info    = $this->run_qit_config_test( $json_config, 'json' );
+		$env_info    = $this->run_qit_config_test( $json_config );
 		$this->assertMatchesSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
@@ -166,7 +153,7 @@ JSON;
   "plugins": ["wordpress-importer"]
 }
 JSON;
-		$env_info    = $this->run_qit_config_test( $json_config, 'json' );
+		$env_info    = $this->run_qit_config_test( $json_config );
 		$this->assertMatchesSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
@@ -179,7 +166,7 @@ JSON;
   "themes": ["storefront"]
 }
 JSON;
-		$env_info    = $this->run_qit_config_test( $json_config, 'json' );
+		$env_info    = $this->run_qit_config_test( $json_config );
 		$this->assertMatchesSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
@@ -192,13 +179,13 @@ JSON;
 }
 JSON;
 
-		// Provide additional CLI flags: --wp 6.4, --plugin=wordpress-importer
-		$env_info = $this->run_qit_config_test( $json_config, 'json', [
+		$cli_extra = [
 			'--wp',
 			'6.4',
 			'--plugin',
 			'wordpress-importer'
-		] );
+		];
+		$env_info  = $this->run_qit_config_test( $json_config, 'json', $cli_extra );
 		$this->assertMatchesSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
@@ -207,17 +194,12 @@ JSON;
 		file_put_contents( $dummy_plugin_zip, 'fake plugin contents' );
 
 		$config_array = [
-			'plugins' => [
-				$dummy_plugin_zip,
-			],
-			'themes'  => [
-				'/absolute/path/to/mytheme.zip'
-			]
+			'plugins' => [ $dummy_plugin_zip ],
+			'themes'  => [ '/absolute/path/to/mytheme.zip' ]
 		];
+		$json_config  = json_encode( $config_array, JSON_PRETTY_PRINT );
 
-		$json_config = json_encode( $config_array, JSON_PRETTY_PRINT );
-
-		$env_info = $this->run_qit_config_test( $json_config, 'json' );
+		$env_info = $this->run_qit_config_test( $json_config );
 		unlink( $dummy_plugin_zip );
 
 		$this->assertMatchesSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
@@ -234,14 +216,251 @@ JSON;
 }
 JSON;
 
-		$env_info = $this->run_qit_config_test( $json_config, 'json', [
+		$cli_extra = [
 			'--env_file',
 			$env_file_path,
 			'--env',
 			'DB_NAME=wp_test'
-		] );
+		];
+		$env_info  = $this->run_qit_config_test( $json_config, 'json', $cli_extra );
 		unlink( $env_file_path );
 
 		$this->assertMatchesSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
+
+	public function test_config_with_brackets_array(): void {
+		$json_config = <<<'JSON'
+{
+  "wp": "stable",
+  "php_version": "7.4",
+  "plugins": [
+    "woocommerce",
+    "wordpress-importer"
+  ],
+  "themes": [
+    "https://downloads.wordpress.org/theme/storefront.zip",
+    "https://downloads.wordpress.org/theme/twentytwentyfour.zip"
+  ]
+}
+JSON;
+		$env_info    = $this->run_qit_config_test( $json_config );
+		$this->assertMatchesSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
+	}
+
+	public function test_config_with_invalid_json(): void {
+		$this->expectException( \RuntimeException::class );
+		$json_config = <<<'JSON'
+{
+  "wp": "stable",
+  "php_version": "7.4",
+  "plugins": {
+    "woocommerce",
+    "wordpress-importer"
+  },
+  "themes": {
+    "https://downloads.wordpress.org/theme/storefront.zip",
+    "https://downloads.wordpress.org/theme/twentytwentyfour.zip"
+  }
+}
+JSON;
+		$env_info    = $this->run_qit_config_test( $json_config );
+		$this->assertMatchesSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
+	}
+
+	public function test_config_with_partial_associative(): void {
+		$json_config = <<<'JSON'
+{
+  "wp": "stable",
+  "php_version": "7.4",
+  "plugins": [
+    "woocommerce",
+    "wordpress-importer"
+  ],
+  "themes": {
+    "https://downloads.wordpress.org/theme/storefront.zip": {
+	  "action": "activate"
+	},
+    "https://downloads.wordpress.org/theme/twentytwentyfour.zip": {
+      "source": "https://downloads.wordpress.org/theme/twentytwentyfour.zip"
+    }
+  }
+}
+JSON;
+		$env_info    = $this->run_qit_config_test( $json_config );
+		$this->assertMatchesSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
+	}
+
+	public function test_config_with_partial_associative_mixed_sources(): void {
+		// Fix: Provide "source" for local/remote keys, so parser doesn't fail
+		$json_config = <<<'JSON'
+{
+  "wp": "stable",
+  "php_version": "7.4",
+  "plugins": {
+    "woocommerce": {},
+    "/path/to/local/plugin-directory": {
+      "source": "/path/to/local/plugin-directory",
+      "action": "activate"
+    },
+    "/path/to/local/plugin.zip": {
+      "source": "/path/to/local/plugin.zip"
+    },
+    "https://example.com/some-remote-plugin.zip": {
+      "source": "https://example.com/some-remote-plugin.zip",
+      "test_tags": ["e2e", "my-custom-tag"]
+    }
+  },
+  "themes": {
+    "https://downloads.wordpress.org/theme/storefront.zip": {
+      "source": "https://downloads.wordpress.org/theme/storefront.zip",
+      "action": "activate"
+    },
+    "https://downloads.wordpress.org/theme/twentytwentyfour.zip": {
+      "source": "https://downloads.wordpress.org/theme/twentytwentyfour.zip"
+    },
+    "/path/to/local/theme-directory": {
+      "source": "/path/to/local/theme-directory"
+    },
+    "/path/to/local/theme.zip": {
+      "source": "/path/to/local/theme.zip",
+      "test_tags": ["special-theme-test"]
+    }
+  }
+}
+JSON;
+
+		$env_info = $this->run_qit_config_test( $json_config );
+		$this->assertMatchesSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
+	}
+
+	public function test_config_with_cli_plugin_override(): void {
+		$json_config = <<<'JSON'
+{
+  "plugins": [
+    "woocommerce",
+    {
+      "slug": "my-plugin",
+      "source": "./my-plugin.zip"
+    }
+  ],
+  "themes": [
+    "storefront"
+  ]
+}
+JSON;
+
+		$cli_extra = [
+			'--plugin',
+			'woocommerce:activate:newTestTag',
+			'--plugin',
+			'contact-form-7'
+		];
+		$env_info  = $this->run_qit_config_test( $json_config, 'json', $cli_extra );
+		$this->assertMatchesSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
+	}
+
+	public function test_wp_and_woo_version_cli_override(): void {
+		$json_config = <<<'JSON'
+{
+  "wp": "6.3",
+  "woo": "8.5.1",
+  "plugins": ["woocommerce"]
+}
+JSON;
+
+		$cli_extra = [
+			'--wp',
+			'6.4',
+			'--woo',
+			'nightly'
+		];
+		$env_info  = $this->run_qit_config_test( $json_config, 'json', $cli_extra );
+		$this->assertMatchesSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
+	}
+
+	public function test_multiple_cli_plugins_with_config_base(): void {
+		$json_config = <<<'JSON'
+{
+  "plugins": ["woocommerce", "my-plugin"],
+  "themes": ["storefront"]
+}
+JSON;
+
+		$cli_extra = [
+			'--plugin',
+			'contact-form-7',
+			'--plugin',
+			'./my-second-plugin.zip',
+			'--plugin',
+			'woocommerce:install:e2e-tag'
+		];
+
+		$env_info = $this->run_qit_config_test( $json_config, 'json', $cli_extra );
+		$this->assertMatchesSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
+	}
+
+	public function test_cli_short_syntax_edge_cases(): void {
+		$json_config = <<<'JSON'
+{
+  "plugins": ["woocommerce"]
+}
+JSON;
+
+		$cli_extra = [
+			'--plugin',
+			'my-plugin:test',
+			'--plugin',
+			'another-plugin:activate:',
+			'--plugin',
+			'final-plugin:activate:foo,bar'
+		];
+
+		$env_info = $this->run_qit_config_test( $json_config, 'json', $cli_extra );
+		$this->assertMatchesSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
+	}
+
+	public function test_mixed_assoc_with_cli_override_path(): void {
+		$json_config = <<<'JSON'
+{
+  "plugins": {
+    "woocommerce": {
+      "action": "bootstrap",
+      "source": "woocommerce"
+    },
+    "/path/to/local/plugin-dir": {
+      "source": "/path/to/local/plugin-dir"
+    }
+  },
+  "themes": ["storefront"]
+}
+JSON;
+
+		$cli_extra = [
+			'--plugin',
+			'/path/to/local/plugin-dir:test:anotherTag'
+		];
+		$env_info  = $this->run_qit_config_test( $json_config, 'json', $cli_extra );
+		$this->assertMatchesSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
+	}
+
+	public function test_config_and_cli_same_slug_override(): void {
+		$json_config = <<<'JSON'
+{
+  "plugins": [
+    "woocommerce",
+    "woocommerce:test:myInitialTag"
+  ]
+}
+JSON;
+
+		// Then CLI also references woo with a different action/test_tags:
+		$cli_extra = [
+			'--plugin',
+			'woocommerce:activate:base64bmV3VGVzdFRhZw=='  // => test_tags=["newTestTag"]
+		];
+
+		$env_info = $this->run_qit_config_test( $json_config, 'json', $cli_extra );
+		$this->assertMatchesSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
+	}
+
 }
