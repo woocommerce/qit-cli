@@ -3,6 +3,7 @@
 namespace QIT_CLI\Environment;
 
 use QIT_CLI\WooExtensionsList;
+use QIT_CLI\WPORGExtensionsList;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class PluginsAndThemesParser {
@@ -12,15 +13,20 @@ class PluginsAndThemesParser {
 	/** @var WooExtensionsList */
 	protected $woo_extensions_list;
 
-	public function __construct( OutputInterface $output, WooExtensionsList $woo_extensions_list ) {
-		$this->output              = $output;
-		$this->woo_extensions_list = $woo_extensions_list;
+	/** @var WPORGExtensionsList */
+	protected $wporg_extensions_list;
+
+	public function __construct( OutputInterface $output, WooExtensionsList $woo_extensions_list, WPORGExtensionsList $wporg_extensions_list ) {
+		$this->output                = $output;
+		$this->woo_extensions_list   = $woo_extensions_list;
+		$this->wporg_extensions_list = $wporg_extensions_list;
 	}
 
 	/**
 	 * @param array<int|string,string|array{source?:string,slug?:string,action?:string,test_tags?:array<string>}> $plugins_or_themes
 	 * @param string                                                                                              $type
 	 * @param string                                                                                              $default_action
+	 *
 	 * @return array<Extension>
 	 */
 	public function parse_extensions( array $plugins_or_themes, string $type, string $default_action = Extension::ACTIONS['activate'] ): array {
@@ -117,34 +123,43 @@ class PluginsAndThemesParser {
 	/**
 	 * Infer slug from source if possible.
 	 */
+	/**
+	 * Infers a slug from the given string "source".
+	 * Flow:
+	 *   1) If it's an HTTP(S) URL → parse the remote filename.
+	 *   2) If it contains a slash → check if file exists locally and parse filename if so.
+	 *   3) If numeric → treat as woo ID.
+	 *   4) If "valid plugin slug" → check local woo list, then WP.org if not found.
+	 *   5) Otherwise, fallback to pathinfo filename.
+	 */
 	protected function infer_slug_from_source( string $source ): string {
-		// If the source looks like a remote URL or non-local scheme, don't call file_exists().
-		// A simple check can be if it starts with a known scheme like http://, https://, ftp://, ssh://, or \\\\.
-		if ( preg_match( '/^(https?|ftp|ssh|\\\\)/i', $source ) ) {
-			// This is a remote URL or network path, skip file_exists().
+		// 1. Check if $source has a URL scheme (like http://, ftp://, etc.)
+		$scheme = parse_url( $source, PHP_URL_SCHEME );
+
+		if ( $scheme && strlen( $scheme ) === 1 ) {
+			// It's probably a Windows drive letter like C: or D:
+			// Treat it like a local path by clearing $scheme.
+			$scheme = null;
+		}
+
+		// If there's a scheme...
+		if ( $scheme !== null ) {
+			// 2. Enforce only http(s)
+			if ( ! in_array( strtolower( $scheme ), [ 'http', 'https' ], true ) ) {
+				throw new \Exception( "Only http(s) protocol is supported. Provided: '{$scheme}'." );
+			}
+
+			// 3. If it’s http(s), parse it like a remote URL:
 			$filename = pathinfo( \QIT_CLI\normalize_path( $source ), PATHINFO_FILENAME );
 			if ( empty( $filename ) ) {
-				throw new \Exception( "Could not infer slug from '{$source}'." );
+				throw new \Exception( "Could not infer slug from remote source '{$source}'." );
 			}
 
 			return $filename;
 		}
 
-		// If source is numeric, try WCCOM by ID.
-		if ( is_numeric( $source ) ) {
-			$id = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $source );
-
-			return $id;
-		}
-
-		// Otherwise, try WCCOM by slug.
-		try {
-			$id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $source );
-
-			return $source;
-		} catch ( \Exception $e ) {
-			// If not a known WCCOM slug or ID, assume it's a local path or a fallback.
-			// Check if the file is local and exists.
+		// 2) If it contains slash/backslash, treat it as potential local file.
+		if ( strpos( $source, '/' ) !== false || strpos( $source, '\\' ) !== false ) {
 			if ( file_exists( $source ) ) {
 				$filename = pathinfo( \QIT_CLI\normalize_path( $source ), PATHINFO_FILENAME );
 				if ( empty( $filename ) ) {
@@ -152,16 +167,45 @@ class PluginsAndThemesParser {
 				}
 
 				return $filename;
-			} else {
-				// If file doesn't exist locally, just infer the slug from the filename.
-				$filename = pathinfo( \QIT_CLI\normalize_path( $source ), PATHINFO_FILENAME );
-				if ( empty( $filename ) ) {
-					throw new \Exception( "Could not infer slug from '{$source}'." );
-				}
+			}
+			// If slash but not an existing file, we keep going.
+		}
 
-				return $filename;
+		// 3) If numeric => treat as a woo ID.
+		if ( is_numeric( $source ) ) {
+			$id = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $source );
+
+			return $id;
+		}
+
+		// 4) If "valid plugin slug," do woo check, then WP.org.
+		if ( $this->is_valid_plugin_slug( $source ) ) {
+			// Try local woo.
+			try {
+				$this->woo_extensions_list->get_woo_extension_id_by_slug( $source );
+
+				return $source; // recognized woo extension.
+			} catch ( \Exception $e ) {
+				// Not known by woo => check WP.org.
+				if ( $this->wporg_extensions_list->is_wporg_plugin( $source ) ) {
+					return $source;  // recognized plugin slug.
+				} elseif ( $this->wporg_extensions_list->is_wporg_theme( $source ) ) {
+					return $source;  // recognized theme slug.
+				}
 			}
 		}
+
+		// 5) Fallback → parse final path segment from the string.
+		$filename = pathinfo( \QIT_CLI\normalize_path( $source ), PATHINFO_FILENAME );
+		if ( empty( $filename ) ) {
+			throw new \Exception( "Could not infer slug from '{$source}'." );
+		}
+
+		return $filename;
+	}
+
+	protected function is_valid_plugin_slug( string $slug ): bool {
+		return (bool) preg_match( '/^[a-z0-9_-]+$/i', $slug );
 	}
 
 	/**
