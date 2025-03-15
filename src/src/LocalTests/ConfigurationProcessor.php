@@ -395,6 +395,15 @@ class ConfigurationProcessor {
 		}
 
 		foreach ( $env_config['themes'] as $theme_slug => &$theme_config ) {
+			// If it's just a string, convert it into an array with 'slug'/'source'
+			// so the lines below won't break.
+			if ( is_string( $theme_config ) ) {
+				$theme_config = [
+					'slug'   => $theme_config,
+					'source' => $theme_config,
+				];
+			}
+
 			if ( empty( $theme_config['test_tags'] ) ) {
 				$theme_config['test_tags'] = [ 'default' ];
 			} else {
@@ -512,8 +521,19 @@ class ConfigurationProcessor {
 	 */
 	protected function normalize_numeric_qit_plugins( array &$env_config ): void {
 		$updated_plugins = [];
+
 		foreach ( $env_config['plugins'] as $key => $cfg ) {
+			// If the *value* is just a string, convert it to an array so we can safely do $cfg['source'], etc.
+			// e.g. "woocommerce" => [ 'slug' => 'woocommerce', 'source' => 'woocommerce' ]
+			if ( is_string( $cfg ) ) {
+				$cfg = [
+					'slug'   => $cfg,
+					'source' => $cfg,
+				];
+			}
+
 			if ( is_numeric( $key ) ) {
+				// Then the *key* is numeric. We try to look up a slug from the numeric ID:
 				try {
 					$resolved_slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $key );
 					// Keep original numeric ID as source if not set.
@@ -530,9 +550,11 @@ class ConfigurationProcessor {
 					$updated_plugins[ $key ] = $cfg;
 				}
 			} else {
+				// The key is not numeric—just keep it as-is.
 				$updated_plugins[ $key ] = $cfg;
 			}
 		}
+
 		$env_config['plugins'] = $updated_plugins;
 	}
 

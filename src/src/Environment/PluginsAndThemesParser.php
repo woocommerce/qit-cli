@@ -37,6 +37,23 @@ class PluginsAndThemesParser {
 				$extension        = $this->parse_string_extension( $extension, $default_action );
 			} elseif ( is_array( $extension ) ) {
 				$extension = $this->parse_array_extension( $extension, $potential_slug );
+			} elseif ( $extension instanceof Extension ) {
+				// Handle the case where we already have an Extension object.
+				// Check if there's already a matching slug so we can override it,
+				// just like we do for strings/arrays:
+				foreach ( $parsed_extensions as $k => $already_parsed ) {
+					if ( $extension->slug === $already_parsed->slug ) {
+						$this->output->writeln(
+							sprintf( '<comment>Overriding extension "%s".</comment>', $extension->slug )
+						);
+						$parsed_extensions[ $k ] = $extension;
+						continue 2; // Skip the usual push to the end.
+					}
+				}
+
+				// Otherwise, just append it to $parsed_extensions.
+				$parsed_extensions[] = $extension;
+				continue;
 			}
 
 			if ( ! isset( $extension['source'] ) && ! isset( $extension['slug'] ) ) {
