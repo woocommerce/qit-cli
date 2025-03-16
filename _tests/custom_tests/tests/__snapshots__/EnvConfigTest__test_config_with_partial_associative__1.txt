@@ -40,7 +40,7 @@
     ],
     "themes": [
         {
-            "slug": "https:\/\/downloads.wordpress.org\/theme\/storefront.zip",
+            "slug": "storefront",
             "entrypoint": null,
             "source": "https:\/\/downloads.wordpress.org\/theme\/storefront.zip",
             "downloaded_source": null,
@@ -53,7 +53,7 @@
             ]
         },
         {
-            "slug": "https:\/\/downloads.wordpress.org\/theme\/twentytwentyfour.zip",
+            "slug": "twentytwentyfour",
             "entrypoint": null,
             "source": "https:\/\/downloads.wordpress.org\/theme\/twentytwentyfour.zip",
             "downloaded_source": null,
