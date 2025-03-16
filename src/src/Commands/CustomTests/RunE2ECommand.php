@@ -1,7 +1,7 @@
 <?php
 /*
  * We need this to shut down the environment if the user
- * press "Ctrl+C" and has the "pcntl" extension installed.
+ * presses "Ctrl+C" and has the "pcntl" extension installed.
  */
 declare( ticks=1 );
 
@@ -18,7 +18,6 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\Extension;
-use QIT_CLI\LocalTests\ConfigurationProcessor;
 use QIT_CLI\LocalTests\E2E\E2ETestManager;
 use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
@@ -58,9 +57,6 @@ class RunE2ECommand extends DynamicCommand {
 	/** @var PluginDependencies */
 	protected $dependencies;
 
-	/** @var ConfigurationProcessor */
-	protected $configuration_processor;
-
 	/** @var EnvironmentRunner */
 	protected $environment_runner;
 
@@ -83,17 +79,15 @@ class RunE2ECommand extends DynamicCommand {
 		WooExtensionsList $woo_extensions_list,
 		LocalTestRunNotifier $test_run_notifier,
 		PluginDependencies $dependencies,
-		ConfigurationProcessor $configuration_processor,
 		EnvironmentRunner $environment_runner
 	) {
-		$this->e2e_environment         = $e2e_environment;
-		$this->cache                   = $cache;
-		$this->e2e_test_manager        = $e2e_test_manager;
-		$this->woo_extensions_list     = $woo_extensions_list;
-		$this->test_run_notifier       = $test_run_notifier;
-		$this->dependencies            = $dependencies;
-		$this->configuration_processor = $configuration_processor;
-		$this->environment_runner      = $environment_runner;
+		$this->e2e_environment     = $e2e_environment;
+		$this->cache               = $cache;
+		$this->e2e_test_manager    = $e2e_test_manager;
+		$this->woo_extensions_list = $woo_extensions_list;
+		$this->test_run_notifier   = $test_run_notifier;
+		$this->dependencies        = $dependencies;
+		$this->environment_runner  = $environment_runner;
 
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
@@ -178,13 +172,12 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		$this->configure_pw_options( $input );
-
 		$this->parse_env_vars( $input->getOption( 'env' ) );
 
 		$woo_extension_raw = $input->getArgument( 'woo_extension' );
 		[ $woo_extension_id, $woo_extension_slug, $sut_type_or_code ] = $this->resolve_woo_extension( $woo_extension_raw, $output );
 		if ( $sut_type_or_code === Command::INVALID ) {
-			// Failed to resolve woo extension.
+			// Failed to resolve extension.
 			return Command::INVALID;
 		}
 		$sut_type = $sut_type_or_code;
@@ -202,8 +195,8 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		$shard = $input->getOption( 'shard' );
-		if ( $shard && preg_match( '/^\d+\/\d+$/', $shard ) ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedIf
-			// Already validated above.
+		if ( $shard && preg_match( '/^\d+\/\d+$/', $shard ) ) {
+			// Already validated in validate_input().
 		}
 
 		$additional_volumes         = [];
@@ -227,12 +220,13 @@ class RunE2ECommand extends DynamicCommand {
 			App::setVar( 'QIT_SUT_SLUG', $woo_extension_slug );
 		}
 
-		$env_up_options = $this->configuration_processor->process_configuration(
+		// Inline the logic that used to be in ConfigurationProcessor.
+		$env_up_options = $this->add_sut_to_env_up_options(
+			$input,
+			$env_up_options,
 			$woo_extension_slug,
 			$woo_extension_id,
-			$sut_type,
-			$input,
-			$env_up_options
+			$sut_type
 		);
 
 		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
@@ -268,7 +262,7 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::FAILURE;
 		}
 
-		putenv( 'QIT_HIDE_SITE_INFO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		putenv( 'QIT_HIDE_SITE_INFO' );    // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 
 		$test_tag = $input->getOption( 'pw_test_tag' ) ?? 'full';
@@ -283,7 +277,7 @@ class RunE2ECommand extends DynamicCommand {
 				$woo_extension_id,
 				$input->getOption( 'woo' ) ?? 'none',
 				$env_info,
-				$input->getOption('source') && file_exists( $input->getOption( 'source' ) ),
+				$input->getOption( 'source' ) && file_exists( $input->getOption( 'source' ) ),
 				$input->getOption( 'notify' )
 			);
 		}
@@ -360,7 +354,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		try {
 			Environment::down( $GLOBALS['env_to_shutdown'] );
-		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+		} catch ( \Exception $e ) {
 			// no-op.
 		}
 	}
@@ -396,7 +390,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
+				$parsed_options['env_up']["--$option_name"] = $option_value;
 			}
 		}
 
@@ -430,7 +424,7 @@ class RunE2ECommand extends DynamicCommand {
 	}
 
 	/**
-	 * @param string|null     $woo_extension_raw
+	 * @param string|null $woo_extension_raw
 	 * @param OutputInterface $output
 	 *
 	 * @return array{0:int|null,1:string|null,2:string|int|null} Array containing:
@@ -438,7 +432,7 @@ class RunE2ECommand extends DynamicCommand {
 	 */
 	private function resolve_woo_extension( ?string $woo_extension_raw, OutputInterface $output ): array {
 		if ( empty( $woo_extension_raw ) ) {
-			return [ null, null, null ]; // no extension provided.
+			return [ null, null, null ]; // no extension provided
 		}
 
 		try {
@@ -536,6 +530,7 @@ class RunE2ECommand extends DynamicCommand {
 	private function configure_pw_options( InputInterface $input ): void {
 		$pw_options = $input->getOption( 'pw_options' ) ?? '';
 		if ( ! empty( $pw_options ) ) {
+			// Strip surrounding quotes if present
 			if ( substr( $pw_options, 0, 1 ) === '"' && substr( $pw_options, - 1 ) === '"' ) {
 				$pw_options = substr( $pw_options, 1, - 1 );
 			}
@@ -546,5 +541,117 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		App::setVar( 'pw_options', $pw_options );
+	}
+
+	/**
+	 * Inline replacement for ConfigurationProcessor::process_configuration().
+	 *
+	 * @param InputInterface $input
+	 * @param array $env_up_options
+	 * @param string|null $woo_extension_slug
+	 * @param int|null $woo_extension_id
+	 * @param string|null $sut_type 'plugin', 'theme', or null
+	 *
+	 * @return array Updated env_up_options
+	 */
+	private function add_sut_to_env_up_options(
+		InputInterface $input,
+		array $env_up_options,
+		?string $woo_extension_slug,
+		?int $woo_extension_id,
+		?string $sut_type
+	): array {
+		// Only proceed if we do have a main extension slug.
+		if ( ! $woo_extension_slug ) {
+			return $env_up_options;
+		}
+
+		// If no explicit SUT type, default to 'plugin'.
+		if ( ! $sut_type ) {
+			$sut_type = 'plugin';
+		}
+
+		// Determine SUT action (test, install, etc.).
+		$sut_action = $input->getOption( 'sut_action' ) ?: Extension::ACTIONS['test'];
+
+		// Determine test tags for the SUT.
+		$test_arg  = $input->getArgument( 'test' );
+		$test_tags = $test_arg ? explode( ',', $test_arg ) : [ 'default' ];
+
+		// If user specified a local/URL source, we use that; otherwise use the slug.
+		$source_option = $input->getOption( 'source' ) ?? $woo_extension_slug;
+
+		// Construct short syntax: slugOrSource:action:tag1,tag2
+		$sut_string = sprintf(
+			'%s:%s:%s',
+			$source_option,
+			$sut_action,
+			implode( ',', $test_tags )
+		);
+
+		// Add this to --plugin or --theme.
+		if ( $sut_type === 'theme' ) {
+			$env_up_options['--theme'][] = $sut_string;
+		} else {
+			$env_up_options['--plugin'][] = $sut_string;
+		}
+
+		// Apply dependencies if requested.
+		$dependencies_option = $input->getOption( 'dependencies' ) ?? Extension::ACTIONS['bootstrap'];
+		if ( ! empty( $woo_extension_id ) && $dependencies_option !== 'none' ) {
+			$env_up_options = $this->apply_sut_dependencies(
+				$woo_extension_id,
+				$dependencies_option,
+				$env_up_options
+			);
+		}
+
+		return $env_up_options;
+	}
+
+	/**
+	 * Inlined logic from ConfigurationProcessor::apply_dependencies().
+	 * Adds plugin & PHP ext dependencies to $env_up_options.
+	 */
+	private function apply_sut_dependencies(
+		int $woo_extension_id,
+		string $dependencies_option,
+		array $env_up_options
+	): array {
+		$dependencies_data = $this->dependencies->get_plugin_and_php_ext_dependencies(
+			$woo_extension_id,
+			[]
+		);
+
+		// Ensure array keys exist
+		if ( ! isset( $env_up_options['--php_extension'] ) ) {
+			$env_up_options['--php_extension'] = [];
+		}
+		if ( ! isset( $env_up_options['--plugin'] ) ) {
+			$env_up_options['--plugin'] = [];
+		}
+
+		// Add required PHP extensions
+		foreach ( $dependencies_data['php_extensions'] as $php_ext ) {
+			if ( ! in_array( $php_ext, $env_up_options['--php_extension'], true ) ) {
+				$env_up_options['--php_extension'][] = $php_ext;
+			}
+		}
+
+		// Add plugin dependencies
+		$woo_version = $env_up_options['--woo'] ?? null;
+		foreach ( $dependencies_data['plugins'] as $dep_plugin ) {
+			// Skip if user pinned a specific Woo version and dep is "woocommerce:..."
+			if ( $woo_version && stripos( $dep_plugin, 'woocommerce:' ) !== false ) {
+				continue;
+			}
+
+			$formatted_plugin = sprintf( '%s:%s', $dep_plugin, $dependencies_option );
+			if ( ! in_array( $formatted_plugin, $env_up_options['--plugin'], true ) ) {
+				$env_up_options['--plugin'][] = $formatted_plugin;
+			}
+		}
+
+		return $env_up_options;
 	}
 }
