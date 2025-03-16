@@ -424,7 +424,7 @@ class PluginsAndThemesParser {
 		}
 
 		$extension['slug'] = $slug;
-		
+
 		return $extension;
 	}
 }
