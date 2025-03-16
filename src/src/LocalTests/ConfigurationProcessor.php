@@ -5,6 +5,7 @@ namespace QIT_CLI\LocalTests;
 use QIT_CLI\App;
 use QIT_CLI\Environment\EnvConfigLoader;
 use QIT_CLI\Environment\Extension;
+use QIT_CLI\PluginDependencies;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Input\InputInterface;
 
@@ -15,550 +16,214 @@ class ConfigurationProcessor {
 	/** @var WooExtensionsList */
 	protected $woo_extensions_list;
 
-	/** @var bool */
-	protected $is_development;
+	/** @var PluginDependencies */
+	protected $plugin_dependencies;
 
-	public function __construct( EnvConfigLoader $config_loader, WooExtensionsList $woo_extensions_list ) {
+	public function __construct(
+		EnvConfigLoader $config_loader,
+		WooExtensionsList $woo_extensions_list,
+		PluginDependencies $plugin_dependencies
+	) {
 		$this->config_loader       = $config_loader;
 		$this->woo_extensions_list = $woo_extensions_list;
+		$this->plugin_dependencies = $plugin_dependencies;
 	}
 
 	/**
-	 * Process and merge configuration from qit.yml and CLI options into a final set of env:up options.
+	 * Process final steps of configuration that EnvConfigLoader does NOT do, specifically:
+	 * - If there's a main SUT, add it to --plugin or --theme (short syntax).
+	 * - Apply plugin dependencies (if dependencies != 'none').
+	 * - If activation test is set, tweak plugin actions/test_tags.
+	 * - Determine if we are in local development mode (is_development).
 	 *
-	 * @param string|null         $woo_extension_slug The slug of the SUT if resolved from an ID, otherwise the original slug, or null if none.
-	 * @param InputInterface      $input              The input interface for CLI arguments and options.
-	 * @param array<string,mixed> $env_up_options     The partially processed env_up_options from RunE2ECommand.
-	 * @param string|null         $sut_type           Either 'plugin', 'theme', or null if no SUT.
+	 * @param string|null $woo_extension_slug The main SUT slug (if any).
+	 * @param int|null $woo_extension_id The main SUT numeric ID (if any).
+	 * @param string|null $sut_type 'plugin' or 'theme' or null if none.
+	 * @param InputInterface $input CLI input interface (for reading e.g. --source, --dependencies).
+	 * @param array $env_up_options The array of --options we'll pass to env:up.
 	 *
-	 * @return array<string,mixed> Final configuration suitable for passing to env:up (e.g., $env_up_options).
+	 * @return array Updated $env_up_options
 	 */
 	public function process_configuration(
 		?string $woo_extension_slug,
+		?int $woo_extension_id,
+		?string $sut_type,
 		InputInterface $input,
-		array $env_up_options,
-		?string $sut_type
+		array $env_up_options
 	): array {
-		if ( $input->getOption( 'config' ) ) {
-			App::setVar( 'QIT_CONFIG_OVERRIDE', $input->getOption( 'config' ) );
-		}
-
-		$env_config = $this->config_loader->load_config();
-		if ( ! isset( $env_config['plugins'] ) || ! is_array( $env_config['plugins'] ) ) {
-			$env_config['plugins'] = [];
-		}
-		if ( ! isset( $env_config['themes'] ) || ! is_array( $env_config['themes'] ) ) {
-			$env_config['themes'] = [];
-		}
-
-		// Handle numeric keys in qit.yml for plugins before proceeding.
-		// If qit.yml has numeric keys, convert them to slug-based keys.
-		$this->normalize_numeric_qit_plugins( $env_config );
-
-		$woo_extension_raw   = $input->getArgument( 'woo_extension' );
-		$test                = $input->getArgument( 'test' );
-		$source_option       = $input->getOption( 'source' );
-		$source              = ! empty( $source_option ) ? $source_option : '';
-		$sut_action          = $input->getOption( 'sut_action' );
-		$dependencies_option = $input->getOption( 'dependencies' ) ?? Extension::ACTIONS['bootstrap'];
-
-		// If original was numeric and no source provided, keep source as numeric ID.
-		if ( empty( $source ) && ! empty( $woo_extension_raw ) && is_numeric( $woo_extension_raw ) ) {
-			$source = $woo_extension_raw;
-		}
-
-		$has_sut = ! empty( $woo_extension_slug ) || ! empty( $source ) || ! empty( $sut_action );
-
-		// If no sut_type given, default to 'plugin'.
-		// This should not happen if we resolved correctly, but just in case.
-		if ( $sut_type === null ) {
-			$sut_type = 'plugin';
-		}
-
-		if ( $has_sut ) {
-			$this->finalize_sut_definition(
+		// 1) Possibly add the SUT to the --plugin / --theme list if we have a main extension.
+		//    Because EnvConfigLoader and PluginsAndThemesParser will handle the actual parse+merge,
+		//    here we only need to ensure we set the CLI option in short syntax, e.g. "foo:test:tag1,tag2".
+		if ( $woo_extension_slug ) {
+			$env_up_options = $this->finalize_sut(
 				$woo_extension_slug,
-				$source,
-				$test,
-				$dependencies_option,
-				$env_up_options,
-				$env_config,
-				$input,
+				$woo_extension_id,
 				$sut_type,
-				$sut_action
+				$input,
+				$env_up_options
 			);
-		} else {
-			// No SUT: Just handle CLI plugins/themes and skip dependencies.
-			$this->add_cli_plugins( $env_config, $input );
-			$this->normalize_plugins( $env_config );
-			$this->normalize_themes( $env_config );
-
-			$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
-			$env_up_options['--theme']  = array_values( $env_config['themes'] );
 		}
 
-		if ( App::getVar( 'QIT_ACTIVATION_TEST' ) ) {
-			foreach ( [ 'plugin', 'theme' ] as $type ) {
-				$key = "--$type";
-
-				if ( isset( $env_up_options[ $key ] ) && is_array( $env_up_options[ $key ] ) ) {
-					foreach ( $env_up_options[ $key ] as &$item ) {
-						if ( isset( $item['slug'] ) && $item['slug'] === 'woocommerce' ) {
-							$item['action']    = Extension::ACTIONS['test'];
-							$item['test_tags'] = [ 'activation' ];
-						} else {
-							$item['action']    = Extension::ACTIONS['bootstrap'];
-							$item['test_tags'] = [ 'pre-activation' ];
-						}
-					}
-					unset( $item );
-				}
-			}
-		}
-
-		$this->is_development = ! empty( $source_option ) && file_exists( $source_option );
+		// 2) If activation test is set, modify all plugins/themes to reflect the "pre-activation" or "test" tags.
+		//    This is specialized logic that EnvConfigLoader does NOT do.
+		$this->apply_activation_test_logic( $env_up_options );
 
 		return $env_up_options;
 	}
 
 	/**
-	 * Finalize the SUT definition by merging CLI and qit.yml:
-	 * - Determine source and test_tags
-	 * - Ensure action=test
-	 * - Apply dependencies
-	 * - Add CLI plugins
-	 * - Normalize all plugins/themes
-	 *
-	 * @param string|null         $woo_extension
-	 * @param string|null         $source
-	 * @param string|null         $test
-	 * @param string              $dependencies_option
-	 * @param array<string,mixed> $env_up_options
-	 * @param array<string,mixed> $env_config
-	 * @param InputInterface      $input
-	 * @param string              $sut_type
-	 * @param string|null         $sut_action The SUT action provided by CLI, if any (e.g. 'bootstrap' for activation tests).
-	 *
-	 * @return void
+	 * Adds the SUT (main extension) as a plugin or theme in short syntax format,
+	 * sets the correct action (e.g. test or user-specified),
+	 * applies dependencies if requested, and sets test tags.
 	 */
-	protected function finalize_sut_definition(
-		$woo_extension,
-		$source,
-		$test,
-		$dependencies_option,
-		array &$env_up_options,
-		array &$env_config,
+	protected function finalize_sut(
+		string $woo_extension_slug,
+		?int $woo_extension_id,
+		?string $sut_type,
 		InputInterface $input,
-		string $sut_type,
-		?string $sut_action
-	): void {
-		if ( empty( $woo_extension ) ) {
-			// If no woo_extension, there's no main SUT, so skip dependencies.
-			$this->add_cli_plugins( $env_config, $input );
-
-			$cli_themes = $input->getOption( 'theme' ) ?? [];
-			foreach ( $cli_themes as $theme_item ) {
-				$env_config['themes'][ $theme_item ] = [
-					'slug'   => $theme_item,
-					'source' => $theme_item,
-					'action' => Extension::ACTIONS['bootstrap'],
-				];
-			}
-
-			$this->normalize_plugins( $env_config );
-			$this->normalize_themes( $env_config );
-			$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
-			$env_up_options['--theme']  = array_values( $env_config['themes'] );
-
-			return;
+		array $env_up_options
+	): array {
+		// If no explicit SUT type, default to plugin
+		if ( ! $sut_type ) {
+			$sut_type = 'plugin';
 		}
 
-		$sut_base = $this->get_sut_base( $env_config, $woo_extension );
+		// Determine SUT action
+		$sut_action = $input->getOption( 'sut_action' ) ?: Extension::ACTIONS['test'];
 
-		// Resolve source to an absolute path if possible.
-		if ( ! empty( $source ) ) {
-			$resolved_source = realpath( $source );
-			if ( $resolved_source && file_exists( $resolved_source ) ) {
-				$source = $resolved_source;
-			}
-			$sut_base['source'] = $source;
-		}
+		// Determine test tags for the SUT
+		$test_arg  = $input->getArgument( 'test' );
+		$test_tags = $test_arg ? explode( ',', $test_arg ) : [ 'default' ];
 
-		// Override test_tags if provided via CLI.
-		if ( ! empty( $test ) ) {
-			$sut_base['test_tags'] = array_map( 'trim', explode( ',', $test ) );
-		} else {
-			if ( empty( $sut_base['test_tags'] ) ) {
-				$sut_base['test_tags'] = [ 'default' ];
-			}
-		}
+		// If user specified a local/URL source, we put that in the short syntax's "source" part
+		$source_option = $input->getOption( 'source' ) ?? $woo_extension_slug;
 
-		// If sut_action is provided, use it instead of defaulting to test
-		// Otherwise, ensure action is 'test' if not set.
-		if ( ! empty( $sut_action ) ) {
-			$sut_base['action'] = $sut_action;
-		} else {
-			if ( ! isset( $sut_base['action'] ) ) {
-				$sut_base['action'] = Extension::ACTIONS['test'];
-			}
-		}
+		/**
+		 * Add to --plugin or --theme using short syntax:
+		 *   slug:action:tag1,tag2
+		 *
+		 * The EnvConfigLoader + PluginsAndThemesParser will parse each entry and do final normalization.
+		 */
+		$sut_string = sprintf(
+			'%s:%s:%s',
+			$source_option,
+			$sut_action,
+			implode( ',', $test_tags )
+		);
 
-		// Place SUT in themes if sut_type is 'theme', else in plugins.
 		if ( $sut_type === 'theme' ) {
-			$env_config['themes'][ $woo_extension ] = $sut_base;
+			$env_up_options['--theme'][] = $sut_string;
 		} else {
-			$env_config['plugins'][ $woo_extension ] = $sut_base;
+			$env_up_options['--plugin'][] = $sut_string;
 		}
 
-		$woo_extension_id = App::getVar( 'QIT_SUT' );
-
-		$this->apply_dependencies( $woo_extension_id, $dependencies_option, $env_up_options, $env_config );
-		$this->add_cli_plugins( $env_config, $input );
-
-		$cli_themes = $input->getOption( 'theme' ) ?? [];
-		foreach ( $cli_themes as $theme_item ) {
-			$env_config['themes'][ $theme_item ] = [
-				'slug'   => $theme_item,
-				'source' => $theme_item,
-				'action' => Extension::ACTIONS['bootstrap'],
-			];
+		// Apply dependencies if needed
+		$dependencies_option = $input->getOption( 'dependencies' ) ?? Extension::ACTIONS['bootstrap'];
+		if ( ! empty( $woo_extension_id ) && $dependencies_option !== 'none' ) {
+			$env_up_options = $this->apply_dependencies(
+				$woo_extension_id,
+				$dependencies_option,
+				$env_up_options
+			);
 		}
 
-		$this->normalize_plugins( $env_config );
-		$this->normalize_themes( $env_config );
-
-		$env_up_options['--theme']  = array_values( $env_config['themes'] );
-		$env_up_options['--plugin'] = array_values( $env_config['plugins'] );
+		return $env_up_options;
 	}
 
 	/**
-	 * Retrieve a base configuration for the SUT from qit.yml if present, otherwise return defaults.
-	 *
-	 * @param array<string,mixed> $env_config
-	 * @param string              $woo_extension
-	 *
-	 * @return array<string,mixed>
+	 * Adds dependency plugins (and PHP extensions) to $env_up_options in short syntax,
+	 * using PluginDependencies. This replicates old "apply_dependencies()" logic
+	 * but in a minimal way.
 	 */
-	protected function get_sut_base( array $env_config, string $woo_extension ): array {
-		if ( isset( $env_config['plugins'][ $woo_extension ] ) ) {
-			return $env_config['plugins'][ $woo_extension ];
-		}
+	protected function apply_dependencies(
+		int $woo_extension_id,
+		string $dependencies_option,
+		array $env_up_options
+	): array {
+		$dependencies = $this->plugin_dependencies->get_plugin_and_php_ext_dependencies(
+			$woo_extension_id,
+			[] // Additional data if needed
+		);
 
-		if ( isset( $env_config['themes'][ $woo_extension ] ) ) {
-			return $env_config['themes'][ $woo_extension ];
-		}
-
-		// Default configuration if not defined in qit.yml.
-		return [
-			'slug'      => $woo_extension,
-			'source'    => $woo_extension,
-			'test_tags' => [ 'default' ],
-		];
-	}
-
-	/**
-	 * Merge CLI plugins into the env_config as objects.
-	 *
-	 * @param array<string,mixed> $env_config
-	 * @param InputInterface      $input
-	 *
-	 * @return void
-	 */
-	protected function add_cli_plugins( array &$env_config, InputInterface $input ): void {
-		$cli_plugins = $input->getOption( 'plugin' );
-		if ( empty( $cli_plugins ) ) {
-			return;
-		}
-
-		foreach ( $cli_plugins as $cli_plugin ) {
-			$parts           = explode( ':', $cli_plugin );
-			$original_source = $parts[0];
-			$cli_slug        = $parts[0]; // This will be changed if numeric.
-			$cli_action      = Extension::ACTIONS['bootstrap'];
-			$cli_tags        = [];
-
-			// Handle numeric plugin IDs.
-			if ( is_numeric( $cli_slug ) ) {
-				try {
-					$resolved_slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $cli_slug );
-					$cli_slug      = $resolved_slug;
-				} catch ( \Exception $e ) {
-					throw new \RuntimeException( "Failed to resolve extension ID {$cli_slug}: " . $e->getMessage() );
-				}
-			}
-
-			if ( isset( $parts[1] ) && in_array( $parts[1], Extension::ACTIONS, true ) ) {
-				$cli_action = $parts[1];
-				if ( isset( $parts[2] ) && ! empty( $parts[2] ) ) {
-					$cli_tags = array_map( 'trim', explode( ',', $parts[2] ) );
-				}
-			} else {
-				if ( isset( $parts[1] ) ) {
-					$cli_tags = array_map( 'trim', explode( ',', $parts[1] ) );
-				}
-			}
-
-			// By default, we assume extensions go to plugins if not defined otherwise.
-			// This is consistent with original logic.
-			if ( ! isset( $env_config['plugins'] ) ) {
-				$env_config['plugins'] = [];
-			}
-
-			// If plugin not defined in qit.yml, create a new entry.
-			if ( ! isset( $env_config['plugins'][ $cli_slug ] ) && ! isset( $env_config['themes'][ $cli_slug ] ) ) {
-				$env_config['plugins'][ $cli_slug ] = [
-					'slug'      => $cli_slug,
-					'source'    => $original_source,
-					'test_tags' => empty( $cli_tags ) ? [ 'default' ] : $cli_tags,
-					'action'    => $cli_action,
-				];
-			} else {
-				// If found in plugins.
-				if ( isset( $env_config['plugins'][ $cli_slug ] ) ) {
-					if ( ! empty( $cli_tags ) ) {
-						$env_config['plugins'][ $cli_slug ]['test_tags'] = $cli_tags;
-					} elseif ( empty( $env_config['plugins'][ $cli_slug ]['test_tags'] ) ) {
-						$env_config['plugins'][ $cli_slug ]['test_tags'] = [ 'default' ];
-					}
-
-					$env_config['plugins'][ $cli_slug ]['action'] = $cli_action;
-				}
-
-				// If found in themes.
-				if ( isset( $env_config['themes'][ $cli_slug ] ) ) {
-					if ( ! empty( $cli_tags ) ) {
-						$env_config['themes'][ $cli_slug ]['test_tags'] = $cli_tags;
-					} elseif ( empty( $env_config['themes'][ $cli_slug ]['test_tags'] ) ) {
-						$env_config['themes'][ $cli_slug ]['test_tags'] = [ 'default' ];
-					}
-
-					$env_config['themes'][ $cli_slug ]['action'] = $cli_action;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Normalize all plugins to ensure test_tags, action, slug, and source are properly set.
-	 *
-	 * @param array<string,mixed> $env_config
-	 *
-	 * @return void
-	 */
-	protected function normalize_plugins( array &$env_config ): void {
-		if ( ! isset( $env_config['plugins'] ) || ! is_array( $env_config['plugins'] ) ) {
-			$env_config['plugins'] = [];
-		}
-
-		foreach ( $env_config['plugins'] as $plugin_slug => &$plugin_config ) {
-			if ( empty( $plugin_config['test_tags'] ) ) {
-				$plugin_config['test_tags'] = [ 'default' ];
-			} else {
-				$normalized_tags = [];
-				foreach ( (array) $plugin_config['test_tags'] as $tag ) {
-					if ( strpos( $tag, ',' ) !== false ) {
-						$split_tags      = array_map( 'trim', explode( ',', $tag ) );
-						$normalized_tags = array_merge( $normalized_tags, $split_tags );
-					} else {
-						$normalized_tags[] = $tag;
-					}
-				}
-				$plugin_config['test_tags'] = $normalized_tags;
-			}
-
-			if ( ! isset( $plugin_config['action'] ) ) {
-				$plugin_config['action'] = Extension::ACTIONS['bootstrap'];
-			}
-
-			if ( ! isset( $plugin_config['slug'] ) ) {
-				$plugin_config['slug'] = $plugin_slug;
-			}
-
-			// Set a default source if none is specified.
-			if ( ! isset( $plugin_config['source'] ) ) {
-				$plugin_config['source'] = $plugin_slug;
-			}
-		}
-		unset( $plugin_config );
-	}
-
-	/**
-	 * Normalize all themes to ensure test_tags, action, slug, and source are properly set.
-	 *
-	 * @param array<string,mixed> $env_config
-	 *
-	 * @return void
-	 */
-	protected function normalize_themes( array &$env_config ): void {
-		if ( ! isset( $env_config['themes'] ) || ! is_array( $env_config['themes'] ) ) {
-			$env_config['themes'] = [];
-		}
-
-		foreach ( $env_config['themes'] as $theme_slug => &$theme_config ) {
-			// If it's just a string, convert it into an array with 'slug'/'source'
-			// so the lines below won't break.
-			if ( is_string( $theme_config ) ) {
-				$theme_config = [
-					'slug'   => $theme_config,
-					'source' => $theme_config,
-				];
-			}
-
-			if ( empty( $theme_config['test_tags'] ) ) {
-				$theme_config['test_tags'] = [ 'default' ];
-			} else {
-				$normalized_tags = [];
-				foreach ( (array) $theme_config['test_tags'] as $tag ) {
-					if ( strpos( $tag, ',' ) !== false ) {
-						$split_tags      = array_map( 'trim', explode( ',', $tag ) );
-						$normalized_tags = array_merge( $normalized_tags, $split_tags );
-					} else {
-						$normalized_tags[] = $tag;
-					}
-				}
-				$theme_config['test_tags'] = $normalized_tags;
-			}
-
-			if ( ! isset( $theme_config['action'] ) ) {
-				$theme_config['action'] = Extension::ACTIONS['test'];
-			}
-
-			if ( ! isset( $theme_config['slug'] ) ) {
-				$theme_config['slug'] = $theme_slug;
-			}
-
-			// Set a default source if none is specified.
-			if ( ! isset( $theme_config['source'] ) ) {
-				$theme_config['source'] = $theme_slug;
-			}
-		}
-		unset( $theme_config );
-	}
-
-	/**
-	 * Add dependencies as strings to --plugin and their corresponding arrays to $env_config['plugins'],
-	 * and PHP extensions directly to $env_up_options['--php_extension'].
-	 *
-	 * By this point, $env_config should already be normalized by EnvConfigLoader, ensuring
-	 * that 'plugins' key is used consistently. No separate handling of 'plugin' vs 'plugins' is needed.
-	 *
-	 * @param int|null            $woo_extension_id
-	 * @param string              $dependencies_option
-	 * @param array<string,mixed> $env_up_options
-	 * @param array<string,mixed> $env_config
-	 *
-	 * @return void
-	 */
-	protected function apply_dependencies( ?int $woo_extension_id, string $dependencies_option, array &$env_up_options, array &$env_config ): void {
-		if ( empty( $woo_extension_id ) || $dependencies_option === 'none' ) {
-			return;
-		}
-
-		/** @var \QIT_CLI\PluginDependencies $dependencies_service */
-		$dependencies_service = App::make( \QIT_CLI\PluginDependencies::class );
-		$dependencies         = $dependencies_service->get_plugin_and_php_ext_dependencies( $woo_extension_id, [] );
-
+		// Add any required PHP extensions
 		if ( ! isset( $env_up_options['--php_extension'] ) ) {
 			$env_up_options['--php_extension'] = [];
 		}
-		if ( ! isset( $env_up_options['--plugin'] ) ) {
-			$env_up_options['--plugin'] = [];
-		}
-		if ( ! isset( $env_config['plugins'] ) || ! is_array( $env_config['plugins'] ) ) {
-			$env_config['plugins'] = [];
+		foreach ( $dependencies['php_extensions'] as $php_ext ) {
+			if ( ! in_array( $php_ext, $env_up_options['--php_extension'], true ) ) {
+				$env_up_options['--php_extension'][] = $php_ext;
+			}
 		}
 
-		// Add PHP extensions directly to $env_up_options['--php_extension'].
-		foreach ( $dependencies['php_extensions'] as $php_extension ) {
-			if ( ! in_array( $php_extension, $env_up_options['--php_extension'], true ) ) {
-				$env_up_options['--php_extension'][] = $php_extension;
-			}
+		// Add plugin dependencies in short syntax "slug:action".
+		if ( ! isset( $env_up_options['--plugin'] ) ) {
+			$env_up_options['--plugin'] = [];
 		}
 
 		$woo_version = $env_up_options['--woo'] ?? null;
 
-		// Add plugin dependencies to both $env_up_options['--plugin'] and $env_config['plugins'].
 		foreach ( $dependencies['plugins'] as $dep_plugin ) {
+			// skip if user pinned a specific Woo version
 			if ( $woo_version && stripos( $dep_plugin, 'woocommerce:' ) !== false ) {
-				// Skip this dependency if a Woo version is specified and it conflicts.
 				continue;
 			}
 
-			$plugin_slug     = strtok( $dep_plugin, ':' );
-			$already_present = false;
-			foreach ( $env_up_options['--plugin'] as $existing_plugin ) {
-				if ( stripos( $existing_plugin, $plugin_slug ) !== false ) {
-					$already_present = true;
-					break;
-				}
-			}
+			// Append :{dependencies_option} to ensure we get the correct action
+			$formatted_plugin = sprintf( '%s:%s', $dep_plugin, $dependencies_option );
 
-			if ( ! $already_present ) {
-				// Append ":{$dependencies_option}" to ensure the correct action is assigned.
-				$formatted_plugin             = "{$dep_plugin}:{$dependencies_option}";
+			// Skip duplicates
+			if ( ! in_array( $formatted_plugin, $env_up_options['--plugin'], true ) ) {
 				$env_up_options['--plugin'][] = $formatted_plugin;
 			}
-
-			// Ensure the plugin is also in $env_config['plugins'].
-			if ( ! isset( $env_config['plugins'][ $plugin_slug ] ) ) {
-				$env_config['plugins'][ $plugin_slug ] = [
-					'slug'      => $plugin_slug,
-					'source'    => $plugin_slug,
-					'test_tags' => [ 'default' ],
-					'action'    => $dependencies_option,
-				];
-			}
 		}
+
+		return $env_up_options;
 	}
 
 	/**
-	 * Handle numeric keys found in qit.yml for plugins.
-	 * Convert them to slug-based keys while preserving source as numeric.
-	 *
-	 * @param array<string,mixed> $env_config
-	 *
-	 * @return void
+	 * If QIT_ACTIVATION_TEST is set, we alter all "woocommerce" vs. non-woocommerce
+	 * plugin actions + test_tags for the activation scenario.
 	 */
-	protected function normalize_numeric_qit_plugins( array &$env_config ): void {
-		$updated_plugins = [];
-
-		foreach ( $env_config['plugins'] as $key => $cfg ) {
-			// If the *value* is just a string, convert it to an array so we can safely do $cfg['source'], etc.
-			// e.g. "woocommerce" => [ 'slug' => 'woocommerce', 'source' => 'woocommerce' ].
-			if ( is_string( $cfg ) ) {
-				$cfg = [
-					'slug'   => $cfg,
-					'source' => $cfg,
-				];
-			}
-
-			if ( is_numeric( $key ) ) {
-				// Then the *key* is numeric. We try to look up a slug from the numeric ID.
-				try {
-					$resolved_slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $key );
-					// Keep original numeric ID as source if not set.
-					if ( ! isset( $cfg['source'] ) ) {
-						$cfg['source'] = (string) $key;
-					}
-					// Use resolved slug as new key.
-					$updated_plugins[ $resolved_slug ] = $cfg;
-				} catch ( \Exception $e ) {
-					// If fails, just keep numeric key as a slug.
-					if ( ! isset( $cfg['source'] ) ) {
-						$cfg['source'] = (string) $key;
-					}
-					$updated_plugins[ $key ] = $cfg;
-				}
-			} else {
-				// The key is not numeric—just keep it as-is.
-				$updated_plugins[ $key ] = $cfg;
-			}
+	protected function apply_activation_test_logic( array &$env_up_options ): void {
+		if ( ! App::getVar( 'QIT_ACTIVATION_TEST' ) ) {
+			return;
 		}
 
-		$env_config['plugins'] = $updated_plugins;
-	}
+		foreach ( [ '--plugin', '--theme' ] as $key ) {
+			if ( empty( $env_up_options[ $key ] ) || ! is_array( $env_up_options[ $key ] ) ) {
+				continue;
+			}
 
-	public function is_development(): bool {
-		return $this->is_development;
+			foreach ( $env_up_options[ $key ] as &$item ) {
+				/**
+				 * $item is short syntax e.g. "slug:action:tag1,tag2"
+				 * We need to parse it, set the correct tags, then rebuild the string.
+				 */
+				$parts        = explode( ':', $item );
+				$slug         = $parts[0] ?? '';
+				$action       = $parts[1] ?? Extension::ACTIONS['bootstrap'];
+				$existingTags = $parts[2] ?? 'default';
+
+				$tagsArray = array_map( 'trim', explode( ',', $existingTags ) );
+
+				if ( $slug === 'woocommerce' ) {
+					// WooCommerce itself -> action=test, test_tags=activation
+					$action  = Extension::ACTIONS['test'];
+					$tagsArr = [ 'activation' ];
+				} else {
+					// Non-Woo => action=bootstrap, test_tags=pre-activation
+					$action  = Extension::ACTIONS['bootstrap'];
+					$tagsArr = [ 'pre-activation' ];
+				}
+
+				$item = sprintf(
+					'%s:%s:%s',
+					$slug,
+					$action,
+					implode( ',', $tagsArr )
+				);
+			}
+			unset( $item );
+		}
 	}
 }

@@ -229,9 +229,10 @@ class RunE2ECommand extends DynamicCommand {
 
 		$env_up_options = $this->configuration_processor->process_configuration(
 			$woo_extension_slug,
+			$woo_extension_id,
+			$sut_type,
 			$input,
-			$env_up_options,
-			$sut_type
+			$env_up_options
 		);
 
 		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
@@ -282,7 +283,7 @@ class RunE2ECommand extends DynamicCommand {
 				$woo_extension_id,
 				$input->getOption( 'woo' ) ?? 'none',
 				$env_info,
-				$this->configuration_processor->is_development(),
+				$input->getOption('source') && file_exists( $input->getOption( 'source' ) ),
 				$input->getOption( 'notify' )
 			);
 		}
