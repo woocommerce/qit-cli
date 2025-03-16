@@ -30,12 +30,6 @@ class ConfigurationProcessor {
 	}
 
 	/**
-	 * Process final steps of configuration that EnvConfigLoader does NOT do, specifically:
-	 * - If there's a main SUT, add it to --plugin or --theme (short syntax).
-	 * - Apply plugin dependencies (if dependencies != 'none').
-	 * - If activation test is set, tweak plugin actions/test_tags.
-	 * - Determine if we are in local development mode (is_development).
-	 *
 	 * @param string|null $woo_extension_slug The main SUT slug (if any).
 	 * @param int|null $woo_extension_id The main SUT numeric ID (if any).
 	 * @param string|null $sut_type 'plugin' or 'theme' or null if none.
@@ -55,76 +49,51 @@ class ConfigurationProcessor {
 		//    Because EnvConfigLoader and PluginsAndThemesParser will handle the actual parse+merge,
 		//    here we only need to ensure we set the CLI option in short syntax, e.g. "foo:test:tag1,tag2".
 		if ( $woo_extension_slug ) {
-			$env_up_options = $this->finalize_sut(
-				$woo_extension_slug,
-				$woo_extension_id,
-				$sut_type,
-				$input,
-				$env_up_options
+			// If no explicit SUT type, default to plugin
+			if ( ! $sut_type ) {
+				$sut_type = 'plugin';
+			}
+
+			// Determine SUT action
+			$sut_action = $input->getOption( 'sut_action' ) ?: Extension::ACTIONS['test'];
+
+			// Determine test tags for the SUT
+			$test_arg  = $input->getArgument( 'test' );
+			$test_tags = $test_arg ? explode( ',', $test_arg ) : [ 'default' ];
+
+			// If user specified a local/URL source, we put that in the short syntax's "source" part
+			$source_option = $input->getOption( 'source' ) ?? $woo_extension_slug;
+
+			/**
+			 * Add to --plugin or --theme using short syntax:
+			 *   slug:action:tag1,tag2
+			 *
+			 * The EnvConfigLoader + PluginsAndThemesParser will parse each entry and do final normalization.
+			 */
+			$sut_string = sprintf(
+				'%s:%s:%s',
+				$source_option,
+				$sut_action,
+				implode( ',', $test_tags )
 			);
-		}
 
-		// 2) If activation test is set, modify all plugins/themes to reflect the "pre-activation" or "test" tags.
-		//    This is specialized logic that EnvConfigLoader does NOT do.
-		$this->apply_activation_test_logic( $env_up_options );
+			if ( $sut_type === 'theme' ) {
+				$env_up_options['--theme'][] = $sut_string;
+			} else {
+				$env_up_options['--plugin'][] = $sut_string;
+			}
 
-		return $env_up_options;
-	}
+			// Apply dependencies if needed
+			$dependencies_option = $input->getOption( 'dependencies' ) ?? Extension::ACTIONS['bootstrap'];
+			if ( ! empty( $woo_extension_id ) && $dependencies_option !== 'none' ) {
+				$env_up_options = $this->apply_dependencies(
+					$woo_extension_id,
+					$dependencies_option,
+					$env_up_options
+				);
+			}
 
-	/**
-	 * Adds the SUT (main extension) as a plugin or theme in short syntax format,
-	 * sets the correct action (e.g. test or user-specified),
-	 * applies dependencies if requested, and sets test tags.
-	 */
-	protected function finalize_sut(
-		string $woo_extension_slug,
-		?int $woo_extension_id,
-		?string $sut_type,
-		InputInterface $input,
-		array $env_up_options
-	): array {
-		// If no explicit SUT type, default to plugin
-		if ( ! $sut_type ) {
-			$sut_type = 'plugin';
-		}
-
-		// Determine SUT action
-		$sut_action = $input->getOption( 'sut_action' ) ?: Extension::ACTIONS['test'];
-
-		// Determine test tags for the SUT
-		$test_arg  = $input->getArgument( 'test' );
-		$test_tags = $test_arg ? explode( ',', $test_arg ) : [ 'default' ];
-
-		// If user specified a local/URL source, we put that in the short syntax's "source" part
-		$source_option = $input->getOption( 'source' ) ?? $woo_extension_slug;
-
-		/**
-		 * Add to --plugin or --theme using short syntax:
-		 *   slug:action:tag1,tag2
-		 *
-		 * The EnvConfigLoader + PluginsAndThemesParser will parse each entry and do final normalization.
-		 */
-		$sut_string = sprintf(
-			'%s:%s:%s',
-			$source_option,
-			$sut_action,
-			implode( ',', $test_tags )
-		);
-
-		if ( $sut_type === 'theme' ) {
-			$env_up_options['--theme'][] = $sut_string;
-		} else {
-			$env_up_options['--plugin'][] = $sut_string;
-		}
-
-		// Apply dependencies if needed
-		$dependencies_option = $input->getOption( 'dependencies' ) ?? Extension::ACTIONS['bootstrap'];
-		if ( ! empty( $woo_extension_id ) && $dependencies_option !== 'none' ) {
-			$env_up_options = $this->apply_dependencies(
-				$woo_extension_id,
-				$dependencies_option,
-				$env_up_options
-			);
+			return $env_up_options;
 		}
 
 		return $env_up_options;
@@ -178,52 +147,5 @@ class ConfigurationProcessor {
 		}
 
 		return $env_up_options;
-	}
-
-	/**
-	 * If QIT_ACTIVATION_TEST is set, we alter all "woocommerce" vs. non-woocommerce
-	 * plugin actions + test_tags for the activation scenario.
-	 */
-	protected function apply_activation_test_logic( array &$env_up_options ): void {
-		if ( ! App::getVar( 'QIT_ACTIVATION_TEST' ) ) {
-			return;
-		}
-
-		foreach ( [ '--plugin', '--theme' ] as $key ) {
-			if ( empty( $env_up_options[ $key ] ) || ! is_array( $env_up_options[ $key ] ) ) {
-				continue;
-			}
-
-			foreach ( $env_up_options[ $key ] as &$item ) {
-				/**
-				 * $item is short syntax e.g. "slug:action:tag1,tag2"
-				 * We need to parse it, set the correct tags, then rebuild the string.
-				 */
-				$parts        = explode( ':', $item );
-				$slug         = $parts[0] ?? '';
-				$action       = $parts[1] ?? Extension::ACTIONS['bootstrap'];
-				$existingTags = $parts[2] ?? 'default';
-
-				$tagsArray = array_map( 'trim', explode( ',', $existingTags ) );
-
-				if ( $slug === 'woocommerce' ) {
-					// WooCommerce itself -> action=test, test_tags=activation
-					$action  = Extension::ACTIONS['test'];
-					$tagsArr = [ 'activation' ];
-				} else {
-					// Non-Woo => action=bootstrap, test_tags=pre-activation
-					$action  = Extension::ACTIONS['bootstrap'];
-					$tagsArr = [ 'pre-activation' ];
-				}
-
-				$item = sprintf(
-					'%s:%s:%s',
-					$slug,
-					$action,
-					implode( ',', $tagsArr )
-				);
-			}
-			unset( $item );
-		}
 	}
 }
