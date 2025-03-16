@@ -69,6 +69,12 @@ class JsonOutput {
 	 * Output a Throwable in JSON format and exit(1).
 	 */
 	public static function output_throwable_as_json( \Throwable $throwable ): void {
+		if ( ! App::make( Output::class )->isVerbose() ) {
+			// If not verbose, just output the message.
+			echo json_encode( [ 'error' => $throwable->getMessage() ] ), "\n";
+			exit( 1 );
+		}
+
 		$error_data = [
 			'error' => [
 				'type'    => get_class( $throwable ),
