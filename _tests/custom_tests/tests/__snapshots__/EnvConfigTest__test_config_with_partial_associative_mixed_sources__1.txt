@@ -25,7 +25,7 @@
             ]
         },
         {
-            "slug": "\/path\/to\/local\/plugin-directory",
+            "slug": "plugin-directory",
             "entrypoint": null,
             "source": "\/path\/to\/local\/plugin-directory",
             "downloaded_source": null,
@@ -38,7 +38,7 @@
             ]
         },
         {
-            "slug": "\/path\/to\/local\/plugin.zip",
+            "slug": "plugin",
             "entrypoint": null,
             "source": "\/path\/to\/local\/plugin.zip",
             "downloaded_source": null,
@@ -51,7 +51,7 @@
             ]
         },
         {
-            "slug": "https:\/\/example.com\/some-remote-plugin.zip",
+            "slug": "some-remote-plugin",
             "entrypoint": null,
             "source": "https:\/\/example.com\/some-remote-plugin.zip",
             "downloaded_source": null,
@@ -67,7 +67,7 @@
     ],
     "themes": [
         {
-            "slug": "https:\/\/downloads.wordpress.org\/theme\/storefront.zip",
+            "slug": "storefront",
             "entrypoint": null,
             "source": "https:\/\/downloads.wordpress.org\/theme\/storefront.zip",
             "downloaded_source": null,
@@ -80,7 +80,7 @@
             ]
         },
         {
-            "slug": "https:\/\/downloads.wordpress.org\/theme\/twentytwentyfour.zip",
+            "slug": "twentytwentyfour",
             "entrypoint": null,
             "source": "https:\/\/downloads.wordpress.org\/theme\/twentytwentyfour.zip",
             "downloaded_source": null,
@@ -93,7 +93,7 @@
             ]
         },
         {
-            "slug": "\/path\/to\/local\/theme-directory",
+            "slug": "theme-directory",
             "entrypoint": null,
             "source": "\/path\/to\/local\/theme-directory",
             "downloaded_source": null,
@@ -106,7 +106,7 @@
             ]
         },
         {
-            "slug": "\/path\/to\/local\/theme.zip",
+            "slug": "theme",
             "entrypoint": null,
             "source": "\/path\/to\/local\/theme.zip",
             "downloaded_source": null,

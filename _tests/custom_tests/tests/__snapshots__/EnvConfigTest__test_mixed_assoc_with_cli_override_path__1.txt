@@ -25,19 +25,6 @@
             ]
         },
         {
-            "slug": "\/path\/to\/local\/plugin-dir",
-            "entrypoint": null,
-            "source": "\/path\/to\/local\/plugin-dir",
-            "downloaded_source": null,
-            "type": "plugin",
-            "handler": null,
-            "version": "NORMALIZED_VERSION",
-            "action": "activate",
-            "test_tags": [
-                "default"
-            ]
-        },
-        {
             "slug": "plugin-dir",
             "entrypoint": null,
             "source": "\/path\/to\/local\/plugin-dir",

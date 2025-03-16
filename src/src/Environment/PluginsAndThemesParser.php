@@ -62,17 +62,17 @@ class PluginsAndThemesParser {
 				continue;
 			}
 
-			if ( ! isset( $extension['source'] ) && ! isset( $extension['slug'] ) ) {
+			if ( ! isset( $extension['source'] ) && ! isset( $extension['slug'] ) ) { // @phpstan-ignore-line
 				throw new \Exception( "Please provide a 'source' or 'slug' for the plugin." );
 			}
 
 			// Infer slug if not set.
 			if ( ! isset( $extension['slug'] ) ) {
-				$extension['slug'] = $this->infer_slug_from_source( $extension['source'] ?? '' );
+				$extension['slug'] = $this->infer_slug_from_source( $extension['source'] ?? '' ); // @phpstan-ignore-line
 			}
 
 			// If "source" is empty, use slug as the source.
-			if ( ! isset( $extension['source'] ) ) {
+			if ( ! isset( $extension['source'] ) ) { // @phpstan-ignore-line
 				$extension['source'] = $extension['slug'];
 			}
 
@@ -309,85 +309,122 @@ class PluginsAndThemesParser {
 	}
 
 	/**
-	 * @param array<mixed> $extension
-	 * @param int|string   $potential_slug
+	 * Parse an individual plugin/theme entry from the environment config.
+	 *
+	 * @param array{action?: string, slug?: string, source?: string, test_tags?: string[]} $extension
+	 *
+	 * @param int|string                                                                   $potential_slug The JSON config key for this plugin/theme.
 	 *
 	 * @return array{
 	 *     action?: string,
-	 *     slug?: string,
-	 *     source?: string,
+	 *     slug: string,
+	 *     source: string,
 	 *     test_tags?: array<string>,
-	 * } The parsed extension.
-	 * @throws \InvalidArgumentException When couldn't parse or validate the extension that was defined in a config file.
+	 * } This will always have 'slug' and 'source' when returned.
+	 *
+	 * @throws \InvalidArgumentException If the extension array is invalid or
+	 *                                   we could not figure out a valid slug/source.
 	 */
 	protected function parse_array_extension( array $extension, $potential_slug ): array {
-		/*
-		 * "$potential_slug" will usually hold the slug, example:
-		 *
-		 * plugins:
-		 *  qit-beaver: (This is $potential_slug)
-		 *      source: ~/qit-beaver
-		 *      action: install
-		 *
-		 * We use this key, unless a slug is explicitly defined:
-		 * plugins:
-		 *  qit-beaver:
-		 *      slug: qit-beaver (if this is set, we use this)
-		 *      source: ~/qit-beaver
-		 */
-		if ( ! is_numeric( $potential_slug ) && ! isset( $extension['slug'] ) ) {
-			$extension['slug'] = $potential_slug;
-		}
-
-		/*
-		 * Validate only allowed keys are defined.
-		 *
-		 * This is useful to clearly inform the user about typos, such as "test_tag" instead of "test_tags".
-		 */
-		$allowed_keys = [
-			'action',
-			'slug',
-			'source',
-			'test_tags',
-		];
+		// Which keys are allowed in the extension’s array.
+		$allowed_keys = [ 'action', 'slug', 'source', 'test_tags' ];
 		foreach ( $extension as $k => $v ) {
 			if ( ! in_array( $k, $allowed_keys, true ) ) {
-				throw new \InvalidArgumentException( sprintf( 'Invalid key "%s" in extension array. Expected keys: %s', $k, implode( ', ', $allowed_keys ) ) );
+				throw new \InvalidArgumentException(
+					sprintf(
+						'Invalid key "%s" in extension array. Allowed keys: %s',
+						$k,
+						implode( ', ', $allowed_keys )
+					)
+				);
 			}
 		}
 
-		// If user set a "source", make sure it's valid.
-		if ( isset( $extension['source'] ) ) {
-			// @phpstan-ignore-next-line
-			if ( ! is_string( $extension['source'] ) ) {
-				throw new \InvalidArgumentException( sprintf( 'Invalid source "%s". Source must be a string.', $extension['source'] ) );
-			}
-
-			if ( empty( $extension['source'] ) ) {
-				throw new \InvalidArgumentException( 'If set, source cannot be empty.' );
-			}
-		}
-
-		// If user set an "action", make sure it's valid.
+		// ACTION: Validate if set.
 		if ( isset( $extension['action'] ) ) {
 			if ( ! in_array( $extension['action'], Extension::ACTIONS, true ) ) {
-				throw new \InvalidArgumentException( sprintf( 'Invalid action "%s". Valid actions are: %s', $extension['action'], implode( ', ', Extension::ACTIONS ) ) );
+				throw new \InvalidArgumentException(
+					sprintf(
+						'Invalid action "%s". Valid actions are: %s',
+						$extension['action'],
+						implode( ', ', Extension::ACTIONS )
+					)
+				);
 			}
 		}
 
-		// If user set "test_tags", make sure it's valid.
+		// TEST_TAGS: Validate if set.
 		if ( isset( $extension['test_tags'] ) ) {
-			// @phpstan-ignore-next-line
-			if ( ! is_array( $extension['test_tags'] ) ) {
+			if ( ! is_array( $extension['test_tags'] ) ) { // @phpstan-ignore-line
 				$example              = $extension;
-				$example['test_tags'] = [
-					'example-foo',
-					'example-bar',
-				];
-				throw new \InvalidArgumentException( sprintf( "\"test_tags\" must be an array. \n\nActual:\n%s \n\nExpected: \n%s.", json_encode( $extension, JSON_PRETTY_PRINT ), json_encode( $example, JSON_PRETTY_PRINT ) ) );
+				$example['test_tags'] = [ 'example-foo', 'example-bar' ];
+				throw new \InvalidArgumentException(
+					sprintf(
+						"\"test_tags\" must be an array.\n\nActual:\n%s\n\nExpected:\n%s",
+						json_encode( $extension, JSON_PRETTY_PRINT ),
+						json_encode( $example, JSON_PRETTY_PRINT )
+					)
+				);
 			}
 		}
 
+		/*
+		 * SOURCE
+		 *
+		 * 1) Extract $source if set, else use the $potential_slug.
+		 * 2) Validate that it’s a non-empty string.
+		 * 3) Normalize JSON-escaped slashes.
+		 */
+		$source = array_key_exists( 'source', $extension ) ? $extension['source'] : (string) $potential_slug;
+
+		if ( ! is_string( $source ) ) {
+			throw new \InvalidArgumentException(
+				sprintf(
+					'Invalid source. Must be a string, got: %s',
+					(string) $source
+				)
+			);
+		}
+		if ( $source === '' ) {
+			throw new \InvalidArgumentException(
+				'If "source" is set, it cannot be empty.'
+			);
+		}
+		// Fix "https:\/\/" => "https://".
+		$source              = str_replace( '\\/', '/', $source );
+		$extension['source'] = $source;
+
+		/*
+		 * SLUG
+		 *
+		 * 1) If a slug is explicitly set, use it.
+		 * 2) Else infer from numeric key (Woo.com ID), or if valid slug, or from $source.
+		 */
+		$slug = array_key_exists( 'slug', $extension ) ? $extension['slug'] : null;
+
+		if ( $slug === null ) {
+			if ( is_numeric( $potential_slug ) ) {
+				$woo_id = (int) $potential_slug;
+				$slug   = $this->woo_extensions_list->get_woo_extension_slug_by_id( $woo_id );
+			} elseif ( $this->is_valid_plugin_slug( (string) $potential_slug ) ) {
+				$slug = (string) $potential_slug;
+			} else {
+				// Fall back to inferring from $source.
+				$slug = $this->infer_slug_from_source( $source );
+			}
+		}
+
+		if ( ! is_string( $slug ) || $slug === '' ) {
+			throw new \InvalidArgumentException(
+				sprintf(
+					"Could not determine a valid slug for '%s'. Please set 'slug' or a valid 'source'.",
+					(string) $potential_slug
+				)
+			);
+		}
+
+		$extension['slug'] = $slug;
+		
 		return $extension;
 	}
 }
