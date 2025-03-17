@@ -23,6 +23,7 @@ use QIT_CLI\LocalTests\E2E\E2ETestManager;
 use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\PluginDependencies;
+use QIT_CLI\TestGroup;
 use QIT_CLI\Tunnel\TunnelRunner;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
@@ -64,6 +65,9 @@ class RunE2ECommand extends DynamicCommand {
 	/** @var EnvironmentRunner */
 	protected $environment_runner;
 
+	/** @var TestGroup */
+	protected $test_group;
+
 	protected static $defaultName = 'run:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/**
@@ -84,7 +88,8 @@ class RunE2ECommand extends DynamicCommand {
 		LocalTestRunNotifier $test_run_notifier,
 		PluginDependencies $dependencies,
 		ConfigurationProcessor $configuration_processor,
-		EnvironmentRunner $environment_runner
+		EnvironmentRunner $environment_runner,
+		TestGroup $test_group
 	) {
 		$this->e2e_environment         = $e2e_environment;
 		$this->cache                   = $cache;
@@ -94,7 +99,7 @@ class RunE2ECommand extends DynamicCommand {
 		$this->dependencies            = $dependencies;
 		$this->configuration_processor = $configuration_processor;
 		$this->environment_runner      = $environment_runner;
-
+		$this->test_group              = $test_group;
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
@@ -139,7 +144,8 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'dependencies', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies of the SUT and additional plugins. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['bootstrap'] )
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode.' )
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen.' )
-			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' );
+			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' )
+			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the test run into a group.', null );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -187,6 +193,32 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::INVALID;
 		}
 		$sut_type = $sut_type_or_code;
+
+		$group = $input->getOption( 'group' );
+
+		if ( $group ) {
+
+			$group_options = [
+				'woo_id' => $woo_extension_id,
+			];
+
+			if ( ! empty( $input->getOption( 'extension_set' ) ) ) {
+				$group_options['extension_set'] = $input->getOption( 'extension_set' );
+			}
+
+			$test_type = ! empty( $input->getArgument( 'test' ) ) ? 'activation' : 'e2e';
+
+			try {
+				$this->test_group->create_or_update( $group_options, $test_type );
+			} catch ( \Exception $e ) {
+				$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
+				return Command::FAILURE;
+			}
+
+			$output->writeln( sprintf( '<info>Group successfully enqueued.</info>' ) );
+
+			return Command::SUCCESS;
+		}
 
 		if ( $input->getOption( 'skip_activating_plugins' ) ) {
 			$this->e2e_environment->set_skip_activating_plugins( true );

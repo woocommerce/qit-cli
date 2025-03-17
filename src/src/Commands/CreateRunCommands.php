@@ -8,6 +8,7 @@ use QIT_CLI\Cache;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
+use QIT_CLI\TestGroup;
 use QIT_CLI\Upload;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Application;
@@ -36,12 +37,16 @@ class CreateRunCommands extends DynamicCommandCreator {
 	/** @var WooExtensionsList $woo_extensions_list */
 	protected $woo_extensions_list;
 
-	public function __construct( Cache $cache, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list ) {
+	/** @var TestGroup $test_group */
+	protected $test_group;
+
+	public function __construct( Cache $cache, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list, TestGroup $test_group ) {
 		$this->cache               = $cache;
 		$this->auth                = $auth;
 		$this->output              = App::make( Output::class );
 		$this->upload              = $upload;
 		$this->woo_extensions_list = $woo_extensions_list;
+		$this->test_group          = $test_group;
 	}
 
 	public function register_commands( Application $application ): void {
@@ -62,7 +67,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 	 * @return void
 	 */
 	protected function register_command_by_schema( Application $application, string $test_type, array $schema ): void {
-		$command = new class( $test_type, $this->auth, $this->upload, $this->woo_extensions_list, $this->cache ) extends DynamicCommand {
+		$command = new class( $test_type, $this->auth, $this->upload, $this->woo_extensions_list, $this->test_group ) extends DynamicCommand {
 			/** @var Auth $auth */
 			protected $auth;
 
@@ -75,15 +80,15 @@ class CreateRunCommands extends DynamicCommandCreator {
 			/** @var Upload $upload */
 			protected $upload;
 
-			/** @var Cache $cache */
-			protected $cache;
+			/** @var TestGroup $test_group */
+			protected $test_group;
 
-			public function __construct( string $test_type, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list, Cache $cache ) {
+			public function __construct( string $test_type, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list, TestGroup $test_group ) {
 				$this->auth                = $auth;
 				$this->test_type           = $test_type;
 				$this->woo_extensions_list = $woo_extensions_list;
 				$this->upload              = $upload;
-				$this->cache               = $cache;
+				$this->test_group          = $test_group;
 				parent::__construct();
 			}
 
@@ -149,27 +154,13 @@ class CreateRunCommands extends DynamicCommandCreator {
 				}
 
 				if ( $input->getOption( 'group' ) ) {
-					$group = $this->cache->get( 'group' );
 
-					if ( empty( $group ) ) {
-						$group = [
-							'tests' => [],
-						];
+					try {
+						$this->test_group->create_or_update( $options, $this->test_type );
+					} catch ( \Exception $e ) {
+						$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
+						return Command::FAILURE;
 					}
-
-					$test = [
-						'type'   => $this->test_type,
-						'params' => [
-							'client' => 'qit_cli',
-						],
-					];
-
-					foreach ( $options as $key => $value ) {
-						$test['params'][ $key ] = $value;
-					}
-					$group['tests'][] = $test;
-
-					$this->cache->set( 'group', $group, 3600 );
 
 					$output->writeln( sprintf( '<info>Group successfully enqueued.</info>' ) );
 

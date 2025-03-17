@@ -42,7 +42,8 @@ class RunActivationTestCommand extends Command {
 			->reuseOption( RunE2ECommand::getDefaultName(), 'require' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'extension_set' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'dependencies' )
-			->reuseOption( RunE2ECommand::getDefaultName(), 'pw_test_tag' );
+			->reuseOption( RunE2ECommand::getDefaultName(), 'pw_test_tag' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'group' );
 
 		$this->addOption(
 			'json',
@@ -126,6 +127,10 @@ class RunActivationTestCommand extends Command {
 		}
 
 		App::setVar( 'QIT_ACTIVATION_TEST', 'yes' );
+
+		if ( $input->getOption( 'group' ) ) {
+			$run_e2e_options['--group'] = $input->getOption( 'group' );
+		}
 
 		$run_e2e_exit_code = $run_e2e_command->run(
 			new ArrayInput( $run_e2e_options ),
