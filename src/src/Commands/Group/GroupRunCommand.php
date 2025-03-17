@@ -58,7 +58,7 @@ class GroupRunCommand extends Command {
 			return Command::SUCCESS;
 		} catch ( \Exception $e ) {
 			$output->writeln( sprintf( '<error>Failed to enqueue group: %s</error>', $e->getMessage() ) );
-			$this->cache->delete( 'group' );
+			$this->test_group->delete_group();
 			return Command::FAILURE;
 		}
 	}

@@ -305,6 +305,9 @@ class RunE2ECommand extends DynamicCommand {
 			$env_info->sut_type    = $sut_type;
 			$env_info->pw_test_tag = $test_tag;
 
+			// TODO: Add group info to the notification.
+			// Since the test group can only have a single type of each test variation, we can fetch the first
+			// one we find from the cache and use that.
 			$this->test_run_notifier->notify_test_started(
 				$woo_extension_id,
 				$input->getOption( 'woo' ) ?? 'none',
