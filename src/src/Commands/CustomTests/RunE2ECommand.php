@@ -131,7 +131,7 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT.' )
 			->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional options and parameters to pass to Playwright, eg: "--retries=0", etc.' )
-			->addOption( 'dependencies', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies of the SUT and additional plugins. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['bootstrap'] )
+			->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies for recognized WooCommerce plugins. Possible values: ' . implode( ', ', PluginDependencies::DEPENDENCY_MODES['env_test'] ), 'none' )
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode.' )
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen.' )
 			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' );
@@ -220,14 +220,7 @@ class RunE2ECommand extends DynamicCommand {
 			App::setVar( 'QIT_SUT_SLUG', $woo_extension_slug );
 		}
 
-		// Inline the logic that used to be in ConfigurationProcessor.
-		$env_up_options = $this->add_sut_to_env_up_options(
-			$input,
-			$env_up_options,
-			$woo_extension_slug,
-			$woo_extension_id,
-			$sut_type
-		);
+		$env_up_options = $this->add_sut_to_env_up_options( $input, $env_up_options, $woo_extension_slug, $sut_type );
 
 		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
 		App::setVar( 'QIT_ENV_UP_OPTIONS', $env_up_options );
@@ -544,23 +537,14 @@ class RunE2ECommand extends DynamicCommand {
 	}
 
 	/**
-	 * Inline replacement for ConfigurationProcessor::process_configuration().
-	 *
 	 * @param InputInterface $input
 	 * @param array $env_up_options
 	 * @param string|null $woo_extension_slug
-	 * @param int|null $woo_extension_id
 	 * @param string|null $sut_type 'plugin', 'theme', or null
 	 *
 	 * @return array Updated env_up_options
 	 */
-	private function add_sut_to_env_up_options(
-		InputInterface $input,
-		array $env_up_options,
-		?string $woo_extension_slug,
-		?int $woo_extension_id,
-		?string $sut_type
-	): array {
+	private function add_sut_to_env_up_options( InputInterface $input, array $env_up_options, ?string $woo_extension_slug, ?string $sut_type ): array {
 		// Only proceed if we do have a main extension slug.
 		if ( ! $woo_extension_slug ) {
 			return $env_up_options;
@@ -594,62 +578,6 @@ class RunE2ECommand extends DynamicCommand {
 			$env_up_options['--theme'][] = $sut_string;
 		} else {
 			$env_up_options['--plugin'][] = $sut_string;
-		}
-
-		// Apply dependencies if requested.
-		$dependencies_option = $input->getOption( 'dependencies' ) ?? Extension::ACTIONS['bootstrap'];
-		if ( ! empty( $woo_extension_id ) && $dependencies_option !== 'none' ) {
-			$env_up_options = $this->apply_sut_dependencies(
-				$woo_extension_id,
-				$dependencies_option,
-				$env_up_options
-			);
-		}
-
-		return $env_up_options;
-	}
-
-	/**
-	 * Inlined logic from ConfigurationProcessor::apply_dependencies().
-	 * Adds plugin & PHP ext dependencies to $env_up_options.
-	 */
-	private function apply_sut_dependencies(
-		int $woo_extension_id,
-		string $dependencies_option,
-		array $env_up_options
-	): array {
-		$dependencies_data = $this->dependencies->get_plugin_and_php_ext_dependencies(
-			$woo_extension_id,
-			[]
-		);
-
-		// Ensure array keys exist
-		if ( ! isset( $env_up_options['--php_extension'] ) ) {
-			$env_up_options['--php_extension'] = [];
-		}
-		if ( ! isset( $env_up_options['--plugin'] ) ) {
-			$env_up_options['--plugin'] = [];
-		}
-
-		// Add required PHP extensions
-		foreach ( $dependencies_data['php_extensions'] as $php_ext ) {
-			if ( ! in_array( $php_ext, $env_up_options['--php_extension'], true ) ) {
-				$env_up_options['--php_extension'][] = $php_ext;
-			}
-		}
-
-		// Add plugin dependencies
-		$woo_version = $env_up_options['--woo'] ?? null;
-		foreach ( $dependencies_data['plugins'] as $dep_plugin ) {
-			// Skip if user pinned a specific Woo version and dep is "woocommerce:..."
-			if ( $woo_version && stripos( $dep_plugin, 'woocommerce:' ) !== false ) {
-				continue;
-			}
-
-			$formatted_plugin = sprintf( '%s:%s', $dep_plugin, $dependencies_option );
-			if ( ! in_array( $formatted_plugin, $env_up_options['--plugin'], true ) ) {
-				$env_up_options['--plugin'][] = $formatted_plugin;
-			}
 		}
 
 		return $env_up_options;
