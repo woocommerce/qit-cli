@@ -22,7 +22,7 @@ class PluginDependencies {
 			'none'      => 'none',
 			'activate'  => 'activate',
 			'bootstrap' => 'bootstrap',
-			'test'      => 'test'
+			'test'      => 'test',
 		],
 	];
 
@@ -32,7 +32,7 @@ class PluginDependencies {
 	}
 
 	/**
-	 * @param int $woo_id
+	 * @param int        $woo_id
 	 * @param array<int> $additional_woo_extension_ids
 	 *
 	 * @return array{
@@ -91,7 +91,7 @@ class PluginDependencies {
 	 *
 	 * @param array<Extension> $plugins
 	 * @param array<Extension> $themes
-	 * @param string $dependencies_mode
+	 * @param string           $dependencies_mode
 	 *
 	 * @return array{
 	 *     plugins_with_deps: array<Extension>,
@@ -100,7 +100,10 @@ class PluginDependencies {
 	 */
 	public function add_plugin_dependencies( array $plugins, array $themes, string $dependencies_mode ): array {
 		if ( $dependencies_mode === self::DEPENDENCY_MODES['env_only']['none'] ) {
-			return [ 'plugins_with_deps' => [], 'php_extensions' => [] ];
+			return [
+				'plugins_with_deps' => [],
+				'php_extensions'    => [],
+			];
 		}
 
 		$woo_extension_ids = [];
@@ -124,7 +127,10 @@ class PluginDependencies {
 		$woo_extension_ids = array_unique( $woo_extension_ids );
 
 		if ( empty( $woo_extension_ids ) ) {
-			return [ 'plugins_with_deps' => [], 'php_extensions' => [] ];
+			return [
+				'plugins_with_deps' => [],
+				'php_extensions'    => [],
+			];
 		}
 
 		$first_id = array_shift( $woo_extension_ids );

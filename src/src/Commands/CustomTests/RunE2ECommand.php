@@ -195,7 +195,7 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		$shard = $input->getOption( 'shard' );
-		if ( $shard && preg_match( '/^\d+\/\d+$/', $shard ) ) {
+		if ( $shard && preg_match( '/^\d+\/\d+$/', $shard ) ) { // phpcs:ignore
 			// Already validated in validate_input().
 		}
 
@@ -347,7 +347,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		try {
 			Environment::down( $GLOBALS['env_to_shutdown'] );
-		} catch ( \Exception $e ) {
+		} catch ( \Exception $e ) { // phpcs:ignore
 			// no-op.
 		}
 	}
@@ -383,7 +383,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up']["--$option_name"] = $option_value;
+				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
 			}
 		}
 
@@ -417,7 +417,7 @@ class RunE2ECommand extends DynamicCommand {
 	}
 
 	/**
-	 * @param string|null $woo_extension_raw
+	 * @param string|null     $woo_extension_raw
 	 * @param OutputInterface $output
 	 *
 	 * @return array{0:int|null,1:string|null,2:string|int|null} Array containing:
@@ -425,7 +425,7 @@ class RunE2ECommand extends DynamicCommand {
 	 */
 	private function resolve_woo_extension( ?string $woo_extension_raw, OutputInterface $output ): array {
 		if ( empty( $woo_extension_raw ) ) {
-			return [ null, null, null ]; // no extension provided
+			return [ null, null, null ]; // no extension provided.
 		}
 
 		try {
@@ -523,7 +523,7 @@ class RunE2ECommand extends DynamicCommand {
 	private function configure_pw_options( InputInterface $input ): void {
 		$pw_options = $input->getOption( 'pw_options' ) ?? '';
 		if ( ! empty( $pw_options ) ) {
-			// Strip surrounding quotes if present
+			// Strip surrounding quotes if present.
 			if ( substr( $pw_options, 0, 1 ) === '"' && substr( $pw_options, - 1 ) === '"' ) {
 				$pw_options = substr( $pw_options, 1, - 1 );
 			}
@@ -538,9 +538,9 @@ class RunE2ECommand extends DynamicCommand {
 
 	/**
 	 * @param InputInterface $input
-	 * @param array $env_up_options
-	 * @param string|null $woo_extension_slug
-	 * @param string|null $sut_type 'plugin', 'theme', or null
+	 * @param array          $env_up_options
+	 * @param string|null    $woo_extension_slug
+	 * @param string|null    $sut_type 'plugin', 'theme', or null.
 	 *
 	 * @return array Updated env_up_options
 	 */
@@ -565,7 +565,7 @@ class RunE2ECommand extends DynamicCommand {
 		// If user specified a local/URL source, we use that; otherwise use the slug.
 		$source_option = $input->getOption( 'source' ) ?? $woo_extension_slug;
 
-		// Construct short syntax: slugOrSource:action:tag1,tag2
+		// Construct short syntax: "slugOrSource:action:tag1,tag2".
 		$sut_string = sprintf(
 			'%s:%s:%s',
 			$source_option,

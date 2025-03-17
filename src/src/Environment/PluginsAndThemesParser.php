@@ -2,7 +2,6 @@
 
 namespace QIT_CLI\Environment;
 
-use QIT_CLI\PluginDependencies;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\WPORGExtensionsList;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,8 +19,7 @@ class PluginsAndThemesParser {
 	public function __construct(
 		OutputInterface $output,
 		WooExtensionsList $woo_extensions_list,
-		WPORGExtensionsList $wporg_extensions_list,
-		PluginDependencies $dependencies
+		WPORGExtensionsList $wporg_extensions_list
 	) {
 		$this->output                = $output;
 		$this->woo_extensions_list   = $woo_extensions_list;
@@ -30,8 +28,8 @@ class PluginsAndThemesParser {
 
 	/**
 	 * @param array<int|string,string|array{source?:string,slug?:string,action?:string,test_tags?:array<string>}> $plugins_or_themes
-	 * @param string $type
-	 * @param string $default_action
+	 * @param string                                                                                              $type
+	 * @param string                                                                                              $default_action
 	 *
 	 * @return array<Extension>
 	 */
@@ -319,7 +317,7 @@ class PluginsAndThemesParser {
 	 *
 	 * @param array{action?: string, slug?: string, source?: string, test_tags?: string[]} $extension
 	 *
-	 * @param int|string $potential_slug The JSON config key for this plugin/theme.
+	 * @param int|string                                                                   $potential_slug The JSON config key for this plugin/theme.
 	 *
 	 * @return array{
 	 *     action?: string,

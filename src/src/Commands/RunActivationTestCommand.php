@@ -84,23 +84,23 @@ class RunActivationTestCommand extends Command {
 
 		$run_e2e_options = [];
 
-		// Provide 0 retries for this activation scenario
+		// Provide 0 retries for this activation scenario.
 		$run_e2e_options['--pw_options'] = '--retries=0';
 
-		// Skip automatically activating anything prior to running the test
+		// Skip automatically activating anything prior to running the test.
 		$run_e2e_options['--skip_activating_plugins'] = true;
 		$run_e2e_options['--skip_activating_themes']  = true;
 
-		// Copy or transform reused options
+		// Copy or transform reused options.
 		foreach ( $this->reused_options as $reused_option ) {
 			if ( $reused_option === 'tunnel' ) {
 				$run_e2e_options['--tunnel'] = TunnelRunner::get_tunnel_value( $input );
 			} else {
-				$run_e2e_options["--$reused_option"] = $input->getOption( $reused_option );
+				$run_e2e_options[ "--$reused_option" ] = $input->getOption( $reused_option );
 			}
 		}
 
-		// Handle the deprecated --zip option
+		// Handle the deprecated --zip option.
 		if ( ! empty( $input->getOption( 'zip' ) ) ) {
 			if ( ! empty( $input->getOption( 'source' ) ) ) {
 				$output->writeln( '<error>Cannot use both --zip and --source options. Use only --source.</error>' );
@@ -112,7 +112,7 @@ class RunActivationTestCommand extends Command {
 
 		$sut = $input->getArgument( 'woo_extension' );
 
-		// Decide how to arrange SUT vs. WooCommerce based on whether the main SUT is woo itself
+		// Decide how to arrange SUT vs. WooCommerce based on whether the main SUT is woo itself.
 		if ( $sut !== 'woocommerce' ) {
 			$run_e2e_options['--sut_action']  = Extension::ACTIONS['bootstrap'];
 			$run_e2e_options['test']          = 'pre-activation';
@@ -130,24 +130,24 @@ class RunActivationTestCommand extends Command {
 			$run_e2e_options['--very-verbose'] = true;
 		}
 
-		// Mark that we're running an activation test scenario
+		// Mark that we're running an activation test scenario.
 		App::setVar( 'QIT_ACTIVATION_TEST', 'yes' );
 
-		// Optionally apply global "activation test" overrides to ANY plugin/theme short syntax in $run_e2e_options
+		// Optionally apply global "activation test" overrides to ANY plugin/theme short syntax in $run_e2e_options.
 		$this->apply_pre_activation_test_tags( $run_e2e_options );
 
-		// Now run the `run:e2e` command with these fully customized options
+		// Now run the `run:e2e` command with these fully customized options.
 		$run_e2e_exit_code = $run_e2e_command->run(
 			new ArrayInput( $run_e2e_options ),
 			new StreamOutput( $resource_stream )
 		);
 
-		// If user didn't request JSON output, show the underlying run:e2e output
+		// If user didn't request JSON output, show the underlying run:e2e output.
 		if ( ! $input->getOption( 'json' ) ) {
 			$run_e2e_output = stream_get_contents( $resource_stream, - 1, 0 );
 			$output->writeln( $run_e2e_output );
 
-			// Otherwise, fetch a test run JSON from QIT Manager
+			// Otherwise, fetch a test run JSON from QIT Manager.
 		} else {
 			$test_run_id = App::make( Cache::class )->get( 'QIT_LAST_LOCAL_TEST_FINISHED' );
 
@@ -166,12 +166,12 @@ class RunActivationTestCommand extends Command {
 			$output->writeln( $json );
 		}
 
-		// Backwards compatibility: if user passed --ignore-fail, always return SUCCESS
+		// Backwards compatibility: if user passed --ignore-fail, always return SUCCESS.
 		if ( $input->getOption( 'ignore-fail' ) ) {
 			return Command::SUCCESS;
 		}
 
-		// Otherwise, pass along the actual exit code from run:e2e
+		// Otherwise, pass along the actual exit code from run:e2e.
 		return $run_e2e_exit_code;
 	}
 
@@ -195,11 +195,11 @@ class RunActivationTestCommand extends Command {
 				$tags_array = array_map( 'trim', explode( ',', $existing_tags ) );
 
 				if ( $slug === 'woocommerce' ) {
-					// WooCommerce itself => action=test, tag=activation
+					// WooCommerce itself => action=test, tag=activation.
 					$action   = Extension::ACTIONS['test'];
 					$tags_arr = [ 'activation' ];
 				} else {
-					// Any other plugin => action=bootstrap, tag=pre-activation
+					// Any other plugin => action=bootstrap, tag=pre-activation.
 					$action   = Extension::ACTIONS['bootstrap'];
 					$tags_arr = [ 'pre-activation' ];
 				}
