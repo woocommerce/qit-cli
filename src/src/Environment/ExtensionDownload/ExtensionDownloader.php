@@ -125,7 +125,7 @@ class ExtensionDownloader {
 
 				if ( getenv( 'QIT_SUT' ) === $e->slug && $env_info instanceof E2EEnvInfo ) {
 					$env_info->sut_entrypoint = $e->entrypoint;
-					$env_info->sut_path       = "/var/www/html/wp-content/{$e->type}s/{$e->slug}/{$e->entrypoint}";
+					$env_info->sut_path       = "$env_info->temporary_env/html/wp-content/{$e->type}s/{$e->slug}";
 				}
 
 				// Add a volume bind.
