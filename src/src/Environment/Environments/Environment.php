@@ -183,6 +183,10 @@ abstract class Environment {
 			'/qit/cache'      => $this->cache_dir,
 		];
 
+		if ( file_exists( $this->env_info->temporary_env . '/wp-cli.yml' ) ) {
+			$default_volumes['/qit/wp-cli.yml'] = "{$this->env_info->temporary_env}/wp-cli.yml";
+		}
+
 		$default_volumes = $this->additional_default_volumes( $default_volumes );
 
 		$volumes = array_merge( $default_volumes, $this->env_info->volumes );
