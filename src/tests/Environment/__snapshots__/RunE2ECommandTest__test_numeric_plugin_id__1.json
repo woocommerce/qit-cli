@@ -22,7 +22,7 @@
             "test_tags": [
                 "default"
             ],
-            "wccom_id": 123
+            "wccom_id": 2165910
         },
         {
             "slug": "woocommerce-amazon-s3-storage",
@@ -36,7 +36,7 @@
             "test_tags": [
                 "default"
             ],
-            "wccom_id": 123
+            "wccom_id": null
         },
         {
             "slug": "woocommerce",
@@ -50,7 +50,7 @@
             "test_tags": [
                 "default"
             ],
-            "wccom_id": 123
+            "wccom_id": null
         }
     ],
     "themes": [],

@@ -84,6 +84,8 @@ class RunE2ECommandTest extends QITTestCase {
 							return 995;
 						case 'twentytwentyone':
 							return 994;
+						case 'woocommerce-shipping':
+							return 2165910;
 					}
 
 					return 123; // default plugin ID
@@ -762,21 +764,6 @@ class RunE2ECommandTest extends QITTestCase {
 		putenv( 'QIT_SELF_TEST=env_info' );
 		chdir( $this->scenarios_dir . 'scenario-cli-only' );
 
-		// Depending on your environment, you might need to mock WooExtensionsList or ManagerSync.
-		// Here, we assume QIT CLI fetches extensions from manager and we have a mock scenario set.
-		App::setVar(
-			sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-extensions' ),
-			json_encode( [
-				'extensions' => [
-					[
-						'id'   => 2165910,
-						'slug' => 'woocommerce-shipping',
-						'type' => 'plugin'
-					]
-				]
-			] )
-		);
-
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
 			'woo_extension' => 'woocommerce-amazon-s3-storage',
@@ -791,20 +778,6 @@ class RunE2ECommandTest extends QITTestCase {
 		putenv( 'QIT_SELF_TEST=env_info' );
 		$fixture_dir = $this->scenarios_dir . 'scenario-numeric-plugin-id-with-qit';
 		chdir( $fixture_dir );
-
-		// Mock the manager extensions so that ID 2165910 maps to woocommerce-shipping.
-		App::setVar(
-			sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-extensions' ),
-			json_encode( [
-				'extensions' => [
-					[
-						'id'   => 2165910,
-						'slug' => 'woocommerce-shipping',
-						'type' => 'plugin'
-					]
-				]
-			] )
-		);
 
 		// Run with qit.yml defined plus a numeric plugin ID from CLI.
 		$this->application_tester->run( [

@@ -28,8 +28,8 @@ class PluginsAndThemesParser {
 
 	/**
 	 * @param array<int|string,string|array{source?:string,slug?:string,action?:string,test_tags?:array<string>}> $plugins_or_themes
-	 * @param string $type
-	 * @param string $default_action
+	 * @param string                                                                                              $type
+	 * @param string                                                                                              $default_action
 	 *
 	 * @return array<Extension>
 	 */
@@ -126,7 +126,7 @@ class PluginsAndThemesParser {
 			if ( ! isset( $extension->wccom_id ) ) {
 				try {
 					$extension->wccom_id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $extension->slug );
-				} catch ( \Exception $e ) {
+				} catch ( \Exception $e ) { // phpcs:ignore
 					// No ID found, do nothing.
 				}
 			}
@@ -257,7 +257,7 @@ class PluginsAndThemesParser {
 	 *     test_tags: array<string>,
 	 * }
 	 */
-	protected function parse_string_extension( string $extension, string $default_action ): array {
+	public function parse_string_extension( string $extension, string $default_action ): array {
 		$json_array = json_decode( $extension, true );
 
 		// Early bail: Long format, JSON.
@@ -342,7 +342,7 @@ class PluginsAndThemesParser {
 	 *
 	 * @param array{action?: string, slug?: string, source?: string, test_tags?: string[]} $extension
 	 *
-	 * @param int|string $potential_slug The JSON config key for this plugin/theme.
+	 * @param int|string                                                                   $potential_slug The JSON config key for this plugin/theme.
 	 *
 	 * @return array{
 	 *     action?: string,
@@ -405,6 +405,10 @@ class PluginsAndThemesParser {
 		 * 3) Normalize JSON-escaped slashes.
 		 */
 		$source = array_key_exists( 'source', $extension ) ? $extension['source'] : (string) $potential_slug;
+
+		if ( is_numeric( $source ) ) {
+			$source = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $source );
+		}
 
 		if ( ! is_string( $source ) ) {
 			throw new \InvalidArgumentException(

@@ -5,7 +5,6 @@ namespace QIT_CLI;
 use QIT_CLI\Environment\Extension;
 use QIT_CLI\Environment\PluginsAndThemesParser;
 use QIT_CLI\Exceptions\NetworkErrorException;
-use QIT_CLI\IO\Output;
 
 class PluginDependencies {
 	/** @var Cache $cache */
@@ -37,12 +36,12 @@ class PluginDependencies {
 	}
 
 	/**
-	 * @param int $woo_id
+	 * @param int        $woo_id
 	 * @param array<int> $additional_woo_extension_ids
 	 *
 	 * @return array{
-	 *     plugins: array<string>,
-	 *     php_extensions: array<string>,
+	 *     plugin: array<string>,
+	 *     php_extension: array<string>,
 	 * } The dependencies of the plugins.
 	 */
 	private function get_plugin_and_php_ext_dependencies( int $woo_id, array $additional_woo_extension_ids ): array {
@@ -96,7 +95,7 @@ class PluginDependencies {
 	 *
 	 * @param array<Extension> $plugins
 	 * @param array<Extension> $themes
-	 * @param string $dependencies_mode
+	 * @param string           $dependencies_mode
 	 *
 	 * @return array{
 	 *     plugin: array<Extension>,
@@ -146,7 +145,7 @@ class PluginDependencies {
 			} );
 
 			if ( empty( $exists ) ) {
-				$p = $this->parser->parse_extensions( [ $plugin_slug ], 'plugin', $dependencies_mode );
+				$p         = $this->parser->parse_extensions( [ $plugin_slug ], 'plugin', $dependencies_mode );
 				$plugins[] = array_shift( $p );
 			}
 		}

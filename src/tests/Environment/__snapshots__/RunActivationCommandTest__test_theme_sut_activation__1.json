@@ -36,7 +36,7 @@
             "version": "undefined",
             "action": "bootstrap",
             "test_tags": [
-                "default"
+                "pre-activation"
             ],
             "wccom_id": null
         }

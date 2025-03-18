@@ -54,6 +54,6 @@ class Extension {
 	 */
 	public $test_tags;
 
-	/** @var bool */
+	/** @var int|null */
 	public $wccom_id;
 }

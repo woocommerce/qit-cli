@@ -9,6 +9,7 @@ namespace QIT_CLI\Commands\CustomTests;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\Environment\PluginsAndThemesParser;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
@@ -377,7 +378,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up']["--$option_name"] = $option_value;
+				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
 			}
 		}
 
@@ -411,7 +412,7 @@ class RunE2ECommand extends DynamicCommand {
 	}
 
 	/**
-	 * @param string|null $woo_extension_raw
+	 * @param string|null     $woo_extension_raw
 	 * @param OutputInterface $output
 	 *
 	 * @return array{0:int|null,1:string|null,2:string|int|null} Array containing:
@@ -532,14 +533,13 @@ class RunE2ECommand extends DynamicCommand {
 
 	/**
 	 * @param InputInterface $input
-	 * @param array<mixed> $env_up_options
-	 * @param string|null $woo_extension_slug
-	 * @param string|null $sut_type 'plugin', 'theme', or null.
+	 * @param array<mixed>   $env_up_options
+	 * @param string|null    $woo_extension_slug
+	 * @param string|null    $sut_type 'plugin', 'theme', or null.
 	 *
 	 * @return array<mixed> Updated env_up_options.
 	 */
 	private function add_sut_to_env_up_options( InputInterface $input, array $env_up_options, ?string $woo_extension_slug, ?string $sut_type ): array {
-		// Only proceed if we do have a main extension slug.
 		if ( ! $woo_extension_slug ) {
 			return $env_up_options;
 		}
@@ -549,30 +549,74 @@ class RunE2ECommand extends DynamicCommand {
 			$sut_type = 'plugin';
 		}
 
-		// Determine SUT action (test, install, etc.).
-		$sut_action = $input->getOption( 'sut_action' ) ?: Extension::ACTIONS['test'];
+		$key = ( $sut_type === 'theme' ) ? '--theme' : '--plugin';
 
-		// Determine test tags for the SUT.
-		$test_arg  = $input->getArgument( 'test' );
-		$test_tags = $test_arg ? explode( ',', $test_arg ) : [ 'default' ];
+		// Gather CLI overrides.
+		$cli_action    = $input->getOption( 'sut_action' );
+		$test_arg      = $input->getArgument( 'test' );
+		$cli_test_tags = $test_arg ? explode( ',', $test_arg ) : [];
+		$cli_source    = $input->getOption( 'source' );
 
-		// If user specified a local/URL source, we use that; otherwise use the slug.
-		$source_option = $input->getOption( 'source' ) ?? $woo_extension_slug;
+		// STEP 1: Find & parse any existing entry for this slug from qit.yml or earlier merges.
+		$old_index     = null;
+		$existing_data = [];
 
-		// Construct short syntax: "slugOrSource:action:tag1,tag2".
-		$sut_string = json_encode( [
-			'slug'   => $woo_extension_slug,
-			'source' => $source_option,
-			'action' => $sut_action,
-			'tags'   => $test_tags,
-		] );
+		if ( ! empty( $env_up_options[ $key ] ) ) {
+			foreach ( $env_up_options[ $key ] as $i => $entry ) {
+				$decoded = json_decode( $entry, true );
+				// If it’s valid JSON with the correct slug.
+				if ( is_array( $decoded ) && ! empty( $decoded['slug'] ) && $decoded['slug'] === $woo_extension_slug ) {
+					$old_index     = $i;
+					$existing_data = $decoded;
+					break;
+				}
 
-		// Add this to --plugin or --theme.
-		if ( $sut_type === 'theme' ) {
-			$env_up_options['--theme'][] = $sut_string;
-		} else {
-			$env_up_options['--plugin'][] = $sut_string;
+				// If it’s short syntax ("some-plugin:action:tag1,tag2"), parse similarly.
+				if ( ! $decoded ) {
+					$maybe_parsed = App::make( PluginsAndThemesParser::class )->parse_string_extension( $entry, Extension::ACTIONS['test'] );
+					if ( $maybe_parsed && ! empty( $maybe_parsed['slug'] ) && $maybe_parsed['slug'] === $woo_extension_slug ) {
+						$old_index     = $i;
+						$existing_data = $maybe_parsed;
+						break;
+					}
+				}
+			}
 		}
+
+		// STEP 2: Remove that old entry if found, so we don't have duplicates.
+		if ( $old_index !== null ) {
+			array_splice( $env_up_options[ $key ], $old_index, 1 );
+		}
+
+		// STEP 3: Partially merge the user's CLI overrides onto the existing data.
+		// If there was no old entry, $existing_data is empty → we start fresh.
+		// Ensure we at least have 'slug'.
+		$extension_data         = $existing_data;
+		$extension_data['slug'] = $woo_extension_slug;
+
+		// If CLI explicitly sets a source, override the old one.
+		if ( $cli_source ) {
+			$extension_data['source'] = $cli_source;
+		}
+
+		// If CLI explicitly sets an action, override the old one.
+		if ( $cli_action ) {
+			$extension_data['action'] = $cli_action;
+		}
+
+		// Currently, CLI test tags override any existing test_tags.
+		// We could change it to array_merge below to merge instead.
+		if ( ! empty( $cli_test_tags ) ) {
+			$extension_data['test_tags'] = $cli_test_tags;
+		} else {
+			// If we never set test_tags, ensure it at least exists.
+			if ( empty( $extension_data['test_tags'] ) ) {
+				$extension_data['test_tags'] = [ 'default' ];
+			}
+		}
+
+		// STEP 4: Re‐insert this final single definition for that slug.
+		$env_up_options[ $key ][] = json_encode( $extension_data );
 
 		return $env_up_options;
 	}

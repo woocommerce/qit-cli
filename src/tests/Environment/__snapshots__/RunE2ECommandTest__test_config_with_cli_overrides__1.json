@@ -20,7 +20,7 @@
             "version": "undefined",
             "action": "test",
             "test_tags": [
-                "default"
+                "new-test-tag"
             ],
             "wccom_id": null
         }
