@@ -25,7 +25,7 @@ class Extension {
 	/** @var string|int The "source" can be a slug, a URL, a directory or a zip file. */
 	public $source;
 
-	/** @var string|int The file or directory of the source once it's downloaded (or, if it was already a local file, points to it). */
+	/** @var string|int|null The file or directory of the source once it's downloaded (or, if it was already a local file, points to it). */
 	public $downloaded_source;
 
 	/**
