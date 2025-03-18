@@ -9,6 +9,7 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\IO\Output;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\RequestBuilder;
+use QIT_CLI\TestGroup;
 use QIT_CLI\Upload;
 use QIT_CLI\Zipper;
 use Symfony\Component\Console\Command\Command;
@@ -53,7 +54,7 @@ class LocalTestRunNotifier {
 	/**
 	 * @suppress PhanTypeArraySuspicious
 	 */
-	public function notify_test_started( int $woo_extension_id, string $woocommerce_version, E2EEnvInfo $env_info, bool $is_development, bool $notify ): void {
+	public function notify_test_started( int $woo_extension_id, string $woocommerce_version, E2EEnvInfo $env_info, bool $is_development, bool $notify, array $group_info = [] ): void {
 		App::setVar( 'NOTIFY_TEST_STARTED_RAN', true );
 
 		$additional_plugins = [];
@@ -97,6 +98,14 @@ class LocalTestRunNotifier {
 		 */
 		if ( getenv( 'QIT_TEST_RUN_ID' ) ) {
 			$body['test_run_id'] = getenv( 'QIT_TEST_RUN_ID' );
+		}
+
+		/**
+		 * A group test run id takes precedence over the QIT_TEST_RUN_ID environment variable.
+		 */
+		if ( ! empty( $group_info ) ) {
+			$body['group_id']    = $group_info['group_id'];
+			$body['test_run_id'] = $group_info['test_run_id'];
 		}
 
 		$r = App::make( RequestBuilder::class )

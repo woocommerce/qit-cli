@@ -10,7 +10,7 @@ class TestGroup {
 	public const STATUS_NOT_STARTED = 'not_started';
 	public const STATUS_PENDING     = 'pending';
 	public const STATUS_COMPLETED   = 'completed';
-
+	public const STATUS_RUNNING     = 'running';
 	/** @var Cache $cache */
 	protected $cache;
 
@@ -41,9 +41,8 @@ class TestGroup {
 
 		if ( empty( $group ) ) {
 			$group = [
-				'identifier' => $options['identifier'],
-				'status'     => self::STATUS_NOT_STARTED,
-				'tests'      => [],
+				'status' => self::STATUS_NOT_STARTED,
+				'tests'  => [],
 			];
 		}
 
@@ -52,23 +51,7 @@ class TestGroup {
 		if ( count( $group['tests'] ) > 0 ) {
 			foreach ( $group['tests'] as $test ) {
 				if ( $test['type'] === $test_type ) {
-					if ( in_array( $test_type, [ 'activation', 'e2e' ] ) ) {
-						// If we're adding a test WITH extension_set
-						if ( isset( $options['extension_set'] ) ) {
-							// It's a duplicate only if existing test has same extension_set
-							if ( isset( $test['params']['extension_set'] ) &&
-								$test['params']['extension_set'] === $options['extension_set']
-							) {
-								$test_type_exists = true;
-								break;
-							}
-						} else { // If we're adding a test WITHOUT extension_set
-							if ( ! isset( $test['params']['extension_set'] ) ) {
-								$test_type_exists = true;
-								break;
-							}
-						}
-					} else {
+					if ( $test['hash'] === md5( json_encode( $options ) ) ) {
 						$test_type_exists = true;
 						break;
 					}
@@ -77,15 +60,12 @@ class TestGroup {
 		}
 
 		if ( $test_type_exists ) {
-			if ( isset( $options['extension_set'] ) ) {
-				throw new \Exception( sprintf( 'Test type "%s" with extension set "%s" already exists in the group. Please use a different test type or delete the existing test with `group:clear`.', $test_type, $options['extension_set'] ) );
-			} else {
-				throw new \Exception( sprintf( 'Test type "%s" already exists in the group. Please use a different test type or delete the existing test with `group:clear`.', $test_type ) );
-			}
+			throw new \Exception( sprintf( 'A "%s" test for extension ID %s with identical parameters already exists in the group. Please modify the type, parameters or the extension being tested. Alternatively, you can delete the existing test with `group:clear` and run this command again.', $test_type, $options['woo_id'] ) );
 		}
 
 		$test = [
 			'type'   => $test_type,
+			'hash'   => md5( json_encode( $options ) ),
 			'params' => [
 				'client' => 'qit_cli',
 			],
@@ -124,9 +104,9 @@ class TestGroup {
 		}
 
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/enqueue-group' ) )
-		->with_method( 'POST' )
-		->with_post_body( $group )
-		->request();
+			->with_method( 'POST' )
+			->with_post_body( $group )
+			->request();
 
 		$response_data = json_decode( $response, true );
 
@@ -189,6 +169,132 @@ class TestGroup {
 	}
 
 	public function get(): array {
-		return $this->cache->get( 'group' );
+		$group = $this->cache->get( 'group' );
+
+		if ( empty( $group ) ) {
+			return [];
+		}
+
+		return $group;
+	}
+
+	/**
+	 * Fetches the matching pending test that is expected to be running locally.
+	 *
+	 * @return array{test_run_id: string, test_type: string}
+	 */
+	public function fetch_local_group_info( array $info ): array {
+		$group = $this->cache->get( 'group' );
+
+		if ( empty( $group ) ) {
+			return [];
+		}
+
+		if ( $group['status'] !== self::STATUS_PENDING ) {
+			return [];
+		}
+
+		$woo_id        = $info['woo_id'];
+		$extension_set = isset( $info['extension_set'] ) ? $info['extension_set'] : null;
+
+		foreach ( $group['tests'] as $test ) {
+			$data = isset( $test['params'] ) ? $test['params'] : $test;
+
+			if ( is_null( $extension_set ) ) {
+				if ( $data['woo_id'] === $woo_id &&
+					$data['local'] === true
+				) {
+					return [
+						'test_run_id' => $test['test_run_id'],
+						'test_type'   => $test['type'],
+						'group_id'    => $group['group_id'],
+					];
+				}
+			} else {
+				if (
+					$data['woo_id'] === $woo_id &&
+					$data['extension_set'] === $extension_set &&
+					$data['local'] === true
+				) {
+					return [
+						'test_run_id' => $test['test_run_id'],
+						'test_type'   => $test['type'],
+						'group_id'    => $group['group_id'],
+					];
+				}
+			}
+		}
+
+		return [];
+	}
+
+	private function update_group_item( array &$group, array $item ): void {
+		foreach ( $group['tests'] as $index => $test ) {
+			if ( $test['test_run_id'] === $item['test_run_id'] ) {
+				$group['tests'][ $index ]['status'] = $item['status'];
+			}
+		}
+	}
+
+	public function update_group_test_runs(): void {
+		$group = $this->cache->get( 'group' );
+
+		if ( empty( $group ) ) {
+			return;
+		}
+
+		if ( ! isset( $group['group_id'] ) ) {
+			return;
+		}
+
+		$body = [
+			'group_id' => $group['group_id'],
+		];
+
+		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get-group-test-runs' ) )
+			->with_method( 'POST' )
+			->with_post_body( $body )
+			->request();
+
+		$response_data = json_decode( $response, true );
+		$status        = self::STATUS_COMPLETED;
+
+		/**
+		 * If any test run is not completed, the group is still pending.
+		 */
+		foreach ( $response_data['test_runs'] as $test ) {
+			if ( ! in_array( $test['status'], [ 'hanged', 'failed', 'success', 'cancelled' ] ) ) {
+				$status = self::STATUS_PENDING;
+				break;
+			}
+		}
+
+		$group['status']           = $status;
+		$group['group_identifier'] = $response_data['group_identifier'];
+		$group['group_id']         = $response_data['group_id'];
+
+		foreach ( $response_data['test_runs'] as $test ) {
+			$this->update_group_item( $group, $test );
+		}
+
+		// Only cache fetched group data for 1 hour.
+		$this->cache->set( 'group', $group, 3600 );
+	}
+
+	public function update_test_status( string $test_run_id, string $status ): void {
+		$group = $this->cache->get( 'group' );
+
+		if ( empty( $group ) ) {
+			return;
+		}
+
+		foreach ( $group['tests'] as $test ) {
+			if ( $test['test_run_id'] === $test_run_id ) {
+				$test['status'] = $status;
+				break;
+			}
+		}
+
+		$this->cache->set( 'group', $group, 3600 );
 	}
 }

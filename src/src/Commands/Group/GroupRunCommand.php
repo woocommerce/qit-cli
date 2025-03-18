@@ -32,6 +32,8 @@ class GroupRunCommand extends Command {
 		$group_identifier = $input->getOption( 'group-identifier' );
 		$skip_grouping    = $input->getOption( 'skip-grouping' );
 
+		$group = $this->test_group->get();
+
 		if ( empty( $group ) ) {
 			$output->writeln( 'No group found. Please create one by using the any `run:<test> command with the --group option.' );
 			return Command::FAILURE;

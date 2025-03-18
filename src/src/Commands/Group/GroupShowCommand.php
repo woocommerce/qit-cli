@@ -30,14 +30,38 @@ class GroupShowCommand extends Command {
 			return Command::FAILURE;
 		}
 
+		$this->test_group->update_group_test_runs();
+
+		$group = $this->test_group->get();
 		$tests = $group['tests'];
+
+		/**
+		 * If the group_id is set, then the other fields are available.
+		 */
+		if ( isset( $group['group_id'] ) ) {
+			$output->writeln( '--------------------------------' );
+			$output->writeln( sprintf( 'Group ID: <info>%s</info>', $group['group_id'] ) );
+			$output->writeln( sprintf( 'Group Identifier: <info>%s</info>', $group['group_identifier'] ) );
+			$output->writeln( sprintf( 'Status: <info>%s</info>', $group['status'] ) );
+			$output->writeln( '--------------------------------' );
+		}
 
 		foreach ( $tests as $test ) {
 			$test_type = ucfirst( $test['type'] );
-			$params    = $test['params'];
+
+			if ( isset( $test['params'] ) ) {
+				$params = $test['params'];
+			} else {
+				$params = $test;
+			}
 
 			$output->writeln( sprintf( 'Test Type: <info>%s</info>', $test_type ) );
 			$output->writeln( sprintf( 'Params: <comment>%s</comment>', json_encode( $params ) ) );
+
+			if ( isset( $test['status'] ) ) {
+				$output->writeln( sprintf( 'Status: <info>%s</info>', $test['status'] ) );
+			}
+
 			$output->writeln( '--------------------------------' );
 		}
 

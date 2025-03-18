@@ -145,7 +145,7 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode.' )
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen.' )
 			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' )
-			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the test run into a group.', null );
+			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the test run into a group.', false );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -200,6 +200,7 @@ class RunE2ECommand extends DynamicCommand {
 
 			$group_options = [
 				'woo_id' => $woo_extension_id,
+				'local'  => true,
 			];
 
 			if ( ! empty( $input->getOption( 'extension_set' ) ) ) {
@@ -305,16 +306,30 @@ class RunE2ECommand extends DynamicCommand {
 			$env_info->sut_type    = $sut_type;
 			$env_info->pw_test_tag = $test_tag;
 
-			// TODO: Add group info to the notification.
-			// Since the test group can only have a single type of each test variation, we can fetch the first
-			// one we find from the cache and use that.
+			// Fetch the local test info if the test is part of a group.
+			$group_info = [
+				'woo_id' => $woo_extension_id,
+			];
+
+			if ( ! empty( $input->getOption( 'extension_set' ) ) ) {
+				$group_info['extension_set'] = $input->getOption( 'extension_set' );
+			}
+
+			$local_test_info = $this->test_group->fetch_local_group_info( $group_info );
+
 			$this->test_run_notifier->notify_test_started(
 				$woo_extension_id,
 				$input->getOption( 'woo' ) ?? 'none',
 				$env_info,
 				$this->configuration_processor->is_development(),
-				$input->getOption( 'notify' )
+				$input->getOption( 'notify' ),
+				$local_test_info
 			);
+
+			// Update the test status to running if the test is part of a group.
+			if ( ! empty( $local_test_info ) ) {
+				$this->test_group->update_test_status( $local_test_info['test_run_id'], TestGroup::STATUS_RUNNING );
+			}
 		}
 
 		$GLOBALS['env_to_shutdown'] = $env_info;
