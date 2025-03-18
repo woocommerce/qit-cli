@@ -24,7 +24,7 @@ class Docker {
 	public function find_docker(): string {
 		$docker = 'docker';
 
-		$docker_version = trim( shell_exec( $docker . ' --version' ) ?? '' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
+		$docker_version = trim( shell_exec( $docker . ' --version 2>/dev/null' ) ?? '' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
 
 		if ( $docker_version ) {
 			return $docker;
