@@ -1,41 +1,72 @@
 {
-    "--php_version": "7.4",
-    "--wp": "stable",
-    "--plugin": [
+    "environment": "e2e",
+    "dependencies_mode": "none",
+    "temporary_env": "\/tmp\/.woo-qit-tests\/temporary-envs\/e2e-67d8a2645703d\/",
+    "created_at": 1742250596,
+    "status": "pending",
+    "env_id": "67d8a2645703d",
+    "volumes": [],
+    "docker_images": [],
+    "docker_network": null,
+    "php_extensions": [],
+    "plugins": [
         {
-            "source": ".\/woocommerce-known-plugin",
+            "slug": "woocommerce-known-plugin",
+            "entrypoint": null,
+            "source": "woocommerce-known-plugin",
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "undefined",
+            "action": "bootstrap",
             "test_tags": [
                 "pre-activation"
             ],
-            "action": "bootstrap",
-            "slug": "woocommerce-known-plugin"
+            "wccom_id": null
         },
         {
             "slug": "extra-plugin",
+            "entrypoint": null,
             "source": "extra-plugin",
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "undefined",
+            "action": "bootstrap",
             "test_tags": [
-                "pre-activation"
+                "default"
             ],
-            "action": "bootstrap"
+            "wccom_id": null
         },
         {
             "slug": "woocommerce",
+            "entrypoint": null,
             "source": "woocommerce",
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "undefined",
+            "action": "test",
             "test_tags": [
                 "activation"
             ],
-            "action": "test"
+            "wccom_id": null
         }
     ],
-    "--theme": [],
-    "--volume": [],
-    "--php_extension": [],
-    "--require": [],
-    "--object_cache": false,
-    "--skip_activating_plugins": true,
-    "--skip_activating_themes": true,
-    "--tunnel": "no_tunnel",
-    "--json": true,
-    "--env": [],
-    "--env_file": []
+    "themes": [],
+    "tunnel": false,
+    "site_url": null,
+    "wp": "latest",
+    "object_cache": false,
+    "php_version": "7.4",
+    "nginx_port": null,
+    "sut_slug": null,
+    "sut_type": null,
+    "sut_entrypoint": null,
+    "sut_path": null,
+    "sut_id": null,
+    "domain": "qitenvnginx67d8a2645703d",
+    "tests": [],
+    "playwright_config": [],
+    "pw_test_tag": ""
 }

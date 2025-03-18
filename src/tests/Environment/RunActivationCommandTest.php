@@ -6,8 +6,10 @@ use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use QIT_CLI\Commands\RunActivationTestCommand;
+use QIT_CLI\Environment\PluginsAndThemesParser;
 use QIT_CLI\LocalTests\ConfigurationProcessor;
 use QIT_CLI\ManagerSync;
+use QIT_CLI\PluginDependencies;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI_Tests\QITTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
@@ -85,6 +87,8 @@ class RunActivationCommandTest extends QITTestCase {
 							return 1234;
 						case 'some-dependency-plugin':
 							return 1111;
+						case 'woocommerce-amazon-s3-storage':
+							return 54321;
 					}
 
 					return 123; // default plugin ID
@@ -109,7 +113,7 @@ class RunActivationCommandTest extends QITTestCase {
 		   ->needs( WooExtensionsList::class )
 		   ->give( $mocked_woo_extension_list );
 
-		App::when( ConfigurationProcessor::class )
+		App::when( PluginsAndThemesParser::class )
 		   ->needs( WooExtensionsList::class )
 		   ->give( $mocked_woo_extension_list );
 
@@ -136,7 +140,7 @@ class RunActivationCommandTest extends QITTestCase {
 	 * Check that the SUT is bootstrapped properly.
 	 */
 	public function test_cli_only_config() {
-		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+		putenv( 'QIT_SELF_TEST=env_info' );
 
 		$fixture_dir = $this->scenarios_dir . 'scenario-cli-only';
 		$this->assertDirectoryExists($fixture_dir);
@@ -159,7 +163,7 @@ class RunActivationCommandTest extends QITTestCase {
 	 * qit.yml present, no CLI overrides. Check bootstrap action.
 	 */
 	public function test_config_only() {
-		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+		putenv( 'QIT_SELF_TEST=env_info' );
 
 		$fixture_dir = $this->scenarios_dir . 'scenario-config-only';
 		$this->assertDirectoryExists($fixture_dir);
@@ -180,7 +184,7 @@ class RunActivationCommandTest extends QITTestCase {
 	 * Contains 'woocommerce', use that as SUT to ensure bootstrap action is applied.
 	 */
 	public function test_woocommerce_sut() {
-		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+		putenv( 'QIT_SELF_TEST=env_info' );
 
 		$fixture_dir = $this->scenarios_dir . 'scenario-conflict-woo';
 		$this->assertDirectoryExists($fixture_dir);
@@ -201,7 +205,7 @@ class RunActivationCommandTest extends QITTestCase {
 	 * Add extra plugins via CLI. Check that SUT remains bootstrap.
 	 */
 	public function test_with_additional_plugins() {
-		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+		putenv( 'QIT_SELF_TEST=env_info' );
 
 		$fixture_dir = $this->scenarios_dir . 'scenario-cli-add-new-plugin';
 		$this->assertDirectoryExists($fixture_dir);
@@ -224,7 +228,7 @@ class RunActivationCommandTest extends QITTestCase {
 	 * Check that dependencies are handled and SUT is still bootstrap.
 	 */
 	public function test_scenario_with_dependencies() {
-		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+		putenv( 'QIT_SELF_TEST=env_info' );
 
 		// Mock dependencies
 		App::setVar(
@@ -243,7 +247,7 @@ class RunActivationCommandTest extends QITTestCase {
 		$this->application_tester->run( [
 			'command'        => 'run:activation',
 			'woo_extension'  => 'woocommerce-amazon-s3-storage',
-			'--dependencies' => 'bootstrap',
+			'--dependencies_mode' => 'bootstrap',
 		], [ 'capture_stderr_separately' => true ] );
 
 		$output = $this->application_tester->getDisplay();
@@ -256,7 +260,7 @@ class RunActivationCommandTest extends QITTestCase {
 	 * We expect to see the SUT and dependencies in the final JSON config.
 	 */
 	public function test_activation_plugin_with_dependencies() {
-		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+		putenv( 'QIT_SELF_TEST=env_info' );
 
 		// Mock the dependencies response only for this test.
 		App::setVar(
@@ -280,7 +284,7 @@ class RunActivationCommandTest extends QITTestCase {
 		$this->application_tester->run( [
 			'command'        => 'run:activation',
 			'woo_extension'  => 'my-sut-plugin', // non-Woo SUT
-			'--dependencies' => 'bootstrap',
+			'--dependencies_mode' => 'bootstrap',
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -297,7 +301,7 @@ class RunActivationCommandTest extends QITTestCase {
 	 * This ensures we see how additional plugins are assigned actions/test_tags by default.
 	 */
 	public function test_activation_with_additional_plugins() {
-		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+		putenv( 'QIT_SELF_TEST=env_info' );
 
 		$fixture_dir = $this->scenarios_dir . 'scenario-activation-with-additional-plugins';
 		$this->assertDirectoryExists($fixture_dir);
@@ -315,7 +319,7 @@ class RunActivationCommandTest extends QITTestCase {
 	}
 
 	public function test_theme_sut_activation() {
-		putenv( 'QIT_TESTING_ENV_CONFIG=1' );
+		putenv( 'QIT_SELF_TEST=env_info' );
 
 		$fixture_dir = $this->scenarios_dir . 'scenario-theme-activation';
 		$this->assertDirectoryExists( $fixture_dir );
@@ -332,6 +336,6 @@ class RunActivationCommandTest extends QITTestCase {
 
 	public function tearDown(): void {
 		parent::tearDown();
-		putenv( 'QIT_TESTING_ENV_CONFIG' );
+		putenv( 'QIT_SELF_TEST' );
 	}
 }

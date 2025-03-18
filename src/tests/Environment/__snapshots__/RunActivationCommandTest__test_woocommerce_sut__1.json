@@ -1,33 +1,58 @@
 {
-    "--php_version": "7.4",
-    "--wp": "stable",
-    "--plugin": [
+    "environment": "e2e",
+    "dependencies_mode": "none",
+    "temporary_env": "\/tmp\/.woo-qit-tests\/temporary-envs\/e2e-67d8a264565ba\/",
+    "created_at": 1742250596,
+    "status": "pending",
+    "env_id": "67d8a264565ba",
+    "volumes": [],
+    "docker_images": [],
+    "docker_network": null,
+    "php_extensions": [],
+    "plugins": [
         {
-            "source": ".\/woocommerce",
+            "slug": "woocommerce",
+            "entrypoint": null,
+            "source": "woocommerce",
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "undefined",
+            "action": "test",
             "test_tags": [
                 "activation"
             ],
-            "action": "test",
-            "slug": "woocommerce"
+            "wccom_id": null
         },
         {
+            "slug": "woocommerce-amazon-s3-storage",
+            "entrypoint": null,
             "source": ".\/woocommerce-amazon-s3-storage",
-            "test_tags": [
-                "pre-activation"
-            ],
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "undefined",
             "action": "bootstrap",
-            "slug": "woocommerce-amazon-s3-storage"
+            "test_tags": [
+                ".\/woocommerce-amazon-s3-storage-tests"
+            ],
+            "wccom_id": null
         }
     ],
-    "--theme": [],
-    "--volume": [],
-    "--php_extension": [],
-    "--require": [],
-    "--object_cache": false,
-    "--skip_activating_plugins": true,
-    "--skip_activating_themes": true,
-    "--tunnel": "no_tunnel",
-    "--json": true,
-    "--env": [],
-    "--env_file": []
+    "themes": [],
+    "tunnel": false,
+    "site_url": null,
+    "wp": "latest",
+    "object_cache": false,
+    "php_version": "7.4",
+    "nginx_port": null,
+    "sut_slug": null,
+    "sut_type": null,
+    "sut_entrypoint": null,
+    "sut_path": null,
+    "sut_id": null,
+    "domain": "qitenvnginx67d8a264565ba",
+    "tests": [],
+    "playwright_config": [],
+    "pw_test_tag": ""
 }

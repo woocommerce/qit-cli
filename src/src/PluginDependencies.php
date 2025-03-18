@@ -3,6 +3,7 @@
 namespace QIT_CLI;
 
 use QIT_CLI\Environment\Extension;
+use QIT_CLI\Environment\PluginsAndThemesParser;
 use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\IO\Output;
 
@@ -12,6 +13,9 @@ class PluginDependencies {
 
 	/** @var WooExtensionsList $woo_extensions_list */
 	protected $woo_extensions_list;
+
+	/** @var PluginsAndThemesParser $parser */
+	protected $parser;
 
 	const DEPENDENCY_MODES = [
 		'env_only' => [
@@ -26,13 +30,14 @@ class PluginDependencies {
 		],
 	];
 
-	public function __construct( Cache $cache, WooExtensionsList $woo_extensions_list ) {
+	public function __construct( Cache $cache, WooExtensionsList $woo_extensions_list, PluginsAndThemesParser $parser ) {
 		$this->cache               = $cache;
 		$this->woo_extensions_list = $woo_extensions_list;
+		$this->parser              = $parser;
 	}
 
 	/**
-	 * @param int        $woo_id
+	 * @param int $woo_id
 	 * @param array<int> $additional_woo_extension_ids
 	 *
 	 * @return array{
@@ -40,8 +45,8 @@ class PluginDependencies {
 	 *     php_extensions: array<string>,
 	 * } The dependencies of the plugins.
 	 */
-	public function get_plugin_and_php_ext_dependencies( int $woo_id, array $additional_woo_extension_ids ): array {
-		$cache_key = sprintf( 'plugin_dependencies_%s_%s_v2', $woo_id, md5( implode( ',', $additional_woo_extension_ids ) ) );
+	private function get_plugin_and_php_ext_dependencies( int $woo_id, array $additional_woo_extension_ids ): array {
+		$cache_key = sprintf( 'plugins_%s_%s_v2', $woo_id, md5( implode( ',', $additional_woo_extension_ids ) ) );
 
 		$cached = $this->cache->get( $cache_key );
 
@@ -80,8 +85,8 @@ class PluginDependencies {
 		}
 
 		return [
-			'plugins'        => $response['plugins'], // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
-			'php_extensions' => $response['php_extensions'], // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
+			'plugin'        => $response['plugins'], // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
+			'php_extension' => $response['php_extensions'], // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
 		];
 	}
 
@@ -91,45 +96,41 @@ class PluginDependencies {
 	 *
 	 * @param array<Extension> $plugins
 	 * @param array<Extension> $themes
-	 * @param string           $dependencies_mode
+	 * @param string $dependencies_mode
 	 *
 	 * @return array{
-	 *     plugins_with_deps: array<Extension>,
-	 *     php_extensions: array<string>
+	 *     plugin: array<Extension>,
+	 *     php_extension: array<string>
 	 * }
 	 */
-	public function add_plugin_dependencies( array $plugins, array $themes, string $dependencies_mode ): array {
+	public function get_dependencies( array $plugins, array $themes, string $dependencies_mode ): array {
 		if ( $dependencies_mode === self::DEPENDENCY_MODES['env_only']['none'] ) {
 			return [
-				'plugins_with_deps' => [],
-				'php_extensions'    => [],
+				'plugin'        => [],
+				'php_extension' => [],
 			];
 		}
 
 		$woo_extension_ids = [];
 
 		foreach ( array_merge( $plugins, $themes ) as $ext ) {
-			if ( is_numeric( $ext->source ) ) {
-				$woo_extension_ids[] = (int) $ext->source;
+			if ( ! isset( $ext->wccom_id ) ) {
 				continue;
 			}
 
-			try {
-				$woo_id              = $this->woo_extensions_list->get_woo_extension_id_by_slug( $ext->slug );
-				$woo_extension_ids[] = $woo_id;
-			} catch ( \UnexpectedValueException $e ) {
-				App::make( Output::class )->writeln(
-					sprintf( '<comment>Warning: Skip dependency checks of "%s", because it\'s WooCommerce.com ID could not be found or is unauthorized.</comment>', $ext->slug )
-				);
+			if ( ! $ext->wccom_id ) {
+				continue;
 			}
+
+			$woo_extension_ids[] = $ext->wccom_id;
 		}
 
 		$woo_extension_ids = array_unique( $woo_extension_ids );
 
 		if ( empty( $woo_extension_ids ) ) {
 			return [
-				'plugins_with_deps' => [],
-				'php_extensions'    => [],
+				'plugin'        => [],
+				'php_extension' => [],
 			];
 		}
 
@@ -137,27 +138,22 @@ class PluginDependencies {
 
 		$dependencies_data = $this->get_plugin_and_php_ext_dependencies( $first_id, $woo_extension_ids );
 
-		$plugins_with_deps = [];
+		$plugins = [];
 
-		foreach ( $dependencies_data['plugins'] as $plugin_slug ) {
+		foreach ( $dependencies_data['plugin'] as $plugin_slug ) {
 			$exists = array_filter( $plugins, function ( $ext ) use ( $plugin_slug ) {
 				return $ext->slug === $plugin_slug;
 			} );
 
 			if ( empty( $exists ) ) {
-				$extension            = new Extension();
-				$extension->slug      = $plugin_slug;
-				$extension->source    = $plugin_slug;
-				$extension->action    = $dependencies_mode;
-				$extension->type      = Extension::TYPES['plugin'];
-				$extension->test_tags = [ 'dependency' ];
-				$plugins_with_deps[]  = $extension;
+				$p = $this->parser->parse_extensions( [ $plugin_slug ], 'plugin', $dependencies_mode );
+				$plugins[] = array_shift( $p );
 			}
 		}
 
 		return [
-			'plugins_with_deps' => $plugins_with_deps,
-			'php_extensions'    => $dependencies_data['php_extensions'],
+			'plugin'        => $plugins,
+			'php_extension' => $dependencies_data['php_extension'],
 		];
 	}
 }

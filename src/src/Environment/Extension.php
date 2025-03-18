@@ -53,4 +53,7 @@ class Extension {
 	 * @var array<string,string> Test tags to fetch for this extension.
 	 */
 	public $test_tags;
+
+	/** @var bool */
+	public $wccom_id;
 }

@@ -225,12 +225,6 @@ class RunE2ECommand extends DynamicCommand {
 		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
 		App::setVar( 'QIT_ENV_UP_OPTIONS', $env_up_options );
 
-		if ( getenv( 'QIT_TESTING_ENV_CONFIG' ) ) {
-			$this->output->writeln( json_encode( $env_up_options, JSON_PRETTY_PRINT ) );
-
-			return Command::SUCCESS;
-		}
-
 		if ( $wait ) {
 			putenv( 'QIT_HIDE_SITE_INFO=0' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		} else {
@@ -253,10 +247,10 @@ class RunE2ECommand extends DynamicCommand {
 			$this->output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
 			return Command::FAILURE;
+		} finally {
+			putenv( 'QIT_HIDE_SITE_INFO' );    // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
-
-		putenv( 'QIT_HIDE_SITE_INFO' );    // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-		putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 
 		$test_tag = $input->getOption( 'pw_test_tag' ) ?? 'full';
 
@@ -538,11 +532,11 @@ class RunE2ECommand extends DynamicCommand {
 
 	/**
 	 * @param InputInterface $input
-	 * @param array          $env_up_options
+	 * @param array<mixed>   $env_up_options
 	 * @param string|null    $woo_extension_slug
 	 * @param string|null    $sut_type 'plugin', 'theme', or null.
 	 *
-	 * @return array Updated env_up_options
+	 * @return array<mixed> Updated env_up_options.
 	 */
 	private function add_sut_to_env_up_options( InputInterface $input, array $env_up_options, ?string $woo_extension_slug, ?string $sut_type ): array {
 		// Only proceed if we do have a main extension slug.
@@ -566,12 +560,12 @@ class RunE2ECommand extends DynamicCommand {
 		$source_option = $input->getOption( 'source' ) ?? $woo_extension_slug;
 
 		// Construct short syntax: "slugOrSource:action:tag1,tag2".
-		$sut_string = sprintf(
-			'%s:%s:%s',
-			$source_option,
-			$sut_action,
-			implode( ',', $test_tags )
-		);
+		$sut_string = json_encode( [
+			'slug'   => $woo_extension_slug,
+			'source' => $source_option,
+			'action' => $sut_action,
+			'tags'   => $test_tags,
+		] );
 
 		// Add this to --plugin or --theme.
 		if ( $sut_type === 'theme' ) {

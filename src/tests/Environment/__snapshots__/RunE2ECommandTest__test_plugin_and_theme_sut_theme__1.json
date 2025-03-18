@@ -1,34 +1,59 @@
 {
-    "--php_version": "7.4",
-    "--wp": "stable",
-    "--plugin": [
+    "environment": "e2e",
+    "dependencies_mode": "none",
+    "temporary_env": "\/tmp\/.woo-qit-tests\/temporary-envs\/e2e-123456\/",
+    "created_at": 1711651749,
+    "status": "pending",
+    "env_id": "123456",
+    "volumes": [],
+    "docker_images": [],
+    "docker_network": null,
+    "php_extensions": [],
+    "plugins": [
         {
+            "slug": "woocommerce-sample-plugin",
+            "entrypoint": null,
             "source": ".\/woocommerce-sample-plugin",
-            "test_tags": [
-                "default"
-            ],
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "undefined",
             "action": "bootstrap",
-            "slug": "woocommerce-sample-plugin"
-        }
-    ],
-    "--theme": [
-        {
-            "source": ".\/deli-theme",
             "test_tags": [
                 "default"
             ],
-            "action": "test",
-            "slug": "deli-theme"
+            "wccom_id": 123
         }
     ],
-    "--volume": [],
-    "--php_extension": [],
-    "--require": [],
-    "--object_cache": false,
-    "--skip_activating_plugins": false,
-    "--skip_activating_themes": false,
-    "--tunnel": "no_tunnel",
-    "--json": true,
-    "--env": [],
-    "--env_file": []
+    "themes": [
+        {
+            "slug": "deli-theme",
+            "entrypoint": null,
+            "source": "deli-theme",
+            "downloaded_source": null,
+            "type": "theme",
+            "handler": null,
+            "version": "undefined",
+            "action": "test",
+            "test_tags": [
+                "default"
+            ],
+            "wccom_id": 998
+        }
+    ],
+    "tunnel": false,
+    "site_url": null,
+    "wp": "latest",
+    "object_cache": false,
+    "php_version": "7.4",
+    "nginx_port": null,
+    "sut_slug": null,
+    "sut_type": null,
+    "sut_entrypoint": null,
+    "sut_path": null,
+    "sut_id": null,
+    "domain": "qitenvnginx123456",
+    "tests": [],
+    "playwright_config": [],
+    "pw_test_tag": ""
 }

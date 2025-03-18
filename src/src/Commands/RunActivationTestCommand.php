@@ -133,9 +133,6 @@ class RunActivationTestCommand extends Command {
 		// Mark that we're running an activation test scenario.
 		App::setVar( 'QIT_ACTIVATION_TEST', 'yes' );
 
-		// Optionally apply global "activation test" overrides to ANY plugin/theme short syntax in $run_e2e_options.
-		$this->apply_pre_activation_test_tags( $run_e2e_options );
-
 		// Now run the `run:e2e` command with these fully customized options.
 		$run_e2e_exit_code = $run_e2e_command->run(
 			new ArrayInput( $run_e2e_options ),
@@ -173,45 +170,5 @@ class RunActivationTestCommand extends Command {
 
 		// Otherwise, pass along the actual exit code from run:e2e.
 		return $run_e2e_exit_code;
-	}
-
-	protected function apply_pre_activation_test_tags( array &$run_e2e_options ): void {
-		foreach ( [ '--plugin', '--theme' ] as $key ) {
-			if ( empty( $run_e2e_options[ $key ] ) || ! is_array( $run_e2e_options[ $key ] ) ) {
-				continue;
-			}
-
-			foreach ( $run_e2e_options[ $key ] as &$item ) {
-				/**
-				 * $item is short syntax: "slug:action:tag1,tag2"
-				 * We'll parse it, then enforce "test:activation" for WooCommerce,
-				 * and "bootstrap:pre-activation" for any other slug.
-				 */
-				$parts         = explode( ':', $item );
-				$slug          = $parts[0] ?? '';
-				$action        = $parts[1] ?? Extension::ACTIONS['bootstrap'];
-				$existing_tags = $parts[2] ?? 'default';
-
-				$tags_array = array_map( 'trim', explode( ',', $existing_tags ) );
-
-				if ( $slug === 'woocommerce' ) {
-					// WooCommerce itself => action=test, tag=activation.
-					$action   = Extension::ACTIONS['test'];
-					$tags_arr = [ 'activation' ];
-				} else {
-					// Any other plugin => action=bootstrap, tag=pre-activation.
-					$action   = Extension::ACTIONS['bootstrap'];
-					$tags_arr = [ 'pre-activation' ];
-				}
-
-				$item = sprintf(
-					'%s:%s:%s',
-					$slug,
-					$action,
-					implode( ',', $tags_arr )
-				);
-			}
-			unset( $item );
-		}
 	}
 }

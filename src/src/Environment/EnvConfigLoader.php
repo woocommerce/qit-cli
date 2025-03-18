@@ -101,18 +101,22 @@ class EnvConfigLoader {
 		);
 
 		// Plugin and PHP Extension Dependencies.
-		$deps = $this->dependencies->add_plugin_dependencies(
+		$deps = $this->dependencies->get_dependencies(
 			$env_config['plugin'],
 			$env_config['theme'],
-			$env_config['dependencies_mode'] ?? 'install'
+			$env_config['dependencies_mode'] ?? 'activate'
 		);
 
-		$env_config['plugin'] = $deps['extensions'];
+		// Merge plugins dependencies with existing plugins array.
+		$env_config['plugin'] = array_merge(
+			$env_config['plugin'],
+			$deps['plugin']
+		);
 
 		// Merge PHP extension dependencies into existing php_extensions array.
-		$env_config['php_extensions'] = array_merge(
-			$env_config['php_extensions'] ?? [],
-			$deps['php_extensions']
+		$env_config['php_extension'] = array_merge(
+			$env_config['php_extension'] ?? [],
+			$deps['php_extension']
 		);
 
 		// Requires.
