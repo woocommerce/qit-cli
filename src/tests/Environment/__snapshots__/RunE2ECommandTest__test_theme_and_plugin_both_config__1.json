@@ -22,7 +22,7 @@
             "test_tags": [
                 "default"
             ],
-            "wccom_id": 123
+            "wccom_id": null
         }
     ],
     "themes": [
@@ -38,7 +38,7 @@
             "test_tags": [
                 "default"
             ],
-            "wccom_id": 994
+            "wccom_id": null
         }
     ],
     "tunnel": false,

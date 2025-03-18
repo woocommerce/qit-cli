@@ -20,10 +20,9 @@
             "version": "undefined",
             "action": "test",
             "test_tags": [
-                "self-test-multiple-test-tags",
-                "self-test-multiple-test-tags-another"
+                "default"
             ],
-            "wccom_id": 123
+            "wccom_id": null
         }
     ],
     "themes": [],

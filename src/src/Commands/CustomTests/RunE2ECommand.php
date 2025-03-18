@@ -377,7 +377,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
+				$parsed_options['env_up']["--$option_name"] = $option_value;
 			}
 		}
 
@@ -411,7 +411,7 @@ class RunE2ECommand extends DynamicCommand {
 	}
 
 	/**
-	 * @param string|null     $woo_extension_raw
+	 * @param string|null $woo_extension_raw
 	 * @param OutputInterface $output
 	 *
 	 * @return array{0:int|null,1:string|null,2:string|int|null} Array containing:
@@ -532,9 +532,9 @@ class RunE2ECommand extends DynamicCommand {
 
 	/**
 	 * @param InputInterface $input
-	 * @param array<mixed>   $env_up_options
-	 * @param string|null    $woo_extension_slug
-	 * @param string|null    $sut_type 'plugin', 'theme', or null.
+	 * @param array<mixed> $env_up_options
+	 * @param string|null $woo_extension_slug
+	 * @param string|null $sut_type 'plugin', 'theme', or null.
 	 *
 	 * @return array<mixed> Updated env_up_options.
 	 */

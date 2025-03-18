@@ -22,21 +22,7 @@
             "test_tags": [
                 "default"
             ],
-            "wccom_id": 123
-        },
-        {
-            "slug": "woocommerce-services",
-            "entrypoint": null,
-            "source": "woocommerce-services",
-            "downloaded_source": null,
-            "type": "plugin",
-            "handler": null,
-            "version": "undefined",
-            "action": "bootstrap",
-            "test_tags": [
-                "default"
-            ],
-            "wccom_id": 123
+            "wccom_id": null
         }
     ],
     "themes": [],

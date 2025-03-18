@@ -8,10 +8,7 @@
     "volumes": [],
     "docker_images": [],
     "docker_network": null,
-    "php_extensions": [
-        "intl",
-        "soap"
-    ],
+    "php_extensions": [],
     "plugins": [
         {
             "slug": "woocommerce-amazon-s3-storage",
@@ -25,7 +22,7 @@
             "test_tags": [
                 "default"
             ],
-            "wccom_id": 123
+            "wccom_id": null
         }
     ],
     "themes": [],

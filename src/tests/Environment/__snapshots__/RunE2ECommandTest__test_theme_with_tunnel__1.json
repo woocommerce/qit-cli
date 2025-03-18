@@ -23,7 +23,7 @@
             "test_tags": [
                 "default"
             ],
-            "wccom_id": 996
+            "wccom_id": null
         }
     ],
     "tunnel": true,

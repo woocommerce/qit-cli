@@ -14,20 +14,6 @@
         {
             "slug": "boutique",
             "entrypoint": null,
-            "source": ".\/boutique-theme",
-            "downloaded_source": null,
-            "type": "theme",
-            "handler": null,
-            "version": "undefined",
-            "action": "bootstrap",
-            "test_tags": [
-                "cli-override-test"
-            ],
-            "wccom_id": 997
-        },
-        {
-            "slug": "custom-boutique-theme",
-            "entrypoint": null,
             "source": ".\/custom-boutique-theme",
             "downloaded_source": null,
             "type": "theme",
@@ -37,7 +23,7 @@
             "test_tags": [
                 "default"
             ],
-            "wccom_id": 123
+            "wccom_id": null
         }
     ],
     "tunnel": false,

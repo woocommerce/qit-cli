@@ -13,20 +13,6 @@
         {
             "slug": "woocommerce-amazon-s3-storage",
             "entrypoint": null,
-            "source": ".\/original-source",
-            "downloaded_source": null,
-            "type": "plugin",
-            "handler": null,
-            "version": "undefined",
-            "action": "bootstrap",
-            "test_tags": [
-                ".\/original-test-dir"
-            ],
-            "wccom_id": 123
-        },
-        {
-            "slug": "overridden-source",
-            "entrypoint": null,
             "source": ".\/overridden-source",
             "downloaded_source": null,
             "type": "plugin",
@@ -34,9 +20,9 @@
             "version": "undefined",
             "action": "test",
             "test_tags": [
-                "new-test-tag"
+                "default"
             ],
-            "wccom_id": 123
+            "wccom_id": null
         }
     ],
     "themes": [],

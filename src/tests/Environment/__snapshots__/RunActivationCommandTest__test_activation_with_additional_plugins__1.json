@@ -1,10 +1,10 @@
 {
     "environment": "e2e",
     "dependencies_mode": "none",
-    "temporary_env": "\/tmp\/.woo-qit-tests\/temporary-envs\/e2e-67d8a26458e89\/",
-    "created_at": 1742250596,
+    "temporary_env": "\/tmp\/.woo-qit-tests\/temporary-envs\/e2e-123456\/",
+    "created_at": 1711651749,
     "status": "pending",
-    "env_id": "67d8a26458e89",
+    "env_id": "123456",
     "volumes": [],
     "docker_images": [],
     "docker_network": null,
@@ -20,7 +20,7 @@
             "version": "undefined",
             "action": "bootstrap",
             "test_tags": [
-                "pre-activation"
+                "default"
             ],
             "wccom_id": null
         },
@@ -65,7 +65,7 @@
     "sut_entrypoint": null,
     "sut_path": null,
     "sut_id": null,
-    "domain": "qitenvnginx67d8a26458e89",
+    "domain": "qitenvnginx123456",
     "tests": [],
     "playwright_config": [],
     "pw_test_tag": ""

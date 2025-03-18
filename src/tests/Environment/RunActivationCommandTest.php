@@ -11,6 +11,7 @@ use QIT_CLI\LocalTests\ConfigurationProcessor;
 use QIT_CLI\ManagerSync;
 use QIT_CLI\PluginDependencies;
 use QIT_CLI\WooExtensionsList;
+use QIT_CLI_Tests\Helpers\EnvInfoNormalizer;
 use QIT_CLI_Tests\QITTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Console\Application;
@@ -19,6 +20,7 @@ use function QIT_CLI\get_manager_url;
 
 class RunActivationCommandTest extends QITTestCase {
 	use MatchesSnapshots;
+	use EnvInfoNormalizer;
 
 	/** @var ApplicationTester */
 	protected $application_tester;
@@ -153,9 +155,8 @@ class RunActivationCommandTest extends QITTestCase {
 			'--source'      => './woocommerce-amazon-s3-storage',
 		], [ 'capture_stderr_separately' => true ] );
 
-		$output = $this->application_tester->getDisplay();
 		$this->assertCommandIsSuccessful( $this->application_tester );
-		$this->assertMatchesJsonSnapshot( $output );
+		$this->assertMatchesJsonSnapshot( $this->normalize_env_info( json_decode( $this->application_tester->getDisplay(), true ) ) );
 	}
 
 	/**
@@ -174,9 +175,8 @@ class RunActivationCommandTest extends QITTestCase {
 			'woo_extension' => 'woocommerce-amazon-s3-storage',
 		], [ 'capture_stderr_separately' => true ] );
 
-		$output = $this->application_tester->getDisplay();
 		$this->assertCommandIsSuccessful( $this->application_tester );
-		$this->assertMatchesJsonSnapshot( $output );
+		$this->assertMatchesJsonSnapshot( $this->normalize_env_info( json_decode( $this->application_tester->getDisplay(), true ) ) );
 	}
 
 	/**
@@ -195,9 +195,8 @@ class RunActivationCommandTest extends QITTestCase {
 			'woo_extension' => 'woocommerce', // SUT is woocommerce
 		], [ 'capture_stderr_separately' => true ] );
 
-		$output = $this->application_tester->getDisplay();
 		$this->assertCommandIsSuccessful( $this->application_tester );
-		$this->assertMatchesJsonSnapshot( $output );
+		$this->assertMatchesJsonSnapshot( $this->normalize_env_info( json_decode( $this->application_tester->getDisplay(), true ) ) );
 	}
 
 	/**
@@ -217,9 +216,8 @@ class RunActivationCommandTest extends QITTestCase {
 			'--plugin'      => [ 'extra-plugin' ],
 		], [ 'capture_stderr_separately' => true ] );
 
-		$output = $this->application_tester->getDisplay();
 		$this->assertCommandIsSuccessful( $this->application_tester );
-		$this->assertMatchesJsonSnapshot( $output );
+		$this->assertMatchesJsonSnapshot( $this->normalize_env_info( json_decode( $this->application_tester->getDisplay(), true ) ) );
 	}
 
 	/**
@@ -250,9 +248,8 @@ class RunActivationCommandTest extends QITTestCase {
 			'--dependencies_mode' => 'bootstrap',
 		], [ 'capture_stderr_separately' => true ] );
 
-		$output = $this->application_tester->getDisplay();
 		$this->assertCommandIsSuccessful( $this->application_tester );
-		$this->assertMatchesJsonSnapshot( $output );
+		$this->assertMatchesJsonSnapshot( $this->normalize_env_info( json_decode( $this->application_tester->getDisplay(), true ) ) );
 	}
 
 	/**
@@ -293,7 +290,7 @@ class RunActivationCommandTest extends QITTestCase {
 		// - my-sut-plugin (SUT): action=bootstrap, test_tags=pre-activation
 		// - some-dependency-plugin (from dependencies): action=bootstrap, test_tags=pre-activation
 		// - woocommerce (added by RunActivationTestCommand): action=test, test_tags=activation
-		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+		$this->assertMatchesJsonSnapshot( $this->normalize_env_info( json_decode( $this->application_tester->getDisplay(), true ) ) );
 	}
 
 	/**
@@ -315,7 +312,7 @@ class RunActivationCommandTest extends QITTestCase {
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
-		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+		$this->assertMatchesJsonSnapshot( $this->normalize_env_info( json_decode( $this->application_tester->getDisplay(), true ) ) );
 	}
 
 	public function test_theme_sut_activation() {
@@ -331,7 +328,7 @@ class RunActivationCommandTest extends QITTestCase {
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
-		$this->assertMatchesJsonSnapshot( $this->application_tester->getDisplay() );
+		$this->assertMatchesJsonSnapshot( $this->normalize_env_info( json_decode( $this->application_tester->getDisplay(), true ) ) );
 	}
 
 	public function tearDown(): void {

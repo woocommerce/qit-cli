@@ -22,35 +22,7 @@
             "test_tags": [
                 "default"
             ],
-            "wccom_id": 123
-        },
-        {
-            "slug": "woocommerce-gateway-stripe",
-            "entrypoint": null,
-            "source": "woocommerce-gateway-stripe",
-            "downloaded_source": null,
-            "type": "plugin",
-            "handler": null,
-            "version": "undefined",
-            "action": "bootstrap",
-            "test_tags": [
-                "default"
-            ],
-            "wccom_id": 123
-        },
-        {
-            "slug": "woocommerce-subscriptions",
-            "entrypoint": null,
-            "source": "woocommerce-subscriptions",
-            "downloaded_source": null,
-            "type": "plugin",
-            "handler": null,
-            "version": "undefined",
-            "action": "bootstrap",
-            "test_tags": [
-                "default"
-            ],
-            "wccom_id": 123
+            "wccom_id": null
         }
     ],
     "themes": [],
