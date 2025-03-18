@@ -5,7 +5,6 @@ namespace QIT_CLI\Commands\Environment;
 use Dotenv\Dotenv;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
-use QIT_CLI\Environment\Docker;
 use QIT_CLI\ExtensionSetResolver;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
@@ -197,14 +196,6 @@ HELP
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		if ( is_windows() ) {
 			$output->writeln( '<comment>To use QIT Environments on Window, please use WSL. Check our guide here: https://qit.woo.com/docs/environment/getting-started#getting-started---windows</comment>' );
-
-			return Command::FAILURE;
-		}
-
-		try {
-			App::make( Docker::class )->find_docker();
-		} catch ( \Exception $e ) {
-			$output->writeln( '<error>Please install Docker to use this command.</error>' );
 
 			return Command::FAILURE;
 		}

@@ -121,6 +121,12 @@ abstract class Environment {
 			throw new \InvalidArgumentException( 'Invalid type: ' . $type );
 		}
 
+		try {
+			App::make( Docker::class )->find_docker();
+		} catch ( \Exception $e ) {
+			throw new \RuntimeException( 'QIT needs Docker to be able to process this command.' );
+		}
+
 		// Start the benchmark.
 		$start = microtime( true );
 
