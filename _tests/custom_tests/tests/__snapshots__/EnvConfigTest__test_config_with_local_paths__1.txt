@@ -1,6 +1,6 @@
 {
     "environment": "e2e",
-    "dependencies_mode": "none",
+    "dependencies_mode": "activate",
     "temporary_env": "qit-cli\/_tests\/custom_tests\/tmp\/tmp_qit_config-qit_custom_tests_ENV_ID_NORMALIZED\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/",
     "created_at": 1700000000,
     "status": "pending",
@@ -24,6 +24,7 @@
             "test_tags": [
                 "default"
             ],
+            "priority": 50,
             "wccom_id": null
         }
     ],
@@ -40,6 +41,7 @@
             "test_tags": [
                 "default"
             ],
+            "priority": 50,
             "wccom_id": null
         }
     ],
