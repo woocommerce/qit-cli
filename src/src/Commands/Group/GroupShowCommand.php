@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class GroupShowCommand extends Command {
 	protected static $defaultName = 'group:show'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
+    /** @var TestGroup */
 	protected $test_group;
 
 	public function __construct( TestGroup $test_group ) {

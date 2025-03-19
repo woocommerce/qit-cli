@@ -32,6 +32,12 @@ class TestGroup {
 		return true;
 	}
 
+	/**
+	 * Creates a new test group or updates an existing one.
+	 * 
+	 * @param array<string, mixed> $options The options for the test.
+	 * @param string $test_type The type of test.
+	 */
 	public function create_or_update( array $options, string $test_type ): void {
 		$group = $this->cache->get( 'group' );
 
@@ -82,6 +88,10 @@ class TestGroup {
 	}
 
 	/**
+	 * Dispatches the test group to the QIT servers.
+	 * 
+	 * @param string|null $group_identifier The identifier for the group.
+	 * @param bool $skip_grouping Whether to skip grouping the tests.
 	 * @return array<string, mixed>
 	 */
 	public function dispatch( $group_identifier = null, $skip_grouping = false ): array {
@@ -113,6 +123,13 @@ class TestGroup {
 		return $response_data;
 	}
 
+	/**
+	 * Outputs the response from the QIT servers.
+	 * 
+	 * @param array<string, mixed> $response_data The response from the QIT servers.
+	 * @param OutputInterface $output The output interface.
+	 * @return int The exit code.
+	 */
 	public function output_response( array $response_data, OutputInterface $output ): int {
 
 		if ( isset( $response_data['code'] ) &&
@@ -164,10 +181,19 @@ class TestGroup {
 		$this->cache->delete( 'group' );
 	}
 
+	/**
+	 * Updates the group in the cache.
+	 * 
+	 * @param array<string, mixed> $group The group to update.
+	 * @return void
+	 */
 	public function update_group( array $group ): void {
 		$this->cache->set( 'group', $group, 7200 );
 	}
 
+	/**
+	 * @return array<string, mixed>|array<empty>
+	 */
 	public function get(): array {
 		$group = $this->cache->get( 'group' );
 
@@ -181,7 +207,8 @@ class TestGroup {
 	/**
 	 * Fetches the matching pending test that is expected to be running locally.
 	 *
-	 * @return array
+	 * @param array<string, mixed> $info The info to fetch.
+	 * @return array{test_run_id?: string, test_type?: string, group_id?: string}|array<empty>
 	 */
 	public function fetch_local_group_info( array $info ): array {
 		$group = $this->cache->get( 'group' );
@@ -229,6 +256,12 @@ class TestGroup {
 		return [];
 	}
 
+    /**
+     * Updates the status of a test in the group.
+     *
+     * @param array<string, mixed> $group The group to update.
+     * @param array<string, mixed> $item The item to update.
+     */
 	private function update_group_item( array &$group, array $item ): void {
 		foreach ( $group['tests'] as $index => $test ) {
 			if ( $test['test_run_id'] === $item['test_run_id'] ) {
@@ -237,6 +270,11 @@ class TestGroup {
 		}
 	}
 
+    /**
+     * Updates the test runs for the group.
+     * 
+     * @return void
+     */
 	public function update_group_test_runs(): void {
 		$group = $this->cache->get( 'group' );
 
