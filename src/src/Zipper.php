@@ -18,6 +18,27 @@ class Zipper {
 		$this->docker = $docker;
 	}
 
+	/**
+	 * @param bool $docker_only Whether to check for Docker only.
+	 *
+	 * @return void
+	 */
+	private function check_zip_available( bool $docker_only = false ): void {
+		$zip_archive_exists = class_exists( 'ZipArchive' );
+
+		try {
+			App::make( Docker::class )->find_docker();
+		} catch ( \Exception $e ) {
+			if ( $docker_only ) {
+				throw new \RuntimeException( 'QIT needs Docker to be able to process this command.' );
+			}
+
+			if ( ! $zip_archive_exists ) {
+				throw new \RuntimeException( 'QIT needs either Docker or PHP ZipArchive to be able to process this command.' );
+			}
+		}
+	}
+
 	public function extract_zip( string $zip_file, string $extract_to ): void {
 		if ( ! file_exists( $zip_file ) ) {
 			throw new \InvalidArgumentException( 'Zip file does not exist.' );
@@ -36,6 +57,7 @@ class Zipper {
 			}
 		}
 
+		$this->check_zip_available();
 		$this->validate_zip( $zip_file );
 
 		$start = microtime( true );
@@ -94,6 +116,7 @@ class Zipper {
 	}
 
 	public function validate_zip( string $zip_file ): void {
+		$this->check_zip_available();
 		$start = microtime( true );
 
 		if ( class_exists( 'ZipArchive' ) ) {
@@ -179,6 +202,8 @@ class Zipper {
 			throw new \RuntimeException( 'Could not create temporary directory.' );
 		}
 
+		$this->check_zip_available( true );
+
 		// Building the exclusion string for the Docker command.
 		$exclude_string = '';
 		foreach ( $exclude as $item ) {
@@ -214,11 +239,11 @@ class Zipper {
 		}
 
 		$zip_process = new Process( $docker_command );
-		$zip_process->mustRun(function ( $type, $out ) {
+		$zip_process->mustRun( function ( $type, $out ) {
 			if ( $this->output->isVeryVerbose() ) {
 				$this->output->write( 'Docker ZIP: ' . $out );
 			}
-		});
+		} );
 
 		// Move the zipped file from the temp directory to the desired output location.
 		rename( "$temp_dir/output.zip", $output_zip_file );
