@@ -27,9 +27,9 @@ class PluginsAndThemesParser {
 	}
 
 	/**
-	 * @param array<int|string,string|array{source?:string,slug?:string,action?:string,test_tags?:array<string>}> $plugins_or_themes
-	 * @param string                                                                                              $type
-	 * @param string                                                                                              $default_action
+	 * @param array<int|string,string|array{source?:string,slug?:string,action?:string,test_tags?:array<string>,priority?: int}> $plugins_or_themes
+	 * @param string                                                                                                             $type
+	 * @param string                                                                                                             $default_action
 	 *
 	 * @return array<Extension>
 	 */
@@ -51,19 +51,7 @@ class PluginsAndThemesParser {
 				// Handle the case where we already have an Extension object.
 				// Check if there's already a matching slug so we can override it,
 				// just like we do for strings/arrays.
-				foreach ( $parsed_extensions as $k => $already_parsed ) {
-					if ( $extension->slug === $already_parsed->slug ) {
-						$this->output->writeln(
-							sprintf( '<comment>Overriding extension "%s".</comment>', $extension->slug )
-						);
-						$parsed_extensions[ $k ] = $extension;
-						continue 2; // Skip the usual push to the end.
-					}
-				}
-
-				// Otherwise, just append it to $parsed_extensions.
-				$parsed_extensions[] = $extension;
-				continue;
+				$this->maybe_override_or_insert( $extension, $parsed_extensions );
 			}
 
 			if ( ! isset( $extension['source'] ) && ! isset( $extension['slug'] ) ) { // @phpstan-ignore-line
@@ -106,19 +94,12 @@ class PluginsAndThemesParser {
 			$extension_instance->action    = $extension['action'];
 			$extension_instance->test_tags = $extension['test_tags'];
 			$extension_instance->type      = $type;
+			$extension_instance->priority  = $extension['priority'] ?? Extension::PRIORITY_MEDIUM; // @phpstan-ignore-line
 
 			// No SUT overriding logic here. The caller must ensure correct action for SUT.
 
 			// If slug already defined, override it with the newest definition.
-			foreach ( $parsed_extensions as $k => $already_parsed ) {
-				if ( $extension_instance->slug === $already_parsed->slug ) {
-					$this->output->writeln( sprintf( '<comment>Overriding extension "%s".</comment>', $extension['slug'] ) );
-					$parsed_extensions[ $k ] = $extension_instance;
-					continue 2;
-				}
-			}
-
-			$parsed_extensions[] = $extension_instance;
+			$this->maybe_override_or_insert( $extension_instance, $parsed_extensions );
 		}
 
 		// Add wccom_ids where possible.
@@ -133,6 +114,47 @@ class PluginsAndThemesParser {
 		}
 
 		return $parsed_extensions;
+	}
+
+	/**
+	 * Check if the extension is already in the list and override it if necessary.
+	 *
+	 * @param Extension        $extension
+	 * @param array<Extension> $parsed_extensions
+	 */
+	private function maybe_override_or_insert( Extension $extension, array &$parsed_extensions ): void {
+		foreach ( $parsed_extensions as $k => $already_parsed ) {
+			if ( $extension->slug === $already_parsed->slug ) {
+				if ( $extension->priority < $already_parsed->priority ) {
+					if ( $this->output->isVeryVerbose() ) {
+						$this->output->writeln( sprintf(
+							'<comment>Skipping override of slug "%s" because priority %d < %d.</comment>',
+							$extension->slug,
+							$extension->priority,
+							$already_parsed->priority
+						) );
+					}
+
+					return;
+				}
+
+				// Override.
+				if ( $this->output->isVeryVerbose() ) {
+					$this->output->writeln( sprintf(
+						'<comment>Overriding extension "%s" with priority %d (old was %d).</comment>',
+						$extension->slug,
+						$extension->priority,
+						$already_parsed->priority
+					) );
+				}
+				$parsed_extensions[ $k ] = $extension;
+
+				return;
+			}
+		}
+
+		// No matching slug found, so append it.
+		$parsed_extensions[] = $extension;
 	}
 
 	/**
@@ -255,6 +277,7 @@ class PluginsAndThemesParser {
 	 *     source: string,
 	 *     action: string,
 	 *     test_tags: array<string>,
+	 *     priority: int,
 	 * }
 	 */
 	public function parse_string_extension( string $extension, string $default_action ): array {
@@ -334,6 +357,8 @@ class PluginsAndThemesParser {
 			$parsed_short_syntax['source'] = $extension;
 		}
 
+		$parsed_short_syntax['priority'] = Extension::PRIORITY_MEDIUM;
+
 		return $parsed_short_syntax;
 	}
 
@@ -349,6 +374,7 @@ class PluginsAndThemesParser {
 	 *     slug: string,
 	 *     source: string,
 	 *     test_tags?: array<string>,
+	 *     priority: int,
 	 * } This will always have 'slug' and 'source' when returned.
 	 *
 	 * @throws \InvalidArgumentException If the extension array is invalid or
@@ -456,7 +482,8 @@ class PluginsAndThemesParser {
 			);
 		}
 
-		$extension['slug'] = $slug;
+		$extension['slug']     = $slug;
+		$extension['priority'] = Extension::PRIORITY_MEDIUM;
 
 		return $extension;
 	}

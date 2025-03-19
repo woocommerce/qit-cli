@@ -615,6 +615,8 @@ class RunE2ECommand extends DynamicCommand {
 			}
 		}
 
+		$extension_data['priority'] = Extension::PRIORITY_LOW;
+
 		// STEP 4: Re‐insert this final single definition for that slug.
 		$env_up_options[ $key ][] = json_encode( $extension_data );
 
