@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 0, File Errors: 2",
+            "test_summary": "Errors: 0, File Errors: 1",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -51,22 +51,15 @@
             "test_result_json": {
                 "totals": {
                     "errors": 0,
-                    "file_errors": 2
+                    "file_errors": 1
                 },
                 "files": {
                     "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                        "errors": 2,
+                        "errors": 1,
                         "messages": [
                             {
-                                "message": "Function some_custom_wp_function not found.",
-                                "line": 12,
-                                "ignorable": true,
-                                "tip": "Learn more at https:\\/\\/phpstan.org\\/user-guide\\/discovering-symbols",
-                                "identifier": "function.notFound"
-                            },
-                            {
                                 "message": "Function totally_unknown_function not found.",
-                                "line": 15,
+                                "line": 18,
                                 "ignorable": true,
                                 "tip": "Learn more at https:\\/\\/phpstan.org\\/user-guide\\/discovering-symbols",
                                 "identifier": "function.notFound"
