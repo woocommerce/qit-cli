@@ -1,5 +1,6 @@
 {
     "environment": "e2e",
+    "dependencies_mode": "none",
     "temporary_env": "\/path\/normalized\/\/tmp-normalized\/tmp_qit_config-qit_custom_tests_NORMALIZED_ID\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/",
     "created_at": "1700000000",
     "status": "pending",
@@ -9,19 +10,6 @@
     "docker_network": null,
     "php_extensions": [],
     "plugins": [
-        {
-            "slug": "woocommerce-amazon-s3-storage",
-            "entrypoint": null,
-            "source": "woocommerce-amazon-s3-storage",
-            "downloaded_source": null,
-            "type": "plugin",
-            "handler": null,
-            "version": "NORMALIZED_VERSION",
-            "action": "test",
-            "test_tags": [
-                "\/tmp-normalized\/qit_scaffolded_e2e-NORMALIZED_ID"
-            ]
-        },
         {
             "slug": "woocommerce",
             "entrypoint": null,
@@ -33,7 +21,22 @@
             "action": "bootstrap",
             "test_tags": [
                 "default"
-            ]
+            ],
+            "wccom_id": 18734003134382
+        },
+        {
+            "slug": "woocommerce-amazon-s3-storage",
+            "entrypoint": null,
+            "source": "woocommerce-amazon-s3-storage",
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "NORMALIZED_VERSION",
+            "action": "test",
+            "test_tags": [
+                "\/tmp-normalized\/qit_scaffolded_e2e-NORMALIZED_ID"
+            ],
+            "wccom_id": 18663
         }
     ],
     "themes": [],

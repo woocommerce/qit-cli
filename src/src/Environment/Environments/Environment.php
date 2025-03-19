@@ -121,6 +121,12 @@ abstract class Environment {
 			throw new \InvalidArgumentException( 'Invalid type: ' . $type );
 		}
 
+		try {
+			App::make( Docker::class )->find_docker();
+		} catch ( \Exception $e ) {
+			throw new \RuntimeException( 'QIT needs Docker to be able to process this command.' );
+		}
+
 		// Start the benchmark.
 		$start = microtime( true );
 
@@ -182,6 +188,10 @@ abstract class Environment {
 			'/qit/mu-plugins' => "{$this->env_info->temporary_env}/mu-plugins",
 			'/qit/cache'      => $this->cache_dir,
 		];
+
+		if ( file_exists( $this->env_info->temporary_env . '/wp-cli.yml' ) ) {
+			$default_volumes['/qit/wp-cli.yml'] = "{$this->env_info->temporary_env}/wp-cli.yml";
+		}
 
 		$default_volumes = $this->additional_default_volumes( $default_volumes );
 

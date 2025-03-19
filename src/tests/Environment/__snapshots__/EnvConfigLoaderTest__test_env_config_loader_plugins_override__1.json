@@ -1,5 +1,6 @@
 {
     "environment": "e2e",
+    "dependencies_mode": "none",
     "temporary_env": "\/tmp\/.woo-qit-tests\/temporary-envs\/e2e-123456\/",
     "created_at": 1711651749,
     "status": "pending",
@@ -20,7 +21,8 @@
             "action": "activate",
             "test_tags": [
                 "default"
-            ]
+            ],
+            "wccom_id": 1234
         },
         {
             "slug": "qit-dog",
@@ -33,7 +35,8 @@
             "action": "activate",
             "test_tags": [
                 "bar"
-            ]
+            ],
+            "wccom_id": 12346
         },
         {
             "slug": "foo-extension",
@@ -46,7 +49,8 @@
             "action": "activate",
             "test_tags": [
                 "test_tag_array"
-            ]
+            ],
+            "wccom_id": 123
         }
     ],
     "themes": [
@@ -61,7 +65,8 @@
             "action": "test",
             "test_tags": [
                 "default"
-            ]
+            ],
+            "wccom_id": 1234
         }
     ],
     "tunnel": false,

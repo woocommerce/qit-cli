@@ -1,5 +1,6 @@
 {
     "environment": "e2e",
+    "dependencies_mode": null,
     "temporary_env": "\/tmp\/test",
     "created_at": 123,
     "status": "running",

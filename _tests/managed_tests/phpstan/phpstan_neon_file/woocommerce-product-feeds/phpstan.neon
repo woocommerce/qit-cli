@@ -1,0 +1,8 @@
+parameters:
+  excludePaths:
+    analyse:
+      - ./dont-analyse/*
+  bootstrapFiles:
+    - phpstan-bootstrap.php
+  ignoreErrors:
+    - '#Function some_custom_wp_function not found\.#'

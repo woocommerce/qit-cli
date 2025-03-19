@@ -62,6 +62,7 @@ try {
 		[ 'id' => 1234, 'slug' => 'qit-beaver' ],
 		[ 'id' => 12345, 'slug' => 'qit-cat' ],
 		[ 'id' => 12346, 'slug' => 'qit-dog' ],
+		[ 'id' => 2165910, 'slug' => 'woocommerce-shipping' ],
 	];
 
 	// Normalize data.

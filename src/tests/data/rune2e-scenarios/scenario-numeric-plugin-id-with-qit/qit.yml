@@ -1,3 +1,4 @@
 plugins:
-  2165910:
+  woocommerce-shipping:
+    source: 2165910
     action: bootstrap

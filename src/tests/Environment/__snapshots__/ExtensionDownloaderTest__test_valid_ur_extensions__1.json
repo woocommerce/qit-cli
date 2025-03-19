@@ -8,7 +8,8 @@
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\URLHandler",
         "version": "undefined",
         "action": null,
-        "test_tags": null
+        "test_tags": null,
+        "wccom_id": null
     },
     "414dd101454aa1fdae474005c0824121": {
         "slug": "414dd101454aa1fdae474005c0824121",
@@ -19,6 +20,7 @@
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\URLHandler",
         "version": "undefined",
         "action": null,
-        "test_tags": null
+        "test_tags": null,
+        "wccom_id": null
     }
 }
