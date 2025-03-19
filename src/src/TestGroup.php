@@ -202,7 +202,8 @@ class TestGroup {
 
 			if ( is_null( $extension_set ) ) {
 				if ( $data['woo_id'] === $woo_id &&
-					$data['local'] === true
+					$data['local'] === true &&
+                    $data['extension_set'] === ''
 				) {
 					return [
 						'test_run_id' => $test['test_run_id'],
