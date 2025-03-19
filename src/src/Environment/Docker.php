@@ -29,7 +29,7 @@ class Docker {
 		if ( $docker_version ) {
 			return $docker;
 		} else {
-			throw new \RuntimeException( 'It seems Docker is not installed. Docker is needed to run some test types.' );
+			throw new \RuntimeException( 'It seems Docker is not installed. Docker is needed to run some test types. For more information, please see the official documentation on installing the Docker engine for your operating system.' );
 		}
 	}
 
