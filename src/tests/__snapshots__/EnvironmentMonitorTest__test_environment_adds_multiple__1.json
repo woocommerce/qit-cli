@@ -1,6 +1,7 @@
 {
     "1234567890": {
         "environment": "e2e",
+        "dependencies_mode": null,
         "temporary_env": "\/path\/to\/temporary-envs\/bar",
         "created_at": 1708728299,
         "status": "pending",

@@ -8,7 +8,8 @@
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
         "version": "undefined",
         "action": null,
-        "test_tags": null
+        "test_tags": null,
+        "wccom_id": null
     },
     "this-is-a-very-long-theme-name-that-might-exceed-typical-limits": {
         "slug": "this-is-a-very-long-theme-name-that-might-exceed-typical-limits",
@@ -19,6 +20,7 @@
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
         "version": "undefined",
         "action": null,
-        "test_tags": null
+        "test_tags": null,
+        "wccom_id": null
     }
 }

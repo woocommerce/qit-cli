@@ -8,7 +8,8 @@
         "handler": "FooCustomHandler",
         "version": "undefined",
         "action": null,
-        "test_tags": null
+        "test_tags": null,
+        "wccom_id": null
     },
     "foo-custom-2": {
         "slug": "foo-custom-2",
@@ -19,7 +20,8 @@
         "handler": "FooCustomHandler",
         "version": "undefined",
         "action": null,
-        "test_tags": null
+        "test_tags": null,
+        "wccom_id": null
     },
     "foo-custom-theme-1": {
         "slug": "foo-custom-theme-1",
@@ -30,7 +32,8 @@
         "handler": "FooCustomHandler",
         "version": "undefined",
         "action": null,
-        "test_tags": null
+        "test_tags": null,
+        "wccom_id": null
     },
     "foo-custom-theme-2": {
         "slug": "foo-custom-theme-2",
@@ -41,6 +44,7 @@
         "handler": "FooCustomHandler",
         "version": "undefined",
         "action": null,
-        "test_tags": null
+        "test_tags": null,
+        "wccom_id": null
     }
 }

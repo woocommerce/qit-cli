@@ -10,7 +10,8 @@
         "action": "activate",
         "test_tags": [
             "default"
-        ]
+        ],
+        "wccom_id": 1234
     },
     {
         "slug": "qit-cat",
@@ -24,7 +25,8 @@
         "test_tags": [
             "rc",
             "\/tmp\/test-tag-local-zip.zip"
-        ]
+        ],
+        "wccom_id": 12345
     },
     {
         "slug": "foo-extension",
@@ -37,7 +39,8 @@
         "action": "activate",
         "test_tags": [
             "default"
-        ]
+        ],
+        "wccom_id": 123
     },
     {
         "slug": "bar-extension",
@@ -50,7 +53,8 @@
         "action": "activate",
         "test_tags": [
             "default"
-        ]
+        ],
+        "wccom_id": 456
     },
     {
         "slug": "baz-extension",
@@ -63,6 +67,7 @@
         "action": "activate",
         "test_tags": [
             "default"
-        ]
+        ],
+        "wccom_id": 789
     }
 ]

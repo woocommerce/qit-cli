@@ -41,7 +41,7 @@ class RunActivationTestCommand extends Command {
 			->reuseOption( RunE2ECommand::getDefaultName(), 'tunnel' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'require' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'extension_set' )
-			->reuseOption( RunE2ECommand::getDefaultName(), 'dependencies' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'dependencies_mode' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'pw_test_tag' );
 
 		$this->addOption(
@@ -84,10 +84,14 @@ class RunActivationTestCommand extends Command {
 
 		$run_e2e_options = [];
 
-		$run_e2e_options['--pw_options']              = '--retries=0';
+		// Provide 0 retries for this activation scenario.
+		$run_e2e_options['--pw_options'] = '--retries=0';
+
+		// Skip automatically activating anything prior to running the test.
 		$run_e2e_options['--skip_activating_plugins'] = true;
 		$run_e2e_options['--skip_activating_themes']  = true;
 
+		// Copy or transform reused options.
 		foreach ( $this->reused_options as $reused_option ) {
 			if ( $reused_option === 'tunnel' ) {
 				$run_e2e_options['--tunnel'] = TunnelRunner::get_tunnel_value( $input );
@@ -96,23 +100,23 @@ class RunActivationTestCommand extends Command {
 			}
 		}
 
-		// --zip deprecated option.
+		// Handle the deprecated --zip option.
 		if ( ! empty( $input->getOption( 'zip' ) ) ) {
 			if ( ! empty( $input->getOption( 'source' ) ) ) {
 				$output->writeln( '<error>Cannot use both --zip and --source options. Use only --source.</error>' );
 
 				return Command::FAILURE;
 			}
-
 			$run_e2e_options['--source'] = $input->getOption( 'zip' );
 		}
 
 		$sut = $input->getArgument( 'woo_extension' );
 
+		// Decide how to arrange SUT vs. WooCommerce based on whether the main SUT is woo itself.
 		if ( $sut !== 'woocommerce' ) {
 			$run_e2e_options['--sut_action']  = Extension::ACTIONS['bootstrap'];
 			$run_e2e_options['test']          = 'pre-activation';
-			$run_e2e_options['woo_extension'] = $input->getArgument( 'woo_extension' );
+			$run_e2e_options['woo_extension'] = $sut;
 			$run_e2e_options['--plugin'][]    = 'woocommerce:test:activation';
 		} else {
 			$run_e2e_options['woo_extension'] = 'woocommerce';
@@ -126,16 +130,21 @@ class RunActivationTestCommand extends Command {
 			$run_e2e_options['--very-verbose'] = true;
 		}
 
+		// Mark that we're running an activation test scenario.
 		App::setVar( 'QIT_ACTIVATION_TEST', 'yes' );
 
+		// Now run the `run:e2e` command with these fully customized options.
 		$run_e2e_exit_code = $run_e2e_command->run(
 			new ArrayInput( $run_e2e_options ),
 			new StreamOutput( $resource_stream )
 		);
 
+		// If user didn't request JSON output, show the underlying run:e2e output.
 		if ( ! $input->getOption( 'json' ) ) {
 			$run_e2e_output = stream_get_contents( $resource_stream, - 1, 0 );
 			$output->writeln( $run_e2e_output );
+
+			// Otherwise, fetch a test run JSON from QIT Manager.
 		} else {
 			$test_run_id = App::make( Cache::class )->get( 'QIT_LAST_LOCAL_TEST_FINISHED' );
 
@@ -147,20 +156,19 @@ class RunActivationTestCommand extends Command {
 
 			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get-single' ) )
 				->with_method( 'POST' )
-				->with_post_body( [
-					'test_run_id' => $test_run_id,
-				] )
+				->with_post_body( [ 'test_run_id' => $test_run_id ] )
 				->with_retry( 3 )
 				->request();
 
 			$output->writeln( $json );
 		}
 
-		// Backwards compatibility with old "activation" test. To be used in scripting.
+		// Backwards compatibility: if user passed --ignore-fail, always return SUCCESS.
 		if ( $input->getOption( 'ignore-fail' ) ) {
 			return Command::SUCCESS;
 		}
 
+		// Otherwise, pass along the actual exit code from run:e2e.
 		return $run_e2e_exit_code;
 	}
 }
