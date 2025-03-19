@@ -1,5 +1,6 @@
 {
     "environment": "e2e",
+    "dependencies_mode": "none",
     "temporary_env": "\/tmp\/.woo-qit-tests\/temporary-envs\/e2e-123456\/",
     "created_at": 1711651749,
     "status": "pending",
@@ -20,7 +21,8 @@
             "action": "activate",
             "test_tags": [
                 "rc"
-            ]
+            ],
+            "wccom_id": 1234
         }
     ],
     "themes": [],

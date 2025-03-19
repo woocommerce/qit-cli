@@ -1,4 +1,4 @@
 themes:
   storefront:
     source: ./storefront
-test_tags: [] # no extra test tags defined here, so default might be 'default'.
+    test_tags: []

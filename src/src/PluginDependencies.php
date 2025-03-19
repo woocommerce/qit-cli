@@ -2,14 +2,37 @@
 
 namespace QIT_CLI;
 
+use QIT_CLI\Environment\Extension;
+use QIT_CLI\Environment\PluginsAndThemesParser;
 use QIT_CLI\Exceptions\NetworkErrorException;
 
 class PluginDependencies {
 	/** @var Cache $cache */
 	protected $cache;
 
-	public function __construct( Cache $cache ) {
-		$this->cache = $cache;
+	/** @var WooExtensionsList $woo_extensions_list */
+	protected $woo_extensions_list;
+
+	/** @var PluginsAndThemesParser $parser */
+	protected $parser;
+
+	const DEPENDENCY_MODES = [
+		'env_only' => [
+			'none'     => 'none',
+			'activate' => 'activate',
+		],
+		'env_test' => [
+			'none'      => 'none',
+			'activate'  => 'activate',
+			'bootstrap' => 'bootstrap',
+			'test'      => 'test',
+		],
+	];
+
+	public function __construct( Cache $cache, WooExtensionsList $woo_extensions_list, PluginsAndThemesParser $parser ) {
+		$this->cache               = $cache;
+		$this->woo_extensions_list = $woo_extensions_list;
+		$this->parser              = $parser;
 	}
 
 	/**
@@ -17,12 +40,12 @@ class PluginDependencies {
 	 * @param array<int> $additional_woo_extension_ids
 	 *
 	 * @return array{
-	 *     plugins: array<string>,
-	 *     php_extensions: array<string>,
+	 *     plugin: array<string>,
+	 *     php_extension: array<string>,
 	 * } The dependencies of the plugins.
 	 */
-	public function get_plugin_and_php_ext_dependencies( int $woo_id, array $additional_woo_extension_ids ): array {
-		$cache_key = sprintf( 'plugin_dependencies_%s_%s_v2', $woo_id, md5( implode( ',', $additional_woo_extension_ids ) ) );
+	private function get_plugin_and_php_ext_dependencies( int $woo_id, array $additional_woo_extension_ids ): array {
+		$cache_key = sprintf( 'plugins_%s_%s_v2', $woo_id, md5( implode( ',', $additional_woo_extension_ids ) ) );
 
 		$cached = $this->cache->get( $cache_key );
 
@@ -61,8 +84,75 @@ class PluginDependencies {
 		}
 
 		return [
-			'plugins'        => $response['plugins'], // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
-			'php_extensions' => $response['php_extensions'], // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
+			'plugin'        => $response['plugins'], // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
+			'php_extension' => $response['php_extensions'], // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
+		];
+	}
+
+
+	/**
+	 * Enrich plugins and themes with their plugin dependencies.
+	 *
+	 * @param array<Extension> $plugins
+	 * @param array<Extension> $themes
+	 * @param string           $dependencies_mode
+	 *
+	 * @return array{
+	 *     plugin: array<Extension>,
+	 *     php_extension: array<string>
+	 * }
+	 */
+	public function get_dependencies( array $plugins, array $themes, string $dependencies_mode ): array {
+		if ( $dependencies_mode === self::DEPENDENCY_MODES['env_only']['none'] ) {
+			return [
+				'plugin'        => [],
+				'php_extension' => [],
+			];
+		}
+
+		$woo_extension_ids = [];
+
+		foreach ( array_merge( $plugins, $themes ) as $ext ) {
+			if ( ! isset( $ext->wccom_id ) ) {
+				continue;
+			}
+
+			if ( ! $ext->wccom_id ) {
+				continue;
+			}
+
+			$woo_extension_ids[] = $ext->wccom_id;
+		}
+
+		$woo_extension_ids = array_unique( $woo_extension_ids );
+
+		if ( empty( $woo_extension_ids ) ) {
+			return [
+				'plugin'        => [],
+				'php_extension' => [],
+			];
+		}
+
+		$first_id = array_shift( $woo_extension_ids );
+
+		$dependencies_data = $this->get_plugin_and_php_ext_dependencies( $first_id, $woo_extension_ids );
+
+		$plugins = [];
+
+		foreach ( $dependencies_data['plugin'] as $plugin_slug ) {
+			$exists = array_filter( $plugins, function ( $ext ) use ( $plugin_slug ) {
+				return $ext->slug === $plugin_slug;
+			} );
+
+			if ( empty( $exists ) ) {
+				$p         = $this->parser->parse_extensions( [ $plugin_slug ], 'plugin', $dependencies_mode );
+				$plugins[] = array_shift( $p );
+			}
+		}
+
+		return [
+			'plugin'        => $plugins,
+			'php_extension' => $dependencies_data['php_extension'],
 		];
 	}
 }

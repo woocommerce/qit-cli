@@ -1451,6 +1451,10 @@
                 {
                     "id": 12346,
                     "slug": "qit-dog"
+                },
+                {
+                    "id": 2165910,
+                    "slug": "woocommerce-shipping"
                 }
             ],
             "environments": {

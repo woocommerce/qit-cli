@@ -16,7 +16,11 @@ class PluginsAndThemesParser {
 	/** @var WPORGExtensionsList */
 	protected $wporg_extensions_list;
 
-	public function __construct( OutputInterface $output, WooExtensionsList $woo_extensions_list, WPORGExtensionsList $wporg_extensions_list ) {
+	public function __construct(
+		OutputInterface $output,
+		WooExtensionsList $woo_extensions_list,
+		WPORGExtensionsList $wporg_extensions_list
+	) {
 		$this->output                = $output;
 		$this->woo_extensions_list   = $woo_extensions_list;
 		$this->wporg_extensions_list = $wporg_extensions_list;
@@ -117,6 +121,17 @@ class PluginsAndThemesParser {
 			$parsed_extensions[] = $extension_instance;
 		}
 
+		// Add wccom_ids where possible.
+		foreach ( $parsed_extensions as $k => $extension ) {
+			if ( ! isset( $extension->wccom_id ) ) {
+				try {
+					$extension->wccom_id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $extension->slug );
+				} catch ( \Exception $e ) { // phpcs:ignore
+					// No ID found, do nothing.
+				}
+			}
+		}
+
 		return $parsed_extensions;
 	}
 
@@ -204,9 +219,23 @@ class PluginsAndThemesParser {
 	protected function validate_test_tag( string $test_tag ): void {
 		if ( ! file_exists( $test_tag ) ) {
 			if ( ! preg_match( '/^[a-z0-9-_]+$/i', $test_tag ) ) {
-				throw new \InvalidArgumentException(
-					sprintf( 'Invalid test tag "%s". Test tags must be alphanumeric (dashes/underscores allowed), zip file, or directory.', $test_tag )
-				);
+				// Has "/" but not "http".
+				$looks_like_local_path = strpos( $test_tag, '/' ) !== false && strpos( $test_tag, 'http' ) === false;
+
+				if ( $looks_like_local_path ) {
+					$attempted_path = rtrim( getcwd(), DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . ltrim( $test_tag, DIRECTORY_SEPARATOR );
+
+					throw new \InvalidArgumentException( sprintf(
+						'Invalid test tag "%s". If this is a file/directory, please make sure that it exists. ' .
+						'Attempted path: %s. Please provide an existing file/directory or use a valid alphanumeric tag (with optional dashes/underscores).',
+						$test_tag,
+						$attempted_path
+					) );
+				} else {
+					throw new \InvalidArgumentException(
+						sprintf( 'Invalid test tag "%s". Test tags must be alphanumeric (dashes/underscores allowed), zip file, or directory.', $test_tag )
+					);
+				}
 			}
 		} else {
 			// It's a file/directory. If file, must be zip.
@@ -228,7 +257,7 @@ class PluginsAndThemesParser {
 	 *     test_tags: array<string>,
 	 * }
 	 */
-	protected function parse_string_extension( string $extension, string $default_action ): array {
+	public function parse_string_extension( string $extension, string $default_action ): array {
 		$json_array = json_decode( $extension, true );
 
 		// Early bail: Long format, JSON.
@@ -376,6 +405,10 @@ class PluginsAndThemesParser {
 		 * 3) Normalize JSON-escaped slashes.
 		 */
 		$source = array_key_exists( 'source', $extension ) ? $extension['source'] : (string) $potential_slug;
+
+		if ( is_numeric( $source ) ) {
+			$source = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $source );
+		}
 
 		if ( ! is_string( $source ) ) {
 			throw new \InvalidArgumentException(
