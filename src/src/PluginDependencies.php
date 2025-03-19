@@ -150,9 +150,52 @@ class PluginDependencies {
 			}
 		}
 
+		foreach ( $plugins as $plugin ) {
+			$plugin->priority = Extension::PRIORITY_LOW;
+		}
+
 		return [
 			'plugin'        => $plugins,
 			'php_extension' => $dependencies_data['php_extension'],
 		];
+	}
+
+	/**
+	 * @param array<Extension> $new_deps
+	 * @param array<Extension> $existing_plugins
+	 * @param int              $default_priority
+	 */
+	public function maybe_add_plugin_dependencies( array $new_deps, array &$existing_plugins, int $default_priority = Extension::PRIORITY_LOW ): void {
+		foreach ( $new_deps as $depExt ) {
+			$depExt->priority = $default_priority;
+
+			$found_index = null;
+			foreach ( $existing_plugins as $i => $existing_ext ) {
+				if ( $existing_ext->slug === $depExt->slug ) {
+					if ( $depExt->priority > $existing_ext->priority ) {
+						$existing_plugins[ $i ] = $depExt;
+					}
+					$found_index = $i;
+					break;
+				}
+			}
+
+			// If not found, add.
+			if ( $found_index === null ) {
+				$existing_plugins[] = $depExt;
+			}
+		}
+	}
+
+	/**
+	 * @param array<string> $new_extensions
+	 * @param array<string> $existing
+	 */
+	public function maybe_add_php_extensions( array $new_extensions, array &$existing ): void {
+		foreach ( $new_extensions as $extName ) {
+			if ( ! in_array( $extName, $existing, true ) ) {
+				$existing[] = $extName;
+			}
+		}
 	}
 }

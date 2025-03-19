@@ -108,16 +108,13 @@ class EnvConfigLoader {
 		);
 
 		// Merge plugins dependencies with existing plugins array.
-		$env_config['plugin'] = array_merge(
-			$env_config['plugin'],
-			$deps['plugin']
-		);
+		$this->dependencies->maybe_add_plugin_dependencies( $deps['plugin'], $env_config['plugin'] );
 
-		// Merge PHP extension dependencies into existing php_extensions array.
-		$env_config['php_extension'] = array_merge(
-			$env_config['php_extension'] ?? [],
-			$deps['php_extension']
-		);
+		if ( empty( $env_config['php_extension'] ) ) {
+			$env_config['php_extension'] = [];
+		}
+
+		$this->dependencies->maybe_add_php_extensions( $deps['php_extension'] ?? [], $env_config['php_extension'] );
 
 		// Requires.
 		foreach ( $env_config['require'] ?? [] as $file ) {
