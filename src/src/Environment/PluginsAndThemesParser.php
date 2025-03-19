@@ -52,6 +52,8 @@ class PluginsAndThemesParser {
 				// Check if there's already a matching slug so we can override it,
 				// just like we do for strings/arrays.
 				$this->maybe_override_or_insert( $extension, $parsed_extensions );
+
+				continue;
 			}
 
 			if ( ! isset( $extension['source'] ) && ! isset( $extension['slug'] ) ) { // @phpstan-ignore-line
