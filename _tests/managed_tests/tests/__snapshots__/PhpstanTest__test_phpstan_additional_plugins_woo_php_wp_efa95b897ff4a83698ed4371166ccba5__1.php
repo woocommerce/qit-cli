@@ -10,10 +10,14 @@
             "php_version": "7.4",
             "max_php_version": "",
             "min_php_version": "",
-            "additional_woo_plugins": [],
-            "additional_wp_plugins": [
-                "google-listings-and-ads"
-            ],
+            "additional_woo_plugins": {
+                "7623964": {
+                    "id": 7623964,
+                    "host": "wccom",
+                    "name": "Google Listings & Ads"
+                }
+            },
+            "additional_wp_plugins": [],
             "test_log": "",
             "ctrf_json": "",
             "status": "failed",
