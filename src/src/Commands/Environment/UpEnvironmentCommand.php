@@ -415,6 +415,8 @@ HELP
 			$parsed_vars[ $key ] = $value;
 		}
 
+		$parsed_vars['WP_CLI_CONFIG_PATH'] = '/qit/wp-cli.yml';
+
 		App::setVar( 'QIT_DOCKER_ENV_VARS', $parsed_vars );
 	}
 }

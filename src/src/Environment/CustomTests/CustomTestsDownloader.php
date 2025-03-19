@@ -168,6 +168,9 @@ class CustomTestsDownloader {
 		$payload = [ 'extensions' => [] ];
 
 		foreach ( $extensions as $ext ) {
+			if ( ! isset( $ext->wccom_id ) || empty( $ext->wccom_id ) ) {
+				continue;
+			}
 			$payload['extensions'][] = [
 				'slug' => $ext->slug,
 				'tags' => array_values( $ext->test_tags ),

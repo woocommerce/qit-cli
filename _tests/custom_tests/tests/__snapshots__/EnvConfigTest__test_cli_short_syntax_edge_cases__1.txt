@@ -1,5 +1,6 @@
 {
     "environment": "e2e",
+    "dependencies_mode": "none",
     "temporary_env": "qit-cli\/_tests\/custom_tests\/tmp\/tmp_qit_config-qit_custom_tests_ENV_ID_NORMALIZED\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/",
     "created_at": 1700000000,
     "status": "pending",
@@ -22,7 +23,8 @@
             "action": "activate",
             "test_tags": [
                 "default"
-            ]
+            ],
+            "wccom_id": 18734003134382
         },
         {
             "slug": "my-plugin",
@@ -35,7 +37,8 @@
             "action": "test",
             "test_tags": [
                 "default"
-            ]
+            ],
+            "wccom_id": null
         },
         {
             "slug": "another-plugin",
@@ -48,7 +51,8 @@
             "action": "activate",
             "test_tags": [
                 "default"
-            ]
+            ],
+            "wccom_id": null
         },
         {
             "slug": "final-plugin",
@@ -62,7 +66,8 @@
             "test_tags": [
                 "foo",
                 "bar"
-            ]
+            ],
+            "wccom_id": null
         }
     ],
     "themes": [],

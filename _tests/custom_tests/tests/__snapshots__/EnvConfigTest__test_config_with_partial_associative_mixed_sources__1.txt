@@ -1,5 +1,6 @@
 {
     "environment": "e2e",
+    "dependencies_mode": "none",
     "temporary_env": "qit-cli\/_tests\/custom_tests\/tmp\/tmp_qit_config-qit_custom_tests_ENV_ID_NORMALIZED\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/",
     "created_at": 1700000000,
     "status": "pending",
@@ -22,7 +23,8 @@
             "action": "activate",
             "test_tags": [
                 "default"
-            ]
+            ],
+            "wccom_id": 18734003134382
         },
         {
             "slug": "plugin-directory",
@@ -35,7 +37,8 @@
             "action": "activate",
             "test_tags": [
                 "default"
-            ]
+            ],
+            "wccom_id": null
         },
         {
             "slug": "plugin",
@@ -48,7 +51,8 @@
             "action": "activate",
             "test_tags": [
                 "default"
-            ]
+            ],
+            "wccom_id": null
         },
         {
             "slug": "some-remote-plugin",
@@ -62,7 +66,8 @@
             "test_tags": [
                 "e2e",
                 "my-custom-tag"
-            ]
+            ],
+            "wccom_id": null
         }
     ],
     "themes": [
@@ -77,7 +82,8 @@
             "action": "activate",
             "test_tags": [
                 "default"
-            ]
+            ],
+            "wccom_id": null
         },
         {
             "slug": "twentytwentyfour",
@@ -90,7 +96,8 @@
             "action": "activate",
             "test_tags": [
                 "default"
-            ]
+            ],
+            "wccom_id": null
         },
         {
             "slug": "theme-directory",
@@ -103,7 +110,8 @@
             "action": "activate",
             "test_tags": [
                 "default"
-            ]
+            ],
+            "wccom_id": null
         },
         {
             "slug": "theme",
@@ -116,7 +124,8 @@
             "action": "activate",
             "test_tags": [
                 "special-theme-test"
-            ]
+            ],
+            "wccom_id": null
         }
     ],
     "tunnel": false,
