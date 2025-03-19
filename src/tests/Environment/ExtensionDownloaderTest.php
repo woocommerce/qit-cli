@@ -209,7 +209,7 @@ class ExtensionDownloaderTest extends TestCase {
 			$this->make_extension( 'theme', 'duplicate-theme' ),
 		];
 		$this->expectException( InvalidArgumentException::class );
-		$this->expectExceptionMessage( 'Duplicate extension found.' );
+		$this->expectExceptionMessage( 'Duplicate extension found: duplicate-plugin' );
 		$this->assertMatchesJsonSnapshot( $this->sut->categorize_extensions( $plugins, $themes, '/tmp/cache/' ) );
 	}
 

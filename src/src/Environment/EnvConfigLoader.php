@@ -114,7 +114,7 @@ class EnvConfigLoader {
 			$env_config['php_extension'] = [];
 		}
 
-		$this->dependencies->maybe_add_php_extensions( $deps['php_extension'] ?? [], $env_config['php_extension'] );
+		$this->dependencies->maybe_add_php_extensions( $deps['php_extension'], $env_config['php_extension'] );
 
 		// Requires.
 		foreach ( $env_config['require'] ?? [] as $file ) {
