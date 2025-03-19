@@ -181,7 +181,7 @@ class TestGroup {
 	/**
 	 * Fetches the matching pending test that is expected to be running locally.
 	 *
-	 * @return array{test_run_id: string, test_type: string}
+	 * @return array
 	 */
 	public function fetch_local_group_info( array $info ): array {
 		$group = $this->cache->get( 'group' );
@@ -203,7 +203,7 @@ class TestGroup {
 			if ( is_null( $extension_set ) ) {
 				if ( $data['woo_id'] === $woo_id &&
 					$data['local'] === true &&
-                    $data['extension_set'] === ''
+					$data['extension_set'] === ''
 				) {
 					return [
 						'test_run_id' => $test['test_run_id'],
@@ -257,7 +257,7 @@ class TestGroup {
 			->with_post_body( $body )
 			->request();
 
-		$response_data = json_decode( $response, true );
+		$response_data = json_decode( $response, true ) ?? [];
 		$status        = self::STATUS_COMPLETED;
 
 		/**

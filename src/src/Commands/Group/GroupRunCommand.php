@@ -8,8 +8,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use function QIT_CLI\get_manager_url;
-
 class GroupRunCommand extends Command {
 	protected static $defaultName = 'group:run'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 

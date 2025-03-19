@@ -9,7 +9,6 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\IO\Output;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\RequestBuilder;
-use QIT_CLI\TestGroup;
 use QIT_CLI\Upload;
 use QIT_CLI\Zipper;
 use Symfony\Component\Console\Command\Command;
