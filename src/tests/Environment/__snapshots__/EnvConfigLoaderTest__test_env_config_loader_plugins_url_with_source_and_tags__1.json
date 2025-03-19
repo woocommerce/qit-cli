@@ -22,6 +22,7 @@
             "test_tags": [
                 "rc"
             ],
+            "priority": 50,
             "wccom_id": 1234
         }
     ],

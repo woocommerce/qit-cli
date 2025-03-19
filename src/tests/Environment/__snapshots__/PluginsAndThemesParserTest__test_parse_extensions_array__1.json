@@ -12,6 +12,7 @@
             "stable",
             "\/tmp\/test-tag-local-dir"
         ],
+        "priority": 50,
         "wccom_id": 1234
     },
     {
@@ -27,6 +28,7 @@
             "beta",
             "release-candidate"
         ],
+        "priority": 50,
         "wccom_id": 12345
     }
 ]

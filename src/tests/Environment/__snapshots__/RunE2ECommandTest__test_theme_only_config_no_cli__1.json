@@ -14,15 +14,16 @@
         {
             "slug": "hestia",
             "entrypoint": null,
-            "source": "hestia",
+            "source": ".\/hestia-theme",
             "downloaded_source": null,
             "type": "theme",
             "handler": null,
             "version": "undefined",
-            "action": "test",
+            "action": "bootstrap",
             "test_tags": [
                 "default"
             ],
+            "priority": 50,
             "wccom_id": null
         }
     ],

@@ -13,15 +13,16 @@
         {
             "slug": "woocommerce",
             "entrypoint": null,
-            "source": "woocommerce",
+            "source": ".\/woocommerce",
             "downloaded_source": null,
             "type": "plugin",
             "handler": null,
             "version": "undefined",
-            "action": "test",
+            "action": "bootstrap",
             "test_tags": [
-                "activation"
+                "default"
             ],
+            "priority": 50,
             "wccom_id": null
         },
         {
@@ -36,6 +37,7 @@
             "test_tags": [
                 ".\/woocommerce-amazon-s3-storage-tests"
             ],
+            "priority": 50,
             "wccom_id": null
         }
     ],

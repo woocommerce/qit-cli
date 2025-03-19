@@ -9,6 +9,7 @@
         "version": "undefined",
         "action": null,
         "test_tags": null,
+        "priority": 50,
         "wccom_id": null
     },
     "414dd101454aa1fdae474005c0824121": {
@@ -21,6 +22,7 @@
         "version": "undefined",
         "action": null,
         "test_tags": null,
+        "priority": 50,
         "wccom_id": null
     }
 }
