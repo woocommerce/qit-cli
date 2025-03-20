@@ -132,12 +132,12 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT.' )
 			->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional options and parameters to pass to Playwright, eg: "--retries=0", etc.' )
-			->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies for recognized WooCommerce plugins. Possible values: ' . implode( ', ', PluginDependencies::DEPENDENCY_MODES['env_test'] ), 'none' )
+			->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies for recognized WooCommerce plugins. Possible values: ' . implode( ', ', PluginDependencies::DEPENDENCY_MODES['env_test'] ), PluginDependencies::DEPENDENCY_MODES['env_test']['bootstrap'] )
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode.' )
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen.' )
 			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' );
 	}
-
+	
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		$this->prepare_output( $output );
 
@@ -614,6 +614,8 @@ class RunE2ECommand extends DynamicCommand {
 				$extension_data['test_tags'] = [ 'default' ];
 			}
 		}
+
+		$extension_data['priority'] = Extension::PRIORITY_LOW;
 
 		// STEP 4: Re‐insert this final single definition for that slug.
 		$env_up_options[ $key ][] = json_encode( $extension_data );

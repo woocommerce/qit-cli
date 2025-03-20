@@ -22,6 +22,7 @@
             "test_tags": [
                 "default"
             ],
+            "priority": 50,
             "wccom_id": null
         },
         {
@@ -36,6 +37,7 @@
             "test_tags": [
                 "activation"
             ],
+            "priority": 50,
             "wccom_id": null
         },
         {
@@ -50,6 +52,7 @@
             "test_tags": [
                 "pre-activation"
             ],
+            "priority": 10,
             "wccom_id": null
         }
     ],

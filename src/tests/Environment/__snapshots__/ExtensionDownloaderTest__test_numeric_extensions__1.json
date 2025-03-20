@@ -9,6 +9,7 @@
         "version": "undefined",
         "action": null,
         "test_tags": null,
+        "priority": 50,
         "wccom_id": null
     },
     "plugin2": {
@@ -21,6 +22,7 @@
         "version": "undefined",
         "action": null,
         "test_tags": null,
+        "priority": 50,
         "wccom_id": null
     },
     "theme1": {
@@ -33,6 +35,7 @@
         "version": "undefined",
         "action": null,
         "test_tags": null,
+        "priority": 50,
         "wccom_id": null
     }
 }

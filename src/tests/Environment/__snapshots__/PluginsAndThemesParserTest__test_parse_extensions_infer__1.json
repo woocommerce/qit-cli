@@ -11,6 +11,7 @@
         "test_tags": [
             "default"
         ],
+        "priority": 50,
         "wccom_id": 1234
     },
     {
@@ -26,6 +27,7 @@
             "rc",
             "\/tmp\/test-tag-local-zip.zip"
         ],
+        "priority": 50,
         "wccom_id": 12345
     },
     {
@@ -40,6 +42,7 @@
         "test_tags": [
             "default"
         ],
+        "priority": 50,
         "wccom_id": 123
     },
     {
@@ -54,6 +57,7 @@
         "test_tags": [
             "default"
         ],
+        "priority": 50,
         "wccom_id": 456
     },
     {
@@ -68,6 +72,7 @@
         "test_tags": [
             "default"
         ],
+        "priority": 50,
         "wccom_id": 789
     }
 ]

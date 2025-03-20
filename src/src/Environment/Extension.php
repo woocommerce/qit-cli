@@ -16,6 +16,10 @@ class Extension {
 		'theme'  => 'theme',
 	];
 
+	const PRIORITY_LOW    = 10;
+	const PRIORITY_MEDIUM = 50;
+	const PRIORITY_HIGH   = 100;
+
 	/** @var string */
 	public $slug;
 
@@ -53,6 +57,9 @@ class Extension {
 	 * @var array<string,string> Test tags to fetch for this extension.
 	 */
 	public $test_tags;
+
+	/** @var int */
+	public $priority = self::PRIORITY_MEDIUM;
 
 	/** @var int|null */
 	public $wccom_id;

@@ -196,7 +196,7 @@ class ExtensionDownloader {
 
 				// @phan-suppress-next-line PhanPossiblyUndeclaredVariable
 				if ( array_key_exists( $ext->slug, $categorized_extensions ) ) {
-					throw new \InvalidArgumentException( 'Duplicate extension found.' );
+					throw new \InvalidArgumentException( 'Duplicate extension found: ' . $ext->slug );
 				}
 
 				/*
