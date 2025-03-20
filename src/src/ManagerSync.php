@@ -88,7 +88,8 @@ class ManagerSync {
 		$current_version = App::getVar( 'CLI_VERSION' );
 
 		// Do not check version on development build.
-		if ( $current_version === '@QIT_CLI_VERSION@' ) {
+		// This is base64_encoded so that the version replacement during build doesn't replace the placeholder.
+		if ( base64_encode( $current_version ) === 'QFFJVF9DTElfVkVSU0lPTkA=' ) {
 			return;
 		}
 
@@ -106,12 +107,8 @@ class ManagerSync {
 			$this->output->writeln( "\nUpdate today to take advantage of the latest features!" );
 			$this->output->writeln( "How to update: https://qit.woo.com/docs/cli/getting-started#updating-qit\n" );
 			if ( version_compare( $current_version, $minimum_cli_version, '<' ) ) {
-				if ( ! Config::is_development_mode() ) {
-					$this->output->writeln( sprintf( '<error>You are using an outdated version of the CLI. Please update to the latest version (%s).</error>', $latest_version ) );
-					throw new UpdateRequiredException();
-				} else {
-					$this->output->writeln( sprintf( '<comment>You are using an outdated version of the CLI (%s). Please update to the latest version (%s). Continuing execution as dev mode is enabled.</comment>', $current_version, $latest_version ) );
-				}
+				$this->output->writeln( sprintf( '<error>You are using an outdated version of the CLI. Please update to the latest version (%s).</error>', $latest_version ) );
+				throw new UpdateRequiredException();
 			}
 		}
 	}
