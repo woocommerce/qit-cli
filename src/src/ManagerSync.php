@@ -87,9 +87,12 @@ class ManagerSync {
 	public function enforce_latest_version(): void {
 		$current_version = App::getVar( 'CLI_VERSION' );
 
-		// Do not check version on development build.
 		// This is base64_encoded so that the version replacement during build doesn't replace the placeholder.
-		if ( base64_encode( $current_version ) === 'QFFJVF9DTElfVkVSU0lPTkA=' ) {
+		$is_dev_build_from_src  = base64_encode( $current_version ) === 'QFFJVF9DTElfVkVSU0lPTkA=';
+		$is_dev_build_from_phar = $current_version === 'qit_dev_build';
+
+		// Do not check version on development build.
+		if ( $is_dev_build_from_src || $is_dev_build_from_phar ) {
 			return;
 		}
 
