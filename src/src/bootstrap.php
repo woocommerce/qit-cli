@@ -125,7 +125,7 @@ $container->setVar( 'doing_autocompletion', stripos( (string) $container->make( 
 
 try {
 	if ( ! $container->getVar( 'doing_autocompletion' ) ) {
-		App::make( ManagerSync::class )->maybe_sync();
+		App::make( ManagerSync::class )->maybe_sync( is_array( $GLOBALS['argv'] ) && in_array( 'sync', $GLOBALS['argv'], true ) ); // @phpstan-ignore-line
 		App::make( ManagerSync::class )->enforce_latest_version();
 	}
 } catch ( UpdateRequiredException $e ) {
