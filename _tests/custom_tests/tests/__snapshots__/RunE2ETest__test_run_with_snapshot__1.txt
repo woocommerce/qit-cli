@@ -8,7 +8,7 @@ Moving must-use plugin of deli /qit/tests/e2e/deli/local/bootstrap/mu-plugin.php
 npx playwright test --trace on --update-snapshots --config /qit/tests/e2e/qit-playwright.config.js  2>&1
 Running E2E Tests
 Running 4 tests using 1 worker
-✓  1 [setup] Deli (Shell) › scripts/bash.js:5:5 › Bash Script (TIME)
+✓  1 [setup] Deli (Shell) › scripts/bash.js:4:5 › Bash Script (TIME)
 ✓  2 [setup] Deli (JS) › deli/local/bootstrap/setup.js:11:5 › Isolated Setup (TIME)
 A snapshot doesn't exist at /qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png, writing actual.
 ✓  3 [test] Deli (Run) › deli/local/activate-theme.spec.js:4:5 › I can activate Deli (TIME)
