@@ -74,6 +74,7 @@ class TestGroup {
 			'hash'   => md5( json_encode( $options ) ),
 			'params' => [
 				'client' => 'qit_cli',
+                'hash'   => md5( json_encode( $options ) ),
 			],
 		];
 
@@ -106,7 +107,7 @@ class TestGroup {
 		}
 
 		if ( ! empty( $group_identifier ) ) {
-			$group['identifier'] = $group_identifier;
+			$group['group_identifier'] = $group_identifier;
 		}
 
 		if ( $skip_grouping ) {
@@ -156,11 +157,14 @@ class TestGroup {
 			return Command::FAILURE;
 		}
 
-		$output->writeln( '<info>Group enqueued on QIT servers!</info>' );
+
 
 		if ( isset( $response_data['group_id'] ) ) {
+            $output->writeln( '<info>Group enqueued on QIT servers!</info>' );
 			$output->writeln( sprintf( '<info>Group ID: %s</info>', $response_data['group_id'] ) );
-		}
+		} else {
+            $output->writeln( '<info>Batch enqueued on QIT servers!</info>' );
+        }
 
 		if ( isset( $response_data['group_identifier'] ) ) {
 			$output->writeln( sprintf( '<info>Group Identifier: %s</info>', $response_data['group_identifier'] ) );
@@ -328,7 +332,10 @@ class TestGroup {
 		}
 
 		foreach ( $group['tests'] as $test ) {
-			if ( $test['test_run_id'] === $test_run_id ) {
+			if (
+                isset( $test['test_run_id'] ) &&
+                $test['test_run_id'] === $test_run_id
+            ) {
 				$test['status'] = $status;
 				break;
 			}
