@@ -3502,7 +3502,8 @@
                     },
                     "composer_audit": [],
                     "npm_audit": [],
-                    "wpscan_audit": []
+                    "wpscan_audit": [],
+                    "gitleaks": []
                 }
             }
         }
