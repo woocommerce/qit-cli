@@ -156,7 +156,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 				if ( $input->getOption( 'group' ) ) {
 
 					try {
-						$this->test_group->create_or_update( $options, $this->test_type );
+						$this->test_group->create_or_update( $options, $this->test_type, null );
 					} catch ( \Exception $e ) {
 						$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 						return Command::FAILURE;

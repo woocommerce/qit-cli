@@ -43,8 +43,8 @@ class RunActivationTestCommand extends Command {
 			->reuseOption( RunE2ECommand::getDefaultName(), 'extension_set' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'dependencies' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'pw_test_tag' )
-			->reuseOption( RunE2ECommand::getDefaultName(), 'group' );
-
+			->reuseOption( RunE2ECommand::getDefaultName(), 'group' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'no_group' );
 		$this->addOption(
 			'json',
 			'j',
@@ -130,6 +130,10 @@ class RunActivationTestCommand extends Command {
 
 		if ( $input->getOption( 'group' ) ) {
 			$run_e2e_options['--group'] = $input->getOption( 'group' );
+		}
+
+		if ( $input->getOption( 'no_group' ) ) {
+			$run_e2e_options['--no_group'] = true;
 		}
 
 		$run_e2e_exit_code = $run_e2e_command->run(

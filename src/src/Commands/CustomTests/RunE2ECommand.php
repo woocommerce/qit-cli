@@ -145,7 +145,8 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode.' )
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen.' )
 			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' )
-			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the test run into a group.', false );
+			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the test run into a group.', false )
+			->addOption( 'no_group', 'ng', InputOption::VALUE_NEGATABLE, 'If set, the CLI will not attempt to match the local test run with a group.', false );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
@@ -210,7 +211,9 @@ class RunE2ECommand extends DynamicCommand {
 			$test_type = ! empty( $input->getArgument( 'test' ) ) ? 'activation' : 'e2e';
 
 			try {
-				$this->test_group->create_or_update( $group_options, $test_type );
+				$env_vars      = getenv();
+				$input_options = $input;
+				$this->test_group->create_or_update( $group_options, $test_type, $input, $env_vars );
 			} catch ( \Exception $e ) {
 				$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 				return Command::FAILURE;
@@ -306,24 +309,12 @@ class RunE2ECommand extends DynamicCommand {
 			$env_info->sut_type    = $sut_type;
 			$env_info->pw_test_tag = $test_tag;
 
-			// Fetch the local test info if the test is part of a group.
-			$group_info = [
-				'woo_id' => $woo_extension_id,
-			];
-
-			if ( ! empty( $input->getOption( 'extension_set' ) ) ) {
-				$group_info['extension_set'] = $input->getOption( 'extension_set' );
-			}
-
-			$local_test_info = $this->test_group->fetch_local_group_info( $group_info );
-
 			$this->test_run_notifier->notify_test_started(
 				$woo_extension_id,
 				$input->getOption( 'woo' ) ?? 'none',
 				$env_info,
 				$this->configuration_processor->is_development(),
-				$input->getOption( 'notify' ),
-				$local_test_info
+				$input->getOption( 'notify' )
 			);
 
 			// Update the test status to running if the test is part of a group.

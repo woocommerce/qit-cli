@@ -52,15 +52,14 @@ class LocalTestRunNotifier {
 
 	/**
 	 * @suppress PhanTypeArraySuspicious
-	 * 
-	 * @param int $woo_extension_id
-	 * @param string $woocommerce_version
+	 *
+	 * @param int        $woo_extension_id
+	 * @param string     $woocommerce_version
 	 * @param E2EEnvInfo $env_info
-	 * @param bool $is_development
-	 * @param bool $notify
-	 * @param array<string, mixed> $group_info
+	 * @param bool       $is_development
+	 * @param bool       $notify
 	 */
-	public function notify_test_started( int $woo_extension_id, string $woocommerce_version, E2EEnvInfo $env_info, bool $is_development, bool $notify, array $group_info = [] ): void {
+	public function notify_test_started( int $woo_extension_id, string $woocommerce_version, E2EEnvInfo $env_info, bool $is_development, bool $notify ): void {
 		App::setVar( 'NOTIFY_TEST_STARTED_RAN', true );
 
 		$additional_plugins = [];
@@ -106,12 +105,8 @@ class LocalTestRunNotifier {
 			$body['test_run_id'] = getenv( 'QIT_TEST_RUN_ID' );
 		}
 
-		/**
-		 * A group test run id takes precedence over the QIT_TEST_RUN_ID environment variable.
-		 */
-		if ( ! empty( $group_info ) ) {
-			$body['group_id']    = $group_info['group_id'];
-			$body['test_run_id'] = $group_info['test_run_id'];
+		if ( getenv( 'QIT_TEST_GROUP_ID' ) ) {
+			$body['group_id'] = getenv( 'QIT_TEST_GROUP_ID' );
 		}
 
 		$r = App::make( RequestBuilder::class )
