@@ -29,8 +29,7 @@ class GroupRunCommand extends Command {
 	protected function execute( InputInterface $input, OutputInterface $output ) {
 		$group_identifier = $input->getOption( 'group-identifier' );
 		$skip_grouping    = $input->getOption( 'skip-grouping' );
-
-		$group = $this->test_group->get();
+		$group            = $this->test_group->get();
 
 		if ( empty( $group ) ) {
 			$output->writeln( 'No group found. Please create one by using the any `run:<test> command with the --group option.' );
@@ -38,22 +37,40 @@ class GroupRunCommand extends Command {
 		}
 
 		try {
-			$response_data = $this->test_group->dispatch( $group_identifier, $skip_grouping );
-			$result        = $this->test_group->output_response( $response_data, $output );
+			$response_data = $this->test_group->dispatch( $group_identifier, $skip_grouping, true );
 
-			if ( $result === Command::FAILURE ) {
-				$this->test_group->delete_group();
-				return $result;
+			if ( ! empty( $response_data ) ) {
+				$result = $this->test_group->output_response( $response_data, $output, true );
+
+				if ( $result === Command::FAILURE ) {
+					$this->test_group->delete_group();
+					return $result;
+				}
+
+				$group['group_id']   = $response_data['group_id'];
+				$group['identifier'] = $group_identifier;
+				$group['status']     = TestGroup::STATUS_RUNNING;
+
+				foreach ( $group['tests'] as $index => $test ) {
+					foreach ( $response_data['test_run_data'] as $test_run ) {
+						if ( $test['hash'] === $test_run['hash'] ) {
+							$group['tests'][ $index ]['test_run'] = $test_run;
+							break;
+						}
+					}
+				}
+
+				$this->test_group->update_group( $group );
 			}
 
-			$group = [
-				'group_id'   => $response_data['group_id'],
-				'tests'      => $response_data['test_run_data'],
-				'identifier' => $group_identifier,
-				'status'     => 'pending',
-			];
+			$output->writeln( '<info>Running local tests...</info>' );
 
-			$this->test_group->update_group( $group );
+			$application = $this->getApplication();
+			$this->test_group->run_local_tests( $application, $output );
+
+			$this->test_group->update_group_test_runs();
+
+			$output->writeln( 'Group run completed successfully.' );
 
 			return Command::SUCCESS;
 		} catch ( \Exception $e ) {

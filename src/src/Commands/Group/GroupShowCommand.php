@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class GroupShowCommand extends Command {
 	protected static $defaultName = 'group:show'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-    /** @var TestGroup */
+	/** @var TestGroup */
 	protected $test_group;
 
 	public function __construct( TestGroup $test_group ) {
@@ -52,8 +52,6 @@ class GroupShowCommand extends Command {
 
 			if ( isset( $test['params'] ) ) {
 				$params = $test['params'];
-			} else {
-				$params = $test;
 			}
 
 			$output->writeln( sprintf( 'Test Type: <info>%s</info>', $test_type ) );

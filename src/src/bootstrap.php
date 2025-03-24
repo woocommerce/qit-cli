@@ -22,6 +22,7 @@ use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\GetMultipleCommand;
 use QIT_CLI\Commands\Group\GroupClearCommand;
+use QIT_CLI\Commands\Group\GroupRegisterCommand;
 use QIT_CLI\Commands\Group\GroupRunCommand;
 use QIT_CLI\Commands\Group\GroupShowCommand;
 use QIT_CLI\Commands\ListCommand;
@@ -268,6 +269,7 @@ if ( $is_connected_to_backend ) {
 	// Group Commands.
 	$application->add( $container->make( GroupRunCommand::class ) );
 	$application->add( $container->make( GroupClearCommand::class ) );
+	$application->add( $container->make( GroupRegisterCommand::class ) );
 	$application->add( $container->make( GroupShowCommand::class ) );
 
 	if ( Config::is_development_mode() ) {
