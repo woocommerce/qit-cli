@@ -2,7 +2,6 @@
 
 namespace QIT_CLI\Environment;
 
-use QIT_CLI\App;
 use QIT_CLI\Config;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\normalize_path;
