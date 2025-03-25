@@ -87,14 +87,14 @@ class RunE2ECommand extends DynamicCommand {
 		EnvironmentRunner $environment_runner,
 		TestGroup $test_group
 	) {
-		$this->e2e_environment         = $e2e_environment;
-		$this->cache                   = $cache;
-		$this->e2e_test_manager        = $e2e_test_manager;
-		$this->woo_extensions_list     = $woo_extensions_list;
-		$this->test_run_notifier       = $test_run_notifier;
-		$this->dependencies            = $dependencies;
-		$this->environment_runner      = $environment_runner;
-		$this->test_group              = $test_group;
+		$this->e2e_environment     = $e2e_environment;
+		$this->cache               = $cache;
+		$this->e2e_test_manager    = $e2e_test_manager;
+		$this->woo_extensions_list = $woo_extensions_list;
+		$this->test_run_notifier   = $test_run_notifier;
+		$this->dependencies        = $dependencies;
+		$this->environment_runner  = $environment_runner;
+		$this->test_group          = $test_group;
 
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
@@ -145,7 +145,7 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the test run into a group.', false )
 			->addOption( 'no_group', 'ng', InputOption::VALUE_NEGATABLE, 'If set, the CLI will not attempt to match the local test run with a group.', false );
 	}
-	
+
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		$this->prepare_output( $output );
 
