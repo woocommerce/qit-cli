@@ -144,6 +144,7 @@ class TestGroup {
 		/**
 		 * Input and env vars are not needed on the QIT servers.
 		 */
+		// @phan-suppress-next-line PhanTypeMismatchForeach
 		foreach ( $group['tests'] as $test ) {
 			unset( $test['env_vars'] );
 			unset( $test['input'] );
@@ -152,6 +153,7 @@ class TestGroup {
 		if ( $group['status'] === self::STATUS_REGISTERED ) {
 			$test_run_ids = [];
 
+			// @phan-suppress-next-line PhanTypeMismatchForeach
 			foreach ( $group['tests'] as $test ) {
 				// Only run remote tests.
 				if ( in_array( ! $test['type'], self::LOCAL_TEST_TYPES ) ) {
@@ -255,7 +257,7 @@ class TestGroup {
 	}
 
 	/**
-	 * @return array<string, mixed>|array<empty>
+	 * @return array<string, mixed> The test group data
 	 */
 	public function get(): array {
 		$group = $this->cache->get( 'group' );
@@ -267,12 +269,11 @@ class TestGroup {
 		return $group;
 	}
 
-	// TODO: Update this implementation to use new group structure.
 	/**
 	 * Fetches the matching pending test that is expected to be running locally.
 	 *
 	 * @param InputInterface $input The input.
-	 * @return array{test_run_id?: string, test_type?: string, group_id?: string}|array<empty>
+	 * @return array{test_run_id?: string, test_type?: string, group_id?: string}
 	 */
 	public function fetch_local_group_info( InputInterface $input ): array {
 		$group = $this->cache->get( 'group' );
