@@ -49,10 +49,7 @@ class GroupShowCommand extends Command {
 
 		foreach ( $tests as $test ) {
 			$test_type = ucfirst( $test['type'] );
-
-			if ( isset( $test['params'] ) ) {
-				$params = $test['params'];
-			}
+			$params    = $test['params'];
 
 			$output->writeln( sprintf( 'Test Type: <info>%s</info>', $test_type ) );
 			$output->writeln( sprintf( 'Params: <comment>%s</comment>', json_encode( $params ) ) );

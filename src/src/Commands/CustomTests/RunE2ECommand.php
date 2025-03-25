@@ -316,11 +316,6 @@ class RunE2ECommand extends DynamicCommand {
 				$this->configuration_processor->is_development(),
 				$input->getOption( 'notify' )
 			);
-
-			// Update the test status to running if the test is part of a group.
-			if ( ! empty( $local_test_info ) ) {
-				$this->test_group->update_test_status( $local_test_info['test_run_id'], TestGroup::STATUS_RUNNING );
-			}
 		}
 
 		$GLOBALS['env_to_shutdown'] = $env_info;

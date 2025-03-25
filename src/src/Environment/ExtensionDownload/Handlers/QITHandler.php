@@ -112,7 +112,7 @@ class QITHandler extends Handler {
 		foreach ( $extensions as $ext ) {
 			// If already downloaded (or not in $extensions_to_download), skip.
 			if (
-				isset( $ext->downloaded_source ) &&
+				! empty( $ext->downloaded_source ) &&
 				file_exists( $ext->downloaded_source )
 			) {
 				continue;

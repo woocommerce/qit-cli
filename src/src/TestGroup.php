@@ -422,6 +422,14 @@ class TestGroup {
 		putenv( 'QIT_TEST_GROUP_ID' );
 	}
 
+	/**
+	 * Runs a local test.
+	 *
+	 * @param array<string, mixed> $test The test to run.
+	 * @param Application $application The application.
+	 * @param OutputInterface $output The output.
+	 * @return void
+	 */
 	private function run_local_test( array $test, Application $application, OutputInterface $output ) {
 		$run_e2e_command = App::make( RunE2ECommand::class );
 		$run_e2e_command->setApplication( $application );
@@ -455,6 +463,13 @@ class TestGroup {
 		}
 	}
 
+	/**
+	 * Builds the input array for the run command.
+	 *
+	 * @param array<string, mixed> $options The options.
+	 * @param array<string, mixed> $arguments The arguments.
+	 * @return array<string, mixed> The input array.
+	 */
 	public function build_input_array( array $options, array $arguments ): array {
 		$input_array = [];
 
