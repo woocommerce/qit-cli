@@ -75,7 +75,9 @@ class TestGroup {
 
 		if ( count( $group['tests'] ) > 0 ) {
 			foreach ( $group['tests'] as $test ) {
-				if ( $test['type'] === $test_type ) {
+				if ( $test['type'] === $test_type &&
+					$test['params']['woo_id'] === $options['woo_id']
+				) {
 					if ( $test['hash'] === $hash ) {
 						$test_type_exists = true;
 						break;
@@ -274,42 +276,6 @@ class TestGroup {
 		}
 
 		return $group;
-	}
-
-	/**
-	 * Fetches the matching pending test that is expected to be running locally.
-	 *
-	 * @param InputInterface $input The input.
-	 * @return array{test_run_id?: string, test_type?: string, group_id?: string}
-	 */
-	public function fetch_local_group_info( InputInterface $input ): array {
-		$group = $this->cache->get( 'group' );
-
-		if ( empty( $group ) ) {
-			return [];
-		}
-
-		if ( $group['status'] !== self::STATUS_PENDING &&
-			$group['status'] !== self::STATUS_RUNNING
-		) {
-			return [];
-		}
-
-		$hash = md5( json_encode( $input->getOptions() ) );
-
-		foreach ( $group['tests'] as $test ) {
-			$data = isset( $test['params'] ) ? $test['params'] : $test;
-
-			if ( $data['hash'] === $hash ) {
-				return [
-					'test_run_id' => $test['test_run']['test_run_id'],
-					'test_type'   => $test['type'],
-					'group_id'    => $group['group_id'],
-				];
-			}
-		}
-
-		return [];
 	}
 
 	/**
