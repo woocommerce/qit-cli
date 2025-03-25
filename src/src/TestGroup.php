@@ -426,8 +426,8 @@ class TestGroup {
 	 * Runs a local test.
 	 *
 	 * @param array<string, mixed> $test The test to run.
-	 * @param Application $application The application.
-	 * @param OutputInterface $output The output.
+	 * @param Application          $application The application.
+	 * @param OutputInterface      $output The output.
 	 * @return void
 	 */
 	private function run_local_test( array $test, Application $application, OutputInterface $output ) {
