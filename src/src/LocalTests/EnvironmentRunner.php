@@ -34,7 +34,7 @@ class EnvironmentRunner {
 		$up_output = stream_get_contents( $resource_stream, - 1, 0 );
 		fclose( $resource_stream );
 
-		if ( $exit_status_code === 1337 ) {
+		if ( $exit_status_code === 137 ) {
 			if ( getenv( 'QIT_SELF_TEST' ) === 'env_info' ) {
 				$env_json = json_decode( $up_output, true );
 				if ( ! is_array( $env_json ) ) {
@@ -44,7 +44,7 @@ class EnvironmentRunner {
 				return EnvInfo::from_array( $env_json );
 			}
 
-			throw new \RuntimeException( 'Environment did not start. Received code 1337 (info-only).' );
+			throw new \RuntimeException( 'Environment did not start. Received code 137 (info-only).' );
 		}
 
 		$env_json = json_decode( $up_output, true );

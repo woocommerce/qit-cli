@@ -221,6 +221,7 @@ class EnvConfigLoaderTest extends TestCase {
 					'test_tags' => [ 'bar' ],
 				],
 			],
+			'dependencies_mode' => 'none',
 		];
 		$this->create_config_file( 'qit.json', json_encode( $complexStructure ) );
 
@@ -232,6 +233,7 @@ class EnvConfigLoaderTest extends TestCase {
 			'plugins' => [
 				'qit-beaver',
 			],
+			'dependencies_mode' => 'none',
 		];
 		$this->create_config_file( 'qit.json', json_encode( $complexStructure ) );
 
@@ -252,6 +254,7 @@ class EnvConfigLoaderTest extends TestCase {
 					'test_tags' => [ 'foo' ],
 				],
 			],
+			'dependencies_mode' => 'none',
 		];
 		$this->create_config_file( 'qit.json', json_encode( $complexStructure ) );
 
@@ -280,6 +283,7 @@ class EnvConfigLoaderTest extends TestCase {
 			'themes'  => [
 				'qit-beaver:test',
 			],
+			'dependencies_mode' => 'none',
 		];
 		$this->create_config_file( 'qit.json', json_encode( [] ) );
 
@@ -296,6 +300,7 @@ class EnvConfigLoaderTest extends TestCase {
 							'source' => 'https://woo.com/qit-beaver',
 						],
 					],
+					'dependencies_mode' => 'none',
 				] )
 			)
 		);
@@ -312,6 +317,7 @@ class EnvConfigLoaderTest extends TestCase {
 							'test_tags' => [ 'rc' ],
 						],
 					],
+					'dependencies_mode' => 'none',
 				] )
 			)
 		);
@@ -325,6 +331,7 @@ class EnvConfigLoaderTest extends TestCase {
 					'plugins' => [
 						'{"source":"https://woo.com/qit-beaver", "slug":"qit-beaver"}',
 					],
+					'dependencies_mode' => 'none',
 				] )
 			)
 		);
@@ -338,6 +345,7 @@ class EnvConfigLoaderTest extends TestCase {
 					'plugins' => [
 						'{"source":"https://woo.com/qit-beaver", "slug":"qit-beaver", "test_tags": ["rc"]}',
 					],
+					'dependencies_mode' => 'none',
 				] )
 			)
 		);

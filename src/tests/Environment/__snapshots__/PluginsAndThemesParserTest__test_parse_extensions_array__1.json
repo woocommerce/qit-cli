@@ -11,7 +11,9 @@
         "test_tags": [
             "stable",
             "\/tmp\/test-tag-local-dir"
-        ]
+        ],
+        "priority": 50,
+        "wccom_id": 1234
     },
     {
         "slug": "qit-cat",
@@ -25,6 +27,8 @@
         "test_tags": [
             "beta",
             "release-candidate"
-        ]
+        ],
+        "priority": 50,
+        "wccom_id": 12345
     }
 ]

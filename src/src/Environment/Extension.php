@@ -16,6 +16,10 @@ class Extension {
 		'theme'  => 'theme',
 	];
 
+	const PRIORITY_LOW    = 10;
+	const PRIORITY_MEDIUM = 50;
+	const PRIORITY_HIGH   = 100;
+
 	/** @var string */
 	public $slug;
 
@@ -25,7 +29,7 @@ class Extension {
 	/** @var string|int The "source" can be a slug, a URL, a directory or a zip file. */
 	public $source;
 
-	/** @var string|int The file or directory of the source once it's downloaded (or, if it was already a local file, points to it). */
+	/** @var string|int|null The file or directory of the source once it's downloaded (or, if it was already a local file, points to it). */
 	public $downloaded_source;
 
 	/**
@@ -53,4 +57,10 @@ class Extension {
 	 * @var array<string,string> Test tags to fetch for this extension.
 	 */
 	public $test_tags;
+
+	/** @var int */
+	public $priority = self::PRIORITY_MEDIUM;
+
+	/** @var int|null */
+	public $wccom_id;
 }

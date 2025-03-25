@@ -3,6 +3,7 @@
 namespace QIT_CLI\Environment;
 
 use QIT_CLI\WooExtensionsList;
+use QIT_CLI\WPORGExtensionsList;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class PluginsAndThemesParser {
@@ -12,15 +13,24 @@ class PluginsAndThemesParser {
 	/** @var WooExtensionsList */
 	protected $woo_extensions_list;
 
-	public function __construct( OutputInterface $output, WooExtensionsList $woo_extensions_list ) {
-		$this->output              = $output;
-		$this->woo_extensions_list = $woo_extensions_list;
+	/** @var WPORGExtensionsList */
+	protected $wporg_extensions_list;
+
+	public function __construct(
+		OutputInterface $output,
+		WooExtensionsList $woo_extensions_list,
+		WPORGExtensionsList $wporg_extensions_list
+	) {
+		$this->output                = $output;
+		$this->woo_extensions_list   = $woo_extensions_list;
+		$this->wporg_extensions_list = $wporg_extensions_list;
 	}
 
 	/**
-	 * @param array<int|string,string|array{source?:string,slug?:string,action?:string,test_tags?:array<string>}> $plugins_or_themes
-	 * @param string                                                                                              $type
-	 * @param string                                                                                              $default_action
+	 * @param array<int|string,string|array{source?:string,slug?:string,action?:string,test_tags?:array<string>,priority?: int}> $plugins_or_themes
+	 * @param string                                                                                                             $type
+	 * @param string                                                                                                             $default_action
+	 *
 	 * @return array<Extension>
 	 */
 	public function parse_extensions( array $plugins_or_themes, string $type, string $default_action = Extension::ACTIONS['activate'] ): array {
@@ -37,19 +47,26 @@ class PluginsAndThemesParser {
 				$extension        = $this->parse_string_extension( $extension, $default_action );
 			} elseif ( is_array( $extension ) ) {
 				$extension = $this->parse_array_extension( $extension, $potential_slug );
+			} elseif ( $extension instanceof Extension ) { // @phpstan-ignore-line
+				// Handle the case where we already have an Extension object.
+				// Check if there's already a matching slug so we can override it,
+				// just like we do for strings/arrays.
+				$this->maybe_override_or_insert( $extension, $parsed_extensions );
+
+				continue;
 			}
 
-			if ( ! isset( $extension['source'] ) && ! isset( $extension['slug'] ) ) {
+			if ( ! isset( $extension['source'] ) && ! isset( $extension['slug'] ) ) { // @phpstan-ignore-line
 				throw new \Exception( "Please provide a 'source' or 'slug' for the plugin." );
 			}
 
 			// Infer slug if not set.
 			if ( ! isset( $extension['slug'] ) ) {
-				$extension['slug'] = $this->infer_slug_from_source( $extension['source'] ?? '' );
+				$extension['slug'] = $this->infer_slug_from_source( $extension['source'] ?? '' ); // @phpstan-ignore-line
 			}
 
 			// If "source" is empty, use slug as the source.
-			if ( ! isset( $extension['source'] ) ) {
+			if ( ! isset( $extension['source'] ) ) { // @phpstan-ignore-line
 				$extension['source'] = $extension['slug'];
 			}
 
@@ -79,55 +96,99 @@ class PluginsAndThemesParser {
 			$extension_instance->action    = $extension['action'];
 			$extension_instance->test_tags = $extension['test_tags'];
 			$extension_instance->type      = $type;
+			$extension_instance->priority  = $extension['priority'] ?? Extension::PRIORITY_MEDIUM; // @phpstan-ignore-line
 
 			// No SUT overriding logic here. The caller must ensure correct action for SUT.
 
 			// If slug already defined, override it with the newest definition.
-			foreach ( $parsed_extensions as $k => $already_parsed ) {
-				if ( $extension_instance->slug === $already_parsed->slug ) {
-					$this->output->writeln( sprintf( '<comment>Overriding extension "%s".</comment>', $extension['slug'] ) );
-					$parsed_extensions[ $k ] = $extension_instance;
-					continue 2;
+			$this->maybe_override_or_insert( $extension_instance, $parsed_extensions );
+		}
+
+		// Add wccom_ids where possible.
+		foreach ( $parsed_extensions as $k => $extension ) {
+			if ( ! isset( $extension->wccom_id ) ) {
+				try {
+					$extension->wccom_id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $extension->slug );
+				} catch ( \Exception $e ) { // phpcs:ignore
+					// No ID found, do nothing.
 				}
 			}
-
-			$parsed_extensions[] = $extension_instance;
 		}
 
 		return $parsed_extensions;
 	}
 
 	/**
+	 * Check if the extension is already in the list and override it if necessary.
+	 *
+	 * @param Extension        $extension
+	 * @param array<Extension> $parsed_extensions
+	 */
+	private function maybe_override_or_insert( Extension $extension, array &$parsed_extensions ): void {
+		foreach ( $parsed_extensions as $k => $already_parsed ) {
+			if ( $extension->slug === $already_parsed->slug ) {
+				if ( $extension->priority < $already_parsed->priority ) {
+					if ( $this->output->isVeryVerbose() ) {
+						$this->output->writeln( sprintf(
+							'<comment>Skipping override of slug "%s" because priority %d < %d.</comment>',
+							$extension->slug,
+							$extension->priority,
+							$already_parsed->priority
+						) );
+					}
+
+					return;
+				}
+
+				// Override.
+				if ( $this->output->isVeryVerbose() ) {
+					$this->output->writeln( sprintf(
+						'<comment>Overriding extension "%s" with priority %d (old was %d).</comment>',
+						$extension->slug,
+						$extension->priority,
+						$already_parsed->priority
+					) );
+				}
+				$parsed_extensions[ $k ] = $extension;
+
+				return;
+			}
+		}
+
+		// No matching slug found, so append it.
+		$parsed_extensions[] = $extension;
+	}
+
+	/**
 	 * Infer slug from source if possible.
 	 */
+	/**
+	 * Infers a slug from the given string "source".
+	 * Flow:
+	 *   1) If it's an HTTP(S) URL → parse the remote filename.
+	 *   2) If it contains a slash → check if file exists locally and parse filename if so.
+	 *   3) If numeric → treat as woo ID.
+	 *   4) If "valid plugin slug" → check local woo list, then WP.org if not found.
+	 *   5) Otherwise, fallback to pathinfo filename.
+	 */
 	protected function infer_slug_from_source( string $source ): string {
-		// If the source looks like a remote URL or non-local scheme, don't call file_exists().
-		// A simple check can be if it starts with a known scheme like http://, https://, ftp://, ssh://, or \\\\.
-		if ( preg_match( '/^(https?|ftp|ssh|\\\\)/i', $source ) ) {
-			// This is a remote URL or network path, skip file_exists().
+		// 1) If it starts with http:// or https:// → remote URL
+		if ( preg_match( '/^https?:\/\//i', $source ) ) {
 			$filename = pathinfo( \QIT_CLI\normalize_path( $source ), PATHINFO_FILENAME );
 			if ( empty( $filename ) ) {
-				throw new \Exception( "Could not infer slug from '{$source}'." );
+				throw new \Exception( "Could not infer slug from remote source '{$source}'." );
 			}
 
 			return $filename;
+		} else {
+			// Throw on any other protocol.
+			if ( preg_match( '/^\w{2,}:\/\//', $source ) ) {
+				throw new \Exception( "Only http(s) protocol is supported. Provided: '{$source}'" );
+			}
 		}
 
-		// If source is numeric, try WCCOM by ID.
-		if ( is_numeric( $source ) ) {
-			$id = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $source );
-
-			return $id;
-		}
-
-		// Otherwise, try WCCOM by slug.
-		try {
-			$id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $source );
-
-			return $source;
-		} catch ( \Exception $e ) {
-			// If not a known WCCOM slug or ID, assume it's a local path or a fallback.
-			// Check if the file is local and exists.
+		// 2) If it contains slash/backslash, treat it as potential local file.
+		if ( strpos( $source, '/' ) !== false || strpos( $source, '\\' ) !== false ) {
 			if ( file_exists( $source ) ) {
 				$filename = pathinfo( \QIT_CLI\normalize_path( $source ), PATHINFO_FILENAME );
 				if ( empty( $filename ) ) {
@@ -135,16 +196,45 @@ class PluginsAndThemesParser {
 				}
 
 				return $filename;
-			} else {
-				// If file doesn't exist locally, just infer the slug from the filename.
-				$filename = pathinfo( \QIT_CLI\normalize_path( $source ), PATHINFO_FILENAME );
-				if ( empty( $filename ) ) {
-					throw new \Exception( "Could not infer slug from '{$source}'." );
-				}
+			}
+			// If slash but not an existing file, we keep going.
+		}
 
-				return $filename;
+		// 3) If numeric => treat as a woo ID.
+		if ( is_numeric( $source ) ) {
+			$id = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $source );
+
+			return $id;
+		}
+
+		// 4) If "valid plugin slug," do woo check, then WP.org.
+		if ( $this->is_valid_plugin_slug( $source ) ) {
+			// Try local woo.
+			try {
+				$this->woo_extensions_list->get_woo_extension_id_by_slug( $source );
+
+				return $source; // recognized woo extension.
+			} catch ( \Exception $e ) {
+				// Not known by woo => check WP.org.
+				if ( $this->wporg_extensions_list->is_wporg_plugin( $source ) ) {
+					return $source;  // recognized plugin slug.
+				} elseif ( $this->wporg_extensions_list->is_wporg_theme( $source ) ) {
+					return $source;  // recognized theme slug.
+				}
 			}
 		}
+
+		// 5) Fallback → parse final path segment from the string.
+		$filename = pathinfo( \QIT_CLI\normalize_path( $source ), PATHINFO_FILENAME );
+		if ( empty( $filename ) ) {
+			throw new \Exception( "Could not infer slug from '{$source}'." );
+		}
+
+		return $filename;
+	}
+
+	protected function is_valid_plugin_slug( string $slug ): bool {
+		return (bool) preg_match( '/^[a-z0-9_-]+$/i', $slug );
 	}
 
 	/**
@@ -153,9 +243,23 @@ class PluginsAndThemesParser {
 	protected function validate_test_tag( string $test_tag ): void {
 		if ( ! file_exists( $test_tag ) ) {
 			if ( ! preg_match( '/^[a-z0-9-_]+$/i', $test_tag ) ) {
-				throw new \InvalidArgumentException(
-					sprintf( 'Invalid test tag "%s". Test tags must be alphanumeric (dashes/underscores allowed), zip file, or directory.', $test_tag )
-				);
+				// Has "/" but not "http".
+				$looks_like_local_path = strpos( $test_tag, '/' ) !== false && strpos( $test_tag, 'http' ) === false;
+
+				if ( $looks_like_local_path ) {
+					$attempted_path = rtrim( getcwd(), DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . ltrim( $test_tag, DIRECTORY_SEPARATOR );
+
+					throw new \InvalidArgumentException( sprintf(
+						'Invalid test tag "%s". If this is a file/directory, please make sure that it exists. ' .
+						'Attempted path: %s. Please provide an existing file/directory or use a valid alphanumeric tag (with optional dashes/underscores).',
+						$test_tag,
+						$attempted_path
+					) );
+				} else {
+					throw new \InvalidArgumentException(
+						sprintf( 'Invalid test tag "%s". Test tags must be alphanumeric (dashes/underscores allowed), zip file, or directory.', $test_tag )
+					);
+				}
 			}
 		} else {
 			// It's a file/directory. If file, must be zip.
@@ -175,9 +279,10 @@ class PluginsAndThemesParser {
 	 *     source: string,
 	 *     action: string,
 	 *     test_tags: array<string>,
+	 *     priority: int,
 	 * }
 	 */
-	protected function parse_string_extension( string $extension, string $default_action ): array {
+	public function parse_string_extension( string $extension, string $default_action ): array {
 		$json_array = json_decode( $extension, true );
 
 		// Early bail: Long format, JSON.
@@ -254,88 +359,133 @@ class PluginsAndThemesParser {
 			$parsed_short_syntax['source'] = $extension;
 		}
 
+		$parsed_short_syntax['priority'] = Extension::PRIORITY_MEDIUM;
+
 		return $parsed_short_syntax;
 	}
 
 	/**
-	 * @param array<mixed> $extension
-	 * @param int|string   $potential_slug
+	 * Parse an individual plugin/theme entry from the environment config.
+	 *
+	 * @param array{action?: string, slug?: string, source?: string, test_tags?: string[]} $extension
+	 *
+	 * @param int|string                                                                   $potential_slug The JSON config key for this plugin/theme.
 	 *
 	 * @return array{
 	 *     action?: string,
-	 *     slug?: string,
-	 *     source?: string,
+	 *     slug: string,
+	 *     source: string,
 	 *     test_tags?: array<string>,
-	 * } The parsed extension.
-	 * @throws \InvalidArgumentException When couldn't parse or validate the extension that was defined in a config file.
+	 *     priority: int,
+	 * } This will always have 'slug' and 'source' when returned.
+	 *
+	 * @throws \InvalidArgumentException If the extension array is invalid or
+	 *                                   we could not figure out a valid slug/source.
 	 */
 	protected function parse_array_extension( array $extension, $potential_slug ): array {
-		/*
-		 * "$potential_slug" will usually hold the slug, example:
-		 *
-		 * plugins:
-		 *  qit-beaver: (This is $potential_slug)
-		 *      source: ~/qit-beaver
-		 *      action: install
-		 *
-		 * We use this key, unless a slug is explicitly defined:
-		 * plugins:
-		 *  qit-beaver:
-		 *      slug: qit-beaver (if this is set, we use this)
-		 *      source: ~/qit-beaver
-		 */
-		if ( ! is_numeric( $potential_slug ) && ! isset( $extension['slug'] ) ) {
-			$extension['slug'] = $potential_slug;
-		}
-
-		/*
-		 * Validate only allowed keys are defined.
-		 *
-		 * This is useful to clearly inform the user about typos, such as "test_tag" instead of "test_tags".
-		 */
-		$allowed_keys = [
-			'action',
-			'slug',
-			'source',
-			'test_tags',
-		];
+		// Which keys are allowed in the extension’s array.
+		$allowed_keys = [ 'action', 'slug', 'source', 'test_tags' ];
 		foreach ( $extension as $k => $v ) {
 			if ( ! in_array( $k, $allowed_keys, true ) ) {
-				throw new \InvalidArgumentException( sprintf( 'Invalid key "%s" in extension array. Expected keys: %s', $k, implode( ', ', $allowed_keys ) ) );
+				throw new \InvalidArgumentException(
+					sprintf(
+						'Invalid key "%s" in extension array. Allowed keys: %s',
+						$k,
+						implode( ', ', $allowed_keys )
+					)
+				);
 			}
 		}
 
-		// If user set a "source", make sure it's valid.
-		if ( isset( $extension['source'] ) ) {
-			// @phpstan-ignore-next-line
-			if ( ! is_string( $extension['source'] ) ) {
-				throw new \InvalidArgumentException( sprintf( 'Invalid source "%s". Source must be a string.', $extension['source'] ) );
-			}
-
-			if ( empty( $extension['source'] ) ) {
-				throw new \InvalidArgumentException( 'If set, source cannot be empty.' );
-			}
-		}
-
-		// If user set an "action", make sure it's valid.
+		// ACTION: Validate if set.
 		if ( isset( $extension['action'] ) ) {
 			if ( ! in_array( $extension['action'], Extension::ACTIONS, true ) ) {
-				throw new \InvalidArgumentException( sprintf( 'Invalid action "%s". Valid actions are: %s', $extension['action'], implode( ', ', Extension::ACTIONS ) ) );
+				throw new \InvalidArgumentException(
+					sprintf(
+						'Invalid action "%s". Valid actions are: %s',
+						$extension['action'],
+						implode( ', ', Extension::ACTIONS )
+					)
+				);
 			}
 		}
 
-		// If user set "test_tags", make sure it's valid.
+		// TEST_TAGS: Validate if set.
 		if ( isset( $extension['test_tags'] ) ) {
-			// @phpstan-ignore-next-line
-			if ( ! is_array( $extension['test_tags'] ) ) {
+			if ( ! is_array( $extension['test_tags'] ) ) { // @phpstan-ignore-line
 				$example              = $extension;
-				$example['test_tags'] = [
-					'example-foo',
-					'example-bar',
-				];
-				throw new \InvalidArgumentException( sprintf( "\"test_tags\" must be an array. \n\nActual:\n%s \n\nExpected: \n%s.", json_encode( $extension, JSON_PRETTY_PRINT ), json_encode( $example, JSON_PRETTY_PRINT ) ) );
+				$example['test_tags'] = [ 'example-foo', 'example-bar' ];
+				throw new \InvalidArgumentException(
+					sprintf(
+						"\"test_tags\" must be an array.\n\nActual:\n%s\n\nExpected:\n%s",
+						json_encode( $extension, JSON_PRETTY_PRINT ),
+						json_encode( $example, JSON_PRETTY_PRINT )
+					)
+				);
 			}
 		}
+
+		/*
+		 * SOURCE
+		 *
+		 * 1) Extract $source if set, else use the $potential_slug.
+		 * 2) Validate that it’s a non-empty string.
+		 * 3) Normalize JSON-escaped slashes.
+		 */
+		$source = array_key_exists( 'source', $extension ) ? $extension['source'] : (string) $potential_slug;
+
+		if ( is_numeric( $source ) ) {
+			$source = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $source );
+		}
+
+		if ( ! is_string( $source ) ) {
+			throw new \InvalidArgumentException(
+				sprintf(
+					'Invalid source. Must be a string, got: %s',
+					(string) $source
+				)
+			);
+		}
+		if ( $source === '' ) {
+			throw new \InvalidArgumentException(
+				'If "source" is set, it cannot be empty.'
+			);
+		}
+		// Fix "https:\/\/" => "https://".
+		$source              = str_replace( '\\/', '/', $source );
+		$extension['source'] = $source;
+
+		/*
+		 * SLUG
+		 *
+		 * 1) If a slug is explicitly set, use it.
+		 * 2) Else infer from numeric key (Woo.com ID), or if valid slug, or from $source.
+		 */
+		$slug = array_key_exists( 'slug', $extension ) ? $extension['slug'] : null;
+
+		if ( $slug === null ) {
+			if ( is_numeric( $potential_slug ) ) {
+				$woo_id = (int) $potential_slug;
+				$slug   = $this->woo_extensions_list->get_woo_extension_slug_by_id( $woo_id );
+			} elseif ( $this->is_valid_plugin_slug( (string) $potential_slug ) ) {
+				$slug = (string) $potential_slug;
+			} else {
+				// Fall back to inferring from $source.
+				$slug = $this->infer_slug_from_source( $source );
+			}
+		}
+
+		if ( ! is_string( $slug ) || $slug === '' ) {
+			throw new \InvalidArgumentException(
+				sprintf(
+					"Could not determine a valid slug for '%s'. Please set 'slug' or a valid 'source'.",
+					(string) $potential_slug
+				)
+			);
+		}
+
+		$extension['slug']     = $slug;
+		$extension['priority'] = Extension::PRIORITY_MEDIUM;
 
 		return $extension;
 	}

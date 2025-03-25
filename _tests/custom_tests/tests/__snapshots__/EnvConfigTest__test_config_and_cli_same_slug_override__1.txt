@@ -1,0 +1,47 @@
+{
+    "environment": "e2e",
+    "dependencies_mode": "activate",
+    "temporary_env": "qit-cli\/_tests\/custom_tests\/tmp\/tmp_qit_config-qit_custom_tests_ENV_ID_NORMALIZED\/temporary-envs\/e2e-ENV_ID_NORMALIZED\/",
+    "created_at": 1700000000,
+    "status": "pending",
+    "env_id": "ENV_ID_NORMALIZED",
+    "volumes": {
+        "\/var\/www\/html\/wp-content\/mu-plugins\/custom-test-mu-plugin.php:ro": "qit-cli\/_tests\/custom_tests\/helpers\/custom-test-mu-plugin.php"
+    },
+    "docker_images": [],
+    "docker_network": null,
+    "php_extensions": [],
+    "plugins": [
+        {
+            "slug": "woocommerce",
+            "entrypoint": null,
+            "source": "woocommerce",
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "NORMALIZED_VERSION",
+            "action": "activate",
+            "test_tags": [
+                "newTestTag"
+            ],
+            "priority": 50,
+            "wccom_id": 18734003134382
+        }
+    ],
+    "themes": [],
+    "tunnel": false,
+    "site_url": null,
+    "wp": "latest",
+    "object_cache": false,
+    "php_version": "7.4",
+    "nginx_port": null,
+    "sut_slug": null,
+    "sut_type": null,
+    "sut_entrypoint": null,
+    "sut_path": null,
+    "sut_id": null,
+    "domain": "normalized.localhost",
+    "tests": [],
+    "playwright_config": [],
+    "pw_test_tag": ""
+}

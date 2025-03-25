@@ -8,7 +8,9 @@
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
         "version": "undefined",
         "action": null,
-        "test_tags": null
+        "test_tags": null,
+        "priority": 50,
+        "wccom_id": null
     },
     "plugin2": {
         "slug": "plugin2",
@@ -19,7 +21,9 @@
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
         "version": "undefined",
         "action": null,
-        "test_tags": null
+        "test_tags": null,
+        "priority": 50,
+        "wccom_id": null
     },
     "theme1": {
         "slug": "theme1",
@@ -30,6 +34,8 @@
         "handler": "QIT_CLI\\Environment\\ExtensionDownload\\Handlers\\QITHandler",
         "version": "undefined",
         "action": null,
-        "test_tags": null
+        "test_tags": null,
+        "priority": 50,
+        "wccom_id": null
     }
 }

@@ -118,38 +118,10 @@ $container->singleton( EnvConfigLoader::class );
 
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 
-/*
- * If the parameter "--json" is present, make sure only JSON
- * is outputted, ignoring all output that is not JSON.
- */
-// phpcs:ignore Squiz.Commenting.ClassComment.WrongStyle
-class QIT_JSON_Filter extends \php_user_filter {
-	public function filter( $in, $out, &$consumed, $closing ): int {
-		while ( $bucket = stream_bucket_make_writeable( $in ) ) { // phpcs:ignore WordPress.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition,Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
-			if ( ! is_null( json_decode( $bucket->data ) ) ) {
-				$consumed += $bucket->datalen;
-				stream_bucket_append( $out, $bucket );
-			} else {
-				if ( ! empty( getenv( 'QIT_NON_JSON_OUTPUT' ) ) ) {
-					file_put_contents( getenv( 'QIT_NON_JSON_OUTPUT' ), $bucket->data, FILE_APPEND );
-				}
-			}
-		}
-
-		return PSFS_PASS_ON;
-	}
-}
-
-if ( ! stream_filter_register( 'qit_json', QIT_JSON_Filter::class ) ) {
-	exit( 151 );
-}
+require_once __DIR__ . '/json-filter.php';
 
 if ( in_array( '--json', $GLOBALS['argv'], true ) ) {
-	$container->setVar( 'QIT_JSON_MODE', true );
-	/* @phan-suppress-next-line PhanUndeclaredMethod */
-	if ( ! stream_filter_append( App::make( Output::class )->getStream(), 'qit_json' ) ) {
-		exit( 152 );
-	}
+	App::make( \QIT_CLI\JsonOutput::class )->init( $container );
 }
 
 // Detect whether this is a "_completion" command that runs on the background in Bash. If so, no remote requests will be made.
@@ -157,7 +129,7 @@ $container->setVar( 'doing_autocompletion', stripos( (string) $container->make( 
 
 try {
 	if ( ! $container->getVar( 'doing_autocompletion' ) ) {
-		App::make( ManagerSync::class )->maybe_sync();
+		App::make( ManagerSync::class )->maybe_sync( is_array( $GLOBALS['argv'] ) && in_array( 'sync', $GLOBALS['argv'], true ) ); // @phpstan-ignore-line
 		App::make( ManagerSync::class )->enforce_latest_version();
 	}
 } catch ( UpdateRequiredException $e ) {

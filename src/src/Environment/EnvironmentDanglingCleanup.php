@@ -70,6 +70,16 @@ class EnvironmentDanglingCleanup {
 	}
 
 	public function cleanup_dangling(): void {
+		try {
+			App::make( Docker::class )->find_docker();
+		} catch ( \Exception $e ) {
+			if ( $this->output->isVerbose() ) {
+				$this->output->writeln( '<error>Docker not found, skipping cleanup.</error>' );
+			}
+
+			return;
+		}
+
 		if ( getenv( 'QIT_DISABLE_CLEANUP' ) === '1' ) {
 			return;
 		}

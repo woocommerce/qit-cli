@@ -123,9 +123,6 @@ YML;
 				'/path/to/file/baz-extension:test:rc,feature-foo', // Directory, short syntax.
 				'/path/to/file/bar-extension.zip', // File, short syntax, defaults.
 				'C:\\Program Files\\example\\qit-beaver.zip',  // Windows file path.
-				'ftp://ftp.example.com/qit-beaver.zip',  // We don't really support this, but just in case.
-				'ssh://example.com:/path/to/qit-beaver.zip', // We don't really support this, but just in case.
-				'\\\\network-share\\plugins\\qit-beaver.zip', // We don't really support this, but just in case.
 				'{"source":"https://github.com/qitbeaver/foo-extension.zip"}', // If they want to, just use JSON.
 				'{"source":"/path/to/file/bar-extension.zip"}', // If they want to, just use JSON.
 				'{"source":"/path/to/file/baz-extension"}', // If they want to, just use JSON.

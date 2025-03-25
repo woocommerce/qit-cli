@@ -5,6 +5,7 @@ namespace QIT_CLI\Environment;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Environment\Environments\EnvInfo;
+use QIT_CLI\PluginDependencies;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Serializer\Serializer;
 
@@ -24,11 +25,15 @@ class EnvConfigLoader {
 	/** @var array<mixed>|null */
 	private $loaded_config = null;
 
-	public function __construct( Serializer $serializer, Cache $cache, OutputInterface $output, PluginsAndThemesParser $plugins_and_themes_parser ) {
+	/** @var PluginDependencies */
+	private $dependencies;
+
+	public function __construct( Serializer $serializer, Cache $cache, OutputInterface $output, PluginsAndThemesParser $plugins_and_themes_parser, PluginDependencies $dependencies ) {
 		$this->serializer                = $serializer;
 		$this->cache                     = $cache;
 		$this->output                    = $output;
 		$this->plugins_and_themes_parser = $plugins_and_themes_parser;
+		$this->dependencies              = $dependencies;
 	}
 
 	/**
@@ -94,6 +99,22 @@ class EnvConfigLoader {
 			Extension::TYPES['theme'],
 			getenv( 'QIT_UP_AND_TEST' ) ? Extension::ACTIONS['bootstrap'] : Extension::ACTIONS['activate']
 		);
+
+		// Plugin and PHP Extension Dependencies.
+		$deps = $this->dependencies->get_dependencies(
+			$env_config['plugin'],
+			$env_config['theme'],
+			$env_config['dependencies_mode'] ?? 'activate'
+		);
+
+		// Merge plugins dependencies with existing plugins array.
+		$this->dependencies->maybe_add_plugin_dependencies( $deps['plugin'], $env_config['plugin'] );
+
+		if ( empty( $env_config['php_extension'] ) ) {
+			$env_config['php_extension'] = [];
+		}
+
+		$this->dependencies->maybe_add_php_extensions( $deps['php_extension'], $env_config['php_extension'] );
 
 		// Requires.
 		foreach ( $env_config['require'] ?? [] as $file ) {

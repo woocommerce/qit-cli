@@ -29,7 +29,7 @@ class QITHandler extends Handler {
 		$extensions_to_download = array_filter(
 			$extensions,
 			static function ( Extension $ext ) {
-				return ! file_exists( $ext->downloaded_source );
+				return ! file_exists( $ext->downloaded_source ?? '' );
 			}
 		);
 
@@ -111,10 +111,7 @@ class QITHandler extends Handler {
 		// Match them up with the original $extensions array.
 		foreach ( $extensions as $ext ) {
 			// If already downloaded (or not in $extensions_to_download), skip.
-			if (
-				! empty( $ext->downloaded_source ) &&
-				file_exists( $ext->downloaded_source )
-			) {
+			if ( file_exists( $ext->downloaded_source ?? '' ) ) {
 				continue;
 			}
 

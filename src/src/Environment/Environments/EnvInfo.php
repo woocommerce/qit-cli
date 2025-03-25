@@ -27,6 +27,9 @@ abstract class EnvInfo implements \JsonSerializable {
 	public $environment;
 
 	/** @var string */
+	public $dependencies_mode;
+
+	/** @var string */
 	public $temporary_env;
 
 	/** @var int */

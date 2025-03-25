@@ -2,7 +2,7 @@
     {
         "slug": "qit-beaver",
         "entrypoint": null,
-        "source": "\\\\network-share\\plugins\\qit-beaver.zip",
+        "source": "C:\\Program Files\\example\\qit-beaver.zip",
         "downloaded_source": null,
         "type": "plugin",
         "handler": null,
@@ -10,7 +10,9 @@
         "action": "activate",
         "test_tags": [
             "default"
-        ]
+        ],
+        "priority": 50,
+        "wccom_id": 1234
     },
     {
         "slug": "qit-cat",
@@ -24,7 +26,9 @@
         "test_tags": [
             "rc",
             "\/tmp\/test-tag-local-zip.zip"
-        ]
+        ],
+        "priority": 50,
+        "wccom_id": 12345
     },
     {
         "slug": "foo-extension",
@@ -37,7 +41,9 @@
         "action": "activate",
         "test_tags": [
             "default"
-        ]
+        ],
+        "priority": 50,
+        "wccom_id": 123
     },
     {
         "slug": "bar-extension",
@@ -50,7 +56,9 @@
         "action": "activate",
         "test_tags": [
             "default"
-        ]
+        ],
+        "priority": 50,
+        "wccom_id": 456
     },
     {
         "slug": "baz-extension",
@@ -63,6 +71,8 @@
         "action": "activate",
         "test_tags": [
             "default"
-        ]
+        ],
+        "priority": 50,
+        "wccom_id": 789
     }
 ]

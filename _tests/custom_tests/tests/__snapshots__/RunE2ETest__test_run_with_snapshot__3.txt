@@ -1,4 +1,5 @@
 Downloading plugins and themes...
+No test tag "default" found for extension "storefront".
 Starting Docker Environment...
 Installing WordPress...
 Activating plugins...
@@ -7,7 +8,7 @@ Moving must-use plugin of deli /qit/tests/e2e/deli/local/bootstrap/mu-plugin.php
 npx playwright test --trace on --config /qit/tests/e2e/qit-playwright.config.js  2>&1
 Running E2E Tests
 Running 4 tests using 1 worker
-✓  1 [setup] Deli (Shell) › scripts/bash.js:4:5 › Bash Script (TIME)
+✓  1 [setup] Deli (Shell) › scripts/bash.js:5:5 › Bash Script (TIME)
 ✓  2 [setup] Deli (JS) › deli/local/bootstrap/setup.js:11:5 › Isolated Setup (TIME)
 ✘  3 [test] Deli (Run) › deli/local/activate-theme.spec.js:4:5 › I can activate Deli (TIME)
 could not read file /qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-actual.png Error: ENOENT: no such file or directory, open '/qit/tests/e2e/deli/local/__snapshots__/activate-theme.spec.js/home.png-actual.png'
@@ -58,12 +59,12 @@ Call log:
 [2m  - fonts loaded[22m
 [2m  - captured a stable screenshot[22m
 [2m  - (SMALL_DIFF close to 892)[22m
-10 |     await page.getByLabel('Activate Deli').click();
-11 |     await page.goto('/');
-> 12 |     await expect(page).toHaveScreenshot('home.png', { maxDiffPixels: 100 });
+7 |     await page.getByLabel('Activate Deli').click();
+8 |     await page.goto('/');
+>  9 |     await expect(page).toHaveScreenshot('home.png', { maxDiffPixels: 100 });
 |                        ^
-13 | });
-at /qit/tests/e2e/deli/local/activate-theme.spec.js:12:24
+10 | });
+at /qit/tests/e2e/deli/local/activate-theme.spec.js:9:24
 attachment #1: home-expected.png (image/png) ───────────────────────────────────────────────────
 deli/local/__snapshots__/activate-theme.spec.js/home.png
 ────────────────────────────────────────────────────────────────────────────────────────────────
@@ -85,21 +86,17 @@ Usage:
 npx playwright show-trace ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run-/trace.zip
 ────────────────────────────────────────────────────────────────────────────────────────────────
 Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
-Error: [31mTimed out 20000ms waiting for [39m[2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m
-Locator: getByRole('cell', { name: 'Deli' })
-Expected: visible
-Received: <element(s) not found>
+TimeoutError: locator.click: Timeout 20000ms exceeded.
 Call log:
-[2m  - expect.toBeVisible with timeout 20000ms[22m
-[2m  - waiting for getByRole('cell', { name: 'Deli' })[22m
+[2m  - waiting for getByLabel('Activate Deli')[22m
 5 |     await qit.loginAsAdmin(page);
 6 |     await page.getByRole('link', { name: 'Appearance' }).click();
->  7 |     await expect(page.getByRole('cell', { name: 'Deli' })).toBeVisible();
-|                                                            ^
-8 |     await page.getByRole('link', { name: 'Install Parent Theme' }).click();
-9 |     await page.getByRole('link', { name: 'Activate “Storefront”' }).click();
-10 |     await page.getByLabel('Activate Deli').click();
-at /qit/tests/e2e/deli/local/activate-theme.spec.js:7:60
+>  7 |     await page.getByLabel('Activate Deli').click();
+|                                            ^
+8 |     await page.goto('/');
+9 |     await expect(page).toHaveScreenshot('home.png', { maxDiffPixels: 100 });
+10 | });
+at /qit/tests/e2e/deli/local/activate-theme.spec.js:7:44
 attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
 ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry1/test-failed-1.png
 ────────────────────────────────────────────────────────────────────────────────────────────────
@@ -112,21 +109,17 @@ Usage:
 npx playwright show-trace ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry1/trace.zip
 ────────────────────────────────────────────────────────────────────────────────────────────────
 Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
-Error: [31mTimed out 20000ms waiting for [39m[2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m
-Locator: getByRole('cell', { name: 'Deli' })
-Expected: visible
-Received: <element(s) not found>
+TimeoutError: locator.click: Timeout 20000ms exceeded.
 Call log:
-[2m  - expect.toBeVisible with timeout 20000ms[22m
-[2m  - waiting for getByRole('cell', { name: 'Deli' })[22m
+[2m  - waiting for getByLabel('Activate Deli')[22m
 5 |     await qit.loginAsAdmin(page);
 6 |     await page.getByRole('link', { name: 'Appearance' }).click();
->  7 |     await expect(page.getByRole('cell', { name: 'Deli' })).toBeVisible();
-|                                                            ^
-8 |     await page.getByRole('link', { name: 'Install Parent Theme' }).click();
-9 |     await page.getByRole('link', { name: 'Activate “Storefront”' }).click();
-10 |     await page.getByLabel('Activate Deli').click();
-at /qit/tests/e2e/deli/local/activate-theme.spec.js:7:60
+>  7 |     await page.getByLabel('Activate Deli').click();
+|                                            ^
+8 |     await page.goto('/');
+9 |     await expect(page).toHaveScreenshot('home.png', { maxDiffPixels: 100 });
+10 | });
+at /qit/tests/e2e/deli/local/activate-theme.spec.js:7:44
 attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
 ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry2/test-failed-1.png
 ────────────────────────────────────────────────────────────────────────────────────────────────
