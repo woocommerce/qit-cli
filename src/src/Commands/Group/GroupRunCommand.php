@@ -47,8 +47,8 @@ class GroupRunCommand extends Command {
 					return $result;
 				}
 
-				$group['group_id']   = $response_data['group_id'];
-				$group['identifier'] = $group_identifier;
+				$group['group_id']   = $response_data['group_id'] ?? '';
+				$group['identifier'] = $group_identifier ?? '';
 				$group['status']     = TestGroup::STATUS_RUNNING;
 
 				foreach ( $group['tests'] as $index => $test ) {
