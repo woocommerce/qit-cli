@@ -52,6 +52,13 @@ class TestGroup {
 	public function create_or_update( array $options, string $test_type, ?InputInterface $input = null, array $env_vars = [] ): void {
 		$group = $this->cache->get( 'group' );
 
+		if (
+			isset( $group['status'] ) &&
+			self::STATUS_COMPLETED === $group['status']
+		) {
+			throw new \Exception( 'The test group has already been completed. Please delete it with `group:clear` and create a new one.' );
+		}
+
 		if ( $this->pending_test_group_exists() ) {
 			throw new \Exception( 'A pending test group already exists. Either wait for it to complete or delete it with `group:clear`.' );
 		}
