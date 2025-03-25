@@ -53,6 +53,7 @@ class GroupShowCommand extends Command {
 
 			$output->writeln( sprintf( 'Test Type: <info>%s</info>', $test_type ) );
 			$output->writeln( sprintf( 'Params: <comment>%s</comment>', json_encode( $params ) ) );
+			$output->writeln( sprintf( 'Test Results Manager URL: <info>%s</info>', $test['test_run']['test_results_manager_url'] ) );
 
 			if ( isset( $test['status'] ) ) {
 				$output->writeln( sprintf( 'Status: <info>%s</info>', $test['status'] ) );
