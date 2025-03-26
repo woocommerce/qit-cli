@@ -83,9 +83,12 @@ class ExtensionSetResolver {
 		);
 
 		// Convert extensions to array format for parser.
-		$extensions_to_parse = array_map(function ( $extension ) {
-			return [ 'slug' => $extension ];
-		}, $extensions);
+		$extensions_to_parse = [];
+		foreach ( $extensions as $extension ) {
+			$extensions_to_parse[ $extension ] = [
+				'slug' => $extension,
+			];
+		}
 
 		// Parse extensions using the parser.
 		$parsed_extensions = $this->plugins_and_themes_parser->parse_extensions(
