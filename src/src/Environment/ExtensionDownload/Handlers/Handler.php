@@ -60,11 +60,11 @@ abstract class Handler {
 				$cache_burst = gmdate( 'z' );
 			} else {
 				/*
-				 * Otherwise, cache it for 1 minute.
+				 * Otherwise, cache it for 1 hour.
 				 * This is because we don't know what version we should be fetching, so we can't cache burst it with confidence.
-				 * We cache it for 1 minute which is just enough to throttle requests.
+				 * We cache it for 1 hour.
 				 */
-				$cache_burst = gmdate( 'YmdHi' );
+				$cache_burst = gmdate( 'YmdH' );
 			}
 		}
 
