@@ -11,7 +11,12 @@ use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\LocalTests\E2E\Runner\E2ERunner;
 use QIT_CLI\LocalTests\E2E\Runner\PlaywrightRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class E2ETestManager {
 	/** @var Docker $docker */
@@ -101,6 +106,28 @@ class E2ETestManager {
 				}
 			} else {
 				$test_result->register_bootstrap( $plugin_slug, 'must-use-plugin.php', 'not_present' );
+			}
+		}
+
+		// 2) If $bootstrap_only is set, skip the real test runs.
+		if ( $bootstrap_only ) {
+			$io = new SymfonyStyle( App::make( \Symfony\Component\Console\Input\InputInterface::class ), $this->output );
+
+			if ( $test_mode === self::$test_modes['codegen'] ) {
+				$io->success( "Environment is running in codegen mode. Generate your tests with Playwright UI." );
+				$this->playwright_codegen->open_codegen( $env_info );
+
+				return Command::SUCCESS;
+			} else {
+				$this->output->writeln( '' );
+
+				$question = new Question( '<comment>Environment ready. Press "Enter" when you are done to terminate it.</comment>' );
+				$question->setValidator( function ( $answer ) {
+					return $answer;
+				} );
+				( new QuestionHelper() )->ask( App::make( InputInterface::class ), $this->output, $question );
+
+				return Command::SUCCESS;
 			}
 		}
 

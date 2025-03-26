@@ -141,6 +141,10 @@ class PlaywrightRunner extends E2ERunner {
 			sprintf( 'BASE_URL=%s', $env_info->site_url ),
 			'-e',
 			sprintf( 'QIT_DOMAIN=%s', $env_info->domain ),
+			'-e',
+			sprintf( 'QIT_INTERNAL_DOMAIN=%s', sprintf( 'host.docker.internal:%s', $env_info->nginx_port ) ),
+			'-e',
+			sprintf( 'QIT_INTERNAL_NGINX=%s', sprintf( 'qitenvnginx%s', $env_info->env_id ) ),
 			'-v',
 			Config::get_qit_dir() . 'cache:/qit/cache',
 			// Map the named volume so that PW can share data with the PHP container and vice-versa.

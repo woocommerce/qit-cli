@@ -1,6 +1,9 @@
 #!/bin/bash
 
 # This is a shared setup script that runs before all plugins' tests are executed.
+#
+# This is an advanced setup, usually you don't have to worry about this file.
+#
 # Use it to:
 # - Set WordPress settings to a known state
 # - Create shared test data

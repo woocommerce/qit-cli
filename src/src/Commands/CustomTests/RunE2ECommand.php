@@ -283,6 +283,11 @@ class RunE2ECommand extends DynamicCommand {
 		$io               = new SymfonyStyle( $input, $output );
 		$io->setDecorated( true );
 
+		// If "up_only" or "bootstrap", don't print final message. Assume if we got here, user already used the environment and already destroyed it.
+		if ( $wait ) {
+			return Command::SUCCESS;
+		}
+
 		if ( $exit_status_code === Command::SUCCESS ) {
 			$io->success( "Tests passed. Run 'qit e2e-report' to view the report." );
 
