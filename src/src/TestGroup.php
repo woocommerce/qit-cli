@@ -73,6 +73,10 @@ class TestGroup {
 		$test_type_exists = false;
 		$hash             = ! is_null( $input ) ? md5( json_encode( $input->getOptions() ) ) : md5( json_encode( $options ) );
 
+		if ( count( $group['tests'] ) >= 10 ) {
+			throw new \Exception( 'The test group cannot contain more than 10 tests.' );
+		}
+
 		if ( count( $group['tests'] ) > 0 ) {
 			foreach ( $group['tests'] as $test ) {
 				if ( $test['type'] === $test_type &&
@@ -329,7 +333,7 @@ class TestGroup {
 		 * If any test run is not completed, the group is still pending.
 		 */
 		foreach ( $response_data['test_runs'] as $test ) {
-			if ( ! in_array( $test['status'], [ 'hanged', 'failed', 'success', 'cancelled' ] ) ) {
+			if ( ! in_array( $test['status'], [ 'hanged', 'failed', 'success', 'cancelled', 'warning', 'skipped' ] ) ) {
 				$status = self::STATUS_PENDING;
 			}
 
