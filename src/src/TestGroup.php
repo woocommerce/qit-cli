@@ -165,7 +165,7 @@ class TestGroup {
 			// @phan-suppress-next-line PhanTypeMismatchForeach
 			foreach ( $group['tests'] as $test ) {
 				// Only run remote tests.
-				if ( in_array( ! $test['type'], self::LOCAL_TEST_TYPES ) ) {
+				if ( ! in_array( $test['type'], self::LOCAL_TEST_TYPES ) ) {
 					$test_run_ids[] = $test['test_run']['test_run_id'];
 				}
 			}
@@ -174,9 +174,11 @@ class TestGroup {
 				return [];
 			}
 
-			$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/run-group' ) )
+			$test_run_ids = implode( ',', $test_run_ids );
+
+			$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/enqueue-group-runs' ) )
 				->with_method( 'POST' )
-				->with_post_body( $test_run_ids )
+				->with_post_body( [ 'test_run_ids' => $test_run_ids ] )
 				->request();
 		} else {
 			$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/create-group' ) )
@@ -243,6 +245,8 @@ class TestGroup {
 		foreach ( $response_data['test_run_data'] as $test ) {
 			$output->writeln( '--------------------------------' );
 			$output->writeln( sprintf( '<info>Test Run ID: %s</info>', $test['test_run_id'] ) );
+			$output->writeln( sprintf( '<info>Woo ID: %s</info>', $test['woo_id'] ) );
+			$output->writeln( sprintf( '<info>Slug: %s</info>', $test['slug'] ) );
 			$output->writeln( sprintf( '<info>Test Type: %s</info>', $test['test_type_display'] ) );
 			$output->writeln( sprintf( '<info>Test Results Manager URL: %s</info>', $test['test_results_manager_url'] ) );
 			$output->writeln( sprintf( '<info>Test Run Status: %s</info>', $test['status'] ) );
@@ -319,6 +323,7 @@ class TestGroup {
 
 		$response_data = json_decode( $response, true ) ?? [];
 		$status        = self::STATUS_COMPLETED;
+		$all_pending   = true;
 
 		/**
 		 * If any test run is not completed, the group is still pending.
@@ -326,8 +331,21 @@ class TestGroup {
 		foreach ( $response_data['test_runs'] as $test ) {
 			if ( ! in_array( $test['status'], [ 'hanged', 'failed', 'success', 'cancelled' ] ) ) {
 				$status = self::STATUS_PENDING;
-				break;
 			}
+
+			if ( $test['status'] !== 'pending' ) {
+				$all_pending = false;
+			}
+		}
+
+		/**
+		 * If all tests are pending and the group is registered, the group is still registered.
+		 */
+		if (
+			$all_pending &&
+			$group['status'] === self::STATUS_REGISTERED
+		) {
+			$status = self::STATUS_REGISTERED;
 		}
 
 		$group['status']           = $status;
