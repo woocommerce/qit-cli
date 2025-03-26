@@ -7,6 +7,8 @@ Moving must-use plugin of woocommerce-amazon-s3-storage /qit/tests/e2e/woocommer
 npx playwright test --trace on --config /qit/tests/e2e/qit-playwright.config.js  2>&1
 Running E2E Tests
 Running 3 tests using 1 worker
+[1m[34m=== Isolated Setup for woocommerce-amazon-s3-storage (Bash) ===[0m
+[QIT] Finished bash script. Exit code: 0
 ✓  1 [setup] Amazon S3 Storage (Shell) › scripts/bash.js:5:5 › Bash Script (TIME)
 ✓  2 [setup] Amazon S3 Storage (JS) › woocommerce-amazon-s3-storage/self-test-tag-and-run/bootstrap/setup.js:11:5 › Isolated Setup (TIME)
 ✓  3 [test] Amazon S3 Storage (Run) › woocommerce-amazon-s3-storage/self-test-tag-and-run/example.spec.js:9:5 › I can see my plugin menu (TIME)
