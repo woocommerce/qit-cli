@@ -92,6 +92,12 @@ class EnvConfigTest extends TestCase {
 				$data = preg_replace( '/[a-f0-9]{10,}/i', 'ENV_ID_NORMALIZED', $data );
 				// Remove everything up to qit-cli/_tests
 				$data = preg_replace( '#.*?(qit-cli/_tests.*)#', '$1', $data );
+
+				$real_temp_dir = realpath( sys_get_temp_dir() );
+				if ( $real_temp_dir ) {
+					$data = str_replace( $real_temp_dir, '/tmp', $data );
+					$data = str_replace( rtrim( $real_temp_dir, '/' ) . '/', '/tmp/', $data );
+				}
 			}
 
 			return $data;
