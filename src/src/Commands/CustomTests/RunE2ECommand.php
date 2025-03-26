@@ -137,7 +137,7 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen.' )
 			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' );
 	}
-	
+
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		$this->prepare_output( $output );
 

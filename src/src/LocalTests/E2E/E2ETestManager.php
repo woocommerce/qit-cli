@@ -114,7 +114,7 @@ class E2ETestManager {
 			$io = new SymfonyStyle( App::make( \Symfony\Component\Console\Input\InputInterface::class ), $this->output );
 
 			if ( $test_mode === self::$test_modes['codegen'] ) {
-				$io->success( "Environment is running in codegen mode. Generate your tests with Playwright UI." );
+				$io->success( 'Environment is running in codegen mode. Generate your tests with Playwright UI.' );
 				$this->playwright_codegen->open_codegen( $env_info );
 
 				return Command::SUCCESS;

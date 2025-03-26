@@ -38,6 +38,11 @@
     # - Create temporary files
     # - Set up test users or other resources needed for the tests
 
+    # The WordPress installation is at "/var/www/html"
+    # This file is at: "/qit/tests/e2e/<your-plugin-slug>/<your-test-tag>/bootstrap/setup.sh"
+    # You can use relative paths to access files in your test.
+    # WP CLI is already configured, there's no need to use "--path /var/www/html"
+
     # echo "Running isolated setup for the plugin..."
     # wp post create --post_title="Test Post" # Create a test post
     # wp user create testuser test@example.com # Create a test user
