@@ -22,6 +22,7 @@ use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\GetMultipleCommand;
 use QIT_CLI\Commands\Group\GroupClearCommand;
+use QIT_CLI\Commands\Group\GroupFetchCommand;
 use QIT_CLI\Commands\Group\GroupRegisterCommand;
 use QIT_CLI\Commands\Group\GroupRunCommand;
 use QIT_CLI\Commands\Group\GroupShowCommand;
@@ -243,6 +244,7 @@ if ( $is_connected_to_backend ) {
 	$application->add( $container->make( GroupClearCommand::class ) );
 	$application->add( $container->make( GroupRegisterCommand::class ) );
 	$application->add( $container->make( GroupShowCommand::class ) );
+	$application->add( $container->make( GroupFetchCommand::class ) );
 
 	if ( Config::is_development_mode() ) {
 		// Dynamically crete Mass Test run command.

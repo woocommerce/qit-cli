@@ -484,4 +484,19 @@ class TestGroup {
 
 		return $input_array;
 	}
+
+	/**
+	 * Fetches a group from the QIT servers.
+	 *
+	 * @param string $group_identifier The group identifier.
+	 * @return array<string, mixed> The group.
+	 */
+	public function fetch( string $group_identifier ): array {
+		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get-group-test-runs' ) )
+			->with_method( 'POST' )
+			->with_post_body( [ 'group_identifier' => $group_identifier ] )
+			->request();
+
+		return json_decode( $response, true );
+	}
 }
