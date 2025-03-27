@@ -1,0 +1,6 @@
+Test Type: Security
+Params: {"client":"qit_cli","hash":"12345","woo_id":12345,"event":"cli_published_extension_test"}
+--------------------------------
+Test Type: Malware
+Params: {"client":"qit_cli","hash":"12345","whitelist_paths":[],"woo_id":12345,"event":"cli_published_extension_test"}
+--------------------------------

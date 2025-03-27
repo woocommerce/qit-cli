@@ -1,0 +1,17 @@
+--------------------------------
+Remote Tests Enqueued on QIT servers!
+--------------------------------
+Test Run ID: 12345
+Woo ID: 12345
+Slug: woocommerce-amazon-s3-storage
+Type: Security
+Status: normalized
+--------------------------------
+Test Run ID: 12345
+Woo ID: 12345
+Slug: woocommerce-amazon-s3-storage
+Type: Malware
+Status: normalized
+--------------------------------
+--------------------------------
+Group run successfully triggered.

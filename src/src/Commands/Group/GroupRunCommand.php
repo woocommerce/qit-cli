@@ -79,17 +79,13 @@ class GroupRunCommand extends Command {
 				}
 			}
 
-			$output->writeln( '--------------------------------' );
-			$output->writeln( '<comment>Running local tests...</comment>' );
-			$output->writeln( '--------------------------------' );
-
 			$application = $this->getApplication();
 			$this->test_group->run_local_tests( $application, $output );
 
 			$this->test_group->update_group_test_runs();
 
 			$output->writeln( '--------------------------------' );
-			$output->writeln( '<info>Group run completed successfully.</info>' );
+			$output->writeln( '<info>Group run successfully triggered.</info>' );
 			return Command::SUCCESS;
 		} catch ( \Exception $e ) {
 			$output->writeln( sprintf( '<error>Failed to enqueue group: %s</error>', $e->getMessage() ) );

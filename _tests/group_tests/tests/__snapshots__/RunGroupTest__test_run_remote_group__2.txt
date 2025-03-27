@@ -1,0 +1,21 @@
+Group enqueued on QIT servers!
+Group ID: 12345
+Group Identifier: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx_0000000000
+--------------------------------
+Test Run ID: 12345
+Woo ID: 12345
+Slug: woocommerce-amazon-s3-storage
+Test Type: Security
+Test Results Manager URL: https://example.com?qit_results=12345.normalized_hash
+Test Run Status: pending
+--------------------------------
+Test Run ID: 12345
+Woo ID: 12345
+Slug: woocommerce-amazon-s3-storage
+Test Type: Malware
+Test Results Manager URL: https://example.com?qit_results=12345.normalized_hash
+Test Run Status: pending
+--------------------------------
+To run the group, use the following command:
+qit group:run
+--------------------------------

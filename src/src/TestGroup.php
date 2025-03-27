@@ -398,16 +398,30 @@ class TestGroup {
 		// Set the test group id to be used by the local tests when notifying the manager.
 		putenv( sprintf( 'QIT_TEST_GROUP_ID=%s', $group['group_id'] ) );
 
+		$local_tests = [];
+
 		foreach ( $group['tests'] as $test ) {
+			if ( in_array( $test['type'], self::LOCAL_TEST_TYPES ) ) {
+				$local_tests[] = $test;
+			}
+		}
+		
+		if ( empty( $local_tests ) ) {
+			return;
+		}
+
+		$output->writeln( '--------------------------------' );
+		$output->writeln( '<comment>Running local tests...</comment>' );
+		$output->writeln( '--------------------------------' );
+
+		foreach ( $local_tests as $test ) {
 
 			try {
-				if ( in_array( $test['type'], self::LOCAL_TEST_TYPES ) ) {
-					$output->writeln( sprintf( '<info>Running local test: %s</info>', $test['test_run']['test_run_id'] ) );
-					putenv( sprintf( 'QIT_TEST_RUN_ID=%s', $test['test_run']['test_run_id'] ) );
-					$this->run_local_test( $test, $application, $output );
-					RunE2ECommand::shutdown_test_run();
-					putenv( 'QIT_TEST_RUN_ID' );
-				}
+				$output->writeln( sprintf( '<info>Running local test: %s</info>', $test['test_run']['test_run_id'] ) );
+				putenv( sprintf( 'QIT_TEST_RUN_ID=%s', $test['test_run']['test_run_id'] ) );
+				$this->run_local_test( $test, $application, $output );
+				RunE2ECommand::shutdown_test_run();
+				putenv( 'QIT_TEST_RUN_ID' );	
 			} catch ( \Exception $e ) {
 				$output->writeln( sprintf( '<error>Failed to run local tests with Parameters: %s. Error: %s</error>', json_encode( $test['params'] ), $e->getMessage() ) );
 				putenv( 'QIT_TEST_RUN_ID' );

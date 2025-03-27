@@ -162,7 +162,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 						return Command::FAILURE;
 					}
 
-					$output->writeln( sprintf( '<info>Group successfully enqueued.</info>' ) );
+					$output->writeln( sprintf( '<info>Group item successfully added.</info>' ) );
 
 					return Command::SUCCESS;
 				}
