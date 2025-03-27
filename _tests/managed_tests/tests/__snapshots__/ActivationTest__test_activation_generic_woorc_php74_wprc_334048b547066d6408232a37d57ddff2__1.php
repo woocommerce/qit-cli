@@ -162,6 +162,28 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[setup] Woocommerce (Shell) > scripts\\/bash.js",
+                            "attachments": [],
+                            "stdout": [
+                                "\\u001b[1m\\u001b[34m=== Isolated Setup for woocommerce (Bash) ===\\u001b[0m\\n",
+                                "Downloading installation package from https:\\/\\/downloads.wordpress.org\\/plugin\\/query-monitor.3.17.0.zip...\\n",
+                                "Unpacking the package...\\n",
+                                "Installing the plugin...\\n",
+                                "Plugin installed successfully.\\n",
+                                "Activating \'query-monitor\'...\\n",
+                                "Plugin \'query-monitor\' activated.\\n",
+                                "Success: Installed 1 of 1 plugins.\\n",
+                                "Installing Twenty Twenty-Four (1.3)\\n",
+                                "Downloading installation package from https:\\/\\/downloads.wordpress.org\\/theme\\/twentytwentyfour.1.3.zip...\\n",
+                                "Using cached file \'\\/qit\\/cache\\/wp-cli\\/theme\\/twentytwentyfour-1.3.zip\'...\\n",
+                                "Unpacking the package...\\n",
+                                "Installing the theme...\\n",
+                                "Theme installed successfully.\\n",
+                                "Success: Installed 1 of 1 themes.\\n",
+                                "Plugin \'woocommerce\' activated.\\n",
+                                "Success: Activated 1 of 1 plugins.\\n",
+                                "[QIT] Finished bash script. Exit code: 0\\n"
+                            ],
+                            "stderr": [],
                             "extra": {
                                 "annotations": [
                                     {
@@ -185,6 +207,18 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "Success: Updated \'woocommerce_coming_soon\' option.\\n",
+                                "Success: Updated \'woocommerce_store_pages_only\' option.\\n",
+                                "Coming soon mode disabled in beforeAll.\\n",
+                                "[INFO] Final sorted plugin list:\\n",
+                                " 1. \\"Query Monitor\\" (Dependencies: [])\\n",
+                                " 2. \\"WooCommerce\\" (Dependencies: [])\\n",
+                                " 3. \\"Activation - Plugin A\\" (Dependencies: [])\\n",
+                                "Activated \\"Activation - Plugin A\\" successfully.\\n"
+                            ],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -203,6 +237,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -221,6 +258,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -239,6 +279,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -257,6 +300,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -275,6 +321,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -293,6 +342,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": [
                                     {
@@ -317,6 +369,25 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Add-Product-Cart--test-Woocommerce-Run-\\/test-failed-1.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Add-Product-Cart--test-Woocommerce-Run-\\/video.webm"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Add-Product-Cart--test-Woocommerce-Run-\\/trace.zip"
+                                }
+                            ],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -335,6 +406,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -353,6 +427,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -371,6 +448,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
