@@ -17,7 +17,7 @@ on:
 
 jobs:
   self_test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
       NO_COLOR: 1
       QIT_DISABLE_ONBOARDING: yes
