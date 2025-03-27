@@ -14,7 +14,7 @@
     {
         "name": "[test] Test Plugin Isolated Only (Run)",
         "testDir": "isolated-only-container-path",
-        "testMatch": "**\/*.spec.js",
+        "testMatch": "**\/*.spec.{js,ts}",
         "dependencies": [
             "[setup] Test Plugin Isolated Only (Shell)"
         ],

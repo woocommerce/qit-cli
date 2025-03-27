@@ -52,7 +52,7 @@
     {
         "name": "[test] Test Plugin (Run)",
         "testDir": "test-path-test",
-        "testMatch": "**\/*.spec.js",
+        "testMatch": "**\/*.spec.{js,ts}",
         "dependencies": [
             "[setup] Test Plugin (JS)"
         ],

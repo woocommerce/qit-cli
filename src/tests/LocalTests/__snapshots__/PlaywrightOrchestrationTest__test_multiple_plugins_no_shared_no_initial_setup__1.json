@@ -12,7 +12,7 @@
     {
         "name": "[test] Test Plugin A (Run)",
         "testDir": "container-a",
-        "testMatch": "**\/*.spec.js",
+        "testMatch": "**\/*.spec.{js,ts}",
         "dependencies": [
             "[db export]"
         ],
@@ -36,7 +36,7 @@
     {
         "name": "[test] Test Plugin B (Run)",
         "testDir": "container-b",
-        "testMatch": "**\/*.spec.js",
+        "testMatch": "**\/*.spec.{js,ts}",
         "dependencies": [
             "[db import]"
         ],

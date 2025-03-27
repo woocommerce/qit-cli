@@ -14,7 +14,7 @@
     {
         "name": "[test] Test Plugin Invalid File (Run)",
         "testDir": "invalid-file-container-path",
-        "testMatch": "**\/*.spec.js",
+        "testMatch": "**\/*.spec.{js,ts}",
         "dependencies": [
             "[setup] Test Plugin Invalid File (Shell)"
         ],
