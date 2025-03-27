@@ -14,7 +14,7 @@
     {
         "name": "[test] Test Plugin Partial Setup (Run)",
         "testDir": "partial-setup-container-path",
-        "testMatch": "**\/*.spec.js",
+        "testMatch": "**\/*.spec.{js,ts}",
         "dependencies": [
             "[setup] Test Plugin Partial Setup (PHP)"
         ],

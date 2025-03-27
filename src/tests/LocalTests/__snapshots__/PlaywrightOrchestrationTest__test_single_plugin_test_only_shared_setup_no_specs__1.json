@@ -14,7 +14,7 @@
     {
         "name": "[test] Test Plugin Shared Only (Run)",
         "testDir": "shared-only-container-path",
-        "testMatch": "**\/*.spec.js",
+        "testMatch": "**\/*.spec.{js,ts}",
         "dependencies": [
             "[setup:shared] Test Plugin Shared Only (Shell)"
         ],

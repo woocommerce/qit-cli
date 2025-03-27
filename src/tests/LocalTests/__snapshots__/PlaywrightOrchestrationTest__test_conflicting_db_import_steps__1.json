@@ -54,7 +54,7 @@
     {
         "name": "[test] Test Plugin One (Run)",
         "testDir": "test-one-container-path",
-        "testMatch": "**\/*.spec.js",
+        "testMatch": "**\/*.spec.{js,ts}",
         "dependencies": [
             "[setup] Test Plugin One (Shell)"
         ],
@@ -104,7 +104,7 @@
     {
         "name": "[test] Test Plugin Two (Run)",
         "testDir": "test-two-container-path",
-        "testMatch": "**\/*.spec.js",
+        "testMatch": "**\/*.spec.{js,ts}",
         "dependencies": [
             "[setup] Test Plugin Two (JS)"
         ],
@@ -156,7 +156,7 @@
     {
         "name": "[test] Test Plugin Three (Run)",
         "testDir": "test-three-container-path",
-        "testMatch": "**\/*.spec.js",
+        "testMatch": "**\/*.spec.{js,ts}",
         "dependencies": [
             "[setup] Test Plugin Three (PHP)"
         ],
