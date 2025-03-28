@@ -230,9 +230,6 @@ class QITE2ETestCase extends TestCase {
 					$value = str_replace( 'qit-runner-staging', 'qit-runner', $value );
 					$value = str_replace( 'compatibility-dashboard', 'qit-runner', $value );
 
-					// This removes *entire* lines that contain "Using cached file"
-					// $value = preg_replace('/^.*Using cached file.*\n?/m', '', $value);
-
 					// Replace qitenvnginx + random hex with a single placeholder
 					$value = preg_replace('/qitenvnginx[0-9a-f]+/i', 'qitenvnginxNORMALIZED', $value);
 
