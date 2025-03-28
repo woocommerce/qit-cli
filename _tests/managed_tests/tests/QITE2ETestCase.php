@@ -249,6 +249,22 @@ class QITE2ETestCase extends TestCase {
 						return [];
 					}
 
+					// Remove lines containing "Using cached file" from all tests' stdout arrays
+					if ( isset( $value['results']['tests'] ) && is_array( $value['results']['tests'] ) ) {
+						foreach ( $value['results']['tests'] as &$test ) {
+							// Only proceed if stdout is an array of lines
+							if ( isset( $test['stdout'] ) && is_array( $test['stdout'] ) ) {
+								$test['stdout'] = array_values(
+									array_filter( $test['stdout'], static function ( $line ) {
+										return stripos( $line, 'Using cached file' ) === false;
+									}
+									)
+								);
+							}
+						}
+						unset( $test );
+					}
+
 					// 5) Now traverse the CTRF JSON to normalize ephemeral fields
 					if ( isset( $value['results'] ) && is_array( $value['results'] ) ) {
 						// 5a) Summary-level ephemeral data

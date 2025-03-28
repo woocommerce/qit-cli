@@ -231,7 +231,6 @@
                                 "Success: Installed 1 of 1 plugins.\\n",
                                 "Installing Twenty Twenty-Four (1.3)\\n",
                                 "Downloading installation package from https:\\/\\/downloads.wordpress.org\\/theme\\/twentytwentyfour.1.3.zip...\\n",
-                                "Using cached file \'\\/qit\\/cache\\/wp-cli\\/theme\\/twentytwentyfour-1.3.zip\'...\\n",
                                 "Unpacking the package...\\n",
                                 "Installing the theme...\\n",
                                 "Theme installed successfully.\\n",
