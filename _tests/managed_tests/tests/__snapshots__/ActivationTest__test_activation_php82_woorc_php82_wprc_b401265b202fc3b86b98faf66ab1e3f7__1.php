@@ -174,7 +174,6 @@
                                 "Success: Installed 1 of 1 plugins.\\n",
                                 "Installing Twenty Twenty-Four (1.3)\\n",
                                 "Downloading installation package from https:\\/\\/downloads.wordpress.org\\/theme\\/twentytwentyfour.1.3.zip...\\n",
-                                "Using cached file \'\\/qit\\/cache\\/wp-cli\\/theme\\/twentytwentyfour-1.3.zip\'...\\n",
                                 "Unpacking the package...\\n",
                                 "Installing the theme...\\n",
                                 "Theme installed successfully.\\n",
@@ -212,6 +211,7 @@
                                 "Success: Updated \'woocommerce_coming_soon\' option.\\n",
                                 "Success: Updated \'woocommerce_store_pages_only\' option.\\n",
                                 "Coming soon mode disabled in beforeAll.\\n",
+                                "Console warning: Bottom margin styles for wp.components.CheckboxControl is deprecated since version 6.7 and will be removed in version 7.0. Note: Set the `__nextHasNoMarginBottom` prop to true to start opting into the new styles, which will become the default in a future version.\\n",
                                 "[INFO] Final sorted plugin list:\\n",
                                 " 1. \\"Query Monitor\\" (Dependencies: [])\\n",
                                 " 2. \\"WooCommerce\\" (Dependencies: [])\\n",
@@ -280,7 +280,12 @@
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "Console warning: Bottom margin styles for wp.components.CheckboxControl is deprecated since version 6.7 and will be removed in version 7.0. Note: Set the `__nextHasNoMarginBottom` prop to true to start opting into the new styles, which will become the default in a future version.\\n",
+                                "Console warning: Bottom margin styles for wp.components.TextControl is deprecated since version 6.7 and will be removed in version 7.0. Note: Set the `__nextHasNoMarginBottom` prop to true to start opting into the new styles, which will become the default in a future version.\\n",
+                                "Console warning: Bottom margin styles for wp.components.SelectControl is deprecated since version 6.7 and will be removed in version 7.0. Note: Set the `__nextHasNoMarginBottom` prop to true to start opting into the new styles, which will become the default in a future version.\\n",
+                                "Console warning: Bottom margin styles for wp.components.ToggleControl is deprecated since version 6.7 and will be removed in version 7.0. Note: Set the `__nextHasNoMarginBottom` prop to true to start opting into the new styles, which will become the default in a future version.\\n"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -301,7 +306,11 @@
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "Console startGroup: PHP Errors in Ajax Response\\n",
+                                "Console warning: {key: 186e674c5a36642a5d0696dcd2ba795c, type: deprecated, message: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 28}\\n",
+                                "Console endGroup: console.groupEnd\\n"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -322,7 +331,18 @@
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "Console startGroup: PHP Errors in Ajax Response\\n",
+                                "Console warning: {key: 186e674c5a36642a5d0696dcd2ba795c, type: deprecated, message: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 28}\\n",
+                                "Console endGroup: console.groupEnd\\n",
+                                "Console startGroup: PHP Errors in Ajax Response\\n",
+                                "Console warning: {key: 186e674c5a36642a5d0696dcd2ba795c, type: deprecated, message: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 28}\\n",
+                                "Console endGroup: console.groupEnd\\n",
+                                "Console warning: Navigation store is deprecated.\\n",
+                                "Console startGroup: PHP Errors in Ajax Response\\n",
+                                "Console warning: {key: 186e674c5a36642a5d0696dcd2ba795c, type: deprecated, message: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 28}\\n",
+                                "Console endGroup: console.groupEnd\\n"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -343,7 +363,20 @@
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "Console startGroup: PHP Errors in Ajax Response\\n",
+                                "Console warning: {key: 186e674c5a36642a5d0696dcd2ba795c, type: deprecated, message: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 28}\\n",
+                                "Console endGroup: console.groupEnd\\n",
+                                "Console startGroup: PHP Errors in Ajax Response\\n",
+                                "Console warning: {key: 186e674c5a36642a5d0696dcd2ba795c, type: deprecated, message: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 28}\\n",
+                                "Console endGroup: console.groupEnd\\n",
+                                "Console startGroup: PHP Errors in Ajax Response\\n",
+                                "Console warning: {key: 186e674c5a36642a5d0696dcd2ba795c, type: deprecated, message: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 28}\\n",
+                                "Console endGroup: console.groupEnd\\n",
+                                "Console startGroup: PHP Errors in Ajax Response\\n",
+                                "Console warning: {key: 186e674c5a36642a5d0696dcd2ba795c, type: deprecated, message: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 28}\\n",
+                                "Console endGroup: console.groupEnd\\n"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -368,7 +401,9 @@
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "Console warning: showSpinner prop is deprecated and will be removed from WooCommerce in version 8.9.0. Please use Render a spinner in the button children instead. instead.\\n"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -389,7 +424,10 @@
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "Console warning: showSpinner prop is deprecated and will be removed from WooCommerce in version 8.9.0. Please use Render a spinner in the button children instead. instead.\\n",
+                                "Console warning: showSpinner prop is deprecated and will be removed from WooCommerce in version 8.9.0. Please use Render a spinner in the button children instead. instead.\\n"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []

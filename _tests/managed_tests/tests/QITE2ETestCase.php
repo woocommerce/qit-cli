@@ -230,6 +230,12 @@ class QITE2ETestCase extends TestCase {
 					$value = str_replace( 'qit-runner-staging', 'qit-runner', $value );
 					$value = str_replace( 'compatibility-dashboard', 'qit-runner', $value );
 
+					// Replace qitenvnginx + random hex with a single placeholder
+					$value = preg_replace('/qitenvnginx[0-9a-f]+/i', 'qitenvnginxNORMALIZED', $value);
+
+					// Pattern: dash, 10+ hex chars, then dot, then jpg/jpeg/png
+					$value = preg_replace('/-[0-9a-f]{10,}\.(jpe?g|png|webm)/i', '-HASHNORMALIZED.$1', $value);
+
 					// 3) Decode back to array so we can walk the structure
 					if ( $array_mode ) {
 						$value = json_decode( $value, true );
@@ -238,6 +244,22 @@ class QITE2ETestCase extends TestCase {
 					// 4) If this file is "delete_products" type, optionally skip or override
 					if ( stripos( $file_path, 'delete_products' ) !== false ) {
 						return [];
+					}
+
+					// Remove lines containing "Using cached file" from all tests' stdout arrays
+					if ( isset( $value['results']['tests'] ) && is_array( $value['results']['tests'] ) ) {
+						foreach ( $value['results']['tests'] as &$test ) {
+							// Only proceed if stdout is an array of lines
+							if ( isset( $test['stdout'] ) && is_array( $test['stdout'] ) ) {
+								$test['stdout'] = array_values(
+									array_filter( $test['stdout'], static function ( $line ) {
+										return stripos( $line, 'Using cached file' ) === false;
+									}
+									)
+								);
+							}
+						}
+						unset( $test );
 					}
 
 					// 5) Now traverse the CTRF JSON to normalize ephemeral fields
