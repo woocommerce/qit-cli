@@ -454,10 +454,11 @@
                             "default": false
                         },
                         "min_php_version": {
-                            "default": "X.X.X",
+                            "default": "auto",
                             "description": "The minimum PHP version to test an extension's compatibility against.",
                             "type": "string",
                             "enum": [
+                                "auto",
                                 "7.2",
                                 "7.3",
                                 "7.4",
@@ -1490,6 +1491,8 @@
                     "woocommerce-subscriptions",
                     "woocommerce-composite-products",
                     "woocommerce-services",
+                    "woocommerce-bookings",
+                    "woocommerce-shipment-tracking",
                     "woocommerce-google-analytics-integration",
                     "mailpoet",
                     "jetpack"
