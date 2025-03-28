@@ -8,6 +8,8 @@ Moving must-use plugin of deli /qit/tests/e2e/deli/local/bootstrap/mu-plugin.php
 npx playwright test --trace on --config /qit/tests/e2e/qit-playwright.config.js  2>&1
 Running E2E Tests
 Running 4 tests using 1 worker
+[1m[34m=== Isolated Setup for deli (Bash) ===[0m
+[QIT] Finished bash script. Exit code: 0
 ✓  1 [setup] Deli (Shell) › scripts/bash.js:5:5 › Bash Script (TIME)
 ✓  2 [setup] Deli (JS) › deli/local/bootstrap/setup.js:11:5 › Isolated Setup (TIME)
 ✘  3 [test] Deli (Run) › deli/local/activate-theme.spec.js:4:5 › I can activate Deli (TIME)
@@ -80,7 +82,7 @@ attachment #4: screenshot (image/png) ──────────────
 attachment #5: video (video/webm) ──────────────────────────────────────────────────────────────
 ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run-/video.webm
 ────────────────────────────────────────────────────────────────────────────────────────────────
-attachment #6: trace (application/zip) ─────────────────────────────────────────────────────────
+attachment #7: trace (application/zip) ─────────────────────────────────────────────────────────
 ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run-/trace.zip
 Usage:
 npx playwright show-trace ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run-/trace.zip
@@ -103,7 +105,7 @@ attachment #1: screenshot (image/png) ──────────────
 attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
 ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry1/video.webm
 ────────────────────────────────────────────────────────────────────────────────────────────────
-attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
 ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry1/trace.zip
 Usage:
 npx playwright show-trace ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry1/trace.zip
@@ -126,7 +128,7 @@ attachment #1: screenshot (image/png) ──────────────
 attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
 ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry2/video.webm
 ────────────────────────────────────────────────────────────────────────────────────────────────
-attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
 ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry2/trace.zip
 Usage:
 npx playwright show-trace ../../results/playwright/activate-theme-I-can-activate-Deli--test-Deli-Run--retry2/trace.zip

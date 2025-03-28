@@ -284,7 +284,7 @@ class PlaywrightOrchestration {
 				$projects[]    = [
 					'name'         => $name,
 					'testDir'      => $base_dir,
-					'testMatch'    => '**/*.spec.js',
+					'testMatch'    => '**/*.spec.{js,ts}',
 					'dependencies' => $current_setup ? [ $current_setup ] : [],
 					'use'          => [
 						'browserName' => 'chromium',

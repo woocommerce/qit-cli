@@ -2,7 +2,7 @@
     {
         "name": "[test] Test Plugin Only Teardown (Run)",
         "testDir": "teardown-only-container-path",
-        "testMatch": "**\/*.spec.js",
+        "testMatch": "**\/*.spec.{js,ts}",
         "dependencies": [],
         "use": {
             "browserName": "chromium",

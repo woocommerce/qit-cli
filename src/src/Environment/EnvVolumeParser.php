@@ -2,7 +2,6 @@
 
 namespace QIT_CLI\Environment;
 
-use QIT_CLI\App;
 use QIT_CLI\Config;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\normalize_path;
@@ -21,25 +20,6 @@ class EnvVolumeParser {
 	 * @return array<string,string>
 	 */
 	public function parse_volumes( array $volumes ): array {
-		try {
-			$working_dir_type = App::make( WorkingDirectoryAwareness::class )->detect_working_directory_type();
-		} catch ( \Exception $e ) {
-			App::make( OutputInterface::class )->writeln( '<comment>Failed to detect working directory type: ' . $e->getMessage() . '</comment>' );
-			$working_dir_type = null;
-		}
-
-		$mapped_automatically = null;
-
-		if ( $working_dir_type === 'plugin' ) {
-			$this->output->writeln( sprintf( '<info>Detected working directory as plugin "%s" and added a volume automatically.</info>', basename( getcwd() ) ) );
-			$volumes[]            = sprintf( '%s:/var/www/html/wp-content/plugins/%s', getcwd(), basename( getcwd() ) );
-			$mapped_automatically = 'plugin';
-		} elseif ( $working_dir_type === 'theme' ) {
-			$this->output->writeln( sprintf( '<info>Detected working directory as theme "%s" and added a volume automatically.</info>', basename( getcwd() ) ) );
-			$volumes[]            = sprintf( '%s:/var/www/html/wp-content/themes/%s', getcwd(), basename( getcwd() ) );
-			$mapped_automatically = 'theme';
-		}
-
 		$parsed_volumes = [];
 
 		$volumes = array_map( 'trim', $volumes );
@@ -77,13 +57,7 @@ class EnvVolumeParser {
 			}
 
 			if ( array_key_exists( $v[1], $parsed_volumes ) ) {
-				if ( $mapped_automatically === 'plugin' ) {
-					$this->output->writeln( sprintf( '<comment>Plugin directory "%s" detected and volume mapped automatically. No manual volume specification needed.</comment>', basename( getcwd() ) ) );
-				} elseif ( $mapped_automatically === 'theme' ) {
-					$this->output->writeln( sprintf( '<comment>Theme directory "%s" detected and volume mapped automatically. No manual volume specification needed.</comment>', basename( getcwd() ) ) );
-				} else {
-					$this->output->writeln( sprintf( '<comment>Warning: Volume "%s" already exists, skipping.</comment>', $v[1] ) );
-				}
+				$this->output->writeln( sprintf( '<comment>Warning: Volume "%s" already exists, skipping.</comment>', $v[1] ) );
 				continue;
 			}
 

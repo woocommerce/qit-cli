@@ -67,7 +67,7 @@
     {
         "name": "[test] Test Plugin A (Run)",
         "testDir": "test-a-container-path",
-        "testMatch": "**\/*.spec.js",
+        "testMatch": "**\/*.spec.{js,ts}",
         "dependencies": [
             "[setup] Test Plugin A (Shell)"
         ],
@@ -119,7 +119,7 @@
     {
         "name": "[test] Test Plugin B (Run)",
         "testDir": "test-b-container-path",
-        "testMatch": "**\/*.spec.js",
+        "testMatch": "**\/*.spec.{js,ts}",
         "dependencies": [
             "[setup] Test Plugin B (PHP)"
         ],

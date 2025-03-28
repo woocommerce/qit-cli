@@ -219,6 +219,27 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[setup] Woocommerce (Shell) > scripts\\/bash.js",
+                            "attachments": [],
+                            "stdout": [
+                                "\\u001b[1m\\u001b[34m=== Isolated Setup for woocommerce (Bash) ===\\u001b[0m\\n",
+                                "Downloading installation package from https:\\/\\/downloads.wordpress.org\\/plugin\\/query-monitor.3.17.0.zip...\\n",
+                                "Unpacking the package...\\n",
+                                "Installing the plugin...\\n",
+                                "Plugin installed successfully.\\n",
+                                "Activating \'query-monitor\'...\\n",
+                                "Plugin \'query-monitor\' activated.\\n",
+                                "Success: Installed 1 of 1 plugins.\\n",
+                                "Installing Twenty Twenty-Four (1.3)\\n",
+                                "Downloading installation package from https:\\/\\/downloads.wordpress.org\\/theme\\/twentytwentyfour.1.3.zip...\\n",
+                                "Unpacking the package...\\n",
+                                "Installing the theme...\\n",
+                                "Theme installed successfully.\\n",
+                                "Success: Installed 1 of 1 themes.\\n",
+                                "Plugin \'woocommerce\' activated.\\n",
+                                "Success: Activated 1 of 1 plugins.\\n",
+                                "[QIT] Finished bash script. Exit code: 0\\n"
+                            ],
+                            "stderr": [],
                             "extra": {
                                 "annotations": [
                                     {
@@ -242,6 +263,19 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "Success: Updated \'woocommerce_coming_soon\' option.\\n",
+                                "Success: Updated \'woocommerce_store_pages_only\' option.\\n",
+                                "Coming soon mode disabled in beforeAll.\\n",
+                                "Console warning: Bottom margin styles for wp.components.CheckboxControl is deprecated since version 6.7 and will be removed in version 7.0. Note: Set the `__nextHasNoMarginBottom` prop to true to start opting into the new styles, which will become the default in a future version.\\n",
+                                "[INFO] Final sorted plugin list:\\n",
+                                " 1. \\"Query Monitor\\" (Dependencies: [])\\n",
+                                " 2. \\"WooCommerce\\" (Dependencies: [])\\n",
+                                " 3. \\"Activation - Plugin A\\" (Dependencies: [])\\n",
+                                "Activated \\"Activation - Plugin A\\" successfully.\\n"
+                            ],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -253,7 +287,7 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "message": "Error: There was a fatal error in the debug log\\n\\n\\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mnot\\u001b[2m.\\u001b[22mtoContain\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m) \\/\\/ indexOf\\u001b[22m\\n\\nExpected substring: not \\u001b[32m\\"Fatal error\\"\\u001b[39m\\nReceived string:        \\u001b[31m\\"[TIMESTAMP] PHP \\u001b[7mFatal error\\u001b[27m:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\u001b[39m\\n\\u001b[31mStack trace:\\u001b[39m\\n\\u001b[31m#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')\\u001b[39m\\n\\u001b[31m#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)\\u001b[39m\\n\\u001b[31m#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\u001b[39m\\n\\u001b[31m#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(259): do_action(\'toplevel_page_p...\')\\u001b[39m\\n\\u001b[31m#4 {main}\\u001b[39m\\n\\u001b[31m  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\"\\u001b[39m",
-                            "trace": "Error: There was a fatal error in the debug log\\n\\n\\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mnot\\u001b[2m.\\u001b[22mtoContain\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m) \\/\\/ indexOf\\u001b[22m\\n\\nExpected substring: not \\u001b[32m\\"Fatal error\\"\\u001b[39m\\nReceived string:        \\u001b[31m\\"[TIMESTAMP] PHP \\u001b[7mFatal error\\u001b[27m:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\u001b[39m\\n\\u001b[31mStack trace:\\u001b[39m\\n\\u001b[31m#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')\\u001b[39m\\n\\u001b[31m#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)\\u001b[39m\\n\\u001b[31m#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\u001b[39m\\n\\u001b[31m#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(259): do_action(\'toplevel_page_p...\')\\u001b[39m\\n\\u001b[31m#4 {main}\\u001b[39m\\n\\u001b[31m  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\"\\u001b[39m\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:428:89\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:364:9",
+                            "trace": "Error: There was a fatal error in the debug log\\n\\n\\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mnot\\u001b[2m.\\u001b[22mtoContain\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m) \\/\\/ indexOf\\u001b[22m\\n\\nExpected substring: not \\u001b[32m\\"Fatal error\\"\\u001b[39m\\nReceived string:        \\u001b[31m\\"[TIMESTAMP] PHP \\u001b[7mFatal error\\u001b[27m:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\u001b[39m\\n\\u001b[31mStack trace:\\u001b[39m\\n\\u001b[31m#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')\\u001b[39m\\n\\u001b[31m#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)\\u001b[39m\\n\\u001b[31m#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\u001b[39m\\n\\u001b[31m#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(259): do_action(\'toplevel_page_p...\')\\u001b[39m\\n\\u001b[31m#4 {main}\\u001b[39m\\n\\u001b[31m  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\"\\u001b[39m\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:429:89\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:365:9",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -271,6 +305,44 @@
                                 }
                             ],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [
+                                {
+                                    "name": "00_Plugin_A",
+                                    "contentType": "image\\/jpeg",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Visit-wp-admin-pages-added-by-the-plugin--test-Woocommerce-Run-\\/attachments\\/00-Plugin-A-HASHNORMALIZED.jpg"
+                                },
+                                {
+                                    "name": "01_Plugin_B",
+                                    "contentType": "image\\/jpeg",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Visit-wp-admin-pages-added-by-the-plugin--test-Woocommerce-Run-\\/attachments\\/01-Plugin-B-HASHNORMALIZED.jpg"
+                                },
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Visit-wp-admin-pages-added-by-the-plugin--test-Woocommerce-Run-\\/test-failed-1.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Visit-wp-admin-pages-added-by-the-plugin--test-Woocommerce-Run-\\/video.webm"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Visit-wp-admin-pages-added-by-the-plugin--test-Woocommerce-Run-\\/trace.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "Navigating to http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/admin.php?page=plugin-a\\n",
+                                "Console log: Console Log in custom page.\\n",
+                                "Console warning: Console Warning in custom page.\\n",
+                                "Console error: Console Error in custom page.\\n",
+                                "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/admin.php?page=plugin-a:209:223\\"\\n",
+                                "Navigating to http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/admin.php?page=plugin-b\\n",
+                                "Console error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)\\n",
+                                "Console error: PHP Fatal Error: Uncaught Error: Call to undefined function call_to_an_undefined_function()\\n"
+                            ],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -289,6 +361,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -307,6 +382,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -325,6 +403,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -343,6 +424,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -361,6 +445,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -379,6 +466,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -397,6 +487,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -415,6 +508,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -433,6 +529,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }

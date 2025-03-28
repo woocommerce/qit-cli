@@ -162,6 +162,27 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[setup] Woocommerce (Shell) > scripts\\/bash.js",
+                            "attachments": [],
+                            "stdout": [
+                                "\\u001b[1m\\u001b[34m=== Isolated Setup for woocommerce (Bash) ===\\u001b[0m\\n",
+                                "Downloading installation package from https:\\/\\/downloads.wordpress.org\\/plugin\\/query-monitor.3.17.0.zip...\\n",
+                                "Unpacking the package...\\n",
+                                "Installing the plugin...\\n",
+                                "Plugin installed successfully.\\n",
+                                "Activating \'query-monitor\'...\\n",
+                                "Plugin \'query-monitor\' activated.\\n",
+                                "Success: Installed 1 of 1 plugins.\\n",
+                                "Installing Twenty Twenty-Four (1.3)\\n",
+                                "Downloading installation package from https:\\/\\/downloads.wordpress.org\\/theme\\/twentytwentyfour.1.3.zip...\\n",
+                                "Unpacking the package...\\n",
+                                "Installing the theme...\\n",
+                                "Theme installed successfully.\\n",
+                                "Success: Installed 1 of 1 themes.\\n",
+                                "Plugin \'woocommerce\' activated.\\n",
+                                "Success: Activated 1 of 1 plugins.\\n",
+                                "[QIT] Finished bash script. Exit code: 0\\n"
+                            ],
+                            "stderr": [],
                             "extra": {
                                 "annotations": [
                                     {
@@ -185,6 +206,19 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "Success: Updated \'woocommerce_coming_soon\' option.\\n",
+                                "Success: Updated \'woocommerce_store_pages_only\' option.\\n",
+                                "Coming soon mode disabled in beforeAll.\\n",
+                                "Console warning: Bottom margin styles for wp.components.CheckboxControl is deprecated since version 6.7 and will be removed in version 7.0. Note: Set the `__nextHasNoMarginBottom` prop to true to start opting into the new styles, which will become the default in a future version.\\n",
+                                "[INFO] Final sorted plugin list:\\n",
+                                " 1. \\"Query Monitor\\" (Dependencies: [])\\n",
+                                " 2. \\"WooCommerce\\" (Dependencies: [])\\n",
+                                " 3. \\"Activation - Plugin A\\" (Dependencies: [])\\n",
+                                "Activated \\"Activation - Plugin A\\" successfully.\\n"
+                            ],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -203,6 +237,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -221,6 +258,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -239,6 +279,14 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "Console warning: Bottom margin styles for wp.components.CheckboxControl is deprecated since version 6.7 and will be removed in version 7.0. Note: Set the `__nextHasNoMarginBottom` prop to true to start opting into the new styles, which will become the default in a future version.\\n",
+                                "Console warning: Bottom margin styles for wp.components.TextControl is deprecated since version 6.7 and will be removed in version 7.0. Note: Set the `__nextHasNoMarginBottom` prop to true to start opting into the new styles, which will become the default in a future version.\\n",
+                                "Console warning: Bottom margin styles for wp.components.SelectControl is deprecated since version 6.7 and will be removed in version 7.0. Note: Set the `__nextHasNoMarginBottom` prop to true to start opting into the new styles, which will become the default in a future version.\\n",
+                                "Console warning: Bottom margin styles for wp.components.ToggleControl is deprecated since version 6.7 and will be removed in version 7.0. Note: Set the `__nextHasNoMarginBottom` prop to true to start opting into the new styles, which will become the default in a future version.\\n"
+                            ],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -257,6 +305,13 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "Console startGroup: PHP Errors in Ajax Response\\n",
+                                "Console warning: {key: ce3dd029c6a0313fd73a3385a1e07698, type: notice, message: Notice on all requests, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 16}\\n",
+                                "Console endGroup: console.groupEnd\\n"
+                            ],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -275,6 +330,20 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "Console startGroup: PHP Errors in Ajax Response\\n",
+                                "Console warning: {key: ce3dd029c6a0313fd73a3385a1e07698, type: notice, message: Notice on all requests, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 16}\\n",
+                                "Console endGroup: console.groupEnd\\n",
+                                "Console startGroup: PHP Errors in Ajax Response\\n",
+                                "Console warning: {key: ce3dd029c6a0313fd73a3385a1e07698, type: notice, message: Notice on all requests, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 16}\\n",
+                                "Console endGroup: console.groupEnd\\n",
+                                "Console warning: Navigation store is deprecated.\\n",
+                                "Console startGroup: PHP Errors in Ajax Response\\n",
+                                "Console warning: {key: ce3dd029c6a0313fd73a3385a1e07698, type: notice, message: Notice on all requests, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 16}\\n",
+                                "Console endGroup: console.groupEnd\\n"
+                            ],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -293,6 +362,22 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "Console startGroup: PHP Errors in Ajax Response\\n",
+                                "Console warning: {key: ce3dd029c6a0313fd73a3385a1e07698, type: notice, message: Notice on all requests, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 16}\\n",
+                                "Console endGroup: console.groupEnd\\n",
+                                "Console startGroup: PHP Errors in Ajax Response\\n",
+                                "Console warning: {key: ce3dd029c6a0313fd73a3385a1e07698, type: notice, message: Notice on all requests, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 16}\\n",
+                                "Console endGroup: console.groupEnd\\n",
+                                "Console startGroup: PHP Errors in Ajax Response\\n",
+                                "Console warning: {key: ce3dd029c6a0313fd73a3385a1e07698, type: notice, message: Notice on all requests, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 16}\\n",
+                                "Console endGroup: console.groupEnd\\n",
+                                "Console startGroup: PHP Errors in Ajax Response\\n",
+                                "Console warning: {key: ce3dd029c6a0313fd73a3385a1e07698, type: notice, message: Notice on all requests, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 16}\\n",
+                                "Console endGroup: console.groupEnd\\n"
+                            ],
+                            "stderr": [],
                             "extra": {
                                 "annotations": [
                                     {
@@ -308,7 +393,7 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toContainText with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toContainText with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:671:69",
+                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toContainText with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:672:69",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -317,6 +402,27 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Add-Product-Cart--test-Woocommerce-Run-\\/test-failed-1.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Add-Product-Cart--test-Woocommerce-Run-\\/video.webm"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Add-Product-Cart--test-Woocommerce-Run-\\/trace.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "Console error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)\\n"
+                            ],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -335,6 +441,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -353,6 +462,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -371,6 +483,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }

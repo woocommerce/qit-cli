@@ -12,11 +12,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-20.04 ]
+        os: [ ubuntu-latest ]
         php: [ '7.4' ]
         wordpress: [ 'nightly' ]
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-latest
             php: '8.3'
             wordpress: 'nightly'
       fail-fast: false
