@@ -31,6 +31,10 @@ _tests/custom_tests/.env
 _tests/custom_tests/tmp_qit_config*
 _tests/custom_tests/cache
 _tests/custom_tests/tmp/
+_tests/group_tests/.env
+_tests/group_tests/tmp_qit_config*
+_tests/group_tests/cache
+_tests/group_tests/tmp/
 
 _tests/custom_tests/.env.staging
 
@@ -38,8 +42,9 @@ _tests/custom_tests/.env.local
 
 _tests/custom_tests/.env.bk
 
-_tests/group_tests/.env
+_tests/group_tests/.env.bk
 
 _tests/managed_tests/last-self-test.log
 
 src/tests/data/sync.json
+

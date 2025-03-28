@@ -70,8 +70,21 @@ class TestGroup {
 			];
 		}
 
+		if ( ! is_null( $input ) ) {
+			$hash_array = [
+				'type'      => $test_type,
+				'options'   => $input->getOptions(),
+				'arguments' => $input->getArguments(),
+			];
+		} else {
+			$hash_array = [
+				'type'    => $test_type,
+				'options' => $options,
+			];
+		}
+
 		$test_type_exists = false;
-		$hash             = ! is_null( $input ) ? md5( json_encode( $input->getOptions() ) ) : md5( json_encode( $options ) );
+		$hash             = md5( json_encode( $hash_array ) );
 
 		if ( count( $group['tests'] ) >= 10 ) {
 			throw new \Exception( 'The test group cannot contain more than 10 tests.' );
@@ -294,7 +307,10 @@ class TestGroup {
 	 */
 	private function update_group_item( array &$group, array $item ): void {
 		foreach ( $group['tests'] as $index => $test ) {
-			if ( $test['test_run']['test_run_id'] === $item['test_run_id'] ) {
+			if (
+				isset( $test['test_run'] ) &&
+				$test['test_run']['test_run_id'] === $item['test_run_id']
+			) {
 				$group['tests'][ $index ]['status'] = $item['status'];
 			}
 		}
@@ -405,7 +421,6 @@ class TestGroup {
 				$local_tests[] = $test;
 			}
 		}
-		
 		if ( empty( $local_tests ) ) {
 			return;
 		}
@@ -421,7 +436,7 @@ class TestGroup {
 				putenv( sprintf( 'QIT_TEST_RUN_ID=%s', $test['test_run']['test_run_id'] ) );
 				$this->run_local_test( $test, $application, $output );
 				RunE2ECommand::shutdown_test_run();
-				putenv( 'QIT_TEST_RUN_ID' );	
+				putenv( 'QIT_TEST_RUN_ID' );
 			} catch ( \Exception $e ) {
 				$output->writeln( sprintf( '<error>Failed to run local tests with Parameters: %s. Error: %s</error>', json_encode( $test['params'] ), $e->getMessage() ) );
 				putenv( 'QIT_TEST_RUN_ID' );
