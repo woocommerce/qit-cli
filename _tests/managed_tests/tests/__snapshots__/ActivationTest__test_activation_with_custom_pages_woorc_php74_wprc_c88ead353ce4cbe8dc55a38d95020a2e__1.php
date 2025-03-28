@@ -310,12 +310,12 @@
                                 {
                                     "name": "00_Plugin_A",
                                     "contentType": "image\\/jpeg",
-                                    "path": "\\/qit\\/results\\/playwright\\/activation-Visit-wp-admin-pages-added-by-the-plugin--test-Woocommerce-Run-\\/attachments\\/00-Plugin-A-c32ffd34c2a7735d608bc38fc43d1766f1f634b0.jpg"
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Visit-wp-admin-pages-added-by-the-plugin--test-Woocommerce-Run-\\/attachments\\/00-Plugin-A-HASHNORMALIZED.jpg"
                                 },
                                 {
                                     "name": "01_Plugin_B",
                                     "contentType": "image\\/jpeg",
-                                    "path": "\\/qit\\/results\\/playwright\\/activation-Visit-wp-admin-pages-added-by-the-plugin--test-Woocommerce-Run-\\/attachments\\/01-Plugin-B-b832b7ace5937cb9a7bd9babad0abb367dcd0700.jpg"
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Visit-wp-admin-pages-added-by-the-plugin--test-Woocommerce-Run-\\/attachments\\/01-Plugin-B-HASHNORMALIZED.jpg"
                                 },
                                 {
                                     "name": "screenshot",
@@ -334,12 +334,12 @@
                                 }
                             ],
                             "stdout": [
-                                "Navigating to http:\\/\\/qitenvnginx67e68e2d4cece\\/wp-admin\\/admin.php?page=plugin-a\\n",
+                                "Navigating to http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/admin.php?page=plugin-a\\n",
                                 "Console log: Console Log in custom page.\\n",
                                 "Console warning: Console Warning in custom page.\\n",
                                 "Console error: Console Error in custom page.\\n",
-                                "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/qitenvnginx67e68e2d4cece\\/wp-admin\\/admin.php?page=plugin-a:209:223\\"\\n",
-                                "Navigating to http:\\/\\/qitenvnginx67e68e2d4cece\\/wp-admin\\/admin.php?page=plugin-b\\n",
+                                "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/admin.php?page=plugin-a:209:223\\"\\n",
+                                "Navigating to http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/admin.php?page=plugin-b\\n",
                                 "Console error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)\\n",
                                 "Console error: PHP Fatal Error: Uncaught Error: Call to undefined function call_to_an_undefined_function()\\n"
                             ],

@@ -230,6 +230,15 @@ class QITE2ETestCase extends TestCase {
 					$value = str_replace( 'qit-runner-staging', 'qit-runner', $value );
 					$value = str_replace( 'compatibility-dashboard', 'qit-runner', $value );
 
+					// This removes *entire* lines that contain "Using cached file"
+					// $value = preg_replace('/^.*Using cached file.*\n?/m', '', $value);
+
+					// Replace qitenvnginx + random hex with a single placeholder
+					$value = preg_replace('/qitenvnginx[0-9a-f]+/i', 'qitenvnginxNORMALIZED', $value);
+
+					// Pattern: dash, 10+ hex chars, then dot, then jpg/jpeg/png
+					$value = preg_replace('/-[0-9a-f]{10,}\.(jpe?g|png|webm)/i', '-HASHNORMALIZED.$1', $value);
+
 					// 3) Decode back to array so we can walk the structure
 					if ( $array_mode ) {
 						$value = json_decode( $value, true );
