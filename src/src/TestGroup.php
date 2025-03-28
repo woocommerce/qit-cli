@@ -59,9 +59,17 @@ class TestGroup {
 			throw new \Exception( 'The test group has already been completed. Please delete it with `group:clear` and create a new one.' );
 		}
 
+		if (
+			isset( $group['status'] ) &&
+			self::STATUS_RUNNING === $group['status']
+		) {
+			throw new \Exception( 'The test group is already registered. Please execute the group with `group:run` and delete it with `group:clear` after it has completed.' );
+		}
+
 		if ( $this->pending_test_group_exists() ) {
 			throw new \Exception( 'A pending test group already exists. Either wait for it to complete or delete it with `group:clear`.' );
 		}
+
 
 		if ( empty( $group ) ) {
 			$group = [
