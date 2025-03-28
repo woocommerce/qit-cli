@@ -61,7 +61,7 @@ class TestGroup {
 
 		if (
 			isset( $group['status'] ) &&
-			self::STATUS_RUNNING === $group['status']
+			self::STATUS_REGISTERED === $group['status']
 		) {
 			throw new \Exception( 'The test group is already registered. Please execute the group with `group:run` and delete it with `group:clear` after it has completed.' );
 		}
