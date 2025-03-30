@@ -83,6 +83,7 @@ class CustomTestsDownloader {
 					}
 				}
 
+				// 1) REMOTE TEST ZIP
 				if ( isset( $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ] ) ) {
 					$custom_test_url       = $custom_tests[ $extension->slug ]['tests'][ $test_type ][ $test_tag ];
 					$custom_test_file_name = md5( $custom_test_url ) . '.zip';
@@ -101,18 +102,44 @@ class CustomTestsDownloader {
 
 					$zip_file           = $custom_test_file_path;
 					$processed_test_tag = $test_tag;
+
+					// 2) LOCAL DIRECTORY OR FILE
 				} elseif ( file_exists( $test_tag ) ) {
-					// Local test directory or file.
 					if ( is_dir( $test_tag ) ) {
-						$original_path = $test_tag;
-						$zip_file      = tempnam( sys_get_temp_dir(), 'qit_' ) . '.zip';
-						$this->zipper->zip_directory( $test_tag, $zip_file, UploadTestTagsCommand::get_files_excluded_from_local_test_build() );
+						// << Minimal change: skip zipping/unzipping if it's a local directory.
+						$original_path      = realpath( $test_tag );
+						$processed_test_tag = $k > 0 ? "local-$k" : 'local';
+
+						$path_in_php_container = "/qit/tests/$test_type/{$extension->slug}/$processed_test_tag";
+						$path_in_host          = $original_path;
+
+						// Mount directly as a volume:
+						$env_info->volumes[ $path_in_php_container ] = $path_in_host;
+
+						if ( $env_info instanceof E2EEnvInfo ) {
+							$env_info->tests[] = [
+								'slug'                  => $extension->slug,
+								'test_tag'              => $processed_test_tag,
+								'type'                  => $extension->type,
+								'action'                => $extension->action,
+								'path_in_php_container' => $path_in_php_container,
+								'path_in_host'          => $path_in_host,
+								'path_in_host_original' => $original_path ?? '',
+							];
+						}
+
+						// Because we are mounting directly, skip the rest (no zipping needed).
+						continue;
+
 					} else {
+						// If local file is e.g. a .zip, continue.
 						$zip_file = $test_tag;
 					}
 
 					$processed_test_tag = $k > 0 ? "local-$k" : 'local';
+
 				} else {
+					// If we don't have a remote or local test, skip it:
 					$this->output->writeln( sprintf( 'No test tag "%s" found for extension "%s".', $test_tag, $extension->slug ) );
 					continue;
 				}

@@ -262,18 +262,12 @@ class RunE2ECommand extends DynamicCommand {
 		$test_tag = $input->getOption( 'pw_test_tag' ) ?? 'full';
 
 		if ( $env_info instanceof E2EEnvInfo && ! empty( $woo_extension_id ) ) {
-			$env_info->sut_slug    = $woo_extension_slug;
-			$env_info->sut_id      = $woo_extension_id;
-			$env_info->sut_type    = $sut_type;
-			$env_info->pw_test_tag = $test_tag;
-
-			$this->test_run_notifier->notify_test_started(
-				$woo_extension_id,
-				$input->getOption( 'woo' ) ?? 'none',
-				$env_info,
-				$input->getOption( 'source' ) && file_exists( $input->getOption( 'source' ) ),
-				$input->getOption( 'notify' )
-			);
+			$env_info->sut_slug             = $woo_extension_slug;
+			$env_info->sut_id               = $woo_extension_id;
+			$env_info->sut_type             = $sut_type;
+			$env_info->pw_test_tag          = $test_tag;
+			$env_info->is_development_build = $input->getOption( 'source' ) && file_exists( $input->getOption( 'source' ) );
+			$env_info->notify               = $input->getOption( 'notify' );
 		}
 
 		$GLOBALS['env_to_shutdown'] = $env_info;

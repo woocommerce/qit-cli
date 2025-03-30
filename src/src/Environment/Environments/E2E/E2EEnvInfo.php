@@ -60,4 +60,13 @@ class E2EEnvInfo extends EnvInfo {
 
 	/** @var string The playwright test tag to be executed*/
 	public $pw_test_tag = '';
+
+	/** @var string The WooCommerce version, if any. */
+	public $woo_version = 'none';
+
+	/** @var bool Whether this test run is for a development build. */
+	public $is_development_build;
+
+	/** @var string Whether to notify the developer about the result of this test run. */
+	public $notify;
 }

@@ -100,12 +100,12 @@ class LocalTestRunNotifier {
 		}
 
 		$r = App::make( RequestBuilder::class )
-				->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-started' )
-				->with_method( 'POST' )
-				->with_expected_status_codes( [ 200 ] )
-				->with_timeout_in_seconds( 60 )
-				->with_post_body( $body )
-				->request();
+		        ->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-started' )
+		        ->with_method( 'POST' )
+		        ->with_expected_status_codes( [ 200 ] )
+		        ->with_timeout_in_seconds( 60 )
+		        ->with_post_body( $body )
+		        ->request();
 
 		// Decode response as JSON.
 		$response = json_decode( $r, true );
@@ -183,12 +183,21 @@ class LocalTestRunNotifier {
 			$debug_log['debug_log'] = file_get_contents( $prepared_debug_log_path, false, null, 0, 8 * 1024 * 1024 ); // First 8mb of debug.log.
 		}
 
-		if ( file_exists( $results_dir . '/allure-playwright' ) && App::getVar( 'should_upload_report' ) ) {
-			$this->zipper->zip_directory( $results_dir . '/allure-playwright', $results_dir . '/allure-playwright.zip' );
-			if ( filesize( $results_dir . '/allure-playwright.zip' ) > 200 * 1024 * 1024 ) {
-				$this->output->writeln( '<error>Report is too large to upload. Skipping...</error>' );
+		$allure_dir = $results_dir . '/allure';
+		if ( is_dir( $allure_dir ) && App::getVar( 'should_upload_report' ) ) {
+			$zip_path = $results_dir . '/allure-raw.zip';
+			$this->zipper->zip_directory( $allure_dir, $zip_path );
+
+			if ( filesize( $zip_path ) > 200 * 1024 * 1024 ) {
+				$this->output->writeln( '<error>Allure raw results are too large to upload. Skipping...</error>' );
 			} else {
-				$this->uploader->upload_build( 'test-report', $test_run_id, $results_dir . '/allure-playwright.zip', $this->output, 'e2e' );
+				$this->uploader->upload_build(
+					'test-report',
+					$test_run_id,
+					$zip_path,
+					$this->output,
+					'e2e'
+				);
 			}
 		}
 
@@ -250,12 +259,12 @@ class LocalTestRunNotifier {
 		];
 
 		$r = App::make( RequestBuilder::class )
-				->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-finished' )
-				->with_method( 'POST' )
-				->with_expected_status_codes( [ 200 ] )
-				->with_timeout_in_seconds( 60 )
-				->with_post_body( $data )
-				->request();
+		        ->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-finished' )
+		        ->with_method( 'POST' )
+		        ->with_expected_status_codes( [ 200 ] )
+		        ->with_timeout_in_seconds( 60 )
+		        ->with_post_body( $data )
+		        ->request();
 
 		// Decode response as JSON.
 		$response = json_decode( $r, true );

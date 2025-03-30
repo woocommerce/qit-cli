@@ -3,6 +3,8 @@
 namespace QIT_CLI\LocalTests\E2E;
 
 use QIT_CLI\App;
+use QIT_CLI\Cache;
+use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Extension;
@@ -55,6 +57,14 @@ class SpecE2ETestRunner {
 	 * @return int
 	 */
 	public function run_custom_e2e_tests( $env_info, $io, $up_only ) {
+		$this->local_test_run_notifier->notify_test_started(
+			$env_info->sut_id,
+			$env_info->woo_version,
+			$env_info,
+			$env_info->is_development_build,
+			$env_info->notify
+		);
+
 		// Initialize test-result tracking
 		$test_result = TestResult::init_from( $env_info );
 		$exit_code   = Command::SUCCESS;
@@ -101,6 +111,22 @@ class SpecE2ETestRunner {
 
 		// 5) Merge CTRF + Allure from all plugins
 		$this->merge_results( $env_info, $io, $test_result );
+
+		// 6) Upload results to QIT Manager
+		try {
+			[ $reportUrl, $override_exit ] = $this->local_test_run_notifier->notify_test_finished( $test_result );
+
+			// If the notifier discovered, e.g., fatal PHP errors, it might want to override your exit code
+			if ( $override_exit !== null ) {
+				$exit_code = $override_exit;
+			}
+
+			$io->writeln( "<info>Raw Allure results have been uploaded. View final report at: {$reportUrl}</info>" );
+		} catch ( \Exception $e ) {
+			$io->error( 'Could not finalize results to QIT Manager: ' . $e->getMessage() );
+			// Optionally force a failure if you prefer
+			$exit_code = Command::FAILURE;
+		}
 
 		return $exit_code;
 	}
@@ -262,19 +288,105 @@ class SpecE2ETestRunner {
 		}
 	}
 
-	/**
-	 * Merges results, e.g. CTRF JSON from all tested plugins, plus optional Allure reports.
-	 *
-	 * @param E2EEnvInfo $env_info
-	 * @param SymfonyStyle $io
-	 * @param TestResult $test_result
-	 */
 	protected function merge_results( $env_info, $io, $test_result ) {
-		$io->writeln( '<info>Merging CTRF results from all tested plugins...</info>' );
-		// Example steps:
-		//  1) gather all JSON from $test_result->get_results_dir() . '/ctrf'
-		//  2) run "ctrf-cli merge" or "allure generate"
+		$io->writeln( '<info>Merging CTRF & Allure results on the host...</info>' );
+
+		// 1) Identify CTRF & Allure result files
+		$ctrf_dir        = $test_result->get_results_dir() . '/ctrf';
+		$allure_root_dir = $test_result->get_results_dir() . '/allure';
+
+		$ctrf_exists = is_dir( $ctrf_dir ) && count( glob( $ctrf_dir . '/*.json' ) ) > 0;
+
+		$allure_exists = false;
+		if ( is_dir( $allure_root_dir ) ) {
+			$json_files = glob( $allure_root_dir . '/**/*.json' );
+			if ( ! empty( $json_files ) ) {
+				$allure_exists = true;
+			}
+		}
+
+		// If neither CTRF nor Allure data is present, bail early.
+		if ( ! $ctrf_exists && ! $allure_exists ) {
+			$io->writeln( '<comment>No CTRF or Allure data found to merge. Skipping...</comment>' );
+
+			return;
+		}
+
+		// Our persistent system-wide directory for installation:
+		$qit_dir = Config::get_qit_dir();
+
+		// Where we expect binaries after npm install:
+		$ctrf_path   = $qit_dir . '/node_modules/.bin/ctrf';
+		$allure_path = $qit_dir . '/node_modules/.bin/allure';
+
+		//
+		// 2) CTRF merge (mandatory if CTRF files exist)
+		//
+		if ( $ctrf_exists ) {
+			$io->writeln( '<info>CTRF JSON found. Ensuring CTRF is installed...</info>' );
+
+			// If ctrf binary is missing, attempt an install
+			if ( ! ( is_file( $ctrf_path ) && is_executable( $ctrf_path ) ) ) {
+				$io->writeln(
+					"<comment>No ctrf binary found at $ctrf_path. Attempting npm install ctrf...</comment>"
+				);
+
+				$install_ctrf = new Process( [
+					'npm',
+					'install',
+					'--prefix',
+					$qit_dir,
+					'ctrf'
+				], $qit_dir );
+				$install_ctrf->setTimeout( 300 ); // 5 minutes
+				$install_ctrf->run();
+
+				if ( ! $install_ctrf->isSuccessful() ) {
+					throw new \RuntimeException(
+						sprintf(
+							'Failed to install CTRF. NPM error: %s',
+							$install_ctrf->getErrorOutput()
+						)
+					);
+				}
+
+				// Check again if the binary is present
+				if ( ! ( is_file( $ctrf_path ) && is_executable( $ctrf_path ) ) ) {
+					throw new \RuntimeException(
+						sprintf(
+							'CTRF was installed, but still no executable at %s',
+							$ctrf_path
+						)
+					);
+				}
+				$io->writeln( "<info>CTRF installed successfully at $ctrf_path</info>" );
+			}
+
+			// Merge the CTRF JSON on the host
+			$io->writeln( '<info>Merging CTRF JSON results...</info>' );
+			$ctrf_proc = new Process( [ $ctrf_path, 'merge', $ctrf_dir ] );
+			$ctrf_proc->setTimeout( 300 );
+			$ctrf_proc->run();
+
+			if ( ! $ctrf_proc->isSuccessful() ) {
+				throw new \RuntimeException(
+					sprintf(
+						'Failed to merge CTRF results. Error: %s',
+						$ctrf_proc->getErrorOutput()
+					)
+				);
+			}
+			$io->writeln( '<info>CTRF merge completed successfully.</info>' );
+		}
+
+		//
+		// 3) Allure merge & generate (optional if Allure files exist)
+		//
+		if ( $allure_exists ) {
+			// We will upload raw allure results to be compiled/unified in a remote workflow.
+		}
 	}
+
 
 	/**
 	 * If a script (like "setup.sh") exists in "bootstrap/" for this plugin test_item, run it.
