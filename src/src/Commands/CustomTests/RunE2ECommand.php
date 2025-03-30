@@ -10,6 +10,7 @@ namespace QIT_CLI\Commands\CustomTests;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Environment\PluginsAndThemesParser;
+use QIT_CLI\LocalTests\E2E\SpecE2ETestRunner;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
@@ -19,7 +20,6 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\Extension;
-use QIT_CLI\LocalTests\E2E\E2ETestManager;
 use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\PluginDependencies;
@@ -46,7 +46,7 @@ class RunE2ECommand extends DynamicCommand {
 	/** @var OutputInterface */
 	protected $output;
 
-	/** @var E2ETestManager */
+	/** @var SpecE2ETestRunner */
 	protected $e2e_test_manager;
 
 	/** @var WooExtensionsList */
@@ -76,7 +76,7 @@ class RunE2ECommand extends DynamicCommand {
 	public function __construct(
 		E2EEnvironment $e2e_environment,
 		Cache $cache,
-		E2ETestManager $e2e_test_manager,
+		SpecE2ETestRunner $e2e_test_manager,
 		WooExtensionsList $woo_extensions_list,
 		LocalTestRunNotifier $test_run_notifier,
 		PluginDependencies $dependencies,
@@ -107,6 +107,11 @@ class RunE2ECommand extends DynamicCommand {
 		$this
 			->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'The slug or WooCommerce ID of the main extension under test.' )
 			->addArgument( 'test', InputArgument::OPTIONAL, '(Optional) The tests for the main extension under test. Accepts test tags, or a test directory. If not set, will use the "default" test tag of this extension.' )
+			->addArgument(
+				'runner_args',
+				InputArgument::IS_ARRAY,
+				'Any arguments after a double-dash (--) go here.'
+			)
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'The source of the main extension under test. Accepts a slug, a file, a URL. If not provided, the source will be the slug.' )
 			->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to take on the SUT. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['test'] )
 			->addOption( 'pw_test_tag', null, InputOption::VALUE_OPTIONAL, 'The Playwright test tag to run.', '' )
@@ -158,7 +163,9 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		try {
-			[ $test_mode, $wait ] = $this->determine_test_mode( $input );
+			$wait = (bool) $input->getOption( 'up_only' );
+
+			[ $test_mode, $wait ] = [ 'headless', $wait ];
 		} catch ( \RuntimeException $e ) {
 			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
@@ -239,6 +246,8 @@ class RunE2ECommand extends DynamicCommand {
 			/** @var E2EEnvInfo $env_info */
 			$env_info = $this->environment_runner->run_environment( $env_up_options );
 
+			$env_info->runner_args = $input->getArgument( 'runner_args' );
+
 			if ( getenv( 'QIT_SELF_TEST' ) === 'env_info' ) {
 				$output->write( json_encode( $env_info ) );
 
@@ -279,7 +288,8 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		$shard            = $input->getOption( 'shard' );
-		$exit_status_code = $this->e2e_test_manager->run_tests( $env_info, $test_mode, $wait, $shard );
+		$io               = new SymfonyStyle( $input, $output );
+		$exit_status_code = $this->e2e_test_manager->run_custom_e2e_tests( $env_info, $io, $input->getOption( 'up_only' ) );
 		$io               = new SymfonyStyle( $input, $output );
 		$io->setDecorated( true );
 
@@ -292,16 +302,8 @@ class RunE2ECommand extends DynamicCommand {
 			$io->success( "Tests passed. Run 'qit e2e-report' to view the report." );
 
 			return Command::SUCCESS;
-		} elseif ( $exit_status_code === self::WARNING ) {
-			if ( $test_mode === E2ETestManager::$test_modes['headless'] ) {
-				$io->warning( "Tests passed with a warning. Run 'qit e2e-report' to view the report." );
-			}
-
-			return self::WARNING;
 		} else {
-			if ( $test_mode === E2ETestManager::$test_modes['headless'] ) {
-				$io->error( "Tests failed. Run 'qit e2e-report' to view the report." );
-			}
+			$io->error( "Tests failed. Run 'qit e2e-report' to view the report." );
 
 			return Command::FAILURE;
 		}
@@ -383,7 +385,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
+				$parsed_options['env_up']["--$option_name"] = $option_value;
 			}
 		}
 
@@ -417,7 +419,7 @@ class RunE2ECommand extends DynamicCommand {
 	}
 
 	/**
-	 * @param string|null     $woo_extension_raw
+	 * @param string|null $woo_extension_raw
 	 * @param OutputInterface $output
 	 *
 	 * @return array{0:int|null,1:string|null,2:string|int|null} Array containing:
@@ -446,36 +448,6 @@ class RunE2ECommand extends DynamicCommand {
 		putenv( "QIT_SUT=$woo_extension_slug" ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 
 		return [ $woo_extension_id, $woo_extension_slug, $sut_type ];
-	}
-
-	/**
-	 * Determine the test mode and whether to wait.
-	 *
-	 * @param InputInterface $input
-	 *
-	 * @return array{0:string,1:bool} Returns an array where:
-	 *                                [0] = test_mode (string)
-	 *                                [1] = wait (bool)
-	 *
-	 * @throws \RuntimeException If both ui and codegen are set.
-	 */
-	private function determine_test_mode( InputInterface $input ): array {
-		if ( $input->getOption( 'ui' ) && $input->getOption( 'codegen' ) ) {
-			throw new \RuntimeException( 'Cannot run tests in both "UI" and "Codegen" mode at the same time.' );
-		}
-
-		if ( $input->getOption( 'ui' ) ) {
-			$test_mode = E2ETestManager::$test_modes['ui'];
-		} elseif ( $input->getOption( 'codegen' ) ) {
-			putenv( 'QIT_CODEGEN=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-			$test_mode = E2ETestManager::$test_modes['codegen'];
-		} else {
-			$test_mode = E2ETestManager::$test_modes['headless'];
-		}
-
-		$wait = $input->getOption( 'up_only' ) || $test_mode === E2ETestManager::$test_modes['codegen'];
-
-		return [ $test_mode, $wait ];
 	}
 
 	private function validate_input( InputInterface $input, OutputInterface $output, bool $wait ): int {
@@ -538,9 +510,9 @@ class RunE2ECommand extends DynamicCommand {
 
 	/**
 	 * @param InputInterface $input
-	 * @param array<mixed>   $env_up_options
-	 * @param string|null    $woo_extension_slug
-	 * @param string|null    $sut_type 'plugin', 'theme', or null.
+	 * @param array<mixed> $env_up_options
+	 * @param string|null $woo_extension_slug
+	 * @param string|null $sut_type 'plugin', 'theme', or null.
 	 *
 	 * @return array<mixed> Updated env_up_options.
 	 */

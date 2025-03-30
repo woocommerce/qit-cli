@@ -169,10 +169,6 @@ class UploadTestTagsCommand extends Command {
 			'.git/*',
 			'.gitignore',
 			'node_modules/*',
-			'playwright.config.js',
-			'playwright.config.ts',
-			'package-lock.json',
-			'package.json',
 		];
 	}
 }

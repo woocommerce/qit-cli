@@ -11,6 +11,9 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var string The site URL, if any. */
 	public $site_url;
 
+	/** @var array<string,string> */
+	public $runner_args = [];
+
 	/** @var string */
 	public $wp = '';
 
