@@ -106,7 +106,7 @@ class CustomTestsDownloader {
 					if ( is_dir( $test_tag ) ) {
 						$original_path = $test_tag;
 						$zip_file      = tempnam( sys_get_temp_dir(), 'qit_' ) . '.zip';
-						$this->zipper->zip_directory( $test_tag, $zip_file, UploadTestTagsCommand::get_exclude_files() );
+						$this->zipper->zip_directory( $test_tag, $zip_file, UploadTestTagsCommand::get_files_excluded_from_local_test_build() );
 					} else {
 						$zip_file = $test_tag;
 					}

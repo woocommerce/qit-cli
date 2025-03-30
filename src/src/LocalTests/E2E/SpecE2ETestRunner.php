@@ -16,6 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use RuntimeException;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
 /**
@@ -135,7 +136,7 @@ class SpecE2ETestRunner {
 	protected function db_export( $env_info, $io ) {
 		$io->writeln( '<info>[db export]</info>' );
 		// For example:
-		$this->docker->run_inside_docker( $env_info, array( 'wp', 'db', 'export', '/qit/snapshot.sql' ) );
+		$this->docker->run_inside_docker( $env_info, [ 'wp', 'db', 'export', '/qit/snapshot.sql' ] );
 	}
 
 	/**
@@ -165,7 +166,7 @@ class SpecE2ETestRunner {
 
 		// 1) Restore DB
 		$io->writeln( '<comment>[db import] for ' . $slug . '</comment>' );
-		$this->docker->run_inside_docker( $env_info, array( 'wp', 'db', 'import', '/qit/snapshot.sql' ) );
+		$this->docker->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql' ] );
 
 		// 2) plugin-specific setup
 		$this->run_script_if_exists( $env_info, $test_item, 'setup.sh', 'Plugin Setup (Shell)', $io );
@@ -180,28 +181,24 @@ class SpecE2ETestRunner {
 
 		try {
 			// Only run "npm install" if no node_modules directory is present.
-			if ( ! is_dir( $host_path . '/node_modules' ) ) {
-				$io->text( "No 'node_modules' found in {$host_path}, running npm install..." );
-				$install_process = new Process( array( 'npm', 'install' ), $host_path );
-				$install_exit    = $install_process->run( function ( $type, $buffer ) use ( $io ) {
-					if ( $type === Process::ERR ) {
-						$io->write( $buffer, false, OutputInterface::OUTPUT_RAW );
-					} else {
-						$io->write( $buffer );
-					}
-				} );
-
-				if ( $install_exit !== 0 ) {
-					throw new \RuntimeException(
-						"npm install failed:\n" . $install_process->getErrorOutput()
-					);
+			$io->text( "No 'node_modules' found in {$host_path}, running npm install..." );
+			$install_process = new Process( [ 'npm', 'install' ], $host_path );
+			$install_exit    = $install_process->run( function ( $type, $buffer ) use ( $io ) {
+				if ( $type === Process::ERR ) {
+					$io->write( $buffer, false, OutputInterface::OUTPUT_RAW );
+				} else {
+					$io->write( $buffer );
 				}
-			} else {
-				$io->text( "'node_modules' already present in {$host_path}, skipping npm install." );
+			} );
+
+			if ( $install_exit !== 0 ) {
+				throw new \RuntimeException(
+					"npm install failed:\n" . $install_process->getErrorOutput()
+				);
 			}
 
 			// Build the full command: `npm run qit-e2e -- <runnerArgs>`
-			$test_cmd = array( 'npm', 'run', 'qit-e2e' );
+			$test_cmd = [ 'npm', 'run', 'qit-e2e' ];
 
 			// Only append `--` and the runner args if there are any runnerArgs
 			if ( ! empty( $env_info->runner_args ) ) {
@@ -210,7 +207,11 @@ class SpecE2ETestRunner {
 			}
 
 			$test_process = new Process( $test_cmd, $host_path );
-			$test_exit    = $test_process->run( function ( $type, $buffer ) use ( $io ) {
+			$test_process->setEnv( [
+				'IS_QIT'       => 'true',
+				'QIT_SITE_URL' => $env_info->site_url,
+			] );
+			$test_exit = $test_process->run( function ( $type, $buffer ) use ( $io ) {
 				if ( $type === Process::ERR ) {
 					$io->write( $buffer, false, OutputInterface::OUTPUT_RAW );
 				} else {
@@ -234,7 +235,7 @@ class SpecE2ETestRunner {
 		$this->run_script_if_exists( $env_info, $test_item, 'teardown.js', 'Plugin Teardown (JS)', $io );
 
 		// 5) Collect artifacts
-		$this->collect_plugin_artifacts( $env_info, $test_item, $test_result, $io );
+		$this->collect_plugin_artifacts( $test_item, $test_result, $io );
 
 		return $code;
 	}
@@ -301,7 +302,7 @@ class SpecE2ETestRunner {
 		//   "bash -c cd /some/path/bootstrap && bash script_name"
 		$this->docker->run_inside_docker(
 			$env_info,
-			array( 'bash', '-c', 'cd ' . $docker_dir . '/bootstrap && bash ' . $script_name )
+			[ 'bash', '-c', 'cd ' . $docker_dir . '/bootstrap && bash ' . $script_name ]
 		);
 	}
 
@@ -309,14 +310,11 @@ class SpecE2ETestRunner {
 	 * Copies plugin's ./results/ctrf.json and optionally ./results/allure/
 	 * from container to local for merging.
 	 *
-	 * @param E2EEnvInfo $env_info
 	 * @param array $test_item
 	 * @param TestResult $test_result
 	 * @param SymfonyStyle $io
 	 */
-	protected function collect_plugin_artifacts( $env_info, $test_item, $test_result, $io ) {
-		$slug        = isset( $test_item['slug'] ) ? $test_item['slug'] : 'unknown';
-		$docker_dir  = isset( $test_item['path_in_php_container'] ) ? $test_item['path_in_php_container'] : '';
+	protected function collect_plugin_artifacts( $test_item, $test_result, $io ) {
 		$results_dir = $test_result->get_results_dir();
 
 		// Ensure we have a subfolder for CTRF, Allure, etc.
@@ -324,26 +322,29 @@ class SpecE2ETestRunner {
 			@mkdir( $results_dir, 0755, true );
 		}
 
-		// 1) Copy CTRF JSON
-		try {
-			$this->docker->copy_from_docker(
-				$env_info,
-				$docker_dir . '/results/ctrf.json',
-				$results_dir . '/ctrf/' . $slug . '.json'
-			);
-		} catch ( \Exception $e ) {
-			$io->warning( 'Plugin ' . $slug . ' did not produce results/ctrf.json' );
+		if ( ! is_dir( $results_dir . '/ctrf' ) ) {
+			@mkdir( $results_dir . '/ctrf', 0755, true );
 		}
 
-		// 2) Copy optional Allure folder
-		try {
-			$this->docker->copy_from_docker(
-				$env_info,
-				$docker_dir . '/results/allure',
-				$results_dir . '/allure/' . $slug
+		if ( ! is_dir( $results_dir . '/allure' ) ) {
+			@mkdir( $results_dir . '/allure', 0755, true );
+		}
+
+		if ( file_exists( $test_item['path_in_host'] . '/results/ctrf.json' ) ) {
+			copy(
+				$test_item['path_in_host'] . '/results/ctrf.json',
+				$results_dir . '/ctrf/' . $test_item['slug'] . '.json'
 			);
-		} catch ( \Exception $e ) {
-			// no allure found, ignore
+		} else {
+			$io->warning( 'Plugin ' . $test_item['slug'] . ' did not produce results/ctrf.json' );
+		}
+
+		if ( file_exists( $test_item['path_in_host'] . '/results/allure' ) ) {
+			$fs = App::make( Filesystem::class );
+			$fs->mirror(
+				$test_item['path_in_host'] . '/results/allure',
+				$results_dir . '/allure/' . $test_item['slug']
+			);
 		}
 	}
 }

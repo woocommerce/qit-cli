@@ -139,7 +139,7 @@ class UploadTestTagsCommand extends Command {
 				 * - playwright.config.js
 				 * - playwright.config.ts
 				 */
-				$this->zipper->zip_directory( $test_path, $zip_to_upload, static::get_exclude_files() );
+				$this->zipper->zip_directory( $test_path, $zip_to_upload, static::get_files_excluded_from_published_test_build() );
 			} catch ( \Exception $e ) {
 				$output->writeln( "<error>{$e->getMessage()}</error>" );
 
@@ -161,14 +161,28 @@ class UploadTestTagsCommand extends Command {
 	}
 
 	/**
-	 * @return array<string> The files to exclude when zipping a custom test.
+	 * @return array<string> The files to exclude when zipping a custom test to be published.
 	 */
-	public static function get_exclude_files(): array {
+	public static function get_files_excluded_from_published_test_build(): array {
 		return [
 			'.github/*',
 			'.git/*',
 			'.gitignore',
 			'node_modules/*',
+			'vendor/*',
+		];
+	}
+
+	/**
+	 * @return array<string> The files to exclude when zipping a custom test to be used locally.
+	 */
+	public static function get_files_excluded_from_local_test_build(): array {
+		return [
+			'.github/*',
+			'.git/*',
+			'.gitignore',
+			'node_modules/*',
+			'vendor/*',
 		];
 	}
 }
