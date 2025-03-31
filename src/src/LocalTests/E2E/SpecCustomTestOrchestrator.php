@@ -3,6 +3,7 @@
 namespace QIT_CLI\LocalTests\E2E;
 
 use QIT_CLI\App;
+use QIT_CLI\Cache;
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
@@ -139,6 +140,17 @@ class SpecCustomTestOrchestrator {
 			if ( $override_exit !== null ) {
 				$exit_code = $override_exit;
 			}
+
+			App::make( Cache::class )->set( 'last_e2e_report', json_encode( [
+				'local_playwright' => file_exists( $test_result->get_results_dir() . '/report/index.html' ) ? $test_result->get_results_dir() . '/report' : '',
+				'remote_qit'       => $report_url,
+			] ), MONTH_IN_SECONDS );
+
+			// Print Report URL in a more stand-out way.
+			$io->writeln( '' );
+			$io->writeln( '<info>Test run finished. Report URL:</info>' );
+			$io->writeln( $report_url );
+			$io->writeln( '' );
 		} catch ( \Exception $e ) {
 			$io->error( 'Could not finalize results to QIT Manager: ' . $e->getMessage() );
 			$exit_code = Command::FAILURE;

@@ -49,14 +49,14 @@ class ExtensionTestRunner {
 	 * Restores DB, runs the plugin's local setups, calls `npm run qit-e2e`, runs teardown,
 	 * and copies artifacts out.
 	 *
-	 * @param E2EEnvInfo   $env_info
-	 * @param array        $test_item
+	 * @param E2EEnvInfo $env_info
+	 * @param array $test_item
 	 * @param SymfonyStyle $io
 	 *
 	 * @return int
 	 */
 	public function run_single_plugin_tests( E2EEnvInfo $env_info, array $test_item, SymfonyStyle $io, bool $is_first ) {
-		$slug = isset( $test_item['slug'] ) ? $test_item['slug'] : 'unknown';
+		$slug = $test_item['slug'] ?? 'unknown';
 
 		if ( ! $is_first ) {
 			// 1) Restore DB
@@ -122,6 +122,12 @@ class ExtensionTestRunner {
 			$code = Command::FAILURE;
 		}
 
+		// 3) Immediately post-process CTRF if it exists, adding pluginSlug and phase = Test
+		$ctrf_file = $host_path . '/results/ctrf.json';
+		if ( file_exists( $ctrf_file ) ) {
+			$this->add_extra_ctrf_data_to_extension_tests( $ctrf_file, $slug );
+		}
+
 		// 4) plugin teardown
 		$this->run_script_if_exists( $env_info, $test_item, 'teardown.sh', 'Plugin Teardown', $io );
 
@@ -131,13 +137,36 @@ class ExtensionTestRunner {
 		return $code;
 	}
 
+	protected function add_extra_ctrf_data_to_extension_tests( string $ctrf_file, string $slug ) {
+		if ( ! file_exists( $ctrf_file ) ) {
+			return;
+		}
+
+		$data = json_decode( file_get_contents( $ctrf_file ), true );
+		if ( ! is_array( $data ) ) {
+			return;
+		}
+
+		if ( ! empty( $data['results']['tests'] ) && is_array( $data['results']['tests'] ) ) {
+			foreach ( $data['results']['tests'] as &$test ) {
+				if ( ! isset( $test['extra'] ) ) {
+					$test['extra'] = [];
+				}
+				$test['extra']['pluginSlug'] = $slug;
+				$test['extra']['phase']      = 'Test';
+			}
+		}
+
+		file_put_contents( $ctrf_file, json_encode( $data, JSON_PRETTY_PRINT ) );
+	}
+
 	/**
 	 * If a script (like 'setup.sh' or 'shared-setup.sh') exists, run it in Docker and record the CTRF snippet.
 	 *
-	 * @param E2EEnvInfo   $env_info
-	 * @param array        $test_item
-	 * @param string       $script_name
-	 * @param string       $phase e.g. "Shared Setup", "Isolated Setup", "Plugin Teardown", etc.
+	 * @param E2EEnvInfo $env_info
+	 * @param array $test_item
+	 * @param string $script_name
+	 * @param string $phase e.g. "Shared Setup", "Isolated Setup", "Plugin Teardown", etc.
 	 * @param SymfonyStyle $io
 	 */
 	public function run_script_if_exists( $env_info, $test_item, $script_name, $phase, $io ) {
@@ -167,7 +196,7 @@ class ExtensionTestRunner {
 		$capture        = $this->run_command_and_capture( $env_info, $command_to_run );
 
 		// Then record it as a partial CTRF snippet.
-		$ctrf_snippet = $this->build_ctrf_snippet( $test_title, $capture, $phase, $plugin_slug );
+		$ctrf_snippet = $this->build_ctrf_snippet( $test_title, $capture, $phase, $plugin_slug, $script_name );
 
 		// Merge it into the CTRF results folder.
 		$ctrf_dir = $this->test_result->get_results_dir() . '/ctrf';
@@ -177,7 +206,7 @@ class ExtensionTestRunner {
 	/**
 	 * Copies plugin's ./results/ctrf.json and ./results/allure/ from host to final results directory.
 	 *
-	 * @param array        $test_item
+	 * @param array $test_item
 	 * @param SymfonyStyle $io
 	 */
 	protected function collect_plugin_artifacts( $test_item, $io ) {
@@ -222,7 +251,7 @@ class ExtensionTestRunner {
 	 * ['exit_code', 'stdout', 'stderr', 'start', 'stop', 'duration'].
 	 *
 	 * @param E2EEnvInfo $env_info
-	 * @param array      $command_args
+	 * @param array $command_args
 	 *
 	 * @return array
 	 */
@@ -254,16 +283,17 @@ class ExtensionTestRunner {
 	 * Builds a minimal CTRF JSON structure for a single script-run (like setup.sh) so it appears in final results.
 	 *
 	 * @param string $test_name
-	 * @param array  $capture
+	 * @param array $capture
 	 * @param string $phase
 	 * @param string $plugin_slug
 	 *
 	 * @return array
 	 */
-	protected function build_ctrf_snippet( $test_name, $capture, $phase = '', $plugin_slug = '' ) {
+	protected function build_ctrf_snippet( $test_name, $capture, $phase = '', $plugin_slug = '', $file_path = '' ) {
 		$start_epoch = (int) $capture['start'];
 		$stop_epoch  = (int) $capture['stop'];
 		$status      = ( $capture['exit_code'] === 0 ) ? 'passed' : 'failed';
+		$suite       = 'bootstrap/' . basename( $file_path );
 
 		return [
 			'$schema'      => 'http://json-schema.org/draft-07/schema#',
@@ -273,7 +303,7 @@ class ExtensionTestRunner {
 			'timestamp'    => gmdate( 'c' ),
 			'generatedBy'  => 'QIT_SpecE2ETestRunner',
 
-			'results'      => [
+			'results' => [
 				'tool'    => [
 					'name'    => 'SpecE2ERunner',
 					'version' => '1.0.0',
@@ -296,7 +326,7 @@ class ExtensionTestRunner {
 						'duration' => $capture['duration'],
 						'start'    => $start_epoch,
 						'stop'     => $stop_epoch,
-						'suite'    => $plugin_slug,
+						'suite'    => $suite,
 						'extra'    => [
 							'phase'      => $phase,
 							'pluginSlug' => $plugin_slug,
@@ -312,8 +342,8 @@ class ExtensionTestRunner {
 	/**
 	 * Writes the snippet to a temporary file and merges it into the final CTRF directory.
 	 *
-	 * @param array        $snippet
-	 * @param string       $ctrf_dir
+	 * @param array $snippet
+	 * @param string $ctrf_dir
 	 * @param SymfonyStyle $io
 	 */
 	protected function merge_ctrf_snippet( array $snippet, $ctrf_dir, SymfonyStyle $io ) {
