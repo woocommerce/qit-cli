@@ -31,23 +31,18 @@ class LocalTestRunNotifier {
 	/** @var PrepareQMLog */
 	protected $prepare_qm_log;
 
-	/** @var PlaywrightToPuppeteerConverter */
-	protected $playwright_to_puppeteer_converter;
-
 	public function __construct(
 		Zipper $zipper,
 		OutputInterface $output,
 		Upload $uploader,
 		PrepareDebugLog $prepare_debug_log,
-		PrepareQMLog $prepare_qm_log,
-		PlaywrightToPuppeteerConverter $playwright_to_puppeteer_converter
+		PrepareQMLog $prepare_qm_log
 	) {
-		$this->zipper                            = $zipper;
-		$this->output                            = $output;
-		$this->uploader                          = $uploader;
-		$this->prepare_debug_log                 = $prepare_debug_log;
-		$this->prepare_qm_log                    = $prepare_qm_log;
-		$this->playwright_to_puppeteer_converter = $playwright_to_puppeteer_converter;
+		$this->zipper            = $zipper;
+		$this->output            = $output;
+		$this->uploader          = $uploader;
+		$this->prepare_debug_log = $prepare_debug_log;
+		$this->prepare_qm_log    = $prepare_qm_log;
 	}
 
 	/**
@@ -137,7 +132,6 @@ class LocalTestRunNotifier {
 
 		$results_dir = $test_result->get_results_dir();
 
-		$result_file               = $results_dir . '/result.json';
 		$ctrf_file                 = $results_dir . '/ctrf/ctrf-report.json';
 		$qm_logs_path              = $results_dir . '/logs';
 		$test_result_json_original = '';
@@ -154,27 +148,14 @@ class LocalTestRunNotifier {
 			],
 		];
 
-		if ( file_exists( $result_file ) ) {
-			$result_json = file_get_contents( $result_file );
+		if ( file_exists( $ctrf_file ) ) {
+			$result_json = json_decode( file_get_contents( $ctrf_file ), true );
 
-			if ( empty( json_decode( $result_json, true ) ) ) {
+			if ( empty( $result_json ) ) {
 				throw new \RuntimeException( 'Result file not a JSON.' );
 			}
-
-			$test_result_json_original = $result_json;
-			$result_json               = $this->playwright_to_puppeteer_converter->convert_pw_to_puppeteer( json_decode( $result_json, true ) );
 		} else {
 			$result_json = [];
-		}
-
-		if ( file_exists( $ctrf_file ) ) {
-			$ctrf_json = json_decode( file_get_contents( $ctrf_file ), true );
-
-			if ( ! empty( $ctrf_json ) ) {
-				$ctrf_json = $ctrf_json;
-			}
-		} else {
-			$ctrf_json = [];
 		}
 
 		if ( file_exists( $results_dir . '/debug.log' ) ) {
@@ -222,8 +203,12 @@ class LocalTestRunNotifier {
 		}
 
 		// If it has failed any assertion, it's a failure.
-		if ( is_null( $status ) && $this->playwright_to_puppeteer_converter->has_failed( $result_json ) ) {
-			$status = 'failed';
+		if ( is_null( $status ) ) {
+			if ( $this->ctrf_has_failed( $result_json ) ) {
+				// We consider it a test failure.
+				$exit_status_code_override = Command::FAILURE; // i.e., exit code 1
+				$status                    = 'failed';
+			}
 		}
 
 		// If there's anything on debug.log, it's a warning.
@@ -244,18 +229,14 @@ class LocalTestRunNotifier {
 			$status = 'success';
 		}
 
-		if ( function_exists( 'gzcompress' ) && ! empty( $test_result_json_original ) ) {
-			$test_result_json_original = base64_encode( gzcompress( $test_result_json_original ) );
-		}
-
 		$data = [
 			'test_run_id'               => $test_run_id,
-			'test_result_json'          => $result_json,
-			'test_result_json_original' => $test_result_json_original,
+			'test_result_json'          => '',
+			'test_result_json_original' => '',
 			'bootstrap_log'             => json_encode( $test_result->bootstrap ),
 			'debug_log'                 => json_encode( $debug_log ),
 			'status'                    => $status,
-			'ctrf_json'                 => $ctrf_json,
+			'ctrf_json'                 => $result_json,
 		];
 
 		$r = App::make( RequestBuilder::class )
@@ -283,5 +264,40 @@ class LocalTestRunNotifier {
 		}
 
 		return [ $response['report_url'], $exit_status_code_override ];
+	}
+
+	/**
+	 * Checks if the CTRF report indicates a failing test.
+	 * If the schema is missing crucial fields, we treat it as failed to be safe.
+	 */
+	private function ctrf_has_failed( array $ctrf ): bool {
+		// 1. Basic structure check: results & results.summary must exist.
+		if (
+			! isset( $ctrf['results'] ) ||
+			! is_array( $ctrf['results'] ) ||
+			! isset( $ctrf['results']['summary'] ) ||
+			! is_array( $ctrf['results']['summary'] )
+		) {
+			// If we can’t verify, we assume failed, to be safe.
+			return true;
+		}
+
+		// 2. 'failed' must be set and numeric (schema says integer).
+		if (
+			! isset( $ctrf['results']['summary']['failed'] ) ||
+			! is_numeric( $ctrf['results']['summary']['failed'] )
+		) {
+			// If missing or invalid type, treat as failed.
+			return true;
+		}
+
+		$failed_count = (int) $ctrf['results']['summary']['failed'];
+		// 3. If the number of failed tests is > 0, it’s a fail.
+		if ( $failed_count > 0 ) {
+			return true;
+		}
+
+		// Otherwise, no CTRF-based failures.
+		return false;
 	}
 }
