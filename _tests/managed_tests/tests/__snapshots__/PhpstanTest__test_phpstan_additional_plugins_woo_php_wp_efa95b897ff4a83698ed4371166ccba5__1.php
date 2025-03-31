@@ -10,10 +10,14 @@
             "php_version": "7.4",
             "max_php_version": "",
             "min_php_version": "",
-            "additional_woo_plugins": [],
-            "additional_wp_plugins": [
-                "google-listings-and-ads"
-            ],
+            "additional_woo_plugins": {
+                "7623964": {
+                    "id": 7623964,
+                    "host": "wccom",
+                    "name": "Google Listings & Ads"
+                }
+            },
+            "additional_wp_plugins": [],
             "test_log": "",
             "ctrf_json": "",
             "status": "failed",
@@ -47,6 +51,7 @@
             "extension_set": "",
             "phpstan_level": 2,
             "test_variation": "",
+            "test_group_id": "",
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {
