@@ -54,6 +54,7 @@ class SpecE2ETestRunner {
 	 *
 	 * @param E2EEnvInfo $env_info
 	 * @param SymfonyStyle $io
+	 * @param bool $up_only
 	 *
 	 * @return int
 	 */
@@ -118,15 +119,12 @@ class SpecE2ETestRunner {
 		try {
 			[ $reportUrl, $override_exit ] = $this->local_test_run_notifier->notify_test_finished( $test_result );
 
-			// If the notifier discovered, e.g., fatal PHP errors, it might want to override your exit code
 			if ( $override_exit !== null ) {
 				$exit_code = $override_exit;
 			}
-
 			$io->writeln( "<info>Raw Allure results have been uploaded. View final report at: {$reportUrl}</info>" );
 		} catch ( \Exception $e ) {
 			$io->error( 'Could not finalize results to QIT Manager: ' . $e->getMessage() );
-			// Optionally force a failure if you prefer
 			$exit_code = Command::FAILURE;
 		}
 
@@ -149,9 +147,8 @@ class SpecE2ETestRunner {
 			) {
 				continue;
 			}
-			$this->run_script_if_exists( $env_info, $test_item, 'shared-setup.sh', 'Shared Setup (Shell)', $io );
-			$this->run_script_if_exists( $env_info, $test_item, 'shared-setup.php', 'Shared Setup (PHP)', $io );
-			$this->run_script_if_exists( $env_info, $test_item, 'shared-setup.js', 'Shared Setup (JS)', $io );
+
+			$this->run_script_if_exists( $env_info, $test_item, 'shared-setup.sh', 'Shared Setup', $io );
 		}
 	}
 
@@ -163,7 +160,6 @@ class SpecE2ETestRunner {
 	 */
 	protected function db_export( $env_info, $io ) {
 		$io->writeln( '<info>[db export]</info>' );
-		// For example:
 		$this->docker->run_inside_docker( $env_info, [ 'wp', 'db', 'export', '/qit/snapshot.sql' ] );
 	}
 
@@ -186,9 +182,8 @@ class SpecE2ETestRunner {
 		$this->docker->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql' ] );
 
 		// 2) plugin-specific setup
-		$this->run_script_if_exists( $env_info, $test_item, 'setup.sh', 'Plugin Setup (Shell)', $io );
-		$this->run_script_if_exists( $env_info, $test_item, 'setup.php', 'Plugin Setup (PHP)', $io );
-		$this->run_script_if_exists( $env_info, $test_item, 'setup.js', 'Plugin Setup (JS)', $io );
+		// CHANGED: Instead of "Plugin Setup (Shell)", pass "Isolated Setup"
+		$this->run_script_if_exists( $env_info, $test_item, 'setup.sh', 'Isolated Setup', $io );
 
 		// 3) "npm install" (if needed) and "npm run qit-e2e" on the host
 		$host_path = isset( $test_item['path_in_host'] ) ? $test_item['path_in_host'] : '';
@@ -197,7 +192,7 @@ class SpecE2ETestRunner {
 		$code = Command::SUCCESS;
 
 		try {
-			// Only run "npm install" if no node_modules directory is present.
+			// (Optional logic for npm install only if node_modules is absent…)
 			$io->text( "No 'node_modules' found in {$host_path}, running npm install..." );
 			$install_process = new Process( [ 'npm', 'install' ], $host_path );
 			$install_exit    = $install_process->run( function ( $type, $buffer ) use ( $io ) {
@@ -216,8 +211,6 @@ class SpecE2ETestRunner {
 
 			// Build the full command: `npm run qit-e2e -- <runnerArgs>`
 			$test_cmd = [ 'npm', 'run', 'qit-e2e' ];
-
-			// Only append `--` and the runner args if there are any runnerArgs
 			if ( ! empty( $env_info->runner_args ) ) {
 				$test_cmd[] = '--';
 				$test_cmd   = array_merge( $test_cmd, $env_info->runner_args );
@@ -247,9 +240,7 @@ class SpecE2ETestRunner {
 		}
 
 		// 4) plugin teardown
-		$this->run_script_if_exists( $env_info, $test_item, 'teardown.sh', 'Plugin Teardown (Shell)', $io );
-		$this->run_script_if_exists( $env_info, $test_item, 'teardown.php', 'Plugin Teardown (PHP)', $io );
-		$this->run_script_if_exists( $env_info, $test_item, 'teardown.js', 'Plugin Teardown (JS)', $io );
+		$this->run_script_if_exists( $env_info, $test_item, 'teardown.sh', 'Plugin Teardown', $io );
 
 		// 5) Collect artifacts
 		$this->collect_plugin_artifacts( $test_item, $test_result, $io );
@@ -273,16 +264,13 @@ class SpecE2ETestRunner {
 			) {
 				continue;
 			}
-			$this->run_script_if_exists( $env_info, $test_item, 'shared-teardown.sh', 'Shared Teardown (Shell)', $io );
-			$this->run_script_if_exists( $env_info, $test_item, 'shared-teardown.php', 'Shared Teardown (PHP)', $io );
-			$this->run_script_if_exists( $env_info, $test_item, 'shared-teardown.js', 'Shared Teardown (JS)', $io );
+			$this->run_script_if_exists( $env_info, $test_item, 'shared-teardown.sh', 'Shared Teardown', $io );
 		}
 	}
 
 	protected function merge_results( $env_info, $io, $test_result ) {
 		$io->writeln( '<info>Merging CTRF & Allure results on the host...</info>' );
 
-		// 1) Identify CTRF & Allure result files
 		$ctrf_dir        = $test_result->get_results_dir() . '/ctrf';
 		$allure_root_dir = $test_result->get_results_dir() . '/allure';
 
@@ -296,40 +284,24 @@ class SpecE2ETestRunner {
 			}
 		}
 
-		// If neither CTRF nor Allure data is present, bail early.
 		if ( ! $ctrf_exists && ! $allure_exists ) {
 			$io->writeln( '<comment>No CTRF or Allure data found to merge. Skipping...</comment>' );
 
 			return;
 		}
 
-		// Our persistent system-wide directory for installation:
-		$qit_dir = Config::get_qit_dir();
-
-		// Where we expect binaries after npm install:
+		$qit_dir     = Config::get_qit_dir();
 		$ctrf_path   = $qit_dir . '/node_modules/.bin/ctrf';
 		$allure_path = $qit_dir . '/node_modules/.bin/allure';
 
-		//
-		// 2) CTRF merge (mandatory if CTRF files exist)
-		//
+		// 2) CTRF merge
 		if ( $ctrf_exists ) {
 			$io->writeln( '<info>CTRF JSON found. Ensuring CTRF is installed...</info>' );
 
-			// If ctrf binary is missing, attempt an install
 			if ( ! ( is_file( $ctrf_path ) && is_executable( $ctrf_path ) ) ) {
-				$io->writeln(
-					"<comment>No ctrf binary found at $ctrf_path. Attempting npm install ctrf...</comment>"
-				);
-
-				$install_ctrf = new Process( [
-					'npm',
-					'install',
-					'--prefix',
-					$qit_dir,
-					'ctrf'
-				], $qit_dir );
-				$install_ctrf->setTimeout( 300 ); // 5 minutes
+				$io->writeln( "<comment>No ctrf binary found at $ctrf_path. Attempting npm install ctrf...</comment>" );
+				$install_ctrf = new Process( [ 'npm', 'install', '--prefix', $qit_dir, 'ctrf' ], $qit_dir );
+				$install_ctrf->setTimeout( 300 );
 				$install_ctrf->run();
 
 				if ( ! $install_ctrf->isSuccessful() ) {
@@ -340,8 +312,6 @@ class SpecE2ETestRunner {
 						)
 					);
 				}
-
-				// Check again if the binary is present
 				if ( ! ( is_file( $ctrf_path ) && is_executable( $ctrf_path ) ) ) {
 					throw new \RuntimeException(
 						sprintf(
@@ -353,7 +323,6 @@ class SpecE2ETestRunner {
 				$io->writeln( "<info>CTRF installed successfully at $ctrf_path</info>" );
 			}
 
-			// Merge the CTRF JSON on the host
 			$io->writeln( '<info>Merging CTRF JSON results...</info>' );
 			$ctrf_proc = new Process( [ $ctrf_path, 'merge', $ctrf_dir ] );
 			$ctrf_proc->setTimeout( 300 );
@@ -368,32 +337,129 @@ class SpecE2ETestRunner {
 				);
 			}
 			$io->writeln( '<info>CTRF merge completed successfully.</info>' );
+
+			$merged_file = $test_result->get_results_dir() . '/ctrf/ctrf-report.json';
+			if ( file_exists( $merged_file ) ) {
+				$this->post_process_ctrf_json( $merged_file );
+				$io->writeln( "<info>Post-processed merged CTRF: {$merged_file}</info>" );
+			} else {
+				$io->warning( "No merged CTRF file found at {$merged_file}." );
+			}
 		}
 
-		//
-		// 3) Allure merge & generate (optional if Allure files exist)
-		//
+		// 3) Allure merge & generate (if present)
 		if ( $allure_exists ) {
-			// We will upload raw allure results to be compiled/unified in a remote workflow.
+			// In your scenario, you upload raw Allure data and handle merges in a remote pipeline.
+			$io->writeln( '<info>Allure data found (raw results will be uploaded)...</info>' );
 		}
 	}
 
+	/**
+	 * Reads a CTRF JSON file and ensures there's always a "phase" in "extra",
+	 * modifies test "name" if you want it more friendly, etc.
+	 *
+	 * @param string $ctrf_file
+	 */
+	protected function post_process_ctrf_json( string $ctrf_file ): void {
+		if ( ! file_exists( $ctrf_file ) ) {
+			return;
+		}
+		$raw = file_get_contents( $ctrf_file );
+		if ( ! $raw ) {
+			return;
+		}
+		$data = json_decode( $raw, true );
+		if ( ! is_array( $data ) ) {
+			return;
+		}
+
+		if ( empty( $data['results']['tests'] ) || ! is_array( $data['results']['tests'] ) ) {
+			return;
+		}
+
+		foreach ( $data['results']['tests'] as &$test ) {
+			if ( empty( $test['extra'] ) || ! is_array( $test['extra'] ) ) {
+				$test['extra'] = [];
+			}
+			if ( empty( $test['extra']['phase'] ) ) {
+				$test['extra']['phase'] = 'Test';
+			}
+			$phase = strtolower( $test['extra']['phase'] );
+
+			if ( empty( $test['extra']['pluginSlug'] ) ) {
+				$test['extra']['pluginSlug'] = '';
+			}
+			$slug = $test['extra']['pluginSlug'];
+
+			// Optionally alter the "name" based on the phase
+			if ( $phase === 'shared setup' ) {
+				$test['name'] = "Shared Setup of {$slug}";
+			} elseif ( $phase === 'isolated setup' ) {
+				$test['name'] = "Isolated Setup of {$slug}";
+			} elseif ( $phase === 'teardown' ) {
+				$test['name'] = "Teardown of {$slug}";
+			}
+		}
+		unset( $test );
+
+		file_put_contents( $ctrf_file, json_encode( $data, JSON_PRETTY_PRINT ) );
+	}
 
 	/**
-	 * Executes a shell command (inside Docker, in this case),
-	 * captures stdout/stderr and timing. Returns an array with
-	 * keys: ['exit_code', 'stdout', 'stderr', 'start', 'stop', 'duration'].
+	 * Writes the snippet to a temporary file and merges it into the final CTRF directory.
+	 *
+	 * @param array $snippet
+	 * @param string $ctrf_dir
+	 * @param SymfonyStyle $io
+	 */
+	protected function merge_ctrf_snippet( array $snippet, $ctrf_dir, SymfonyStyle $io ) {
+		if ( ! is_dir( $ctrf_dir ) ) {
+			@mkdir( $ctrf_dir, 0755, true );
+		}
+
+		$temp_file = tempnam( sys_get_temp_dir(), 'ctrf_step_' ) . '.json';
+		file_put_contents( $temp_file, json_encode( $snippet, JSON_PRETTY_PRINT ) );
+
+		$partial_name = basename( $temp_file );
+		$destination  = rtrim( $ctrf_dir, '/' ) . '/' . $partial_name;
+		rename( $temp_file, $destination );
+
+		$qit_dir   = Config::get_qit_dir();
+		$ctrf_path = $qit_dir . '/node_modules/.bin/ctrf';
+
+		if ( ! file_exists( $ctrf_path ) ) {
+			$io->warning( "CTRF binary not found at $ctrf_path. Make sure it’s installed." );
+
+			return;
+		}
+
+		$merge_cmd = new Process( [ $ctrf_path, 'merge', $ctrf_dir ] );
+		$merge_cmd->setTimeout( 120 );
+		$merge_code = $merge_cmd->run();
+
+		if ( $merge_code !== 0 ) {
+			$io->error( "Failed to merge CTRF results:\n" . $merge_cmd->getErrorOutput() );
+		} else {
+			$io->writeln( "<info>Merged partial CTRF snippet into $ctrf_dir successfully.</info>" );
+		}
+	}
+
+	/**
+	 * Executes a command inside Docker, capturing stdout/stderr. Returns an array with:
+	 * ['exit_code', 'stdout', 'stderr', 'start', 'stop', 'duration'].
+	 *
+	 * @param E2EEnvInfo $env_info
+	 * @param array $command_args
+	 *
+	 * @return array
 	 */
 	protected function run_command_and_capture( $env_info, array $command_args ) {
 		$start_time = microtime( true );
 
 		try {
-			// The 3rd param must be an array of env vars. If you don’t need them, pass an empty array.
-			// The 4th param can be $user, the 5th is timeout, etc.
 			$output    = $this->docker->run_inside_docker( $env_info, $command_args, [], null, 300, 'php', true );
-			$exit_code = 0; // if your Docker method throws an exception on non-zero exit, you can catch that below
+			$exit_code = 0;
 		} catch ( \Exception $e ) {
-			// If run_inside_docker throws an exception, we treat that as a failure
 			$output    = $e->getMessage();
 			$exit_code = 1;
 		}
@@ -403,7 +469,6 @@ class SpecE2ETestRunner {
 
 		return [
 			'exit_code' => $exit_code,
-			// We have no separate stderr, so treat everything as stdout (or parse it if needed)
 			'stdout'    => explode( "\n", $output ),
 			'stderr'    => [],
 			'start'     => $start_time,
@@ -412,33 +477,27 @@ class SpecE2ETestRunner {
 		];
 	}
 
-
 	/**
-	 * Builds a minimal CTRF JSON structure for a single test.
-	 * We only fill in the required fields plus any extras we want:
+	 * Builds a minimal CTRF JSON structure for a single script-run (like setup.sh) so it appears in final results.
 	 *
-	 * @param string $test_name "Isolated setup of plugin X" or "shared-setup.sh"
-	 * @param array $capture Output from run_command_and_capture
+	 * @param string $test_name
+	 * @param array $capture
+	 * @param string $phase
+	 * @param string $plugin_slug
 	 *
-	 * @return array A CTRF document that can be merged.
+	 * @return array
 	 */
-	protected function build_ctrf_snippet( $test_name, $capture ) {
-		// Convert timestamps to integer epoch seconds for CTRF "start" & "stop"
-		// or you could store them as (int) ms from some reference.
+	protected function build_ctrf_snippet( $test_name, $capture, $phase = '', $plugin_slug = '' ) {
 		$start_epoch = (int) $capture['start'];
 		$stop_epoch  = (int) $capture['stop'];
+		$status      = ( $capture['exit_code'] === 0 ) ? 'passed' : 'failed';
 
-		// Convert exit_code => "passed" or "failed" (or "other")
-		$status = ( $capture['exit_code'] === 0 ) ? 'passed' : 'failed';
-
-		// CTRF requires a certain structure:
 		return [
 			'$schema'      => 'http://json-schema.org/draft-07/schema#',
 			'reportFormat' => 'CTRF',
-			'specVersion'  => '1.0.0',    // set your CTRF version
-			// Just generate a random ID if you want:
+			'specVersion'  => '1.0.0',
 			'reportId'     => uniqid( 'test-step-', true ),
-			'timestamp'    => date( 'c' ),  // ISO 8601
+			'timestamp'    => date( 'c' ),
 			'generatedBy'  => 'QIT_SpecE2ETestRunner',
 
 			'results' => [
@@ -453,7 +512,6 @@ class SpecE2ETestRunner {
 					'skipped' => 0,
 					'pending' => 0,
 					'other'   => 0,
-					// You can track the suite count or keep it minimal:
 					'suites'  => 1,
 					'start'   => $start_epoch,
 					'stop'    => $stop_epoch,
@@ -462,10 +520,14 @@ class SpecE2ETestRunner {
 					[
 						'name'     => $test_name,
 						'status'   => $status,
-						'duration' => $capture['duration'],  // in ms
+						'duration' => $capture['duration'],
 						'start'    => $start_epoch,
 						'stop'     => $stop_epoch,
-						// If you want more contextual fields, add them:
+						'suite'    => $plugin_slug,
+						'extra'    => [
+							'phase'      => $phase,
+							'pluginSlug' => $plugin_slug,
+						],
 						'stdout'   => $capture['stdout'],
 						'stderr'   => $capture['stderr'],
 					]
@@ -475,76 +537,30 @@ class SpecE2ETestRunner {
 	}
 
 	/**
-	 * Writes the snippet to a temporary file and merges it into the final CTRF directory.
+	 * If a script (like 'setup.sh') exists, run it in Docker and record the CTRF snippet.
 	 *
-	 * @param array $snippet The CTRF snippet from build_ctrf_snippet()
-	 * @param string $ctrf_dir A directory with all partials or a final single CTRF file
+	 * @param E2EEnvInfo $env_info
+	 * @param array $test_item
+	 * @param string $script_name
+	 * @param string $phase e.g. "Shared Setup", "Isolated Setup", "Plugin Teardown (Shell)", etc.
 	 * @param SymfonyStyle $io
 	 */
-	protected function merge_ctrf_snippet( array $snippet, $ctrf_dir, SymfonyStyle $io ) {
-		// Ensure the CTRF directory exists:
-		if ( ! is_dir( $ctrf_dir ) ) {
-			@mkdir( $ctrf_dir, 0755, true );
-		}
-
-		// Write snippet to a small temp file
-		$temp_file = tempnam( sys_get_temp_dir(), 'ctrf_step_' ) . '.json';
-		file_put_contents( $temp_file, json_encode( $snippet, JSON_PRETTY_PRINT ) );
-
-		// Move the snippet into $ctrf_dir (alternatively, you can keep it in /tmp)
-		// so `ctrf merge` sees it. Or run `ctrf merge /tmp/...` either way.
-		$partial_name = basename( $temp_file );
-		$destination  = rtrim( $ctrf_dir, '/' ) . '/' . $partial_name;
-		rename( $temp_file, $destination );
-
-		// Now call `ctrf merge` on that directory
-		$qit_dir   = Config::get_qit_dir();
-		$ctrf_path = $qit_dir . '/node_modules/.bin/ctrf';  // after "npm install ctrf" in your QIT dir
-
-		if ( ! file_exists( $ctrf_path ) ) {
-			$io->warning( "CTRF binary not found at $ctrf_path. Make sure it’s installed." );
-
-			return;
-		}
-
-		// Shell out to do the actual merge
-		$merge_cmd = new Process( [ $ctrf_path, 'merge', $ctrf_dir ] );
-		$merge_cmd->setTimeout( 120 ); // 2 minutes, for example
-		$merge_code = $merge_cmd->run();
-
-		if ( $merge_code !== 0 ) {
-			$io->error( "Failed to merge CTRF results:\n" . $merge_cmd->getErrorOutput() );
-			// You might choose to throw or to continue
-		} else {
-			$io->writeln( "<info>Merged partial CTRF snippet into $ctrf_dir successfully.</info>" );
-		}
-	}
-
-	// ------------------------------------------------------------------
-	// 4) Put it all together in run_script_if_exists
-	// ------------------------------------------------------------------
-
-	/**
-	 * If a script (like 'setup.sh') exists in 'bootstrap/' for this plugin test_item, run it,
-	 * and record it as a CTRF "test".
-	 */
-	protected function run_script_if_exists( $env_info, $test_item, $script_name, $label, $io ) {
-		$slug = isset( $test_item['slug'] ) ? $test_item['slug'] : 'unknown';
-
-		$host_path  = isset( $test_item['path_in_host'] ) ? $test_item['path_in_host'] : '';
-		$docker_dir = isset( $test_item['path_in_php_container'] ) ? $test_item['path_in_php_container'] : '';
-
+	protected function run_script_if_exists( $env_info, $test_item, $script_name, $phase, $io ) {
+		$plugin_slug   = isset( $test_item['slug'] ) ? $test_item['slug'] : 'unknown';
+		$host_path     = isset( $test_item['path_in_host'] ) ? $test_item['path_in_host'] : '';
+		$docker_dir    = isset( $test_item['path_in_php_container'] ) ? $test_item['path_in_php_container'] : '';
 		$possible_file = rtrim( $host_path, '/' ) . '/bootstrap/' . $script_name;
+
 		if ( ! file_exists( $possible_file ) ) {
-			return; // doesn't exist, skip
+			return; // script not present, skip.
 		}
 
-		$io->writeln( "<info>Running $label for $slug => $script_name</info>" );
+		$test_title = "{$phase} bash script from {$plugin_slug}";
 
-		// We will treat this single script run as its own "test"
-		$test_title = "Bootstrap step: [$label] for plugin [$slug] - file: [$script_name]";
+		// Let the operator see what's happening:
+		$io->writeln( "<info>{$test_title}</info>" );
 
-		// 1) Run the script in Docker, capturing stdout/stderr
+		// Actually run the script inside Docker
 		$command_to_run = [
 			'bash',
 			'-c',
@@ -552,21 +568,16 @@ class SpecE2ETestRunner {
 		];
 		$capture        = $this->run_command_and_capture( $env_info, $command_to_run );
 
-		// 2) Build partial CTRF snippet for this step
-		$ctrf_snippet = $this->build_ctrf_snippet( $test_title, $capture );
+		// Then record it as a partial CTRF snippet
+		$ctrf_snippet = $this->build_ctrf_snippet( $test_title, $capture, $phase, $plugin_slug );
 
-		// 3) Merge it into the final CTRF directory.
-		//    E.g. let’s assume you want everything to go into $results_dir/ctrf
-		//    the same location you use later in "collect_plugin_artifacts".
-		$results_dir = $this->test_result->get_results_dir();
-		$ctrf_dir    = $results_dir . '/ctrf';
-
+		// Merge it into the CTRF results folder
+		$ctrf_dir = $this->test_result->get_results_dir() . '/ctrf';
 		$this->merge_ctrf_snippet( $ctrf_snippet, $ctrf_dir, $io );
 	}
 
 	/**
-	 * Copies plugin's ./results/ctrf.json and optionally ./results/allure/
-	 * from container to local for merging.
+	 * Copies plugin's ./results/ctrf.json and ./results/allure/ from host to final results directory.
 	 *
 	 * @param array $test_item
 	 * @param TestResult $test_result
@@ -575,15 +586,12 @@ class SpecE2ETestRunner {
 	protected function collect_plugin_artifacts( $test_item, $test_result, $io ) {
 		$results_dir = $test_result->get_results_dir();
 
-		// Ensure we have a subfolder for CTRF, Allure, etc.
 		if ( ! is_dir( $results_dir ) ) {
 			@mkdir( $results_dir, 0755, true );
 		}
-
 		if ( ! is_dir( $results_dir . '/ctrf' ) ) {
 			@mkdir( $results_dir . '/ctrf', 0755, true );
 		}
-
 		if ( ! is_dir( $results_dir . '/allure' ) ) {
 			@mkdir( $results_dir . '/allure', 0755, true );
 		}
