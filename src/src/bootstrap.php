@@ -21,6 +21,11 @@ use QIT_CLI\Commands\Environment\ListEnvironmentCommand;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\GetMultipleCommand;
+use QIT_CLI\Commands\Group\GroupClearCommand;
+use QIT_CLI\Commands\Group\GroupFetchCommand;
+use QIT_CLI\Commands\Group\GroupRegisterCommand;
+use QIT_CLI\Commands\Group\GroupRunCommand;
+use QIT_CLI\Commands\Group\GroupShowCommand;
 use QIT_CLI\Commands\ListCommand;
 use QIT_CLI\Commands\OpenCommand;
 use QIT_CLI\Commands\Partner\AddPartner;
@@ -233,6 +238,13 @@ if ( $is_connected_to_backend ) {
 
 	$application->add( $container->make( ShowReportCommand::class ) );
 	$application->add( $container->make( ScaffoldE2ECommand::class ) );
+
+	// Group Commands.
+	$application->add( $container->make( GroupRunCommand::class ) );
+	$application->add( $container->make( GroupClearCommand::class ) );
+	$application->add( $container->make( GroupRegisterCommand::class ) );
+	$application->add( $container->make( GroupShowCommand::class ) );
+	$application->add( $container->make( GroupFetchCommand::class ) );
 
 	if ( Config::is_development_mode() ) {
 		// Dynamically crete Mass Test run command.

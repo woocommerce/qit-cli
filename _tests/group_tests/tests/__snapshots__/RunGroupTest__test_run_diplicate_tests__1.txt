@@ -1,0 +1,1 @@
+A "security" test for extension ID 18663 with identical parameters already exists in the group. Please modify the type, parameters or the extension being tested. Alternatively, you can delete the existing test with `group:clear` and run this command again.
