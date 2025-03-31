@@ -99,11 +99,13 @@ class ExtensionTestRunner {
 				$test_cmd   = array_merge( $test_cmd, $env_info->runner_args );
 			}
 
+			$docker_env_vars = App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?: [];
+
 			$test_process = new Process( $test_cmd, $host_path );
-			$test_process->setEnv( [
+			$test_process->setEnv( array_merge( $docker_env_vars, [
 				'IS_QIT'       => 'true',
 				'QIT_SITE_URL' => $env_info->site_url,
-			] );
+			] ) );
 			$test_exit = $test_process->run( function ( $type, $buffer ) use ( $io ) {
 				if ( $type === Process::ERR ) {
 					$io->write( $buffer, false, OutputInterface::OUTPUT_RAW );
@@ -178,6 +180,7 @@ class ExtensionTestRunner {
 		$plugin_slug   = $test_item['slug'] ?? 'unknown';
 		$host_path     = $test_item['path_in_host'] ?? '';
 		$docker_dir    = $test_item['path_in_php_container'] ?? '';
+		$env_vars      = App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?: [];
 		$possible_file = rtrim( $host_path, '/' ) . '/bootstrap/' . $script_name;
 
 		if ( ! file_exists( $possible_file ) ) {
@@ -193,7 +196,7 @@ class ExtensionTestRunner {
 			'-c',
 			sprintf( 'cd %s/bootstrap && bash %s', $docker_dir, $script_name ),
 		];
-		$capture        = $this->run_command_and_capture( $env_info, $command_to_run );
+		$capture        = $this->run_command_and_capture( $env_info, $command_to_run, $env_vars );
 
 		// Then record it as a partial CTRF snippet.
 		$ctrf_snippet = $this->build_ctrf_snippet( $test_title, $capture, $phase, $plugin_slug, $script_name );
@@ -255,11 +258,11 @@ class ExtensionTestRunner {
 	 *
 	 * @return array
 	 */
-	protected function run_command_and_capture( $env_info, array $command_args ) {
+	protected function run_command_and_capture( $env_info, array $command_args, array $env_vars = [] ) {
 		$start_time = microtime( true );
 
 		try {
-			$output    = $this->docker->run_inside_docker( $env_info, $command_args, [], null, 300, 'php', true );
+			$output    = $this->docker->run_inside_docker( $env_info, $command_args, $env_vars, null, 300, 'php', true );
 			$exit_code = 0;
 		} catch ( \Exception $e ) {
 			$output    = $e->getMessage();
