@@ -10,7 +10,7 @@ namespace QIT_CLI\Commands\CustomTests;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Environment\PluginsAndThemesParser;
-use QIT_CLI\LocalTests\E2E\SpecE2ETestRunner;
+use QIT_CLI\LocalTests\E2E\SpecCustomTestOrchestrator;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
@@ -46,8 +46,8 @@ class RunE2ECommand extends DynamicCommand {
 	/** @var OutputInterface */
 	protected $output;
 
-	/** @var SpecE2ETestRunner */
-	protected $e2e_test_manager;
+	/** @var SpecCustomTestOrchestrator */
+	protected $spec_custom_test_orchestrator;
 
 	/** @var WooExtensionsList */
 	protected $woo_extensions_list;
@@ -76,19 +76,19 @@ class RunE2ECommand extends DynamicCommand {
 	public function __construct(
 		E2EEnvironment $e2e_environment,
 		Cache $cache,
-		SpecE2ETestRunner $e2e_test_manager,
+		SpecCustomTestOrchestrator $spec_custom_test_orchestrator,
 		WooExtensionsList $woo_extensions_list,
 		LocalTestRunNotifier $test_run_notifier,
 		PluginDependencies $dependencies,
 		EnvironmentRunner $environment_runner
 	) {
-		$this->e2e_environment     = $e2e_environment;
-		$this->cache               = $cache;
-		$this->e2e_test_manager    = $e2e_test_manager;
-		$this->woo_extensions_list = $woo_extensions_list;
-		$this->test_run_notifier   = $test_run_notifier;
-		$this->dependencies        = $dependencies;
-		$this->environment_runner  = $environment_runner;
+		$this->e2e_environment               = $e2e_environment;
+		$this->cache                         = $cache;
+		$this->spec_custom_test_orchestrator = $spec_custom_test_orchestrator;
+		$this->woo_extensions_list           = $woo_extensions_list;
+		$this->test_run_notifier             = $test_run_notifier;
+		$this->dependencies                  = $dependencies;
+		$this->environment_runner            = $environment_runner;
 
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
@@ -280,7 +280,7 @@ class RunE2ECommand extends DynamicCommand {
 
 		$shard            = $input->getOption( 'shard' );
 		$io               = new SymfonyStyle( $input, $output );
-		$exit_status_code = $this->e2e_test_manager->run_custom_e2e_tests( $env_info, $io, $input->getOption( 'up_only' ) );
+		$exit_status_code = $this->spec_custom_test_orchestrator->run_custom_e2e_tests( $env_info, $io, $input->getOption( 'up_only' ) );
 		$io               = new SymfonyStyle( $input, $output );
 		$io->setDecorated( true );
 
@@ -376,7 +376,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up']["--$option_name"] = $option_value;
+				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
 			}
 		}
 
@@ -410,7 +410,7 @@ class RunE2ECommand extends DynamicCommand {
 	}
 
 	/**
-	 * @param string|null $woo_extension_raw
+	 * @param string|null     $woo_extension_raw
 	 * @param OutputInterface $output
 	 *
 	 * @return array{0:int|null,1:string|null,2:string|int|null} Array containing:
@@ -501,9 +501,9 @@ class RunE2ECommand extends DynamicCommand {
 
 	/**
 	 * @param InputInterface $input
-	 * @param array<mixed> $env_up_options
-	 * @param string|null $woo_extension_slug
-	 * @param string|null $sut_type 'plugin', 'theme', or null.
+	 * @param array<mixed>   $env_up_options
+	 * @param string|null    $woo_extension_slug
+	 * @param string|null    $sut_type 'plugin', 'theme', or null.
 	 *
 	 * @return array<mixed> Updated env_up_options.
 	 */

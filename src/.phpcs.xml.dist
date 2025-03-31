@@ -43,6 +43,7 @@
         <exclude name="Squiz.Commenting.FunctionComment.MissingParamTag"/>
         <exclude name="Squiz.Commenting.FunctionCommentThrowTag.Missing"/>
         <exclude name="Squiz.PHP.CommentedOutCode.Found"/>
+        <exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
 
         <exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
 

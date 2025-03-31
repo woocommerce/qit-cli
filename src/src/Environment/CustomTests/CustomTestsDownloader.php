@@ -103,8 +103,8 @@ class CustomTestsDownloader {
 					$zip_file           = $custom_test_file_path;
 					$processed_test_tag = $test_tag;
 
-					// 2) LOCAL DIRECTORY OR FILE
 				} elseif ( file_exists( $test_tag ) ) {
+					// 2) LOCAL DIRECTORY OR FILE.
 					if ( is_dir( $test_tag ) ) {
 						// << Minimal change: skip zipping/unzipping if it's a local directory.
 						$original_path      = realpath( $test_tag );
@@ -113,7 +113,7 @@ class CustomTestsDownloader {
 						$path_in_php_container = "/qit/tests/$test_type/{$extension->slug}/$processed_test_tag";
 						$path_in_host          = $original_path;
 
-						// Mount directly as a volume:
+						// Mount directly as a volume.
 						$env_info->volumes[ $path_in_php_container ] = $path_in_host;
 
 						if ( $env_info instanceof E2EEnvInfo ) {
@@ -139,7 +139,7 @@ class CustomTestsDownloader {
 					$processed_test_tag = $k > 0 ? "local-$k" : 'local';
 
 				} else {
-					// If we don't have a remote or local test, skip it:
+					// If we don't have a remote or local test, skip it.
 					$this->output->writeln( sprintf( 'No test tag "%s" found for extension "%s".', $test_tag, $extension->slug ) );
 					continue;
 				}

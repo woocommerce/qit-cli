@@ -95,12 +95,12 @@ class LocalTestRunNotifier {
 		}
 
 		$r = App::make( RequestBuilder::class )
-		        ->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-started' )
-		        ->with_method( 'POST' )
-		        ->with_expected_status_codes( [ 200 ] )
-		        ->with_timeout_in_seconds( 60 )
-		        ->with_post_body( $body )
-		        ->request();
+				->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-started' )
+				->with_method( 'POST' )
+				->with_expected_status_codes( [ 200 ] )
+				->with_timeout_in_seconds( 60 )
+				->with_post_body( $body )
+				->request();
 
 		// Decode response as JSON.
 		$response = json_decode( $r, true );
@@ -206,7 +206,7 @@ class LocalTestRunNotifier {
 		if ( is_null( $status ) ) {
 			if ( $this->ctrf_has_failed( $result_json ) ) {
 				// We consider it a test failure.
-				$exit_status_code_override = Command::FAILURE; // i.e., exit code 1
+				$exit_status_code_override = Command::FAILURE; // i.e., exit code 1.
 				$status                    = 'failed';
 			}
 		}
@@ -240,12 +240,12 @@ class LocalTestRunNotifier {
 		];
 
 		$r = App::make( RequestBuilder::class )
-		        ->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-finished' )
-		        ->with_method( 'POST' )
-		        ->with_expected_status_codes( [ 200 ] )
-		        ->with_timeout_in_seconds( 60 )
-		        ->with_post_body( $data )
-		        ->request();
+				->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-finished' )
+				->with_method( 'POST' )
+				->with_expected_status_codes( [ 200 ] )
+				->with_timeout_in_seconds( 60 )
+				->with_post_body( $data )
+				->request();
 
 		// Decode response as JSON.
 		$response = json_decode( $r, true );
