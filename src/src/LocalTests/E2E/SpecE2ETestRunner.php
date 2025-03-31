@@ -17,7 +17,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
@@ -36,6 +35,8 @@ class SpecE2ETestRunner {
 	 * @var LocalTestRunNotifier
 	 */
 	protected $local_test_run_notifier;
+
+	protected $test_result;
 
 	/**
 	 * Constructor
@@ -66,8 +67,9 @@ class SpecE2ETestRunner {
 		);
 
 		// Initialize test-result tracking
-		$test_result = TestResult::init_from( $env_info );
-		$exit_code   = Command::SUCCESS;
+		$test_result       = TestResult::init_from( $env_info );
+		$this->test_result = $test_result;
+		$exit_code         = Command::SUCCESS;
 
 		// Basic check that we have a tests array
 		if ( empty( $env_info->tests ) || ! is_array( $env_info->tests ) ) {
@@ -165,17 +167,6 @@ class SpecE2ETestRunner {
 		$this->docker->run_inside_docker( $env_info, [ 'wp', 'db', 'export', '/qit/snapshot.sql' ] );
 	}
 
-	/**
-	 * Restores DB, runs the plugin's local setups, calls `npm run qit-e2e`, runs teardown,
-	 * and copies artifacts out.
-	 *
-	 * @param E2EEnvInfo $env_info
-	 * @param array $test_item
-	 * @param SymfonyStyle $io
-	 * @param TestResult $test_result
-	 *
-	 * @return int
-	 */
 	/**
 	 * Restores DB, runs the plugin's local setups, calls `npm run qit-e2e`, runs teardown,
 	 * and copies artifacts out.
@@ -389,13 +380,153 @@ class SpecE2ETestRunner {
 
 
 	/**
-	 * If a script (like "setup.sh") exists in "bootstrap/" for this plugin test_item, run it.
+	 * Executes a shell command (inside Docker, in this case),
+	 * captures stdout/stderr and timing. Returns an array with
+	 * keys: ['exit_code', 'stdout', 'stderr', 'start', 'stop', 'duration'].
+	 */
+	protected function run_command_and_capture( $env_info, array $command_args ) {
+		$start_time = microtime( true );
+
+		try {
+			// The 3rd param must be an array of env vars. If you don’t need them, pass an empty array.
+			// The 4th param can be $user, the 5th is timeout, etc.
+			$output    = $this->docker->run_inside_docker( $env_info, $command_args, [], null, 300, 'php', true );
+			$exit_code = 0; // if your Docker method throws an exception on non-zero exit, you can catch that below
+		} catch ( \Exception $e ) {
+			// If run_inside_docker throws an exception, we treat that as a failure
+			$output    = $e->getMessage();
+			$exit_code = 1;
+		}
+
+		$stop_time   = microtime( true );
+		$duration_ms = (int) round( ( $stop_time - $start_time ) * 1000 );
+
+		return [
+			'exit_code' => $exit_code,
+			// We have no separate stderr, so treat everything as stdout (or parse it if needed)
+			'stdout'    => explode( "\n", $output ),
+			'stderr'    => [],
+			'start'     => $start_time,
+			'stop'      => $stop_time,
+			'duration'  => $duration_ms,
+		];
+	}
+
+
+	/**
+	 * Builds a minimal CTRF JSON structure for a single test.
+	 * We only fill in the required fields plus any extras we want:
 	 *
-	 * @param E2EEnvInfo $env_info
-	 * @param array $test_item
-	 * @param string $script_name
-	 * @param string $label
+	 * @param string $test_name "Isolated setup of plugin X" or "shared-setup.sh"
+	 * @param array $capture Output from run_command_and_capture
+	 *
+	 * @return array A CTRF document that can be merged.
+	 */
+	protected function build_ctrf_snippet( $test_name, $capture ) {
+		// Convert timestamps to integer epoch seconds for CTRF "start" & "stop"
+		// or you could store them as (int) ms from some reference.
+		$start_epoch = (int) $capture['start'];
+		$stop_epoch  = (int) $capture['stop'];
+
+		// Convert exit_code => "passed" or "failed" (or "other")
+		$status = ( $capture['exit_code'] === 0 ) ? 'passed' : 'failed';
+
+		// CTRF requires a certain structure:
+		return [
+			'$schema'      => 'http://json-schema.org/draft-07/schema#',
+			'reportFormat' => 'CTRF',
+			'specVersion'  => '1.0.0',    // set your CTRF version
+			// Just generate a random ID if you want:
+			'reportId'     => uniqid( 'test-step-', true ),
+			'timestamp'    => date( 'c' ),  // ISO 8601
+			'generatedBy'  => 'QIT_SpecE2ETestRunner',
+
+			'results' => [
+				'tool'    => [
+					'name'    => 'SpecE2ERunner',
+					'version' => '1.0.0',
+				],
+				'summary' => [
+					'tests'   => 1,
+					'passed'  => ( $status === 'passed' ) ? 1 : 0,
+					'failed'  => ( $status === 'failed' ) ? 1 : 0,
+					'skipped' => 0,
+					'pending' => 0,
+					'other'   => 0,
+					// You can track the suite count or keep it minimal:
+					'suites'  => 1,
+					'start'   => $start_epoch,
+					'stop'    => $stop_epoch,
+				],
+				'tests'   => [
+					[
+						'name'     => $test_name,
+						'status'   => $status,
+						'duration' => $capture['duration'],  // in ms
+						'start'    => $start_epoch,
+						'stop'     => $stop_epoch,
+						// If you want more contextual fields, add them:
+						'stdout'   => $capture['stdout'],
+						'stderr'   => $capture['stderr'],
+					]
+				],
+			],
+		];
+	}
+
+	/**
+	 * Writes the snippet to a temporary file and merges it into the final CTRF directory.
+	 *
+	 * @param array $snippet The CTRF snippet from build_ctrf_snippet()
+	 * @param string $ctrf_dir A directory with all partials or a final single CTRF file
 	 * @param SymfonyStyle $io
+	 */
+	protected function merge_ctrf_snippet( array $snippet, $ctrf_dir, SymfonyStyle $io ) {
+		// Ensure the CTRF directory exists:
+		if ( ! is_dir( $ctrf_dir ) ) {
+			@mkdir( $ctrf_dir, 0755, true );
+		}
+
+		// Write snippet to a small temp file
+		$temp_file = tempnam( sys_get_temp_dir(), 'ctrf_step_' ) . '.json';
+		file_put_contents( $temp_file, json_encode( $snippet, JSON_PRETTY_PRINT ) );
+
+		// Move the snippet into $ctrf_dir (alternatively, you can keep it in /tmp)
+		// so `ctrf merge` sees it. Or run `ctrf merge /tmp/...` either way.
+		$partial_name = basename( $temp_file );
+		$destination  = rtrim( $ctrf_dir, '/' ) . '/' . $partial_name;
+		rename( $temp_file, $destination );
+
+		// Now call `ctrf merge` on that directory
+		$qit_dir   = Config::get_qit_dir();
+		$ctrf_path = $qit_dir . '/node_modules/.bin/ctrf';  // after "npm install ctrf" in your QIT dir
+
+		if ( ! file_exists( $ctrf_path ) ) {
+			$io->warning( "CTRF binary not found at $ctrf_path. Make sure it’s installed." );
+
+			return;
+		}
+
+		// Shell out to do the actual merge
+		$merge_cmd = new Process( [ $ctrf_path, 'merge', $ctrf_dir ] );
+		$merge_cmd->setTimeout( 120 ); // 2 minutes, for example
+		$merge_code = $merge_cmd->run();
+
+		if ( $merge_code !== 0 ) {
+			$io->error( "Failed to merge CTRF results:\n" . $merge_cmd->getErrorOutput() );
+			// You might choose to throw or to continue
+		} else {
+			$io->writeln( "<info>Merged partial CTRF snippet into $ctrf_dir successfully.</info>" );
+		}
+	}
+
+	// ------------------------------------------------------------------
+	// 4) Put it all together in run_script_if_exists
+	// ------------------------------------------------------------------
+
+	/**
+	 * If a script (like 'setup.sh') exists in 'bootstrap/' for this plugin test_item, run it,
+	 * and record it as a CTRF "test".
 	 */
 	protected function run_script_if_exists( $env_info, $test_item, $script_name, $label, $io ) {
 		$slug = isset( $test_item['slug'] ) ? $test_item['slug'] : 'unknown';
@@ -408,14 +539,29 @@ class SpecE2ETestRunner {
 			return; // doesn't exist, skip
 		}
 
-		$io->writeln( '<info>Running ' . $label . ' for ' . $slug . ' => ' . $script_name . '</info>' );
+		$io->writeln( "<info>Running $label for $slug => $script_name</info>" );
 
-		// For example, if it's a .sh file:
-		//   "bash -c cd /some/path/bootstrap && bash script_name"
-		$this->docker->run_inside_docker(
-			$env_info,
-			[ 'bash', '-c', 'cd ' . $docker_dir . '/bootstrap && bash ' . $script_name ]
-		);
+		// We will treat this single script run as its own "test"
+		$test_title = "Bootstrap step: [$label] for plugin [$slug] - file: [$script_name]";
+
+		// 1) Run the script in Docker, capturing stdout/stderr
+		$command_to_run = [
+			'bash',
+			'-c',
+			sprintf( 'cd %s/bootstrap && bash %s', $docker_dir, $script_name )
+		];
+		$capture        = $this->run_command_and_capture( $env_info, $command_to_run );
+
+		// 2) Build partial CTRF snippet for this step
+		$ctrf_snippet = $this->build_ctrf_snippet( $test_title, $capture );
+
+		// 3) Merge it into the final CTRF directory.
+		//    E.g. let’s assume you want everything to go into $results_dir/ctrf
+		//    the same location you use later in "collect_plugin_artifacts".
+		$results_dir = $this->test_result->get_results_dir();
+		$ctrf_dir    = $results_dir . '/ctrf';
+
+		$this->merge_ctrf_snippet( $ctrf_snippet, $ctrf_dir, $io );
 	}
 
 	/**
