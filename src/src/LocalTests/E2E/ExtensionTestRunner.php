@@ -68,7 +68,7 @@ class ExtensionTestRunner {
 		$this->run_script_if_exists( $env_info, $test_item, 'setup.sh', 'Isolated Setup', $io );
 
 		// 3) "npm install" (if needed) and "npm run qit-e2e" on the host
-		$host_path = isset( $test_item['path_in_host'] ) ? $test_item['path_in_host'] : '';
+		$host_path = $test_item['path_in_host'] ?? '';
 		$io->section( "Running 'npm run qit-e2e' on plugin: " . $slug );
 
 		$code = Command::SUCCESS;
@@ -146,9 +146,9 @@ class ExtensionTestRunner {
 			return;
 		}
 
-		$plugin_slug   = isset( $test_item['slug'] ) ? $test_item['slug'] : 'unknown';
-		$host_path     = isset( $test_item['path_in_host'] ) ? $test_item['path_in_host'] : '';
-		$docker_dir    = isset( $test_item['path_in_php_container'] ) ? $test_item['path_in_php_container'] : '';
+		$plugin_slug   = $test_item['slug'] ?? 'unknown';
+		$host_path     = $test_item['path_in_host'] ?? '';
+		$docker_dir    = $test_item['path_in_php_container'] ?? '';
 		$possible_file = rtrim( $host_path, '/' ) . '/bootstrap/' . $script_name;
 
 		if ( ! file_exists( $possible_file ) ) {
@@ -197,7 +197,7 @@ class ExtensionTestRunner {
 			@mkdir( $results_dir . '/allure', 0755, true );
 		}
 
-		$plugin_slug = isset( $test_item['slug'] ) ? $test_item['slug'] : 'unknown';
+		$plugin_slug = $test_item['slug'] ?? 'unknown';
 
 		if ( file_exists( $test_item['path_in_host'] . '/results/ctrf.json' ) ) {
 			copy(
