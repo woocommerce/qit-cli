@@ -44,7 +44,8 @@
                     "properties": {
                         "woo_id": {
                             "description": "A WooCommerce Extension ID",
-                            "type": "integer"
+                            "type": "integer",
+                            "required": true
                         },
                         "wordpress_version": {
                             "default": "X.X.X",
@@ -159,7 +160,8 @@
                     "properties": {
                         "woo_id": {
                             "description": "A WooCommerce Extension ID",
-                            "type": "integer"
+                            "type": "integer",
+                            "required": true
                         },
                         "wordpress_version": {
                             "default": "X.X.X",
@@ -204,6 +206,7 @@
                         "optional_features": {
                             "description": "A comma-separated list of WooCommerce features to enable in the testing environment.",
                             "type": "array",
+                            "default": [],
                             "uniqueItems": true,
                             "items": {
                                 "oneOf": [
@@ -258,7 +261,8 @@
                     "properties": {
                         "woo_id": {
                             "description": "A WooCommerce Extension ID",
-                            "type": "integer"
+                            "type": "integer",
+                            "required": true
                         },
                         "wordpress_version": {
                             "default": "X.X.X",
@@ -304,6 +308,7 @@
                         "optional_features": {
                             "description": "A comma-separated list of WooCommerce features to enable in the testing environment.",
                             "type": "array",
+                            "default": [],
                             "uniqueItems": true,
                             "items": {
                                 "oneOf": [
@@ -358,7 +363,8 @@
                             "enum": [
                                 "basic",
                                 ""
-                            ]
+                            ],
+                            "default": ""
                         },
                         "additional_plugins": {
                             "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
@@ -382,7 +388,8 @@
                     "properties": {
                         "woo_id": {
                             "description": "A WooCommerce Extension ID",
-                            "type": "integer"
+                            "type": "integer",
+                            "required": true
                         },
                         "upload_id": {
                             "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
@@ -424,7 +431,8 @@
                     "properties": {
                         "woo_id": {
                             "description": "A WooCommerce Extension ID",
-                            "type": "integer"
+                            "type": "integer",
+                            "required": true
                         },
                         "upload_id": {
                             "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
@@ -497,7 +505,8 @@
                     "properties": {
                         "woo_id": {
                             "description": "A WooCommerce Extension ID",
-                            "type": "integer"
+                            "type": "integer",
+                            "required": true
                         },
                         "upload_id": {
                             "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
@@ -546,7 +555,8 @@
                     "properties": {
                         "woo_id": {
                             "description": "A WooCommerce Extension ID",
-                            "type": "integer"
+                            "type": "integer",
+                            "required": true
                         },
                         "wordpress_version": {
                             "default": "X.X.X",
@@ -592,6 +602,7 @@
                         "optional_features": {
                             "description": "A comma-separated list of WooCommerce features to enable in the testing environment.",
                             "type": "array",
+                            "default": [],
                             "uniqueItems": true,
                             "items": {
                                 "oneOf": [
@@ -680,7 +691,8 @@
                     "properties": {
                         "woo_id": {
                             "description": "A WooCommerce Extension ID",
-                            "type": "integer"
+                            "type": "integer",
+                            "required": true
                         },
                         "wordpress_version": {
                             "default": "X.X.X",
@@ -726,6 +738,7 @@
                         "optional_features": {
                             "description": "A comma-separated list of WooCommerce features to enable in the testing environment.",
                             "type": "array",
+                            "default": [],
                             "uniqueItems": true,
                             "items": {
                                 "oneOf": [
@@ -813,7 +826,8 @@
                     "properties": {
                         "woo_id": {
                             "description": "A WooCommerce Extension ID",
-                            "type": "integer"
+                            "type": "integer",
+                            "required": true
                         },
                         "wordpress_version": {
                             "default": "X.X.X",
@@ -858,6 +872,7 @@
                         "optional_features": {
                             "description": "A comma-separated list of WooCommerce features to enable in the testing environment.",
                             "type": "array",
+                            "default": [],
                             "uniqueItems": true,
                             "items": {
                                 "oneOf": [
@@ -958,7 +973,8 @@
                     "properties": {
                         "woo_id": {
                             "description": "A WooCommerce Extension ID",
-                            "type": "integer"
+                            "type": "integer",
+                            "required": true
                         },
                         "wordpress_version": {
                             "default": "X.X.X",
@@ -1003,6 +1019,7 @@
                         "optional_features": {
                             "description": "A comma-separated list of WooCommerce features to enable in the testing environment.",
                             "type": "array",
+                            "default": [],
                             "uniqueItems": true,
                             "items": {
                                 "oneOf": [
@@ -1091,7 +1108,8 @@
                     "properties": {
                         "woo_id": {
                             "description": "A WooCommerce Extension ID",
-                            "type": "integer"
+                            "type": "integer",
+                            "required": true
                         },
                         "php_version": {
                             "default": "",
@@ -1147,7 +1165,8 @@
                     "properties": {
                         "woo_id": {
                             "description": "A WooCommerce Extension ID",
-                            "type": "integer"
+                            "type": "integer",
+                            "required": true
                         },
                         "php_version": {
                             "default": "",
