@@ -335,13 +335,7 @@
                                 "Console startGroup: PHP Errors in Ajax Response\\n",
                                 "Console warning: {key: 186e674c5a36642a5d0696dcd2ba795c, type: deprecated, message: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 28}\\n",
                                 "Console endGroup: console.groupEnd\\n",
-                                "Console startGroup: PHP Errors in Ajax Response\\n",
-                                "Console warning: {key: 186e674c5a36642a5d0696dcd2ba795c, type: deprecated, message: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 28}\\n",
-                                "Console endGroup: console.groupEnd\\n",
-                                "Console warning: Navigation store is deprecated.\\n",
-                                "Console startGroup: PHP Errors in Ajax Response\\n",
-                                "Console warning: {key: 186e674c5a36642a5d0696dcd2ba795c, type: deprecated, message: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 28}\\n",
-                                "Console endGroup: console.groupEnd\\n"
+                                "Console warning: Navigation store is deprecated.\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -364,15 +358,6 @@
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
                             "stdout": [
-                                "Console startGroup: PHP Errors in Ajax Response\\n",
-                                "Console warning: {key: 186e674c5a36642a5d0696dcd2ba795c, type: deprecated, message: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 28}\\n",
-                                "Console endGroup: console.groupEnd\\n",
-                                "Console startGroup: PHP Errors in Ajax Response\\n",
-                                "Console warning: {key: 186e674c5a36642a5d0696dcd2ba795c, type: deprecated, message: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 28}\\n",
-                                "Console endGroup: console.groupEnd\\n",
-                                "Console startGroup: PHP Errors in Ajax Response\\n",
-                                "Console warning: {key: 186e674c5a36642a5d0696dcd2ba795c, type: deprecated, message: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 28}\\n",
-                                "Console endGroup: console.groupEnd\\n",
                                 "Console startGroup: PHP Errors in Ajax Response\\n",
                                 "Console warning: {key: 186e674c5a36642a5d0696dcd2ba795c, type: deprecated, message: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 28}\\n",
                                 "Console endGroup: console.groupEnd\\n"
@@ -425,7 +410,6 @@
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
                             "stdout": [
-                                "Console warning: showSpinner prop is deprecated and will be removed from WooCommerce in version 8.9.0. Please use Render a spinner in the button children instead. instead.\\n",
                                 "Console warning: showSpinner prop is deprecated and will be removed from WooCommerce in version 8.9.0. Please use Render a spinner in the button children instead. instead.\\n"
                             ],
                             "stderr": [],

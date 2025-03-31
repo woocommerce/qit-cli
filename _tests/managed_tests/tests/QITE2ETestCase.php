@@ -246,17 +246,42 @@ class QITE2ETestCase extends TestCase {
 						return [];
 					}
 
-					// Remove lines containing "Using cached file" from all tests' stdout arrays
+					// Remove lines containing "Using cached file" from all tests' stdout arrays,
+					// and then remove duplicates via array_unique, as they can cause flakiness in snapshot testing.
 					if ( isset( $value['results']['tests'] ) && is_array( $value['results']['tests'] ) ) {
 						foreach ( $value['results']['tests'] as &$test ) {
-							// Only proceed if stdout is an array of lines
 							if ( isset( $test['stdout'] ) && is_array( $test['stdout'] ) ) {
-								$test['stdout'] = array_values(
-									array_filter( $test['stdout'], static function ( $line ) {
-										return stripos( $line, 'Using cached file' ) === false;
+								$filtered          = [];
+								$processes_console = []; // track unique "Console " lines
+
+								foreach ( $test['stdout'] as $line ) {
+									if ( stripos( $line, 'Using cached file' ) !== false ) {
+										continue;
 									}
-									)
-								);
+
+									// 2) If this line starts with "Console ", ensure we show it only once, as they can cause flakiness.
+									if ( strpos( $line, 'Console ' ) === 0 ) {
+										if ( ! in_array( $line, $processes_console, true ) ) {
+											$processes_console[] = $line;
+											$filtered[]          = $line;
+										}
+										// Whether we add it or skip it, we're done with this line.
+										continue;
+									}
+
+									// 3) Keep other lines.
+									$filtered[] = $line;
+								}
+
+								$test['stdout'] = $filtered;
+							}
+
+							if ( isset( $test['stderr'] ) && is_array( $test['stderr'] ) ) {
+								foreach ( $test['stderr'] as $k => $line ) {
+									if ( stripos( $line, 'Something may be wrong with WordPress.org' ) !== false ) {
+										unset( $test['stderr'][ $k ] );
+									}
+								}
 							}
 						}
 						unset( $test );

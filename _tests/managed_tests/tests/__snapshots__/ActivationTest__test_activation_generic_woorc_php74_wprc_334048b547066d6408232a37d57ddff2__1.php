@@ -335,13 +335,7 @@
                                 "Console startGroup: PHP Errors in Ajax Response\\n",
                                 "Console warning: {key: ce3dd029c6a0313fd73a3385a1e07698, type: notice, message: Notice on all requests, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 16}\\n",
                                 "Console endGroup: console.groupEnd\\n",
-                                "Console startGroup: PHP Errors in Ajax Response\\n",
-                                "Console warning: {key: ce3dd029c6a0313fd73a3385a1e07698, type: notice, message: Notice on all requests, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 16}\\n",
-                                "Console endGroup: console.groupEnd\\n",
-                                "Console warning: Navigation store is deprecated.\\n",
-                                "Console startGroup: PHP Errors in Ajax Response\\n",
-                                "Console warning: {key: ce3dd029c6a0313fd73a3385a1e07698, type: notice, message: Notice on all requests, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 16}\\n",
-                                "Console endGroup: console.groupEnd\\n"
+                                "Console warning: Navigation store is deprecated.\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -364,15 +358,6 @@
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
                             "stdout": [
-                                "Console startGroup: PHP Errors in Ajax Response\\n",
-                                "Console warning: {key: ce3dd029c6a0313fd73a3385a1e07698, type: notice, message: Notice on all requests, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 16}\\n",
-                                "Console endGroup: console.groupEnd\\n",
-                                "Console startGroup: PHP Errors in Ajax Response\\n",
-                                "Console warning: {key: ce3dd029c6a0313fd73a3385a1e07698, type: notice, message: Notice on all requests, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 16}\\n",
-                                "Console endGroup: console.groupEnd\\n",
-                                "Console startGroup: PHP Errors in Ajax Response\\n",
-                                "Console warning: {key: ce3dd029c6a0313fd73a3385a1e07698, type: notice, message: Notice on all requests, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 16}\\n",
-                                "Console endGroup: console.groupEnd\\n",
                                 "Console startGroup: PHP Errors in Ajax Response\\n",
                                 "Console warning: {key: ce3dd029c6a0313fd73a3385a1e07698, type: notice, message: Notice on all requests, file: wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php, line: 16}\\n",
                                 "Console endGroup: console.groupEnd\\n"

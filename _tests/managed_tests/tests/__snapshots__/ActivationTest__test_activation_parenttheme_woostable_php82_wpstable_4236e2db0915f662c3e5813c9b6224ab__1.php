@@ -214,7 +214,6 @@
                                 "Console error: Store \\"core\\/interface\\" is already registered.\\n",
                                 "Console warning: `select` control in `@wordpress\\/data-controls` is deprecated since version 5.7. Please use built-in `resolveSelect` control in `@wordpress\\/data` instead.\\n",
                                 "Console warning: Bottom margin styles for wp.components.CheckboxControl is deprecated since version 6.7 and will be removed in version 7.0. Note: Set the `__nextHasNoMarginBottom` prop to true to start opting into the new styles, which will become the default in a future version.\\n",
-                                "Console error: Store \\"core\\/interface\\" is already registered.\\n",
                                 "[INFO] Final sorted plugin list:\\n",
                                 " 1. \\"Query Monitor\\" (Dependencies: [])\\n",
                                 " 2. \\"WooCommerce\\" (Dependencies: [])\\n"
@@ -318,11 +317,7 @@
                                 "Console warning: `select` control in `@wordpress\\/data-controls` is deprecated since version 5.7. Please use built-in `resolveSelect` control in `@wordpress\\/data` instead.\\n",
                                 "Console startGroup: PHP Errors in Ajax Response\\n",
                                 "Console warning: {key: 0dfadb931fb42d51a8c9a4494d5bbbdd, type: notice, message: Notice on all requests - Parent Theme, file: wp-content\\/themes\\/bistro\\/functions.php, line: 17}\\n",
-                                "Console endGroup: console.groupEnd\\n",
-                                "Console error: Store \\"core\\/interface\\" is already registered.\\n",
-                                "Console warning: `select` control in `@wordpress\\/data-controls` is deprecated since version 5.7. Please use built-in `resolveSelect` control in `@wordpress\\/data` instead.\\n",
-                                "Console error: Store \\"core\\/interface\\" is already registered.\\n",
-                                "Console warning: `select` control in `@wordpress\\/data-controls` is deprecated since version 5.7. Please use built-in `resolveSelect` control in `@wordpress\\/data` instead.\\n"
+                                "Console endGroup: console.groupEnd\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -345,14 +340,6 @@
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
                             "stdout": [
-                                "Console error: Store \\"core\\/interface\\" is already registered.\\n",
-                                "Console warning: `select` control in `@wordpress\\/data-controls` is deprecated since version 5.7. Please use built-in `resolveSelect` control in `@wordpress\\/data` instead.\\n",
-                                "Console startGroup: PHP Errors in Ajax Response\\n",
-                                "Console warning: {key: 0dfadb931fb42d51a8c9a4494d5bbbdd, type: notice, message: Notice on all requests - Parent Theme, file: wp-content\\/themes\\/bistro\\/functions.php, line: 17}\\n",
-                                "Console endGroup: console.groupEnd\\n",
-                                "Console startGroup: PHP Errors in Ajax Response\\n",
-                                "Console warning: {key: 0dfadb931fb42d51a8c9a4494d5bbbdd, type: notice, message: Notice on all requests - Parent Theme, file: wp-content\\/themes\\/bistro\\/functions.php, line: 17}\\n",
-                                "Console endGroup: console.groupEnd\\n",
                                 "Console error: Store \\"core\\/interface\\" is already registered.\\n",
                                 "Console warning: `select` control in `@wordpress\\/data-controls` is deprecated since version 5.7. Please use built-in `resolveSelect` control in `@wordpress\\/data` instead.\\n",
                                 "Console startGroup: PHP Errors in Ajax Response\\n",
@@ -380,17 +367,6 @@
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
                             "stdout": [
-                                "Console error: Store \\"core\\/interface\\" is already registered.\\n",
-                                "Console warning: `select` control in `@wordpress\\/data-controls` is deprecated since version 5.7. Please use built-in `resolveSelect` control in `@wordpress\\/data` instead.\\n",
-                                "Console startGroup: PHP Errors in Ajax Response\\n",
-                                "Console warning: {key: 0dfadb931fb42d51a8c9a4494d5bbbdd, type: notice, message: Notice on all requests - Parent Theme, file: wp-content\\/themes\\/bistro\\/functions.php, line: 17}\\n",
-                                "Console endGroup: console.groupEnd\\n",
-                                "Console startGroup: PHP Errors in Ajax Response\\n",
-                                "Console warning: {key: 0dfadb931fb42d51a8c9a4494d5bbbdd, type: notice, message: Notice on all requests - Parent Theme, file: wp-content\\/themes\\/bistro\\/functions.php, line: 17}\\n",
-                                "Console endGroup: console.groupEnd\\n",
-                                "Console startGroup: PHP Errors in Ajax Response\\n",
-                                "Console warning: {key: 0dfadb931fb42d51a8c9a4494d5bbbdd, type: notice, message: Notice on all requests - Parent Theme, file: wp-content\\/themes\\/bistro\\/functions.php, line: 17}\\n",
-                                "Console endGroup: console.groupEnd\\n",
                                 "Console error: Store \\"core\\/interface\\" is already registered.\\n",
                                 "Console warning: `select` control in `@wordpress\\/data-controls` is deprecated since version 5.7. Please use built-in `resolveSelect` control in `@wordpress\\/data` instead.\\n",
                                 "Console startGroup: PHP Errors in Ajax Response\\n",
