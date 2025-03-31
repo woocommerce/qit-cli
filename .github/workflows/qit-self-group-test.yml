@@ -3,7 +3,7 @@ name: QIT Self-Tests - Group Tests
 on:
   # Every day at 11pm UTC (6pm ET)
   schedule:
-    - cron: '0 23 * * *'
+    - cron: '0 22 * * *'
   # Manually
   workflow_dispatch:
   # On push to trunk

@@ -52,6 +52,16 @@ class RunGroupTest extends \PHPUnit\Framework\TestCase {
 		$normalized_output = $this->normalized_registered_group_output( $output );
 		$this->assertMatchesSnapshot( $normalized_output );
 
+		// Try to add a test to the group again.
+		$output = qit( [
+			$tests[0]['run_command'],
+			$tests[0]['extension'],
+			'--group',
+		], [], 1 );
+
+
+		$this->assertStringContainsString( 'The test group is already registered. Please execute the group with `group:run` and delete it with `group:clear` after it has completed.', $output );
+		
 		// Run Group.
 		$output = qit( [
 			'group:run'
