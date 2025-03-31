@@ -103,34 +103,6 @@ class UploadTestTagsCommand extends Command {
 					$output->writeln( '<comment>No "bootstrap" directory found.</comment>' );
 				}
 
-				// Check if at least one ".js", ".ts" or ".tsx" file exists in the tests directory.
-				$possible_pw_files = [];
-				$extensions        = [ 'js', 'ts', 'tsx' ];
-
-				foreach ( new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $test_path ) ) as $file ) {
-					if ( $file->isDir() || ! in_array( $file->getExtension(), $extensions, true ) ) {
-						continue;
-					}
-					$possible_pw_files[] = $file->getPathname();
-				}
-
-				// Fail: No JS files in the tests directory.
-				if ( empty( $possible_pw_files ) ) {
-					throw new \RuntimeException( 'No ".js", ".ts" or ".tsx" file found.' );
-				}
-
-				// Check that at least one of these files is actually PW.
-				$pw_files = array_filter( $possible_pw_files, static function ( $file ) {
-					$contents = file_get_contents( $file, false, null, 0, 4 * 1024 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-
-					return str_contains( $contents, '@playwright' );
-				} );
-
-				// Fail: None of the JS files are Playwright.
-				if ( empty( $pw_files ) ) {
-					throw new \RuntimeException( 'No Playwright test found.' );
-				}
-
 				$zip_to_upload = sys_get_temp_dir() . '/' . uniqid( 'e2e-test-' ) . '.zip';
 
 				/*

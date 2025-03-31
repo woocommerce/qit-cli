@@ -225,7 +225,7 @@ class Zipper {
 			'-c',
 		];
 
-		$zip_command = 'cd /home/docker/source && zip -r /home/docker/dest/output.zip .';
+		$zip_command = 'cd /home/docker/source && zip -r /home/docker/dest/output.zip ./*';
 
 		if ( ! empty( $exclude_string ) ) {
 			$zip_command .= " -x $exclude_string";
