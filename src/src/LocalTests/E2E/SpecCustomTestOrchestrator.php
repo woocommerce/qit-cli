@@ -18,11 +18,6 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 
-/**
- * PHP 7.2–compatible, uses snake_case variables and "thisCase" for class name.
- * Manages "Custom E2E" tests orchestration by calling each plugin's "npm run qit-e2e"
- * and handling shared setups, DB snapshots, result merges, etc.
- */
 class SpecCustomTestOrchestrator {
 	/**
 	 * @var Docker
@@ -45,27 +40,32 @@ class SpecCustomTestOrchestrator {
 	protected $extension_test_runner;
 
 	/**
-	 * Constructor
-	 *
-	 * @param Docker               $docker
-	 * @param LocalTestRunNotifier $local_test_run_notifier
+	 * @var SharedSetupRunner
 	 */
-	public function __construct( Docker $docker, LocalTestRunNotifier $local_test_run_notifier, ExtensionTestRunner $extension_test_runner ) {
+	protected $shared_setup_runner;
+
+	public function __construct(
+		Docker $docker,
+		LocalTestRunNotifier $local_test_run_notifier,
+		ExtensionTestRunner $extension_test_runner
+	) {
 		$this->docker                  = $docker;
 		$this->local_test_run_notifier = $local_test_run_notifier;
 		$this->extension_test_runner   = $extension_test_runner;
+		$this->shared_setup_runner     = new SharedSetupRunner( $extension_test_runner );
 	}
 
 	/**
-	 * Main entry point that coordinates all custom E2E tests for the environment.
+	 * Main entry point for custom E2E tests orchestration.
 	 *
-	 * @param E2EEnvInfo   $env_info
+	 * @param E2EEnvInfo $env_info
 	 * @param SymfonyStyle $io
-	 * @param bool         $up_only
+	 * @param bool $up_only
 	 *
 	 * @return int
 	 */
 	public function run_custom_e2e_tests( E2EEnvInfo $env_info, SymfonyStyle $io, bool $up_only ) {
+		// 0) Notify that a test run started
 		$this->local_test_run_notifier->notify_test_started(
 			$env_info->sut_id,
 			$env_info->woo_version,
@@ -74,32 +74,80 @@ class SpecCustomTestOrchestrator {
 			$env_info->notify
 		);
 
-		// Initialize test-result tracking.
+		// 1) Create/attach a TestResult object
 		$test_result       = TestResult::init_from( $env_info );
 		$this->test_result = $test_result;
-
-		// Hand the TestResult object to the PluginTestRunner.
 		$this->extension_test_runner->set_test_result( $this->test_result );
 
 		$exit_code = Command::SUCCESS;
 
-		// Basic check that we have a tests array.
+		// Basic checks
 		if ( empty( $env_info->tests ) || ! is_array( $env_info->tests ) ) {
 			$io->error( 'No test definitions found in $env_info->tests.' );
 
 			return Command::FAILURE;
 		}
 
-		// 1) Run shared-setup across all items that have action=bootstrap or action=test
-		$this->run_shared_setup( $env_info, $io );
+		// 2) Run shared setup for any items with action=bootstrap or test
+		$this->shared_setup_runner->run_shared_setup( $env_info, $io );
 
+		// 3) If user wants ONLY to bring env up (and not immediately run tests)
 		if ( $up_only ) {
-			App::make( Output::class )->writeln( '' );
+			// (A) Attempt to run the SUT's isolated setup
+			$testable_items = array_filter(
+				$env_info->tests,
+				function ( $item ) {
+					return ( isset( $item['action'] ) && $item['action'] === Extension::ACTIONS['test'] );
+				}
+			);
+			$testable_items = array_values( $testable_items );
 
-			$question = new Question( '<comment>Environment ready. Press "Enter" when you are done to terminate it.</comment>' );
-			$question->setValidator( function ( $answer ) {
-				return $answer;
-			} );
+			// Filter out non-SUT.
+			$testable_items = array_filter(
+				$testable_items,
+				function ( $item ) use ( $env_info ) {
+					return ( isset( $item['slug'] ) && $item['slug'] === $env_info->sut_slug );
+				}
+			);
+
+			if ( count( $testable_items ) === 1 ) {
+				$sut_item = array_shift( $testable_items );
+
+				$io->writeln( '<comment>Running isolated setup for the SUT...</comment>' );
+				$this->extension_test_runner->run_script_if_exists(
+					$env_info,
+					$sut_item,
+					'setup.sh',
+					'SUT Setup',
+					$io
+				);
+
+				// Export a second snapshot
+				$io->writeln( '<info>Exporting DB after SUT setup to /qit/plugin-setup-snapshot.sql</info>' );
+				$this->docker->run_inside_docker(
+					$env_info,
+					[ 'wp', 'db', 'export', '/qit/plugin-setup-snapshot.sql' ]
+				);
+			} else {
+				$io->writeln( '<comment>No test item found (action=test). Skipping SUT setup snapshot.</comment>' );
+			}
+
+			// (B) Print instructions & block
+			App::make( Output::class )->writeln( '' );
+			$io->writeln( '<info>Environment ID:</info> ' . $env_info->env_id );
+			$io->writeln( '<info>URL:</info> ' . $env_info->site_url );
+			$io->writeln( '' );
+			$io->writeln( 'You can run your tests and reset the environment at will. For example:' );
+			$io->writeln( '  export QIT_SITE_URL=' . $env_info->site_url );
+			$io->writeln( '  npm run qit-e2e' );
+			$io->writeln( '' );
+			$io->writeln( 'If you need a fresh DB, run:' );
+			$io->writeln( '  qit env:reload ' . $env_info->env_id );
+			$io->writeln( '(That will restore /qit/plugin-setup-snapshot.sql.)' );
+			$io->writeln( '' );
+			$io->writeln( 'When you are done, press "Enter" here (or run "qit env:down ' . $env_info->env_id . '") to terminate.' );
+
+			$question = new Question( '<comment>Press Enter to terminate the environment...</comment>' );
 			( new QuestionHelper() )->ask(
 				App::make( InputInterface::class ),
 				App::make( Output::class ),
@@ -109,15 +157,17 @@ class SpecCustomTestOrchestrator {
 			return Command::SUCCESS;
 		}
 
-		// 2) Snapshot DB
+		// 4) Normal test run flow: do baseline snapshot, then run tests
 		$this->db_export( $env_info, $io );
 
-		// 3) For each item whose action = test
-		$testable_items = array_filter( $env_info->tests, function ( $item ) {
-			return isset( $item['action'] ) && $item['action'] === Extension::ACTIONS['test'];
-		} );
-
-		$is_first = true;
+		// For each item whose action = test
+		$testable_items = array_filter(
+			$env_info->tests,
+			function ( $item ) {
+				return ( isset( $item['action'] ) && $item['action'] === Extension::ACTIONS['test'] );
+			}
+		);
+		$is_first       = true;
 
 		foreach ( $testable_items as $test_item ) {
 			$code = $this->extension_test_runner->run_single_plugin_tests( $env_info, $test_item, $io, $is_first );
@@ -127,26 +177,28 @@ class SpecCustomTestOrchestrator {
 			$is_first = false;
 		}
 
-		// 4) Shared teardown
-		$this->run_shared_teardown( $env_info, $io );
+		// 5) Shared teardown
+		$this->shared_setup_runner->run_shared_teardown( $env_info, $io );
 
-		// 5) Merge CTRF + Allure from all plugins
+		// 6) Merge CTRF + Allure
 		$this->merge_results( $env_info, $io, $this->test_result );
 
-		// 6) Upload results to QIT Manager
+		// 7) Notify test finished
 		try {
 			[ $report_url, $override_exit ] = $this->local_test_run_notifier->notify_test_finished( $this->test_result );
-
 			if ( $override_exit !== null ) {
 				$exit_code = $override_exit;
 			}
-
-			App::make( Cache::class )->set( 'last_e2e_report', json_encode( [
-				'local_playwright' => file_exists( $test_result->get_results_dir() . '/report/index.html' ) ? $test_result->get_results_dir() . '/report' : '',
-				'remote_qit'       => $report_url,
-			] ), MONTH_IN_SECONDS );
-
-			// Print Report URL in a more stand-out way.
+			App::make( Cache::class )->set(
+				'last_e2e_report',
+				json_encode( [
+					'local_playwright' => file_exists( $test_result->get_results_dir() . '/report/index.html' )
+						? $test_result->get_results_dir() . '/report'
+						: '',
+					'remote_qit'       => $report_url,
+				] ),
+				MONTH_IN_SECONDS
+			);
 			$io->writeln( '' );
 			$io->writeln( '<info>Test run finished. Report URL:</info>' );
 			$io->writeln( $report_url );
@@ -160,66 +212,22 @@ class SpecCustomTestOrchestrator {
 	}
 
 	/**
-	 * Runs any shared-setup.* (sh|php|js) script for items whose action is bootstrap or test.
-	 *
-	 * @param E2EEnvInfo   $env_info
-	 * @param SymfonyStyle $io
+	 * Exports the DB to /qit/snapshot.sql
 	 */
-	protected function run_shared_setup( $env_info, $io ) {
-		foreach ( $env_info->tests as $test_item ) {
-			if ( empty( $test_item['action'] ) ) {
-				continue;
-			}
-			if ( $test_item['action'] !== Extension::ACTIONS['bootstrap']
-				&& $test_item['action'] !== Extension::ACTIONS['test']
-			) {
-				continue;
-			}
-
-			// Delegates to the PluginTestRunner:
-			$this->extension_test_runner->run_script_if_exists( $env_info, $test_item, 'shared-setup.sh', 'Shared Setup', $io );
-		}
-	}
-
-	/**
-	 * Exports (snapshots) the DB so we can restore it before each plugin test.
-	 *
-	 * @param E2EEnvInfo   $env_info
-	 * @param SymfonyStyle $io
-	 */
-	protected function db_export( $env_info, $io ) {
+	protected function db_export( E2EEnvInfo $env_info, SymfonyStyle $io ) {
 		$io->writeln( '<info>[db export]</info>' );
-		$this->docker->run_inside_docker( $env_info, [ 'wp', 'db', 'export', '/qit/snapshot.sql' ] );
-	}
-
-	/**
-	 * Runs any shared-teardown.* scripts (sh|php|js) for items with action=bootstrap or test.
-	 *
-	 * @param E2EEnvInfo   $env_info
-	 * @param SymfonyStyle $io
-	 */
-	protected function run_shared_teardown( $env_info, $io ) {
-		foreach ( $env_info->tests as $test_item ) {
-			if ( empty( $test_item['action'] ) ) {
-				continue;
-			}
-			if ( $test_item['action'] !== Extension::ACTIONS['bootstrap']
-				&& $test_item['action'] !== Extension::ACTIONS['test']
-			) {
-				continue;
-			}
-
-			// Delegates to the PluginTestRunner:
-			$this->extension_test_runner->run_script_if_exists( $env_info, $test_item, 'shared-teardown.sh', 'Shared Teardown', $io );
-		}
+		$this->docker->run_inside_docker(
+			$env_info,
+			[ 'wp', 'db', 'export', '/qit/snapshot.sql' ]
+		);
 	}
 
 	/**
 	 * Merge results (CTRF/Allure) from all plugins into final artifacts.
 	 *
-	 * @param E2EEnvInfo   $env_info
+	 * @param E2EEnvInfo $env_info
 	 * @param SymfonyStyle $io
-	 * @param TestResult   $test_result
+	 * @param TestResult $test_result
 	 */
 	protected function merge_results( $env_info, $io, $test_result ) {
 		$ctrf_dir        = $test_result->get_results_dir() . '/ctrf';
