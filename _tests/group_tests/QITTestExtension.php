@@ -273,7 +273,7 @@ class QITTestFinish implements ExecutionFinishedSubscriber {
 			}
 
 			if ( isset( $GLOBALS['IS_SOURCE'] ) && $GLOBALS['IS_SOURCE'] ) {
-				$timeout = 300;
+				$timeout = 500;
 				// Wait for all other tests to finish.
 				while ( count( glob( sys_get_temp_dir() . '/qit-running-*' ) ) > 1 ) {
 					echo sprintf( "Main process is waiting for %d other tests to finish.\n", count( glob( sys_get_temp_dir() . '/qit-running-*' ) ) - 1 );
