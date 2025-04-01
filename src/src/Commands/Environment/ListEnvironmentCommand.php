@@ -46,7 +46,7 @@ class ListEnvironmentCommand extends Command {
 
 			return Command::SUCCESS;
 		}
-		
+
 		if ( $env_id ) {
 			$selected_env = $this->find_environment_or_error( $running, $env_id, $io );
 			if ( ! $selected_env ) {
