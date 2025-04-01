@@ -1,0 +1,15 @@
+--------------------------------
+Group ID: 12345
+Group Identifier: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx_0000000000
+Status: completed
+--------------------------------
+Test Type: Activation
+Params: {"client":"qit_cli","hash":"12345","woo_id":390890,"local":true}
+Test Results Manager URL: https://example.com?qit_results=12345.normalized_hash
+Status: success
+--------------------------------
+Test Type: Activation
+Params: {"client":"qit_cli","hash":"12345","woo_id":4652610,"local":true}
+Test Results Manager URL: https://example.com?qit_results=12345.normalized_hash
+Status: success
+--------------------------------

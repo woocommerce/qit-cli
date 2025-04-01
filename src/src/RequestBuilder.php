@@ -331,6 +331,17 @@ class RequestBuilder {
 					$response_status_code
 				);
 			} else {
+
+				$json_decoded = json_decode( $body, true );
+
+				/**
+				 * If the errors is a rest_invalid_group_param, it must be parsed and printed.
+				 */
+				if ( isset( $json_decoded['code'] ) &&
+					$json_decoded['code'] === 'rest_invalid_group_param'
+				) {
+					return $body;
+				}
 				throw new NetworkErrorException( $error_message );
 			}
 		}

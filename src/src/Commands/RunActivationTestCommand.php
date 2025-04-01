@@ -42,6 +42,8 @@ class RunActivationTestCommand extends Command {
 			->reuseOption( RunE2ECommand::getDefaultName(), 'require' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'extension_set' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'dependencies_mode' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'group' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'no_group' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'pw_test_tag' );
 
 		$this->addOption(
@@ -132,6 +134,14 @@ class RunActivationTestCommand extends Command {
 
 		// Mark that we're running an activation test scenario.
 		App::setVar( 'QIT_ACTIVATION_TEST', 'yes' );
+
+		if ( $input->getOption( 'group' ) ) {
+			$run_e2e_options['--group'] = $input->getOption( 'group' );
+		}
+
+		if ( $input->getOption( 'no_group' ) ) {
+			$run_e2e_options['--no_group'] = true;
+		}
 
 		// Now run the `run:e2e` command with these fully customized options.
 		$run_e2e_exit_code = $run_e2e_command->run(
