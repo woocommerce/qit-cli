@@ -17,8 +17,8 @@ trait EnvironmentSelectorTrait {
 	 * If multiple exist but $env_id is not specified, prints an error and returns null.
 	 * If no matching env_id is found, prints an error and returns null.
 	 *
-	 * @param object[] $running_envs Array of environment objects
-	 * @param string|null $env_id The environment ID requested
+	 * @param object[]     $running_envs Array of environment objects
+	 * @param string|null  $env_id The environment ID requested
 	 * @param SymfonyStyle $io For printing error messages
 	 *
 	 * @return object|null     Returns the matched environment object or null on error

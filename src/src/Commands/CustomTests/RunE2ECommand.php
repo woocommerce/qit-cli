@@ -87,13 +87,13 @@ class RunE2ECommand extends DynamicCommand {
 		EnvironmentRunner $environment_runner,
 		TestGroup $test_group
 	) {
-		$this->e2e_environment     = $e2e_environment;
-		$this->cache               = $cache;
-		$this->woo_extensions_list = $woo_extensions_list;
-		$this->test_run_notifier   = $test_run_notifier;
-		$this->dependencies        = $dependencies;
-		$this->environment_runner  = $environment_runner;
-		$this->test_group          = $test_group;
+		$this->e2e_environment               = $e2e_environment;
+		$this->cache                         = $cache;
+		$this->woo_extensions_list           = $woo_extensions_list;
+		$this->test_run_notifier             = $test_run_notifier;
+		$this->dependencies                  = $dependencies;
+		$this->environment_runner            = $environment_runner;
+		$this->test_group                    = $test_group;
 		$this->spec_custom_test_orchestrator = $spec_custom_test_orchestrator;
 
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase

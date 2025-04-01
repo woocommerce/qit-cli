@@ -49,8 +49,8 @@ class ExtensionTestRunner {
 	 * Restores DB, runs the plugin's local setups, calls `npm run qit-e2e`, runs teardown,
 	 * and copies artifacts out.
 	 *
-	 * @param E2EEnvInfo $env_info
-	 * @param array $test_item
+	 * @param E2EEnvInfo   $env_info
+	 * @param array        $test_item
 	 * @param SymfonyStyle $io
 	 *
 	 * @return int
@@ -165,10 +165,10 @@ class ExtensionTestRunner {
 	/**
 	 * If a script (like 'setup.sh' or 'shared-setup.sh') exists, run it in Docker and record the CTRF snippet.
 	 *
-	 * @param E2EEnvInfo $env_info
-	 * @param array $test_item
-	 * @param string $script_name
-	 * @param string $phase e.g. "Shared Setup", "Isolated Setup", "Plugin Teardown", etc.
+	 * @param E2EEnvInfo   $env_info
+	 * @param array        $test_item
+	 * @param string       $script_name
+	 * @param string       $phase e.g. "Shared Setup", "Isolated Setup", "Plugin Teardown", etc.
 	 * @param SymfonyStyle $io
 	 */
 	public function run_script_if_exists( $env_info, $test_item, $script_name, $phase, $io ) {
@@ -209,7 +209,7 @@ class ExtensionTestRunner {
 	/**
 	 * Copies plugin's ./results/ctrf.json and ./results/allure/ from host to final results directory.
 	 *
-	 * @param array $test_item
+	 * @param array        $test_item
 	 * @param SymfonyStyle $io
 	 */
 	protected function collect_plugin_artifacts( $test_item, $io ) {
@@ -254,7 +254,7 @@ class ExtensionTestRunner {
 	 * ['exit_code', 'stdout', 'stderr', 'start', 'stop', 'duration'].
 	 *
 	 * @param E2EEnvInfo $env_info
-	 * @param array $command_args
+	 * @param array      $command_args
 	 *
 	 * @return array
 	 */
@@ -286,7 +286,7 @@ class ExtensionTestRunner {
 	 * Builds a minimal CTRF JSON structure for a single script-run (like setup.sh) so it appears in final results.
 	 *
 	 * @param string $test_name
-	 * @param array $capture
+	 * @param array  $capture
 	 * @param string $phase
 	 * @param string $plugin_slug
 	 *
@@ -306,7 +306,7 @@ class ExtensionTestRunner {
 			'timestamp'    => gmdate( 'c' ),
 			'generatedBy'  => 'QIT_SpecE2ETestRunner',
 
-			'results' => [
+			'results'      => [
 				'tool'    => [
 					'name'    => 'SpecE2ERunner',
 					'version' => '1.0.0',
@@ -345,8 +345,8 @@ class ExtensionTestRunner {
 	/**
 	 * Writes the snippet to a temporary file and merges it into the final CTRF directory.
 	 *
-	 * @param array $snippet
-	 * @param string $ctrf_dir
+	 * @param array        $snippet
+	 * @param string       $ctrf_dir
 	 * @param SymfonyStyle $io
 	 */
 	protected function merge_ctrf_snippet( array $snippet, $ctrf_dir, SymfonyStyle $io ) {

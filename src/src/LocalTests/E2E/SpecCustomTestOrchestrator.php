@@ -58,9 +58,9 @@ class SpecCustomTestOrchestrator {
 	/**
 	 * Main entry point for custom E2E tests orchestration.
 	 *
-	 * @param E2EEnvInfo $env_info
+	 * @param E2EEnvInfo   $env_info
 	 * @param SymfonyStyle $io
-	 * @param bool $up_only
+	 * @param bool         $up_only
 	 *
 	 * @return int
 	 */
@@ -225,9 +225,9 @@ class SpecCustomTestOrchestrator {
 	/**
 	 * Merge results (CTRF/Allure) from all plugins into final artifacts.
 	 *
-	 * @param E2EEnvInfo $env_info
+	 * @param E2EEnvInfo   $env_info
 	 * @param SymfonyStyle $io
-	 * @param TestResult $test_result
+	 * @param TestResult   $test_result
 	 */
 	protected function merge_results( $env_info, $io, $test_result ) {
 		$ctrf_dir        = $test_result->get_results_dir() . '/ctrf';

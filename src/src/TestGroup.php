@@ -70,7 +70,6 @@ class TestGroup {
 			throw new \Exception( 'A pending test group already exists. Either wait for it to complete or delete it with `group:clear`.' );
 		}
 
-
 		if ( empty( $group ) ) {
 			$group = [
 				'status' => self::STATUS_NOT_STARTED,

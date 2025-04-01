@@ -28,7 +28,7 @@ class SharedSetupRunner {
 	/**
 	 * Runs any shared-setup.* (sh|php|js) scripts.
 	 *
-	 * @param mixed $env_info
+	 * @param mixed        $env_info
 	 * @param SymfonyStyle $io
 	 */
 	public function run_shared_setup( $env_info, SymfonyStyle $io ) {
@@ -37,7 +37,7 @@ class SharedSetupRunner {
 				continue;
 			}
 			if ( $test_item['action'] !== Extension::ACTIONS['bootstrap']
-			     && $test_item['action'] !== Extension::ACTIONS['test']
+				&& $test_item['action'] !== Extension::ACTIONS['test']
 			) {
 				continue;
 			}
@@ -56,7 +56,7 @@ class SharedSetupRunner {
 	/**
 	 * Runs any shared-teardown.* (sh|php|js) scripts.
 	 *
-	 * @param mixed $env_info
+	 * @param mixed        $env_info
 	 * @param SymfonyStyle $io
 	 */
 	public function run_shared_teardown( $env_info, SymfonyStyle $io ) {
@@ -65,7 +65,7 @@ class SharedSetupRunner {
 				continue;
 			}
 			if ( $test_item['action'] !== Extension::ACTIONS['bootstrap']
-			     && $test_item['action'] !== Extension::ACTIONS['test']
+				&& $test_item['action'] !== Extension::ACTIONS['test']
 			) {
 				continue;
 			}
