@@ -15,7 +15,7 @@
         {
             "slug": "fake-plugin-ENV_ID_NORMALIZED",
             "entrypoint": null,
-            "source": "\/var\/folders\/b4\/mftz73hs2mj70_7qjsrbq7lw0000gn\/T\/fake-plugin-ENV_ID_NORMALIZED.zip",
+            "source": "\/tmp\/fake-plugin-ENV_ID_NORMALIZED.zip",
             "downloaded_source": null,
             "type": "plugin",
             "handler": null,
