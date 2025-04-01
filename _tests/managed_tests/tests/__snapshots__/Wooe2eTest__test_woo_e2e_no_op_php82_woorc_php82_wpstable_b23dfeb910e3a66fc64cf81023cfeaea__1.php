@@ -12447,42 +12447,6 @@
                     {
                         "count": "1",
                         "message": "PHP Deprecated: Function Automattic\\\\WooCommerce\\\\Admin\\\\WCAdminHelper::is_store_page is deprecated since version 9.8.0! Use is_current_page_store_page instead. in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6114"
-                    },
-                    {
-                        "count": "1",
-                        "message": "PHP Warning: Attempt to read property ID on null in \\/var\\/www\\/html\\/wp-includes\\/post.php on line 5748"
-                    },
-                    {
-                        "count": "1",
-                        "message": "PHP Warning: Attempt to read property ID on null in \\/var\\/www\\/html\\/wp-includes\\/post.php on line 7822"
-                    },
-                    {
-                        "count": "1",
-                        "message": "PHP Warning: Attempt to read property post_type on null in \\/var\\/www\\/html\\/wp-includes\\/post.php on line 5049"
-                    },
-                    {
-                        "count": "1",
-                        "message": "PHP Warning: Attempt to read property post_type on null in \\/var\\/www\\/html\\/wp-includes\\/post.php on line 5748"
-                    },
-                    {
-                        "count": "1",
-                        "message": "PHP Warning: Attempt to read property post_type on null in \\/var\\/www\\/html\\/wp-includes\\/post.php on line 7817"
-                    },
-                    {
-                        "count": "1",
-                        "message": "PHP Warning: Attempt to read property post_type on null in \\/var\\/www\\/html\\/wp-includes\\/post.php on line 7818"
-                    },
-                    {
-                        "count": "1",
-                        "message": "PHP Warning: Attempt to read property post_type on null in \\/var\\/www\\/html\\/wp-includes\\/post.php on line 8080"
-                    },
-                    {
-                        "count": "1",
-                        "message": "PHP Warning: Attempt to read property post_type on null in \\/var\\/www\\/html\\/wp-includes\\/theme.php on line 3644"
-                    },
-                    {
-                        "count": "1",
-                        "message": "PHP Warning: Attempt to read property post_type on null in \\/var\\/www\\/html\\/wp-includes\\/theme.php on line 3870"
                     }
                 ]
             }
