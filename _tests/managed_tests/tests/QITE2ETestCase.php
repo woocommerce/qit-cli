@@ -236,6 +236,9 @@ class QITE2ETestCase extends TestCase {
 					// Pattern: dash, 10+ hex chars, then dot, then jpg/jpeg/png
 					$value = preg_replace('/-[0-9a-f]{10,}\.(jpe?g|png|webm)/i', '-HASHNORMALIZED.$1', $value);
 
+					// Patern ""e2e-api-access-1743613383248 consumer token successfully created\\n""
+					$value = preg_replace('/e2e-api-access-[0-9]{1,} consumer token successfully created\\\\n/i', 'e2e-api-access-HASHNORMALIZED consumer token successfully created\\n', $value);
+
 					// 3) Decode back to array so we can walk the structure
 					if ( $array_mode ) {
 						$value = json_decode( $value, true );
@@ -254,7 +257,7 @@ class QITE2ETestCase extends TestCase {
 								$filtered          = [];
 								$processes_console = []; // track unique "Console " lines
 
-								foreach ( $test['stdout'] as $line ) {
+								foreach ( $test['stdout'] as &$line ) {
 									if ( stripos( $line, 'Using cached file' ) !== false ) {
 										continue;
 									}
@@ -269,6 +272,23 @@ class QITE2ETestCase extends TestCase {
 										continue;
 									}
 
+									if (
+										// Look for all key substrings unique to the "400 Bad Request" + "Delete option FAILED" log
+										strpos( $line, 'apiRequestContext.post: 400 Bad Request' ) !== false
+										&& strpos( $line, 'Response text:' ) !== false
+										&& strpos( $line, 'Delete option FAILED: woocommerce_gateway_order' ) !== false
+									) {
+										// Replace the entire line with a single normalized message
+										$line = 'apiRequestContext.post: 400 Bad Request [NORMALIZED DELETE OPTION FAILED]';
+
+									} elseif (
+										// Look for the "Invalid URL" + "at setOption" log
+										strpos( $line, 'apiRequestContext.post: Invalid URL' ) !== false
+										&& strpos( $line, 'at setOption' ) !== false
+									) {
+										$line = 'apiRequestContext.post: Invalid URL [NORMALIZED SET OPTION]';
+									}
+									
 									// 3) Keep other lines.
 									$filtered[] = $line;
 								}
