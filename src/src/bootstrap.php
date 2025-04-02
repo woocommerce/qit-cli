@@ -13,6 +13,7 @@ use QIT_CLI\Commands\CreateMassTestCommands;
 use QIT_CLI\Commands\CreateRunCommands;
 use QIT_CLI\Commands\CustomTests\ScaffoldE2ECommand;
 use QIT_CLI\Commands\CustomTests\ShowReportCommand;
+use QIT_CLI\Commands\CustomTests\ValidateE2ECommand;
 use QIT_CLI\Commands\DevModeCommand;
 use QIT_CLI\Commands\Environment\DownEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
@@ -168,6 +169,7 @@ $application->add( $container->make( ConnectCommand::class ) );
 $application->add( $container->make( WooValidateZipCommand::class ) );
 $application->add( $container->make( TunnelSetupCommand::class ) );
 $application->add( $container->make( TunnelSetDefaultCommand::class ) );
+$application->add( $container->make( ValidateE2ECommand::class ) );
 
 // Environment commands.
 try {
