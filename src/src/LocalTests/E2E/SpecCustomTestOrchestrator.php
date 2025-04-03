@@ -44,15 +44,23 @@ class SpecCustomTestOrchestrator {
 	 */
 	protected $shared_setup_runner;
 
+	/**
+	 * @var QITE2EConfig
+	 */
+	protected $qit_e2e_config;
+
 	public function __construct(
 		Docker $docker,
 		LocalTestRunNotifier $local_test_run_notifier,
-		ExtensionTestRunner $extension_test_runner
+		SharedSetupRunner $shared_setup_runner,
+		ExtensionTestRunner $extension_test_runner,
+		QITE2EConfig $qit_e2e_config
 	) {
 		$this->docker                  = $docker;
 		$this->local_test_run_notifier = $local_test_run_notifier;
 		$this->extension_test_runner   = $extension_test_runner;
-		$this->shared_setup_runner     = new SharedSetupRunner( $extension_test_runner );
+		$this->shared_setup_runner     = $shared_setup_runner;
+		$this->qit_e2e_config          = $qit_e2e_config;
 	}
 
 	/**
@@ -88,8 +96,28 @@ class SpecCustomTestOrchestrator {
 			return Command::FAILURE;
 		}
 
+		// Place mu-plugins.
+		foreach ( $env_info->tests as $test_item ) {
+			// Where does this plugin’s test directory live on the host?
+			$plugin_dir = $test_item['path_in_host'];
+
+			// Load that plugin’s qit-e2e.json/yml
+			$config = $this->qit_e2e_config->load_config( $plugin_dir );
+
+			// Copy each muPlugin into /wp-content/mu-plugins
+			foreach ( $config['muPlugins'] as $relative_path ) {
+				$host_path = rtrim( $plugin_dir, '/' ) . '/' . $relative_path;
+
+				$this->docker->copy_into_docker(
+					$env_info,
+					$host_path,
+					'/var/www/html/wp-content/mu-plugins/' . basename( $relative_path )
+				);
+			}
+		}
+
 		// 2) Run shared setup for any items with action=bootstrap or test
-		$this->shared_setup_runner->run_shared_setup( $env_info, $io );
+		$this->shared_setup_runner->run_shared_setup( $env_info, $io, $this->extension_test_runner );
 
 		// 3) If user wants ONLY to bring env up (and not immediately run tests)
 		if ( $up_only ) {
@@ -113,14 +141,21 @@ class SpecCustomTestOrchestrator {
 			if ( count( $testable_items ) === 1 ) {
 				$sut_item = array_shift( $testable_items );
 
-				$io->writeln( '<comment>Running isolated setup for the SUT...</comment>' );
-				$this->extension_test_runner->run_script_if_exists(
-					$env_info,
-					$sut_item,
-					'setup.sh',
-					'SUT Setup',
-					$io
-				);
+				$sut_plugin_dir = $sut_item['path_in_host'];
+				$config         = $this->qit_e2e_config->load_config( $sut_plugin_dir );
+
+				if ( ! empty( $config['setup'] ) ) {
+					$io->writeln( '<comment>Running isolated setup for the SUT...</comment>' );
+					foreach ( $config['setup'] as $setup_script ) {
+						$this->extension_test_runner->run_script_if_exists(
+							$env_info,
+							$sut_item,
+							$setup_script,
+							'SUT Setup',
+							$io
+						);
+					}
+				}
 
 				// Export a second snapshot
 				$io->writeln( '<info>Exporting DB after SUT setup to /qit/plugin-setup-snapshot.sql</info>' );
@@ -178,7 +213,7 @@ class SpecCustomTestOrchestrator {
 		}
 
 		// 5) Shared teardown
-		$this->shared_setup_runner->run_shared_teardown( $env_info, $io );
+		$this->shared_setup_runner->run_shared_teardown( $env_info, $io, $this->extension_test_runner );
 
 		// 6) Merge CTRF + Allure
 		$this->merge_results( $env_info, $io, $this->test_result );

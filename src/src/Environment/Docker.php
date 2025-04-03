@@ -39,7 +39,11 @@ class Docker {
 		$command = [ $this->find_docker(), 'exec', '-i' ];
 
 		if ( $dev_mode ) {
-			$this->run_inside_docker( $env_info, [ '/bin/sh', '-c', 'mkdir -p /qit/cache/apk && apk update --cache-dir /qit/cache/apk && apk add --cache-dir /qit/cache/apk --progress --verbose bash less vim' ], [], '0:0', 600, $docker_image );
+			$this->run_inside_docker( $env_info, [
+				'/bin/sh',
+				'-c',
+				'mkdir -p /qit/cache/apk && apk update --cache-dir /qit/cache/apk && apk add --cache-dir /qit/cache/apk --progress --verbose bash less vim',
+			], [], '0:0', 600, $docker_image );
 			$command[] = '-e';
 			$command[] = 'PAGER=less';
 			$command[] = '-e';
@@ -270,6 +274,73 @@ class Docker {
 
 			if ( $this->output->isVerbose() ) {
 				$message .= "\n" . 'Command that was executed: ' . $process->getCommandLine();
+			}
+
+			throw new \RuntimeException( $message );
+		}
+	}
+
+	/**
+	 * Copy a file from the local filesystem into a Docker container.
+	 *
+	 * @param EnvInfo $env_info
+	 * @param string  $local_path The file path on the host filesystem.
+	 * @param string  $container_path The destination path inside the Docker container.
+	 * @param string  $image The Docker image/container to use ('php' by default).
+	 *
+	 * @return void
+	 * @throws \RuntimeException If the file does not exist locally or the copy command fails.
+	 */
+	public function copy_into_docker(
+		EnvInfo $env_info,
+		string $local_path,
+		string $container_path,
+		string $image = 'php'
+	): void {
+		// 1) Ensure local file exists
+		if ( ! file_exists( $local_path ) ) {
+			throw new \RuntimeException( "Local file $local_path does not exist." );
+		}
+
+		$docker_container = $env_info->get_docker_container( $image );
+
+		// 2) Construct the docker cp command: host -> container
+		$docker_command = [
+			$this->find_docker(),
+			'cp',
+			$local_path,
+			"{$docker_container}:{$container_path}",
+		];
+
+		$process = new Process( $docker_command );
+		$process->setTimeout( 30 );
+		$process->setIdleTimeout( 30 );
+
+		if ( $this->output->isVeryVerbose() ) {
+			$this->output->writeln( $process->getCommandLine() );
+		}
+
+		$process->run( function ( $type, $buffer ) {
+			if ( $this->output->isVerbose() ) {
+				$this->output->write( $buffer );
+			}
+		} );
+
+		if ( ! $process->isSuccessful() ) {
+			$exit_code    = $process->getExitCode();
+			$output       = $process->getOutput();
+			$error_output = $process->getErrorOutput();
+
+			$message = "Failed to copy $local_path into Docker container ($docker_container exited with $exit_code).";
+
+			if ( ! empty( $output ) ) {
+				$message .= "\n" . $output;
+			}
+			if ( ! empty( $error_output ) ) {
+				$message .= "\n" . $error_output;
+			}
+			if ( $this->output->isVerbose() ) {
+				$message .= "\n" . 'Command executed: ' . $process->getCommandLine();
 			}
 
 			throw new \RuntimeException( $message );

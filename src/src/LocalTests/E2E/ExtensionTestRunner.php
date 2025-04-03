@@ -28,12 +28,18 @@ class ExtensionTestRunner {
 	protected $test_result = null;
 
 	/**
+	 * @var QITE2EConfig
+	 */
+	protected $qit_e2e_config;
+
+	/**
 	 * Constructor
 	 *
 	 * @param Docker $docker
 	 */
-	public function __construct( Docker $docker ) {
-		$this->docker = $docker;
+	public function __construct( Docker $docker, QITE2EConfig $qit_e2e_config ) {
+		$this->docker         = $docker;
+		$this->qit_e2e_config = $qit_e2e_config;
 	}
 
 	/**
@@ -56,7 +62,9 @@ class ExtensionTestRunner {
 	 * @return int
 	 */
 	public function run_single_plugin_tests( E2EEnvInfo $env_info, array $test_item, SymfonyStyle $io, bool $is_first ) {
-		$slug = $test_item['slug'] ?? 'unknown';
+		$plugin_dir = $test_item['path_in_host'];
+		$config     = $this->qit_e2e_config->load_config( $plugin_dir );
+		$slug       = $test_item['slug'] ?? 'unknown';
 
 		if ( ! $is_first ) {
 			// 1) Restore DB
@@ -64,8 +72,16 @@ class ExtensionTestRunner {
 			$this->docker->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql' ] );
 		}
 
-		// 2) plugin-specific setup
-		$this->run_script_if_exists( $env_info, $test_item, 'setup.sh', 'Isolated Setup', $io );
+		// 3) Run $config['setup'] scripts
+		foreach ( $config['setup'] as $script ) {
+			$this->run_script_if_exists(
+				$env_info,
+				$test_item,
+				rtrim( $plugin_dir, '/' ) . '/' . $script,
+				'Isolated Setup',
+				$io
+			);
+		}
 
 		// 3) "npm install" (if needed) and "npm run qit-e2e" on the host
 		$host_path = $test_item['path_in_host'] ?? '';
@@ -131,7 +147,15 @@ class ExtensionTestRunner {
 		}
 
 		// 4) plugin teardown
-		$this->run_script_if_exists( $env_info, $test_item, 'teardown.sh', 'Plugin Teardown', $io );
+		foreach ( $config['teardown'] as $script ) {
+			$this->run_script_if_exists(
+				$env_info,
+				$test_item,
+				rtrim( $plugin_dir, '/' ) . '/' . $script,
+				'Isolated Teardown',
+				$io
+			);
+		}
 
 		// 5) Collect artifacts
 		$this->collect_plugin_artifacts( $test_item, $io );
@@ -177,13 +201,13 @@ class ExtensionTestRunner {
 			return;
 		}
 
-		$plugin_slug   = $test_item['slug'] ?? 'unknown';
-		$host_path     = $test_item['path_in_host'] ?? '';
-		$docker_dir    = $test_item['path_in_php_container'] ?? '';
-		$env_vars      = App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?: [];
-		$possible_file = rtrim( $host_path, '/' ) . '/bootstrap/' . $script_name;
+		$plugin_slug  = $test_item['slug'] ?? 'unknown';
+		$host_path    = $test_item['path_in_host'] ?? '';
+		$docker_dir   = $test_item['path_in_php_container'] ?? '';
+		$env_vars     = App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?: [];
+		$relative_dir = str_replace( $host_path, '', $script_name );
 
-		if ( ! file_exists( $possible_file ) ) {
+		if ( ! file_exists( $script_name ) ) {
 			return; // script not present, skip.
 		}
 
@@ -194,7 +218,7 @@ class ExtensionTestRunner {
 		$command_to_run = [
 			'bash',
 			'-c',
-			sprintf( 'cd %s/bootstrap && bash %s', $docker_dir, $script_name ),
+			sprintf( 'cd %s && bash %s', dirname( rtrim( $docker_dir, '/' ) . '/' . ltrim( $relative_dir, '/' ) ), basename( $script_name ) ),
 		];
 		$capture        = $this->run_command_and_capture( $env_info, $command_to_run, $env_vars );
 

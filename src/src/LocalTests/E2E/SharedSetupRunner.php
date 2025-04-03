@@ -12,17 +12,17 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class SharedSetupRunner {
 
 	/**
-	 * @var ExtensionTestRunner
+	 * @var QITE2EConfig
 	 */
-	protected $extension_test_runner;
+	protected $qit_e2e_config;
 
 	/**
 	 * Constructor
 	 *
 	 * @param ExtensionTestRunner $extension_test_runner
 	 */
-	public function __construct( ExtensionTestRunner $extension_test_runner ) {
-		$this->extension_test_runner = $extension_test_runner;
+	public function __construct( QITE2EConfig $qit_e2e_config ) {
+		$this->qit_e2e_config = $qit_e2e_config;
 	}
 
 	/**
@@ -31,7 +31,7 @@ class SharedSetupRunner {
 	 * @param mixed        $env_info
 	 * @param SymfonyStyle $io
 	 */
-	public function run_shared_setup( $env_info, SymfonyStyle $io ) {
+	public function run_shared_setup( $env_info, SymfonyStyle $io, ExtensionTestRunner $extension_test_runner ) {
 		foreach ( $env_info->tests as $test_item ) {
 			if ( empty( $test_item['action'] ) ) {
 				continue;
@@ -42,14 +42,20 @@ class SharedSetupRunner {
 				continue;
 			}
 
-			// Delegates to the ExtensionTestRunner:
-			$this->extension_test_runner->run_script_if_exists(
-				$env_info,
-				$test_item,
-				'shared-setup.sh',
-				'Shared Setup',
-				$io
-			);
+			// Load the plugin's config from its test directory
+			$plugin_dir = $test_item['path_in_host'];
+			$config     = $this->qit_e2e_config->load_config( $plugin_dir );
+
+			// Now get $config['sharedSetup']
+			foreach ( $config['sharedSetup'] as $script ) {
+				$extension_test_runner->run_script_if_exists(
+					$env_info,
+					$test_item,
+					rtrim( $plugin_dir, '/' ) . '/' . $script,
+					'Shared Setup',
+					$io
+				);
+			}
 		}
 	}
 
@@ -59,7 +65,7 @@ class SharedSetupRunner {
 	 * @param mixed        $env_info
 	 * @param SymfonyStyle $io
 	 */
-	public function run_shared_teardown( $env_info, SymfonyStyle $io ) {
+	public function run_shared_teardown( $env_info, SymfonyStyle $io, ExtensionTestRunner $extension_test_runner ) {
 		foreach ( $env_info->tests as $test_item ) {
 			if ( empty( $test_item['action'] ) ) {
 				continue;
@@ -70,14 +76,19 @@ class SharedSetupRunner {
 				continue;
 			}
 
-			// Delegates to the ExtensionTestRunner:
-			$this->extension_test_runner->run_script_if_exists(
-				$env_info,
-				$test_item,
-				'shared-teardown.sh',
-				'Shared Teardown',
-				$io
-			);
+			// Load the plugin's config from its test directory
+			$plugin_dir = $test_item['path_in_host'];
+			$config     = $this->qit_e2e_config->load_config( $plugin_dir );
+
+			foreach ( $config['sharedTeardown'] as $script ) {
+				$extension_test_runner->run_script_if_exists(
+					$env_info,
+					$test_item,
+					rtrim( $plugin_dir, '/' ) . '/' . $script,
+					'Shared Teardown',
+					$io
+				);
+			}
 		}
 	}
 }

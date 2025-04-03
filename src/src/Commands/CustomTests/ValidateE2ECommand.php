@@ -109,7 +109,7 @@ class ValidateE2ECommand extends Command {
 		}
 
 		// 4. If NO config file, check for default bootstrap scripts (optional, but recommended).
-		//    The spec says it *falls back* to these if no config is present, so let's check for existence:
+		// The spec says it *falls back* to these if no config is present, so let's check for existence:
 		if ( ! $hasQitE2EConfig ) {
 			$bootstrapDir = $directory . '/bootstrap';
 			$defaultFiles = [
@@ -133,7 +133,7 @@ class ValidateE2ECommand extends Command {
 		}
 
 		// 5. If config file is present, check that listed script/plugin files actually exist
-		//    (We won't parse outside references, just check existence.)
+		// (We won't parse outside references, just check existence.)
 		if ( $hasQitE2EConfig && $configIsValid && is_array( $configData ) ) {
 			$keysToCheck = [ 'sharedSetup', 'setup', 'teardown', 'sharedTeardown', 'muPlugins' ];
 			foreach ( $keysToCheck as $key ) {
@@ -183,9 +183,9 @@ class ValidateE2ECommand extends Command {
 			$output->writeln( "{$mark} {$check['label']} - {$check['info']}" );
 			if ( ! $check['pass'] ) {
 				if ( $check['severity'] === 'must' ) {
-					$errorCount ++;
+					++$errorCount;
 				} else {
-					$warningCount ++;
+					++$warningCount;
 				}
 			}
 		}
@@ -202,7 +202,7 @@ class ValidateE2ECommand extends Command {
 			return Command::SUCCESS;
 		}
 
-		$output->writeln( "<info>All checks passed (required + optional)!</info>" );
+		$output->writeln( '<info>All checks passed (required + optional)!</info>' );
 
 		return Command::SUCCESS;
 	}
