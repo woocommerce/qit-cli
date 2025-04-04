@@ -2874,7 +2874,7 @@
                             "suite": "consumer token setup > ..\\/fixtures\\/token.setup.js",
                             "attachments": [],
                             "stdout": [
-                                "e2e-api-access-1743608626964 consumer token successfully created\\n"
+                                "e2e-api-access-HASHNORMALIZED consumer token successfully created\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -13679,7 +13679,7 @@
                 "generic": [
                     {
                         "count": "1",
-                        "message": "PHP Deprecated: Function Automattic\\\\WooCommerce\\\\Admin\\\\WCAdminHelper::is_store_page is deprecated since version 9.8.0! Use is_current_page_store_page instead. in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6114"
+                        "message": "PHP Deprecated: Function Automattic\\\\WooCommerce\\\\Admin\\\\WCAdminHelper::is_store_page is deprecated since version 9.8.0! Use is_current_page_store_page instead. in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6121"
                     },
                     {
                         "count": "1",

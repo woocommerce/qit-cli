@@ -2874,7 +2874,7 @@
                             "suite": "consumer token setup > ..\\/fixtures\\/token.setup.js",
                             "attachments": [],
                             "stdout": [
-                                "e2e-api-access-1743608614380 consumer token successfully created\\n"
+                                "e2e-api-access-HASHNORMALIZED consumer token successfully created\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -12630,6 +12630,34 @@
                             "flaky": false,
                             "steps": [
                                 {
+                                    "name": "Create variable product for individual edit test",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Create variable product for bulk edit test",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Create variable product for \\"delete all\\" test",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Create variable product for \\"manage stock\\" test",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Create variable product for \\"variation defaults\\" test",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Create variable product with 1 variation for \\"remove variation\\" test",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Hide variable product tour",
+                                    "status": "passed"
+                                },
+                                {
                                     "name": "Go to the \\"Edit product\\" page.",
                                     "status": "passed"
                                 },
@@ -13614,7 +13642,7 @@
                             "suite": "e2e > wp-core\\/create-page.spec.js > Can create a new page",
                             "attachments": [],
                             "stdout": [
-                                "Deleting page 653\\n"
+                                "Deleting page 674\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -13637,7 +13665,7 @@
                             "suite": "e2e > wp-core\\/create-post.spec.js > Can create a new post",
                             "attachments": [],
                             "stdout": [
-                                "Deleting post 655\\n"
+                                "Deleting post 676\\n"
                             ],
                             "stderr": [],
                             "extra": {
