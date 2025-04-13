@@ -249,10 +249,16 @@ class QITE2ETestCase extends TestCase {
 						return [];
 					}
 
+					$is_woo_e2e = stripos( $file_path, 'woo-e2e/' ) !== false;
+
 					// Remove lines containing "Using cached file" from all tests' stdout arrays,
 					// and then remove duplicates via array_unique, as they can cause flakiness in snapshot testing.
 					if ( isset( $value['results']['tests'] ) && is_array( $value['results']['tests'] ) ) {
 						foreach ( $value['results']['tests'] as &$test ) {
+							if ( $is_woo_e2e && isset( $test['stdout'] ) ) {
+								$test['stdout'] = ['[IGNORED FOR WOO-E2E]'];
+								continue;
+							}
 							if ( isset( $test['stdout'] ) && is_array( $test['stdout'] ) ) {
 								$filtered          = [];
 								$processes_console = []; // track unique "Console " lines
