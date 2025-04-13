@@ -2874,7 +2874,7 @@
                             "suite": "consumer token setup > ..\\/fixtures\\/token.setup.js",
                             "attachments": [],
                             "stdout": [
-                                "e2e-api-access-1743608614380 consumer token successfully created\\n"
+                                "e2e-api-access-HASHNORMALIZED consumer token successfully created\\n"
                             ],
                             "stderr": [],
                             "extra": {
