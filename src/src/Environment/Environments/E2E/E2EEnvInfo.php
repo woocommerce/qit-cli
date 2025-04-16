@@ -57,4 +57,10 @@ class E2EEnvInfo extends EnvInfo {
 
 	/** @var string The playwright test tag to be executed*/
 	public $pw_test_tag = '';
+
+	/** @var string The ZAP container name. */
+	public $zap_container;
+
+	/** @var string The ZAP proxy URL. */
+	public $zap_proxy;
 }

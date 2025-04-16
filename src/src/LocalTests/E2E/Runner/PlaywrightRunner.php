@@ -73,6 +73,12 @@ class PlaywrightRunner extends E2ERunner {
 			}
 		}
 
+		// Special setting for running security checks on Playwright tests through Zaproxy.
+		if ( getenv( 'QIT_SECURITY_CHECKS_PROXY' ) ) {
+			$env_info->playwright_config['use']['ignoreHTTPSErrors'] = true;
+			$env_info->playwright_config['use']['proxy']['server'] = $env_info->zap_proxy;
+		}
+
 		// Generate playwright-config.
 		$process = new Process( [ PHP_BINARY, $env_info->temporary_env . '/playwright/playwright-config-generator.php' ] );
 		$process->setEnv( [
@@ -449,6 +455,74 @@ class PlaywrightRunner extends E2ERunner {
 		}
 
 		$exit_status_code = $playwright_process->getExitCode();
+
+		/*
+		 * Download ZAP report if security checks were enabled.
+		 */
+		if ( getenv( 'QIT_SECURITY_CHECKS_PROXY' ) && $exit_status_code !== 143 ) {
+			$this->output->writeln( '<info>Downloading ZAP reports...</info>' );
+			
+			// Generate the report in JSON format
+			$generate_report_process = new Process( [
+				App::make( Docker::class )->find_docker(),
+				'exec',
+				$env_info->zap_container,
+				'curl',
+				'-s',
+				'-X',
+				'GET',
+				"{$env_info->zap_proxy}/JSON/reports/action/generate/?title=Zap+Report&template=traditional-json&theme=&description=&contexts=&sites=&sections=&includedConfidences=&includedRisks=&reportFileName=zap-report&reportFileNamePattern=&reportDir=&display="
+			] );
+
+			$generate_report_process->run();
+
+			if ( $generate_report_process->isSuccessful() && isset( json_decode( $generate_report_process->getOutput(), true )['generate'] ) ) {
+				$report_types = [
+					'html' => '/OTHER/core/other/htmlreport/',
+					'json' => '/OTHER/core/other/jsonreport/'
+				];
+
+				$success = true;
+				foreach ( $report_types as $type => $endpoint ) {
+					// Download report
+					$download_process = new Process( [
+						App::make( Docker::class )->find_docker(),
+						'exec',
+						$env_info->zap_container,
+						'curl',
+						'-s',
+						'-o',
+						"/tmp/zap-report.{$type}",
+						"{$env_info->zap_proxy}{$endpoint}",
+					] );
+
+					$download_process->run();
+
+					if ( $download_process->isSuccessful() ) {
+						// Copy report to host
+						$copy_process = new Process( [
+							App::make( Docker::class )->find_docker(),
+							'cp',
+							"{$env_info->zap_container}:/tmp/zap-report.{$type}",
+							$results_dir . "/zap-report.{$type}",
+						] );
+
+						$copy_process->run();
+						$success = $success && $copy_process->isSuccessful();
+					} else {
+						$success = false;
+					}
+				}
+
+				if ( $success ) {
+					$this->output->writeln( '<info>ZAP reports downloaded successfully.</info>' );
+				} else {
+					$this->output->writeln( '<error>Failed to download or copy ZAP reports.</error>' );
+				}
+			} else {
+				$this->output->writeln( '<error>Failed to generate ZAP report.</error>' );
+			}
+		}
 
 		/*
 		 * Upload test media if test not aborted.

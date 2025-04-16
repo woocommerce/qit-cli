@@ -326,6 +326,28 @@ abstract class Environment {
 		$output              = $output ?? App::make( OutputInterface::class );
 		$environment_monitor = App::make( EnvironmentMonitor::class );
 
+		if ( getenv( 'QIT_SECURITY_CHECKS_PROXY' ) ) {
+			$zap_container_name = "qit_env_zap_{$env_info->env_id}";
+			try {
+				$down_zap_process = new Process( [
+					App::make( Docker::class )->find_docker(),
+					'rm',
+					'-f',
+					$zap_container_name,
+				] );
+
+				$down_zap_process->run();
+
+				if ( $output->isVerbose() ) {
+					$output->writeln( "Removed Zaproxy container: $zap_container_name" );
+				}
+			} catch ( \Exception $e ) {
+				if ( $output->isVerbose() ) {
+					$output->writeln( "<comment>Failed to remove Zaproxy container: {$e->getMessage()}</comment>" );
+				}
+			}
+		}
+
 		if ( ! file_exists( $env_info->temporary_env ) ) {
 			if ( $output->isVerbose() ) {
 				$output->writeln( sprintf( 'Tried to stop environment %s, but it does not exist.', $env_info->temporary_env ) );

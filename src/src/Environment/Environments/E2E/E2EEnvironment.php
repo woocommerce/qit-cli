@@ -124,6 +124,46 @@ class E2EEnvironment extends Environment {
 			);
 			$theme_activation->auto_activate_themes();
 		}
+
+		// Install Zaproxy for E2E security checks.
+		if ( getenv( 'QIT_SECURITY_CHECKS_PROXY' ) ) {
+			$this->output->writeln( '<info>Setting up Zaproxy for E2E security checks...</info>' );
+			$zap_image = 'zaproxy/zap-stable';
+			$zap_container_name = "qit_env_zap_{$this->env_info->env_id}";
+			$zap_port = 8079;
+
+			// Pull the ZAP image if needed
+			App::make( Docker::class )->maybe_pull_image( $zap_image );
+
+			// Run the ZAP container.
+			// Start ZAP container
+			$process = new Process([
+				App::make(Docker::class)->find_docker(),
+				'run',
+				'-d',
+				'-p', "{$zap_port}:{$zap_port}",
+				"--name=$zap_container_name",
+				"--network={$this->env_info->docker_network}",
+				$zap_image,
+				'zap.sh',
+				'-daemon',
+				'-host', '0.0.0.0',
+				'-port', $zap_port,
+				'-config', 'api.addrs.addr.name=.*',
+				'-config', 'api.addrs.addr.regex=true',
+				'-config', 'api.disablekey=true'
+			]);
+
+			$process->setTimeout(300);
+      $process->run();
+
+			// Store ZAP info in environment
+			$this->env_info->zap_container = $zap_container_name;
+			$this->env_info->zap_proxy = "http://host.docker.internal:$zap_port";
+
+			// Wait for ZAP to be ready
+			$this->wait_for_zap_ready($zap_container_name);
+		}
 	}
 
 	protected function additional_output(): void {
@@ -253,5 +293,39 @@ class E2EEnvironment extends Environment {
 		$default_volumes['/var/www/html'] = $named_volume;
 
 		return $default_volumes;
+	}
+
+	protected function wait_for_zap_ready( string $zap_container_name, int $timeout = 120 ): void {
+		$this->output->writeln( '<info>Waiting for Zaproxy to be ready...</info>' );
+		
+		$start = time();
+		while ( ( time() - $start ) < $timeout ) {
+			// Simple check: try to get ZAP version
+			$check_process = new Process( [
+				App::make( Docker::class )->find_docker(),
+				'exec',
+				$zap_container_name,
+				'curl',
+				'-s',
+				'-L',
+				'--fail',
+				"{$this->env_info->zap_proxy}/JSON/core/view/version/"
+			] );
+			
+			$check_process->run();
+			
+			if ( $check_process->isSuccessful() ) {
+				$this->output->writeln( '<info>Zaproxy is ready!</info>' );
+				return;
+			}
+			
+			sleep( 2 );
+		}
+		
+		throw new \RuntimeException( sprintf(
+			'Zaproxy container (%s) failed to start within %d seconds',
+			$zap_container_name,
+			$timeout
+	) );
 	}
 }
