@@ -37,6 +37,8 @@ jobs:
         run: composer install
 
       - name: Run Orchestration Tests
+        env:
+          QIT_SELF_TESTS: 1
         run: |
           cd _tests/orchestration
           php ../../src/qit-cli.php run:e2e woocommerce-amazon-s3-storage -v
