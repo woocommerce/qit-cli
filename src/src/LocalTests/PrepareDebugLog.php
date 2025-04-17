@@ -8,6 +8,9 @@ use QIT_CLI\IO\Output;
 use SplFileObject;
 
 class PrepareDebugLog {
+	/**
+	 * @var string $sut_slug
+	 */
 	protected $sut_slug = '';
 
 	/**

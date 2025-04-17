@@ -8,6 +8,9 @@ class PrepareQMLog {
 	/** @var OutputInterface */
 	protected $output;
 
+	/**
+	 * @var string $sut_slug
+	 */
 	protected $sut_slug = '';
 
 	public function __construct( OutputInterface $output ) {
@@ -225,11 +228,18 @@ class PrepareQMLog {
 
 					// End compatibility extension set issues.
 
+					$trace = $info['trace'] ?? [];
+
+					if ( is_string( $trace ) ) {
+						$trace = json_decode( $trace, true );
+						$trace = is_array( $trace ) ? $trace : [];
+					}
+
 					$info_summary = [
 						'message'   => $info['message'],
 						'type'      => $type,
 						'file_line' => str_replace( '/var/www/html/', '', $info['file'] ) . ':' . $info['line'],
-						'traces'    => $this->get_trace_summary( $info['trace'] ),
+						'traces'    => $this->get_trace_summary( $trace ),
 					];
 
 					// Ensures that we don't have duplicate entries.
