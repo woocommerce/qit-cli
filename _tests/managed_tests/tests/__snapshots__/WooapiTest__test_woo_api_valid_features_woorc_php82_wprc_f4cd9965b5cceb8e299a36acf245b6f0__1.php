@@ -7249,10 +7249,6 @@
                     {
                         "count": "500",
                         "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
-                    },
-                    {
-                        "count": "1",
-                        "message": "WordPress database error Table \'wordpress.wp_wc_tax_rate_classes\' doesn\'t exist for query \\n\\t\\t\\t\\tSELECT * FROM wp_wc_tax_rate_classes ORDER BY name;\\n\\n\\t\\t\\t\\t made by include(\'phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/php\\/boot-phar.php\'), include(\'phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/wp-cli.php\'), WP_CLI\\\\bootstrap, WP_CLI\\\\Bootstrap\\\\LaunchRunner->process, WP_CLI\\\\Runner->start, WP_CLI\\\\Runner->run_command_and_exit, WP_CLI\\\\Runner->run_command, WP_CLI\\\\Dispatcher\\\\Subcommand->invoke, call_user_func, WP_CLI\\\\Dispatcher\\\\CommandFactory::WP_CLI\\\\Dispatcher\\\\{closure}, call_user_func, Plugin_Command->activate, activate_plugin, plugin_sandbox_scrape, include_once(\'\\/plugins\\/woocommerce\\/woocommerce.php\'), WC, WooCommerce::instance, WooCommerce->__construct, WooCommerce->includes, include_once(\'\\/plugins\\/woocommerce\\/includes\\/class-wc-cli.php\'), WC_CLI->__construct, WC_CLI->hooks, WP_CLI::add_hook, WC_CLI_Runner::after_wp_load, do_action(\'rest_api_init\'), WP_Hook->do_action, WP_Hook->apply_filters, Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init->rest_api_init, WC_REST_Taxes_V1_Controller->register_routes, Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Taxes->get_collection_params, WC_REST_Taxes_V1_Controller->get_collection_params, WP_REST_Controller->get_context_param, WC_REST_Taxes_Controller->get_item_schema, WC_REST_Taxes_V1_Controller->get_item_schema, WC_Tax::get_tax_class_slugs, WC_Tax::get_tax_rate_classes"
                     }
                 ]
             }
