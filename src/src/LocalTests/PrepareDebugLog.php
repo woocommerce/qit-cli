@@ -8,6 +8,17 @@ use QIT_CLI\IO\Output;
 use SplFileObject;
 
 class PrepareDebugLog {
+	protected $sut_slug = '';
+
+	/**
+	 * Sets the SUT slug.
+	 *
+	 * @param string $sut_slug
+	 */
+	public function set_sut_slug( string $sut_slug ): void {
+		$this->sut_slug = $sut_slug;
+	}
+
 	public function prepare_debug_log( string $debug_log_file, string $new_debug_log_file, E2EEnvInfo $env_info ): void {
 		$sut_slug = $env_info->sut_slug;
 
@@ -21,6 +32,10 @@ class PrepareDebugLog {
 
 			while ( $debug_log->valid() ) {
 				$line = $debug_log->current();
+
+				// Strip HTML tags.
+				$line = strip_tags( $line );
+
 				$debug_log->next();
 
 				if (
@@ -66,6 +81,31 @@ class PrepareDebugLog {
 					&& ! $has_sut_slug_in_error
 				) {
 					continue;
+				}
+
+				/*
+				 * Notices coming from Query Monitor 3.17.0.
+				 * @todo: Remove after upgrading QM to 3.17.2 or later.
+				 * 3.17.2 has a bug, so we need to wait until 3.17.3 at least.
+				 * @see https://github.com/Automattic/compatibility-dashboard/pull/1206#issuecomment-2636908814
+				 * @see https://wordpress.org/support/topic/for-some-reason-fatal-error-stopped-being-logged-after-3-17-1-and-3-17-2/#new-topic-0
+				 */
+				if ( $this->sut_slug !== 'query-monitor' ) {
+					if ( stripos( $line, 'setted_site_transient is deprecated' ) !== false ) {
+						continue;
+					}
+					if ( stripos( $line, 'setted_transient is deprecated' ) !== false ) {
+						continue;
+					}
+				}
+
+				// Hide "translation loading too early" for plugins that are not the SUT.
+				if ( preg_match( '/translation loading for the (.*) domain was triggered too early/i', $line, $matches ) && ! empty( $matches[1] ) ) {
+					$plugin_slug = strtolower( $matches[1] );
+
+					if ( $plugin_slug !== $sut_slug ) {
+						continue;
+					}
 				}
 
 				// Some compatbility extension set issues.

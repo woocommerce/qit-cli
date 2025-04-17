@@ -8,8 +8,19 @@ class PrepareQMLog {
 	/** @var OutputInterface */
 	protected $output;
 
+	protected $sut_slug = '';
+
 	public function __construct( OutputInterface $output ) {
 		$this->output = $output;
+	}
+
+	/**
+	 * Sets the SUT slug.
+	 *
+	 * @param string $sut_slug
+	 */
+	public function set_sut_slug( string $sut_slug ): void {
+		$this->sut_slug = $sut_slug;
 	}
 
 	/**
@@ -180,12 +191,36 @@ class PrepareQMLog {
 			foreach ( $logs as $type => $type_logs ) {
 				foreach ( $type_logs as $info ) {
 					// Ignore some compatbility extension set issues.
+					$info['message'] = strip_tags( $info['message'] );
 
 					// Ignore a deprecation warning from Jetpack about itself.
 					$is_jetpack_geo_deprecation = stripos( $info['message'], 'Class Jetpack_Geo_Location is' ) !== false;
 
 					if ( $is_jetpack_geo_deprecation ) {
 						continue;
+					}
+
+					/*
+					 * Notices coming from Query Monitor 3.17.0.
+					 * @todo: Remove after upgrading QM to 3.17.2 or later.
+					 * 3.17.2 has a bug, so we need to wait until 3.17.3 at least.
+					 * @see https://github.com/Automattic/compatibility-dashboard/pull/1206#issuecomment-2636908814
+					 * @see https://wordpress.org/support/topic/for-some-reason-fatal-error-stopped-being-logged-after-3-17-1-and-3-17-2/#new-topic-0
+					 */
+					if ( stripos( $info['message'], 'setted_site_transient is deprecated' ) !== false ) {
+						continue;
+					}
+					if ( stripos( $info['message'], 'setted_transient is deprecated' ) !== false ) {
+						continue;
+					}
+
+					// Hide "translation loading too early" for plugins that are not the SUT.
+					if ( preg_match( '/translation loading for the (.*) domain was triggered too early/i', $info['message'], $matches ) && ! empty( $matches[1] ) ) {
+						$plugin_slug = strtolower( $matches[1] );
+
+						if ( $plugin_slug !== $this->sut_slug ) {
+							continue;
+						}
 					}
 
 					// End compatibility extension set issues.
