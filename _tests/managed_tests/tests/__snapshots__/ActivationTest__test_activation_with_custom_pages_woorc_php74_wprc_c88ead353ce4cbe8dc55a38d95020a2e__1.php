@@ -566,19 +566,7 @@
                 "debug_log": [
                     {
                         "count": "1",
-                        "message": "PHP Deprecated: Hook setted_transient is deprecated since version 6.8.0! Use set_transient instead. in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6121"
-                    },
-                    {
-                        "count": "1",
                         "message": "PHP Fatal error: Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(260): do_action(\'toplevel_page_p...\')\\n#4 {main}\\n thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\n"
-                    },
-                    {
-                        "count": "2",
-                        "message": "PHP Notice: Function _load_textdomain_just_in_time was called incorrectly. Translation loading for the query-monitor domain was triggered too early. This is usually an indicator for some code in the plugin or theme running too early. Translations should be loaded at the init action or later. Please see Debugging in WordPress for more information. (This message was added in version 6.7.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6121"
-                    },
-                    {
-                        "count": "3",
-                        "message": "PHP Notice: Function _load_textdomain_just_in_time was called incorrectly. Translation loading for the woocommerce domain was triggered too early. This is usually an indicator for some code in the plugin or theme running too early. Translations should be loaded at the init action or later. Please see Debugging in WordPress for more information. (This message was added in version 6.7.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6121"
                     },
                     {
                         "count": "1",

@@ -465,18 +465,6 @@
                     {
                         "count": "14",
                         "message": "PHP Deprecated: Function utf8_encode() is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 37"
-                    },
-                    {
-                        "count": "1",
-                        "message": "PHP Deprecated: Hook setted_transient is deprecated since version 6.8.0! Use set_transient instead. in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6121"
-                    },
-                    {
-                        "count": "2",
-                        "message": "PHP Notice: Function _load_textdomain_just_in_time was called incorrectly. Translation loading for the query-monitor domain was triggered too early. This is usually an indicator for some code in the plugin or theme running too early. Translations should be loaded at the init action or later. Please see Debugging in WordPress for more information. (This message was added in version 6.7.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6121"
-                    },
-                    {
-                        "count": "3",
-                        "message": "PHP Notice: Function _load_textdomain_just_in_time was called incorrectly. Translation loading for the woocommerce domain was triggered too early. This is usually an indicator for some code in the plugin or theme running too early. Translations should be loaded at the init action or later. Please see Debugging in WordPress for more information. (This message was added in version 6.7.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6121"
                     }
                 ]
             }
