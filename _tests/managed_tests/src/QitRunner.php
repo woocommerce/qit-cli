@@ -1,5 +1,6 @@
 <?php
 
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 
@@ -152,13 +153,15 @@ class QitRunner {
 				$t['test_run_id'] = rand( 100000, 999999 );
 			}
 
+			$non_json_output_file = $t['non_json_output_file'] ?? tempnam( sys_get_temp_dir(), 'qit_non_json_' );
+
 			$t['env'] = [
 				'QIT_TEST_PATH'            => $t['path'],
 				'QIT_TEST_TYPE'            => $test_type,
 				'QIT_TEST_FUNCTION_NAME'   => $t['test_function_name'],
 				'QIT_RAN_TEST'             => false,
 				'QIT_REMOVE_FROM_SNAPSHOT' => $t['remove_from_snapshot'],
-				'QIT_NON_JSON_OUTPUT'      => $t['non_json_output_file'] ?? tempnam( sys_get_temp_dir(), 'qit_non_json_' ),
+				'QIT_NON_JSON_OUTPUT'      => $non_json_output_file,
 				'QIT_POLL_INTERVAL'        => 15,
 			];
 
@@ -251,8 +254,26 @@ class QitRunner {
 		maybe_echo( "\nRunning command: " . $qit_process->getCommandLine() . "\n" );
 		$qit_process->setTimeout( null );
 
+		$non_json_output_file = $t['non_json_output_file'] ?? tempnam( sys_get_temp_dir(), 'qit_non_json_' );
+
+		$env = $qit_process->getEnv();
+		$env['QIT_NON_JSON_OUTPUT'] = $non_json_output_file;
+		$qit_process->setEnv( $env );
+
 		$this->add_task_id_to_process( $qit_process, $t );
-		$qit_process->mustRun();
+		try {
+			$qit_process->mustRun();
+		} catch (ProcessFailedException $e) {
+			// On failure, let's see if there's debug output in that file
+			if ( file_exists( $non_json_output_file ) ) {
+				$all_output_json = file_get_contents( $non_json_output_file );
+				if ( ! empty( $all_output_json ) ) {
+					echo "\nAll output:\n================\n" . $all_output_json . "\n";
+				}
+			}
+			// Re-throw the exception so it behaves like mustRun() normally would
+			throw $e;
+		}
 
 		$output = trim( $qit_process->getOutput() );
 		$this->logger->log( "Output of run:{$test_type}: {$output}" );
@@ -279,13 +300,15 @@ class QitRunner {
 		$t['timeout_in_seconds'] = $timeout_settings['timeout_in_seconds'];
 		$t['poll_interval']      = $timeout_settings['poll_interval'];
 
+		$non_json_output_file = $t['non_json_output_file'] ?? tempnam( sys_get_temp_dir(), 'qit_non_json_' );
+
 		$t['env'] = [
 			'QIT_TEST_PATH'            => $t['path'],
 			'QIT_TEST_TYPE'            => $test_type,
 			'QIT_TEST_FUNCTION_NAME'   => $t['test_function_name'],
 			'QIT_RAN_TEST'             => false,
 			'QIT_REMOVE_FROM_SNAPSHOT' => $t['remove_from_snapshot'],
-			'QIT_NON_JSON_OUTPUT'      => $t['non_json_output_file'] ?? tempnam( sys_get_temp_dir(), 'qit_non_json_' ),
+			'QIT_NON_JSON_OUTPUT'      => $non_json_output_file,
 			'QIT_POLL_INTERVAL'        => $t['poll_interval'],
 		];
 
