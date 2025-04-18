@@ -41,8 +41,9 @@ class PluginDependencies {
 	 *
 	 * @return array{
 	 *     plugin: array<string>,
+	 *     theme: array<string>,
 	 *     php_extension: array<string>,
-	 * } The dependencies of the plugins.
+	 * } The dependencies of the extension.
 	 */
 	private function get_plugin_and_php_ext_dependencies( int $woo_id, array $additional_woo_extension_ids ): array {
 		$cache_key = sprintf( 'plugins_%s_%s_v2', $woo_id, md5( implode( ',', $additional_woo_extension_ids ) ) );
@@ -84,11 +85,11 @@ class PluginDependencies {
 		}
 
 		return [
-			'plugin'        => $response['plugins'], // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
-			'php_extension' => $response['php_extensions'], // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
+			'plugin'        => $response['plugins'],         // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
+			'theme'         => $response['themes'] ?? [],    // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
+			'php_extension' => $response['php_extensions'],  // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
 		];
 	}
-
 
 	/**
 	 * Enrich plugins and themes with their plugin dependencies.
@@ -99,13 +100,16 @@ class PluginDependencies {
 	 *
 	 * @return array{
 	 *     plugin: array<Extension>,
+	 *     theme: array<Extension>,
 	 *     php_extension: array<string>
 	 * }
 	 */
 	public function get_dependencies( array $plugins, array $themes, string $dependencies_mode ): array {
 		if ( $dependencies_mode === self::DEPENDENCY_MODES['env_only']['none'] ) {
+			// Always include 'theme' => [] so the array shape matches the docblock.
 			return [
 				'plugin'        => [],
+				'theme'         => [],
 				'php_extension' => [],
 			];
 		}
@@ -116,19 +120,19 @@ class PluginDependencies {
 			if ( ! isset( $ext->wccom_id ) ) {
 				continue;
 			}
-
 			if ( ! $ext->wccom_id ) {
 				continue;
 			}
-
 			$woo_extension_ids[] = $ext->wccom_id;
 		}
 
 		$woo_extension_ids = array_unique( $woo_extension_ids );
 
 		if ( empty( $woo_extension_ids ) ) {
+			// Always include 'theme' => [] so the array shape matches the docblock.
 			return [
 				'plugin'        => [],
+				'theme'         => [],
 				'php_extension' => [],
 			];
 		}
@@ -150,12 +154,28 @@ class PluginDependencies {
 			}
 		}
 
+		$themes = [];
+		foreach ( $dependencies_data['theme'] as $theme_slug ) {
+			$exists = array_filter( $plugins, function ( $ext ) use ( $theme_slug ) {
+				return $ext->slug === $theme_slug;
+			} );
+
+			if ( empty( $exists ) ) {
+				$t        = $this->parser->parse_extensions( [ $theme_slug ], 'theme', $dependencies_mode );
+				$themes[] = array_shift( $t );
+			}
+		}
+
 		foreach ( $plugins as $plugin ) {
 			$plugin->priority = Extension::PRIORITY_LOW;
+		}
+		foreach ( $themes as $theme ) {
+			$theme->priority = Extension::PRIORITY_LOW;
 		}
 
 		return [
 			'plugin'        => $plugins,
+			'theme'         => $themes,
 			'php_extension' => $dependencies_data['php_extension'],
 		];
 	}
@@ -180,9 +200,28 @@ class PluginDependencies {
 				}
 			}
 
-			// If not found, add.
 			if ( $found_index === null ) {
 				$existing_plugins[] = $dep_ext;
+			}
+		}
+	}
+
+	/**
+	 * @param array<Extension> $new_deps
+	 * @param array<Extension> $existing_themes
+	 */
+	public function maybe_add_theme_dependencies( array $new_deps, array &$existing_themes ): void {
+		foreach ( $new_deps as $dep_ext ) {
+			$found_index = null;
+			foreach ( $existing_themes as $i => $existing_ext ) {
+				if ( $existing_ext->slug === $dep_ext->slug ) {
+					$found_index = $i;
+					break;
+				}
+			}
+
+			if ( $found_index === null ) {
+				$existing_themes[] = $dep_ext;
 			}
 		}
 	}

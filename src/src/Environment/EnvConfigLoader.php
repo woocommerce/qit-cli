@@ -110,6 +110,9 @@ class EnvConfigLoader {
 		// Merge plugins dependencies with existing plugins array.
 		$this->dependencies->maybe_add_plugin_dependencies( $deps['plugin'], $env_config['plugin'] );
 
+		// Theme.
+		$this->dependencies->maybe_add_theme_dependencies( $deps['theme'], $env_config['theme'] );
+
 		if ( empty( $env_config['php_extension'] ) ) {
 			$env_config['php_extension'] = [];
 		}

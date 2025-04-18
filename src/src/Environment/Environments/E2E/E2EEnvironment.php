@@ -115,15 +115,18 @@ class E2EEnvironment extends Environment {
 			App::make( PluginActivationReportRenderer::class )->render_php_activation_report( $this->env_info, $activation_output );
 		}
 
+		$theme_activation = new ThemeActivation(
+			$this->env_info,
+			$this->docker,
+			$this->output
+		);
+
 		// Activate theme.
 		if ( ! $this->skip_activating_themes ) {
-			$theme_activation = new ThemeActivation(
-				$this->env_info,
-				$this->docker,
-				$this->output
-			);
 			$theme_activation->auto_activate_themes();
 		}
+
+		$theme_activation->maybe_activate_theme_that_is_dependency_of_sut();
 	}
 
 	protected function additional_output(): void {
