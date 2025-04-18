@@ -5,7 +5,6 @@ namespace QIT_CLI\Commands\Environment;
 use Dotenv\Dotenv;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
-use QIT_CLI\Environment\ExtensionDownload\DependencyDiscover;
 use QIT_CLI\ExtensionSetResolver;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
@@ -33,17 +32,13 @@ class UpEnvironmentCommand extends DynamicCommand {
 	/** @var TunnelRunner */
 	protected $tunnel_runner;
 
-	/** @var DependencyDiscover */
-	protected $dependency_discover;
-
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	public function __construct( E2EEnvironment $e2e_environment, Cache $cache, OutputInterface $output, TunnelRunner $tunnel_runner, DependencyDiscover $dependency_discover ) {
-		$this->e2e_environment     = $e2e_environment;
-		$this->cache               = $cache;
-		$this->output              = $output;
-		$this->tunnel_runner       = $tunnel_runner;
-		$this->dependency_discover = $dependency_discover;
+	public function __construct( E2EEnvironment $e2e_environment, Cache $cache, OutputInterface $output, TunnelRunner $tunnel_runner ) {
+		$this->e2e_environment = $e2e_environment;
+		$this->cache           = $cache;
+		$this->output          = $output;
+		$this->tunnel_runner   = $tunnel_runner;
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
@@ -276,15 +271,12 @@ HELP
 			$env_info = App::make( ExtensionSetResolver::class )->resolve( $env_info, $options_to_env_info );
 		}
 
-		$this->dependency_discover->discover_dependencies( $env_info );
-
 		if ( $tunnel !== 'no_tunnel' ) {
 			try {
 				$this->tunnel_runner->check_tunnel_support( $tunnel );
 				$env_info->tunnel = true;
 			} catch ( \Exception $e ) {
 				$output->writeln( '<error>' . $e->getMessage() . '</error>' );
-
 				return Command::FAILURE;
 			}
 		} else {
