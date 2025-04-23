@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "401 total, 381 passed, 0 failed, 20 skipped.",
+            "test_summary": "401 total, 383 passed, 0 failed, 18 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -51,12 +51,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 89,
-                "numPendingTestSuites": 13,
+                "numPassedTestSuites": 91,
+                "numPendingTestSuites": 11,
                 "numTotalTestSuites": 102,
                 "numFailedTests": 0,
-                "numPassedTests": 381,
-                "numPendingTests": 20,
+                "numPassedTests": 383,
+                "numPendingTests": 18,
                 "numTotalTests": 401,
                 "testResults": [
                     {
@@ -2037,7 +2037,7 @@
                     {
                         "file": "product\\/block-editor\\/product-inventory-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "can update sku": [
                                 {
@@ -2060,7 +2060,7 @@
                             "can limit purchases": [
                                 {
                                     "title": "can limit purchases",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2161,7 +2161,7 @@
                     {
                         "file": "product\\/product-edit.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "can edit a product and save the changes": [
                                 {
@@ -2178,7 +2178,7 @@
                             "can restore regular price when bulk editing products": [
                                 {
                                     "title": "can restore regular price when bulk editing products",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can decrease the sale price if the product was not previously in sale when bulk editing products": [
@@ -2748,7 +2748,7 @@
                         }
                     }
                 ],
-                "summary": "401 total, 381 passed, 0 failed, 20 skipped."
+                "summary": "401 total, 383 passed, 0 failed, 18 skipped."
             }
         },
         {
@@ -2759,10 +2759,10 @@
                     },
                     "summary": {
                         "tests": 401,
-                        "passed": 381,
+                        "passed": 383,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 20,
+                        "skipped": 18,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -3540,26 +3540,6 @@
                             "retries": 0,
                             "flaky": false,
                             "steps": [
-                                {
-                                    "name": "Send GET request to get the current user id",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Initialize locators",
-                                    "status": "passed"
-                                },
                                 {
                                     "name": "Go to Analytics > Overview",
                                     "status": "passed"
@@ -11352,17 +11332,46 @@
                         },
                         {
                             "name": "can limit purchases",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "go to product editor, inventory tab",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "ensure limit purchases is disabled",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "add 2 items to cart",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "return to product editor",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "enable limit purchases",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "update the product",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "verify you cannot order more than 1 item",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -11370,11 +11379,7 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
+                                "annotations": []
                             }
                         },
                         {
@@ -12062,17 +12067,42 @@
                         },
                         {
                             "name": "can restore regular price when bulk editing products",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "select and bulk edit the products",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "update the sale price",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "save the updates",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "verify the changes",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Update products leaving the \\"Sale > Change to\\" empty",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Verify products have their regular price again",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "e2e > product\\/product-edit.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -12080,11 +12110,7 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
+                                "annotations": []
                             }
                         },
                         {

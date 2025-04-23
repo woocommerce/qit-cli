@@ -3758,7 +3758,6 @@
                             "suite": "api > api-tests\\/payment-gateways\\/payment-gateways-crud.test.js > Payment Gateways API tests",
                             "attachments": [],
                             "stdout": [
-                                "apiRequestContext.post: 400 Bad Request [NORMALIZED DELETE OPTION FAILED]",
                                 "apiRequestContext.post: Invalid URL [NORMALIZED SET OPTION]"
                             ],
                             "stderr": [],

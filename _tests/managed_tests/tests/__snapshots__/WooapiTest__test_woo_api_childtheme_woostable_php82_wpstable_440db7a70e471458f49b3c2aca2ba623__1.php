@@ -3758,7 +3758,6 @@
                             "suite": "api > api-tests\\/payment-gateways\\/payment-gateways-crud.test.js > Payment Gateways API tests",
                             "attachments": [],
                             "stdout": [
-                                "apiRequestContext.post: 400 Bad Request [NORMALIZED DELETE OPTION FAILED]",
                                 "apiRequestContext.post: Invalid URL [NORMALIZED SET OPTION]"
                             ],
                             "stderr": [],
@@ -6060,6 +6059,11 @@
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Email settings options",
                             "attachments": [
                                 {
+                                    "name": "_error-context-0",
+                                    "contentType": "text\\/markdown",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-api\\/test-results\\/api-tests-settings-setting-47eea-retrieve-all-email-settings-api-retry1\\/error-context.md"
+                                },
+                                {
                                     "name": "trace",
                                     "contentType": "application\\/zip",
                                     "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-api\\/test-results\\/api-tests-settings-setting-47eea-retrieve-all-email-settings-api-retry1\\/trace.zip"
@@ -6088,6 +6092,11 @@
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Email settings options with Email Improvements feature enabled",
                             "attachments": [
+                                {
+                                    "name": "_error-context-0",
+                                    "contentType": "text\\/markdown",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-api\\/test-results\\/api-tests-settings-setting-84c30-mprovements-feature-enabled-api-retry1\\/error-context.md"
+                                },
                                 {
                                     "name": "trace",
                                     "contentType": "application\\/zip",
