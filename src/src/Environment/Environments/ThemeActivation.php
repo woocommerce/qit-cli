@@ -31,6 +31,29 @@ class ThemeActivation {
 		$this->output   = $output;
 	}
 
+	public function maybe_activate_theme_that_is_dependency_of_sut(): void {
+		$theme_slugs = array_map( static function ( $ext ) {
+			return $ext->slug;
+		}, $this->env_info->themes );
+
+		if ( count( $theme_slugs ) !== 1 ) {
+			return;
+		}
+
+		$theme_slug = $theme_slugs[0];
+
+		// Skip activating if the theme is the SUT.
+		if ( in_array( $this->env_info->sut_slug, $theme_slugs, true ) ) {
+			return;
+		}
+
+		$this->output->writeln(
+			sprintf( '<info>Auto-activating theme that is a dependency of SUT: %s</info>', $theme_slug )
+		);
+
+		$this->activate_single_theme( $theme_slug );
+	}
+
 	/**
 	 * Entry point: Attempts to auto-activate themes with these rules:
 	 *  1. If exactly 1 theme: activate it.
