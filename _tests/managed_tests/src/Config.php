@@ -4,6 +4,7 @@ class Config {
 	private $params;
 	private $logger;
 	private $tests_based_on_custom_tests = [ 'activation' ];
+	private $one_of_each = false;
 
 	public function __construct( $argv, Logger $logger ) {
 		$this->params = $argv;
@@ -74,6 +75,12 @@ class Config {
 
 			Context::$env_filters[ $key ] = $value;
 			$this->logger->log( "Env filter: $key = $value" );
+		}
+
+		// One of each will run only one test of each test type.
+		if ( in_array( '--one-of-each', $this->params, true ) ) {
+			$this->one_of_each = true;
+			$this->logger->log( "one-of-each mode enabled" );
 		}
 	}
 }

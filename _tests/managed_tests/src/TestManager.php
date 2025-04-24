@@ -3,10 +3,12 @@
 class TestManager {
 	private $logger;
 	private $tests_based_on_custom_tests;
+	private $one_of_each;
 
-	public function __construct( Logger $logger, array $tests_based_on_custom_tests ) {
+	public function __construct( Logger $logger, array $tests_based_on_custom_tests, bool $one_of_each ) {
 		$this->logger                      = $logger;
 		$this->tests_based_on_custom_tests = $tests_based_on_custom_tests;
+		$this->one_of_each                 = $one_of_each;
 	}
 
 	public function get_test_types(): array {
@@ -88,7 +90,27 @@ class TestManager {
 
 		foreach ( $test_types as $test_type ) {
 			$tests_to_run[ basename( $test_type ) ] = [];
-			foreach ( $this->get_tests_in_test_type( $test_type ) as $test ) {
+
+			$scenarios = $this->get_tests_in_test_type( $test_type );
+
+			// If --one-of-each is set, pick exactly one scenario (prefer no_op)
+			if ( $this->one_of_each && ! empty( $scenarios ) ) {
+				$no_op_path = null;
+				foreach ( $scenarios as $scenario_path ) {
+					if ( basename( $scenario_path ) === 'no_op' ) {
+						$no_op_path = $scenario_path;
+						break;
+					}
+				}
+				if ( $no_op_path ) {
+					$scenarios = [ $no_op_path ];
+				} else {
+					// pick the first scenario if no_op doesn’t exist
+					$scenarios = [ reset( $scenarios ) ];
+				}
+			}
+			
+			foreach ( $scenarios as $test ) {
 				// Scenario filtering
 				if ( ! is_null( Context::$scenarios ) ) {
 					if ( ! in_array( basename( $test ), Context::$scenarios ) ) {

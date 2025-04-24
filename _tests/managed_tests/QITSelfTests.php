@@ -32,7 +32,7 @@ $validator->validate();
 $liveOutput                  = new QITLiveOutput();
 $tests_based_on_custom_tests = [ 'activation' ];
 
-$testManager  = new TestManager( $logger, $tests_based_on_custom_tests );
+$testManager  = new TestManager( $logger, $tests_based_on_custom_tests, $config->is_one_of_each() );
 $test_types   = $testManager->get_test_types();
 $test_types   = $testManager->filter_test_types( $test_types );
 $tests_to_run = $testManager->generate_test_runs( $test_types );
