@@ -255,10 +255,37 @@ class QITE2ETestCase extends TestCase {
 					// and then remove duplicates via array_unique, as they can cause flakiness in snapshot testing.
 					if ( isset( $value['results']['tests'] ) && is_array( $value['results']['tests'] ) ) {
 						foreach ( $value['results']['tests'] as &$test ) {
+							/* -----------------------------------------------------------------
+							 * Playwright hook-step normalisation
+							 * -----------------------------------------------------------------
+							 * These five setup steps appear / disappear depending on which worker
+							 * ran the test. We delete them so snapshots stay stable.
+							 */
+							$hook_steps = array(
+								'Send GET request to get the current user id',
+								'Send POST request to reset all sections',
+								'Assert response status is OK',
+								'Verify that sections were reset',
+								'Initialize locators',
+							);
+
+							if ( isset( $test['steps'] ) && is_array( $test['steps'] ) ) {
+								$test['steps'] = array_values(
+									array_filter(
+										$test['steps'],
+										/** @param array<string,mixed> $step */
+										function ( $step ) use ( $hook_steps ) {
+											return ! in_array( $step['name'], $hook_steps, true );
+										}
+									)
+								);
+							}
+
 							if ( $is_woo_e2e && isset( $test['stdout'] ) ) {
 								$test['stdout'] = ['[IGNORED FOR WOO-E2E]'];
 								continue;
 							}
+
 							if ( isset( $test['stdout'] ) && is_array( $test['stdout'] ) ) {
 								$filtered          = [];
 								$processes_console = []; // track unique "Console " lines

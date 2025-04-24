@@ -3265,26 +3265,6 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Send GET request to get the current user id",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Initialize locators",
-                                    "status": "passed"
-                                },
-                                {
                                     "name": "Go to Analytics > Overview",
                                     "status": "passed"
                                 },
@@ -3298,18 +3278,6 @@
                                 },
                                 {
                                     "name": "Assert that the \\"Leaderboards\\" section is visible",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
                                     "status": "passed"
                                 }
                             ],
@@ -3347,18 +3315,6 @@
                                 {
                                     "name": "Expect the Performance section to be hidden",
                                     "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
-                                    "status": "passed"
                                 }
                             ],
                             "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages",
@@ -3393,10 +3349,6 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
                                     "name": "Inspect the response payload to verify that Performance section was successfully hidden",
                                     "status": "passed"
                                 },
@@ -3406,18 +3358,6 @@
                                 },
                                 {
                                     "name": "Expect the Performance section to be added back.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
                                     "status": "passed"
                                 }
                             ],
@@ -3455,18 +3395,6 @@
                                 {
                                     "name": "Check the bottom section",
                                     "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
-                                    "status": "passed"
                                 }
                             ],
                             "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages > moving sections",
@@ -3503,18 +3431,6 @@
                                 {
                                     "name": "Expect the second section to become first, and first becomes second.",
                                     "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
-                                    "status": "passed"
                                 }
                             ],
                             "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages > moving sections",
@@ -3550,18 +3466,6 @@
                                 },
                                 {
                                     "name": "Expect second section becomes first section, first becomes second",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
                                     "status": "passed"
                                 }
                             ],
