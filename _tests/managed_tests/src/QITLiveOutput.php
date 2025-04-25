@@ -110,13 +110,7 @@ class QITLiveOutput {
 	}
 
 	public function renderOutput() {
-		if ( ! $this->isCI ) {
-			if ( stripos( PHP_OS, 'WIN' ) === 0 ) {
-				system( 'cls' );
-			} else {
-				system( 'clear' );
-			}
-		}
+		clear_output();
 
 		maybe_echo( "──────────────────────────────────────────────────────────────────────\n" );
 		maybe_echo( " QIT Self Test Runner\n" );
@@ -239,13 +233,7 @@ class QITLiveOutput {
 	}
 
 	public function printFinalSummary( int $phpUnitFailedCount ) {
-		if ( ! $this->isCI ) {
-			if ( stripos( PHP_OS, 'WIN' ) === 0 ) {
-				system( 'cls' );
-			} else {
-				system( 'clear' );
-			}
-		}
+		clear_output();
 
 		echo "──────────────────────────────────────────────────────────────────────\n";
 		echo " QIT Self Test Runner - Final Summary\n";

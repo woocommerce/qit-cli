@@ -13,12 +13,27 @@ require_once __DIR__ . '/src/QitRunner.php';
 require_once __DIR__ . '/src/QITLiveOutput.php';
 require_once __DIR__ . '/src/test-result-parser.php';
 
+global $output;
 $isCI = ! empty( getenv( 'CI' ) );
+$output = '';
 
 function maybe_echo( $message ) {
-	global $isCI;
-	if ( ! $isCI ) {
+	global $isCI, $output;
+
+	if ( $isCI ) {
+		$output .= $message;
+	} else {
 		echo $message;
+	}
+}
+
+function clear_output() {
+	global $isCI, $output;
+
+	if ( $isCI ) {
+		$output = '';
+	} else {
+		system( 'clear' );
 	}
 }
 
@@ -58,7 +73,7 @@ register_shutdown_function( function () use ( $logger ) {
 } );
 
 // --- Stage 1: Preparation ---
-system( 'clear' );
+clear_output();
 maybe_echo( "──────────────────────────────────────────────────────────────────────\n" );
 maybe_echo( " QIT Test Runner - Stage 1: Preparing Tests\n" );
 maybe_echo( " (Verbose logs: last-self-test.log)\n" );
@@ -79,7 +94,7 @@ maybe_echo( "\nPreparation complete. Moving on to running QIT tests...\n" );
 sleep( 2 );
 
 // --- Stage 2: Running QIT Tests ---
-system( 'clear' );
+clear_output();
 maybe_echo( "──────────────────────────────────────────────────────────────────────\n" );
 maybe_echo( " QIT Test Runner - Stage 2: Executing Tests on QIT\n" );
 maybe_echo( " (Verbose logs: last-self-test.log)\n" );
