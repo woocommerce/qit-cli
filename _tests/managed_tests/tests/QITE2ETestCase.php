@@ -255,10 +255,37 @@ class QITE2ETestCase extends TestCase {
 					// and then remove duplicates via array_unique, as they can cause flakiness in snapshot testing.
 					if ( isset( $value['results']['tests'] ) && is_array( $value['results']['tests'] ) ) {
 						foreach ( $value['results']['tests'] as &$test ) {
+							/* -----------------------------------------------------------------
+							 * Playwright hook-step normalisation
+							 * -----------------------------------------------------------------
+							 * These five setup steps appear / disappear depending on which worker
+							 * ran the test. We delete them so snapshots stay stable.
+							 */
+							$hook_steps = array(
+								'Send GET request to get the current user id',
+								'Send POST request to reset all sections',
+								'Assert response status is OK',
+								'Verify that sections were reset',
+								'Initialize locators',
+							);
+
+							if ( isset( $test['steps'] ) && is_array( $test['steps'] ) ) {
+								$test['steps'] = array_values(
+									array_filter(
+										$test['steps'],
+										/** @param array<string,mixed> $step */
+										function ( $step ) use ( $hook_steps ) {
+											return ! in_array( $step['name'], $hook_steps, true );
+										}
+									)
+								);
+							}
+
 							if ( $is_woo_e2e && isset( $test['stdout'] ) ) {
 								$test['stdout'] = ['[IGNORED FOR WOO-E2E]'];
 								continue;
 							}
+
 							if ( isset( $test['stdout'] ) && is_array( $test['stdout'] ) ) {
 								$filtered          = [];
 								$processes_console = []; // track unique "Console " lines
@@ -632,25 +659,7 @@ class QITE2ETestCase extends TestCase {
 		if ( $count < 25 ) {
 			// No-op. Exact match for counts below 50.
 		} elseif ( $count < 100 ) {
-			$normalize_to_closest = 25;
-			if ( $count % $normalize_to_closest === 0 ) {
-				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
-			} else {
-				echo "Normalizing debug_log.count from {$count} to ";
-				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 10.
-				echo "{$count}\n";
-			}
-		} elseif ( $count < 200 ) {
 			$normalize_to_closest = 50;
-			if ( $count % $normalize_to_closest === 0 ) {
-				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
-			} else {
-				echo "Normalizing debug_log.count from {$count} to ";
-				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 25.
-				echo "{$count}\n";
-			}
-		} elseif ( $count < 1000 ) {
-			$normalize_to_closest = 100;
 			if ( $count % $normalize_to_closest === 0 ) {
 				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
 			} else {
@@ -658,13 +667,31 @@ class QITE2ETestCase extends TestCase {
 				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 50.
 				echo "{$count}\n";
 			}
-		} elseif ( $count < 10000 ) {
+		} elseif ( $count < 200 ) {
+			$normalize_to_closest = 75;
+			if ( $count % $normalize_to_closest === 0 ) {
+				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
+			} else {
+				echo "Normalizing debug_log.count from {$count} to ";
+				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 75.
+				echo "{$count}\n";
+			}
+		} elseif ( $count < 1000 ) {
 			$normalize_to_closest = 250;
 			if ( $count % $normalize_to_closest === 0 ) {
 				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
 			} else {
 				echo "Normalizing debug_log.count from {$count} to ";
-				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 100.
+				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 250.
+				echo "{$count}\n";
+			}
+		} elseif ( $count < 10000 ) {
+			$normalize_to_closest = 500;
+			if ( $count % $normalize_to_closest === 0 ) {
+				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
+			} else {
+				echo "Normalizing debug_log.count from {$count} to ";
+				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 500.
 				echo "{$count}\n";
 			}
 		} else {
@@ -673,7 +700,7 @@ class QITE2ETestCase extends TestCase {
 				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
 			} else {
 				echo "Normalizing debug_log.count from {$count} to ";
-				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 1000.
+				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 10000.
 				echo "{$count}\n";
 			}
 		}

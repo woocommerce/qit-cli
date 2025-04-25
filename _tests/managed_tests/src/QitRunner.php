@@ -483,6 +483,8 @@ class QitRunner {
 
 		$failures = $this->phpunit_runner->getFailedTestsCount();
 		$this->live_output->printFinalSummary( $failures );
+		global $gracefulEnding;
+		$gracefulEnding = true;
 		exit( $failures > 0 ? 1 : 0 );
 	}
 

@@ -209,8 +209,8 @@
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
                             "stdout": [
-                                "Success: Updated \'woocommerce_coming_soon\' option.\\n",
-                                "Success: Updated \'woocommerce_store_pages_only\' option.\\n",
+                                "Notice: Function _load_textdomain_just_in_time was called <strong>incorrectly<\\/strong>. Translation loading for the <code>woocommerce<\\/code> domain was triggered too early. This is usually an indicator for some code in the plugin or theme running too early. Translations should be loaded at the <code>init<\\/code> action or later. Please see <a href=\\"https:\\/\\/developer.wordpress.org\\/advanced-administration\\/debug\\/debug-wordpress\\/\\">Debugging in WordPress<\\/a> for more information. (This message was added in version 6.7.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6121\\nSuccess: Updated \'woocommerce_coming_soon\' option.\\n",
+                                "Notice: Function _load_textdomain_just_in_time was called <strong>incorrectly<\\/strong>. Translation loading for the <code>woocommerce<\\/code> domain was triggered too early. This is usually an indicator for some code in the plugin or theme running too early. Translations should be loaded at the <code>init<\\/code> action or later. Please see <a href=\\"https:\\/\\/developer.wordpress.org\\/advanced-administration\\/debug\\/debug-wordpress\\/\\">Debugging in WordPress<\\/a> for more information. (This message was added in version 6.7.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6121\\nSuccess: Updated \'woocommerce_store_pages_only\' option.\\n",
                                 "Coming soon mode disabled in beforeAll.\\n",
                                 "[INFO] Final sorted plugin list:\\n",
                                 " 1. \\"Query Monitor\\" (Dependencies: [])\\n",
@@ -459,7 +459,7 @@
                 ],
                 "debug_log": [
                     {
-                        "count": "100",
+                        "count": "75",
                         "message": "PHP Deprecated: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 28"
                     },
                     {

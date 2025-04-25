@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "401 total, 381 passed, 0 failed, 20 skipped.",
+            "test_summary": "401 total, 383 passed, 0 failed, 18 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -51,12 +51,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 89,
-                "numPendingTestSuites": 13,
+                "numPassedTestSuites": 91,
+                "numPendingTestSuites": 11,
                 "numTotalTestSuites": 102,
                 "numFailedTests": 0,
-                "numPassedTests": 381,
-                "numPendingTests": 20,
+                "numPassedTests": 383,
+                "numPendingTests": 18,
                 "numTotalTests": 401,
                 "testResults": [
                     {
@@ -2037,7 +2037,7 @@
                     {
                         "file": "product\\/block-editor\\/product-inventory-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "can update sku": [
                                 {
@@ -2060,7 +2060,7 @@
                             "can limit purchases": [
                                 {
                                     "title": "can limit purchases",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2161,7 +2161,7 @@
                     {
                         "file": "product\\/product-edit.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "can edit a product and save the changes": [
                                 {
@@ -2178,7 +2178,7 @@
                             "can restore regular price when bulk editing products": [
                                 {
                                     "title": "can restore regular price when bulk editing products",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can decrease the sale price if the product was not previously in sale when bulk editing products": [
@@ -2748,7 +2748,7 @@
                         }
                     }
                 ],
-                "summary": "401 total, 381 passed, 0 failed, 20 skipped."
+                "summary": "401 total, 383 passed, 0 failed, 18 skipped."
             }
         },
         {
@@ -2759,10 +2759,10 @@
                     },
                     "summary": {
                         "tests": 401,
-                        "passed": 381,
+                        "passed": 383,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 20,
+                        "skipped": 18,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -3265,26 +3265,6 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Send GET request to get the current user id",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Initialize locators",
-                                    "status": "passed"
-                                },
-                                {
                                     "name": "Go to Analytics > Overview",
                                     "status": "passed"
                                 },
@@ -3298,18 +3278,6 @@
                                 },
                                 {
                                     "name": "Assert that the \\"Leaderboards\\" section is visible",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
                                     "status": "passed"
                                 }
                             ],
@@ -3347,18 +3315,6 @@
                                 {
                                     "name": "Expect the Performance section to be hidden",
                                     "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
-                                    "status": "passed"
                                 }
                             ],
                             "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages",
@@ -3393,10 +3349,6 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
                                     "name": "Inspect the response payload to verify that Performance section was successfully hidden",
                                     "status": "passed"
                                 },
@@ -3406,18 +3358,6 @@
                                 },
                                 {
                                     "name": "Expect the Performance section to be added back.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
                                     "status": "passed"
                                 }
                             ],
@@ -3455,18 +3395,6 @@
                                 {
                                     "name": "Check the bottom section",
                                     "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
-                                    "status": "passed"
                                 }
                             ],
                             "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages > moving sections",
@@ -3503,18 +3431,6 @@
                                 {
                                     "name": "Expect the second section to become first, and first becomes second.",
                                     "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
-                                    "status": "passed"
                                 }
                             ],
                             "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages > moving sections",
@@ -3550,18 +3466,6 @@
                                 },
                                 {
                                     "name": "Expect second section becomes first section, first becomes second",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
                                     "status": "passed"
                                 }
                             ],
@@ -11332,17 +11236,46 @@
                         },
                         {
                             "name": "can limit purchases",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "go to product editor, inventory tab",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "ensure limit purchases is disabled",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "add 2 items to cart",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "return to product editor",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "enable limit purchases",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "update the product",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "verify you cannot order more than 1 item",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -11350,11 +11283,7 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
+                                "annotations": []
                             }
                         },
                         {
@@ -12042,17 +11971,42 @@
                         },
                         {
                             "name": "can restore regular price when bulk editing products",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "select and bulk edit the products",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "update the sale price",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "save the updates",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "verify the changes",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Update products leaving the \\"Sale > Change to\\" empty",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Verify products have their regular price again",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "e2e > product\\/product-edit.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -12060,11 +12014,7 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
+                                "annotations": []
                             }
                         },
                         {
@@ -14441,16 +14391,7 @@
         },
         {
             "debug_log": {
-                "generic": [
-                    {
-                        "count": "1",
-                        "message": "PHP Deprecated: Function Automattic\\\\WooCommerce\\\\Admin\\\\WCAdminHelper::is_store_page is deprecated since version 9.8.0! Use is_current_page_store_page instead. in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6121"
-                    },
-                    {
-                        "count": "1",
-                        "message": "WordPress database error Table \'wordpress.wp_wc_tax_rate_classes\' doesn\'t exist for query \\n\\t\\t\\t\\tSELECT * FROM wp_wc_tax_rate_classes ORDER BY name;\\n\\n\\t\\t\\t\\t made by include(\'phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/php\\/boot-phar.php\'), include(\'phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/wp-cli.php\'), WP_CLI\\\\bootstrap, WP_CLI\\\\Bootstrap\\\\LaunchRunner->process, WP_CLI\\\\Runner->start, WP_CLI\\\\Runner->run_command_and_exit, WP_CLI\\\\Runner->run_command, WP_CLI\\\\Dispatcher\\\\Subcommand->invoke, call_user_func, WP_CLI\\\\Dispatcher\\\\CommandFactory::WP_CLI\\\\Dispatcher\\\\{closure}, call_user_func, Plugin_Command->activate, activate_plugin, plugin_sandbox_scrape, include_once(\'\\/plugins\\/woocommerce\\/woocommerce.php\'), WC, WooCommerce::instance, WooCommerce->__construct, WooCommerce->includes, include_once(\'\\/plugins\\/woocommerce\\/includes\\/class-wc-cli.php\'), WC_CLI->__construct, WC_CLI->hooks, WP_CLI::add_hook, WC_CLI_Runner::after_wp_load, do_action(\'rest_api_init\'), WP_Hook->do_action, WP_Hook->apply_filters, Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init->rest_api_init, WC_REST_Taxes_V1_Controller->register_routes, Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Taxes->get_collection_params, WC_REST_Taxes_V1_Controller->get_collection_params, WP_REST_Controller->get_context_param, WC_REST_Taxes_Controller->get_item_schema, WC_REST_Taxes_V1_Controller->get_item_schema, WC_Tax::get_tax_class_slugs, WC_Tax::get_tax_rate_classes"
-                    }
-                ]
+                "generic": []
             }
         }
     ]

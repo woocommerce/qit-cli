@@ -13,12 +13,28 @@ require_once __DIR__ . '/src/QitRunner.php';
 require_once __DIR__ . '/src/QITLiveOutput.php';
 require_once __DIR__ . '/src/test-result-parser.php';
 
+global $output, $gracefulEnding;
 $isCI = ! empty( getenv( 'CI' ) );
+$output = '';
+$gracefulEnding = false;
 
 function maybe_echo( $message ) {
-	global $isCI;
-	if ( ! $isCI ) {
+	global $isCI, $output;
+
+	if ( $isCI ) {
+		$output .= $message;
+	} else {
 		echo $message;
+	}
+}
+
+function clear_output() {
+	global $isCI, $output;
+
+	if ( $isCI ) {
+		$output = '';
+	} else {
+		system( 'clear' );
 	}
 }
 
@@ -32,7 +48,7 @@ $validator->validate();
 $liveOutput                  = new QITLiveOutput();
 $tests_based_on_custom_tests = [ 'activation' ];
 
-$testManager  = new TestManager( $logger, $tests_based_on_custom_tests );
+$testManager  = new TestManager( $logger, $tests_based_on_custom_tests, $config->one_of_each );
 $test_types   = $testManager->get_test_types();
 $test_types   = $testManager->filter_test_types( $test_types );
 $tests_to_run = $testManager->generate_test_runs( $test_types );
@@ -42,6 +58,11 @@ $phpUnitRunner = new PhpUnitRunner( $logger, $liveOutput );
 
 // Register shutdown cleanup
 register_shutdown_function( function () use ( $logger ) {
+	global $isCI, $output, $gracefulEnding;
+	if ( $isCI && ! $gracefulEnding ) {
+		echo $output;
+	}
+	
 	$to_delete  = array_unique( Context::$to_delete );
 	$reuse_json = ( getenv( 'QIT_REUSE_JSON' ) === '1' );
 	foreach ( $to_delete as $file ) {
@@ -58,7 +79,7 @@ register_shutdown_function( function () use ( $logger ) {
 } );
 
 // --- Stage 1: Preparation ---
-system( 'clear' );
+clear_output();
 maybe_echo( "──────────────────────────────────────────────────────────────────────\n" );
 maybe_echo( " QIT Test Runner - Stage 1: Preparing Tests\n" );
 maybe_echo( " (Verbose logs: last-self-test.log)\n" );
@@ -79,7 +100,7 @@ maybe_echo( "\nPreparation complete. Moving on to running QIT tests...\n" );
 sleep( 2 );
 
 // --- Stage 2: Running QIT Tests ---
-system( 'clear' );
+clear_output();
 maybe_echo( "──────────────────────────────────────────────────────────────────────\n" );
 maybe_echo( " QIT Test Runner - Stage 2: Executing Tests on QIT\n" );
 maybe_echo( " (Verbose logs: last-self-test.log)\n" );
