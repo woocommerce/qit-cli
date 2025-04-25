@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "271 total, 267 passed, 0 failed, 4 skipped.",
+            "test_summary": "271 total, 265 passed, 0 failed, 6 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -51,12 +51,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 22,
-                "numPendingTestSuites": 3,
+                "numPassedTestSuites": 21,
+                "numPendingTestSuites": 4,
                 "numTotalTestSuites": 25,
                 "numFailedTests": 0,
-                "numPassedTests": 267,
-                "numPendingTests": 4,
+                "numPassedTests": 265,
+                "numPendingTests": 6,
                 "numTotalTests": 271,
                 "testResults": [
                     {
@@ -1103,7 +1103,7 @@
                     {
                         "file": "api-tests\\/settings\\/settings-crud.test.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Settings API tests: CRUD": [],
                             "Settings API tests: CRUD > List all settings groups": [
@@ -1169,13 +1169,13 @@
                             "Settings API tests: CRUD > List all Email settings options": [
                                 {
                                     "title": "can retrieve all email settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Email settings options with Email Improvements feature enabled": [
                                 {
                                     "title": "can retrieve all email settings with Email Improvements feature enabled",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Advanced settings options": [
@@ -1502,7 +1502,7 @@
                         }
                     }
                 ],
-                "summary": "271 total, 267 passed, 0 failed, 4 skipped."
+                "summary": "271 total, 265 passed, 0 failed, 6 skipped."
             }
         },
         {
@@ -1513,10 +1513,10 @@
                     },
                     "summary": {
                         "tests": 271,
-                        "passed": 267,
+                        "passed": 265,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 4,
+                        "skipped": 6,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -6043,11 +6043,11 @@
                         },
                         {
                             "name": "can retrieve all email settings",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-crud.test.js",
@@ -6059,16 +6059,20 @@
                             "stdout": [],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can retrieve all email settings with Email Improvements feature enabled",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-crud.test.js",
@@ -6080,7 +6084,11 @@
                             "stdout": [],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
