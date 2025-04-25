@@ -13,9 +13,10 @@ require_once __DIR__ . '/src/QitRunner.php';
 require_once __DIR__ . '/src/QITLiveOutput.php';
 require_once __DIR__ . '/src/test-result-parser.php';
 
-global $output;
+global $output, $gracefulEnding;
 $isCI = ! empty( getenv( 'CI' ) );
 $output = '';
+$gracefulEnding = false;
 
 function maybe_echo( $message ) {
 	global $isCI, $output;
@@ -57,6 +58,11 @@ $phpUnitRunner = new PhpUnitRunner( $logger, $liveOutput );
 
 // Register shutdown cleanup
 register_shutdown_function( function () use ( $logger ) {
+	global $isCI, $output, $gracefulEnding;
+	if ( $isCI && ! $gracefulEnding ) {
+		echo $output;
+	}
+	
 	$to_delete  = array_unique( Context::$to_delete );
 	$reuse_json = ( getenv( 'QIT_REUSE_JSON' ) === '1' );
 	foreach ( $to_delete as $file ) {
