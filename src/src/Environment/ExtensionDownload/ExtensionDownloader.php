@@ -125,6 +125,7 @@ class ExtensionDownloader {
 
 				if ( getenv( 'QIT_SUT' ) === $e->slug && $env_info instanceof E2EEnvInfo ) {
 					$env_info->sut_entrypoint = $e->entrypoint;
+					$env_info->sut_slug       = $e->slug;
 					$env_info->sut_path       = "$env_info->temporary_env/html/wp-content/{$e->type}s/{$e->slug}";
 				}
 
@@ -153,6 +154,7 @@ class ExtensionDownloader {
 
 				if ( getenv( 'QIT_SUT' ) === $e->slug && $env_info instanceof E2EEnvInfo ) {
 					$env_info->sut_entrypoint = $e->entrypoint;
+					$env_info->sut_slug       = $e->slug;
 					$env_info->sut_path       = $e->downloaded_source;
 				}
 			} else {
