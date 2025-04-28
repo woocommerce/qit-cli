@@ -158,6 +158,9 @@ class LocalTestRunNotifier {
 			],
 		];
 
+		$this->prepare_debug_log->set_sut_slug( $test_result->get_env_info()->sut_slug ?: '' );
+		$this->prepare_qm_log->set_sut_slug( $test_result->get_env_info()->sut_slug ?: '' );
+
 		if ( file_exists( $ctrf_file ) ) {
 			$result_json = json_decode( file_get_contents( $ctrf_file ), true );
 

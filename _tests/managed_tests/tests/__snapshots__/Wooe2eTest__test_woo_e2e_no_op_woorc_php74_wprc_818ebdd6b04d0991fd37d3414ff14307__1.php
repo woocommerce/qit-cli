@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "401 total, 381 passed, 0 failed, 20 skipped.",
+            "test_summary": "401 total, 383 passed, 0 failed, 18 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -51,12 +51,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 89,
-                "numPendingTestSuites": 13,
+                "numPassedTestSuites": 91,
+                "numPendingTestSuites": 11,
                 "numTotalTestSuites": 102,
                 "numFailedTests": 0,
-                "numPassedTests": 381,
-                "numPendingTests": 20,
+                "numPassedTests": 383,
+                "numPendingTests": 18,
                 "numTotalTests": 401,
                 "testResults": [
                     {
@@ -2037,7 +2037,7 @@
                     {
                         "file": "product\\/block-editor\\/product-inventory-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "can update sku": [
                                 {
@@ -2060,7 +2060,7 @@
                             "can limit purchases": [
                                 {
                                     "title": "can limit purchases",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2161,7 +2161,7 @@
                     {
                         "file": "product\\/product-edit.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "can edit a product and save the changes": [
                                 {
@@ -2178,7 +2178,7 @@
                             "can restore regular price when bulk editing products": [
                                 {
                                     "title": "can restore regular price when bulk editing products",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can decrease the sale price if the product was not previously in sale when bulk editing products": [
@@ -2748,7 +2748,7 @@
                         }
                     }
                 ],
-                "summary": "401 total, 381 passed, 0 failed, 20 skipped."
+                "summary": "401 total, 383 passed, 0 failed, 18 skipped."
             }
         },
         {
@@ -2759,10 +2759,10 @@
                     },
                     "summary": {
                         "tests": 401,
-                        "passed": 381,
+                        "passed": 383,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 20,
+                        "skipped": 18,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -2784,7 +2784,9 @@
                             "steps": [],
                             "suite": "consumer token teardown > ..\\/fixtures\\/token.teardown.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -2805,7 +2807,9 @@
                             "steps": [],
                             "suite": "install wc > ..\\/fixtures\\/install-wc.setup.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -2831,7 +2835,9 @@
                             "steps": [],
                             "suite": "global authentication > ..\\/fixtures\\/auth.setup.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -2852,7 +2858,9 @@
                             "steps": [],
                             "suite": "global authentication > ..\\/fixtures\\/auth.setup.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -2874,7 +2882,7 @@
                             "suite": "consumer token setup > ..\\/fixtures\\/token.setup.js",
                             "attachments": [],
                             "stdout": [
-                                "e2e-api-access-1743608590101 consumer token successfully created\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -2897,8 +2905,7 @@
                             "suite": "site setup > ..\\/fixtures\\/site.setup.js",
                             "attachments": [],
                             "stdout": [
-                                "DISABLE_HPOS: undefined\\n",
-                                "HPOS configuration (woocommerce_custom_orders_table_enabled): yes - High-performance order storage (recommended)\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -2920,7 +2927,9 @@
                             "steps": [],
                             "suite": "site setup > ..\\/fixtures\\/site.setup.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -2941,7 +2950,9 @@
                             "steps": [],
                             "suite": "site setup > ..\\/fixtures\\/site.setup.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -2962,7 +2973,9 @@
                             "steps": [],
                             "suite": "site setup > ..\\/fixtures\\/site.setup.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -2983,7 +2996,9 @@
                             "steps": [],
                             "suite": "site setup > ..\\/fixtures\\/site.setup.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3004,7 +3019,9 @@
                             "steps": [],
                             "suite": "site setup > ..\\/fixtures\\/site.setup.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3025,7 +3042,9 @@
                             "steps": [],
                             "suite": "site setup > ..\\/fixtures\\/site.setup.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3063,7 +3082,9 @@
                             ],
                             "suite": "e2e > analytics\\/analytics-access.spec.js > WooCommerce Home",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3084,7 +3105,9 @@
                             "steps": [],
                             "suite": "e2e > analytics\\/analytics-data.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3105,7 +3128,9 @@
                             "steps": [],
                             "suite": "e2e > analytics\\/analytics-data.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3126,7 +3151,9 @@
                             "steps": [],
                             "suite": "e2e > analytics\\/analytics-data.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3147,7 +3174,9 @@
                             "steps": [],
                             "suite": "e2e > analytics\\/analytics-data.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3168,7 +3197,9 @@
                             "steps": [],
                             "suite": "e2e > analytics\\/analytics-data.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3189,7 +3220,9 @@
                             "steps": [],
                             "suite": "e2e > analytics\\/analytics-data.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3210,7 +3243,9 @@
                             "steps": [],
                             "suite": "e2e > analytics\\/analytics-data.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3230,26 +3265,6 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Send GET request to get the current user id",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Initialize locators",
-                                    "status": "passed"
-                                },
-                                {
                                     "name": "Go to Analytics > Overview",
                                     "status": "passed"
                                 },
@@ -3264,23 +3279,13 @@
                                 {
                                     "name": "Assert that the \\"Leaderboards\\" section is visible",
                                     "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
-                                    "status": "passed"
                                 }
                             ],
                             "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3310,23 +3315,13 @@
                                 {
                                     "name": "Expect the Performance section to be hidden",
                                     "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
-                                    "status": "passed"
                                 }
                             ],
                             "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3354,10 +3349,6 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
                                     "name": "Inspect the response payload to verify that Performance section was successfully hidden",
                                     "status": "passed"
                                 },
@@ -3368,23 +3359,13 @@
                                 {
                                     "name": "Expect the Performance section to be added back.",
                                     "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
-                                    "status": "passed"
                                 }
                             ],
                             "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3414,23 +3395,13 @@
                                 {
                                     "name": "Check the bottom section",
                                     "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
-                                    "status": "passed"
                                 }
                             ],
                             "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages > moving sections",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3460,23 +3431,13 @@
                                 {
                                     "name": "Expect the second section to become first, and first becomes second.",
                                     "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
-                                    "status": "passed"
                                 }
                             ],
                             "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages > moving sections",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3506,23 +3467,13 @@
                                 {
                                     "name": "Expect second section becomes first section, first becomes second",
                                     "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to reset all sections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert response status is OK",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify that sections were reset",
-                                    "status": "passed"
                                 }
                             ],
                             "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages > moving sections",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3543,7 +3494,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/basic.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3564,7 +3517,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/basic.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3585,7 +3540,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/basic.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3606,7 +3563,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/dashboard-access.spec.js > Customer-role users are blocked from accessing the WP Dashboard.",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3627,7 +3586,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/dashboard-access.spec.js > Customer-role users are blocked from accessing the WP Dashboard.",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3648,7 +3609,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/dashboard-access.spec.js > Customer-role users are blocked from accessing the WP Dashboard.",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3669,7 +3632,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load WooCommerce sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3690,7 +3655,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load WooCommerce sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3711,7 +3678,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load WooCommerce sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3732,7 +3701,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load WooCommerce sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3753,7 +3724,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load WooCommerce sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3774,7 +3747,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load WooCommerce sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3795,7 +3770,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Products sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3816,7 +3793,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Products sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3837,7 +3816,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Products sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3858,7 +3839,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Products sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3879,7 +3862,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Products sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3900,7 +3885,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Analytics sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3921,7 +3908,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Analytics sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3942,7 +3931,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Analytics sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3963,7 +3954,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Analytics sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -3984,7 +3977,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Analytics sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4005,7 +4000,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Analytics sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4026,7 +4023,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Analytics sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4047,7 +4046,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Analytics sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4068,7 +4069,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Analytics sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4089,7 +4092,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Analytics sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4110,7 +4115,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Analytics sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4131,7 +4138,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Marketing sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4152,7 +4161,9 @@
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js > WooCommerce Page Load > Load Marketing sub pages",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4173,7 +4184,9 @@
                             "steps": [],
                             "suite": "e2e > brands\\/create-product-brand.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4194,7 +4207,9 @@
                             "steps": [],
                             "suite": "e2e > cart\\/add-to-cart.spec.js > Add to Cart behavior",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4245,7 +4260,7 @@
                             "suite": "e2e > cart\\/cart.spec.js",
                             "attachments": [],
                             "stdout": [
-                                "Creating Checkout Blocks page\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -4296,7 +4311,9 @@
                             ],
                             "suite": "e2e > cart\\/cart.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4317,7 +4334,9 @@
                             "steps": [],
                             "suite": "e2e > checkout\\/checkout.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4338,7 +4357,9 @@
                             "steps": [],
                             "suite": "e2e > checkout\\/checkout.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4359,7 +4380,9 @@
                             "steps": [],
                             "suite": "e2e > checkout\\/checkout.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4380,7 +4403,9 @@
                             "steps": [],
                             "suite": "e2e > checkout\\/checkout.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4401,7 +4426,9 @@
                             "steps": [],
                             "suite": "e2e > checkout\\/checkout.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4422,7 +4449,9 @@
                             "steps": [],
                             "suite": "e2e > checkout\\/checkout.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4443,7 +4472,9 @@
                             "steps": [],
                             "suite": "e2e > checkout\\/checkout.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4464,7 +4495,9 @@
                             "steps": [],
                             "suite": "e2e > checkout\\/checkout.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4485,7 +4518,9 @@
                             "steps": [],
                             "suite": "e2e > checkout\\/checkout.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4506,7 +4541,9 @@
                             "steps": [],
                             "suite": "e2e > checkout\\/checkout.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4528,7 +4565,7 @@
                             "suite": "e2e > coupons\\/cart-block-coupons.spec.js > Cart Block Applying Coupons",
                             "attachments": [],
                             "stdout": [
-                                "Deleting page 82\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -4551,7 +4588,7 @@
                             "suite": "e2e > coupons\\/cart-block-coupons.spec.js > Cart Block Applying Coupons",
                             "attachments": [],
                             "stdout": [
-                                "Deleting page 84\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -4574,7 +4611,7 @@
                             "suite": "e2e > coupons\\/cart-block-coupons.spec.js > Cart Block Applying Coupons",
                             "attachments": [],
                             "stdout": [
-                                "Deleting page 86\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -4597,7 +4634,7 @@
                             "suite": "e2e > coupons\\/cart-block-coupons.spec.js > Cart Block Applying Coupons",
                             "attachments": [],
                             "stdout": [
-                                "Deleting page 88\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -4628,7 +4665,9 @@
                             ],
                             "suite": "e2e > coupons\\/cart-checkout-coupons.spec.js > Cart & Checkout applying coupons",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4658,7 +4697,9 @@
                             ],
                             "suite": "e2e > coupons\\/cart-checkout-coupons.spec.js > Cart & Checkout applying coupons",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4688,7 +4729,9 @@
                             ],
                             "suite": "e2e > coupons\\/cart-checkout-coupons.spec.js > Cart & Checkout applying coupons",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4718,7 +4761,9 @@
                             ],
                             "suite": "e2e > coupons\\/cart-checkout-coupons.spec.js > Cart & Checkout applying coupons",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4748,7 +4793,9 @@
                             ],
                             "suite": "e2e > coupons\\/cart-checkout-coupons.spec.js > Cart & Checkout applying coupons",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4778,7 +4825,9 @@
                             ],
                             "suite": "e2e > coupons\\/cart-checkout-coupons.spec.js > Cart & Checkout applying coupons",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4808,7 +4857,9 @@
                             ],
                             "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4838,7 +4889,9 @@
                             ],
                             "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4868,7 +4921,9 @@
                             ],
                             "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4899,7 +4954,7 @@
                             "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
                             "attachments": [],
                             "stdout": [
-                                "[ push: \\u001b[33m103\\u001b[39m ]\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -4930,7 +4985,9 @@
                             ],
                             "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4960,7 +5017,9 @@
                             ],
                             "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -4990,7 +5049,9 @@
                             ],
                             "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5020,7 +5081,9 @@
                             ],
                             "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5041,7 +5104,9 @@
                             "steps": [],
                             "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5062,7 +5127,9 @@
                             "steps": [],
                             "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5083,7 +5150,9 @@
                             "steps": [],
                             "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5105,7 +5174,7 @@
                             "suite": "e2e > coupons\\/checkout-block-coupons.spec.js > Checkout Block Applying Coupons",
                             "attachments": [],
                             "stdout": [
-                                "Deleting page 111\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -5128,7 +5197,7 @@
                             "suite": "e2e > coupons\\/checkout-block-coupons.spec.js > Checkout Block Applying Coupons",
                             "attachments": [],
                             "stdout": [
-                                "Deleting page 114\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -5151,7 +5220,7 @@
                             "suite": "e2e > coupons\\/checkout-block-coupons.spec.js > Checkout Block Applying Coupons",
                             "attachments": [],
                             "stdout": [
-                                "Deleting page 117\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -5174,7 +5243,7 @@
                             "suite": "e2e > coupons\\/checkout-block-coupons.spec.js > Checkout Block Applying Coupons",
                             "attachments": [],
                             "stdout": [
-                                "Deleting page 120\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -5209,7 +5278,9 @@
                             ],
                             "suite": "e2e > coupons\\/create-coupon.spec.js > Coupon management",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5243,7 +5314,9 @@
                             ],
                             "suite": "e2e > coupons\\/create-coupon.spec.js > Coupon management",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5277,7 +5350,9 @@
                             ],
                             "suite": "e2e > coupons\\/create-coupon.spec.js > Coupon management",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5315,7 +5390,9 @@
                             ],
                             "suite": "e2e > coupons\\/create-coupon.spec.js > Coupon management",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5353,7 +5430,9 @@
                             ],
                             "suite": "e2e > coupons\\/create-coupon.spec.js > Coupon management",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5395,7 +5474,9 @@
                             ],
                             "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5437,7 +5518,9 @@
                             ],
                             "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5479,7 +5562,9 @@
                             ],
                             "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5521,7 +5606,9 @@
                             ],
                             "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5563,7 +5650,9 @@
                             ],
                             "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5605,7 +5694,9 @@
                             ],
                             "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5643,7 +5734,9 @@
                             ],
                             "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5685,7 +5778,9 @@
                             ],
                             "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5727,7 +5822,9 @@
                             ],
                             "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5769,7 +5866,9 @@
                             ],
                             "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5811,7 +5910,9 @@
                             ],
                             "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5853,7 +5954,9 @@
                             ],
                             "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5895,7 +5998,9 @@
                             ],
                             "suite": "e2e > customer\\/customer-list.spec.js > Merchant > Customer List",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5925,7 +6030,9 @@
                             ],
                             "suite": "e2e > customer\\/customer-list.spec.js > Merchant > Customer List",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5967,7 +6074,9 @@
                             ],
                             "suite": "e2e > customer\\/customer-list.spec.js > Merchant > Customer List",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -5988,7 +6097,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/color-picker.spec.js > Assembler -> Color Pickers",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6009,7 +6120,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/color-picker.spec.js > Assembler -> Color Pickers",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6030,7 +6143,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/color-picker.spec.js > Assembler -> Color Pickers",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6051,7 +6166,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/font-picker.spec.js > Assembler -> Font Picker",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6072,7 +6189,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/font-picker.spec.js > Assembler -> Font Picker",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6093,7 +6212,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/font-picker.spec.js > Assembler -> Font Picker",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6114,7 +6235,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/font-picker.spec.js > Assembler -> Font Picker",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6135,7 +6258,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/font-picker.spec.js > Assembler -> Font Picker",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6156,7 +6281,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/footer.spec.js > Assembler -> Footers",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6177,7 +6304,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/footer.spec.js > Assembler -> Footers",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6198,7 +6327,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/footer.spec.js > Assembler -> Footers",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6219,7 +6350,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/footer.spec.js > Assembler -> Footers",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6240,7 +6373,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6261,7 +6396,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6282,7 +6419,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6303,7 +6442,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6324,7 +6465,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6345,7 +6488,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6366,7 +6511,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6387,7 +6534,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6408,7 +6557,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/header.spec.js > Assembler -> headers",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6429,7 +6580,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/header.spec.js > Assembler -> headers",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6450,7 +6603,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/header.spec.js > Assembler -> headers",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6471,7 +6626,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/header.spec.js > Assembler -> headers",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6492,7 +6649,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/homepage.spec.js > Assembler -> Homepage",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -6517,7 +6676,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/homepage.spec.js > Assembler -> Homepage",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -6542,7 +6703,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/homepage.spec.js > Assembler -> Homepage",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -6567,7 +6730,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/homepage.spec.js > Homepage tracking banner",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6588,7 +6753,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/homepage.spec.js > Homepage tracking banner",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6609,7 +6776,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js > Assembler -> Logo Picker",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6630,7 +6799,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js > Assembler -> Logo Picker",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6651,7 +6822,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js > Assembler -> Logo Picker",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6672,7 +6845,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js > Assembler -> Logo Picker",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6693,7 +6868,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js > Assembler -> Logo Picker",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6714,7 +6891,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js > Assembler -> Logo Picker",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6735,7 +6914,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js > Assembler -> Logo Picker",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6756,7 +6937,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler-hub.spec.js > Store owner can view Assembler Hub for store customization",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6777,7 +6960,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler-hub.spec.js > Store owner can view Assembler Hub for store customization",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6798,7 +6983,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler-hub.spec.js > Store owner can view Assembler Hub for store customization",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6819,7 +7006,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/intro.spec.js > Store owner can view the Intro page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6840,7 +7029,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/intro.spec.js > Store owner can view the Intro page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6861,7 +7052,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/intro.spec.js > Store owner can view the Intro page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6882,7 +7075,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/intro.spec.js > Store owner can view the Intro page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6903,7 +7098,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/intro.spec.js > Store owner can view the Intro page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6924,7 +7121,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/loading-screen\\/loading-screen.spec.js > Assembler - Loading Page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6946,7 +7145,7 @@
                             "suite": "e2e > customize-store\\/loading-screen\\/loading-screen.spec.js > Assembler - Loading Page",
                             "attachments": [],
                             "stdout": [
-                                "Store completed option not updated\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -6968,7 +7167,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/transitional.spec.js > Store owner can view the Transitional page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6989,7 +7190,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/transitional.spec.js > Store owner can view the Transitional page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7010,7 +7213,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/transitional.spec.js > Store owner can view the Transitional page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7031,7 +7236,9 @@
                             "steps": [],
                             "suite": "e2e > customize-store\\/transitional.spec.js > Store owner can view the Transitional page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7052,7 +7259,9 @@
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7073,7 +7282,9 @@
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7094,7 +7305,9 @@
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7115,7 +7328,9 @@
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7136,7 +7351,9 @@
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7157,7 +7374,9 @@
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7178,7 +7397,9 @@
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7297,7 +7518,7 @@
                             "suite": "e2e > editor\\/create-woocommerce-blocks.spec.js > Add WooCommerce Blocks Into Page",
                             "attachments": [],
                             "stdout": [
-                                "Deleting page 322\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -7329,7 +7550,7 @@
                             "suite": "e2e > editor\\/create-woocommerce-patterns.spec.js > Add WooCommerce Patterns Into Page",
                             "attachments": [],
                             "stdout": [
-                                "Deleting page 324\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -7360,7 +7581,9 @@
                             ],
                             "suite": "e2e > email\\/account-emails.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7394,7 +7617,9 @@
                             ],
                             "suite": "e2e > email\\/account-emails.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7428,7 +7653,9 @@
                             ],
                             "suite": "e2e > email\\/account-emails.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7458,7 +7685,9 @@
                             ],
                             "suite": "e2e > email\\/order-emails.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7488,7 +7717,9 @@
                             ],
                             "suite": "e2e > email\\/order-emails.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7518,7 +7749,9 @@
                             ],
                             "suite": "e2e > email\\/order-emails.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7548,7 +7781,9 @@
                             ],
                             "suite": "e2e > email\\/order-emails.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7569,7 +7804,9 @@
                             "steps": [],
                             "suite": "e2e > email\\/order-emails.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7590,7 +7827,9 @@
                             "steps": [],
                             "suite": "e2e > email\\/settings-email-style-sync.spec.js > Email Style Sync",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7611,7 +7850,9 @@
                             "steps": [],
                             "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7632,7 +7873,9 @@
                             "steps": [],
                             "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7653,7 +7896,9 @@
                             "steps": [],
                             "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7674,7 +7919,9 @@
                             "steps": [],
                             "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -7699,7 +7946,9 @@
                             "steps": [],
                             "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7720,7 +7969,9 @@
                             "steps": [],
                             "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7741,7 +7992,9 @@
                             "steps": [],
                             "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7762,7 +8015,9 @@
                             "steps": [],
                             "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7783,7 +8038,9 @@
                             "steps": [],
                             "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7804,7 +8061,9 @@
                             "steps": [],
                             "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7825,7 +8084,9 @@
                             "steps": [],
                             "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7846,7 +8107,9 @@
                             "steps": [],
                             "suite": "e2e > marketing\\/overview.spec.js > Marketing page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7867,7 +8130,9 @@
                             "steps": [],
                             "suite": "e2e > marketing\\/overview.spec.js > Marketing page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7888,7 +8153,9 @@
                             "steps": [],
                             "suite": "e2e > my-account\\/my-account-addresses.spec.js > Customer can manage addresses in My Account > Addresses page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7909,7 +8176,9 @@
                             "steps": [],
                             "suite": "e2e > my-account\\/my-account-addresses.spec.js > Customer can manage addresses in My Account > Addresses page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7930,7 +8199,9 @@
                             "steps": [],
                             "suite": "e2e > my-account\\/my-account-create-account.spec.js > Shopper My Account Create Account",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7951,7 +8222,9 @@
                             "steps": [],
                             "suite": "e2e > my-account\\/my-account-downloads.spec.js > Customer can manage downloadable file in My Account > Downloads page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -7972,7 +8245,9 @@
                             "steps": [],
                             "suite": "e2e > my-account\\/my-account-pay-order.spec.js > Customer can pay for their order through My Account",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8010,7 +8285,9 @@
                             ],
                             "suite": "e2e > my-account\\/my-account.spec.js > My account page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8031,7 +8308,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/add-product-task.spec.js > Add Product Task",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8052,7 +8331,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/add-product-task.spec.js > Add Product Task",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8073,7 +8354,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/add-product-task.spec.js > Add Product Task",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8094,7 +8377,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/add-product-task.spec.js > Add Product Task",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8115,7 +8400,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store - logged in",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8136,7 +8423,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store - logged in",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8157,7 +8446,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store - logged in",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8178,7 +8469,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store - logged in",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8199,7 +8492,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store - logged in",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8220,7 +8515,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store - logged in",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8241,7 +8538,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store front end - logged out > Block Theme (Twenty Twenty Four)",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8262,7 +8561,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store front end - logged out > Block Theme (Twenty Twenty Four)",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8283,7 +8584,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store front end - logged out > Classic Theme (Storefront)",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8304,7 +8607,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store front end - logged out > Classic Theme (Storefront)",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8350,7 +8655,9 @@
                             ],
                             "suite": "e2e > onboarding\\/onboarding-wizard.spec.js > Store owner can complete the core profiler",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8371,7 +8678,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/onboarding-wizard.spec.js > Store owner can complete the core profiler",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -8401,7 +8710,9 @@
                             ],
                             "suite": "e2e > onboarding\\/onboarding-wizard.spec.js > Store owner can skip the core profiler",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8422,7 +8733,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/payment-setup-task.spec.js > Payment setup task",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8443,7 +8756,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/payment-setup-task.spec.js > Payment setup task",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8473,7 +8788,9 @@
                             ],
                             "suite": "e2e > onboarding\\/setup-checklist.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8494,7 +8811,9 @@
                             "steps": [],
                             "suite": "e2e > onboarding\\/setup-checklist.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8528,7 +8847,9 @@
                             ],
                             "suite": "e2e > onboarding\\/setup-checklist.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8549,7 +8870,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/create-order.spec.js > WooCommerce Orders > Add new order",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8570,7 +8893,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/create-order.spec.js > WooCommerce Orders > Add new order",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8591,7 +8916,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/create-order.spec.js > WooCommerce Orders > Add new order",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8612,7 +8939,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/create-order.spec.js > WooCommerce Orders > Add new order",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8633,7 +8962,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/customer-payment-page.spec.js > WooCommerce Merchant Flow: Orders > Customer Payment Page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8654,7 +8985,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/customer-payment-page.spec.js > WooCommerce Merchant Flow: Orders > Customer Payment Page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8688,7 +9021,9 @@
                             ],
                             "suite": "e2e > order\\/customer-payment-page.spec.js > WooCommerce Merchant Flow: Orders > Customer Payment Page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8709,7 +9044,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-bulk-edit.spec.js > Bulk edit orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8730,7 +9067,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-coupon.spec.js > WooCommerce Orders > Apply Coupon",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8751,7 +9090,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-coupon.spec.js > WooCommerce Orders > Apply Coupon",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8772,7 +9113,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-edit.spec.js > Edit order",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8793,7 +9136,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-edit.spec.js > Edit order",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8814,7 +9159,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-edit.spec.js > Edit order",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8835,7 +9182,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-edit.spec.js > Edit order",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8856,7 +9205,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-edit.spec.js > Edit order",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8890,7 +9241,9 @@
                             ],
                             "suite": "e2e > order\\/order-edit.spec.js > Edit order",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8924,7 +9277,9 @@
                             ],
                             "suite": "e2e > order\\/order-edit.spec.js > Edit order",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8945,7 +9300,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-edit.spec.js > Edit order > Downloadable product permissions",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8966,7 +9323,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-edit.spec.js > Edit order > Downloadable product permissions",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -8987,7 +9346,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-edit.spec.js > Edit order > Downloadable product permissions",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9008,7 +9369,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-edit.spec.js > Edit order > Downloadable product permissions",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9029,7 +9392,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-edit.spec.js > Edit order > Downloadable product permissions",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9050,7 +9415,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-edit.spec.js > Edit order > Downloadable product permissions",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9071,7 +9438,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-grace-period.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -9096,7 +9465,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-refund.spec.js > WooCommerce Orders > Refund an order",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9117,7 +9488,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-refund.spec.js > WooCommerce Orders > Refund an order",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -9142,7 +9515,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-refund.spec.js > WooCommerce Orders > Refund and restock an order item",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9163,7 +9538,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9184,7 +9561,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9205,7 +9584,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9226,7 +9607,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9247,7 +9630,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9268,7 +9653,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9289,7 +9676,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9310,7 +9699,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9333,7 +9724,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9354,7 +9747,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9375,7 +9770,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9396,7 +9793,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9417,7 +9816,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9438,7 +9839,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9459,7 +9862,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9480,7 +9885,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9501,7 +9908,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9522,7 +9931,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-search.spec.js > WooCommerce Orders > Search orders",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9543,7 +9954,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-status-filter.spec.js > WooCommerce Orders > Filter Order by Status",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9564,7 +9977,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-status-filter.spec.js > WooCommerce Orders > Filter Order by Status",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9585,7 +10000,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-status-filter.spec.js > WooCommerce Orders > Filter Order by Status",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9606,7 +10023,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-status-filter.spec.js > WooCommerce Orders > Filter Order by Status",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9627,7 +10046,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-status-filter.spec.js > WooCommerce Orders > Filter Order by Status",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9648,7 +10069,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-status-filter.spec.js > WooCommerce Orders > Filter Order by Status",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9669,7 +10092,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-status-filter.spec.js > WooCommerce Orders > Filter Order by Status",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9690,7 +10115,9 @@
                             "steps": [],
                             "suite": "e2e > order\\/order-status-filter.spec.js > WooCommerce Orders > Filter Order by Status",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9711,7 +10138,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/create-grouped-product-block-editor.spec.js > General tab > Grouped product",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9732,7 +10161,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Simple product form",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9802,7 +10233,9 @@
                             ],
                             "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Create product",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9844,7 +10277,9 @@
                             ],
                             "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Create product",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9865,7 +10300,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Create product",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9915,7 +10352,9 @@
                             ],
                             "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.js > Variations tab > Create variable products",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9936,7 +10375,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.js > Variations tab > Create variable products",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9957,7 +10398,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.js > Variations tab > Create variable products",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9978,7 +10421,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.js > Variations tab > Create variable products",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -9999,7 +10444,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.js > Variations tab > Create variable products",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10020,7 +10467,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/disable-block-product-editor.spec.js > Disable block product editor",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -10045,7 +10494,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/disable-block-product-editor.spec.js > Disable block product editor",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -10070,7 +10521,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/disable-block-product-editor.spec.js > Disable block product editor",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -10095,7 +10548,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/enable-block-product-editor.spec.js > Enable block product editor > Enabled",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10116,7 +10571,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/enable-block-product-editor.spec.js > Enable block product editor > Enabled",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10137,7 +10594,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/linked-product-tab-product-block-editor.spec.js > General tab > Linked product",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10158,7 +10617,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/organization-tab-product-block-editor.spec.js > General tab > Create product - Organization tab",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10200,7 +10661,9 @@
                             ],
                             "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10246,7 +10709,9 @@
                             ],
                             "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10292,7 +10757,9 @@
                             ],
                             "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10334,7 +10801,9 @@
                             ],
                             "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10372,7 +10841,9 @@
                             ],
                             "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10393,7 +10864,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.js > Publish dropdown options",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10414,7 +10887,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.js > Publish dropdown options",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10435,7 +10910,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.js > Publish dropdown options",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10473,7 +10950,9 @@
                             ],
                             "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10511,7 +10990,9 @@
                             ],
                             "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10549,7 +11030,9 @@
                             ],
                             "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10587,7 +11070,9 @@
                             ],
                             "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10629,7 +11114,9 @@
                             ],
                             "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10671,7 +11158,9 @@
                             ],
                             "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10737,7 +11226,9 @@
                             ],
                             "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10745,27 +11236,54 @@
                         },
                         {
                             "name": "can limit purchases",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "go to product editor, inventory tab",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "ensure limit purchases is disabled",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "add 2 items to cart",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "return to product editor",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "enable limit purchases",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "update the product",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "verify you cannot order more than 1 item",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
+                                "annotations": []
                             }
                         },
                         {
@@ -10783,7 +11301,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/create-product-attributes.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -10857,7 +11377,9 @@
                             ],
                             "suite": "e2e > product\\/create-variable-product.spec.js > Add variable product",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -10927,7 +11449,9 @@
                             ],
                             "suite": "e2e > product\\/create-variations.spec.js > Add variations",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11037,7 +11561,9 @@
                             ],
                             "suite": "e2e > product\\/create-variations.spec.js > Add variations",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11103,7 +11629,9 @@
                             ],
                             "suite": "e2e > product\\/product-create-simple.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11169,7 +11697,9 @@
                             ],
                             "suite": "e2e > product\\/product-create-simple.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11231,7 +11761,9 @@
                             ],
                             "suite": "e2e > product\\/product-create-simple.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11265,7 +11797,9 @@
                             ],
                             "suite": "e2e > product\\/product-delete.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11299,7 +11833,9 @@
                             ],
                             "suite": "e2e > product\\/product-delete.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11333,7 +11869,9 @@
                             ],
                             "suite": "e2e > product\\/product-delete.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11375,7 +11913,9 @@
                             ],
                             "suite": "e2e > product\\/product-edit.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11421,7 +11961,9 @@
                             ],
                             "suite": "e2e > product\\/product-edit.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11429,27 +11971,50 @@
                         },
                         {
                             "name": "can restore regular price when bulk editing products",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "select and bulk edit the products",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "update the sale price",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "save the updates",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "verify the changes",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Update products leaving the \\"Sale > Change to\\" empty",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Verify products have their regular price again",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "e2e > product\\/product-edit.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
+                                "annotations": []
                             }
                         },
                         {
@@ -11476,7 +12041,9 @@
                             ],
                             "suite": "e2e > product\\/product-edit.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11506,7 +12073,9 @@
                             ],
                             "suite": "e2e > product\\/product-edit.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11527,7 +12096,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-grouped.spec.js > Grouped Product Page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11548,7 +12119,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-grouped.spec.js > Grouped Product Page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -11586,7 +12159,9 @@
                             ],
                             "suite": "e2e > product\\/product-images.spec.js > Products > Product Images",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11620,7 +12195,9 @@
                             ],
                             "suite": "e2e > product\\/product-images.spec.js > Products > Product Images",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11654,7 +12231,9 @@
                             ],
                             "suite": "e2e > product\\/product-images.spec.js > Products > Product Images",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11688,7 +12267,9 @@
                             ],
                             "suite": "e2e > product\\/product-images.spec.js > Products > Product Images",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11722,7 +12303,9 @@
                             ],
                             "suite": "e2e > product\\/product-images.spec.js > Products > Product Images",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11743,7 +12326,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-import-csv.spec.js > Import Products from a CSV file",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11764,7 +12349,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-import-csv.spec.js > Import Products from a CSV file",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11785,7 +12372,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-import-csv.spec.js > Import Products from a CSV file",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11831,7 +12420,9 @@
                             ],
                             "suite": "e2e > product\\/product-linked-products.spec.js > Products > Related products",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11877,7 +12468,9 @@
                             ],
                             "suite": "e2e > product\\/product-linked-products.spec.js > Products > Related products",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11923,7 +12516,9 @@
                             ],
                             "suite": "e2e > product\\/product-linked-products.spec.js > Products > Related products",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11965,7 +12560,9 @@
                             ],
                             "suite": "e2e > product\\/product-linked-products.spec.js > Products > Related products",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -11986,7 +12583,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Merchant manages reviews",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12007,7 +12606,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Merchant manages reviews",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -12032,7 +12633,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Merchant manages reviews",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12053,7 +12656,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Merchant manages reviews",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -12078,7 +12683,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Merchant manages reviews",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12099,7 +12706,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Merchant manages reviews",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12120,7 +12729,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Merchant manages reviews",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -12145,7 +12756,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Merchant manages reviews",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12166,7 +12779,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Shopper adds reviews",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12187,7 +12802,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-search.spec.js > Products > Search and View a product",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12208,7 +12825,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-search.spec.js > Products > Search and View a product",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12229,7 +12848,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-search.spec.js > Products > Search and View a product",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12250,7 +12871,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-settings.spec.js > WooCommerce Products > Downloadable Product Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12271,7 +12894,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-tags-attributes.spec.js > Browse product tags and attributes from the product page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12292,7 +12917,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-tags-attributes.spec.js > Browse product tags and attributes from the product page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12313,7 +12940,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-tags-attributes.spec.js > Browse product tags and attributes from the product page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12334,7 +12963,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-tags-attributes.spec.js > Browse product tags and attributes from the product page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12355,7 +12986,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-variable.spec.js > Variable Product Page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -12380,7 +13013,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-variable.spec.js > Variable Product Page",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [
@@ -12405,7 +13040,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-variable.spec.js > Shopper > Update variable product",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12426,7 +13063,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-variable.spec.js > Shopper > Update variable product",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12447,7 +13086,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-variable.spec.js > Shopper > Update variable product",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12468,7 +13109,9 @@
                             "steps": [],
                             "suite": "e2e > product\\/product-variable.spec.js > Shopper > Update variable product",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12610,7 +13253,9 @@
                             ],
                             "suite": "e2e > product\\/update-variations.spec.js > Update variations",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12652,7 +13297,9 @@
                             ],
                             "suite": "e2e > product\\/update-variations.spec.js > Update variations",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12690,7 +13337,9 @@
                             ],
                             "suite": "e2e > product\\/update-variations.spec.js > Update variations",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12768,7 +13417,9 @@
                             ],
                             "suite": "e2e > product\\/update-variations.spec.js > Update variations",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12830,7 +13481,9 @@
                             ],
                             "suite": "e2e > product\\/update-variations.spec.js > Update variations",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12868,7 +13521,9 @@
                             ],
                             "suite": "e2e > product\\/update-variations.spec.js > Update variations",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12889,7 +13544,9 @@
                             "steps": [],
                             "suite": "e2e > settings\\/settings-general.spec.js > WooCommerce General Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12910,7 +13567,9 @@
                             "steps": [],
                             "suite": "e2e > settings\\/settings-general.spec.js > WooCommerce General Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12931,7 +13590,9 @@
                             "steps": [],
                             "suite": "e2e > settings\\/settings-tax.spec.js > WooCommerce Tax Settings > enable",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12952,7 +13613,9 @@
                             "steps": [],
                             "suite": "e2e > settings\\/settings-tax.spec.js > WooCommerce Tax Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12973,7 +13636,9 @@
                             "steps": [],
                             "suite": "e2e > settings\\/settings-tax.spec.js > WooCommerce Tax Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -12994,7 +13659,9 @@
                             "steps": [],
                             "suite": "e2e > settings\\/settings-tax.spec.js > WooCommerce Tax Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13015,7 +13682,9 @@
                             "steps": [],
                             "suite": "e2e > settings\\/settings-tax.spec.js > WooCommerce Tax Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13036,7 +13705,9 @@
                             "steps": [],
                             "suite": "e2e > settings\\/settings-woo-com.spec.js > WooCommerce woo.com Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13057,7 +13728,9 @@
                             "steps": [],
                             "suite": "e2e > settings\\/settings-woo-com.spec.js > WooCommerce woo.com Settings",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13078,7 +13751,9 @@
                             "steps": [],
                             "suite": "e2e > settings\\/webhooks.spec.js > Manage webhooks",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13099,7 +13774,9 @@
                             "steps": [],
                             "suite": "e2e > shipping\\/shipping-classes.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13120,7 +13797,9 @@
                             "steps": [],
                             "suite": "e2e > shipping\\/shipping-classes.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13141,7 +13820,9 @@
                             "steps": [],
                             "suite": "e2e > shipping\\/shipping-zones.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13162,7 +13843,9 @@
                             "steps": [],
                             "suite": "e2e > shipping\\/shipping-zones.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13183,7 +13866,9 @@
                             "steps": [],
                             "suite": "e2e > shipping\\/shipping-zones.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13204,7 +13889,9 @@
                             "steps": [],
                             "suite": "e2e > shipping\\/shipping-zones.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13225,7 +13912,9 @@
                             "steps": [],
                             "suite": "e2e > shipping\\/shipping-zones.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13246,7 +13935,9 @@
                             "steps": [],
                             "suite": "e2e > shop\\/cart-redirection.spec.js > Cart > Redirect to cart from shop",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13267,7 +13958,9 @@
                             "steps": [],
                             "suite": "e2e > shop\\/cart-redirection.spec.js > Cart > Redirect to cart from shop",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13293,7 +13986,9 @@
                             ],
                             "suite": "e2e > shop\\/shop-search-browse-sort.spec.js > Search, browse by categories and sort items in the shop",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13323,7 +14018,9 @@
                             ],
                             "suite": "e2e > shop\\/shop-search-browse-sort.spec.js > Search, browse by categories and sort items in the shop",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13353,7 +14050,9 @@
                             ],
                             "suite": "e2e > shop\\/shop-search-browse-sort.spec.js > Search, browse by categories and sort items in the shop",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13374,7 +14073,9 @@
                             "steps": [],
                             "suite": "e2e > shop\\/shop-title-after-deletion.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13395,7 +14096,9 @@
                             "steps": [],
                             "suite": "e2e > user\\/lost-password.spec.js > Can go to lost password page and submit the form",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13416,7 +14119,9 @@
                             "steps": [],
                             "suite": "e2e > user\\/lost-password.spec.js > Can go to lost password page and submit the form",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13455,7 +14160,7 @@
                             "suite": "e2e > user\\/users-create.spec.js",
                             "attachments": [],
                             "stdout": [
-                                "Deleting user 34\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -13498,7 +14203,9 @@
                             ],
                             "suite": "e2e > user\\/users-manage.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13524,7 +14231,9 @@
                             ],
                             "suite": "e2e > user\\/users-manage.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13558,7 +14267,9 @@
                             ],
                             "suite": "e2e > user\\/users-manage.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13592,7 +14303,9 @@
                             ],
                             "suite": "e2e > user\\/users-manage.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13614,7 +14327,7 @@
                             "suite": "e2e > wp-core\\/create-page.spec.js > Can create a new page",
                             "attachments": [],
                             "stdout": [
-                                "Deleting page 653\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -13637,7 +14350,7 @@
                             "suite": "e2e > wp-core\\/create-post.spec.js > Can create a new post",
                             "attachments": [],
                             "stdout": [
-                                "Deleting post 655\\n"
+                                "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
@@ -13664,7 +14377,9 @@
                             ],
                             "suite": "e2e > wp-core\\/post-comments.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -13676,16 +14391,7 @@
         },
         {
             "debug_log": {
-                "generic": [
-                    {
-                        "count": "1",
-                        "message": "PHP Deprecated: Function Automattic\\\\WooCommerce\\\\Admin\\\\WCAdminHelper::is_store_page is deprecated since version 9.8.0! Use is_current_page_store_page instead. in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6114"
-                    },
-                    {
-                        "count": "1",
-                        "message": "WordPress database error Table \'wordpress.wp_wc_tax_rate_classes\' doesn\'t exist for query \\n\\t\\t\\t\\tSELECT * FROM wp_wc_tax_rate_classes ORDER BY name;\\n\\n\\t\\t\\t\\t made by include(\'phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/php\\/boot-phar.php\'), include(\'phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/wp-cli.php\'), WP_CLI\\\\bootstrap, WP_CLI\\\\Bootstrap\\\\LaunchRunner->process, WP_CLI\\\\Runner->start, WP_CLI\\\\Runner->run_command_and_exit, WP_CLI\\\\Runner->run_command, WP_CLI\\\\Dispatcher\\\\Subcommand->invoke, call_user_func, WP_CLI\\\\Dispatcher\\\\CommandFactory::WP_CLI\\\\Dispatcher\\\\{closure}, call_user_func, Plugin_Command->activate, activate_plugin, plugin_sandbox_scrape, include_once(\'\\/plugins\\/woocommerce\\/woocommerce.php\'), WC, WooCommerce::instance, WooCommerce->__construct, WooCommerce->includes, include_once(\'\\/plugins\\/woocommerce\\/includes\\/class-wc-cli.php\'), WC_CLI->__construct, WC_CLI->hooks, WP_CLI::add_hook, WC_CLI_Runner::after_wp_load, do_action(\'rest_api_init\'), WP_Hook->do_action, WP_Hook->apply_filters, Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init->rest_api_init, WC_REST_Taxes_V1_Controller->register_routes, Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Taxes->get_collection_params, WC_REST_Taxes_V1_Controller->get_collection_params, WP_REST_Controller->get_context_param, WC_REST_Taxes_Controller->get_item_schema, WC_REST_Taxes_V1_Controller->get_item_schema, WC_Tax::get_tax_class_slugs, WC_Tax::get_tax_rate_classes"
-                    }
-                ]
+                "generic": []
             }
         }
     ]

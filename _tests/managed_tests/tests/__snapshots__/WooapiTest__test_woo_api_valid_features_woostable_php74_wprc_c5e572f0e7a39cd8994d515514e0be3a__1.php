@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "258 total, 255 passed, 0 failed, 3 skipped.",
+            "test_summary": "271 total, 265 passed, 0 failed, 6 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -51,14 +51,121 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 18,
-                "numPendingTestSuites": 2,
-                "numTotalTestSuites": 20,
+                "numPassedTestSuites": 21,
+                "numPendingTestSuites": 4,
+                "numTotalTestSuites": 25,
                 "numFailedTests": 0,
-                "numPassedTests": 255,
-                "numPendingTests": 3,
-                "numTotalTests": 258,
+                "numPassedTests": 265,
+                "numPendingTests": 6,
+                "numTotalTests": 271,
                 "testResults": [
+                    {
+                        "file": "..\\/fixtures\\/token.teardown.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "remove consumer key": [
+                                {
+                                    "title": "remove consumer key",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "..\\/fixtures\\/install-wc.setup.js",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Install WC using WC Beta Tester": [
+                                {
+                                    "title": "Install WC using WC Beta Tester",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "..\\/fixtures\\/auth.setup.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "authenticate admin": [
+                                {
+                                    "title": "authenticate admin",
+                                    "status": "passed"
+                                }
+                            ],
+                            "authenticate customer": [
+                                {
+                                    "title": "authenticate customer",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "..\\/fixtures\\/token.setup.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "generate consumer key": [
+                                {
+                                    "title": "generate consumer key",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "..\\/fixtures\\/site.setup.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "configure HPOS": [
+                                {
+                                    "title": "configure HPOS",
+                                    "status": "passed"
+                                }
+                            ],
+                            "convert Cart and Checkout pages to shortcode": [
+                                {
+                                    "title": "convert Cart and Checkout pages to shortcode",
+                                    "status": "passed"
+                                }
+                            ],
+                            "disable coming soon": [
+                                {
+                                    "title": "disable coming soon",
+                                    "status": "passed"
+                                }
+                            ],
+                            "disable onboarding wizard": [
+                                {
+                                    "title": "disable onboarding wizard",
+                                    "status": "passed"
+                                }
+                            ],
+                            "disable new payments settings page": [
+                                {
+                                    "title": "disable new payments settings page",
+                                    "status": "passed"
+                                }
+                            ],
+                            "determine if multisite": [
+                                {
+                                    "title": "determine if multisite",
+                                    "status": "passed"
+                                }
+                            ],
+                            "general settings": [
+                                {
+                                    "title": "general settings",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
                     {
                         "file": "api-tests\\/coupons\\/coupons.test.js",
                         "status": "passed",
@@ -996,7 +1103,7 @@
                     {
                         "file": "api-tests\\/settings\\/settings-crud.test.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Settings API tests: CRUD": [],
                             "Settings API tests: CRUD > List all settings groups": [
@@ -1062,7 +1169,13 @@
                             "Settings API tests: CRUD > List all Email settings options": [
                                 {
                                     "title": "can retrieve all email settings",
-                                    "status": "passed"
+                                    "status": "pending"
+                                }
+                            ],
+                            "Settings API tests: CRUD > List all Email settings options with Email Improvements feature enabled": [
+                                {
+                                    "title": "can retrieve all email settings with Email Improvements feature enabled",
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Advanced settings options": [
@@ -1389,7 +1502,7 @@
                         }
                     }
                 ],
-                "summary": "258 total, 255 passed, 0 failed, 3 skipped."
+                "summary": "271 total, 265 passed, 0 failed, 6 skipped."
             }
         },
         {
@@ -1399,17 +1512,279 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 258,
-                        "passed": 255,
+                        "tests": 271,
+                        "passed": 265,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 3,
+                        "skipped": 6,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
                         "suites": 0
                     },
                     "tests": [
+                        {
+                            "name": "remove consumer key",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/token.teardown.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "consumer token teardown > ..\\/fixtures\\/token.teardown.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "Install WC using WC Beta Tester",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/install-wc.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "install wc > ..\\/fixtures\\/install-wc.setup.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "description": "Skipping installing WC using WC Beta Tester; INSTALL_WC not found."
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "authenticate admin",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/auth.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "global authentication > ..\\/fixtures\\/auth.setup.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "authenticate customer",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/auth.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "global authentication > ..\\/fixtures\\/auth.setup.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "generate consumer key",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/token.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "consumer token setup > ..\\/fixtures\\/token.setup.js",
+                            "attachments": [],
+                            "stdout": [
+                                "e2e-api-access-HASHNORMALIZED consumer token successfully created\\n"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "configure HPOS",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/site.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
+                            "attachments": [],
+                            "stdout": [
+                                "DISABLE_HPOS: undefined\\n",
+                                "HPOS configuration (woocommerce_custom_orders_table_enabled): yes - High-performance order storage (recommended)\\n"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "convert Cart and Checkout pages to shortcode",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/site.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "disable coming soon",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/site.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "disable onboarding wizard",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/site.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "disable new payments settings page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/site.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "determine if multisite",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/site.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
+                        {
+                            "name": "general settings",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/site.setup.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            }
+                        },
                         {
                             "name": "can create a coupon",
                             "status": "passed",
@@ -1424,6 +1799,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/coupons\\/coupons.test.js > Coupons API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1442,6 +1820,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/coupons\\/coupons.test.js > Coupons API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1460,6 +1841,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/coupons\\/coupons.test.js > Coupons API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1478,6 +1862,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/coupons\\/coupons.test.js > Coupons API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1496,6 +1883,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/coupons\\/coupons.test.js > Batch update coupons",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1514,6 +1904,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/coupons\\/coupons.test.js > Batch update coupons",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1532,6 +1925,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/coupons\\/coupons.test.js > Batch update coupons",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1550,6 +1946,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/coupons\\/coupons.test.js > List coupons",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1568,6 +1967,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/coupons\\/coupons.test.js > List coupons",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1586,6 +1988,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/coupons\\/coupons.test.js > List coupons",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1604,6 +2009,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/coupons\\/coupons.test.js > List coupons",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1622,6 +2030,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/coupons\\/coupons.test.js > Add coupon to order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1640,6 +2051,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Retrieve after env setup",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1658,6 +2072,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Retrieve after env setup",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1676,6 +2093,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Retrieve after env setup",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1694,6 +2114,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Retrieve after env setup",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1712,6 +2135,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Retrieve after env setup",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1730,6 +2156,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Create a customer",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1748,6 +2177,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Retrieve after create",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1766,6 +2198,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Retrieve after create",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1784,6 +2219,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Update a customer",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1802,6 +2240,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Update a customer",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1820,6 +2261,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Update a customer",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1838,6 +2282,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Update a customer",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1856,6 +2303,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Update a customer",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1874,6 +2324,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Update a customer",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1892,6 +2345,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Delete a customer",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1910,6 +2366,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Batch update customers",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1928,6 +2387,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Batch update customers",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1946,6 +2408,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/customers\\/customers-crud.test.js > Customers API tests: CRUD > Batch update customers",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1964,6 +2429,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/data\\/data-crud.test.js > Data API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -1982,6 +2450,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/data\\/data-crud.test.js > Data API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": [
                                     {
@@ -2004,6 +2475,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/data\\/data-crud.test.js > Data API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2022,6 +2496,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/data\\/data-crud.test.js > Data API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2040,6 +2517,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/hello\\/hello.test.js > Test API connectivity",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2058,6 +2538,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/hello\\/hello.test.js > Test API connectivity",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2076,6 +2559,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/order-complex.test.js > Orders API test",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2094,6 +2580,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/order-search.test.js > Order Search API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2112,6 +2601,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/order-search.test.js > Order Search API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2130,6 +2622,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/order-search.test.js > Order Search API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2148,6 +2643,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/order-search.test.js > Order Search API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2166,6 +2664,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/order-search.test.js > Order Search API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2184,6 +2685,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/order-search.test.js > Order Search API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2202,6 +2706,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/order-search.test.js > Order Search API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2220,6 +2727,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/order-search.test.js > Order Search API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2238,6 +2748,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/order-search.test.js > Order Search API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2256,6 +2769,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/order-search.test.js > Order Search API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2274,6 +2790,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/order-search.test.js > Order Search API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2292,6 +2811,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/order-search.test.js > Order Search API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2310,6 +2832,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/order-search.test.js > Order Search API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2328,6 +2853,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/order-search.test.js > Order Search API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2346,6 +2874,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/order-search.test.js > Order Search API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2364,6 +2895,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Create an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2382,6 +2916,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Create an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2400,6 +2937,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Create an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2418,6 +2958,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Create an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2436,6 +2979,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Create an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2454,6 +3000,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Create an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2472,6 +3021,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Create an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2490,6 +3042,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Create an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2508,6 +3063,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Create an order > Order Notes tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2526,6 +3084,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Create an order > Order Notes tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2544,6 +3105,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Create an order > Order Notes tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2562,6 +3126,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Create an order > Order Notes tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2580,6 +3147,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Create an order > Order Notes tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2598,6 +3168,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Retrieve an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2616,6 +3189,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Update an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2634,6 +3210,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Update an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2652,6 +3231,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Update an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2670,6 +3252,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Update an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2688,6 +3273,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Update an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2706,6 +3294,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Update an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2724,6 +3315,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Update an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2742,6 +3336,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Update an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2760,6 +3357,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Update an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2778,6 +3378,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Update an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2796,6 +3399,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders-crud.test.js > Orders API tests: CRUD > Delete an order",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2814,6 +3420,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders.test.js > Orders API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2832,6 +3441,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders.test.js > Orders API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2850,6 +3462,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders.test.js > Orders API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2868,6 +3483,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders.test.js > Orders API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2886,6 +3504,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders.test.js > Orders API tests > List all orders",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2904,6 +3525,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders.test.js > Orders API tests > List all orders",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2922,6 +3546,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders.test.js > Orders API tests > List all orders",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2940,6 +3567,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders.test.js > Orders API tests > List all orders",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2958,6 +3588,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders.test.js > Orders API tests > List all orders",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2976,6 +3609,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders.test.js > Orders API tests > List all orders",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -2994,6 +3630,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders.test.js > Orders API tests > List all orders",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3012,6 +3651,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders.test.js > Orders API tests > List all orders",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3030,6 +3672,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders.test.js > Orders API tests > orderby",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3048,6 +3693,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders.test.js > Orders API tests > orderby",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3066,6 +3714,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders.test.js > Orders API tests > orderby",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3084,6 +3735,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/orders\\/orders.test.js > Orders API tests > orderby",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3102,6 +3756,11 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/payment-gateways\\/payment-gateways-crud.test.js > Payment Gateways API tests",
+                            "attachments": [],
+                            "stdout": [
+                                "apiRequestContext.post: Invalid URL [NORMALIZED SET OPTION]"
+                            ],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3120,6 +3779,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/payment-gateways\\/payment-gateways-crud.test.js > Payment Gateways API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3138,6 +3800,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/payment-gateways\\/payment-gateways-crud.test.js > Payment Gateways API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3156,6 +3821,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3174,6 +3842,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3192,6 +3863,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3210,6 +3884,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3228,6 +3905,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3246,6 +3926,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3264,6 +3947,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3282,6 +3968,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3300,6 +3989,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3318,6 +4010,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3336,6 +4031,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3354,6 +4052,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3372,6 +4073,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3390,6 +4094,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3408,6 +4115,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3426,6 +4136,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3444,6 +4157,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3462,6 +4178,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3480,6 +4199,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3498,6 +4220,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products > orderby",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3516,6 +4241,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products > orderby",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3534,6 +4262,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products > orderby",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3552,6 +4283,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products > orderby",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3570,6 +4304,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products > orderby",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3588,6 +4325,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products > orderby",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3606,6 +4346,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products > orderby",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3624,6 +4367,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products > orderby",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3642,6 +4388,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products > orderby",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": [
                                     {
@@ -3664,6 +4413,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products > orderby",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": [
                                     {
@@ -3686,6 +4438,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/product-list.test.js > Products API tests: List All Products > List all products > orderby",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3704,6 +4459,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3722,6 +4480,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3740,6 +4501,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3758,6 +4522,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3776,6 +4543,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3794,6 +4564,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product attributes tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3812,6 +4585,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product attributes tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3830,6 +4606,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product attributes tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3848,6 +4627,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product attributes tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3866,6 +4648,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product attributes tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3884,6 +4669,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product attributes tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3902,6 +4690,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product attributes tests: CRUD > Product attribute terms tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3920,6 +4711,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product attributes tests: CRUD > Product attribute terms tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3938,6 +4732,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product attributes tests: CRUD > Product attribute terms tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3956,6 +4753,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product attributes tests: CRUD > Product attribute terms tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3974,6 +4774,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product attributes tests: CRUD > Product attribute terms tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3992,6 +4795,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product attributes tests: CRUD > Product attribute terms tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4010,6 +4816,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product categories tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4028,6 +4837,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product categories tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4046,6 +4858,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product categories tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4064,6 +4879,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product categories tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4082,6 +4900,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product categories tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4100,6 +4921,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product categories tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4118,6 +4942,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product review tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4136,6 +4963,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product review tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4154,6 +4984,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product review tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4172,6 +5005,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product review tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4190,6 +5026,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product review tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4208,6 +5047,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product review tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4226,6 +5068,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product review tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4244,6 +5089,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product review tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4262,6 +5110,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product shipping classes tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4280,6 +5131,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product shipping classes tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4298,6 +5152,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product shipping classes tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4316,6 +5173,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product shipping classes tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4334,6 +5194,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product shipping classes tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4352,6 +5215,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product shipping classes tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4370,6 +5236,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product tags tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4388,6 +5257,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product tags tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4406,6 +5278,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product tags tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4424,6 +5299,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product tags tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4442,6 +5320,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product tags tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4460,6 +5341,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product tags tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4478,6 +5362,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product variation tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4496,6 +5383,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product variation tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4514,6 +5404,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product variation tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4532,6 +5425,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product variation tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4550,6 +5446,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product variation tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4568,6 +5467,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product variation tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4586,6 +5488,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Product variation tests: CRUD",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4604,6 +5509,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Batch update products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4622,6 +5530,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Batch update products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4640,6 +5551,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/products\\/products-crud.test.js > Products API tests: CRUD > Batch update products",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4658,6 +5572,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/refunds\\/refunds.test.js > Refunds API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4676,6 +5593,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/refunds\\/refunds.test.js > Refunds API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4694,6 +5614,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/refunds\\/refunds.test.js > Refunds API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4712,6 +5635,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/refunds\\/refunds.test.js > Refunds API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4730,6 +5656,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/refunds\\/refunds.test.js > Refunds API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4748,6 +5677,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/reports\\/reports-crud.test.js > Reports API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4766,6 +5698,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/reports\\/reports-crud.test.js > Reports API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4784,6 +5719,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/reports\\/reports-crud.test.js > Reports API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4802,6 +5740,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/reports\\/reports-crud.test.js > Reports API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4820,6 +5761,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/reports\\/reports-crud.test.js > Reports API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4838,6 +5782,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/reports\\/reports-crud.test.js > Reports API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4856,6 +5803,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/reports\\/reports-crud.test.js > Reports API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4874,6 +5824,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/reports\\/reports-crud.test.js > Reports API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4892,6 +5845,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all settings groups",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4910,6 +5866,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all settings options",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4928,6 +5887,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > Retrieve a settings option",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4946,6 +5908,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > Update a settings option",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4964,6 +5929,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > Batch Update a settings option",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -4982,6 +5950,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Products settings options",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5000,6 +5971,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Tax settings options",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5018,6 +5992,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Shipping settings options",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5036,6 +6013,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Checkout settings options",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5054,17 +6034,20 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Account settings options",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
                         },
                         {
                             "name": "can retrieve all email settings",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-crud.test.js",
@@ -5072,8 +6055,40 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Email settings options",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "can retrieve all email settings with Email Improvements feature enabled",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/settings-crud.test.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Email settings options with Email Improvements feature enabled",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -5090,6 +6105,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Advanced settings options",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5108,6 +6126,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Email New Order settings",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5126,6 +6147,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Email Failed Order settings",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5144,6 +6168,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Email Customer On Hold Order settings",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5162,6 +6189,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Email Customer Processing Order settings",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5180,6 +6210,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Email Customer Completed Order settings",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5198,6 +6231,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Email Customer Refunded Order settings",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5216,6 +6252,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Email Customer Invoice settings",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5234,6 +6273,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Email Customer Note settings",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5252,6 +6294,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Email Customer Reset Password settings",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5270,6 +6315,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Email Customer New Account settings",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5288,6 +6336,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-method.test.js > Shipping methods API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5306,6 +6357,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-method.test.js > Shipping methods API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5324,6 +6378,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-method.test.js > Shipping methods API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5342,6 +6399,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-method.test.js > Shipping methods API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5360,6 +6420,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-method.test.js > Shipping methods API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5378,6 +6441,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-method.test.js > Shipping methods API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5396,6 +6462,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-method.test.js > Shipping methods API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5414,6 +6483,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-method.test.js > Shipping methods API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5432,6 +6504,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-zones.test.js > Shipping zones API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5450,6 +6525,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-zones.test.js > Shipping zones API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5468,6 +6546,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-zones.test.js > Shipping zones API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5486,6 +6567,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-zones.test.js > Shipping zones API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5504,6 +6588,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-zones.test.js > Shipping zones API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5522,6 +6609,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-zones.test.js > Shipping zones API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5540,6 +6630,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-zones.test.js > Shipping zones API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5558,6 +6651,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-zones.test.js > Shipping zones API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5576,6 +6672,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-zones.test.js > Shipping zones API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5594,6 +6693,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-zones.test.js > Shipping zones API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5612,6 +6714,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/system-status\\/system-status-crud.test.js > System Status API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5630,6 +6735,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/system-status\\/system-status-crud.test.js > System Status API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5648,6 +6756,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/system-status\\/system-status-crud.test.js > System Status API tests",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5666,6 +6777,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/taxes\\/tax-classes-crud.test.js > Tax Classes API tests: CRUD > Create a tax class",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5684,6 +6798,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/taxes\\/tax-classes-crud.test.js > Tax Classes API tests: CRUD > Create a tax class",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5702,6 +6819,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/taxes\\/tax-classes-crud.test.js > Tax Classes API tests: CRUD > Retrieve after create",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5720,6 +6840,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/taxes\\/tax-classes-crud.test.js > Tax Classes API tests: CRUD > Retrieve after create",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5738,6 +6861,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/taxes\\/tax-classes-crud.test.js > Tax Classes API tests: CRUD > Update a tax class",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5756,6 +6882,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/taxes\\/tax-classes-crud.test.js > Tax Classes API tests: CRUD > Delete a tax class",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5774,6 +6903,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/taxes\\/tax-rates-crud.test.js > Tax Rates API tests: CRUD > Create a tax rate",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5792,6 +6924,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/taxes\\/tax-rates-crud.test.js > Tax Rates API tests: CRUD > Retrieve after create",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5810,6 +6945,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/taxes\\/tax-rates-crud.test.js > Tax Rates API tests: CRUD > Retrieve after create",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5828,6 +6966,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/taxes\\/tax-rates-crud.test.js > Tax Rates API tests: CRUD > Update a tax rate",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5846,6 +6987,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/taxes\\/tax-rates-crud.test.js > Tax Rates API tests: CRUD > Update a tax rate",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5864,6 +7008,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/taxes\\/tax-rates-crud.test.js > Tax Rates API tests: CRUD > Delete a tax rate",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5882,6 +7029,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/taxes\\/tax-rates-crud.test.js > Tax Rates API tests: CRUD > Batch tax rate operations",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5900,6 +7050,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/taxes\\/tax-rates-crud.test.js > Tax Rates API tests: CRUD > Batch tax rate operations",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5918,6 +7071,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/taxes\\/tax-rates-crud.test.js > Tax Rates API tests: CRUD > Batch tax rate operations",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5936,6 +7092,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/webhooks\\/webhooks-crud.test.js > Webhooks API tests > Create a webhook",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5954,6 +7113,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/webhooks\\/webhooks-crud.test.js > Webhooks API tests > Retrieve after create",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5972,6 +7134,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/webhooks\\/webhooks-crud.test.js > Webhooks API tests > Retrieve after create",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5990,6 +7155,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/webhooks\\/webhooks-crud.test.js > Webhooks API tests > Update a webhook",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -6008,6 +7176,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/webhooks\\/webhooks-crud.test.js > Webhooks API tests > Delete a webhook",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -6026,6 +7197,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/webhooks\\/webhooks-crud.test.js > Webhooks API tests > Batch webhook operations",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -6044,6 +7218,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/webhooks\\/webhooks-crud.test.js > Webhooks API tests > Batch webhook operations",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -6062,6 +7239,9 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/webhooks\\/webhooks-crud.test.js > Webhooks API tests > Batch webhook operations",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -6074,7 +7254,7 @@
             "debug_log": {
                 "generic": [
                     {
-                        "count": "600",
+                        "count": "500",
                         "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                     }
                 ]

@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "271 total, 267 passed, 0 failed, 4 skipped.",
+            "test_summary": "271 total, 265 passed, 0 failed, 6 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -51,12 +51,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 22,
-                "numPendingTestSuites": 3,
+                "numPassedTestSuites": 21,
+                "numPendingTestSuites": 4,
                 "numTotalTestSuites": 25,
                 "numFailedTests": 0,
-                "numPassedTests": 267,
-                "numPendingTests": 4,
+                "numPassedTests": 265,
+                "numPendingTests": 6,
                 "numTotalTests": 271,
                 "testResults": [
                     {
@@ -1103,7 +1103,7 @@
                     {
                         "file": "api-tests\\/settings\\/settings-crud.test.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Settings API tests: CRUD": [],
                             "Settings API tests: CRUD > List all settings groups": [
@@ -1169,13 +1169,13 @@
                             "Settings API tests: CRUD > List all Email settings options": [
                                 {
                                     "title": "can retrieve all email settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Email settings options with Email Improvements feature enabled": [
                                 {
                                     "title": "can retrieve all email settings with Email Improvements feature enabled",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Settings API tests: CRUD > List all Advanced settings options": [
@@ -1502,7 +1502,7 @@
                         }
                     }
                 ],
-                "summary": "271 total, 267 passed, 0 failed, 4 skipped."
+                "summary": "271 total, 265 passed, 0 failed, 6 skipped."
             }
         },
         {
@@ -1513,10 +1513,10 @@
                     },
                     "summary": {
                         "tests": 271,
-                        "passed": 267,
+                        "passed": 265,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 4,
+                        "skipped": 6,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -3758,7 +3758,6 @@
                             "suite": "api > api-tests\\/payment-gateways\\/payment-gateways-crud.test.js > Payment Gateways API tests",
                             "attachments": [],
                             "stdout": [
-                                "apiRequestContext.post: 400 Bad Request [NORMALIZED DELETE OPTION FAILED]",
                                 "apiRequestContext.post: Invalid URL [NORMALIZED SET OPTION]"
                             ],
                             "stderr": [],
@@ -6044,11 +6043,11 @@
                         },
                         {
                             "name": "can retrieve all email settings",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-crud.test.js",
@@ -6060,16 +6059,20 @@
                             "stdout": [],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can retrieve all email settings with Email Improvements feature enabled",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-crud.test.js",
@@ -6081,7 +6084,11 @@
                             "stdout": [],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -7247,12 +7254,8 @@
             "debug_log": {
                 "generic": [
                     {
-                        "count": "600",
+                        "count": "500",
                         "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
-                    },
-                    {
-                        "count": "1",
-                        "message": "WordPress database error Table \'wordpress.wp_wc_tax_rate_classes\' doesn\'t exist for query \\n\\t\\t\\t\\tSELECT * FROM wp_wc_tax_rate_classes ORDER BY name;\\n\\n\\t\\t\\t\\t made by include(\'phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/php\\/boot-phar.php\'), include(\'phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/wp-cli\\/wp-cli\\/php\\/wp-cli.php\'), WP_CLI\\\\bootstrap, WP_CLI\\\\Bootstrap\\\\LaunchRunner->process, WP_CLI\\\\Runner->start, WP_CLI\\\\Runner->run_command_and_exit, WP_CLI\\\\Runner->run_command, WP_CLI\\\\Dispatcher\\\\Subcommand->invoke, call_user_func, WP_CLI\\\\Dispatcher\\\\CommandFactory::WP_CLI\\\\Dispatcher\\\\{closure}, call_user_func, Plugin_Command->activate, activate_plugin, plugin_sandbox_scrape, include_once(\'\\/plugins\\/woocommerce\\/woocommerce.php\'), WC, WooCommerce::instance, WooCommerce->__construct, WooCommerce->includes, include_once(\'\\/plugins\\/woocommerce\\/includes\\/class-wc-cli.php\'), WC_CLI->__construct, WC_CLI->hooks, WP_CLI::add_hook, WC_CLI_Runner::after_wp_load, do_action(\'rest_api_init\'), WP_Hook->do_action, WP_Hook->apply_filters, Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Init->rest_api_init, WC_REST_Taxes_V1_Controller->register_routes, Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Taxes->get_collection_params, WC_REST_Taxes_V1_Controller->get_collection_params, WP_REST_Controller->get_context_param, WC_REST_Taxes_Controller->get_item_schema, WC_REST_Taxes_V1_Controller->get_item_schema, WC_Tax::get_tax_class_slugs, WC_Tax::get_tax_rate_classes"
                     }
                 ]
             }
