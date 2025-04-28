@@ -2,19 +2,23 @@
 
 namespace QIT_CLI\LocalTests\E2E;
 
+use RuntimeException;
 use QIT_CLI\App;
-use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 
 /**
- * Handles per-plugin test running (DB restore, local setup, npm calls, etc.).
+ * Handles per-plugin test flow:
+ * - DB restore (except for the first plugin)
+ * - Lifecycle setup scripts
+ * - Running the user-defined test.command
+ * - Lifecycle teardown
+ * - Copying artifacts (CTRF / Allure)
  */
 class ExtensionTestRunner {
 	/**
@@ -27,148 +31,166 @@ class ExtensionTestRunner {
 	 */
 	protected $test_result = null;
 
-	/**
-	 * @var QITE2EConfig
-	 */
-	protected $qit_e2e_config;
-
-	/**
-	 * Constructor
-	 *
-	 * @param Docker $docker
-	 */
-	public function __construct( Docker $docker, QITE2EConfig $qit_e2e_config ) {
-		$this->docker         = $docker;
-		$this->qit_e2e_config = $qit_e2e_config;
+	public function __construct( Docker $docker ) {
+		$this->docker = $docker;
 	}
 
 	/**
-	 * Set the TestResult instance once it's available
-	 *
-	 * @param TestResult $test_result
+	 * Attach the shared TestResult instance so we can record partial CTRF data.
 	 */
-	public function set_test_result( TestResult $test_result ) {
+	public function set_test_result( TestResult $test_result ): void {
 		$this->test_result = $test_result;
 	}
 
 	/**
-	 * Restores DB, runs the plugin's local setups, calls `npm run qit-e2e`, runs teardown,
-	 * and copies artifacts out.
+	 * Runs all steps for a single plugin with action="test":
+	 * - DB import (unless first)
+	 * - lifecycle.setup scripts
+	 * - test.command
+	 * - lifecycle.teardown
+	 * - Copies CTRF and Allure artifacts
 	 *
-	 * @param E2EEnvInfo   $env_info
-	 * @param array        $test_item
+	 * @param E2EEnvInfo $env_info
+	 * @param array $test_item
 	 * @param SymfonyStyle $io
+	 * @param bool $is_first
 	 *
-	 * @return int
+	 * @return int Command::SUCCESS or Command::FAILURE
 	 */
-	public function run_single_plugin_tests( E2EEnvInfo $env_info, array $test_item, SymfonyStyle $io, bool $is_first ) {
-		$plugin_dir = $test_item['path_in_host'];
-		$config     = $this->qit_e2e_config->load_config( $plugin_dir );
+	public function run_single_plugin_tests(
+		E2EEnvInfo $env_info,
+		array $test_item,
+		SymfonyStyle $io,
+		bool $is_first
+	): int {
+		$plugin_dir = $test_item['path_in_host'] ?? '';
 		$slug       = $test_item['slug'] ?? 'unknown';
 
+		// Load config from $test_item['config'] (stored in orchestrator)
+		$config = $test_item['config'] ?? [];
+
+		if ( ! $plugin_dir || ! is_dir( $plugin_dir ) ) {
+			$io->error( "Invalid or missing plugin directory for {$slug}" );
+
+			return Command::FAILURE;
+		}
+
+		// 1) Restore DB if not the first plugin
 		if ( ! $is_first ) {
-			// 1) Restore DB
-			$io->writeln( '<comment>[db import] for ' . $slug . '</comment>' );
+			$io->writeln( "<comment>[db import] for {$slug}</comment>" );
 			$this->docker->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql' ] );
 		}
 
-		// 3) Run $config['setup'] scripts
-		foreach ( $config['setup'] as $script ) {
-			$this->run_script_if_exists(
-				$env_info,
-				$test_item,
-				rtrim( $plugin_dir, '/' ) . '/' . $script,
-				'Isolated Setup',
-				$io
-			);
-		}
-
-		// 3) "npm install" (if needed) and "npm run qit-e2e" on the host
-		$host_path = $test_item['path_in_host'] ?? '';
-		$io->section( "Running 'npm run qit-e2e' on plugin: " . $slug );
-
-		$code = Command::SUCCESS;
-
-		try {
-			if ( ! is_dir( $host_path . '/node_modules' ) ) {
-				$io->text( "No 'node_modules' found in {$host_path}, running npm install..." );
-				$install_process = new Process( [ 'npm', 'install' ], $host_path );
-				$install_exit    = $install_process->run( function ( $type, $buffer ) use ( $io ) {
-					if ( $type === Process::ERR ) {
-						$io->write( $buffer, false, OutputInterface::OUTPUT_RAW );
-					} else {
-						$io->write( $buffer );
-					}
-				} );
-
-				if ( $install_exit !== 0 ) {
-					throw new \RuntimeException(
-						"npm install failed:\n" . $install_process->getErrorOutput()
-					);
-				}
-			}
-
-			// Build the full command: `npm run qit-e2e -- <runnerArgs>`.
-			$test_cmd = [ 'npm', 'run', 'qit-e2e' ];
-			if ( ! empty( $env_info->runner_args ) ) {
-				$test_cmd[] = '--';
-				$test_cmd   = array_merge( $test_cmd, $env_info->runner_args );
-			}
-
-			$docker_env_vars = App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?: [];
-
-			$test_process = new Process( $test_cmd, $host_path );
-			$test_process->setEnv( array_merge( $docker_env_vars, [
-				'IS_QIT'       => 'true',
-				'QIT_SITE_URL' => $env_info->site_url,
-			] ) );
-			$test_exit = $test_process->run( function ( $type, $buffer ) use ( $io ) {
-				if ( $type === Process::ERR ) {
-					$io->write( $buffer, false, OutputInterface::OUTPUT_RAW );
-				} else {
-					$io->write( $buffer );
-				}
-			} );
-
-			if ( $test_exit !== 0 ) {
-				throw new \RuntimeException(
-					"npm run qit-e2e failed:\n" . $test_process->getErrorOutput()
+		// 2) lifecycle.setup scripts
+		if ( ! empty( $config['lifecycle']['setup'] ) && is_array( $config['lifecycle']['setup'] ) ) {
+			foreach ( $config['lifecycle']['setup'] as $script ) {
+				$this->run_script_if_exists(
+					$env_info,
+					$test_item,
+					rtrim( $plugin_dir, '/' ) . '/' . $script,
+					'Isolated Setup',
+					$io
 				);
 			}
-		} catch ( \Exception $e ) {
-			$io->error( "Plugin $slug E2E test error on host: " . $e->getMessage() );
-			$code = Command::FAILURE;
 		}
 
-		// 3) Immediately post-process CTRF if it exists, adding pluginSlug and phase = Test
-		$ctrf_file = $host_path . '/results/ctrf.json';
-		if ( file_exists( $ctrf_file ) ) {
-			$this->add_extra_ctrf_data_to_extension_tests( $ctrf_file, $slug );
+		// 3) Run test.command
+		$code = $this->run_test_command( $env_info, $plugin_dir, $slug, $config, $io );
+
+		// 4) If CTRF results exist, add pluginSlug
+		$this->tag_ctrf_with_plugin_slug( $plugin_dir, $slug, $config );
+
+		// 5) lifecycle.teardown
+		if ( ! empty( $config['lifecycle']['teardown'] ) && is_array( $config['lifecycle']['teardown'] ) ) {
+			foreach ( $config['lifecycle']['teardown'] as $script ) {
+				$this->run_script_if_exists(
+					$env_info,
+					$test_item,
+					rtrim( $plugin_dir, '/' ) . '/' . $script,
+					'Isolated Teardown',
+					$io
+				);
+			}
 		}
 
-		// 4) plugin teardown
-		foreach ( $config['teardown'] as $script ) {
-			$this->run_script_if_exists(
-				$env_info,
-				$test_item,
-				rtrim( $plugin_dir, '/' ) . '/' . $script,
-				'Isolated Teardown',
-				$io
-			);
-		}
-
-		// 5) Collect artifacts
-		$this->collect_plugin_artifacts( $test_item, $io );
+		// 6) Copy artifacts
+		$this->collect_plugin_artifacts( $test_item, $config, $io );
 
 		return $code;
 	}
 
-	protected function add_extra_ctrf_data_to_extension_tests( string $ctrf_file, string $slug ) {
+	/**
+	 * Execute the test.command (e.g. "npx playwright test") in the plugin's directory.
+	 * Return Command::SUCCESS or Command::FAILURE.
+	 */
+	protected function run_test_command(
+		E2EEnvInfo $env_info,
+		string $plugin_dir,
+		string $slug,
+		array $config,
+		SymfonyStyle $io
+	): int {
+		if ( empty( $config['test']['command'] ) ) {
+			$io->error( "No test.command defined in qit-e2e.json for plugin: {$slug}" );
+
+			return Command::FAILURE;
+		}
+
+		$test_cmd_str = $config['test']['command'];
+		$io->section( "Running test.command for plugin: {$slug}" );
+
+		// Optionally do npm install if node_modules doesn't exist
+		$node_modules = rtrim( $plugin_dir, '/' ) . '/node_modules';
+		if ( ! is_dir( $node_modules ) ) {
+			$io->text( "No 'node_modules' found in {$plugin_dir}, running npm install..." );
+			$install_process = new Process( [ 'npm', 'install' ], $plugin_dir );
+			$install_exit    = $install_process->run( function ( $type, $buffer ) use ( $io ) {
+				$io->write( $buffer );
+			} );
+			if ( $install_exit !== 0 ) {
+				$io->error( "npm install failed:\n" . $install_process->getErrorOutput() );
+
+				return Command::FAILURE;
+			}
+		}
+
+		// Finally, run the user-defined command
+		$docker_env_vars = App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?: [];
+		$process         = Process::fromShellCommandline( $test_cmd_str, $plugin_dir );
+		$process->setEnv( array_merge( $docker_env_vars, [
+			'IS_QIT'       => 'true',
+			'QIT_SITE_URL' => $env_info->site_url,
+		] ) );
+
+		try {
+			$exit_code = $process->run( function ( $type, $buffer ) use ( $io ) {
+				$io->write( $buffer );
+			} );
+			if ( $exit_code !== 0 ) {
+				throw new RuntimeException( "Test command failed:\n" . $process->getErrorOutput() );
+			}
+		} catch ( \Exception $e ) {
+			$io->error( "Plugin {$slug} test error: " . $e->getMessage() );
+
+			return Command::FAILURE;
+		}
+
+		return Command::SUCCESS;
+	}
+
+	/**
+	 * If test.results.ctrf is set, load that JSON and add pluginSlug/phase=Test to each test.
+	 */
+	protected function tag_ctrf_with_plugin_slug( string $plugin_dir, string $slug, array $config ): void {
+		$ctrf_rel = $config['test']['results']['ctrf'] ?? '';
+		if ( ! $ctrf_rel ) {
+			return;
+		}
+		$ctrf_file = rtrim( $plugin_dir, '/' ) . '/' . ltrim( $ctrf_rel, '/' );
 		if ( ! file_exists( $ctrf_file ) ) {
 			return;
 		}
-
-		$data = json_decode( file_get_contents( $ctrf_file ), true );
+		$data = @json_decode( file_get_contents( $ctrf_file ), true );
 		if ( ! is_array( $data ) ) {
 			return;
 		}
@@ -182,117 +204,76 @@ class ExtensionTestRunner {
 				$test['extra']['phase']      = 'Test';
 			}
 		}
-
 		file_put_contents( $ctrf_file, json_encode( $data, JSON_PRETTY_PRINT ) );
 	}
 
 	/**
-	 * If a script (like 'setup.sh' or 'shared-setup.sh') exists, run it in Docker and record the CTRF snippet.
-	 *
-	 * @param E2EEnvInfo   $env_info
-	 * @param array        $test_item
-	 * @param string       $script_name
-	 * @param string       $phase e.g. "Shared Setup", "Isolated Setup", "Plugin Teardown", etc.
-	 * @param SymfonyStyle $io
+	 * Run a lifecycle script (setup or teardown) inside Docker, capturing partial CTRF.
 	 */
-	public function run_script_if_exists( $env_info, $test_item, $script_name, $phase, $io ) {
+	public function run_script_if_exists(
+		E2EEnvInfo $env_info,
+		array $test_item,
+		string $script_path,
+		string $phase,
+		SymfonyStyle $io
+	): void {
 		if ( ! $this->test_result ) {
-			// If for some reason it's called before set_test_result(), skip
-			return;
+			return; // Should not happen, but guard anyway
 		}
+		$plugin_slug = $test_item['slug'] ?? 'unknown';
 
-		$plugin_slug  = $test_item['slug'] ?? 'unknown';
-		$host_path    = $test_item['path_in_host'] ?? '';
-		$docker_dir   = $test_item['path_in_php_container'] ?? '';
-		$env_vars     = App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?: [];
-		$relative_dir = str_replace( $host_path, '', $script_name );
-
-		if ( ! file_exists( $script_name ) ) {
-			return; // script not present, skip.
+		if ( ! file_exists( $script_path ) ) {
+			return; // script not present, skip
 		}
+		$io->writeln( "<info>{$phase} script for {$plugin_slug}: {$script_path}</info>" );
 
-		$test_title = "{$phase} bash script from {$plugin_slug}";
-		$io->writeln( "<info>{$test_title}</info>" );
+		// Build Docker command
+		$docker_dir = $test_item['path_in_php_container'] ?? '';
+		$relative   = str_replace( $test_item['path_in_host'], '', $script_path );
 
-		// Actually run the script inside Docker.
-		$command_to_run = [
+		$command_args = [
 			'bash',
 			'-c',
-			sprintf( 'cd %s && bash %s', dirname( rtrim( $docker_dir, '/' ) . '/' . ltrim( $relative_dir, '/' ) ), basename( $script_name ) ),
+			sprintf(
+				'cd %s && bash %s',
+				escapeshellarg( dirname( rtrim( $docker_dir, '/' ) . '/' . ltrim( $relative, '/' ) ) ),
+				escapeshellarg( basename( $script_path ) )
+			),
 		];
-		$capture        = $this->run_command_and_capture( $env_info, $command_to_run, $env_vars );
 
-		// Then record it as a partial CTRF snippet.
-		$ctrf_snippet = $this->build_ctrf_snippet( $test_title, $capture, $phase, $plugin_slug, $script_name );
+		$capture  = $this->run_command_and_capture( $env_info, $command_args );
+		$ctrf_dir = rtrim( $this->test_result->get_results_dir(), '/' ) . '/ctrf';
 
-		// Merge it into the CTRF results folder.
-		$ctrf_dir = $this->test_result->get_results_dir() . '/ctrf';
+		$ctrf_snippet = $this->build_ctrf_snippet(
+			"{$phase} - {$plugin_slug}",
+			$capture,
+			$phase,
+			$plugin_slug,
+			$script_path
+		);
 		$this->merge_ctrf_snippet( $ctrf_snippet, $ctrf_dir, $io );
 	}
 
 	/**
-	 * Copies plugin's ./results/ctrf.json and ./results/allure/ from host to final results directory.
-	 *
-	 * @param array        $test_item
-	 * @param SymfonyStyle $io
+	 * Executes a command inside Docker, capturing stdout/stderr. Returns:
+	 * [
+	 *   'exit_code' => int,
+	 *   'stdout'    => string[],
+	 *   'stderr'    => string[],
+	 *   'start'     => float, // microtime
+	 *   'stop'      => float,
+	 *   'duration'  => int    // ms
+	 * ]
 	 */
-	protected function collect_plugin_artifacts( $test_item, $io ) {
-		if ( ! $this->test_result ) {
-			return;
-		}
-
-		$results_dir = $this->test_result->get_results_dir();
-
-		if ( ! is_dir( $results_dir ) ) {
-			@mkdir( $results_dir, 0755, true );
-		}
-		if ( ! is_dir( $results_dir . '/ctrf' ) ) {
-			@mkdir( $results_dir . '/ctrf', 0755, true );
-		}
-		if ( ! is_dir( $results_dir . '/allure' ) ) {
-			@mkdir( $results_dir . '/allure', 0755, true );
-		}
-
-		$plugin_slug = $test_item['slug'] ?? 'unknown';
-
-		if ( file_exists( $test_item['path_in_host'] . '/results/ctrf.json' ) ) {
-			copy(
-				$test_item['path_in_host'] . '/results/ctrf.json',
-				$results_dir . '/ctrf/' . $plugin_slug . '.json'
-			);
-		} else {
-			$io->warning( 'Plugin ' . $plugin_slug . ' did not produce results/ctrf.json' );
-		}
-
-		if ( file_exists( $test_item['path_in_host'] . '/results/allure' ) ) {
-			$fs = App::make( Filesystem::class );
-			$fs->mirror(
-				$test_item['path_in_host'] . '/results/allure',
-				$results_dir . '/allure/' . $plugin_slug
-			);
-		}
-	}
-
-	/**
-	 * Executes a command inside Docker, capturing stdout/stderr. Returns an array with:
-	 * ['exit_code', 'stdout', 'stderr', 'start', 'stop', 'duration'].
-	 *
-	 * @param E2EEnvInfo $env_info
-	 * @param array      $command_args
-	 *
-	 * @return array
-	 */
-	protected function run_command_and_capture( $env_info, array $command_args, array $env_vars = [] ) {
+	protected function run_command_and_capture( E2EEnvInfo $env_info, array $command_args ): array {
 		$start_time = microtime( true );
-
 		try {
-			$output    = $this->docker->run_inside_docker( $env_info, $command_args, $env_vars, null, 300, 'php', true );
+			$output    = $this->docker->run_inside_docker( $env_info, $command_args, [], null, 300, 'php', true );
 			$exit_code = 0;
 		} catch ( \Exception $e ) {
 			$output    = $e->getMessage();
 			$exit_code = 1;
 		}
-
 		$stop_time   = microtime( true );
 		$duration_ms = (int) round( ( $stop_time - $start_time ) * 1000 );
 
@@ -307,20 +288,18 @@ class ExtensionTestRunner {
 	}
 
 	/**
-	 * Builds a minimal CTRF JSON structure for a single script-run (like setup.sh) so it appears in final results.
-	 *
-	 * @param string $test_name
-	 * @param array  $capture
-	 * @param string $phase
-	 * @param string $plugin_slug
-	 *
-	 * @return array
+	 * Build a small CTRF snippet for each script run, so it appears in final results.
 	 */
-	protected function build_ctrf_snippet( $test_name, $capture, $phase = '', $plugin_slug = '', $file_path = '' ) {
+	protected function build_ctrf_snippet(
+		string $test_name,
+		array $capture,
+		string $phase,
+		string $plugin_slug,
+		string $file_path
+	): array {
 		$start_epoch = (int) $capture['start'];
 		$stop_epoch  = (int) $capture['stop'];
 		$status      = ( $capture['exit_code'] === 0 ) ? 'passed' : 'failed';
-		$suite       = 'bootstrap/' . basename( $file_path );
 
 		return [
 			'$schema'      => 'http://json-schema.org/draft-07/schema#',
@@ -330,7 +309,7 @@ class ExtensionTestRunner {
 			'timestamp'    => gmdate( 'c' ),
 			'generatedBy'  => 'QIT_SpecE2ETestRunner',
 
-			'results'      => [
+			'results' => [
 				'tool'    => [
 					'name'    => 'SpecE2ERunner',
 					'version' => '1.0.0',
@@ -353,7 +332,7 @@ class ExtensionTestRunner {
 						'duration' => $capture['duration'],
 						'start'    => $start_epoch,
 						'stop'     => $stop_epoch,
-						'suite'    => $suite,
+						'suite'    => 'bootstrap/' . basename( $file_path ),
 						'extra'    => [
 							'phase'      => $phase,
 							'pluginSlug' => $plugin_slug,
@@ -367,13 +346,9 @@ class ExtensionTestRunner {
 	}
 
 	/**
-	 * Writes the snippet to a temporary file and merges it into the final CTRF directory.
-	 *
-	 * @param array        $snippet
-	 * @param string       $ctrf_dir
-	 * @param SymfonyStyle $io
+	 * Merge an individual CTRF snippet into the aggregated CTRF in $ctrf_dir.
 	 */
-	protected function merge_ctrf_snippet( array $snippet, $ctrf_dir, SymfonyStyle $io ) {
+	protected function merge_ctrf_snippet( array $snippet, string $ctrf_dir, SymfonyStyle $io ): void {
 		if ( ! is_dir( $ctrf_dir ) ) {
 			@mkdir( $ctrf_dir, 0755, true );
 		}
@@ -385,43 +360,34 @@ class ExtensionTestRunner {
 		$destination  = rtrim( $ctrf_dir, '/' ) . '/' . $partial_name;
 		rename( $temp_file, $destination );
 
-		$qit_dir   = Config::get_qit_dir();
+		$qit_dir   = App::getVar( 'QIT_DIR' ) ?: '';
 		$ctrf_path = $qit_dir . '/node_modules/.bin/ctrf';
-
 		if ( ! file_exists( $ctrf_path ) ) {
-			$io->warning( "CTRF binary not found at $ctrf_path. Make sure it’s installed." );
+			$io->warning( "CTRF binary not found at {$ctrf_path}. Install if you want combined merges." );
 
 			return;
 		}
-
 		$merge_cmd = new Process( [ $ctrf_path, 'merge', $ctrf_dir ] );
 		$merge_cmd->setTimeout( 120 );
-		$merge_code = $merge_cmd->run();
 
+		$merge_code = $merge_cmd->run();
 		if ( $merge_code !== 0 ) {
 			$io->error( "Failed to merge CTRF results:\n" . $merge_cmd->getErrorOutput() );
 		}
 	}
 
 	/**
-	 * Reads a CTRF JSON file and ensures there's always a "phase" in "extra",
-	 * modifies test "name" if you want it more friendly, etc.
-	 *
-	 * @param string $ctrf_file
+	 * Post-process the final merged CTRF file if needed (e.g. add "phase" or rename tests).
 	 */
 	public function post_process_ctrf_json( string $ctrf_file ): void {
 		if ( ! file_exists( $ctrf_file ) ) {
 			return;
 		}
-		$raw = file_get_contents( $ctrf_file );
-		if ( ! $raw ) {
-			return;
-		}
+		$raw  = file_get_contents( $ctrf_file );
 		$data = json_decode( $raw, true );
 		if ( ! is_array( $data ) ) {
 			return;
 		}
-
 		if ( empty( $data['results']['tests'] ) || ! is_array( $data['results']['tests'] ) ) {
 			return;
 		}
@@ -433,24 +399,53 @@ class ExtensionTestRunner {
 			if ( empty( $test['extra']['phase'] ) ) {
 				$test['extra']['phase'] = 'Test';
 			}
-			$phase = strtolower( $test['extra']['phase'] );
-
 			if ( empty( $test['extra']['pluginSlug'] ) ) {
 				$test['extra']['pluginSlug'] = '';
 			}
-			$slug = $test['extra']['pluginSlug'];
-
-			// Optionally alter the "name" based on the phase.
-			if ( $phase === 'shared setup' ) {
-				$test['name'] = "Shared Setup of {$slug}";
-			} elseif ( $phase === 'isolated setup' ) {
-				$test['name'] = "Isolated Setup of {$slug}";
-			} elseif ( $phase === 'teardown' ) {
-				$test['name'] = "Teardown of {$slug}";
-			}
+			// Example: rename the test name based on phase, if you want
+			// ...
 		}
 		unset( $test );
 
 		file_put_contents( $ctrf_file, json_encode( $data, JSON_PRETTY_PRINT ) );
+	}
+
+	/**
+	 * Copies test.results.ctrf and test.results.allure from plugin_dir to the final results directory.
+	 */
+	protected function collect_plugin_artifacts( array $test_item, array $config, SymfonyStyle $io ): void {
+		if ( ! $this->test_result ) {
+			return;
+		}
+
+		$slug        = $test_item['slug'] ?? 'unknown';
+		$plugin_dir  = $test_item['path_in_host'] ?? '';
+		$results_dir = $this->test_result->get_results_dir();
+
+		@mkdir( $results_dir, 0755, true );
+		@mkdir( $results_dir . '/ctrf', 0755, true );
+		@mkdir( $results_dir . '/allure', 0755, true );
+
+		$ctrf_rel   = $config['test']['results']['ctrf'] ?? '';
+		$allure_rel = $config['test']['results']['allure'] ?? '';
+
+		// CTRF
+		if ( $ctrf_rel ) {
+			$full_ctrf = rtrim( $plugin_dir, '/' ) . '/' . ltrim( $ctrf_rel, '/' );
+			if ( file_exists( $full_ctrf ) ) {
+				copy( $full_ctrf, "{$results_dir}/ctrf/{$slug}.json" );
+			} else {
+				$io->warning( "Plugin {$slug} did not produce {$ctrf_rel}." );
+			}
+		}
+
+		// Allure
+		if ( $allure_rel ) {
+			$full_allure = rtrim( $plugin_dir, '/' ) . '/' . ltrim( $allure_rel, '/' );
+			if ( is_dir( $full_allure ) ) {
+				$fs = new Filesystem();
+				$fs->mirror( $full_allure, "{$results_dir}/allure/{$slug}" );
+			}
+		}
 	}
 }

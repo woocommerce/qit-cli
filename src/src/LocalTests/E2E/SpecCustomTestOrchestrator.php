@@ -2,9 +2,10 @@
 
 namespace QIT_CLI\LocalTests\E2E;
 
+use RuntimeException;
 use QIT_CLI\App;
-use QIT_CLI\Cache;
 use QIT_CLI\Config;
+use QIT_CLI\Cache;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Extension;
@@ -18,6 +19,11 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 
+/**
+ * Orchestrates custom E2E tests with a required qit-e2e.json (no fallback).
+ * - Reads & caches each plugin’s qit-e2e.json into $this->pluginConfigs
+ * - Runs shared lifecycle steps, plugin-specific steps, merges results, etc.
+ */
 class SpecCustomTestOrchestrator {
 	/**
 	 * @var Docker
@@ -45,35 +51,33 @@ class SpecCustomTestOrchestrator {
 	protected $shared_setup_runner;
 
 	/**
-	 * @var QITE2EConfig
+	 * @var array<string,array>  Holds parsed qit-e2e.json data keyed by plugin path
 	 */
-	protected $qit_e2e_config;
+	private $pluginConfigs = [];
 
 	public function __construct(
 		Docker $docker,
 		LocalTestRunNotifier $local_test_run_notifier,
 		SharedSetupRunner $shared_setup_runner,
-		ExtensionTestRunner $extension_test_runner,
-		QITE2EConfig $qit_e2e_config
+		ExtensionTestRunner $extension_test_runner
 	) {
 		$this->docker                  = $docker;
 		$this->local_test_run_notifier = $local_test_run_notifier;
 		$this->extension_test_runner   = $extension_test_runner;
 		$this->shared_setup_runner     = $shared_setup_runner;
-		$this->qit_e2e_config          = $qit_e2e_config;
 	}
 
 	/**
 	 * Main entry point for custom E2E tests orchestration.
 	 *
-	 * @param E2EEnvInfo   $env_info
+	 * @param E2EEnvInfo $env_info
 	 * @param SymfonyStyle $io
-	 * @param bool         $up_only
+	 * @param bool $up_only Whether to just bring up the environment without running tests
 	 *
 	 * @return int
 	 */
 	public function run_custom_e2e_tests( E2EEnvInfo $env_info, SymfonyStyle $io, bool $up_only ) {
-		// 0) Notify that a test run started
+		// 1) Notify that a test run started
 		$this->local_test_run_notifier->notify_test_started(
 			$env_info->sut_id,
 			$env_info->woo_version,
@@ -82,103 +86,53 @@ class SpecCustomTestOrchestrator {
 			$env_info->notify
 		);
 
-		// 1) Create/attach a TestResult object
-		$test_result       = TestResult::init_from( $env_info );
-		$this->test_result = $test_result;
+		// 2) Create/attach a TestResult object
+		$this->test_result = TestResult::init_from( $env_info );
 		$this->extension_test_runner->set_test_result( $this->test_result );
 
-		$exit_code = Command::SUCCESS;
-
-		// Basic checks
+		// 3) Basic checks
 		if ( empty( $env_info->tests ) || ! is_array( $env_info->tests ) ) {
 			$io->error( 'No test definitions found in $env_info->tests.' );
 
 			return Command::FAILURE;
 		}
 
-		// Place mu-plugins.
-		foreach ( $env_info->tests as $test_item ) {
-			// Where does this plugin’s test directory live on the host?
+		// 4) Preload each plugin’s qit-e2e.json and copy muPlugins
+		foreach ( $env_info->tests as &$test_item ) {
+			if ( empty( $test_item['path_in_host'] ) ) {
+				continue;
+			}
 			$plugin_dir = $test_item['path_in_host'];
+			$config     = $this->getConfigForPlugin( $plugin_dir );
 
-			// Load that plugin’s qit-e2e.json/yml
-			$config = $this->qit_e2e_config->load_config( $plugin_dir );
+			$test_item['config'] = $config;
 
-			// Copy each muPlugin into /wp-content/mu-plugins
-			foreach ( $config['muPlugins'] as $relative_path ) {
-				$host_path = rtrim( $plugin_dir, '/' ) . '/' . $relative_path;
-
-				$this->docker->copy_into_docker(
-					$env_info,
-					$host_path,
-					'/var/www/html/wp-content/mu-plugins/' . basename( $relative_path )
-				);
+			if ( ! empty( $config['muPlugins'] ) && is_array( $config['muPlugins'] ) ) {
+				foreach ( $config['muPlugins'] as $relativePath ) {
+					$host_path = rtrim( $plugin_dir, '/' ) . '/' . $relativePath;
+					$this->docker->copy_into_docker(
+						$env_info,
+						$host_path,
+						'/var/www/html/wp-content/mu-plugins/' . basename( $relativePath )
+					);
+				}
 			}
 		}
 
-		// 2) Run shared setup for any items with action=bootstrap or test
+		unset($test_item);
+
+		// 5) Shared setup (for anything that has action=bootstrap or action=test)
 		$this->shared_setup_runner->run_shared_setup( $env_info, $io, $this->extension_test_runner );
 
-		// 3) If user wants ONLY to bring env up (and not immediately run tests)
+		// 6) up_only scenario: just bring env up and wait
 		if ( $up_only ) {
-			// (A) Attempt to run the SUT's isolated setup
-			$testable_items = array_filter(
-				$env_info->tests,
-				function ( $item ) {
-					return ( isset( $item['action'] ) && $item['action'] === Extension::ACTIONS['test'] );
-				}
-			);
-			$testable_items = array_values( $testable_items );
-
-			// Filter out non-SUT.
-			$testable_items = array_filter(
-				$testable_items,
-				function ( $item ) use ( $env_info ) {
-					return ( isset( $item['slug'] ) && $item['slug'] === $env_info->sut_slug );
-				}
-			);
-
-			if ( count( $testable_items ) === 1 ) {
-				$sut_item = array_shift( $testable_items );
-
-				$sut_plugin_dir = $sut_item['path_in_host'];
-				$config         = $this->qit_e2e_config->load_config( $sut_plugin_dir );
-
-				if ( ! empty( $config['setup'] ) ) {
-					$io->writeln( '<comment>Running isolated setup for the SUT...</comment>' );
-					foreach ( $config['setup'] as $setup_script ) {
-						$this->extension_test_runner->run_script_if_exists(
-							$env_info,
-							$sut_item,
-							$setup_script,
-							'SUT Setup',
-							$io
-						);
-					}
-				}
-
-				// Export a second snapshot
-				$io->writeln( '<info>Exporting DB after SUT setup to /qit/plugin-setup-snapshot.sql</info>' );
-				$this->docker->run_inside_docker(
-					$env_info,
-					[ 'wp', 'db', 'export', '/qit/plugin-setup-snapshot.sql' ]
-				);
-			} else {
-				$io->writeln( '<comment>No test item found (action=test). Skipping SUT setup snapshot.</comment>' );
-			}
-
-			// (B) Print instructions & block
 			App::make( Output::class )->writeln( '' );
 			$io->writeln( '<info>Environment ID:</info> ' . $env_info->env_id );
 			$io->writeln( '<info>URL:</info> ' . $env_info->site_url );
 			$io->writeln( '' );
-			$io->writeln( 'You can run your tests and reset the environment at will. For example:' );
+			$io->writeln( 'You can run your tests manually now. For example:' );
 			$io->writeln( '  export QIT_SITE_URL=' . $env_info->site_url );
 			$io->writeln( '  npm run qit-e2e' );
-			$io->writeln( '' );
-			$io->writeln( 'If you need a fresh DB, run:' );
-			$io->writeln( '  qit env:reload ' . $env_info->env_id );
-			$io->writeln( '(That will restore /qit/plugin-setup-snapshot.sql.)' );
 			$io->writeln( '' );
 			$io->writeln( 'When you are done, press "Enter" here (or run "qit env:down ' . $env_info->env_id . '") to terminate.' );
 
@@ -192,17 +146,20 @@ class SpecCustomTestOrchestrator {
 			return Command::SUCCESS;
 		}
 
-		// 4) Normal test run flow: do baseline snapshot, then run tests
-		$this->db_export( $env_info, $io );
+		// 7) Normal test flow: do baseline snapshot, then run tests
+		$io->writeln( '<info>[db export]</info>' );
+		$this->docker->run_inside_docker( $env_info, [ 'wp', 'db', 'export', '/qit/snapshot.sql' ] );
 
-		// For each item whose action = test
+		// 8) Run tests for each item with action=test
 		$testable_items = array_filter(
 			$env_info->tests,
 			function ( $item ) {
 				return ( isset( $item['action'] ) && $item['action'] === Extension::ACTIONS['test'] );
 			}
 		);
-		$is_first       = true;
+
+		$is_first  = true;
+		$exit_code = Command::SUCCESS;
 
 		foreach ( $testable_items as $test_item ) {
 			$code = $this->extension_test_runner->run_single_plugin_tests( $env_info, $test_item, $io, $is_first );
@@ -212,32 +169,19 @@ class SpecCustomTestOrchestrator {
 			$is_first = false;
 		}
 
-		// 5) Shared teardown
+		// 9) Shared teardown
 		$this->shared_setup_runner->run_shared_teardown( $env_info, $io, $this->extension_test_runner );
 
-		// 6) Merge CTRF + Allure
+		// 10) Merge final CTRF/Allure
 		$this->merge_results( $env_info, $io, $this->test_result );
 
-		// 7) Notify test finished
+		// 11) Notify test finished
 		try {
 			[ $report_url, $override_exit ] = $this->local_test_run_notifier->notify_test_finished( $this->test_result );
 			if ( $override_exit !== null ) {
 				$exit_code = $override_exit;
 			}
-			App::make( Cache::class )->set(
-				'last_e2e_report',
-				json_encode( [
-					'local_playwright' => file_exists( $test_result->get_results_dir() . '/report/index.html' )
-						? $test_result->get_results_dir() . '/report'
-						: '',
-					'remote_qit'       => $report_url,
-				] ),
-				MONTH_IN_SECONDS
-			);
-			$io->writeln( '' );
-			$io->writeln( '<info>Test run finished. Report URL:</info>' );
-			$io->writeln( $report_url );
-			$io->writeln( '' );
+			$io->writeln( "\n<info>Test run finished. Report URL:</info>\n{$report_url}\n" );
 		} catch ( \Exception $e ) {
 			$io->error( 'Could not finalize results to QIT Manager: ' . $e->getMessage() );
 			$exit_code = Command::FAILURE;
@@ -247,99 +191,88 @@ class SpecCustomTestOrchestrator {
 	}
 
 	/**
-	 * Exports the DB to /qit/snapshot.sql
+	 * Load (and cache) qit-e2e.json for the given plugin directory.
 	 */
-	protected function db_export( E2EEnvInfo $env_info, SymfonyStyle $io ) {
-		$io->writeln( '<info>[db export]</info>' );
-		$this->docker->run_inside_docker(
-			$env_info,
-			[ 'wp', 'db', 'export', '/qit/snapshot.sql' ]
-		);
+	private function getConfigForPlugin( string $pluginDir ): array {
+		if ( isset( $this->pluginConfigs[ $pluginDir ] ) ) {
+			return $this->pluginConfigs[ $pluginDir ];
+		}
+		$this->pluginConfigs[ $pluginDir ] = $this->loadQitE2EConfig( $pluginDir );
+
+		return $this->pluginConfigs[ $pluginDir ];
 	}
 
 	/**
-	 * Merge results (CTRF/Allure) from all plugins into final artifacts.
+	 * Actually reads qit-e2e.json from disk and decodes it.
 	 *
-	 * @param E2EEnvInfo   $env_info
-	 * @param SymfonyStyle $io
-	 * @param TestResult   $test_result
+	 * @param string $pluginDir
+	 *
+	 * @return array
 	 */
-	protected function merge_results( $env_info, $io, $test_result ) {
-		$ctrf_dir        = $test_result->get_results_dir() . '/ctrf';
-		$allure_root_dir = $test_result->get_results_dir() . '/allure';
+	private function loadQitE2EConfig( string $pluginDir ): array {
+		$configFile = rtrim( $pluginDir, '/' ) . '/qit-e2e.json';
 
-		$ctrf_exists = is_dir( $ctrf_dir ) && count( glob( $ctrf_dir . '/*.json' ) ) > 0;
+		if ( ! file_exists( $configFile ) ) {
+			throw new RuntimeException( "No qit-e2e.json found in $pluginDir" );
+		}
+		$raw  = file_get_contents( $configFile );
+		$data = json_decode( $raw, true );
 
-		$allure_exists = false;
-		if ( is_dir( $allure_root_dir ) ) {
-			$json_files = glob( $allure_root_dir . '/**/*.json' );
-			if ( ! empty( $json_files ) ) {
-				$allure_exists = true;
-			}
+		if ( ! is_array( $data ) ) {
+			throw new RuntimeException( "Invalid JSON in $configFile" );
 		}
 
-		if ( ! $ctrf_exists && ! $allure_exists ) {
+		return $data;
+	}
+
+	/**
+	 * Merge CTRF + Allure results from all plugins into final artifacts.
+	 */
+	protected function merge_results( E2EEnvInfo $env_info, SymfonyStyle $io, TestResult $test_result ) {
+		$ctrf_dir   = $test_result->get_results_dir() . '/ctrf';
+		$allure_dir = $test_result->get_results_dir() . '/allure';
+
+		$has_ctrf   = ( is_dir( $ctrf_dir ) && count( glob( $ctrf_dir . '/*.json' ) ) > 0 );
+		$has_allure = false;
+
+		if ( is_dir( $allure_dir ) ) {
+			$json_files = glob( $allure_dir . '/**/*.json' );
+			$has_allure = ! empty( $json_files );
+		}
+
+		if ( ! $has_ctrf && ! $has_allure ) {
 			$io->writeln( '<comment>No CTRF or Allure data found to merge. Skipping...</comment>' );
 
 			return;
 		}
 
-		$qit_dir     = Config::get_qit_dir();
-		$ctrf_path   = $qit_dir . '/node_modules/.bin/ctrf';
-		$allure_path = $qit_dir . '/node_modules/.bin/allure';
+		$qit_dir   = Config::get_qit_dir();
+		$ctrf_path = $qit_dir . '/node_modules/.bin/ctrf';
 
-		// 2) CTRF merge
-		if ( $ctrf_exists ) {
+		// Merge CTRF
+		if ( $has_ctrf ) {
 			if ( ! ( is_file( $ctrf_path ) && is_executable( $ctrf_path ) ) ) {
-				$io->writeln( "<comment>No ctrf binary found at $ctrf_path. Attempting npm install ctrf...</comment>" );
-				$install_ctrf = new Process( [ 'npm', 'install', '--prefix', $qit_dir, 'ctrf' ], $qit_dir );
-				$install_ctrf->setTimeout( 300 );
-				$install_ctrf->run();
-
-				if ( ! $install_ctrf->isSuccessful() ) {
-					throw new \RuntimeException(
-						sprintf(
-							'Failed to install CTRF. NPM error: %s',
-							$install_ctrf->getErrorOutput()
-						)
-					);
-				}
-				if ( ! ( is_file( $ctrf_path ) && is_executable( $ctrf_path ) ) ) {
-					throw new \RuntimeException(
-						sprintf(
-							'CTRF was installed, but still no executable at %s',
-							$ctrf_path
-						)
-					);
-				}
-				$io->writeln( "<info>CTRF installed successfully at $ctrf_path</info>" );
-			}
-
-			$ctrf_proc = new Process( [ $ctrf_path, 'merge', $ctrf_dir ] );
-			$ctrf_proc->setTimeout( 300 );
-			$ctrf_proc->run();
-
-			if ( ! $ctrf_proc->isSuccessful() ) {
-				throw new \RuntimeException(
-					sprintf(
-						'Failed to merge CTRF results. Error: %s',
-						$ctrf_proc->getErrorOutput()
-					)
-				);
-			}
-
-			$merged_file = $test_result->get_results_dir() . '/ctrf/ctrf-report.json';
-			if ( file_exists( $merged_file ) ) {
-				// Call into PluginTestRunner for post-processing
-				$this->extension_test_runner->post_process_ctrf_json( $merged_file );
+				$io->warning( "No 'ctrf' binary found at $ctrf_path." );
 			} else {
-				$io->warning( "No merged CTRF file found at {$merged_file}." );
+				$merge_cmd = new Process( [ $ctrf_path, 'merge', $ctrf_dir ] );
+				$merge_cmd->setTimeout( 300 );
+				$merge_cmd->run();
+				if ( ! $merge_cmd->isSuccessful() ) {
+					throw new RuntimeException(
+						sprintf(
+							'Failed to merge CTRF results. Error: %s',
+							$merge_cmd->getErrorOutput()
+						)
+					);
+				}
+				// Post-process final merged file if desired
+				$merged_file = $ctrf_dir . '/ctrf-report.json';
+				$this->extension_test_runner->post_process_ctrf_json( $merged_file );
 			}
 		}
 
-		// 3) Allure merge & generate (if present)
-		if ( $allure_exists ) {
-			// In your scenario, you upload raw Allure data and handle merges in a remote pipeline.
+		// Allure
+		if ( $has_allure ) {
 			$io->writeln( '<info>Allure data found (raw results will be uploaded)...</info>' );
 		}
 	}
