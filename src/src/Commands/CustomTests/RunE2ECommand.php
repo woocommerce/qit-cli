@@ -10,7 +10,7 @@ namespace QIT_CLI\Commands\CustomTests;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Environment\PluginsAndThemesParser;
-use QIT_CLI\LocalTests\E2E\SpecCustomTestOrchestrator;
+use QIT_CLI\LocalTests\E2E\CustomE2ERunner;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
@@ -47,7 +47,7 @@ class RunE2ECommand extends DynamicCommand {
 	/** @var OutputInterface */
 	protected $output;
 
-	/** @var SpecCustomTestOrchestrator */
+	/** @var CustomE2ERunner */
 	protected $spec_custom_test_orchestrator;
 
 	/** @var WooExtensionsList */
@@ -80,7 +80,7 @@ class RunE2ECommand extends DynamicCommand {
 	public function __construct(
 		E2EEnvironment $e2e_environment,
 		Cache $cache,
-		SpecCustomTestOrchestrator $spec_custom_test_orchestrator,
+		CustomE2ERunner $spec_custom_test_orchestrator,
 		WooExtensionsList $woo_extensions_list,
 		LocalTestRunNotifier $test_run_notifier,
 		PluginDependencies $dependencies,

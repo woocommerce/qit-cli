@@ -24,7 +24,7 @@ use Symfony\Component\Process\Process;
  * - Reads & caches each plugin’s qit-e2e.json into $this->pluginConfigs
  * - Runs shared lifecycle steps, plugin-specific steps, merges results, etc.
  */
-class SpecCustomTestOrchestrator {
+class CustomE2ERunner {
 	/**
 	 * @var Docker
 	 */
@@ -46,25 +46,18 @@ class SpecCustomTestOrchestrator {
 	protected $extension_test_runner;
 
 	/**
-	 * @var SharedSetupRunner
-	 */
-	protected $shared_setup_runner;
-
-	/**
 	 * @var array<string,array>  Holds parsed qit-e2e.json data keyed by plugin path
 	 */
-	private $pluginConfigs = [];
+	private $plugin_configs = [];
 
 	public function __construct(
 		Docker $docker,
 		LocalTestRunNotifier $local_test_run_notifier,
-		SharedSetupRunner $shared_setup_runner,
 		ExtensionTestRunner $extension_test_runner
 	) {
 		$this->docker                  = $docker;
 		$this->local_test_run_notifier = $local_test_run_notifier;
 		$this->extension_test_runner   = $extension_test_runner;
-		$this->shared_setup_runner     = $shared_setup_runner;
 	}
 
 	/**
@@ -103,7 +96,7 @@ class SpecCustomTestOrchestrator {
 				continue;
 			}
 			$plugin_dir = $test_item['path_in_host'];
-			$config     = $this->getConfigForPlugin( $plugin_dir );
+			$config     = $this->get_config_for_plugin( $plugin_dir );
 
 			$test_item['config'] = $config;
 
@@ -119,10 +112,10 @@ class SpecCustomTestOrchestrator {
 			}
 		}
 
-		unset($test_item);
+		unset( $test_item );
 
 		// 5) Shared setup (for anything that has action=bootstrap or action=test)
-		$this->shared_setup_runner->run_shared_setup( $env_info, $io, $this->extension_test_runner );
+		$this->run_shared_setup( $env_info, $io, $this->extension_test_runner );
 
 		// 6) up_only scenario: just bring env up and wait
 		if ( $up_only ) {
@@ -170,7 +163,7 @@ class SpecCustomTestOrchestrator {
 		}
 
 		// 9) Shared teardown
-		$this->shared_setup_runner->run_shared_teardown( $env_info, $io, $this->extension_test_runner );
+		$this->run_shared_teardown( $env_info, $io, $this->extension_test_runner );
 
 		// 10) Merge final CTRF/Allure
 		$this->merge_results( $env_info, $io, $this->test_result );
@@ -193,34 +186,25 @@ class SpecCustomTestOrchestrator {
 	/**
 	 * Load (and cache) qit-e2e.json for the given plugin directory.
 	 */
-	private function getConfigForPlugin( string $pluginDir ): array {
-		if ( isset( $this->pluginConfigs[ $pluginDir ] ) ) {
-			return $this->pluginConfigs[ $pluginDir ];
+	private function get_config_for_plugin( string $plugin_dir ): array {
+		if ( isset( $this->plugin_configs[ $plugin_dir ] ) ) {
+			return $this->plugin_configs[ $plugin_dir ];
 		}
-		$this->pluginConfigs[ $pluginDir ] = $this->loadQitE2EConfig( $pluginDir );
 
-		return $this->pluginConfigs[ $pluginDir ];
-	}
+		$config_file = rtrim( $plugin_dir, '/' ) . '/qit-e2e.json';
 
-	/**
-	 * Actually reads qit-e2e.json from disk and decodes it.
-	 *
-	 * @param string $pluginDir
-	 *
-	 * @return array
-	 */
-	private function loadQitE2EConfig( string $pluginDir ): array {
-		$configFile = rtrim( $pluginDir, '/' ) . '/qit-e2e.json';
-
-		if ( ! file_exists( $configFile ) ) {
-			throw new RuntimeException( "No qit-e2e.json found in $pluginDir" );
+		if ( ! file_exists( $config_file ) ) {
+			throw new RuntimeException( "No qit-e2e.json found in $plugin_dir" );
 		}
-		$raw  = file_get_contents( $configFile );
+
+		$raw  = file_get_contents( $config_file );
 		$data = json_decode( $raw, true );
 
 		if ( ! is_array( $data ) ) {
-			throw new RuntimeException( "Invalid JSON in $configFile" );
+			throw new RuntimeException( "Invalid JSON in $config_file" );
 		}
+
+		$this->plugin_configs[ $plugin_dir ] = $data;
 
 		return $data;
 	}
@@ -274,6 +258,65 @@ class SpecCustomTestOrchestrator {
 		// Allure
 		if ( $has_allure ) {
 			$io->writeln( '<info>Allure data found (raw results will be uploaded)...</info>' );
+		}
+	}
+
+	public function run_shared_setup( $env_info, SymfonyStyle $io, ExtensionTestRunner $extension_test_runner ): void {
+		foreach ( $env_info->tests as $test_item ) {
+			// We only run shared setup for items with action=bootstrap or action=test
+			if ( empty( $test_item['action'] ) ) {
+				continue;
+			}
+			if (
+				$test_item['action'] !== Extension::ACTIONS['bootstrap']
+				&& $test_item['action'] !== Extension::ACTIONS['test']
+			) {
+				continue;
+			}
+
+			$plugin_dir = $test_item['path_in_host'] ?? '';
+			$config     = $test_item['config'] ?? [];
+
+			if ( ! empty( $config['lifecycle']['sharedSetup'] ) && is_array( $config['lifecycle']['sharedSetup'] ) ) {
+				foreach ( $config['lifecycle']['sharedSetup'] as $script ) {
+					$extension_test_runner->run_script_if_exists(
+						$env_info,
+						$test_item,
+						rtrim( $plugin_dir, '/' ) . '/' . $script,
+						'Shared Setup',
+						$io
+					);
+				}
+			}
+		}
+	}
+
+	public function run_shared_teardown( $env_info, SymfonyStyle $io, ExtensionTestRunner $extension_test_runner ): void {
+		foreach ( $env_info->tests as $test_item ) {
+			if ( empty( $test_item['action'] ) ) {
+				continue;
+			}
+			if (
+				$test_item['action'] !== Extension::ACTIONS['bootstrap']
+				&& $test_item['action'] !== Extension::ACTIONS['test']
+			) {
+				continue;
+			}
+
+			$plugin_dir = $test_item['path_in_host'] ?? '';
+			$config     = $test_item['config'] ?? [];
+
+			if ( ! empty( $config['lifecycle']['sharedTeardown'] ) && is_array( $config['lifecycle']['sharedTeardown'] ) ) {
+				foreach ( $config['lifecycle']['sharedTeardown'] as $script ) {
+					$extension_test_runner->run_script_if_exists(
+						$env_info,
+						$test_item,
+						rtrim( $plugin_dir, '/' ) . '/' . $script,
+						'Shared Teardown',
+						$io
+					);
+				}
+			}
 		}
 	}
 }
