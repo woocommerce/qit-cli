@@ -226,7 +226,28 @@ class PrepareQMLog {
 						}
 					}
 
+					if ( ! empty( $info['file'] ) ) {
+						// If coming from query-monitor and we are not testing QM, ignore it.
+						if ( strpos( $info['file'], '/wp-content/plugins/query-monitor/' ) !== false && $this->sut_slug !== 'query-monitor' ) {
+							continue;
+						}
+					}
+
 					// End compatibility extension set issues.
+
+					$file_and_line = '';
+
+					if ( ! empty( $info['file'] ) ) {
+						$file_and_line = str_replace( '/var/www/html/', '', $info['file'] );
+					}
+
+					if ( ! empty( $info['line'] ) ) {
+						$file_and_line .= ':' . $info['line'];
+					}
+
+					if ( empty( $file_and_line ) ) {
+						$file_and_line = '-';
+					}
 
 					$trace = $info['trace'] ?? [];
 
@@ -238,7 +259,7 @@ class PrepareQMLog {
 					$info_summary = [
 						'message'   => $info['message'],
 						'type'      => $type,
-						'file_line' => str_replace( '/var/www/html/', '', $info['file'] ) . ':' . $info['line'],
+						'file_line' => $file_and_line,
 						'traces'    => $this->get_trace_summary( $trace ),
 					];
 
