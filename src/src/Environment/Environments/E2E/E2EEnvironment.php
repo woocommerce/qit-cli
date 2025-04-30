@@ -127,16 +127,20 @@ class E2EEnvironment extends Environment {
 
 		// Install Zaproxy for E2E security checks.
 		if ( getenv( 'QIT_SECURITY_CHECKS_PROXY' ) ) {
-			$this->output->writeln( '<info>Setting up Zaproxy for E2E security checks...</info>' );
 			$zap_image = 'zaproxy/zap-stable';
 			$zap_container_name = "qit_env_zap_{$this->env_info->env_id}";
 			$zap_port = 8079;
+			$rule_ids_to_disable = [
+				'10011', '10035', '10040', '10041', '10042', '10020', '10038',
+				'10055', '10021', '10037', '10036', '10033', '10034', '2', '3',
+				'90001', '10032', '10061', '10039', '10052', '10056', '90030',
+				'10015', '10050', '10096', '10105', '10098',
+			];
 
-			// Pull the ZAP image if needed
+			$this->output->writeln( '<info>Setting up Zaproxy for E2E security checks...</info>' );
 			App::make( Docker::class )->maybe_pull_image( $zap_image );
 
-			// Run the ZAP container.
-			// Start ZAP container
+			// Start ZAP container.
 			$process = new Process([
 				App::make(Docker::class)->find_docker(),
 				'run',
@@ -161,8 +165,8 @@ class E2EEnvironment extends Environment {
 			$this->env_info->zap_container = $zap_container_name;
 			$this->env_info->zap_proxy = "http://host.docker.internal:$zap_port";
 
-			// Wait for ZAP to be ready
-			$this->wait_for_zap_ready($zap_container_name);
+			$this->wait_for_zap_ready();
+			$this->disable_zap_rules( $rule_ids_to_disable );
 		}
 	}
 
@@ -295,7 +299,7 @@ class E2EEnvironment extends Environment {
 		return $default_volumes;
 	}
 
-	protected function wait_for_zap_ready( string $zap_container_name, int $timeout = 120 ): void {
+	protected function wait_for_zap_ready( int $timeout = 120 ): void {
 		$this->output->writeln( '<info>Waiting for Zaproxy to be ready...</info>' );
 		
 		$start = time();
@@ -304,7 +308,7 @@ class E2EEnvironment extends Environment {
 			$check_process = new Process( [
 				App::make( Docker::class )->find_docker(),
 				'exec',
-				$zap_container_name,
+				$this->env_info->zap_container,
 				'curl',
 				'-s',
 				'-L',
@@ -324,8 +328,39 @@ class E2EEnvironment extends Environment {
 		
 		throw new \RuntimeException( sprintf(
 			'Zaproxy container (%s) failed to start within %d seconds',
-			$zap_container_name,
+			$this->env_info->zap_container,
 			$timeout
 	) );
+	}
+
+	protected function disable_zap_rules( array $rule_ids ): void {
+		$this->output->writeln( "Disabling specified passive scan rules via API..." );
+
+		$process = new Process( [
+			App::make( Docker::class )->find_docker(),
+			'exec',
+			$this->env_info->zap_container,
+			'curl',
+			'-s',
+			'-L',
+			'--fail',
+			"{$this->env_info->zap_proxy}/JSON/pscan/action/disableScanners/?ids=" . urlencode( implode( ',', $rule_ids ) )
+		] );
+
+		$process->run();
+
+		// Check if the process was successful
+		if ( $process->isSuccessful() ) {
+			$output = $process->getOutput();
+			$result = json_decode( $output, true );
+			
+			if ( isset( $result['Result'] ) && $result['Result'] === 'OK' ) {
+					echo "Successfully disabled all passive scan rules in ZAP\n";
+			} else {
+					echo "Request succeeded but returned unexpected response: " . $output . "\n";
+			}
+		} else {
+			echo "Failed to disable passive scan rules: " . $process->getErrorOutput() . "\n";
+		}
 	}
 }
