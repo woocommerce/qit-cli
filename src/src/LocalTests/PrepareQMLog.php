@@ -264,7 +264,7 @@ class PrepareQMLog {
 					];
 
 					// Ensures that we don't have duplicate entries.
-					$md5_key = md5( $info['message'] . $type . $info['file'] . $info['line'] );
+					$md5_key = md5( $info['message'] . $type . $file_and_line );
 
 					if ( array_key_exists( $md5_key, $summarized_data ) ) {
 						++$summarized_data[ $md5_key ]['count'];
