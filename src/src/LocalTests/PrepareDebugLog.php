@@ -102,6 +102,13 @@ class PrepareDebugLog {
 					}
 				}
 
+				if ( ! empty( $line ) ) {
+					// If coming from query-monitor and we are not testing QM, ignore it.
+					if ( strpos( $line, '/wp-content/plugins/query-monitor/' ) !== false && $sut_slug !== 'query-monitor' ) {
+						continue;
+					}
+				}
+
 				// Hide "translation loading too early" for plugins that are not the SUT.
 				if ( preg_match( '/translation loading for the (.*) domain was triggered too early/i', $line, $matches ) && ! empty( $matches[1] ) ) {
 					$plugin_slug = strtolower( $matches[1] );
