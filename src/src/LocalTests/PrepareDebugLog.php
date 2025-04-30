@@ -100,11 +100,7 @@ class PrepareDebugLog {
 					if ( stripos( $line, 'setted_transient is deprecated' ) !== false ) {
 						continue;
 					}
-				}
-
-				if ( ! empty( $line ) ) {
-					// If coming from query-monitor and we are not testing QM, ignore it.
-					if ( strpos( $line, '/wp-content/plugins/query-monitor/' ) !== false && $sut_slug !== 'query-monitor' ) {
+					if ( strpos( $line, '/wp-content/plugins/query-monitor/' ) !== false ) {
 						continue;
 					}
 				}
