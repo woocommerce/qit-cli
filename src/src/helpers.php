@@ -2,12 +2,15 @@
 
 namespace QIT_CLI;
 
+use Symfony\Component\Console\Style\SymfonyStyle;
+
 function is_windows(): bool {
 	if ( defined( 'UNIT_TESTS' ) && UNIT_TESTS ) {
 		if ( App::getVar( 'MIMICK_WINDOWS' ) ) {
 			return true;
 		}
 	}
+
 	return defined( 'PHP_WINDOWS_VERSION_BUILD' );
 }
 
@@ -58,9 +61,9 @@ function validate_authentication( string $username, string $qit_token ): void {
  *
  * @param string $url The URL to open in the browser.
  *
+ * @return void
  * @throws \InvalidArgumentException When the URL is invalid.
  *
- * @return void
  */
 function open_in_browser( string $url ): void {
 	$url = htmlspecialchars_decode( $url );
@@ -178,7 +181,7 @@ function format_elapsed_time( int $seconds ): string {
 	$lengths       = [ 60, 60, 24, 7, 4.35, 12 ];
 	$count_lengths = count( $lengths );
 
-	for ( $i = 0; $seconds >= $lengths[ $i ] && $i < $count_lengths - 1; $i++ ) {
+	for ( $i = 0; $seconds >= $lengths[ $i ] && $i < $count_lengths - 1; $i ++ ) {
 		$seconds /= $lengths[ $i ];
 	}
 
@@ -188,4 +191,16 @@ function format_elapsed_time( int $seconds ): string {
 	}
 
 	return "$seconds $periods[$i] ago";
+}
+
+function banner( SymfonyStyle $io, string $label, bool $line_before = true, bool $line_after = true, string $icon = '' ): void {
+	$line = str_repeat( '─', max( 0, 60 - mb_strlen( $label ) ) );
+
+	if ( $line_before ) {
+		$io->writeln( '' );
+	}
+	$io->writeln( "<fg=bright-cyan;options=bold>── $icon {$label} {$line}</>" );
+	if ( $line_after ) {
+		$io->writeln( '' );
+	}
 }

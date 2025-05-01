@@ -18,6 +18,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
+use function QIT_CLI\banner;
 
 /**
  * Orchestrates custom E2E tests with a required qit-e2e.json (no fallback).
@@ -140,7 +141,7 @@ class CustomE2ERunner {
 		}
 
 		// 7) Normal test flow: do baseline snapshot, then run tests
-		$io->writeln( '<info>[db export]</info>' );
+		$io->writeln( '<info>[Saving baseline DB state]</info>' );
 		$this->docker->run_inside_docker( $env_info, [ 'wp', 'db', 'export', '/qit/snapshot.sql' ] );
 
 		// 8) Run tests for each item with action=test
@@ -161,6 +162,8 @@ class CustomE2ERunner {
 			}
 			$is_first = false;
 		}
+
+		banner( $io, 'Post-Processing', true, true, '⚙️' );
 
 		// 9) Shared teardown
 		$this->run_shared_teardown( $env_info, $io, $this->extension_test_runner );
@@ -262,6 +265,32 @@ class CustomE2ERunner {
 	}
 
 	public function run_shared_setup( $env_info, SymfonyStyle $io, ExtensionTestRunner $extension_test_runner ): void {
+		$will_have_shared_setup = false;
+
+		foreach ( $env_info->tests as $test_item ) {
+			if ( empty( $test_item['action'] ) ) {
+				continue;
+			}
+			if (
+				$test_item['action'] !== Extension::ACTIONS['bootstrap']
+				&& $test_item['action'] !== Extension::ACTIONS['test']
+			) {
+				continue;
+			}
+
+			$plugin_dir = $test_item['path_in_host'] ?? '';
+			$config     = $test_item['config'] ?? [];
+
+			if ( ! empty( $config['lifecycle']['sharedSetup'] ) && is_array( $config['lifecycle']['sharedSetup'] ) ) {
+				$will_have_shared_setup = true;
+				break;
+			}
+		}
+
+		if ( $will_have_shared_setup ) {
+			banner( $io, 'Shared Setup', false, true, '⚙️' );
+		}
+
 		foreach ( $env_info->tests as $test_item ) {
 			// We only run shared setup for items with action=bootstrap or action=test
 			if ( empty( $test_item['action'] ) ) {

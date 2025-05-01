@@ -2,8 +2,10 @@
 
 namespace QIT_CLI\LocalTests\E2E;
 
+use QIT_CLI\IO\Output;
 use RuntimeException;
 use QIT_CLI\App;
+use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
@@ -11,12 +13,13 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
+use function QIT_CLI\banner;
 
 /**
  * Handles per-plugin test flow:
  * - DB restore (except for the first plugin)
  * - Lifecycle setup scripts
- * - Running the user-defined test.command
+ * - Running <test.command> -- <runnerArgs>
  * - Lifecycle teardown
  * - Copying artifacts (CTRF / Allure)
  */
@@ -77,7 +80,7 @@ class ExtensionTestRunner {
 
 		// 1) Restore DB if not the first plugin
 		if ( ! $is_first ) {
-			$io->writeln( "<comment>[db import] for {$slug}</comment>" );
+			$io->writeln( "<info>[Restoring baseline DB state]</info>" );
 			$this->docker->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql' ] );
 		}
 
@@ -120,7 +123,7 @@ class ExtensionTestRunner {
 	}
 
 	/**
-	 * Execute the test.command (e.g. "npx playwright test") in the plugin's directory.
+	 * Runs "<test.command> -- <runnerArgs>" by splitting test.command into argv, then appending -- plus any runner_args.
 	 * Return Command::SUCCESS or Command::FAILURE.
 	 */
 	protected function run_test_command(
@@ -131,13 +134,12 @@ class ExtensionTestRunner {
 		SymfonyStyle $io
 	): int {
 		if ( empty( $config['test']['command'] ) ) {
-			$io->error( "No test.command defined in qit-e2e.json for plugin: {$slug}" );
+			$io->error( "No test.command defined for plugin: {$slug}" );
 
 			return Command::FAILURE;
 		}
 
-		$test_cmd_str = $config['test']['command'];
-		$io->section( "Running test.command for plugin: {$slug}" );
+		banner( $io, "Running tests for $slug", true, false, "🧪" );
 
 		// Optionally do npm install if node_modules doesn't exist
 		$node_modules = rtrim( $plugin_dir, '/' ) . '/node_modules';
@@ -154,13 +156,27 @@ class ExtensionTestRunner {
 			}
 		}
 
-		// Finally, run the user-defined command
+		// Build "<test.command> -- <runnerArgs>"
+		$base_cmd = $config['test']['command'];
+		$test_cmd = preg_split( '/\s+/', $base_cmd );
+		if ( ! empty( $env_info->runner_args ) ) {
+			$test_cmd[] = '--';
+			$test_cmd   = array_merge( $test_cmd, $env_info->runner_args );
+		}
+
+		// Merge environment variables from multiple sources
 		$docker_env_vars = App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?: [];
-		$process         = Process::fromShellCommandline( $test_cmd_str, $plugin_dir );
-		$process->setEnv( array_merge( $docker_env_vars, [
-			'IS_QIT'       => 'true',
-			'QIT_SITE_URL' => $env_info->site_url,
-		] ) );
+		$all_env         = array_merge(
+			$docker_env_vars,
+			$env_info->env_vars ?? [],
+			[
+				'IS_QIT'       => 'true',
+				'QIT_SITE_URL' => $env_info->site_url,
+			]
+		);
+
+		$process = new Process( $test_cmd, $plugin_dir );
+		$process->setEnv( $all_env );
 
 		try {
 			$exit_code = $process->run( function ( $type, $buffer ) use ( $io ) {
@@ -218,16 +234,17 @@ class ExtensionTestRunner {
 		SymfonyStyle $io
 	): void {
 		if ( ! $this->test_result ) {
-			return; // Should not happen, but guard anyway
+			return;
 		}
+
 		$plugin_slug = $test_item['slug'] ?? 'unknown';
 
 		if ( ! file_exists( $script_path ) ) {
-			return; // script not present, skip
+			return;
 		}
-		$io->writeln( "<info>{$phase} script for {$plugin_slug}: {$script_path}</info>" );
 
-		// Build Docker command
+		$io->writeln( "<info>{$phase} script for {$plugin_slug}</info>" );
+
 		$docker_dir = $test_item['path_in_php_container'] ?? '';
 		$relative   = str_replace( $test_item['path_in_host'], '', $script_path );
 
@@ -241,7 +258,46 @@ class ExtensionTestRunner {
 			),
 		];
 
-		$capture  = $this->run_command_and_capture( $env_info, $command_args );
+		$start_time = microtime( true );
+		try {
+			$output_instance = App::make( Output::class );
+			$output = $this->docker->run_inside_docker( $env_info, $command_args, [], null, 300, 'php', false, function ( $type, $buffer ) use ( $output_instance ) {
+				if ( ! is_scalar( $buffer ) ) {
+					return;
+				}
+
+				if ( $type === 'err' ) {
+					if ( $output_instance->isVerbose() ) {
+						$output_instance->write( $buffer );
+						return;
+					}
+				} else {
+					$output_instance->write( $buffer );
+				}
+			} );
+			$exit_code = 0;
+		} catch ( \Exception $e ) {
+			$output    = $e->getMessage();
+			$exit_code = 1;
+		}
+		$stop_time   = microtime( true );
+		$duration_ms = (int) round( ( $stop_time - $start_time ) * 1000 );
+
+		$stdout = explode( "\n", $output );
+
+		// Remove anything that starts with "Notice:".
+		$stdout = [];
+
+		$capture = [
+			'exit_code' => $exit_code,
+			'stdout'    => $stdout,
+			'stderr'    => [],
+			'start'     => $start_time,
+			'stop'      => $stop_time,
+			'duration'  => $duration_ms,
+		];
+
+		// Log the execution of this script as a CTRF test.
 		$ctrf_dir = rtrim( $this->test_result->get_results_dir(), '/' ) . '/ctrf';
 
 		$ctrf_snippet = $this->build_ctrf_snippet(
@@ -254,42 +310,6 @@ class ExtensionTestRunner {
 		$this->merge_ctrf_snippet( $ctrf_snippet, $ctrf_dir, $io );
 	}
 
-	/**
-	 * Executes a command inside Docker, capturing stdout/stderr. Returns:
-	 * [
-	 *   'exit_code' => int,
-	 *   'stdout'    => string[],
-	 *   'stderr'    => string[],
-	 *   'start'     => float, // microtime
-	 *   'stop'      => float,
-	 *   'duration'  => int    // ms
-	 * ]
-	 */
-	protected function run_command_and_capture( E2EEnvInfo $env_info, array $command_args ): array {
-		$start_time = microtime( true );
-		try {
-			$output    = $this->docker->run_inside_docker( $env_info, $command_args, [], null, 300, 'php', true );
-			$exit_code = 0;
-		} catch ( \Exception $e ) {
-			$output    = $e->getMessage();
-			$exit_code = 1;
-		}
-		$stop_time   = microtime( true );
-		$duration_ms = (int) round( ( $stop_time - $start_time ) * 1000 );
-
-		return [
-			'exit_code' => $exit_code,
-			'stdout'    => explode( "\n", $output ),
-			'stderr'    => [],
-			'start'     => $start_time,
-			'stop'      => $stop_time,
-			'duration'  => $duration_ms,
-		];
-	}
-
-	/**
-	 * Build a small CTRF snippet for each script run, so it appears in final results.
-	 */
 	protected function build_ctrf_snippet(
 		string $test_name,
 		array $capture,
@@ -308,8 +328,7 @@ class ExtensionTestRunner {
 			'reportId'     => uniqid( 'test-step-', true ),
 			'timestamp'    => gmdate( 'c' ),
 			'generatedBy'  => 'QIT_SpecE2ETestRunner',
-
-			'results' => [
+			'results'      => [
 				'tool'    => [
 					'name'    => 'SpecE2ERunner',
 					'version' => '1.0.0',
@@ -345,9 +364,6 @@ class ExtensionTestRunner {
 		];
 	}
 
-	/**
-	 * Merge an individual CTRF snippet into the aggregated CTRF in $ctrf_dir.
-	 */
 	protected function merge_ctrf_snippet( array $snippet, string $ctrf_dir, SymfonyStyle $io ): void {
 		if ( ! is_dir( $ctrf_dir ) ) {
 			@mkdir( $ctrf_dir, 0755, true );
@@ -360,12 +376,17 @@ class ExtensionTestRunner {
 		$destination  = rtrim( $ctrf_dir, '/' ) . '/' . $partial_name;
 		rename( $temp_file, $destination );
 
-		$qit_dir   = App::getVar( 'QIT_DIR' ) ?: '';
+		$qit_dir   = Config::get_qit_dir();
 		$ctrf_path = $qit_dir . '/node_modules/.bin/ctrf';
 		if ( ! file_exists( $ctrf_path ) ) {
-			$io->warning( "CTRF binary not found at {$ctrf_path}. Install if you want combined merges." );
+			$io->text( "CTRF binary not found at {$ctrf_path}. Installing now..." );
+			$install_ctrf = new Process( [ 'npm', 'install', 'ctrf', '--no-save' ], $qit_dir );
+			$install_code = $install_ctrf->run();
+			if ( $install_code !== 0 ) {
+				$io->error( "Failed to install CTRF:\n" . $install_ctrf->getErrorOutput() );
 
-			return;
+				return;
+			}
 		}
 		$merge_cmd = new Process( [ $ctrf_path, 'merge', $ctrf_dir ] );
 		$merge_cmd->setTimeout( 120 );
@@ -376,9 +397,6 @@ class ExtensionTestRunner {
 		}
 	}
 
-	/**
-	 * Post-process the final merged CTRF file if needed (e.g. add "phase" or rename tests).
-	 */
 	public function post_process_ctrf_json( string $ctrf_file ): void {
 		if ( ! file_exists( $ctrf_file ) ) {
 			return;
@@ -402,17 +420,12 @@ class ExtensionTestRunner {
 			if ( empty( $test['extra']['pluginSlug'] ) ) {
 				$test['extra']['pluginSlug'] = '';
 			}
-			// Example: rename the test name based on phase, if you want
-			// ...
 		}
 		unset( $test );
 
 		file_put_contents( $ctrf_file, json_encode( $data, JSON_PRETTY_PRINT ) );
 	}
 
-	/**
-	 * Copies test.results.ctrf and test.results.allure from plugin_dir to the final results directory.
-	 */
 	protected function collect_plugin_artifacts( array $test_item, array $config, SymfonyStyle $io ): void {
 		if ( ! $this->test_result ) {
 			return;

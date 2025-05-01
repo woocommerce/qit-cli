@@ -71,10 +71,10 @@ class PluginActivationReportRenderer {
 				throw new \RuntimeException( sprintf( "Plugin %s failed to activate. Output:\n %s", $r['plugin'], $activation_output ) );
 			}
 
-			if ( ! empty( $r['debug_log'] ) ) {
+			if ( ! empty( $r['debug_log'] ) && $this->output->isVerbose() ) {
 				$this->output->writeln(
 					sprintf(
-						'<error>New debug log entries were generated while activating plugin "%s"%s:</error>',
+						'<comment>New debug log entries were generated while activating plugin "%s"%s:</comment>',
 						$r['plugin'], // @phan-suppress-current-line PhanTypeMismatchArgumentInternal
 						count( $r['debug_log'] ) > 10 ? sprintf( ' (%d lines total, showing last 10)', count( $r['debug_log'] ) ) : ''
 					)
@@ -83,15 +83,13 @@ class PluginActivationReportRenderer {
 					$has_big_debug_log = true;
 					$r['debug_log']    = array_slice( $r['debug_log'], - 10 );
 				}
-				$table = new Table( $this->output );
 				foreach ( $r['debug_log'] as $line ) {
-					$table->addRow( [ $line ] );
+					$this->output->writeln( substr( $line, 0, 100 ) );
 				}
-				$table->render();
 			}
 		}
 
-		if ( $has_big_debug_log ) {
+		if ( $has_big_debug_log && $this->output->isVerbose() ) {
 			$this->output->writeln( sprintf( '<info>Some debug logs were too big to show. Full logs: %s</info>', $activation_report_file ) );
 		}
 	}
