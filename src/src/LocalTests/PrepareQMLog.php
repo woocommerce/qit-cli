@@ -1,6 +1,3 @@
-/**
- * @phan-file-suppress PhanUnusedPublicMethodParameter
- */
 <?php
 
 namespace QIT_CLI\LocalTests;
