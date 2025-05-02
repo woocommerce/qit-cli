@@ -100,6 +100,9 @@ class PrepareDebugLog {
 					if ( stripos( $line, 'setted_transient is deprecated' ) !== false ) {
 						continue;
 					}
+					if ( strpos( $line, '/wp-content/plugins/query-monitor/' ) !== false ) {
+						continue;
+					}
 				}
 
 				// Hide "translation loading too early" for plugins that are not the SUT.
