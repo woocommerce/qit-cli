@@ -165,7 +165,6 @@ class LocalTestRunNotifier {
 		];
 
 		$this->prepare_debug_log->set_sut_slug( $test_result->get_env_info()->sut_slug ?: '' );
-		$this->prepare_qm_log->set_sut_slug( $test_result->get_env_info()->sut_slug ?: '' );
 
 		if ( file_exists( $result_file ) ) {
 			$result_json = file_get_contents( $result_file );

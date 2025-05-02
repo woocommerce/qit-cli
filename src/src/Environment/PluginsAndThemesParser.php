@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Environment;
 
+use QIT_CLI\App;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\WPORGExtensionsList;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -75,7 +76,8 @@ class PluginsAndThemesParser {
 
 			// Ensure test_tags is set.
 			if ( empty( $extension['test_tags'] ) || ! is_array( $extension['test_tags'] ) ) { // @phpstan-ignore-line
-				$extension['test_tags'] = [ 'default' ];
+				$is_activation_test     = App::getVar( 'QIT_ACTIVATION_TEST' ) === 'yes';
+				$extension['test_tags'] = $is_activation_test ? [ 'pre_activation' ] : [ 'default' ];
 			}
 
 			foreach ( $extension['test_tags'] as $test_tag ) {

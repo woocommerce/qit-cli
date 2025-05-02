@@ -8,22 +8,8 @@ class PrepareQMLog {
 	/** @var OutputInterface */
 	protected $output;
 
-	/**
-	 * @var string $sut_slug
-	 */
-	protected $sut_slug = '';
-
 	public function __construct( OutputInterface $output ) {
 		$this->output = $output;
-	}
-
-	/**
-	 * Sets the SUT slug.
-	 *
-	 * @param string $sut_slug
-	 */
-	public function set_sut_slug( string $sut_slug ): void {
-		$this->sut_slug = $sut_slug;
 	}
 
 	/**
@@ -194,77 +180,27 @@ class PrepareQMLog {
 			foreach ( $logs as $type => $type_logs ) {
 				foreach ( $type_logs as $info ) {
 					// Ignore some compatbility extension set issues.
-					$info['message'] = strip_tags( $info['message'] );
 
 					// Ignore a deprecation warning from Jetpack about itself.
 					$is_jetpack_geo_deprecation = stripos( $info['message'], 'Class Jetpack_Geo_Location is' ) !== false;
+
+
 
 					if ( $is_jetpack_geo_deprecation ) {
 						continue;
 					}
 
-					/*
-					 * Notices coming from Query Monitor 3.17.0.
-					 * @todo: Remove after upgrading QM to 3.17.2 or later.
-					 * 3.17.2 has a bug, so we need to wait until 3.17.3 at least.
-					 * @see https://github.com/Automattic/compatibility-dashboard/pull/1206#issuecomment-2636908814
-					 * @see https://wordpress.org/support/topic/for-some-reason-fatal-error-stopped-being-logged-after-3-17-1-and-3-17-2/#new-topic-0
-					 */
-					if ( stripos( $info['message'], 'setted_site_transient is deprecated' ) !== false ) {
-						continue;
-					}
-					if ( stripos( $info['message'], 'setted_transient is deprecated' ) !== false ) {
-						continue;
-					}
-
-					// Hide "translation loading too early" for plugins that are not the SUT.
-					if ( preg_match( '/translation loading for the (.*) domain was triggered too early/i', $info['message'], $matches ) && ! empty( $matches[1] ) ) {
-						$plugin_slug = strtolower( $matches[1] );
-
-						if ( $plugin_slug !== $this->sut_slug ) {
-							continue;
-						}
-					}
-
-					if ( ! empty( $info['file'] ) ) {
-						// If coming from query-monitor and we are not testing QM, ignore it.
-						if ( strpos( $info['file'], '/wp-content/plugins/query-monitor/' ) !== false && $this->sut_slug !== 'query-monitor' ) {
-							continue;
-						}
-					}
-
 					// End compatibility extension set issues.
-
-					$file_and_line = '';
-
-					if ( ! empty( $info['file'] ) ) {
-						$file_and_line = str_replace( '/var/www/html/', '', $info['file'] );
-					}
-
-					if ( ! empty( $info['line'] ) ) {
-						$file_and_line .= ':' . $info['line'];
-					}
-
-					if ( empty( $file_and_line ) ) {
-						$file_and_line = '-';
-					}
-
-					$trace = $info['trace'] ?? [];
-
-					if ( is_string( $trace ) ) {
-						$trace = json_decode( $trace, true );
-						$trace = is_array( $trace ) ? $trace : [];
-					}
 
 					$info_summary = [
 						'message'   => $info['message'],
 						'type'      => $type,
-						'file_line' => $file_and_line,
-						'traces'    => $this->get_trace_summary( $trace ),
+						'file_line' => str_replace( '/var/www/html/', '', $info['file'] ) . ':' . $info['line'],
+						'traces'    => $this->get_trace_summary( $info['trace'] ),
 					];
 
 					// Ensures that we don't have duplicate entries.
-					$md5_key = md5( $info['message'] . $type . $file_and_line );
+					$md5_key = md5( $info['message'] . $type . $info['file'] . $info['line'] );
 
 					if ( array_key_exists( $md5_key, $summarized_data ) ) {
 						++$summarized_data[ $md5_key ]['count'];
