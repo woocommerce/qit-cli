@@ -20,7 +20,7 @@
             "version": "undefined",
             "action": "bootstrap",
             "test_tags": [
-                "default"
+                "pre_activation"
             ],
             "priority": 50,
             "wccom_id": null

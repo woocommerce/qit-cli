@@ -362,6 +362,7 @@
                             "type": "string",
                             "enum": [
                                 "basic",
+                                "host-plan",
                                 ""
                             ],
                             "default": ""
