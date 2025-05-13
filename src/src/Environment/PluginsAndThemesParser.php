@@ -249,13 +249,10 @@ class PluginsAndThemesParser {
 				$looks_like_local_path = strpos( $test_tag, '/' ) !== false && strpos( $test_tag, 'http' ) === false;
 
 				if ( $looks_like_local_path ) {
-					$attempted_path = rtrim( getcwd(), DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . ltrim( $test_tag, DIRECTORY_SEPARATOR );
-
 					throw new \InvalidArgumentException( sprintf(
 						'Invalid test tag "%s". If this is a file/directory, please make sure that it exists. ' .
-						'Attempted path: %s. Please provide an existing file/directory or use a valid alphanumeric tag (with optional dashes/underscores).',
-						$test_tag,
-						$attempted_path
+						'Please provide an existing file/directory or use a valid alphanumeric tag (with optional dashes/underscores).',
+						$test_tag
 					) );
 				} else {
 					throw new \InvalidArgumentException(
