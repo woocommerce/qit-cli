@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "398 total, 388 passed, 6 failed, 4 skipped.",
+            "test_summary": "398 total, 386 passed, 2 failed, 10 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -50,13 +50,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 5,
-                "numPassedTestSuites": 95,
-                "numPendingTestSuites": 2,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 93,
+                "numPendingTestSuites": 8,
                 "numTotalTestSuites": 102,
-                "numFailedTests": 6,
-                "numPassedTests": 388,
-                "numPendingTests": 4,
+                "numFailedTests": 2,
+                "numPassedTests": 386,
+                "numPendingTests": 10,
                 "numTotalTests": 398,
                 "testResults": [
                     {
@@ -764,13 +764,13 @@
                     },
                     {
                         "file": "customer\\/customer-list.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Merchant > Customer List": [
                                 {
                                     "title": "Merchant can view a list of all customers, filter and download",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Merchant can view a single customer",
@@ -1249,8 +1249,8 @@
                     },
                     {
                         "file": "email\\/settings-email.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Email Settings": [
                                 {
@@ -1267,7 +1267,7 @@
                                 },
                                 {
                                     "title": "Send email preview",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "See specific email preview",
@@ -1464,7 +1464,7 @@
                     {
                         "file": "onboarding\\/onboarding-wizard.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Store owner can complete the core profiler": [
                                 {
@@ -1473,7 +1473,7 @@
                                 },
                                 {
                                     "title": "Can complete the core profiler installing default extensions",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Store owner can skip the core profiler": [
@@ -1680,8 +1680,8 @@
                     },
                     {
                         "file": "order\\/order-refund.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
@@ -1690,7 +1690,7 @@
                                 },
                                 {
                                     "title": "can delete an issued refund",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
@@ -2084,13 +2084,13 @@
                     },
                     {
                         "file": "product\\/create-product-attributes.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "can add custom product attributes": [
                                 {
                                     "title": "can add custom product attributes",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2307,7 +2307,7 @@
                     {
                         "file": "product\\/product-reviews.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Product Reviews": [],
                             "Product Reviews > Merchant manages reviews": [
@@ -2337,7 +2337,7 @@
                                 },
                                 {
                                     "title": "can reply to a product review",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete a product review",
@@ -2772,7 +2772,7 @@
                         }
                     }
                 ],
-                "summary": "398 total, 388 passed, 6 failed, 4 skipped."
+                "summary": "398 total, 386 passed, 2 failed, 10 skipped."
             }
         },
         {
@@ -2783,10 +2783,10 @@
                     },
                     "summary": {
                         "tests": 398,
-                        "passed": 388,
-                        "failed": 6,
+                        "passed": 386,
+                        "failed": 2,
                         "pending": 0,
-                        "skipped": 4,
+                        "skipped": 10,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -5919,57 +5919,29 @@
                         },
                         {
                             "name": "Merchant can view a list of all customers, filter and download",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'link\', { name: \'saul.1747233093262@example.com\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'link\', { name: \'saul.1747233093262@example.com\' })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'link\', { name: \'saul.1747233093262@example.com\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'link\', { name: \'saul.1747233093262@example.com\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customer\\/customer-list.spec.js:119:7\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customer\\/customer-list.spec.js:115:3",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/customer-list.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to the customers reports page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Check that the customers are displayed in the list",
-                                    "status": "failed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > customer\\/customer-list.spec.js > Merchant > Customer List",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customer-customer-list-Mer-872c9-stomers-filter-and-download-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customer-customer-list-Mer-872c9-stomers-filter-and-download-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "_error-context-0",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customer-customer-list-Mer-872c9-stomers-filter-and-download-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customer-customer-list-Mer-872c9-stomers-filter-and-download-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -7875,13 +7847,11 @@
                         },
                         {
                             "name": "Send email preview",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'dialog\').locator(\'text=Error sending test email. Please try again.\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'dialog\').locator(\'text=Error sending test email. Please try again.\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'dialog\').locator(\'text=Error sending test email. Please try again.\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'dialog\').locator(\'text=Error sending test email. Please try again.\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email\\/settings-email.spec.js:209:27",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
@@ -7889,34 +7859,17 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-settings-email-WooCo-414e5-Settings-Send-email-preview-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-settings-email-WooCo-414e5-Settings-Send-email-preview-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "_error-context-0",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-settings-email-WooCo-414e5-Settings-Send-email-preview-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-settings-email-WooCo-414e5-Settings-Send-email-preview-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -8630,50 +8583,17 @@
                         },
                         {
                             "name": "Can complete the core profiler installing default extensions",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Intro page and opt in to data sharing",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "User profile information",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Business Information",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Extensions -- install some suggested extensions",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Confirm that core profiler was completed and a couple of default extensions installed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Confirm that information from core profiler saved",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Clean up installed extensions",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Confirm that the store is in coming soon mode after completing the core profiler",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > onboarding\\/onboarding-wizard.spec.js > Store owner can complete the core profiler",
                             "attachments": [],
                             "stdout": [
@@ -8681,7 +8601,11 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -9486,13 +9410,11 @@
                         },
                         {
                             "name": "can delete an issued refund",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'td.refunded-total\')\\nExpected: \\u001b[32m0\\u001b[39m\\nReceived: \\u001b[31m2\\u001b[39m\\nCall log:\\n\\u001b[2m  - expect.toHaveCount with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'td.refunded-total\')\\u001b[22m\\n\\u001b[2m    24 \\u00d7 locator resolved to 2 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"2\\"\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'td.refunded-total\')\\nExpected: \\u001b[32m0\\u001b[39m\\nReceived: \\u001b[31m2\\u001b[39m\\nCall log:\\n\\u001b[2m  - expect.toHaveCount with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'td.refunded-total\')\\u001b[22m\\n\\u001b[2m    24 \\u00d7 locator resolved to 2 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"2\\"\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-refund.spec.js:133:56",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-refund.spec.js",
@@ -9500,34 +9422,17 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > order\\/order-refund.spec.js > WooCommerce Orders > Refund an order",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/order-order-refund-WooComm-af33f-can-delete-an-issued-refund-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/order-order-refund-WooComm-af33f-can-delete-an-issued-refund-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "_error-context-0",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/order-order-refund-WooComm-af33f-can-delete-an-issued-refund-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/order-order-refund-WooComm-af33f-can-delete-an-issued-refund-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -11306,160 +11211,29 @@
                         },
                         {
                             "name": "can add custom product attributes",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: page.waitForResponse: Timeout 20000ms exceeded while waiting for event \\"response\\"",
-                            "trace": "TimeoutError: page.waitForResponse: Timeout 20000ms exceeded while waiting for event \\"response\\"\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/create-product-attributes.spec.js:163:39\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/create-product-attributes.spec.js:160:13",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-product-attributes.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Open \\"Edit product\\" page of product id <ID>",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Go to the \\"Attributes\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Add the attribute \\"Colour\\" with values \\"Red | Green\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type \\"Colour\\" in the \\"Attribute name\\" input field.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type the attribute values \\"Red | Green\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Visible on the product page\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Used for variations\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \\"Save attributes\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Wait for the tour\'s dismissal to be saved",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Wait for the loading overlay to disappear.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Add the attribute \\"Size\\" with values \\"Small | Medium\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \'Add new\'.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type \\"Size\\" in the \\"Attribute name\\" input field.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type the attribute values \\"Small | Medium\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Visible on the product page\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Used for variations\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \\"Save attributes\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Wait for the tour\'s dismissal to be saved",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Wait for the loading overlay to disappear.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Add the attribute \\"Logo\\" with values \\"Woo | WordPress\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \'Add new\'.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type \\"Logo\\" in the \\"Attribute name\\" input field.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type the attribute values \\"Woo | WordPress\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Visible on the product page\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Used for variations\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \\"Save attributes\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Wait for the tour\'s dismissal to be saved",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Wait for the loading overlay to disappear.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Update product",
-                                    "status": "failed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/create-product-attributes.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-create-product-att-81cb4-d-custom-product-attributes-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-create-product-att-81cb4-d-custom-product-attributes-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-create-product-att-81cb4-d-custom-product-attributes-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -12853,11 +12627,11 @@
                         },
                         {
                             "name": "can reply to a product review",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-reviews.spec.js",
@@ -12871,7 +12645,11 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -14387,8 +14165,8 @@
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByText(\'Delete Users You have\').getByText(\'Willie.Rogahn99\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByText(\'Delete Users You have\').getByText(\'Willie.Rogahn99\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByText(\'Delete Users You have\').getByText(\'Willie.Rogahn99\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByText(\'Delete Users You have\').getByText(\'Willie.Rogahn99\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:76:5\\n    at userDeletionTest (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:67:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:337:10",
+                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByText(\'You have specified\').getByText(\'Dexter.Schowalter86\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByText(\'You have specified\').getByText(\'Dexter.Schowalter86\')\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByText(\'You have specified\').getByText(\'Dexter.Schowalter86\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByText(\'You have specified\').getByText(\'Dexter.Schowalter86\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:76:5\\n    at userDeletionTest (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:67:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:337:10",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -14442,8 +14220,8 @@
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByText(\'Delete Users You have\').getByText(\'Arno.Nader16\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByText(\'Delete Users You have\').getByText(\'Arno.Nader16\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByText(\'Delete Users You have\').getByText(\'Arno.Nader16\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByText(\'Delete Users You have\').getByText(\'Arno.Nader16\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:76:5\\n    at userDeletionTest (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:67:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:345:10",
+                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByText(\'You have specified\').getByText(\'Fredy.Walsh-Fritsch\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByText(\'You have specified\').getByText(\'Fredy.Walsh-Fritsch\')\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByText(\'You have specified\').getByText(\'Fredy.Walsh-Fritsch\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByText(\'You have specified\').getByText(\'Fredy.Walsh-Fritsch\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:76:5\\n    at userDeletionTest (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:67:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:345:10",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -14571,12 +14349,7 @@
         },
         {
             "debug_log": {
-                "generic": [
-                    {
-                        "count": "1",
-                        "message": "PHP Warning: Undefined array key erase_plugin_data in \\/var\\/www\\/html\\/wp-content\\/plugins\\/pinterest-for-woocommerce\\/uninstall.php on line 21"
-                    }
-                ]
+                "generic": []
             }
         }
     ]
