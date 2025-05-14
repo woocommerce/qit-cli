@@ -304,12 +304,7 @@
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
                             "stdout": [
-                                "9.9.0-beta.1\\n",
-                                "versionResponse: {\\n  status: \\u001b[33m0\\u001b[39m,\\n  stdout: \\u001b[32m\'9.9.0-beta.1\'\\u001b[39m,\\n  stderr: \\u001b[32m\'Deprecated: Creation of dynamic property SUT\\\\\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 28\'\\u001b[39m\\n}\\n",
-                                "WooCommerce version: 9.9.0-beta.1\\n",
-                                "Major version: 9\\n",
-                                "Minor version: 9\\n",
-                                "isVersion99OrHigher: \\u001b[33mtrue\\u001b[39m\\n"
+                                "9.9.0-beta.1\\n"
                             ],
                             "stderr": [],
                             "extra": {
