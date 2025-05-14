@@ -473,18 +473,6 @@
                         "count": 1
                     },
                     {
-                        "message": "Hook setted_site_transient is deprecated since version 6.8.0! Use set_site_transient instead. ",
-                        "type": "other",
-                        "file_line": ":",
-                        "count": 15
-                    },
-                    {
-                        "message": "Hook setted_transient is deprecated since version 6.8.0! Use set_transient instead. ",
-                        "type": "other",
-                        "file_line": ":",
-                        "count": 5
-                    },
-                    {
                         "message": "Notice on all requests - Child theme",
                         "type": "notice",
                         "file_line": "wp-content\\/themes\\/bistro\\/functions.php:17",

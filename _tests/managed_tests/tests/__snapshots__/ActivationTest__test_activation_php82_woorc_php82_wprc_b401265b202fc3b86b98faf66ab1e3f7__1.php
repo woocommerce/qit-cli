@@ -465,18 +465,6 @@
                         "type": "deprecated",
                         "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:28",
                         "count": 22
-                    },
-                    {
-                        "message": "Hook setted_site_transient is deprecated since version 6.8.0! Use set_site_transient instead. ",
-                        "type": "other",
-                        "file_line": ":",
-                        "count": 6
-                    },
-                    {
-                        "message": "Hook setted_transient is deprecated since version 6.8.0! Use set_transient instead. ",
-                        "type": "other",
-                        "file_line": ":",
-                        "count": 5
                     }
                 ],
                 "debug_log": [

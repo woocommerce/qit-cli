@@ -461,18 +461,6 @@
             "debug_log": {
                 "qm_logs": [
                     {
-                        "message": "Hook setted_site_transient is deprecated since version 6.8.0! Use set_site_transient instead. ",
-                        "type": "other",
-                        "file_line": ":",
-                        "count": 6
-                    },
-                    {
-                        "message": "Hook setted_transient is deprecated since version 6.8.0! Use set_transient instead. ",
-                        "type": "other",
-                        "file_line": ":",
-                        "count": 5
-                    },
-                    {
                         "message": "Notice on all requests",
                         "type": "notice",
                         "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:16",

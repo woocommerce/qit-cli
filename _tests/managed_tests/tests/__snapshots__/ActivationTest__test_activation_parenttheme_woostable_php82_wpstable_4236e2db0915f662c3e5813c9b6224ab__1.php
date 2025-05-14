@@ -326,11 +326,7 @@
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
-                            "stdout": [
-                                "Request failed: https:\\/\\/secure.gravatar.com\\/avatar\\/be3221a6fac131657111728b4d912a877ec158b123d5db3afef3bd8a59784ece?s=26&d=mm&r=g - net::ERR_NAME_NOT_RESOLVED\\n",
-                                "Request failed: https:\\/\\/secure.gravatar.com\\/avatar\\/8e1606e6fba450a9362af43874c1b2dfad34c782e33d0a51e1b46c18a2a567dd?s=50&d=mm&r=g - net::ERR_NAME_NOT_RESOLVED\\n",
-                                "Request failed: https:\\/\\/fonts.googleapis.com\\/css?family=Source+Sans+Pro:400%2C300%2C300italic%2C400italic%2C600%2C700%2C900&subset=latin%2Clatin-ext&wp-mce-49110-20201110 - net::ERR_NAME_NOT_RESOLVED\\n"
-                            ],
+                            "stdout": [],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -475,18 +471,6 @@
                         "type": "PHP Fatal",
                         "file_line": "wp-content\\/themes\\/bistro\\/functions.php:10",
                         "count": 1
-                    },
-                    {
-                        "message": "Hook setted_site_transient is deprecated since version 6.8.0! Use set_site_transient instead. ",
-                        "type": "other",
-                        "file_line": ":",
-                        "count": 16
-                    },
-                    {
-                        "message": "Hook setted_transient is deprecated since version 6.8.0! Use set_transient instead. ",
-                        "type": "other",
-                        "file_line": ":",
-                        "count": 5
                     },
                     {
                         "message": "Notice on all requests - Parent Theme",
