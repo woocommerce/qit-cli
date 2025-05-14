@@ -57,8 +57,8 @@
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 2,
                 "numFailedTests": 1,
-                "numPassedTests": 5,
-                "numPendingTests": 6,
+                "numPassedTests": 8,
+                "numPendingTests": 3,
                 "numTotalTests": 12,
                 "testResults": [
                     {
@@ -98,19 +98,19 @@
                                 },
                                 {
                                     "title": "Set up Cash On Delivery Payment Method",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Create a Product",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Create a Simple Order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Add Product Cart",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "Can Place Order",
@@ -128,7 +128,7 @@
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 1 passed, 2 total | Tests: 6 skipped, 1 failed, 5 passed, 12 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 1 passed, 2 total | Tests: 3 skipped, 1 failed, 8 passed, 12 total."
             }
         },
         {
@@ -139,10 +139,10 @@
                     },
                     "summary": {
                         "tests": 12,
-                        "passed": 5,
+                        "passed": 8,
                         "failed": 1,
                         "pending": 0,
-                        "skipped": 6,
+                        "skipped": 3,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -290,13 +290,11 @@
                         },
                         {
                             "name": "Set up Cash On Delivery Payment Method",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.check: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Enable\\/Disable\')\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.check: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Enable\\/Disable\')\\u001b[22m\\n\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:590:49",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -304,30 +302,14 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/qit\\/results\\/playwright\\/activation-Set-up-Cash-On-Delivery-Payment-Method--test-Woocommerce-Run-\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/qit\\/results\\/playwright\\/activation-Set-up-Cash-On-Delivery-Payment-Method--test-Woocommerce-Run-\\/video.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/qit\\/results\\/playwright\\/activation-Set-up-Cash-On-Delivery-Payment-Method--test-Woocommerce-Run-\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
-                                "Notice: Notice on all requests in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16\\n9.9.0-beta.1\\n",
-                                "versionResponse: {\\n  status: \\u001b[33m0\\u001b[39m,\\n  output: \\u001b[32m\'Notice: Notice on all requests in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16\\\\n\'\\u001b[39m +\\n    \\u001b[32m\'9.9.0-beta.1\'\\u001b[39m\\n}\\n",
-                                "WooCommerce version: Notice: Notice on all requests in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16\\n9.9.0-beta.1\\n",
-                                "Major version: Notice: Notice on all requests in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds\\n",
-                                "Minor version: php on line 16\\n9\\n",
-                                "isVersion99OrHigher: \\u001b[33mfalse\\u001b[39m\\n"
+                                "9.9.0-beta.1\\n",
+                                "versionResponse: {\\n  status: \\u001b[33m0\\u001b[39m,\\n  stdout: \\u001b[32m\'9.9.0-beta.1\'\\u001b[39m,\\n  stderr: \\u001b[32m\'Notice: Notice on all requests in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16\'\\u001b[39m\\n}\\n",
+                                "WooCommerce version: 9.9.0-beta.1\\n",
+                                "Major version: 9\\n",
+                                "Minor version: 9\\n",
+                                "isVersion99OrHigher: \\u001b[33mtrue\\u001b[39m\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -336,11 +318,11 @@
                         },
                         {
                             "name": "Create a Product",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -357,11 +339,11 @@
                         },
                         {
                             "name": "Create a Simple Order",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -373,16 +355,22 @@
                             "stdout": [],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "slow"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "Add Product Cart",
-                            "status": "skipped",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toContainText with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toContainText with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:750:69",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -390,7 +378,23 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Add-Product-Cart--test-Woocommerce-Run-\\/test-failed-1.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Add-Product-Cart--test-Woocommerce-Run-\\/video.webm"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Add-Product-Cart--test-Woocommerce-Run-\\/trace.zip"
+                                }
+                            ],
                             "stdout": [],
                             "stderr": [],
                             "extra": {
@@ -468,16 +472,36 @@
             "debug_log": {
                 "qm_logs": [
                     {
+                        "message": " Uncaught Error: Call to undefined function call_to_undefined_function()",
+                        "type": "PHP Fatal",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:9",
+                        "count": 1
+                    },
+                    {
                         "message": "Notice on all requests",
                         "type": "notice",
                         "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:16",
-                        "count": 22
+                        "count": 50
+                    },
+                    {
+                        "message": "Warning on all requests",
+                        "type": "warning",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:12",
+                        "count": 4
                     }
                 ],
                 "debug_log": [
                     {
-                        "count": "24",
+                        "count": "1",
+                        "message": "PHP Fatal error: Uncaught Error: Call to undefined function call_to_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:9\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(Object(WP))\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(565): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-includes\\/class-wp.php(835): do_action_ref_array(\'wp\', Array)\\n#4 \\/var\\/www\\/html\\/wp-includes\\/functions.php(1342): WP->main(\'\')\\n#5 \\/var\\/www\\/html\\/wp-blog-header.php(16): wp()\\n#6 \\/var\\/www\\/html\\/index.php(17): require(\'\\/var\\/www\\/html\\/w...\')\\n#7 {main}\\n thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 9\\n"
+                    },
+                    {
+                        "count": "100",
                         "message": "PHP Notice: Notice on all requests in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16"
+                    },
+                    {
+                        "count": "4",
+                        "message": "PHP Warning: Warning on all requests in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                     }
                 ]
             }

@@ -15,7 +15,7 @@
                 "woocommerce"
             ],
             "test_log": "",
-            "status": "failed",
+            "status": "warning",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -52,13 +52,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 1,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 2,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 2,
-                "numFailedTests": 1,
-                "numPassedTests": 5,
-                "numPendingTests": 6,
+                "numFailedTests": 0,
+                "numPassedTests": 12,
+                "numPendingTests": 0,
                 "numTotalTests": 12,
                 "testResults": [
                     {
@@ -76,8 +76,8 @@
                     },
                     {
                         "file": "woocommerce\\/activation\\/activation.spec.js",
-                        "status": "failed",
-                        "has_pending": true,
+                        "status": "passed",
+                        "has_pending": false,
                         "tests": {
                             "woocommerce\\/activation\\/activation.spec.js": [
                                 {
@@ -98,37 +98,37 @@
                                 },
                                 {
                                     "title": "Set up Cash On Delivery Payment Method",
-                                    "status": "failed"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Create a Product",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Create a Simple Order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Add Product Cart",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Can Place Order",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Deactivate Plugin",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Activate Other Theme",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 1 failed, 1 passed, 2 total | Tests: 6 skipped, 1 failed, 5 passed, 12 total."
+                "summary": "Test Suites: 0 skipped, 0 failed, 2 passed, 2 total | Tests: 0 skipped, 0 failed, 12 passed, 12 total."
             }
         },
         {
@@ -139,10 +139,10 @@
                     },
                     "summary": {
                         "tests": 12,
-                        "passed": 5,
-                        "failed": 1,
+                        "passed": 12,
+                        "failed": 0,
                         "pending": 0,
-                        "skipped": 6,
+                        "skipped": 0,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -290,13 +290,11 @@
                         },
                         {
                             "name": "Set up Cash On Delivery Payment Method",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.check: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Enable\\/Disable\')\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.check: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Enable\\/Disable\')\\u001b[22m\\n\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:590:49",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -304,30 +302,14 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/qit\\/results\\/playwright\\/activation-Set-up-Cash-On-Delivery-Payment-Method--test-Woocommerce-Run-\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/qit\\/results\\/playwright\\/activation-Set-up-Cash-On-Delivery-Payment-Method--test-Woocommerce-Run-\\/video.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/qit\\/results\\/playwright\\/activation-Set-up-Cash-On-Delivery-Payment-Method--test-Woocommerce-Run-\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
-                                "Deprecated: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 28\\n9.9.0-beta.1\\n",
-                                "versionResponse: {\\n  status: \\u001b[33m0\\u001b[39m,\\n  output: \\u001b[32m\'Deprecated: Creation of dynamic property SUT\\\\\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 28\\\\n\'\\u001b[39m +\\n    \\u001b[32m\'9.9.0-beta.1\'\\u001b[39m\\n}\\n",
-                                "WooCommerce version: Deprecated: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 28\\n9.9.0-beta.1\\n",
-                                "Major version: Deprecated: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds\\n",
-                                "Minor version: php on line 28\\n9\\n",
-                                "isVersion99OrHigher: \\u001b[33mfalse\\u001b[39m\\n"
+                                "9.9.0-beta.1\\n",
+                                "versionResponse: {\\n  status: \\u001b[33m0\\u001b[39m,\\n  stdout: \\u001b[32m\'9.9.0-beta.1\'\\u001b[39m,\\n  stderr: \\u001b[32m\'Deprecated: Creation of dynamic property SUT\\\\\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 28\'\\u001b[39m\\n}\\n",
+                                "WooCommerce version: 9.9.0-beta.1\\n",
+                                "Major version: 9\\n",
+                                "Minor version: 9\\n",
+                                "isVersion99OrHigher: \\u001b[33mtrue\\u001b[39m\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -336,11 +318,11 @@
                         },
                         {
                             "name": "Create a Product",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -357,11 +339,11 @@
                         },
                         {
                             "name": "Create a Simple Order",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -373,16 +355,20 @@
                             "stdout": [],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "slow"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "Add Product Cart",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -399,11 +385,11 @@
                         },
                         {
                             "name": "Can Place Order",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -420,11 +406,11 @@
                         },
                         {
                             "name": "Deactivate Plugin",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -441,11 +427,11 @@
                         },
                         {
                             "name": "Activate Other Theme",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -471,13 +457,23 @@
                         "message": "Creation of dynamic property SUT\\\\BarUser::$bar is deprecated",
                         "type": "deprecated",
                         "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:28",
-                        "count": 22
+                        "count": 100
+                    },
+                    {
+                        "message": "Function utf8_encode() is deprecated",
+                        "type": "deprecated",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:37",
+                        "count": 14
                     }
                 ],
                 "debug_log": [
                     {
-                        "count": "24",
+                        "count": "100",
                         "message": "PHP Deprecated: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 28"
+                    },
+                    {
+                        "count": "14",
+                        "message": "PHP Deprecated: Function utf8_encode() is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 37"
                     }
                 ]
             }
