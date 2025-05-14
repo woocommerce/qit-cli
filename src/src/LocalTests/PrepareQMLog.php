@@ -193,6 +193,10 @@ class PrepareQMLog {
 		foreach ( $data as $hash => $logs ) {
 			foreach ( $logs as $type => $type_logs ) {
 				foreach ( $type_logs as $info ) {
+					if ( empty( $info['message'] ) ) {
+						continue;
+					}
+
 					// Ignore some compatbility extension set issues.
 					$info['message'] = strip_tags( $info['message'] );
 
