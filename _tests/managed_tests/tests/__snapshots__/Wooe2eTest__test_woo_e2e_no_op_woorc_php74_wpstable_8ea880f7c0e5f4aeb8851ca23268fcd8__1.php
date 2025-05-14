@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "398 total, 386 passed, 2 failed, 10 skipped.",
+            "test_summary": "398 total, 388 passed, 0 failed, 10 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -50,12 +50,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 93,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 94,
                 "numPendingTestSuites": 8,
                 "numTotalTestSuites": 102,
-                "numFailedTests": 2,
-                "numPassedTests": 386,
+                "numFailedTests": 0,
+                "numPassedTests": 388,
                 "numPendingTests": 10,
                 "numTotalTests": 398,
                 "testResults": [
@@ -2703,7 +2703,7 @@
                     },
                     {
                         "file": "user\\/users-manage.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": false,
                         "tests": {
                             "can update customer data": [
@@ -2721,13 +2721,13 @@
                             "can delete a customer": [
                                 {
                                     "title": "can delete a customer",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ],
                             "can delete a shop manager": [
                                 {
                                     "title": "can delete a shop manager",
-                                    "status": "failed"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2772,7 +2772,7 @@
                         }
                     }
                 ],
-                "summary": "398 total, 386 passed, 2 failed, 10 skipped."
+                "summary": "398 total, 388 passed, 0 failed, 10 skipped."
             }
         },
         {
@@ -2783,8 +2783,8 @@
                     },
                     "summary": {
                         "tests": 398,
-                        "passed": 386,
-                        "failed": 2,
+                        "passed": 388,
+                        "failed": 0,
                         "pending": 0,
                         "skipped": 10,
                         "other": 0,
@@ -14161,13 +14161,11 @@
                         },
                         {
                             "name": "can delete a customer",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByText(\'You have specified\').getByText(\'Maya_Wilderman\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByText(\'You have specified\').getByText(\'Maya_Wilderman\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByText(\'You have specified\').getByText(\'Maya_Wilderman\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByText(\'You have specified\').getByText(\'Maya_Wilderman\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:76:5\\n    at userDeletionTest (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:67:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:337:10",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/users-manage.spec.js",
@@ -14180,32 +14178,15 @@
                                 },
                                 {
                                     "name": "confirm deletion",
-                                    "status": "failed"
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "verify the user was deleted",
+                                    "status": "passed"
                                 }
                             ],
                             "suite": "e2e > user\\/users-manage.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/user-users-manage-can-delete-a-customer-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/user-users-manage-can-delete-a-customer-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "_error-context-0",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/user-users-manage-can-delete-a-customer-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/user-users-manage-can-delete-a-customer-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -14216,13 +14197,11 @@
                         },
                         {
                             "name": "can delete a shop manager",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByText(\'You have specified\').getByText(\'Schuyler.Vandervort92\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByText(\'You have specified\').getByText(\'Schuyler.Vandervort92\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByText(\'You have specified\').getByText(\'Schuyler.Vandervort92\')\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toBeVisible with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByText(\'You have specified\').getByText(\'Schuyler.Vandervort92\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:76:5\\n    at userDeletionTest (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:67:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/user\\/users-manage.spec.js:345:10",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/users-manage.spec.js",
@@ -14235,32 +14214,15 @@
                                 },
                                 {
                                     "name": "confirm deletion",
-                                    "status": "failed"
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "verify the user was deleted",
+                                    "status": "passed"
                                 }
                             ],
                             "suite": "e2e > user\\/users-manage.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/user-users-manage-can-delete-a-shop-manager-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/user-users-manage-can-delete-a-shop-manager-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "_error-context-0",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/user-users-manage-can-delete-a-shop-manager-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/user-users-manage-can-delete-a-shop-manager-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
