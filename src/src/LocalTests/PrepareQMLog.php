@@ -192,6 +192,9 @@ class PrepareQMLog {
 
 		foreach ( $data as $hash => $logs ) {
 			foreach ( $logs as $type => $type_logs ) {
+				/**
+				 * @param array{message?: string, file?: string, line?: string} $info
+				 */
 				foreach ( $type_logs as $info ) {
 					if ( empty( $info['message'] ) ) {
 						continue;
