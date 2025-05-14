@@ -264,14 +264,14 @@ class PrepareQMLog {
 					}
 
 					$info_summary = [
-						'message'   => $info['message'],
+						'message'   => $info['message'], // @suppress PhanTypePossiblyInvalidDimOffset
 						'type'      => $type,
 						'file_line' => $file_and_line,
 						'traces'    => $this->get_trace_summary( $trace ),
 					];
 
 					// Ensures that we don't have duplicate entries.
-					$md5_key = md5( $info['message'] . $type . $file_and_line );
+					$md5_key = md5( $info['message'] . $type . $file_and_line ); // @suppress PhanTypePossiblyInvalidDimOffset
 
 					if ( array_key_exists( $md5_key, $summarized_data ) ) {
 						++$summarized_data[ $md5_key ]['count'];
