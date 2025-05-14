@@ -180,6 +180,7 @@ class PrepareQMLog {
 	 * Reads every json file in  the QM logs directory and summarizes the data.
 	 *
 	 * @param string $directory
+	 * @phan-suppress PhanTypePossiblyInvalidDimOffset
 	 * @return array<string,mixed>
 	 */
 	public function summarize_qm_logs( string $directory ): array {
@@ -264,14 +265,14 @@ class PrepareQMLog {
 					}
 
 					$info_summary = [
-						'message'   => $info['message'], // @suppress PhanTypePossiblyInvalidDimOffset
+						'message'   => $info['message'],
 						'type'      => $type,
 						'file_line' => $file_and_line,
 						'traces'    => $this->get_trace_summary( $trace ),
 					];
 
 					// Ensures that we don't have duplicate entries.
-					$md5_key = md5( $info['message'] . $type . $file_and_line ); // @suppress PhanTypePossiblyInvalidDimOffset
+					$md5_key = md5( $info['message'] . $type . $file_and_line );
 
 					if ( array_key_exists( $md5_key, $summarized_data ) ) {
 						++$summarized_data[ $md5_key ]['count'];
