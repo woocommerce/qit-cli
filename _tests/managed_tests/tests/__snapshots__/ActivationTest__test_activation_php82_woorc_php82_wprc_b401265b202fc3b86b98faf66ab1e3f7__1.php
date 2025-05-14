@@ -295,7 +295,7 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "message": "TimeoutError: locator.check: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Enable\\/Disable\')\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.check: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Enable\\/Disable\')\\u001b[22m\\n\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:562:45",
+                            "trace": "TimeoutError: locator.check: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Enable\\/Disable\')\\u001b[22m\\n\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:590:49",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -321,7 +321,14 @@
                                     "path": "\\/qit\\/results\\/playwright\\/activation-Set-up-Cash-On-Delivery-Payment-Method--test-Woocommerce-Run-\\/trace.zip"
                                 }
                             ],
-                            "stdout": [],
+                            "stdout": [
+                                "Deprecated: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 28\\n9.9.0-beta.1\\n",
+                                "versionResponse: {\\n  status: \\u001b[33m0\\u001b[39m,\\n  output: \\u001b[32m\'Deprecated: Creation of dynamic property SUT\\\\\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 28\\\\n\'\\u001b[39m +\\n    \\u001b[32m\'9.9.0-beta.1\'\\u001b[39m\\n}\\n",
+                                "WooCommerce version: Deprecated: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 28\\n9.9.0-beta.1\\n",
+                                "Major version: Deprecated: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds\\n",
+                                "Minor version: php on line 28\\n9\\n",
+                                "isVersion99OrHigher: \\u001b[33mfalse\\u001b[39m\\n"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -469,7 +476,7 @@
                 ],
                 "debug_log": [
                     {
-                        "count": "22",
+                        "count": "24",
                         "message": "PHP Deprecated: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 28"
                     }
                 ]
