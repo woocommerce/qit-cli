@@ -183,22 +183,7 @@
                                 "Success: Activated 1 of 1 plugins.\\n",
                                 "[QIT] Finished bash script. Exit code: 0\\n"
                             ],
-                            "stderr": [
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Finder::getIterator() should either be compatible with IteratorAggregate::getIterator(): Traversable, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Finder.php on line 566\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Finder::count() should either be compatible with Countable::count(): int, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Finder.php on line 637\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\FilterIterator::rewind() should either be compatible with FilterIterator::rewind(): void, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/FilterIterator.php on line 32\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\FileTypeFilterIterator::accept() should either be compatible with FilterIterator::accept(): bool, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/FileTypeFilterIterator.php on line 42\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\RecursiveDirectoryIterator::getChildren() should either be compatible with RecursiveDirectoryIterator::getChildren(): RecursiveDirectoryIterator, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/RecursiveDirectoryIterator.php on line 89\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\RecursiveDirectoryIterator::rewind() should either be compatible with FilesystemIterator::rewind(): void, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/RecursiveDirectoryIterator.php on line 117\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\RecursiveDirectoryIterator::current() should either be compatible with FilesystemIterator::current(): SplFileInfo|FilesystemIterator|string, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/RecursiveDirectoryIterator.php on line 65\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\ExcludeDirectoryFilterIterator::accept() should either be compatible with FilterIterator::accept(): bool, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/ExcludeDirectoryFilterIterator.php on line 55\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\ExcludeDirectoryFilterIterator::hasChildren() should either be compatible with RecursiveIterator::hasChildren(): bool, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/ExcludeDirectoryFilterIterator.php on line 71\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\ExcludeDirectoryFilterIterator::getChildren() should either be compatible with RecursiveIterator::getChildren(): ?RecursiveIterator, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/ExcludeDirectoryFilterIterator.php on line 76\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\FilterIterator::rewind() should either be compatible with Iterator::rewind(): void, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/FilterIterator.php on line 32\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\DateRangeFilterIterator::accept() should either be compatible with FilterIterator::accept(): bool, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/DateRangeFilterIterator.php on line 41\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\PathFilterIterator::accept() should either be compatible with FilterIterator::accept(): bool, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/PathFilterIterator.php on line 27\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\SortableIterator::getIterator() should either be compatible with IteratorAggregate::getIterator(): Traversable, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/SortableIterator.php on line 73\\u001b[0m\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
                                 "annotations": [
                                     {
@@ -224,8 +209,6 @@
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
                             "stdout": [
-                                "Success: Updated \'woocommerce_coming_soon\' option.\\n",
-                                "Success: Updated \'woocommerce_store_pages_only\' option.\\n",
                                 "Coming soon mode disabled in beforeAll.\\n",
                                 "dependenciesSatisfied: true for Query Monitor\\n",
                                 "dependenciesSatisfied: true for WooCommerce\\n",
@@ -318,11 +301,7 @@
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
-                            "stdout": [
-                                "Before\\n",
-                                "9.9.0-beta.1\\n",
-                                "After\\n"
-                            ],
+                            "stdout": [],
                             "stderr": [],
                             "extra": {
                                 "annotations": []

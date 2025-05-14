@@ -266,8 +266,6 @@
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
                             "stdout": [
-                                "Success: Updated \'woocommerce_coming_soon\' option.\\n",
-                                "Success: Updated \'woocommerce_store_pages_only\' option.\\n",
                                 "Coming soon mode disabled in beforeAll.\\n",
                                 "dependenciesSatisfied: true for Query Monitor\\n",
                                 "dependenciesSatisfied: true for WooCommerce\\n",
