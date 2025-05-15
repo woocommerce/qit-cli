@@ -9,7 +9,7 @@ test('Shared Teardown', async ({page}) => {
 
     // Verify shared setup exists
     const shared = await qit.wp('option get woocommerce-amazon-s3-storage_shared_order', true);
-    expect(shared.output.trim()).toBe("first");
+    expect(shared.stdout.trim()).toBe("first");
 
     // Verify the other plugin's shared option does NOT exist (since we run last)
     try {
