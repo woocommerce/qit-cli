@@ -5,9 +5,9 @@ test('Isolated Setup', async ({ page }) => {
     await page.goto('/wp-admin');
     console.log('[Isolated Setup JS] Progressive Discounts');
     const shared = await qit.wp('option get woocommerce-progressive-discounts_shared_order', true);
-    expect(shared.output.trim()).toBe("first");
+    expect(shared.stdout.trim()).toBe("first");
     const setup = await qit.wp('option get woocommerce-progressive-discounts_isolated_order', true);
-    expect(setup.output.trim()).toBe("second");
+    expect(setup.stdout.trim()).toBe("second");
 
     // Check that Plugin A's isolated option does not exist
     try {
@@ -19,5 +19,5 @@ test('Isolated Setup', async ({ page }) => {
 
 
     const pluginAiShared = await qit.wp('option get woocommerce-amazon-s3-storage_shared_order', true);
-    expect(pluginAiShared.output.trim()).toBe("first");
+    expect(pluginAiShared.stdout.trim()).toBe("first");
 });
