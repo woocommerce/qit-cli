@@ -57,7 +57,11 @@ class TestGroup {
 			isset( $group['status'] ) &&
 			self::STATUS_COMPLETED === $group['status']
 		) {
-			throw new \Exception( 'The test group has already been completed. Please delete it with `group:clear` and create a new one.' );
+			$output->writeln( '<comment>A completed test group already exists. It will be displayed and clear in order to complete your action.</comment>' );
+			$this->output_group( $output );
+
+			$this->cache->delete( 'group' );
+			$group = [];
 		}
 
 		if (
@@ -68,11 +72,7 @@ class TestGroup {
 		}
 
 		if ( $this->pending_test_group_exists() ) {
-			$output->writeln( '<comment>A pending test group already exists. It will be displayed and clear in order to complete your action.</comment>' );
-			$this->output_group( $output );
-
-			$this->cache->delete( 'group' );
-			$group = [];
+			throw new \Exception( 'A pending test group already exists. Either wait for it to complete or delete it with `group:clear`.' );
 		}
 
 		if ( empty( $group ) ) {
