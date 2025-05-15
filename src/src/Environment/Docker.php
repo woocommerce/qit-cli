@@ -4,6 +4,7 @@ namespace QIT_CLI\Environment;
 
 use QIT_CLI\Cache;
 use QIT_CLI\Environment\Environments\EnvInfo;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use function QIT_CLI\is_windows;
@@ -176,7 +177,16 @@ class Docker {
 		$process->run( function ( $type, $buffer ) use ( $force_output, &$output ) {
 			$output .= $buffer;
 			if ( $this->output->isVerbose() || $force_output ) {
-				$this->output->write( $buffer );
+				if ( $this->output instanceof ConsoleOutput ) {
+					if ( $type === Process::OUT ) {
+						$this->output->write( $buffer );
+					} elseif ( $type === Process::ERR ) {
+						$this->output->getErrorOutput()->writeln( $buffer );
+					}
+				} else {
+					// Just print.
+					$this->output->write( $buffer );
+				}
 			}
 		} );
 
