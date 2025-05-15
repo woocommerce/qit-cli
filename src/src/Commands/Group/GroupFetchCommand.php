@@ -23,7 +23,8 @@ class GroupFetchCommand extends Command {
 	protected function configure() {
 		$this
 			->setDescription( 'Fetch a group of tests using a group identifier.' )
-			->addOption( 'group-identifier', 'i', InputOption::VALUE_REQUIRED, 'The group identifier.' );
+			->addOption( 'group-identifier', 'i', InputOption::VALUE_REQUIRED, 'The group identifier.' )
+			->addOption( 'json', 'j', InputOption::VALUE_NONE, 'Output the results in JSON format.' );
 	}
 
 	/**
@@ -33,11 +34,22 @@ class GroupFetchCommand extends Command {
 	 */
 	protected function execute( InputInterface $input, OutputInterface $output ) {
 		$group_identifier = $input->getOption( 'group-identifier' );
-		$group            = $this->test_group->fetch( $group_identifier );
+
+		if ( empty( $group_identifier ) ) {
+			$output->writeln( '<error>Group identifier is required.</error>' );
+			return Command::FAILURE;
+		}
+
+		$group = $this->test_group->fetch( $group_identifier );
 
 		if ( empty( $group ) ) {
 			$output->writeln( '<error>No group found.</error>' );
 			return Command::FAILURE;
+		}
+
+		if ( $input->getOption( 'json' ) ) {
+			$output->writeln( json_encode( $group, JSON_PRETTY_PRINT ) );
+			return Command::SUCCESS;
 		}
 
 		$output->writeln( '--------------------------------' );
