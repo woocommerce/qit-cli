@@ -1,9 +1,10 @@
-<?php
+    <?php
 
 namespace QIT_CLI\Environment;
 
 use QIT_CLI\Cache;
 use QIT_CLI\Environment\Environments\EnvInfo;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use function QIT_CLI\is_windows;
@@ -175,18 +176,27 @@ class Docker {
 			$this->output->writeln( $process->getCommandLine() );
 		}
 
-		$output = '';
+        $output = '';
+        
+        if ( is_null( $output_callback ) ) {
+	            $output_callback = function ( $type, $buffer ) use ( $force_output, &$output ) {
+		        $output .= $buffer;
+		        if ( $this->output->isVerbose() || $force_output ) {
+			        if ( $this->output instanceof ConsoleOutput ) {
+				        if ( $type === Process::OUT ) {
+    					    $this->output->write( $buffer );
+				        } elseif ( $type === Process::ERR ) {
+    					    $this->output->getErrorOutput()->writeln( $buffer );
+    	    			}
+		    	    } else {
+			    	    // Just print.
+				        $this->output->write( $buffer );
+			        }
+		        }
+	        };
+        }
 
-		if ( is_null( $output_callback ) ) {
-			$output_callback = function ( $type, $buffer ) use ( $force_output, &$output ) {
-				$output .= $buffer;
-				if ( $this->output->isVerbose() || $force_output ) {
-					$this->output->write( $buffer );
-				}
-			};
-		}
-
-		$process->run( $output_callback );
+        $process->run( $output_callback );
 
 		if ( ! $process->isSuccessful() ) {
 			$exit_code    = $process->getExitCode();

@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Environment;
 
+use QIT_CLI\App;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\WPORGExtensionsList;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -75,7 +76,8 @@ class PluginsAndThemesParser {
 
 			// Ensure test_tags is set.
 			if ( empty( $extension['test_tags'] ) || ! is_array( $extension['test_tags'] ) ) { // @phpstan-ignore-line
-				$extension['test_tags'] = [ 'default' ];
+				$is_activation_test     = App::getVar( 'QIT_ACTIVATION_TEST' ) === 'yes';
+				$extension['test_tags'] = $is_activation_test ? [ 'pre_activation' ] : [ 'default' ];
 			}
 
 			foreach ( $extension['test_tags'] as $test_tag ) {
@@ -247,13 +249,10 @@ class PluginsAndThemesParser {
 				$looks_like_local_path = strpos( $test_tag, '/' ) !== false && strpos( $test_tag, 'http' ) === false;
 
 				if ( $looks_like_local_path ) {
-					$attempted_path = rtrim( getcwd(), DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR . ltrim( $test_tag, DIRECTORY_SEPARATOR );
-
 					throw new \InvalidArgumentException( sprintf(
 						'Invalid test tag "%s". If this is a file/directory, please make sure that it exists. ' .
-						'Attempted path: %s. Please provide an existing file/directory or use a valid alphanumeric tag (with optional dashes/underscores).',
-						$test_tag,
-						$attempted_path
+						'Please provide an existing file/directory or use a valid alphanumeric tag (with optional dashes/underscores).',
+						$test_tag
 					) );
 				} else {
 					throw new \InvalidArgumentException(

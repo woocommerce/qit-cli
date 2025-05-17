@@ -6,5 +6,5 @@ test('Shared Setup', async ({ page }) => {
     console.log('[Shared Setup JS] Amazon S3 Storage');
     const result = await qit.wp('option get woocommerce-amazon-s3-storage_shared_order', true);
     console.log('Shared Setup Order:', result.output);
-    expect(result.output.trim()).toBe("first");
+    expect(result.stdout.trim()).toBe("first");
 });

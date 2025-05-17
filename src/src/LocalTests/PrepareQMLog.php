@@ -42,7 +42,7 @@ class PrepareQMLog {
 
 		if ( is_dir( $directory ) ) {
 
-            // phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure, Generic.CodeAnalysis.AssignmentInCondition.Found
+			// phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.FoundInControlStructure, Generic.CodeAnalysis.AssignmentInCondition.Found
 			if ( $dh = opendir( $directory ) ) {
 
 				while ( ( $file = readdir( $dh ) ) !== false ) { // phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
@@ -180,6 +180,7 @@ class PrepareQMLog {
 	 * Reads every json file in  the QM logs directory and summarizes the data.
 	 *
 	 * @param string $directory
+	 * @phan-suppress PhanTypePossiblyInvalidDimOffset
 	 * @return array<string,mixed>
 	 */
 	public function summarize_qm_logs( string $directory ): array {
@@ -192,7 +193,14 @@ class PrepareQMLog {
 
 		foreach ( $data as $hash => $logs ) {
 			foreach ( $logs as $type => $type_logs ) {
+				/**
+				 * @param array{message?: string, file?: string, line?: string} $info
+				 */
 				foreach ( $type_logs as $info ) {
+					if ( empty( $info['message'] ) ) {
+						continue;
+					}
+
 					// Ignore some compatbility extension set issues.
 					$info['message'] = strip_tags( $info['message'] );
 
@@ -226,7 +234,28 @@ class PrepareQMLog {
 						}
 					}
 
+					if ( ! empty( $info['file'] ) ) {
+						// If coming from query-monitor and we are not testing QM, ignore it.
+						if ( strpos( $info['file'], '/wp-content/plugins/query-monitor/' ) !== false && $this->sut_slug !== 'query-monitor' ) {
+							continue;
+						}
+					}
+
 					// End compatibility extension set issues.
+
+					$file_and_line = '';
+
+					if ( ! empty( $info['file'] ) ) {
+						$file_and_line = str_replace( '/var/www/html/', '', $info['file'] );
+					}
+
+					if ( ! empty( $info['line'] ) ) {
+						$file_and_line .= ':' . $info['line'];
+					}
+
+					if ( empty( $file_and_line ) ) {
+						$file_and_line = '-';
+					}
 
 					$trace = $info['trace'] ?? [];
 
@@ -238,12 +267,12 @@ class PrepareQMLog {
 					$info_summary = [
 						'message'   => $info['message'],
 						'type'      => $type,
-						'file_line' => str_replace( '/var/www/html/', '', $info['file'] ) . ':' . $info['line'],
+						'file_line' => $file_and_line,
 						'traces'    => $this->get_trace_summary( $trace ),
 					];
 
 					// Ensures that we don't have duplicate entries.
-					$md5_key = md5( $info['message'] . $type . $info['file'] . $info['line'] );
+					$md5_key = md5( $info['message'] . $type . $file_and_line );
 
 					if ( array_key_exists( $md5_key, $summarized_data ) ) {
 						++$summarized_data[ $md5_key ]['count'];

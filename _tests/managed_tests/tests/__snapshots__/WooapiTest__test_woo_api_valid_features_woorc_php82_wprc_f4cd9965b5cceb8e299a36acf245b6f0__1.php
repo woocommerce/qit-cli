@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "271 total, 265 passed, 0 failed, 6 skipped.",
+            "test_summary": "267 total, 262 passed, 0 failed, 5 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -51,27 +51,14 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 21,
+                "numPassedTestSuites": 19,
                 "numPendingTestSuites": 4,
-                "numTotalTestSuites": 25,
+                "numTotalTestSuites": 23,
                 "numFailedTests": 0,
-                "numPassedTests": 265,
-                "numPendingTests": 6,
-                "numTotalTests": 271,
+                "numPassedTests": 262,
+                "numPendingTests": 5,
+                "numTotalTests": 267,
                 "testResults": [
-                    {
-                        "file": "..\\/fixtures\\/token.teardown.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "remove consumer key": [
-                                {
-                                    "title": "remove consumer key",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.js",
                         "status": "passed",
@@ -105,19 +92,6 @@
                         }
                     },
                     {
-                        "file": "..\\/fixtures\\/token.setup.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "generate consumer key": [
-                                {
-                                    "title": "generate consumer key",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "..\\/fixtures\\/site.setup.js",
                         "status": "passed",
                         "has_pending": false,
@@ -125,12 +99,6 @@
                             "configure HPOS": [
                                 {
                                     "title": "configure HPOS",
-                                    "status": "passed"
-                                }
-                            ],
-                            "convert Cart and Checkout pages to shortcode": [
-                                {
-                                    "title": "convert Cart and Checkout pages to shortcode",
                                     "status": "passed"
                                 }
                             ],
@@ -1172,12 +1140,6 @@
                                     "status": "pending"
                                 }
                             ],
-                            "Settings API tests: CRUD > List all Email settings options with Email Improvements feature enabled": [
-                                {
-                                    "title": "can retrieve all email settings with Email Improvements feature enabled",
-                                    "status": "pending"
-                                }
-                            ],
                             "Settings API tests: CRUD > List all Advanced settings options": [
                                 {
                                     "title": "can retrieve all advanced settings",
@@ -1502,7 +1464,7 @@
                         }
                     }
                 ],
-                "summary": "271 total, 265 passed, 0 failed, 6 skipped."
+                "summary": "267 total, 262 passed, 0 failed, 5 skipped."
             }
         },
         {
@@ -1512,38 +1474,17 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 271,
-                        "passed": 265,
+                        "tests": 267,
+                        "passed": 262,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 6,
+                        "skipped": 5,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
                         "suites": 0
                     },
                     "tests": [
-                        {
-                            "name": "remove consumer key",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/token.teardown.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "consumer token teardown > ..\\/fixtures\\/token.teardown.js",
-                            "attachments": [],
-                            "stdout": [],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
                         {
                             "name": "Install WC using WC Beta Tester",
                             "status": "skipped",
@@ -1613,29 +1554,6 @@
                             }
                         },
                         {
-                            "name": "generate consumer key",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/token.setup.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "consumer token setup > ..\\/fixtures\\/token.setup.js",
-                            "attachments": [],
-                            "stdout": [
-                                "e2e-api-access-HASHNORMALIZED consumer token successfully created\\n"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
                             "name": "configure HPOS",
                             "status": "passed",
                             "duration": 999,
@@ -1654,27 +1572,6 @@
                                 "DISABLE_HPOS: undefined\\n",
                                 "HPOS configuration (woocommerce_custom_orders_table_enabled): yes - High-performance order storage (recommended)\\n"
                             ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "convert Cart and Checkout pages to shortcode",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/site.setup.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
-                            "attachments": [],
-                            "stdout": [],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -6055,31 +5952,6 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Email settings options",
-                            "attachments": [],
-                            "stdout": [],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "can retrieve all email settings with Email Improvements feature enabled",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-crud.test.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "api > api-tests\\/settings\\/settings-crud.test.js > Settings API tests: CRUD > List all Email settings options with Email Improvements feature enabled",
                             "attachments": [],
                             "stdout": [],
                             "stderr": [],

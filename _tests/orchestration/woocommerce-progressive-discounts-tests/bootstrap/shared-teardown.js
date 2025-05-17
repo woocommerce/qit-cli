@@ -9,11 +9,11 @@ test('Shared Teardown', async ({ page }) => {
 
     // Verify shared setup exists
     const shared = await qit.wp('option get woocommerce-progressive-discounts_shared_order', true);
-    expect(shared.output.trim()).toBe("first");
+    expect(shared.stdout.trim()).toBe("first");
 
     // Verify the other plugin's shared option exists (since we run first)
     const otherShared = await qit.wp('option get woocommerce-amazon-s3-storage_shared_order', true);
-    expect(otherShared.output.trim()).toBe("first");
+    expect(otherShared.stdout.trim()).toBe("first");
 
     // Verify isolated options don't exist (should throw with "Does it exist?")
     try {
