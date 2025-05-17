@@ -2,7 +2,7 @@
   "config": {
     "platform-check": false,
     "platform": {
-      "php": "7.2.5"
+      "php": "7.4"
     },
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true
@@ -21,7 +21,7 @@
     }
   },
   "require": {
-    "php": "^7.2.5 | ^8",
+    "php": "^7.4 | ^8",
     "ext-curl": "*",
     "ext-zip": "*",
     "symfony/console": "^5",
