@@ -53,10 +53,10 @@ class ExtensionTestRunner {
 	 * - lifecycle.teardown
 	 * - Copies CTRF and Allure artifacts
 	 *
-	 * @param E2EEnvInfo $env_info
-	 * @param array $test_item
+	 * @param E2EEnvInfo   $env_info
+	 * @param array        $test_item
 	 * @param SymfonyStyle $io
-	 * @param bool $is_first
+	 * @param bool         $is_first
 	 *
 	 * @return int Command::SUCCESS or Command::FAILURE
 	 */
@@ -80,7 +80,7 @@ class ExtensionTestRunner {
 
 		// 1) Restore DB if not the first plugin
 		if ( ! $is_first ) {
-			$io->writeln( "<info>[Restoring baseline DB state]</info>" );
+			$io->writeln( '<info>[Restoring baseline DB state]</info>' );
 			$this->docker->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql' ] );
 		}
 
@@ -139,7 +139,7 @@ class ExtensionTestRunner {
 			return Command::FAILURE;
 		}
 
-		banner( $io, "Running tests for $slug", true, false, "🧪" );
+		banner( $io, "Running tests for $slug", true, false, '🧪' );
 
 		// Optionally do npm install if node_modules doesn't exist
 		$node_modules = rtrim( $plugin_dir, '/' ) . '/node_modules';
@@ -261,7 +261,7 @@ class ExtensionTestRunner {
 		$start_time = microtime( true );
 		try {
 			$output_instance = App::make( Output::class );
-			$output = $this->docker->run_inside_docker( $env_info, $command_args, [], null, 300, 'php', false, function ( $type, $buffer ) use ( $output_instance ) {
+			$output          = $this->docker->run_inside_docker( $env_info, $command_args, [], null, 300, 'php', false, function ( $type, $buffer ) use ( $output_instance ) {
 				if ( ! is_scalar( $buffer ) ) {
 					return;
 				}
@@ -275,7 +275,7 @@ class ExtensionTestRunner {
 					$output_instance->write( $buffer );
 				}
 			} );
-			$exit_code = 0;
+			$exit_code       = 0;
 		} catch ( \Exception $e ) {
 			$output    = $e->getMessage();
 			$exit_code = 1;

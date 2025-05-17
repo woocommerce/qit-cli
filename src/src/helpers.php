@@ -63,7 +63,6 @@ function validate_authentication( string $username, string $qit_token ): void {
  *
  * @return void
  * @throws \InvalidArgumentException When the URL is invalid.
- *
  */
 function open_in_browser( string $url ): void {
 	$url = htmlspecialchars_decode( $url );
@@ -181,7 +180,7 @@ function format_elapsed_time( int $seconds ): string {
 	$lengths       = [ 60, 60, 24, 7, 4.35, 12 ];
 	$count_lengths = count( $lengths );
 
-	for ( $i = 0; $seconds >= $lengths[ $i ] && $i < $count_lengths - 1; $i ++ ) {
+	for ( $i = 0; $seconds >= $lengths[ $i ] && $i < $count_lengths - 1; $i++ ) {
 		$seconds /= $lengths[ $i ];
 	}
 

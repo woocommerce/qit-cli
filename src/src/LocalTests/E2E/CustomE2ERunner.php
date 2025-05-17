@@ -64,9 +64,9 @@ class CustomE2ERunner {
 	/**
 	 * Main entry point for custom E2E tests orchestration.
 	 *
-	 * @param E2EEnvInfo $env_info
+	 * @param E2EEnvInfo   $env_info
 	 * @param SymfonyStyle $io
-	 * @param bool $up_only Whether to just bring up the environment without running tests
+	 * @param bool         $up_only Whether to just bring up the environment without running tests
 	 *
 	 * @return int
 	 */
