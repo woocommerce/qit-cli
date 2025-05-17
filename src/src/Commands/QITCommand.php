@@ -3,6 +3,7 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\QITConfig;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,17 +22,18 @@ abstract class QITCommand extends Command {
 		);
 	}
 
-	protected function execute(InputInterface $input, OutputInterface $output): int {
-		$configFile = $input->getOption('config');
+	protected function execute( InputInterface $input, OutputInterface $output ): int {
+		$configFile = $input->getOption( 'config' );
 		try {
-			$this->config = new QITConfig($configFile);
-		} catch (\RuntimeException $e) {
-			$output->writeln("<error>{$e->getMessage()}</error>");
+			$this->config = new QITConfig( $configFile, $this->getApplication() );
+		} catch ( \RuntimeException $e ) {
+			$output->writeln( "<error>{$e->getMessage()}</error>" );
+
 			return Command::FAILURE;
 		}
 
-		return $this->doExecute($input, $output);
+		return $this->doExecute( $input, $output );
 	}
 
-	abstract protected function doExecute(InputInterface $input, OutputInterface $output): int;
+	abstract protected function doExecute( InputInterface $input, OutputInterface $output ): int;
 }

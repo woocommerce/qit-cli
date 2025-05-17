@@ -1,11 +1,25 @@
 <?php
 
+namespace QIT_CLI_Tests;
+
+use Exception;
+use FilesystemIterator;
 use lucatume\DI52\Container;
 use QIT_CLI\App;
+use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\IO\Output;
+use QIT_CLI\TestConfig;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use ReflectionClass;
+use RuntimeException;
+use SplFileInfo;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
 echo "Fetching latest sync.json from production QIT Manager... ";
@@ -131,6 +145,37 @@ if ( ! empty( $failed_to_build ) ) {
 	foreach ( $failed_to_build as $fqdn ) {
 		echo "Adding deferred command: $fqdn\n";
 		$GLOBALS['qit_application']->add( App::make( $fqdn ) );
+	}
+}
+
+class FooTestConfig extends TestConfig {
+	public function getTestType(): string {
+		return 'foo';
+	}
+}
+
+class FooTestCommand extends QITCommand {
+	protected function configure(): void {
+		parent::configure();
+		$this->setName('run:foo')
+		     ->setDescription('Run a foo test')
+		     ->addOption('param', null, InputOption::VALUE_OPTIONAL, 'Test parameter', 'default')
+		     ->addOption('variant', null, InputOption::VALUE_OPTIONAL, 'Test variant', 'default');
+	}
+
+	protected function doExecute(InputInterface $input, OutputInterface $output): int {
+		$variant = $input->getOption('variant');
+		try {
+			$testConfigData = $this->config->get_test_config('foo', $variant);
+		} catch (\RuntimeException $e) {
+			$output->writeln("<error>Test variant '$variant' not found for test type 'foo'.</error>");
+			return Command::FAILURE;
+		}
+		$testConfig = new FooTestConfig($testConfigData);
+		$param = $input->getOption('param');
+		$output->writeln("Running foo test variant: $variant with param: $param");
+		$output->writeln('Test config: ' . json_encode($testConfig->getConfig()));
+		return Command::SUCCESS;
 	}
 }
 

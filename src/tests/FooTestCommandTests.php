@@ -2,86 +2,142 @@
 
 namespace QIT_CLI_Tests;
 
-use QIT_CLI\Commands\QITCommand;
-use QIT_CLI\TestConfig;
+use QIT_CLI\App;
+use Spatie\Snapshots\MatchesSnapshots;
+use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
-// Configuration class for foo tests
-class FooTestConfig extends TestConfig {
-	public function getTestType(): string {
-		return 'foo';
-	}
-}
-
-// Command class for executing foo tests
-class FooTestCommand extends QITCommand {
-	protected function configure(): void {
-		parent::configure();
-		$this->setName('foo:test')
-		     ->setDescription('Run a foo test')
-		     ->addOption('param', null, InputOption::VALUE_OPTIONAL, 'Test parameter', 'default');
-	}
-
-	protected function doExecute(InputInterface $input, OutputInterface $output): int {
-		$tests = $this->config->get('tests', []);
-		$fooTests = $tests['foo'] ?? [];
-		$testConfig = new FooTestConfig($fooTests);
-		$param = $input->getOption('param');
-		$output->writeln('Running ' . $testConfig->getTestType() . ' test with param: ' . $param);
-		$output->writeln('Test config: ' . json_encode($testConfig->getConfig()));
-		return Command::SUCCESS;
-	}
-}
-
-// Test class for FooTestCommand
 class FooTestCommandTests extends QITTestCase {
 	use MatchesSnapshots;
 
+	protected Application $application;
+
+	public function setUp(): void {
+		parent::setUp();
+		$this->application = new Application();
+		$this->application->add( new FooTestCommand() );
+		$this->application->add( App::make( \QIT_CLI\Commands\CustomTests\RunE2ECommand::class ) );
+	}
+
 	public function tearDown(): void {
-		// Clean up temporary files
-		if (file_exists('qit.json')) {
-			unlink('qit.json');
+		if ( file_exists( 'qit.json' ) ) {
+			unlink( 'qit.json' );
 		}
 		parent::tearDown();
 	}
 
-	public function test_generates_foo_test_config() {
-		file_put_contents('qit.json', json_encode(['tests' => ['foo' => ['param' => 'value']]]));
-
+	public function test_generates_foo_test_config_with_default_variant() {
+		file_put_contents( 'qit.json', json_encode( [
+			'tests' => [
+				'foo' => [
+					'default' => [ 'param' => 'value' ]
+				]
+			]
+		] ) );
 		$command = new FooTestCommand();
-		$tester = new CommandTester($command);
-		$tester->execute([]);
+		$command->setApplication( $this->application );
+		$tester = new CommandTester( $command );
+		$tester->execute( [] );
+		$this->assertStringContainsString( 'Running foo test variant: default with param: default', $tester->getDisplay() );
+		$this->assertStringContainsString( 'Test config: {"param":"value"}', $tester->getDisplay() );
+		$this->assertEquals( Command::SUCCESS, $tester->getStatusCode() );
+	}
 
-		$this->assertStringContainsString('Running foo test with param: default', $tester->getDisplay());
-		$this->assertStringContainsString('Test config: {"param":"value"}', $tester->getDisplay());
-		$this->assertEquals(Command::SUCCESS, $tester->getStatusCode());
+	public function test_generates_foo_test_config_with_custom_variant() {
+		file_put_contents( 'qit.json', json_encode( [
+			'tests' => [
+				'foo' => [
+					'custom' => [ 'param' => 'custom_value' ]
+				]
+			]
+		] ) );
+		$command = new FooTestCommand();
+		$command->setApplication( $this->application );
+		$tester = new CommandTester( $command );
+		$tester->execute( [ '--variant' => 'custom' ] );
+		$this->assertStringContainsString( 'Running foo test variant: custom with param: default', $tester->getDisplay() );
+		$this->assertStringContainsString( 'Test config: {"param":"custom_value"}', $tester->getDisplay() );
+		$this->assertEquals( Command::SUCCESS, $tester->getStatusCode() );
+	}
+
+	public function test_handles_missing_variant() {
+		file_put_contents( 'qit.json', json_encode( [
+			'tests' => [
+				'foo' => [
+					'default' => [ 'param' => 'value' ]
+				]
+			]
+		] ) );
+		$command = new FooTestCommand();
+		$command->setApplication( $this->application );
+		$tester = new CommandTester( $command );
+		$tester->execute( [ '--variant' => 'non_existing' ] );
+		$this->assertStringContainsString( "Test variant 'non_existing' not found for test type 'foo'.", $tester->getDisplay() );
+		$this->assertEquals( Command::FAILURE, $tester->getStatusCode() );
 	}
 
 	public function test_overrides_param() {
-		file_put_contents('qit.json', json_encode(['tests' => ['foo' => ['param' => 'value']]]));
-
+		file_put_contents( 'qit.json', json_encode( [
+			'tests' => [
+				'foo' => [
+					'default' => [ 'param' => 'value' ]
+				]
+			]
+		] ) );
 		$command = new FooTestCommand();
-		$tester = new CommandTester($command);
-		$tester->execute(['--param' => 'custom']);
-
-		$this->assertStringContainsString('Running foo test with param: custom', $tester->getDisplay());
-		$this->assertStringContainsString('Test config: {"param":"value"}', $tester->getDisplay());
-		$this->assertEquals(Command::SUCCESS, $tester->getStatusCode());
+		$command->setApplication( $this->application );
+		$tester = new CommandTester( $command );
+		$tester->execute( [ '--param' => 'custom' ] );
+		$this->assertStringContainsString( 'Running foo test variant: default with param: custom', $tester->getDisplay() );
+		$this->assertStringContainsString( 'Test config: {"param":"value"}', $tester->getDisplay() );
+		$this->assertEquals( Command::SUCCESS, $tester->getStatusCode() );
 	}
 
 	public function test_handles_missing_test_config() {
-		file_put_contents('qit.json', json_encode(['other' => 'data']));
-
+		file_put_contents( 'qit.json', json_encode( [ 'other' => 'data' ] ) );
 		$command = new FooTestCommand();
-		$tester = new CommandTester($command);
-		$tester->execute([]);
+		$command->setApplication( $this->application );
+		$tester = new CommandTester( $command );
+		$tester->execute( [] );
+		$this->assertStringContainsString( 'Running foo test variant: default with param: default', $tester->getDisplay() );
+		$this->assertStringContainsString( 'Test config: []', $tester->getDisplay() );
+		$this->assertEquals( Command::SUCCESS, $tester->getStatusCode() );
+	}
 
-		$this->assertStringContainsString('Running foo test with param: default', $tester->getDisplay());
-		$this->assertStringContainsString('Test config: []', $tester->getDisplay());
-		$this->assertEquals(Command::SUCCESS, $tester->getStatusCode());
+	public function test_invalid_test_profile_key() {
+		file_put_contents( 'qit.json', json_encode( [
+			'tests' => [
+				'foo' => [
+					'default' => [ 'invalid_key' => 'value' ]
+				]
+			]
+		] ) );
+		$command = new FooTestCommand();
+		$command->setApplication( $this->application );
+		$tester = new CommandTester( $command );
+		$tester->execute( [] );
+		$this->assertMatchesTextSnapshot( $tester->getDisplay() );
+		$this->assertEquals( Command::FAILURE, $tester->getStatusCode() );
+	}
+
+	public function test_valid_settings_key() {
+		file_put_contents( 'qit.json', json_encode( [
+			'tests' => [
+				'foo' => [
+					'default' => [
+						'param'    => 'value',
+						'settings' => [ 'skip' => [ 'test1' ] ]
+					]
+				]
+			]
+		] ) );
+		$command = new FooTestCommand();
+		$command->setApplication( $this->application );
+		$tester = new CommandTester( $command );
+		$tester->execute( [] );
+		$this->assertStringContainsString( 'Running foo test variant: default with param: default', $tester->getDisplay() );
+		$this->assertStringContainsString( 'Test config: {"param":"value","settings":{"skip":["test1"]}}', $tester->getDisplay() );
+		$this->assertEquals( Command::SUCCESS, $tester->getStatusCode() );
 	}
 }
