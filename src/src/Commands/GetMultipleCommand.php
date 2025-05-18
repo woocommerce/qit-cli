@@ -3,7 +3,7 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\RequestBuilder;
-use Symfony\Component\Console\Command\Command;
+use QIT_CLI\Commands\QITCommand;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,10 +12,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 use function QIT_CLI\open_in_browser;
 
-class GetMultipleCommand extends Command {
+class GetMultipleCommand extends QITCommand {
 	protected static $defaultName = 'get-multiple'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'Get multiple test runs.' )
 			->setHelp( 'Get multiple test runs by providing a comma-separated list of test_run_ids. Exit status codes: 0 (success), 1 (failed), 2 (warning), 3 (others).' )
@@ -25,14 +26,14 @@ class GetMultipleCommand extends Command {
 			->addOption( 'check_finished', null, InputOption::VALUE_NONE, 'Return success if all tests have finished. Failure if any not finished.', null );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute(InputInterface $input, OutputInterface $output): int {
 		$test_run_ids = $input->getArgument( 'test_run_ids' );
 		$test_run_ids = array_filter( array_map( 'trim', explode( ',', $test_run_ids ) ) );
 
 		if ( empty( $test_run_ids ) ) {
 			$output->writeln( '<error>No test_run_ids provided.</error>' );
 
-			return Command::FAILURE;
+			return self::FAILURE;
 		}
 
 		try {
@@ -46,13 +47,13 @@ class GetMultipleCommand extends Command {
 		} catch ( \Exception $e ) {
 			$output->writeln( "<error>{$e->getMessage()}</error>" );
 
-			return Command::FAILURE;
+			return self::FAILURE;
 		}
 
 		$test_runs = json_decode( $json, true );
 
 		if ( ! is_array( $test_runs ) ) {
-			return Command::FAILURE;
+			return self::FAILURE;
 		}
 
 		// Determine exit codes for each test run and choose the "worst" one.
@@ -88,12 +89,12 @@ class GetMultipleCommand extends Command {
 			foreach ( $test_runs as $tr ) {
 				if ( ! isset( $tr['update_complete'] ) || $tr['update_complete'] !== true ) {
 					// If any test is not finished, fail.
-					return Command::FAILURE;
+					return self::FAILURE;
 				}
 			}
 
 			// All tests finished.
-			return Command::SUCCESS;
+			return self::SUCCESS;
 		}
 
 		// Not JSON, not check_finished:

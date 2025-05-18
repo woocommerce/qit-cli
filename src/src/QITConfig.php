@@ -2,12 +2,9 @@
 
 namespace QIT_CLI;
 
-use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Console\Application;
-use Symfony\Component\Console\Command\Command;
 
 class QITConfig {
-	use MatchesSnapshots;
 
 	private array $config = [];
 	private string $configFile;

@@ -5,7 +5,7 @@ namespace QIT_CLI\Commands\Environment;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\Environments\EnvInfo;
-use Symfony\Component\Console\Command\Command;
+use QIT_CLI\Commands\QITCommand;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,12 +14,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use function QIT_CLI\format_elapsed_time;
 
-class ExecEnvironmentCommand extends Command {
-	/** @var EnvironmentMonitor */
-	protected $environment_monitor;
+class ExecEnvironmentCommand extends QITCommand {
+	protected EnvironmentMonitor $environment_monitor;
 
-	/** @var Docker */
-	protected $docker;
+	protected Docker $docker;
 
 	protected static $defaultName = 'env:exec'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
@@ -32,7 +30,8 @@ class ExecEnvironmentCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'Execute a command inside the PHP container of a running test environment.' )
 			->addArgument( 'command_to_run', InputArgument::REQUIRED, 'The command to execute in the environment' )
@@ -48,13 +47,13 @@ class ExecEnvironmentCommand extends Command {
 			->addOption( 'image', null, InputOption::VALUE_OPTIONAL, 'The Docker image to use', 'php' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$running_environments = $this->environment_monitor->get();
 
 		if ( empty( $running_environments ) ) {
 			$output->writeln( '<info>No environments running.</info>' );
 
-			return Command::SUCCESS;
+			return self::SUCCESS;
 		}
 
 		if ( ! empty( $input->getOption( 'env_id' ) ) ) {
@@ -89,7 +88,7 @@ class ExecEnvironmentCommand extends Command {
 		if ( ! $environment ) {
 			$output->writeln( '<error>Selected environment not found.</error>' );
 
-			return Command::FAILURE;
+			return self::FAILURE;
 		}
 
 		$command_to_run = $input->getArgument( 'command_to_run' );
@@ -104,10 +103,10 @@ class ExecEnvironmentCommand extends Command {
 		} catch ( \Exception $e ) {
 			$output->writeln( '<error>' . $e->getMessage() . '</error>' );
 
-			return Command::FAILURE;
+			return self::FAILURE;
 		}
 
-		return Command::SUCCESS;
+		return self::SUCCESS;
 	}
 
 	/**

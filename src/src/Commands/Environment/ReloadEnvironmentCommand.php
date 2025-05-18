@@ -22,11 +22,8 @@ class ReloadEnvironmentCommand extends Command {
 
 	protected static $defaultName = 'env:reload';
 
-	/** @var EnvironmentMonitor */
-	protected $environment_monitor;
-
-	/** @var Docker */
-	protected $docker;
+	protected EnvironmentMonitor $environment_monitor;
+	protected Docker $docker;
 
 	public function __construct(
 		EnvironmentMonitor $environment_monitor,
@@ -37,7 +34,8 @@ class ReloadEnvironmentCommand extends Command {
 		parent::__construct( static::$defaultName );
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'Reloads a running environment to the post-SUT setup state.' )
 			->addArgument(
@@ -47,7 +45,7 @@ class ReloadEnvironmentCommand extends Command {
 			);
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$io      = new SymfonyStyle( $input, $output );
 		$running = $this->environment_monitor->get();
 		$env_id  = $input->getArgument( 'env_id' );
@@ -55,13 +53,13 @@ class ReloadEnvironmentCommand extends Command {
 		// Use trait to pick environment
 		$env = $this->find_environment_or_error( $running, $env_id, $io );
 		if ( ! $env ) {
-			return Command::FAILURE; // error printed
+			return self::FAILURE; // error printed
 		}
 
 		if ( ! $env instanceof E2EEnvInfo ) {
 			$io->error( 'Could not reload: environment info is not E2EEnvInfo.' );
 
-			return Command::FAILURE;
+			return self::FAILURE;
 		}
 
 		$io->writeln( "<info>Reloading environment {$env->env_id} from /qit/plugin-setup-snapshot.sql...</info>" );
@@ -75,9 +73,9 @@ class ReloadEnvironmentCommand extends Command {
 		} catch ( \Exception $e ) {
 			$io->error( 'Failed to reload environment: ' . $e->getMessage() );
 
-			return Command::FAILURE;
+			return self::FAILURE;
 		}
 
-		return Command::SUCCESS;
+		return self::SUCCESS;
 	}
 }

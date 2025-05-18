@@ -15,14 +15,9 @@ use function QIT_CLI\get_manager_url;
 
 class CreateMassTestCommands extends DynamicCommandCreator {
 
-	/** @var Cache $cache */
-	protected $cache;
-
-	/** @var Auth $auth */
-	protected $auth;
-
-	/** @var OutputInterface $output */
-	protected $output;
+	protected Cache $cache;
+	protected Auth $auth;
+	protected OutputInterface $output;
 
 	public function __construct( Cache $cache, Auth $auth ) {
 		$this->cache  = $cache;

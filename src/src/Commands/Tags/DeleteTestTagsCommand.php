@@ -15,14 +15,9 @@ use function QIT_CLI\get_manager_url;
 class DeleteTestTagsCommand extends Command {
 	protected static $defaultName = 'tag:delete'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Zipper */
-	protected $zipper;
-
-	/** @var Upload */
-	protected $uploader;
-
-	/** @var WooExtensionsList */
-	protected $woo_extensions_list;
+	protected Zipper $zipper;
+	protected Upload $uploader;
+	protected WooExtensionsList $woo_extensions_list;
 
 	public function __construct( Zipper $zipper, Upload $uploader, WooExtensionsList $woo_extensions_list ) {
 		parent::__construct();
@@ -31,14 +26,15 @@ class DeleteTestTagsCommand extends Command {
 		$this->woo_extensions_list = $woo_extensions_list;
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->addArgument( 'test_tag', InputArgument::REQUIRED, 'The test tag to delete, example: "qit-beaver:rc", or "foo:default", etc. Accepts one test tag only, not comma-separated.' )
 			->addArgument( 'test_type', InputArgument::OPTIONAL, 'The test type.', 'e2e' )
 			->setDescription( /** @lang text */ 'Delete your custom test from QIT.' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$test_tag  = $input->getArgument( 'test_tag' );
 		$test_type = $input->getArgument( 'test_type' );
 

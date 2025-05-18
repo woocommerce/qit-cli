@@ -15,14 +15,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 class UploadTestTagsCommand extends Command {
 	protected static $defaultName = 'tag:upload'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Zipper */
-	protected $zipper;
+	protected Zipper $zipper;
 
-	/** @var Upload */
-	protected $uploader;
+	protected Upload $uploader;
 
-	/** @var WooExtensionsList */
-	protected $woo_extensions_list;
+	protected WooExtensionsList $woo_extensions_list;
 
 	public function __construct( Zipper $zipper, Upload $uploader, WooExtensionsList $woo_extensions_list ) {
 		parent::__construct();
@@ -31,7 +28,8 @@ class UploadTestTagsCommand extends Command {
 		$this->woo_extensions_list = $woo_extensions_list;
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->addArgument( 'test_tag', InputArgument::REQUIRED, 'The test tag to upload, can be "my-extension", or "my-extension:my-test-tag". If test tag is not specified, it is the same as running "my-extension:default".' )
 			->addArgument( 'test_path', InputArgument::REQUIRED, 'The path to the custom tests to upload.' )
@@ -39,7 +37,7 @@ class UploadTestTagsCommand extends Command {
 			->setDescription( 'Uploads your custom test to QIT.' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$test_path = $input->getArgument( 'test_path' );
 		$test_type = $input->getArgument( 'test_type' );
 		$tag       = $input->getArgument( 'test_tag' );

@@ -12,16 +12,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CacheCommand extends Command {
 	protected static $defaultName = 'cache'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
+			->setDescription( 'Manipulates the QIT Cache' )
 			->addArgument( 'action', InputArgument::REQUIRED, 'The action to perform. (get, set, delete)' )
 			->addArgument( 'key', InputArgument::REQUIRED, 'The key to cache.' )
 			->addArgument( 'value', InputArgument::OPTIONAL, 'The value when (set).' )
-			->addArgument( 'expiration', InputArgument::OPTIONAL, 'The expiration when (set).' )
-			->setDescription( 'Manipulates the QIT Cache' );
+			->addArgument( 'expiration', InputArgument::OPTIONAL, 'The expiration when (set).' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$action = $input->getArgument( 'action' );
 		$key    = $input->getArgument( 'key' );
 		$cache  = App::make( Cache::class );

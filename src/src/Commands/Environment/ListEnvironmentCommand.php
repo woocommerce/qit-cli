@@ -20,22 +20,22 @@ class ListEnvironmentCommand extends Command {
 
 	protected static $defaultName = 'env:list'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var EnvironmentMonitor */
-	protected $environment_monitor;
+	protected EnvironmentMonitor $environment_monitor;
 
 	public function __construct( EnvironmentMonitor $environment_monitor ) {
 		$this->environment_monitor = $environment_monitor;
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'List running environments.' )
 			->addArgument( 'env_id', InputArgument::OPTIONAL, 'Environment ID to show (otherwise list all).' )
 			->addOption( 'field', 'f', InputOption::VALUE_OPTIONAL, 'Show just a specific field.' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$io      = new SymfonyStyle( $input, $output );
 		$running = $this->environment_monitor->get();
 		$env_id  = $input->getArgument( 'env_id' );

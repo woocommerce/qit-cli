@@ -12,15 +12,15 @@ class GroupFetchCommand extends Command {
 
 	protected static $defaultName = 'group:fetch'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var TestGroup */
-	protected $test_group;
+	protected TestGroup $test_group;
 
 	public function __construct( TestGroup $test_group ) {
 		$this->test_group = $test_group;
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'Fetch a group of tests using a group identifier.' )
 			->addOption( 'group-identifier', 'i', InputOption::VALUE_REQUIRED, 'The group identifier.' );
@@ -31,13 +31,13 @@ class GroupFetchCommand extends Command {
 	 * @param OutputInterface $output
 	 * @return int
 	 */
-	protected function execute( InputInterface $input, OutputInterface $output ) {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$group_identifier = $input->getOption( 'group-identifier' );
 		$group            = $this->test_group->fetch( $group_identifier );
 
 		if ( empty( $group ) ) {
 			$output->writeln( '<error>No group found.</error>' );
-			return Command::FAILURE;
+			return self::FAILURE;
 		}
 
 		$output->writeln( '--------------------------------' );
@@ -54,6 +54,6 @@ class GroupFetchCommand extends Command {
 			$output->writeln( '--------------------------------' );
 		}
 
-		return Command::SUCCESS;
+		return self::SUCCESS;
 	}
 }

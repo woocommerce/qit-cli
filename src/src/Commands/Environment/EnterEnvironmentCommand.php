@@ -15,14 +15,9 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 use function QIT_CLI\format_elapsed_time;
 
 class EnterEnvironmentCommand extends Command {
-	/** @var E2EEnvironment */
-	protected $e2e_environment;
-
-	/** @var EnvironmentMonitor */
-	protected $environment_monitor;
-
-	/** @var Docker */
-	protected $docker;
+	protected E2EEnvironment $e2e_environment;
+	protected EnvironmentMonitor $environment_monitor;
+	protected Docker $docker;
 
 	protected static $defaultName = 'env:enter'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
@@ -37,20 +32,20 @@ class EnterEnvironmentCommand extends Command {
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->addOption( 'user', 'u', InputOption::VALUE_OPTIONAL, 'The user to enter the environment as.', '' )
 			->addOption( 'dev', 'd', InputOption::VALUE_NEGATABLE, 'Enter the environment as a developer. This installs some quality-of-life tooling inside the Alpine container, such as bash and less.', true )
 			->setDescription( 'Enter the PHP container of a running test environment.' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute(InputInterface $input, OutputInterface $output): int {
 		$running_environments = $this->environment_monitor->get();
 
 		if ( empty( $running_environments ) ) {
 			$output->writeln( '<info>No environments running.</info>' );
-
-			return Command::SUCCESS;
+			return self::SUCCESS;
 		}
 
 		$environment = null;
@@ -81,13 +76,12 @@ class EnterEnvironmentCommand extends Command {
 				$environment = $this->environment_monitor->get_env_info_by_id( $selected_environment );
 			} catch ( \Exception $e ) {
 				$output->writeln( '<error>Selected environment not found.</error>' );
-
-				return Command::FAILURE;
+				return self::FAILURE;
 			}
 		}
 
 		$this->docker->enter_environment( $environment, 'php', '/bin/bash', $input->getOption( 'user' ), $input->getOption( 'dev' ) );
 
-		return Command::SUCCESS;
+		return self::SUCCESS;
 	}
 }

@@ -22,23 +22,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
 class CreateRunCommands extends DynamicCommandCreator {
-	/** @var Cache $cache */
-	protected $cache;
-
-	/** @var Auth $auth */
-	protected $auth;
-
-	/** @var OutputInterface $output */
-	protected $output;
-
-	/** @var Upload $upload */
-	protected $upload;
-
-	/** @var WooExtensionsList $woo_extensions_list */
-	protected $woo_extensions_list;
-
-	/** @var TestGroup $test_group */
-	protected $test_group;
+	protected Cache $cache;
+	protected Auth $auth;
+	protected OutputInterface $output;
+	protected Upload $upload;
+	protected WooExtensionsList $woo_extensions_list;
+	protected TestGroup $test_group;
 
 	public function __construct( Cache $cache, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list, TestGroup $test_group ) {
 		$this->cache               = $cache;
@@ -68,20 +57,11 @@ class CreateRunCommands extends DynamicCommandCreator {
 	 */
 	protected function register_command_by_schema( Application $application, string $test_type, array $schema ): void {
 		$command = new class( $test_type, $this->auth, $this->upload, $this->woo_extensions_list, $this->test_group ) extends DynamicCommand {
-			/** @var Auth $auth */
-			protected $auth;
-
-			/** @var WooExtensionsList $woo_extensions_list */
-			protected $woo_extensions_list;
-
-			/** @var string $test_type */
-			protected $test_type;
-
-			/** @var Upload $upload */
-			protected $upload;
-
-			/** @var TestGroup $test_group */
-			protected $test_group;
+			protected Auth $auth;
+			protected WooExtensionsList $woo_extensions_list;
+			protected string $test_type;
+			protected Upload $upload;
+			protected TestGroup $test_group;
 
 			public function __construct( string $test_type, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list, TestGroup $test_group ) {
 				$this->auth                = $auth;

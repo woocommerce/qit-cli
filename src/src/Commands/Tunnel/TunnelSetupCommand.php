@@ -16,15 +16,15 @@ use Symfony\Component\Process\Process;
 class TunnelSetupCommand extends Command {
 	protected static $defaultName = 'tunnel:setup'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Cache */
-	protected $cache;
+	protected Cache $cache;
 
 	public function __construct( Cache $cache ) {
 		parent::__construct();
 		$this->cache = $cache;
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'Configure tunneling methods for QIT CLI.' )
 			->addArgument( 'method', InputArgument::OPTIONAL, 'The tunneling method to configure.' )
@@ -71,7 +71,7 @@ TXT
 			);
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		if ( $input->getOption( 'reset' ) ) {
 			$this->cache->delete( 'tunnel_configs' );
 			$this->cache->delete( 'tunnel_default' );

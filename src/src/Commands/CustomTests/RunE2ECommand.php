@@ -38,32 +38,15 @@ use function QIT_CLI\is_windows;
 class RunE2ECommand extends DynamicCommand {
 	use OptionReuseTrait;
 
-	/** @var E2EEnvironment */
-	protected $e2e_environment;
-
-	/** @var Cache */
-	protected $cache;
-
-	/** @var OutputInterface */
-	protected $output;
-
-	/** @var CustomE2ERunner */
-	protected $spec_custom_test_orchestrator;
-
-	/** @var WooExtensionsList */
-	protected $woo_extensions_list;
-
-	/** @var LocalTestRunNotifier */
-	protected $test_run_notifier;
-
-	/** @var PluginDependencies */
-	protected $dependencies;
-
-	/** @var EnvironmentRunner */
-	protected $environment_runner;
-
-	/** @var TestGroup */
-	protected $test_group;
+	protected E2EEnvironment $e2e_environment;
+	protected Cache $cache;
+	protected OutputInterface $output;
+	protected CustomE2ERunner $spec_custom_test_orchestrator;
+	protected WooExtensionsList $woo_extensions_list;
+	protected LocalTestRunNotifier $test_run_notifier;
+	protected PluginDependencies $dependencies;
+	protected EnvironmentRunner $environment_runner;
+	protected TestGroup $test_group;
 
 	protected static $defaultName = 'run:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
@@ -99,7 +82,9 @@ class RunE2ECommand extends DynamicCommand {
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
+
 		$schemas = $this->cache->get_manager_sync_data( 'schemas' );
 
 		if ( ! is_array( $schemas['e2e']['properties'] ) ) {
@@ -151,13 +136,13 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'no_group', 'ng', InputOption::VALUE_NEGATABLE, 'If set, the CLI will not attempt to match the local test run with a group.', false );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$this->prepare_output( $output );
 
 		if ( is_windows() ) {
 			$output->writeln( '<comment>To run E2E Tests on Windows, please use WSL.</comment>' );
 
-			return Command::FAILURE;
+			return self::FAILURE;
 		}
 
 		try {
@@ -167,7 +152,7 @@ class RunE2ECommand extends DynamicCommand {
 		} catch ( \Exception $e ) {
 			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
-			return Command::FAILURE;
+			return self::FAILURE;
 		}
 
 		try {
@@ -177,13 +162,13 @@ class RunE2ECommand extends DynamicCommand {
 		} catch ( \RuntimeException $e ) {
 			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
-			return Command::INVALID;
+			return self::INVALID;
 		}
 
 		App::setVar( 'TEST_MODE', $test_mode );
 
 		$result = $this->validate_input( $input, $output, $wait );
-		if ( $result !== Command::SUCCESS ) {
+		if ( $result !== self::SUCCESS ) {
 			return $result;
 		}
 
@@ -192,9 +177,9 @@ class RunE2ECommand extends DynamicCommand {
 
 		$woo_extension_raw = $input->getArgument( 'woo_extension' );
 		[ $woo_extension_id, $woo_extension_slug, $sut_type_or_code ] = $this->resolve_woo_extension( $woo_extension_raw, $output );
-		if ( $sut_type_or_code === Command::INVALID ) {
+		if ( $sut_type_or_code === self::INVALID ) {
 			// Failed to resolve extension.
-			return Command::INVALID;
+			return self::INVALID;
 		}
 		$sut_type = $sut_type_or_code;
 
@@ -219,12 +204,12 @@ class RunE2ECommand extends DynamicCommand {
 				$this->test_group->create_or_update( $group_options, $test_type, $input, $env_vars );
 			} catch ( \Exception $e ) {
 				$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
-				return Command::FAILURE;
+				return self::FAILURE;
 			}
 
 			$output->writeln( sprintf( '<info>Group item successfully added.</info>' ) );
 
-			return Command::SUCCESS;
+			return self::SUCCESS;
 		}
 
 		if ( $input->getOption( 'skip_activating_plugins' ) ) {
@@ -285,12 +270,12 @@ class RunE2ECommand extends DynamicCommand {
 			if ( getenv( 'QIT_SELF_TEST' ) === 'env_info' ) {
 				$output->write( json_encode( $env_info ) );
 
-				return Command::SUCCESS;
+				return self::SUCCESS;
 			}
 		} catch ( \Exception $e ) {
 			$this->output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
-			return Command::FAILURE;
+			return self::FAILURE;
 		} finally {
 			putenv( 'QIT_HIDE_SITE_INFO' );    // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
@@ -312,7 +297,7 @@ class RunE2ECommand extends DynamicCommand {
 		if ( getenv( 'QIT_SELF_TEST' ) === 'env_up' ) {
 			$output->write( json_encode( $env_info ) );
 
-			return Command::SUCCESS;
+			return self::SUCCESS;
 		}
 
 		$shard            = $input->getOption( 'shard' );
@@ -323,17 +308,17 @@ class RunE2ECommand extends DynamicCommand {
 
 		// If "up_only" or "bootstrap", don't print final message. Assume if we got here, user already used the environment and already destroyed it.
 		if ( $wait ) {
-			return Command::SUCCESS;
+			return self::SUCCESS;
 		}
 
-		if ( $exit_status_code === Command::SUCCESS ) {
+		if ( $exit_status_code === self::SUCCESS ) {
 			$io->success( "Tests passed. Run 'qit e2e-report' to view the report." );
 
-			return Command::SUCCESS;
+			return self::SUCCESS;
 		} else {
 			$io->error( "Tests failed. Run 'qit e2e-report' to view the report." );
 
-			return Command::FAILURE;
+			return self::FAILURE;
 		}
 	}
 
@@ -451,7 +436,7 @@ class RunE2ECommand extends DynamicCommand {
 	 * @param OutputInterface $output
 	 *
 	 * @return array{0:int|null,1:string|null,2:string|int|null} Array containing:
-	 *                                                            [woo_extension_id, woo_extension_slug, sut_type or Command::INVALID]
+	 *                                                            [woo_extension_id, woo_extension_slug, sut_type or self::INVALID]
 	 */
 	private function resolve_woo_extension( ?string $woo_extension_raw, OutputInterface $output ): array {
 		if ( empty( $woo_extension_raw ) ) {
@@ -469,7 +454,7 @@ class RunE2ECommand extends DynamicCommand {
 		} catch ( \Exception $e ) {
 			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 
-			return [ null, null, Command::INVALID ];
+			return [ null, null, self::INVALID ];
 		}
 
 		$sut_type = $this->woo_extensions_list->get_woo_extension_type( $woo_extension_id );
@@ -485,7 +470,7 @@ class RunE2ECommand extends DynamicCommand {
 		if ( ! empty( $woo ) && ! empty( $plugins ) && in_array( 'woocommerce', $plugins, true ) ) {
 			$output->writeln( '<error>Cannot use both "--woo" and "--plugin woocommerce" together.</error>' );
 
-			return Command::INVALID;
+			return self::INVALID;
 		}
 
 		$shard = $input->getOption( 'shard' );
@@ -493,13 +478,13 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! preg_match( '/^\d+\/\d+$/', $shard ) ) {
 				$output->writeln( '<error>Invalid shard format. Should be current/total, e.g., 1/5.</error>' );
 
-				return Command::INVALID;
+				return self::INVALID;
 			}
 			[ $current, $total ] = explode( '/', $shard );
 			if ( $current <= 0 || $current > $total ) {
 				$output->writeln( '<error>Invalid shard format. current must be > 0 and <= total.</error>' );
 
-				return Command::INVALID;
+				return self::INVALID;
 			}
 		}
 
@@ -508,16 +493,16 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! empty( $input->getOption( 'source' ) ) || ! empty( $input->getOption( 'sut_action' ) ) ) {
 				$output->writeln( '<error>The extension parameter is required when source or sut_action is set.</error>' );
 
-				return Command::INVALID;
+				return self::INVALID;
 			}
 			if ( ! $wait ) {
 				$output->writeln( '<error>The extension parameter is required unless in --up_only or --codegen mode.</error>' );
 
-				return Command::INVALID;
+				return self::INVALID;
 			}
 		}
 
-		return Command::SUCCESS;
+		return self::SUCCESS;
 	}
 
 	private function configure_pw_options( InputInterface $input ): void {

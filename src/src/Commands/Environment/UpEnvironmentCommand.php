@@ -20,17 +20,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\is_windows;
 
 class UpEnvironmentCommand extends DynamicCommand {
-	/** @var E2EEnvironment */
-	protected $e2e_environment;
-
-	/** @var Cache */
-	protected $cache;
-
-	/** @var OutputInterface */
-	protected $output;
-
-	/** @var TunnelRunner */
-	protected $tunnel_runner;
+	protected E2EEnvironment $e2e_environment;
+	protected Cache $cache;
+	protected OutputInterface $output;
+	protected TunnelRunner $tunnel_runner;
 
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
@@ -42,7 +35,9 @@ class UpEnvironmentCommand extends DynamicCommand {
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
+
 		$schemas = $this->cache->get_manager_sync_data( 'schemas' );
 
 		if ( ! is_array( $schemas['e2e']['properties'] ) ) {
@@ -193,7 +188,7 @@ HELP
 			);
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		if ( is_windows() ) {
 			$output->writeln( '<comment>To use QIT Environments on Window, please use WSL. Check our guide here: https://qit.woo.com/docs/environment/getting-started#getting-started---windows</comment>' );
 

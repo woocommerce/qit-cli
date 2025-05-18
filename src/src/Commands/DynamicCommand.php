@@ -2,12 +2,17 @@
 
 namespace QIT_CLI\Commands;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 
-abstract class DynamicCommand extends Command {
+abstract class DynamicCommand extends QITCommand {
 	/** @var array<mixed> $options_to_send */
 	protected $options_to_send = [];
+
+	protected function configure(): void {
+		parent::configure();
+		$this
+			->setDescription( 'Dynamic command base class.' );
+	}
 
 	public function add_option_to_send( string $option_name ): void {
 		$this->options_to_send[ $option_name ] = '';
