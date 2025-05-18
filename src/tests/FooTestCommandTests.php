@@ -27,7 +27,7 @@ class FooTestCommandTests extends QITTestCase {
 		parent::tearDown();
 	}
 
-	public function test_generates_foo_test_config_with_default_variant() {
+	public function test_generates_foo_test_config_with_default_profile() {
 		file_put_contents( 'qit.json', json_encode( [
 			'tests' => [
 				'foo' => [
@@ -39,12 +39,12 @@ class FooTestCommandTests extends QITTestCase {
 		$command->setApplication( $this->application );
 		$tester = new CommandTester( $command );
 		$tester->execute( [] );
-		$this->assertStringContainsString( 'Running foo test variant: default with param: default', $tester->getDisplay() );
+		$this->assertStringContainsString( 'Running foo test profile: default with param: default', $tester->getDisplay() );
 		$this->assertStringContainsString( 'Test config: {"param":"value"}', $tester->getDisplay() );
 		$this->assertEquals( Command::SUCCESS, $tester->getStatusCode() );
 	}
 
-	public function test_generates_foo_test_config_with_custom_variant() {
+	public function test_generates_foo_test_config_with_custom_profile() {
 		file_put_contents( 'qit.json', json_encode( [
 			'tests' => [
 				'foo' => [
@@ -55,13 +55,13 @@ class FooTestCommandTests extends QITTestCase {
 		$command = new FooTestCommand();
 		$command->setApplication( $this->application );
 		$tester = new CommandTester( $command );
-		$tester->execute( [ '--variant' => 'custom' ] );
-		$this->assertStringContainsString( 'Running foo test variant: custom with param: default', $tester->getDisplay() );
+		$tester->execute( [ '--profile' => 'custom' ] );
+		$this->assertStringContainsString( 'Running foo test profile: custom with param: default', $tester->getDisplay() );
 		$this->assertStringContainsString( 'Test config: {"param":"custom_value"}', $tester->getDisplay() );
 		$this->assertEquals( Command::SUCCESS, $tester->getStatusCode() );
 	}
 
-	public function test_handles_missing_variant() {
+	public function test_handles_missing_profile() {
 		file_put_contents( 'qit.json', json_encode( [
 			'tests' => [
 				'foo' => [
@@ -72,8 +72,8 @@ class FooTestCommandTests extends QITTestCase {
 		$command = new FooTestCommand();
 		$command->setApplication( $this->application );
 		$tester = new CommandTester( $command );
-		$tester->execute( [ '--variant' => 'non_existing' ] );
-		$this->assertStringContainsString( "Test variant 'non_existing' not found for test type 'foo'.", $tester->getDisplay() );
+		$tester->execute( [ '--profile' => 'non_existing' ] );
+		$this->assertStringContainsString( "Test profile 'non_existing' not found for test type 'foo'.", $tester->getDisplay() );
 		$this->assertEquals( Command::FAILURE, $tester->getStatusCode() );
 	}
 
@@ -89,7 +89,7 @@ class FooTestCommandTests extends QITTestCase {
 		$command->setApplication( $this->application );
 		$tester = new CommandTester( $command );
 		$tester->execute( [ '--param' => 'custom' ] );
-		$this->assertStringContainsString( 'Running foo test variant: default with param: custom', $tester->getDisplay() );
+		$this->assertStringContainsString( 'Running foo test profile: default with param: custom', $tester->getDisplay() );
 		$this->assertStringContainsString( 'Test config: {"param":"value"}', $tester->getDisplay() );
 		$this->assertEquals( Command::SUCCESS, $tester->getStatusCode() );
 	}
@@ -100,7 +100,7 @@ class FooTestCommandTests extends QITTestCase {
 		$command->setApplication( $this->application );
 		$tester = new CommandTester( $command );
 		$tester->execute( [] );
-		$this->assertStringContainsString( 'Running foo test variant: default with param: default', $tester->getDisplay() );
+		$this->assertStringContainsString( 'Running foo test profile: default with param: default', $tester->getDisplay() );
 		$this->assertStringContainsString( 'Test config: []', $tester->getDisplay() );
 		$this->assertEquals( Command::SUCCESS, $tester->getStatusCode() );
 	}
@@ -136,7 +136,7 @@ class FooTestCommandTests extends QITTestCase {
 		$command->setApplication( $this->application );
 		$tester = new CommandTester( $command );
 		$tester->execute( [] );
-		$this->assertStringContainsString( 'Running foo test variant: default with param: default', $tester->getDisplay() );
+		$this->assertStringContainsString( 'Running foo test profile: default with param: default', $tester->getDisplay() );
 		$this->assertStringContainsString( 'Test config: {"param":"value","settings":{"skip":["test1"]}}', $tester->getDisplay() );
 		$this->assertEquals( Command::SUCCESS, $tester->getStatusCode() );
 	}

@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands\Tags;
 
+use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
 use QIT_CLI\WooExtensionsList;
@@ -12,7 +13,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
-class DeleteTestTagsCommand extends Command {
+class DeleteTestTagsCommand extends QITCommand {
 	protected static $defaultName = 'tag:delete'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	protected Zipper $zipper;

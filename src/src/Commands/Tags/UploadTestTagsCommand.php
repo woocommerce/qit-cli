@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands\Tags;
 
+use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Upload;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\Zipper;
@@ -12,7 +13,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UploadTestTagsCommand extends Command {
+class UploadTestTagsCommand extends QITCommand {
 	protected static $defaultName = 'tag:upload'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	protected Zipper $zipper;

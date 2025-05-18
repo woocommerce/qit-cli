@@ -185,21 +185,21 @@ class FooTestCommand extends QITCommand {
 		$this->setName( 'run:foo' )
 		     ->setDescription( 'Run a foo test' )
 		     ->addOption( 'param', null, InputOption::VALUE_OPTIONAL, 'Test parameter', 'default' )
-		     ->addOption( 'variant', null, InputOption::VALUE_OPTIONAL, 'Test variant', 'default' );
+		     ->addOption( 'profile', null, InputOption::VALUE_OPTIONAL, 'Test profile', 'default' );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
-		$variant = $input->getOption( 'variant' );
+		$profile = $input->getOption( 'profile' );
 		try {
-			$testConfigData = $this->config->get_test_config( 'foo', $variant );
+			$testConfigData = $this->config->get_test_config( 'foo', $profile );
 		} catch ( \RuntimeException $e ) {
-			$output->writeln( "<error>Test variant '$variant' not found for test type 'foo'.</error>" );
+			$output->writeln( "<error>Test profile '$profile' not found for test type 'foo'.</error>" );
 
 			return Command::FAILURE;
 		}
 		$testConfig = new FooTestConfig( $testConfigData );
 		$param      = $input->getOption( 'param' );
-		$output->writeln( "Running foo test variant: $variant with param: $param" );
+		$output->writeln( "Running foo test profile: $profile with param: $param" );
 		$output->writeln( 'Test config: ' . json_encode( $testConfig->getConfig() ) );
 
 		return Command::SUCCESS;
@@ -218,21 +218,21 @@ class BarTestCommand extends QITCommand {
 		$this->setName( 'run:bar' )
 		     ->setDescription( 'Run a bar test' )
 		     ->addOption( 'param', null, InputOption::VALUE_OPTIONAL, 'Test parameter', 'default' )
-		     ->addOption( 'variant', null, InputOption::VALUE_OPTIONAL, 'Test variant', 'default' );
+		     ->addOption( 'profile', null, InputOption::VALUE_OPTIONAL, 'Test profile', 'default' );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
-		$variant = $input->getOption( 'variant' );
+		$profile = $input->getOption( 'profile' );
 		try {
-			$testConfigData = $this->config->get_test_config( 'bar', $variant );
+			$testConfigData = $this->config->get_test_config( 'bar', $profile );
 		} catch ( \RuntimeException $e ) {
-			$output->writeln( "<error>Test variant '$variant' not found for test type 'bar'.</error>" );
+			$output->writeln( "<error>Test profile '$profile' not found for test type 'bar'.</error>" );
 
 			return Command::FAILURE;
 		}
 		$testConfig = new BarTestConfig( $testConfigData );
 		$param      = $input->getOption( 'param' );
-		$output->writeln( "Running bar test variant: $variant with param: $param" );
+		$output->writeln( "Running bar test profile: $profile with param: $param" );
 		$output->writeln( 'Test config: ' . json_encode( $testConfig->getConfig() ) );
 
 		return Command::SUCCESS;
@@ -251,21 +251,21 @@ class BazTestCommand extends QITCommand {
 		$this->setName( 'run:baz' )
 		     ->setDescription( 'Run a baz test' )
 		     ->addOption( 'param', null, InputOption::VALUE_OPTIONAL, 'Test parameter', 'default' )
-		     ->addOption( 'variant', null, InputOption::VALUE_OPTIONAL, 'Test variant', 'default' );
+		     ->addOption( 'profile', null, InputOption::VALUE_OPTIONAL, 'Test profile', 'default' );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
-		$variant = $input->getOption( 'variant' );
+		$profile = $input->getOption( 'profile' );
 		try {
-			$testConfigData = $this->config->get_test_config( 'baz', $variant );
+			$testConfigData = $this->config->get_test_config( 'baz', $profile );
 		} catch ( \RuntimeException $e ) {
-			$output->writeln( "<error>Test variant '$variant' not found for test type 'baz'.</error>" );
+			$output->writeln( "<error>Test profile '$profile' not found for test type 'baz'.</error>" );
 
 			return Command::FAILURE;
 		}
 		$testConfig = new BazTestConfig( $testConfigData );
 		$param      = $input->getOption( 'param' );
-		$output->writeln( "Running baz test variant: $variant with param: $param" );
+		$output->writeln( "Running baz test profile: $profile with param: $param" );
 		$output->writeln( 'Test config: ' . json_encode( $testConfig->getConfig() ) );
 
 		return Command::SUCCESS;
@@ -319,27 +319,27 @@ class TestConfigCommand extends QITCommand {
 
 		// Handle custom config file with output-config
 		if ( $input->getOption( 'config' ) && $input->getOption( 'output-config' ) ) {
-			$output->writeln( 'Config: ' . json_encode( $this->config->getAll() ) );
+			$output->writeln( 'Config: ' . json_encode( $this->config->get_all() ) );
 
 			return Command::SUCCESS;
 		}
 
 		// Output config file path only if explicitly requested
 		if ( $input->getOption( 'config' ) && ! $input->getOption( 'output-config' ) ) {
-			$output->writeln( 'Config file: ' . $this->config->getConfigFile() );
+			$output->writeln( 'Config file: ' . $this->config->get_config_file() );
 
 			return Command::SUCCESS;
 		}
 
 		// Output all config data if requested
 		if ( $input->getOption( 'output-config' ) ) {
-			$output->writeln( 'Config: ' . json_encode( $this->config->getAll() ) );
+			$output->writeln( 'Config: ' . json_encode( $this->config->get_all() ) );
 
 			return Command::SUCCESS;
 		}
 
 		// Default: Output config data
-		$output->writeln( 'Config: ' . json_encode( $this->config->getAll() ) );
+		$output->writeln( 'Config: ' . json_encode( $this->config->get_all() ) );
 
 		return Command::SUCCESS;
 	}

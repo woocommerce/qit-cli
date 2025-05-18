@@ -21,44 +21,19 @@ use function QIT_CLI\normalize_path;
 use function QIT_CLI\use_tty;
 
 abstract class Environment {
-	/** @var EnvironmentDownloader */
-	protected $environment_downloader;
-
-	/** @var ExtensionDownloader */
-	protected $extension_downloader;
-
-	/** @var Cache */
-	protected $cache;
-
-	/** @var EnvironmentMonitor */
-	protected $environment_monitor;
-
-	/** @var Filesystem */
-	protected $filesystem;
-
-	/** @var Docker */
-	protected $docker;
-
-	/** @var string */
-	protected $cache_dir;
-
-	/** @var string */
-	protected $source_environment_path;
-
-	/** @var EnvInfo */
-	protected $env_info;
-
-	/** @var OutputInterface */
-	protected $output;
-
-	/** @var CustomTestsDownloader */
-	protected $custom_tests_downloader;
-
-	/** @var array<string,array{local: string, in_container: string}> */
-	protected $volumes;
-
-	/** @var string "up" if just spinning up the environment, "up_and_test" if running for a custom test. */
-	protected $type;
+	protected EnvironmentDownloader $environment_downloader;
+	protected ExtensionDownloader $extension_downloader;
+	protected Cache $cache;
+	protected EnvironmentMonitor $environment_monitor;
+	protected Filesystem $filesystem;
+	protected Docker $docker;
+	protected string $cache_dir;
+	protected string $source_environment_path;
+	protected EnvInfo $env_info;
+	protected OutputInterface $output;
+	protected CustomTestsDownloader $custom_tests_downloader;
+	protected array $volumes;
+	protected string $type; // "up" or "up_and_test"
 
 	public function __construct(
 		EnvironmentDownloader $environment_downloader,
@@ -338,7 +313,13 @@ abstract class Environment {
 		}
 
 		if ( file_exists( $env_info->temporary_env . '/docker-compose.yml' ) ) {
-			$down_process = new Process( array_merge( App::make( Docker::class )->find_docker_compose(), [ '-f', $env_info->temporary_env . '/docker-compose.yml', 'down', '--volumes', '--remove-orphans' ] ) );
+			$down_process = new Process( array_merge( App::make( Docker::class )->find_docker_compose(), [
+				'-f',
+				$env_info->temporary_env . '/docker-compose.yml',
+				'down',
+				'--volumes',
+				'--remove-orphans'
+			] ) );
 			$down_process->setTimeout( 300 );
 			$down_process->setIdleTimeout( 300 );
 			$down_process->setPty( use_tty() );

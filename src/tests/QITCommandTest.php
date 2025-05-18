@@ -181,7 +181,7 @@ class QITCommandTest extends QITTestCase {
 			]
 		] ) );
 		$config = new QITConfig( 'qit.json', $this->application );
-		$matrix = $config->get_test_matrix( 'foo', 'default' );
+		$matrix = $config->get_compatibility_tests( 'foo', 'default' );
 		$this->assertEquals( [
 			[ 'slug' => 'woocommerce', 'test_package' => 'foo:basic' ],
 			[ 'slug' => 'my-plugin', 'test_package' => './tests/foo' ]
@@ -249,10 +249,10 @@ class QITCommandTest extends QITTestCase {
 			]
 		] ) );
 		$config = new QITConfig( 'qit.json', $this->application );
-		$this->assertEquals( [ 'I can do this', '/I can do \\w+/' ], $config->getNestedValue( 'tests.bar.default.settings.skip' ) );
-		$this->assertEquals( 0, $config->getNestedValue( 'tests.baz.basic.settings.level' ) );
-		$this->assertEquals( './results/ctrf.json', $config->getNestedValue( 'custom_test_packages.default.test_results.ctrf' ) );
-		$this->assertNull( $config->getNestedValue( 'tests.nonexistent' ) );
+		$this->assertEquals( [ 'I can do this', '/I can do \\w+/' ], $config->get_nested_value( 'tests.bar.default.settings.skip' ) );
+		$this->assertEquals( 0, $config->get_nested_value( 'tests.baz.basic.settings.level' ) );
+		$this->assertEquals( './results/ctrf.json', $config->get_nested_value( 'custom_test_packages.default.test_results.ctrf' ) );
+		$this->assertNull( $config->get_nested_value( 'tests.nonexistent' ) );
 	}
 
 	public function test_test_config_with_matrix_and_settings() {
@@ -348,6 +348,18 @@ class QITCommandTest extends QITTestCase {
 		] ) );
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( "env_vars in custom test package 'bad_env_vars' must be an array." );
+		new QITConfig( 'qit.json', $this->application );
+	}
+
+	public function test_circular_inheritance() {
+		file_put_contents( 'qit.json', json_encode( [
+			'custom_test_packages' => [
+				'foo' => [ 'root_path' => './tests/foo', 'test_command' => 'npx playwright test', 'extends' => 'bar' ],
+				'bar'  => [ 'extends' => 'foo', 'test_command' => 'npx playwright test --grep @bad' ]
+			]
+		] ) );
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( "Deep inheritance not allowed in custom test package: 'bar' cannot extend another configuration." );
 		new QITConfig( 'qit.json', $this->application );
 	}
 }

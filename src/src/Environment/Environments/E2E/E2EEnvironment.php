@@ -4,6 +4,7 @@ namespace QIT_CLI\Environment\Environments\E2E;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Docker;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\Environments\ThemeActivation;
 use QIT_CLI\Environment\EnvUpChecker;
@@ -15,19 +16,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 
 class E2EEnvironment extends Environment {
-	/** @var string */
-	protected $description = 'E2E Environment';
-
+	protected string $description = 'E2E Environment';
 	/**
 	 * @var E2EEnvInfo
 	 */
-	protected $env_info;
-
-	/** @var bool */
-	protected $skip_activating_plugins = false;
-
-	/** @var bool */
-	protected $skip_activating_themes = false;
+	protected EnvInfo $env_info;
+	protected bool $skip_activating_plugins = false;
+	protected bool $skip_activating_themes = false;
 
 	public function get_name(): string {
 		return 'e2e';

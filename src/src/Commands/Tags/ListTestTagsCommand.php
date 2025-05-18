@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands\Tags;
 
+use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -10,7 +11,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
-class ListTestTagsCommand extends Command {
+class ListTestTagsCommand extends QITCommand {
 	protected static $defaultName = 'tag:list'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	protected function configure(): void {
