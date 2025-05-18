@@ -34,20 +34,13 @@ class QITCommandTest extends QITTestCase {
 		parent::tearDown();
 	}
 
-	protected function create_config_file( string $file, $data ): void {
-		file_put_contents( $file, is_string( $data ) ? $data : json_encode( $data ) );
-		if ( ! in_array( $file, $this->files_to_clean, true ) ) {
-			$this->files_to_clean[] = $file;
-		}
-	}
-
 	protected function assertCommandOutput( CommandTester $tester, string $expectedOutput, int $expectedStatus ): void {
 		$this->assertStringContainsString( $expectedOutput, $tester->getDisplay() );
 		$this->assertEquals( $expectedStatus, $tester->getStatusCode() );
 	}
 
 	public function test_loads_config_successfully() {
-		$this->create_config_file( 'qit.json', [ 'key' => 'value' ] );
+		file_put_contents( 'qit.json', json_encode( [ 'key' => 'value' ] ) );
 		$tester = new CommandTester( $this->application->find( 'test:config' ) );
 		$tester->execute( [ '--output-config' => true ] );
 		$this->assertCommandOutput( $tester, 'Config: {"key":"value"}', Command::SUCCESS );
@@ -60,7 +53,7 @@ class QITCommandTest extends QITTestCase {
 	}
 
 	public function test_overridable_inputs() {
-		$this->create_config_file( 'qit.json', [ 'setting' => 'default' ] );
+		file_put_contents( 'qit.json', json_encode( [ 'setting' => 'default' ] ) );
 		$tester = new CommandTester( $this->application->find( 'test:config' ) );
 		$tester->execute( [ '--setting' => 'overridden' ] );
 		$this->assertCommandOutput( $tester, 'Setting: overridden', Command::SUCCESS );
@@ -69,14 +62,14 @@ class QITCommandTest extends QITTestCase {
 	}
 
 	public function test_custom_config_file() {
-		$this->create_config_file( 'custom.json', [ 'key' => 'custom_value' ] );
+		file_put_contents( 'custom.json', json_encode( [ 'key' => 'custom_value' ] ) );
 		$tester = new CommandTester( $this->application->find( 'test:config' ) );
 		$tester->execute( [ '--config' => 'custom.json', '--output-config' => true ] );
 		$this->assertCommandOutput( $tester, 'Config: {"key":"custom_value"}', Command::SUCCESS );
 	}
 
 	public function test_invalid_json() {
-		$this->create_config_file( 'qit.json', '{invalid json}' );
+		file_put_contents( 'qit.json', '{invalid json}' );
 		$tester = new CommandTester( $this->application->find( 'test:config' ) );
 		$tester->execute( [] );
 		$this->assertCommandOutput( $tester, 'Invalid qit.json format. Must be a JSON object.', Command::FAILURE );
@@ -106,7 +99,7 @@ class QITCommandTest extends QITTestCase {
 		];
 
 		foreach ( $testCases as $caseName => $case ) {
-			$this->create_config_file( 'qit.json', $case['configData'] );
+			file_put_contents( 'qit.json', json_encode( $case['configData'] ) );
 			$tester = new CommandTester( $this->application->find( 'test:config' ) );
 			$tester->execute( [ '--get-environment' => $case['env'] ] );
 			if ( $case['expectedOutput'] ) {
@@ -141,7 +134,7 @@ class QITCommandTest extends QITTestCase {
 		];
 
 		foreach ( $testCases as $caseName => $case ) {
-			$this->create_config_file( 'qit.json', $case['configData'] );
+			file_put_contents( 'qit.json', json_encode( $case['configData'] ) );
 			$tester = new CommandTester( $this->application->find( 'test:config' ) );
 			$tester->execute( [ '--get-package' => $case['package'] ] );
 			if ( $case['expectedOutput'] ) {
@@ -153,14 +146,13 @@ class QITCommandTest extends QITTestCase {
 	}
 
 	public function test_get_group_tests() {
-		// Tests the retrieval of test profiles from a group configuration
-		$this->create_config_file( 'qit.json', [
+		file_put_contents( 'qit.json', json_encode( [
 			'tests'  => [
 				'foo' => [ 'default' => [ 'param' => 'value' ] ],
 				'bar' => [ 'default' => [ 'env' => 'base' ] ]
 			],
 			'groups' => [ 'pre_release' => [ 'foo:default', 'bar:default' ] ]
-		] );
+		] ) );
 		$config      = new QITConfig( 'qit.json', $this->application );
 		$group_tests = $config->get_group_tests( 'pre_release' );
 		$this->assertCount( 2, $group_tests );
@@ -169,16 +161,14 @@ class QITCommandTest extends QITTestCase {
 	}
 
 	public function test_get_group_tests_invalid_ref() {
-		// Tests error handling for invalid group test profile references
-		$this->create_config_file( 'qit.json', [ 'groups' => [ 'invalid' => [ 'foo' ] ] ] );
+		file_put_contents( 'qit.json', json_encode( [ 'groups' => [ 'invalid' => [ 'foo' ] ] ] ) );
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( "Invalid test reference 'foo' in group 'invalid'. Expected 'type:profile'." );
 		new QITConfig( 'qit.json', $this->application );
 	}
 
 	public function test_get_test_matrix() {
-		// Tests retrieval of test matrix for a test profile
-		$this->create_config_file( 'qit.json', [
+		file_put_contents( 'qit.json', json_encode( [
 			'tests' => [
 				'foo' => [
 					'default' => [
@@ -189,7 +179,7 @@ class QITCommandTest extends QITTestCase {
 					]
 				]
 			]
-		] );
+		] ) );
 		$config = new QITConfig( 'qit.json', $this->application );
 		$matrix = $config->get_test_matrix( 'foo', 'default' );
 		$this->assertEquals( [
@@ -199,8 +189,7 @@ class QITCommandTest extends QITTestCase {
 	}
 
 	public function test_loads_full_config() {
-		// Tests loading a complete configuration with test profiles
-		$this->create_config_file( 'qit.json', [
+		file_put_contents( 'qit.json', json_encode( [
 			'$schema'              => '[invalid url, do not cite]',
 			'slug'                 => 'awesome-plugin',
 			'type'                 => 'plugin',
@@ -231,7 +220,7 @@ class QITCommandTest extends QITTestCase {
 					'volumes'     => [ './:/var/www/html/wp-content/plugins/awesome-plugin' ]
 				]
 			]
-		] );
+		] ) );
 		$config = new QITConfig( 'qit.json', $this->application );
 		$this->assertEquals( 'awesome-plugin', $config->get( 'slug' ) );
 		$this->assertEquals( 'plugin', $config->get( 'type' ) );
@@ -243,16 +232,14 @@ class QITCommandTest extends QITTestCase {
 	}
 
 	public function test_invalid_top_level_key_type() {
-		// Tests error handling for invalid top-level configuration keys
-		$this->create_config_file( 'qit.json', [ 'tests' => 'not_an_array' ] );
+		file_put_contents( 'qit.json', json_encode( [ 'tests' => 'not_an_array' ] ) );
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( 'Tests must be an array.' );
 		new QITConfig( 'qit.json', $this->application );
 	}
 
 	public function test_get_nested_value() {
-		// Tests retrieval of nested configuration values from test profiles
-		$this->create_config_file( 'qit.json', [
+		file_put_contents( 'qit.json', json_encode( [
 			'tests'                => [
 				'bar' => [ 'default' => [ 'settings' => [ 'skip' => [ 'I can do this', '/I can do \\w+/' ] ] ] ],
 				'baz' => [ 'basic' => [ 'settings' => [ 'level' => 0 ] ] ]
@@ -260,7 +247,7 @@ class QITCommandTest extends QITTestCase {
 			'custom_test_packages' => [
 				'default' => [ 'test_results' => [ 'ctrf' => './results/ctrf.json' ] ]
 			]
-		] );
+		] ) );
 		$config = new QITConfig( 'qit.json', $this->application );
 		$this->assertEquals( [ 'I can do this', '/I can do \\w+/' ], $config->getNestedValue( 'tests.bar.default.settings.skip' ) );
 		$this->assertEquals( 0, $config->getNestedValue( 'tests.baz.basic.settings.level' ) );
@@ -269,8 +256,7 @@ class QITCommandTest extends QITTestCase {
 	}
 
 	public function test_test_config_with_matrix_and_settings() {
-		// Tests retrieval of test profile configurations with matrix and settings
-		$this->create_config_file( 'qit.json', [
+		file_put_contents( 'qit.json', json_encode( [
 			'tests' => [
 				'foo' => [
 					'default' => [
@@ -283,7 +269,7 @@ class QITCommandTest extends QITTestCase {
 				],
 				'bar' => [ 'default' => [ 'settings' => [ 'skip' => [ 'I can do this' ] ] ] ]
 			]
-		] );
+		] ) );
 		$config     = new QITConfig( 'qit.json', $this->application );
 		$foo_config = $config->get_test_config( 'foo', 'default' );
 		$this->assertEquals( 'base', $foo_config['env'] );
@@ -293,8 +279,7 @@ class QITCommandTest extends QITTestCase {
 	}
 
 	public function test_inheritance_nested_fields() {
-		// Tests inheritance and validation of custom test packages and environments
-		$this->create_config_file( 'qit.json', [
+		file_put_contents( 'qit.json', json_encode( [
 			'custom_test_packages' => [
 				'default' => [
 					'root_path'    => './tests/foo',
@@ -326,8 +311,7 @@ class QITCommandTest extends QITTestCase {
 					'env_vars'    => [ 'QIT_LEGACY_MODE' => 'true' ]
 				]
 			]
-		] );
-
+		] ) );
 		$config = new QITConfig( 'qit.json', $this->application );
 
 		$basic_package = $config->get_custom_test_package( 'basic' );
@@ -346,22 +330,22 @@ class QITCommandTest extends QITTestCase {
 	}
 
 	public function test_get_test_matrix_invalid() {
-		$this->create_config_file( 'qit.json', [
+		file_put_contents( 'qit.json', json_encode( [
 			'tests' => [ 'foo' => [ 'default' => [ 'test_matrix' => 'not_an_array' ] ] ]
-		] );
+		] ) );
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( "Test_matrix in 'foo:default' must be an array." );
 		new QITConfig( 'qit.json', $this->application );
 	}
 
 	public function test_invalid_custom_test_package_env_vars() {
-		$this->create_config_file( 'qit.json', [
+		file_put_contents( 'qit.json', json_encode( [
 			'custom_test_packages' => [
 				'bad_env_vars' => [
 					'env_vars' => 'not_an_array'
 				]
 			]
-		] );
+		] ) );
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( "env_vars in custom test package 'bad_env_vars' must be an array." );
 		new QITConfig( 'qit.json', $this->application );
