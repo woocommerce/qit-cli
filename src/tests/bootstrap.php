@@ -51,6 +51,13 @@ function qit_tests_reset_config_dir() {
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../src/helpers.php';
 
+$verbose = false;
+
+// Check if PHPUnit is running in verbose mode.
+if ( isset( $_SERVER['argv'] ) && in_array( '--verbose', $_SERVER['argv'], true ) || in_array( '-v', $_SERVER['argv'], true ) ) {
+	$verbose = true;
+}
+
 qit_tests_reset_config_dir();
 
 putenv( sprintf( 'QIT_HOME=%s/.woo-qit-tests', sys_get_temp_dir() ) );
@@ -82,7 +89,7 @@ $GLOBALS['qit_application']->setAutoExit( false );
  * @var RecursiveDirectoryIterator $it
  */
 $failed_to_build = [];
-$it = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( __DIR__ . '/../src/Commands', FilesystemIterator::SKIP_DOTS ) );
+$it              = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( __DIR__ . '/../src/Commands', FilesystemIterator::SKIP_DOTS ) );
 foreach ( $it as $file ) {
 	if ( $file->isFile() && $file->getExtension() === 'php' && ! $file->isLink() ) {
 		$content = file_get_contents( $file->getPathname() );
@@ -98,41 +105,59 @@ foreach ( $it as $file ) {
 		}
 
 		if ( is_null( $namespace ) || is_null( $class ) ) {
-			echo "Skipping file without namespace or class: {$file->getPathname()}\n";
+			if ( $verbose ) {
+				echo "Skipping file without namespace or class: {$file->getPathname()}\n";
+			}
 			continue;
 		}
 
 		$fqdn = sprintf( '%s\\%s', $namespace, $class );
 
 		if ( ! class_exists( $fqdn ) ) {
-			echo "Skipping non-existing class: $fqdn\n";
+			if ( $verbose ) {
+				echo "Skipping non-existing class: $fqdn\n";
+			}
 			continue;
 		}
 
 		if ( ! ( new ReflectionClass( $fqdn ) )->isSubclassOf( Command::class ) ) {
-			echo "Skipping non-command: $fqdn\n";
+			if ( $verbose ) {
+				echo "Skipping non-command class: $fqdn\n";
+			}
 			continue;
 		}
 		if ( ! ( new ReflectionClass( $fqdn ) )->isInstantiable() ) {
-			echo "Skipping non-instantiable command: $fqdn\n";
+			if ( $verbose ) {
+				echo "Skipping non-instantiable class: $fqdn\n";
+			}
 			continue;
 		}
 		if ( is_null( $fqdn::getDefaultName() ) ) {
-			echo "Skipping command without default name: $fqdn\n";
+			if ( $verbose ) {
+				echo "Skipping command without default name: $fqdn\n";
+			}
 			continue;
 		}
 
 		if ( ! $GLOBALS['qit_application']->has( $fqdn::getDefaultName() ) ) {
-			echo "Adding command: $fqdn\n";
+			if ( $verbose ) {
+				echo "Adding command: $fqdn\n";
+			}
 			try {
 				$GLOBALS['qit_application']->add( App::make( $fqdn ) );
 			} catch ( Exception $e ) {
 				$failed_to_build[] = $fqdn;
 			}
 		} else {
-			echo "Skipping already added command: $fqdn\n";
+			if ( $verbose ) {
+				echo "Skipping already added command: $fqdn\n";
+			}
 		}
 	}
+}
+if ( ! $verbose ) {
+	// Mention they can use verbose to see which commands are being added.
+	echo "Use --verbose to see which commands are being added.\n";
 }
 /*
  * Commands that use "reuseOption" might require a specific load order, which is respected
@@ -157,24 +182,165 @@ class FooTestConfig extends TestConfig {
 class FooTestCommand extends QITCommand {
 	protected function configure(): void {
 		parent::configure();
-		$this->setName('run:foo')
-		     ->setDescription('Run a foo test')
-		     ->addOption('param', null, InputOption::VALUE_OPTIONAL, 'Test parameter', 'default')
-		     ->addOption('variant', null, InputOption::VALUE_OPTIONAL, 'Test variant', 'default');
+		$this->setName( 'run:foo' )
+		     ->setDescription( 'Run a foo test' )
+		     ->addOption( 'param', null, InputOption::VALUE_OPTIONAL, 'Test parameter', 'default' )
+		     ->addOption( 'variant', null, InputOption::VALUE_OPTIONAL, 'Test variant', 'default' );
 	}
 
-	protected function doExecute(InputInterface $input, OutputInterface $output): int {
-		$variant = $input->getOption('variant');
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+		$variant = $input->getOption( 'variant' );
 		try {
-			$testConfigData = $this->config->get_test_config('foo', $variant);
-		} catch (\RuntimeException $e) {
-			$output->writeln("<error>Test variant '$variant' not found for test type 'foo'.</error>");
+			$testConfigData = $this->config->get_test_config( 'foo', $variant );
+		} catch ( \RuntimeException $e ) {
+			$output->writeln( "<error>Test variant '$variant' not found for test type 'foo'.</error>" );
+
 			return Command::FAILURE;
 		}
-		$testConfig = new FooTestConfig($testConfigData);
-		$param = $input->getOption('param');
-		$output->writeln("Running foo test variant: $variant with param: $param");
-		$output->writeln('Test config: ' . json_encode($testConfig->getConfig()));
+		$testConfig = new FooTestConfig( $testConfigData );
+		$param      = $input->getOption( 'param' );
+		$output->writeln( "Running foo test variant: $variant with param: $param" );
+		$output->writeln( 'Test config: ' . json_encode( $testConfig->getConfig() ) );
+
+		return Command::SUCCESS;
+	}
+}
+
+class BarTestConfig extends TestConfig {
+	public function getTestType(): string {
+		return 'bar';
+	}
+}
+
+class BarTestCommand extends QITCommand {
+	protected function configure(): void {
+		parent::configure();
+		$this->setName( 'run:bar' )
+		     ->setDescription( 'Run a bar test' )
+		     ->addOption( 'param', null, InputOption::VALUE_OPTIONAL, 'Test parameter', 'default' )
+		     ->addOption( 'variant', null, InputOption::VALUE_OPTIONAL, 'Test variant', 'default' );
+	}
+
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+		$variant = $input->getOption( 'variant' );
+		try {
+			$testConfigData = $this->config->get_test_config( 'bar', $variant );
+		} catch ( \RuntimeException $e ) {
+			$output->writeln( "<error>Test variant '$variant' not found for test type 'bar'.</error>" );
+
+			return Command::FAILURE;
+		}
+		$testConfig = new BarTestConfig( $testConfigData );
+		$param      = $input->getOption( 'param' );
+		$output->writeln( "Running bar test variant: $variant with param: $param" );
+		$output->writeln( 'Test config: ' . json_encode( $testConfig->getConfig() ) );
+
+		return Command::SUCCESS;
+	}
+}
+
+class BazTestConfig extends TestConfig {
+	public function getTestType(): string {
+		return 'baz';
+	}
+}
+
+class BazTestCommand extends QITCommand {
+	protected function configure(): void {
+		parent::configure();
+		$this->setName( 'run:baz' )
+		     ->setDescription( 'Run a baz test' )
+		     ->addOption( 'param', null, InputOption::VALUE_OPTIONAL, 'Test parameter', 'default' )
+		     ->addOption( 'variant', null, InputOption::VALUE_OPTIONAL, 'Test variant', 'default' );
+	}
+
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+		$variant = $input->getOption( 'variant' );
+		try {
+			$testConfigData = $this->config->get_test_config( 'baz', $variant );
+		} catch ( \RuntimeException $e ) {
+			$output->writeln( "<error>Test variant '$variant' not found for test type 'baz'.</error>" );
+
+			return Command::FAILURE;
+		}
+		$testConfig = new BazTestConfig( $testConfigData );
+		$param      = $input->getOption( 'param' );
+		$output->writeln( "Running baz test variant: $variant with param: $param" );
+		$output->writeln( 'Test config: ' . json_encode( $testConfig->getConfig() ) );
+
+		return Command::SUCCESS;
+	}
+}
+
+class TestConfigCommand extends QITCommand {
+	protected function configure(): void {
+		parent::configure();
+		$this->setName( 'test:config' )
+		     ->setDescription( 'Test QITConfig functionality' )
+		     ->addOption( 'setting', null, InputOption::VALUE_OPTIONAL, 'Override setting' )
+		     ->addOption( 'output-config', null, InputOption::VALUE_NONE, 'Output all config data' )
+		     ->addOption( 'get-environment', null, InputOption::VALUE_OPTIONAL, 'Get specific environment' )
+		     ->addOption( 'get-package', null, InputOption::VALUE_OPTIONAL, 'Get specific custom test package' );
+	}
+
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+		// Get specific environment
+		if ( $env = $input->getOption( 'get-environment' ) ) {
+			try {
+				$output->writeln( json_encode( $this->config->get_environment( $env ) ) );
+
+				return Command::SUCCESS;
+			} catch ( \RuntimeException $e ) {
+				$output->writeln( "<error>{$e->getMessage()}</error>" );
+
+				return Command::FAILURE;
+			}
+		}
+
+		// Get specific custom test package
+		if ( $package = $input->getOption( 'get-package' ) ) {
+			try {
+				$output->writeln( json_encode( $this->config->get_custom_test_package( $package ) ) );
+
+				return Command::SUCCESS;
+			} catch ( \RuntimeException $e ) {
+				$output->writeln( "<error>{$e->getMessage()}</error>" );
+
+				return Command::FAILURE;
+			}
+		}
+
+		// Output setting value if provided
+		if ( $input->hasOption( 'setting' ) && $input->getOption( 'setting' ) !== null ) {
+			$output->writeln( 'Setting: ' . $input->getOption( 'setting' ) );
+
+			return Command::SUCCESS;
+		}
+
+		// Handle custom config file with output-config
+		if ( $input->getOption( 'config' ) && $input->getOption( 'output-config' ) ) {
+			$output->writeln( 'Config: ' . json_encode( $this->config->getAll() ) );
+
+			return Command::SUCCESS;
+		}
+
+		// Output config file path only if explicitly requested
+		if ( $input->getOption( 'config' ) && ! $input->getOption( 'output-config' ) ) {
+			$output->writeln( 'Config file: ' . $this->config->getConfigFile() );
+
+			return Command::SUCCESS;
+		}
+
+		// Output all config data if requested
+		if ( $input->getOption( 'output-config' ) ) {
+			$output->writeln( 'Config: ' . json_encode( $this->config->getAll() ) );
+
+			return Command::SUCCESS;
+		}
+
+		// Default: Output config data
+		$output->writeln( 'Config: ' . json_encode( $this->config->getAll() ) );
+
 		return Command::SUCCESS;
 	}
 }

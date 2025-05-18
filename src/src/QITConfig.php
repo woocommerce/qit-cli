@@ -19,10 +19,6 @@ class QITConfig {
 		$this->load_config();
 	}
 
-	/**
-	 * Placeholder method to get valid options for a test type's command.
-	 * In a real implementation, this would use $this->consoleApplication->find("run:$testType").
-	 */
 	private function get_valid_options_for_test_type( string $testType ): array {
 		try {
 			$command    = $this->consoleApplication->find( "run:$testType" );
@@ -54,7 +50,6 @@ class QITConfig {
 
 		$this->config = $decoded;
 
-		// Validate and normalize top-level keys
 		foreach ( $this->config as $key => &$value ) {
 			switch ( $key ) {
 				case '$schema':
@@ -90,43 +85,40 @@ class QITConfig {
 						if ( ! is_array( $profiles ) ) {
 							throw new \RuntimeException( "Profiles for test type '$testType' must be an array." );
 						}
-						// Get valid options for this test type's command
 						$validOptions   = $this->get_valid_options_for_test_type( $testType );
-						$validOptions[] = 'settings'; // Allow special 'settings' key
-						$validOptions[] = 'pre_test_build'; // Allow test-specific pre_test_build
-						$validOptions[] = 'test_matrix'; // Allow test_matrix
-						$validOptions[] = 'env'; // Allow env reference
-						$validOptions[] = 'extends'; // Allow extends for profile inheritance
-						foreach ( $profiles as $variant => $config ) {
-							if ( ! is_string( $variant ) ) {
-								throw new \RuntimeException( "Variant for test type '$testType' must be a string." );
+						$validOptions[] = 'settings';
+						$validOptions[] = 'pre_test_build';
+						$validOptions[] = 'test_matrix';
+						$validOptions[] = 'env';
+						$validOptions[] = 'extends';
+						foreach ( $profiles as $profile => $config ) {
+							if ( ! is_string( $profile ) ) {
+								throw new \RuntimeException( "Profile for test type '$testType' must be a string." );
 							}
 							if ( ! is_array( $config ) ) {
-								throw new \RuntimeException( "Configuration for '$testType:$variant' must be an array." );
+								throw new \RuntimeException( "Configuration for '$testType:$profile' must be an array." );
 							}
-							// Validate profile keys against command options
 							foreach ( $config as $configKey => $configValue ) {
 								if ( ! in_array( $configKey, $validOptions ) ) {
-									throw new \RuntimeException( "Invalid key '$configKey' in profile '$testType:$variant'. Must be one of: " . implode( ', ', $validOptions ) );
+									throw new \RuntimeException( "Invalid key '$configKey' in profile '$testType:$profile'. Must be one of: " . implode( ', ', $validOptions ) );
 								}
-								// Additional validation for specific keys
 								if ( $configKey === 'settings' && ! is_array( $configValue ) ) {
-									throw new \RuntimeException( "Settings in '$testType:$variant' must be an array." );
+									throw new \RuntimeException( "Settings in '$testType:$profile' must be an array." );
 								}
 								if ( $configKey === 'test_matrix' && ! is_array( $configValue ) ) {
-									throw new \RuntimeException( "Test_matrix in '$testType:$variant' must be an array." );
+									throw new \RuntimeException( "Test_matrix in '$testType:$profile' must be an array." );
 								}
 								if ( $configKey === 'env' && ! is_string( $configValue ) ) {
-									throw new \RuntimeException( "Env in '$testType:$variant' must be a string." );
+									throw new \RuntimeException( "Env in '$testType:$profile' must be a string." );
 								}
 								if ( $configKey === 'extends' && ! is_string( $configValue ) ) {
-									throw new \RuntimeException( "Extends in '$testType:$variant' must be a string." );
+									throw new \RuntimeException( "Extends in '$testType:$profile' must be a string." );
 								}
 								if ( $configKey === 'pre_test_build' ) {
 									if ( is_string( $configValue ) ) {
 										$config[ $configKey ] = [ 'command' => $configValue ];
 									} elseif ( ! is_array( $configValue ) ) {
-										throw new \RuntimeException( "Invalid pre_test_build in '$testType:$variant'. Must be string or array." );
+										throw new \RuntimeException( "Invalid pre_test_build in '$testType:$profile'. Must be string or array." );
 									}
 								}
 							}
@@ -153,18 +145,18 @@ class QITConfig {
 								throw new \RuntimeException( "Test reference '$testRef' in group '$groupName' must be a string." );
 							}
 							if ( ! preg_match( '/^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$/', $testRef ) ) {
-								throw new \RuntimeException( "Invalid test reference '$testRef' in group '$groupName'. Expected 'type:variant'." );
+								throw new \RuntimeException( "Invalid test reference '$testRef' in group '$groupName'. Expected 'type:profile'." );
 							}
 							if ( in_array( $testRef, $seenRefs ) ) {
 								throw new \RuntimeException( "Duplicate test reference '$testRef' in group '$groupName'." );
 							}
 							$seenRefs[] = $testRef;
-							[ $type, $variant ] = explode( ':', $testRef, 2 );
+							[ $type, $profile ] = explode( ':', $testRef, 2 );
 							if ( ! isset( $this->config['tests'][ $type ] ) ) {
 								throw new \RuntimeException( "Test type '$type' from reference '$testRef' in group '$groupName' not found in tests configuration." );
 							}
-							if ( ! isset( $this->config['tests'][ $type ][ $variant ] ) ) {
-								throw new \RuntimeException( "Test variant '$variant' from reference '$testRef' in group '$groupName' not found in tests configuration." );
+							if ( ! isset( $this->config['tests'][ $type ][ $profile ] ) ) {
+								throw new \RuntimeException( "Test profile '$profile' from reference '$testRef' in group '$groupName' not found in tests configuration." );
 							}
 						}
 					}
@@ -180,8 +172,6 @@ class QITConfig {
 						if ( ! is_array( $config ) ) {
 							throw new \RuntimeException( "Configuration for custom test package '$packageName' must be an array." );
 						}
-
-						// Validate custom test package configuration
 						foreach ( $config as $configKey => $configValue ) {
 							switch ( $configKey ) {
 								case 'extends':
@@ -253,7 +243,7 @@ class QITConfig {
 											if ( ! is_array( $constraintValue ) ) {
 												throw new \RuntimeException( "requires_plugins in '$packageName' must be an array." );
 											}
-											foreach ( $configValue as $pluginName => $pluginVersion ) {
+											foreach ( $constraintValue as $pluginName => $pluginVersion ) {
 												if ( ! is_string( $pluginName ) ) {
 													throw new \RuntimeException( "Plugin name in requires_plugins for '$packageName' must be a string." );
 												}
@@ -306,8 +296,6 @@ class QITConfig {
 						if ( ! is_array( $config ) ) {
 							throw new \RuntimeException( "Configuration for environment '$envName' must be an array." );
 						}
-
-						// Validate environment configuration
 						foreach ( $config as $envKey => $envValue ) {
 							switch ( $envKey ) {
 								case 'extends':
@@ -398,7 +386,6 @@ class QITConfig {
 					}
 					break;
 				default:
-					// Ignore unknown keys
 					break;
 			}
 		}
@@ -448,7 +435,8 @@ class QITConfig {
 			}
 			$base_config = $this->resolve_extends( $section, $base_name, $stack );
 			unset( $config['extends'] );
-			$config = array_replace_recursive( $base_config, $config );
+			// Replace all keys declared in the extending config, preserving undeclared base config keys
+			$config = array_merge( $base_config, $config );
 		}
 
 		return $config;
@@ -466,32 +454,30 @@ class QITConfig {
 		return $this->resolve_extends( $packages, $name );
 	}
 
-	public function get_test_config( string $test_type, string $variant ): array {
+	public function get_test_config( string $test_type, string $profile ): array {
 		$tests = $this->config['tests'] ?? [];
 		if ( ! isset( $tests[ $test_type ] ) ) {
 			return [];
 		}
 		$section = $tests[ $test_type ];
 		try {
-			$resolved_config = $this->resolve_extends( $section, $variant );
+			$resolved_config = $this->resolve_extends( $section, $profile );
 		} catch ( \RuntimeException $e ) {
-			throw new \RuntimeException( "Error resolving test variant '$test_type:$variant': " . $e->getMessage() );
+			throw new \RuntimeException( "Error resolving test profile '$test_type:$profile': " . $e->getMessage() );
 		}
 
-		// Normalize test-specific pre_test_build
 		if ( isset( $resolved_config['pre_test_build'] ) ) {
 			if ( is_string( $resolved_config['pre_test_build'] ) ) {
 				$resolved_config['pre_test_build'] = [ 'command' => $resolved_config['pre_test_build'] ];
 			} elseif ( ! is_array( $resolved_config['pre_test_build'] ) ) {
-				throw new \RuntimeException( "Invalid pre_test_build for '$test_type:$variant'. Must be string or array." );
+				throw new \RuntimeException( "Invalid pre_test_build for '$test_type:$profile'. Must be string or array." );
 			}
 		} elseif ( isset( $this->config['pre_test_build'] ) ) {
 			$resolved_config['pre_test_build'] = $this->config['pre_test_build'];
 		}
 
-		// Validate test_matrix if present
 		if ( isset( $resolved_config['test_matrix'] ) && ! is_array( $resolved_config['test_matrix'] ) ) {
-			throw new \RuntimeException( "Invalid test_matrix for '$test_type:$variant'. Must be an array." );
+			throw new \RuntimeException( "Invalid test_matrix for '$test_type:$profile'. Must be an array." );
 		}
 
 		return $resolved_config;
@@ -513,31 +499,34 @@ class QITConfig {
 		$seenRefs = [];
 		foreach ( $group as $testRef ) {
 			if ( ! is_string( $testRef ) || ! preg_match( '/^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$/', $testRef ) ) {
-				throw new \RuntimeException( "Invalid test reference '$testRef' in group '$group_name'. Expected 'type:variant'." );
+				throw new \RuntimeException( "Invalid test reference '$testRef' in group '$group_name'. Expected 'type:profile'." );
 			}
 			if ( in_array( $testRef, $seenRefs ) ) {
 				throw new \RuntimeException( "Duplicate test reference '$testRef' in group '$group_name'." );
 			}
 			$seenRefs[] = $testRef;
-			[ $type, $variant ] = explode( ':', $testRef, 2 );
-			if ( ! isset( $this->config['tests'][ $type ][ $variant ] ) ) {
-				throw new \RuntimeException( "Test profile '$testRef' in group '$group_name' not found in tests configuration." );
+			[ $type, $profile ] = explode( ':', $testRef, 2 );
+			if ( ! isset( $this->config['tests'][ $type ] ) ) {
+				throw new \RuntimeException( "Test type '$type' from reference '$testRef' in group '$group_name' not found in tests configuration." );
+			}
+			if ( ! isset( $this->config['tests'][ $type ][ $profile ] ) ) {
+				throw new \RuntimeException( "Test profile '$profile' from reference '$testRef' in group '$group_name' not found in tests configuration." );
 			}
 			$tests[] = [
 				'type'    => $type,
-				'variant' => $variant,
-				'config'  => $this->get_test_config( $type, $variant ),
+				'profile' => $profile,
+				'config'  => $this->get_test_config( $type, $profile ),
 			];
 		}
 
 		return $tests;
 	}
 
-	public function get_test_matrix( string $test_type, string $variant ): array {
-		$test_config = $this->get_test_config( $test_type, $variant );
+	public function get_test_matrix( string $test_type, string $profile ): array {
+		$test_config = $this->get_test_config( $test_type, $profile );
 		$matrix      = $test_config['test_matrix'] ?? [];
 		if ( ! is_array( $matrix ) ) {
-			throw new \RuntimeException( "Invalid test_matrix for '$test_type:$variant'. Must be an array." );
+			throw new \RuntimeException( "Invalid test_matrix for '$test_type:$profile'. Must be an array." );
 		}
 
 		return $matrix;
