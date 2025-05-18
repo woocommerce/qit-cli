@@ -7,18 +7,18 @@ use Symfony\Component\Console\Application;
 class QITConfig {
 
 	private array $config = [];
-	private string $configFile;
-	private Application $consoleApplication;
+	private string $config_file;
+	private Application $console_application;
 
-	public function __construct( string $configFile = 'qit.json', Application $consoleApplication = null ) {
-		$this->configFile         = $configFile;
-		$this->consoleApplication = $consoleApplication ?? new Application();
+	public function __construct( string $config_file = 'qit.json', Application $console_application = null ) {
+		$this->config_file         = $config_file;
+		$this->console_application = $console_application ?? new Application();
 		$this->load_config();
 	}
 
-	private function get_valid_options_for_test_type( string $testType ): array {
+	private function get_valid_options_for_test_type( string $test_type ): array {
 		try {
-			$command    = $this->consoleApplication->find( "run:$testType" );
+			$command    = $this->console_application->find( "run:$test_type" );
 			$definition = $command->getDefinition();
 			$options    = [];
 			foreach ( $definition->getOptions() as $option ) {
@@ -27,18 +27,18 @@ class QITConfig {
 
 			return $options;
 		} catch ( \InvalidArgumentException $e ) {
-			throw new \RuntimeException( "No command found for test type '$testType'. Expected a 'run:$testType' command." );
+			throw new \RuntimeException( "No command found for test type '$test_type'. Expected a 'run:$test_type' command." );
 		}
 	}
 
 	private function load_config(): void {
-		if ( ! file_exists( $this->configFile ) ) {
+		if ( ! file_exists( $this->config_file ) ) {
 			$this->config = [];
 
 			return;
 		}
 
-		$contents = file_get_contents( $this->configFile );
+		$contents = file_get_contents( $this->config_file );
 		$decoded  = json_decode( $contents, true );
 
 		if ( json_last_error() !== JSON_ERROR_NONE || ! is_array( $decoded ) ) {
@@ -65,95 +65,113 @@ class QITConfig {
 					}
 					break;
 				case 'pre_test_build':
-					if ( is_string( $value ) ) {
-						$value = [ 'command' => $value ];
-					} elseif ( ! is_array( $value ) ) {
-						throw new \RuntimeException( 'Invalid pre_test_build. Must be string or array.' );
+					if ( ! is_array( $value ) ) {
+						throw new \RuntimeException( 'pre_test_build must be an array.' );
+					}
+					if ( ! isset( $value['command'] ) || ! is_string( $value['command'] ) ) {
+						throw new \RuntimeException( 'pre_test_build must contain a "command" key with a string value.' );
+					}
+					if ( ! isset( $value['output'] ) || ! is_string( $value['output'] ) ) {
+						throw new \RuntimeException( 'pre_test_build must contain a "output" key with a string value.' );
 					}
 					break;
 				case 'tests':
 					if ( ! is_array( $value ) ) {
 						throw new \RuntimeException( 'Tests must be an array.' );
 					}
-					foreach ( $value as $testType => $profiles ) {
-						if ( ! is_string( $testType ) ) {
+					foreach ( $value as $test_type => $profiles ) {
+						if ( ! is_string( $test_type ) ) {
 							throw new \RuntimeException( 'Test type must be a string.' );
 						}
 						if ( ! is_array( $profiles ) ) {
-							throw new \RuntimeException( "Profiles for test type '$testType' must be an array." );
+							throw new \RuntimeException( "Profiles for test type '$test_type' must be an array." );
 						}
-						$validOptions   = $this->get_valid_options_for_test_type( $testType );
-						$validOptions[] = 'settings';
-						$validOptions[] = 'pre_test_build';
-						$validOptions[] = 'test_matrix';
-						$validOptions[] = 'env';
-						$validOptions[] = 'extends';
+						$valid_options   = $this->get_valid_options_for_test_type( $test_type );
+						$valid_options[] = 'pre_test_build';
+						$valid_options[] = 'compatibility_tests';
+						$valid_options[] = 'env';
+						$valid_options[] = 'extends';
+						$valid_options[] = 'test_package';
 						foreach ( $profiles as $profile => $config ) {
 							if ( ! is_string( $profile ) ) {
-								throw new \RuntimeException( "Profile for test type '$testType' must be a string." );
+								throw new \RuntimeException( "Profile for test type '$test_type' must be a string." );
 							}
 							if ( ! is_array( $config ) ) {
-								throw new \RuntimeException( "Configuration for '$testType:$profile' must be an array." );
+								throw new \RuntimeException( "Configuration for '$test_type:$profile' must be an array." );
 							}
-							foreach ( $config as $configKey => $configValue ) {
-								if ( ! in_array( $configKey, $validOptions ) ) {
-									throw new \RuntimeException( "Invalid key '$configKey' in profile '$testType:$profile'. Must be one of: " . implode( ', ', $validOptions ) );
+							foreach ( $config as $config_key => $config_value ) {
+								if ( $config_key !== 'settings' && ! in_array( $config_key, $valid_options ) ) {
+									throw new \RuntimeException( "Invalid key '$config_key' in profile '$test_type:$profile'. Must be one of: " . implode( ', ', $valid_options ) . ", or settings" );
 								}
-								if ( $configKey === 'settings' && ! is_array( $configValue ) ) {
-									throw new \RuntimeException( "Settings in '$testType:$profile' must be an array." );
-								}
-								if ( $configKey === 'test_matrix' && ! is_array( $configValue ) ) {
-									throw new \RuntimeException( "Test_matrix in '$testType:$profile' must be an array." );
-								}
-								if ( $configKey === 'env' && ! is_string( $configValue ) ) {
-									throw new \RuntimeException( "Env in '$testType:$profile' must be a string." );
-								}
-								if ( $configKey === 'extends' && ! is_string( $configValue ) ) {
-									throw new \RuntimeException( "Extends in '$testType:$profile' must be a string." );
-								}
-								if ( $configKey === 'pre_test_build' ) {
-									if ( is_string( $configValue ) ) {
-										$config[ $configKey ] = [ 'command' => $configValue ];
-									} elseif ( ! is_array( $configValue ) ) {
-										throw new \RuntimeException( "Invalid pre_test_build in '$testType:$profile'. Must be string or array." );
+								if ( $config_key === 'compatibility_tests' ) {
+									if ( ! is_array( $config_value ) ) {
+										throw new \RuntimeException( "compatibility_tests in '$test_type:$profile' must be an array." );
 									}
+									foreach ( $config_value as $compat_test ) {
+										if ( ! is_string( $compat_test ) ) {
+											throw new \RuntimeException( "Compatibility test in '$test_type:$profile' must be a string." );
+										}
+									}
+								}
+								if ( $config_key === 'env' && ! is_string( $config_value ) ) {
+									throw new \RuntimeException( "Env in '$test_type:$profile' must be a string." );
+								}
+								if ( $config_key === 'extends' && ! is_string( $config_value ) ) {
+									throw new \RuntimeException( "Extends in '$test_type:$profile' must be a string." );
+								}
+								if ( $config_key === 'pre_test_build' ) {
+									if ( ! is_array( $config_value ) || ! isset( $config_value['command'] ) || ! is_string( $config_value['command'] ) || ! isset( $config_value['output'] ) || ! is_string( $config_value['output'] ) ) {
+										throw new \RuntimeException( "Invalid pre_test_build in '$test_type:$profile'. Must be an array with 'command' and 'output' keys, both containing strings." );
+									}
+								}
+								if ( $config_key === 'test_package' && ! is_string( $config_value ) ) {
+									throw new \RuntimeException( "Test_package in '$test_type:$profile' must be a string." );
 								}
 							}
 						}
+					}
+					// Validate single-level inheritance for tests
+					foreach ( $value as $test_type => $profiles ) {
+						$this->validate_single_level_inheritance( $profiles, "test profile '$test_type'" );
 					}
 					break;
 				case 'groups':
 					if ( ! is_array( $value ) ) {
 						throw new \RuntimeException( 'Groups must be an array.' );
 					}
-					foreach ( $value as $groupName => $testRefs ) {
-						if ( ! is_string( $groupName ) ) {
+					foreach ( $value as $group_name => $test_refs ) {
+						if ( ! is_string( $group_name ) ) {
 							throw new \RuntimeException( 'Group name must be a string.' );
 						}
-						if ( ! is_array( $testRefs ) ) {
-							throw new \RuntimeException( "Test references for group '$groupName' must be an array." );
+						if ( ! is_array( $test_refs ) ) {
+							throw new \RuntimeException( "Test references for group '$group_name' must be an array." );
 						}
-						if ( empty( $testRefs ) ) {
-							throw new \RuntimeException( "Test references for group '$groupName' cannot be empty." );
+						if ( empty( $test_refs ) ) {
+							throw new \RuntimeException( "Test references for group '$group_name' cannot be empty." );
 						}
-						$seenRefs = [];
-						foreach ( $testRefs as $testRef ) {
-							if ( ! is_string( $testRef ) ) {
-								throw new \RuntimeException( "Test reference '$testRef' in group '$groupName' must be a string." );
+						$seen_refs = [];
+						foreach ( $test_refs as $test_type => $profiles ) {
+							if ( ! is_string( $test_type ) ) {
+								throw new \RuntimeException( "Test type in group '$group_name' must be a string." );
 							}
-							if ( ! preg_match( '/^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$/', $testRef ) ) {
-								throw new \RuntimeException( "Invalid test reference '$testRef' in group '$groupName'. Expected 'type:profile'." );
+							if ( ! is_array( $profiles ) ) {
+								throw new \RuntimeException( "Profiles for test type '$test_type' in group '$group_name' must be an array." );
 							}
-							if ( in_array( $testRef, $seenRefs ) ) {
-								throw new \RuntimeException( "Duplicate test reference '$testRef' in group '$groupName'." );
+							if ( ! isset( $this->config['tests'][ $test_type ] ) ) {
+								throw new \RuntimeException( "Test type '$test_type' in group '$group_name' not found in tests configuration." );
 							}
-							$seenRefs[] = $testRef;
-							[ $type, $profile ] = explode( ':', $testRef, 2 );
-							if ( ! isset( $this->config['tests'][ $type ] ) ) {
-								throw new \RuntimeException( "Test type '$type' from reference '$testRef' in group '$groupName' not found in tests configuration." );
-							}
-							if ( ! isset( $this->config['tests'][ $type ][ $profile ] ) ) {
-								throw new \RuntimeException( "Test profile '$profile' from reference '$testRef' in group '$groupName' not found in tests configuration." );
+							foreach ( $profiles as $profile ) {
+								if ( ! is_string( $profile ) ) {
+									throw new \RuntimeException( "Profile in group '$group_name' for test type '$test_type' must be a string." );
+								}
+								$ref_key = "$test_type.$profile"; // For duplicate checking
+								if ( in_array( $ref_key, $seen_refs ) ) {
+									throw new \RuntimeException( "Duplicate test reference '$ref_key' in group '$group_name'." );
+								}
+								$seen_refs[] = $ref_key;
+								if ( ! isset( $this->config['tests'][ $test_type ][ $profile ] ) ) {
+									throw new \RuntimeException( "Test profile '$profile' for type '$test_type' in group '$group_name' not found in tests configuration." );
+								}
 							}
 						}
 					}
@@ -162,228 +180,247 @@ class QITConfig {
 					if ( ! is_array( $value ) ) {
 						throw new \RuntimeException( 'Custom test packages must be an array.' );
 					}
-					foreach ( $value as $packageName => $config ) {
-						if ( ! is_string( $packageName ) ) {
-							throw new \RuntimeException( 'Custom test package name must be a string.' );
+					foreach ( $value as $test_type => $packages ) {
+						if ( ! is_string( $test_type ) ) {
+							throw new \RuntimeException( 'Custom test package test type must be a string.' );
 						}
-						if ( ! is_array( $config ) ) {
-							throw new \RuntimeException( "Configuration for custom test package '$packageName' must be an array." );
+						if ( ! is_array( $packages ) ) {
+							throw new \RuntimeException( "Packages for test type '$test_type' must be an array." );
 						}
-						foreach ( $config as $configKey => $configValue ) {
-							switch ( $configKey ) {
-								case 'extends':
-									if ( ! is_string( $configValue ) ) {
-										throw new \RuntimeException( "'extends' in custom test package '$packageName' must be a string." );
-									}
-									break;
-								case 'root_path':
-									if ( ! is_string( $configValue ) ) {
-										throw new \RuntimeException( "root_path in custom test package '$packageName' must be a string." );
-									}
-									break;
-								case 'description':
-									if ( ! is_string( $configValue ) ) {
-										throw new \RuntimeException( "description in custom test package '$packageName' must be a string." );
-									}
-									break;
-								case 'test_command':
-									if ( ! is_string( $configValue ) ) {
-										throw new \RuntimeException( "test_command in custom test package '$packageName' must be a string." );
-									}
-									break;
-								case 'test_results':
-									if ( ! is_array( $configValue ) ) {
-										throw new \RuntimeException( "test_results in custom test package '$packageName' must be an array." );
-									}
-									foreach ( $configValue as $resultType => $resultPath ) {
-										if ( ! is_string( $resultType ) ) {
-											throw new \RuntimeException( "Test result type in '$packageName' must be a string." );
+						foreach ( $packages as $package_name => $config ) {
+							if ( ! is_string( $package_name ) ) {
+								throw new \RuntimeException( "Package name for test type '$test_type' must be a string." );
+							}
+							if ( ! is_array( $config ) ) {
+								throw new \RuntimeException( "Configuration for custom test package '$test_type:$package_name' must be an array." );
+							}
+							foreach ( $config as $config_key => $config_value ) {
+								switch ( $config_key ) {
+									case 'extends':
+										if ( ! is_string( $config_value ) ) {
+											throw new \RuntimeException( "'extends' in custom test package '$test_type:$package_name' must be a string." );
 										}
-										if ( ! is_string( $resultPath ) ) {
-											throw new \RuntimeException( "Test result path for '$resultType' in '$packageName' must be a string." );
+										break;
+									case 'root_path':
+										if ( ! is_string( $config_value ) ) {
+											throw new \RuntimeException( "root_path in custom test package '$test_type:$package_name' must be a string." );
 										}
-									}
-									break;
-								case 'lifecycle':
-									if ( ! is_array( $configValue ) ) {
-										throw new \RuntimeException( "lifecycle in custom test package '$packageName' must be an array." );
-									}
-									foreach ( $configValue as $lifecyclePhase => $lifecycleScript ) {
-										if ( ! in_array( $lifecyclePhase, [ 'setup', 'teardown' ] ) ) {
-											throw new \RuntimeException( "Invalid lifecycle phase '$lifecyclePhase' in '$packageName'. Must be 'setup' or 'teardown'." );
+										break;
+									case 'description':
+										if ( ! is_string( $config_value ) ) {
+											throw new \RuntimeException( "description in custom test package '$test_type:$package_name' must be a string." );
 										}
-										if ( ! is_string( $lifecycleScript ) ) {
-											throw new \RuntimeException( "Lifecycle script for '$lifecyclePhase' in '$packageName' must be a string." );
+										break;
+									case 'test_command':
+										if ( ! is_string( $config_value ) ) {
+											throw new \RuntimeException( "test_command in custom test package '$test_type:$package_name' must be a string." );
 										}
-									}
-									break;
-								case 'mu_plugins':
-									if ( ! is_array( $configValue ) ) {
-										throw new \RuntimeException( "mu_plugins in custom test package '$packageName' must be an array." );
-									}
-									foreach ( $configValue as $pluginPath ) {
-										if ( ! is_string( $pluginPath ) ) {
-											throw new \RuntimeException( "MU plugin path in '$packageName' must be a string." );
+										break;
+									case 'test_results':
+										if ( ! is_array( $config_value ) ) {
+											throw new \RuntimeException( "test_results in custom test package '$test_type:$package_name' must be an array." );
 										}
-									}
-									break;
-								case 'constraints':
-									if ( ! is_array( $configValue ) ) {
-										throw new \RuntimeException( "constraints in custom test package '$packageName' must be an array." );
-									}
-									foreach ( $configValue as $constraintType => $constraintValue ) {
-										if ( $constraintType === 'wordpress' ) {
-											if ( ! is_string( $constraintValue ) ) {
-												throw new \RuntimeException( "WordPress constraint in '$packageName' must be a string." );
+										foreach ( $config_value as $result_type => $result_path ) {
+											if ( ! is_string( $result_type ) ) {
+												throw new \RuntimeException( "Test result type in '$test_type:$package_name' must be a string." );
 											}
-										} elseif ( $constraintType === 'requires_plugins' ) {
-											if ( ! is_array( $constraintValue ) ) {
-												throw new \RuntimeException( "requires_plugins in '$packageName' must be an array." );
+											if ( ! is_string( $result_path ) ) {
+												throw new \RuntimeException( "Test result path for '$result_type' in '$test_type:$package_name' must be a string." );
 											}
-											foreach ( $constraintValue as $pluginName => $pluginVersion ) {
-												if ( ! is_string( $pluginName ) ) {
-													throw new \RuntimeException( "Plugin name in requires_plugins for '$packageName' must be a string." );
+										}
+										break;
+									case 'lifecycle':
+										if ( ! is_array( $config_value ) ) {
+											throw new \RuntimeException( "lifecycle in custom test package '$test_type:$package_name' must be an array." );
+										}
+										foreach ( $config_value as $lifecycle_phase => $lifecycle_script ) {
+											if ( ! in_array( $lifecycle_phase, [ 'setup', 'teardown' ] ) ) {
+												throw new \RuntimeException( "Invalid lifecycle phase '$lifecycle_phase' in '$test_type:$package_name'. Must be 'setup' or 'teardown'." );
+											}
+											if ( ! is_string( $lifecycle_script ) ) {
+												throw new \RuntimeException( "Lifecycle script for '$lifecycle_phase' in '$test_type:$package_name' must be a string." );
+											}
+										}
+										break;
+									case 'mu_plugins':
+										if ( ! is_array( $config_value ) ) {
+											throw new \RuntimeException( "mu_plugins in custom test package '$test_type:$package_name' must be an array." );
+										}
+										foreach ( $config_value as $plugin_path ) {
+											if ( ! is_string( $plugin_path ) ) {
+												throw new \RuntimeException( "MU plugin path in '$test_type:$package_name' must be a string." );
+											}
+										}
+										break;
+									case 'constraints':
+										if ( ! is_array( $config_value ) ) {
+											throw new \RuntimeException( "constraints in custom test package '$test_type:$package_name' must be an array." );
+										}
+										foreach ( $config_value as $constraint_type => $constraint_value ) {
+											if ( $constraint_type === 'wordpress' ) {
+												if ( ! is_string( $constraint_value ) ) {
+													throw new \RuntimeException( "WordPress constraint in '$test_type:$package_name' must be a string." );
 												}
-												if ( ! is_string( $pluginVersion ) ) {
-													throw new \RuntimeException( "Plugin version for '$pluginName' in '$packageName' must be a string." );
+											} elseif ( $constraint_type === 'requires_plugins' ) {
+												if ( ! is_array( $constraint_value ) ) {
+													throw new \RuntimeException( "requires_plugins in '$test_type:$package_name' must be an array." );
 												}
+												foreach ( $constraint_value as $plugin_name => $plugin_version ) {
+													if ( ! is_string( $plugin_name ) ) {
+														throw new \RuntimeException( "Plugin name in requires_plugins for '$test_type:$package_name' must be a string." );
+													}
+													if ( ! is_string( $plugin_version ) ) {
+														throw new \RuntimeException( "Plugin version for '$plugin_name' in '$test_type:$package_name' must be a string." );
+													}
+												}
+											} else {
+												throw new \RuntimeException( "Unknown constraint type '$constraint_type' in '$test_type:$package_name'." );
 											}
-										} else {
-											throw new \RuntimeException( "Unknown constraint type '$constraintType' in '$packageName'." );
 										}
-									}
-									break;
-								case 'required_secrets':
-									if ( ! is_array( $configValue ) ) {
-										throw new \RuntimeException( "required_secrets in custom test package '$packageName' must be an array." );
-									}
-									foreach ( $configValue as $secret ) {
-										if ( ! is_string( $secret ) ) {
-											throw new \RuntimeException( "Required secret in '$packageName' must be a string." );
+										break;
+									case 'required_secrets':
+										if ( ! is_array( $config_value ) ) {
+											throw new \RuntimeException( "required_secrets in custom test package '$test_type:$package_name' must be an array." );
 										}
-									}
-									break;
-								case 'env_vars':
-									if ( ! is_array( $configValue ) ) {
-										throw new \RuntimeException( "env_vars in custom test package '$packageName' must be an array." );
-									}
-									foreach ( $configValue as $varName => $varValue ) {
-										if ( ! is_string( $varName ) ) {
-											throw new \RuntimeException( "Environment variable name in '$packageName' must be a string." );
+										foreach ( $config_value as $secret ) {
+											if ( ! is_string( $secret ) ) {
+												throw new \RuntimeException( "Required secret in '$test_type:$package_name' must be a string." );
+											}
 										}
-										if ( ! is_string( $varValue ) ) {
-											throw new \RuntimeException( "Environment variable value for '$varName' in '$packageName' must be a string." );
+										break;
+									case 'env_vars':
+										if ( ! is_array( $config_value ) ) {
+											throw new \RuntimeException( "env_vars in custom test package '$test_type:$package_name' must be an array." );
 										}
-									}
-									break;
-								default:
-									throw new \RuntimeException( "Unknown key '$configKey' in custom test package '$packageName' configuration." );
+										foreach ( $config_value as $var_name => $var_value ) {
+											if ( ! is_string( $var_name ) ) {
+												throw new \RuntimeException( "Environment variable name in '$test_type:$package_name' must be a string." );
+											}
+											if ( ! is_string( $var_value ) ) {
+												throw new \RuntimeException( "Environment variable value for '$var_name' in '$test_type:$package_name' must be a string." );
+											}
+										}
+										break;
+									default:
+										throw new \RuntimeException( "Unknown key '$config_key' in custom test package '$test_type:$package_name' configuration." );
+								}
 							}
 						}
+						// Validate single-level inheritance for custom_test_packages
+						$this->validate_single_level_inheritance( $packages, "custom test package '$test_type'" );
 					}
 					break;
 				case 'environments':
 					if ( ! is_array( $value ) ) {
 						throw new \RuntimeException( 'Environments must be an array.' );
 					}
-					foreach ( $value as $envName => $config ) {
-						if ( ! is_string( $envName ) ) {
+					foreach ( $value as $env_name => $config ) {
+						if ( ! is_string( $env_name ) ) {
 							throw new \RuntimeException( 'Environment name must be a string.' );
 						}
 						if ( ! is_array( $config ) ) {
-							throw new \RuntimeException( "Configuration for environment '$envName' must be an array." );
+							throw new \RuntimeException( "Configuration for environment '$env_name' must be an array." );
 						}
-						foreach ( $config as $envKey => $envValue ) {
-							switch ( $envKey ) {
+						foreach ( $config as $env_key => $env_value ) {
+							switch ( $env_key ) {
 								case 'extends':
-									if ( ! is_string( $envValue ) ) {
-										throw new \RuntimeException( "'extends' in environment '$envName' must be a string." );
+									if ( ! is_string( $env_value ) ) {
+										throw new \RuntimeException( "'extends' in environment '$env_name' must be a string." );
 									}
 									break;
 								case 'php_version':
-									if ( ! is_string( $envValue ) || ! preg_match( '/^[0-9]+\.[0-9]+(\.[0-9]+)?$/', $envValue ) ) {
-										throw new \RuntimeException( "Invalid php_version in environment '$envName'. Must be a valid PHP version string (e.g., '8.2')." );
+									if ( ! is_string( $env_value ) || ! preg_match( '/^[0-9]+\.[0-9]+(\.[0-9]+)?$/', $env_value ) ) {
+										throw new \RuntimeException( "Invalid php_version in environment '$env_name'. Must be a valid PHP version string (e.g., '8.2')." );
 									}
 									break;
 								case 'wordpress_version':
-									if ( ! is_string( $envValue ) ) {
-										throw new \RuntimeException( "wordpress_version in environment '$envName' must be a string." );
+									if ( ! is_string( $env_value ) ) {
+										throw new \RuntimeException( "wordpress_version in environment '$env_name' must be a string." );
 									}
 									break;
 								case 'woocommerce_version':
-									if ( ! is_string( $envValue ) ) {
-										throw new \RuntimeException( "woocommerce_version in environment '$envName' must be a string." );
+									if ( ! is_string( $env_value ) ) {
+										throw new \RuntimeException( "woocommerce_version in environment '$env_name' must be a string." );
 									}
 									break;
 								case 'object_cache':
-									if ( ! is_bool( $envValue ) ) {
-										throw new \RuntimeException( "object_cache in environment '$envName' must be a boolean." );
+									if ( ! is_bool( $env_value ) ) {
+										throw new \RuntimeException( "object_cache in environment '$env_name' must be a boolean." );
 									}
 									break;
 								case 'env_vars':
-									if ( ! is_array( $envValue ) ) {
-										throw new \RuntimeException( "env_vars in environment '$envName' must be an array." );
+									if ( ! is_array( $env_value ) ) {
+										throw new \RuntimeException( "env_vars in environment '$env_name' must be an array." );
 									}
-									foreach ( $envValue as $varName => $varValue ) {
-										if ( ! is_string( $varName ) ) {
-											throw new \RuntimeException( "Environment variable name in '$envName' must be a string." );
+									foreach ( $env_value as $var_name => $var_value ) {
+										if ( ! is_string( $var_name ) ) {
+											throw new \RuntimeException( "Environment variable name in '$env_name' must be a string." );
 										}
-										if ( ! is_string( $varValue ) ) {
-											throw new \RuntimeException( "Environment variable value for '$varName' in '$envName' must be a string." );
+										if ( ! is_string( $var_value ) ) {
+											throw new \RuntimeException( "Environment variable value for '$var_name' in '$env_name' must be a string." );
 										}
 									}
 									break;
 								case 'plugins':
-									if ( ! is_array( $envValue ) ) {
-										throw new \RuntimeException( "plugins in environment '$envName' must be an array." );
+									if ( ! is_array( $env_value ) ) {
+										throw new \RuntimeException( "plugins in environment '$env_name' must be an array." );
 									}
-									foreach ( $envValue as $plugin ) {
+									foreach ( $env_value as $plugin ) {
 										if ( ! is_string( $plugin ) ) {
-											throw new \RuntimeException( "Plugin in environment '$envName' must be a string." );
+											throw new \RuntimeException( "Plugin in environment '$env_name' must be a string." );
 										}
 									}
 									break;
 								case 'bootstrap':
-									if ( ! is_array( $envValue ) ) {
-										throw new \RuntimeException( "bootstrap in environment '$envName' must be an array." );
+									if ( ! is_array( $env_value ) ) {
+										throw new \RuntimeException( "bootstrap in environment '$env_name' must be an array." );
 									}
-									foreach ( $envValue as $bootstrapItem ) {
-										if ( ! is_string( $bootstrapItem ) ) {
-											throw new \RuntimeException( "Bootstrap item in environment '$envName' must be a string." );
+									foreach ( $env_value as $bootstrap_item ) {
+										if ( ! is_array( $bootstrap_item ) || ! isset( $bootstrap_item['slug'], $bootstrap_item['test_package'] ) ) {
+											throw new \RuntimeException( "Bootstrap item in environment '$env_name' must be an object with 'slug' and 'test_package' fields." );
+										}
+										if ( ! is_string( $bootstrap_item['slug'] ) ) {
+											throw new \RuntimeException( "Bootstrap slug in environment '$env_name' must be a string." );
+										}
+										if ( ! is_string( $bootstrap_item['test_package'] ) ) {
+											throw new \RuntimeException( "Bootstrap test_package in environment '$env_name' must be a string." );
 										}
 									}
 									break;
 								case 'volumes':
-									if ( ! is_array( $envValue ) ) {
-										throw new \RuntimeException( "volumes in environment '$envName' must be an array." );
+									if ( ! is_array( $env_value ) ) {
+										throw new \RuntimeException( "volumes in environment '$env_name' must be an array." );
 									}
-									foreach ( $envValue as $volume ) {
+									foreach ( $env_value as $volume ) {
 										if ( ! is_string( $volume ) ) {
-											throw new \RuntimeException( "Volume in environment '$envName' must be a string." );
-										}
-									}
-									break;
-								case 'compatibility':
-									if ( ! is_array( $envValue ) ) {
-										throw new \RuntimeException( "compatibility in environment '$envName' must be an array." );
-									}
-									foreach ( $envValue as $compatKey => $compatValue ) {
-										if ( ! is_string( $compatKey ) ) {
-											throw new \RuntimeException( "Compatibility key in '$envName' must be a string." );
-										}
-										if ( ! is_string( $compatValue ) ) {
-											throw new \RuntimeException( "Compatibility value for '$compatKey' in '$envName' must be a string." );
+											throw new \RuntimeException( "Volume in environment '$env_name' must be a string." );
 										}
 									}
 									break;
 								default:
-									throw new \RuntimeException( "Unknown key '$envKey' in environment '$envName' configuration." );
+									throw new \RuntimeException( "Unknown key '$env_key' in environment '$env_name' configuration." );
 							}
 						}
 					}
+					// Validate single-level inheritance for environments
+					$this->validate_single_level_inheritance( $value, 'environment' );
 					break;
 				default:
-					break;
+					throw new \RuntimeException("Unknown top-level key '$key' in configuration.");
+			}
+		}
+	}
+
+	private function validate_single_level_inheritance( array $section, string $section_name ): void {
+		foreach ( $section as $name => $config ) {
+			if ( isset( $config['extends'] ) ) {
+				$base_name = $config['extends'];
+				if ( ! isset( $section[ $base_name ] ) ) {
+					throw new \RuntimeException( "Extended configuration '$base_name' not found in $section_name '$name'." );
+				}
+				if ( isset( $section[ $base_name ]['extends'] ) ) {
+					throw new \RuntimeException( "Deep inheritance not allowed in $section_name: '$base_name' cannot extend another configuration." );
+				}
 			}
 		}
 	}
@@ -392,15 +429,15 @@ class QITConfig {
 		return $this->config[ $key ] ?? $default;
 	}
 
-	public function getAll(): array {
+	public function get_all(): array {
 		return $this->config;
 	}
 
-	public function getConfigFile(): string {
-		return $this->configFile;
+	public function get_config_file(): string {
+		return $this->config_file;
 	}
 
-	public function getNestedValue( string $path ): mixed {
+	public function get_nested_value( string $path ): mixed {
 		$keys  = explode( '.', $path );
 		$value = $this->config;
 		foreach ( $keys as $key ) {
@@ -414,12 +451,7 @@ class QITConfig {
 		return $value;
 	}
 
-	private function resolve_extends( array $section, string $name, array $stack = [] ): array {
-		if ( in_array( $name, $stack ) ) {
-			throw new \RuntimeException( 'Circular dependency detected: ' . implode( ' -> ', $stack ) . " -> $name" );
-		}
-		$stack[] = $name;
-
+	private function resolve_extends( array $section, string $name ): array {
 		if ( ! isset( $section[ $name ] ) ) {
 			throw new \RuntimeException( "Configuration '$name' not found in section." );
 		}
@@ -430,9 +462,13 @@ class QITConfig {
 			if ( ! is_string( $base_name ) ) {
 				throw new \RuntimeException( "Invalid 'extends' value for '$name'. Must be a string." );
 			}
-			$base_config = $this->resolve_extends( $section, $base_name, $stack );
+			if ( ! isset( $section[ $base_name ] ) ) {
+				throw new \RuntimeException( "Extended configuration '$base_name' not found for '$name'." );
+			}
+			// No need to check for deep extends here, as it's validated in load_config
+			$base_config = $section[ $base_name ];
 			unset( $config['extends'] );
-			// Replace all keys declared in the extending config, preserving undeclared base config keys
+			// Merge base config with child, child overrides base
 			$config = array_merge( $base_config, $config );
 		}
 
@@ -446,9 +482,13 @@ class QITConfig {
 	}
 
 	public function get_custom_test_package( string $name ): array {
-		$packages = $this->config['custom_test_packages'] ?? [];
+		[ $test_type, $package_name ] = explode( '.', $name, 2 );
+		$packages = $this->config['custom_test_packages'][ $test_type ] ?? [];
+		if ( ! isset( $packages[ $package_name ] ) ) {
+			return [];
+		}
 
-		return $this->resolve_extends( $packages, $name );
+		return $this->resolve_extends( $packages, $package_name );
 	}
 
 	public function get_test_config( string $test_type, string $profile ): array {
@@ -464,68 +504,53 @@ class QITConfig {
 		}
 
 		if ( isset( $resolved_config['pre_test_build'] ) ) {
-			if ( is_string( $resolved_config['pre_test_build'] ) ) {
-				$resolved_config['pre_test_build'] = [ 'command' => $resolved_config['pre_test_build'] ];
-			} elseif ( ! is_array( $resolved_config['pre_test_build'] ) ) {
-				throw new \RuntimeException( "Invalid pre_test_build for '$test_type:$profile'. Must be string or array." );
+			if ( ! is_array( $resolved_config['pre_test_build'] ) || ! isset( $resolved_config['pre_test_build']['command'] ) || ! is_string( $resolved_config['pre_test_build']['command'] ) || ! isset( $resolved_config['pre_test_build']['output'] ) || ! is_string( $resolved_config['pre_test_build']['output'] ) ) {
+				throw new \RuntimeException( "Invalid pre_test_build for '$test_type:$profile'. Must be an array with 'command' and 'output' keys, both containing strings." );
 			}
 		} elseif ( isset( $this->config['pre_test_build'] ) ) {
+			// Ensure top-level pre_test_build is valid before using as fallback
+			if ( ! is_array( $this->config['pre_test_build'] ) || ! isset( $this->config['pre_test_build']['command'] ) || ! is_string( $this->config['pre_test_build']['command'] ) || ! isset( $this->config['pre_test_build']['output'] ) || ! is_string( $this->config['pre_test_build']['output'] ) ) {
+				throw new \RuntimeException( "Invalid top-level pre_test_build. Must be an array with 'command' and 'output' keys, both containing strings." );
+			}
 			$resolved_config['pre_test_build'] = $this->config['pre_test_build'];
-		}
-
-		if ( isset( $resolved_config['test_matrix'] ) && ! is_array( $resolved_config['test_matrix'] ) ) {
-			throw new \RuntimeException( "Invalid test_matrix for '$test_type:$profile'. Must be an array." );
 		}
 
 		return $resolved_config;
 	}
 
 	public function get_group( string $group_name ): array {
-		return $this->config['groups'][ $group_name ] ?? [];
+		$group = $this->config['groups'][ $group_name ] ?? [];
+
+		return is_array( $group ) ? $group : [];
 	}
 
 	public function get_group_tests( string $group_name ): array {
-		$group = $this->config['groups'][ $group_name ] ?? [];
-		if ( ! is_array( $group ) ) {
-			throw new \RuntimeException( "Group '$group_name' must be an array." );
-		}
+		$group = $this->get_group( $group_name );
 		if ( empty( $group ) ) {
-			throw new \RuntimeException( "Test references for group '$group_name' cannot be empty." );
+			return [];
 		}
-		$tests    = [];
-		$seenRefs = [];
-		foreach ( $group as $testRef ) {
-			if ( ! is_string( $testRef ) || ! preg_match( '/^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$/', $testRef ) ) {
-				throw new \RuntimeException( "Invalid test reference '$testRef' in group '$group_name'. Expected 'type:profile'." );
+
+		$tests = [];
+		foreach ( $group as $test_type => $profiles ) {
+			foreach ( $profiles as $profile ) {
+				$tests[] = [
+					'type'    => $test_type,
+					'profile' => $profile,
+					'config'  => $this->get_test_config( $test_type, $profile ),
+				];
 			}
-			if ( in_array( $testRef, $seenRefs ) ) {
-				throw new \RuntimeException( "Duplicate test reference '$testRef' in group '$group_name'." );
-			}
-			$seenRefs[] = $testRef;
-			[ $type, $profile ] = explode( ':', $testRef, 2 );
-			if ( ! isset( $this->config['tests'][ $type ] ) ) {
-				throw new \RuntimeException( "Test type '$type' from reference '$testRef' in group '$group_name' not found in tests configuration." );
-			}
-			if ( ! isset( $this->config['tests'][ $type ][ $profile ] ) ) {
-				throw new \RuntimeException( "Test profile '$profile' from reference '$testRef' in group '$group_name' not found in tests configuration." );
-			}
-			$tests[] = [
-				'type'    => $type,
-				'profile' => $profile,
-				'config'  => $this->get_test_config( $type, $profile ),
-			];
 		}
 
 		return $tests;
 	}
 
-	public function get_test_matrix( string $test_type, string $profile ): array {
-		$test_config = $this->get_test_config( $test_type, $profile );
-		$matrix      = $test_config['test_matrix'] ?? [];
-		if ( ! is_array( $matrix ) ) {
-			throw new \RuntimeException( "Invalid test_matrix for '$test_type:$profile'. Must be an array." );
+	public function get_compatibility_tests( string $test_type, string $profile ): array {
+		$test_config  = $this->get_test_config( $test_type, $profile );
+		$compat_tests = $test_config['compatibility_tests'] ?? [];
+		if ( ! is_array( $compat_tests ) ) {
+			throw new \RuntimeException( "Invalid compatibility_tests for '$test_type:$profile'. Must be an array." );
 		}
 
-		return $matrix;
+		return $compat_tests;
 	}
 }
