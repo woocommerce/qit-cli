@@ -4,13 +4,6 @@ namespace QIT_CLI\Environment;
 
 class Extension {
 	/** @var array<string> */
-	const ACTIONS = [
-		'activate'  => 'activate',
-		'bootstrap' => 'bootstrap',
-		'test'      => 'test',
-	];
-
-	/** @var array<string> */
 	const TYPES = [
 		'plugin' => 'plugin',
 		'theme'  => 'theme',
@@ -19,12 +12,11 @@ class Extension {
 	const PRIORITY_LOW    = 10;
 	const PRIORITY_MEDIUM = 50;
 	const PRIORITY_HIGH   = 100;
-
-	/** @var string */
-	public $slug;
+	
+	public string $slug;
 
 	/** @var string The entrypoint of the extension, the main PHP file if a plugin or style.css if a theme. */
-	public $entrypoint;
+	public string $entrypoint;
 
 	/** @var string|int The "source" can be a slug, a URL, a directory or a zip file. */
 	public $source;
@@ -36,31 +28,21 @@ class Extension {
 	 * @see Extension::TYPES
 	 * @var string
 	 */
-	public $type;
+	public string $type;
 
-	/**
-	 * @var string A FQDN for an instance of Handler.
-	 * @see \QIT_CLI\Environment\ExtensionDownload\Handlers\Handler
-	 */
-	public $handler;
+	/** @var string A FQDN for an instance of Handler. */
+	public string $handler;
 
-	/** @var string */
-	public $version = 'undefined';
+	public string $version = 'undefined';
 
-	/**
-	 * @see Extension::ACTIONS
-	 * @var string
-	 */
-	public $action;
+	/** @var string|null Action for the extension, set by commands (e.g., 'activate', 'test'). */
+	public ?string $action;
 
-	/**
-	 * @var array<string,string> Test tags to fetch for this extension.
-	 */
-	public $test_tags;
+	/** @var array<string>|null Test tags for testing, set by testing commands. */
+	public ?array $test_tags;
 
-	/** @var int */
-	public $priority = self::PRIORITY_MEDIUM;
+	public int $priority = self::PRIORITY_MEDIUM;
 
 	/** @var int|null */
-	public $wccom_id;
+	public ?int $wccom_id;
 }

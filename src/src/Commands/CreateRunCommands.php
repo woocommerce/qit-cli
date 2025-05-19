@@ -190,6 +190,13 @@ class CreateRunCommands extends DynamicCommandCreator {
 					return Command::SUCCESS;
 				}
 
+				// Handle QIT_SELF_TEST=options
+				if ( getenv( 'QIT_SELF_TEST' ) === 'options' ) {
+					$output->write( json_encode( $options, JSON_PRETTY_PRINT ) );
+
+					return Command::SUCCESS;
+				}
+
 				try {
 					$output->writeln( sprintf( 'Running test...' ) );
 					$json = ( new RequestBuilder( get_manager_url() . "/wp-json/cd/v1/enqueue-{$this->test_type}" ) )

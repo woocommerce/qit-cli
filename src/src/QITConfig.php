@@ -2,10 +2,10 @@
 
 namespace QIT_CLI;
 
+use QIT_CLI\Environment\Extension;
 use Symfony\Component\Console\Application;
 
 class QITConfig {
-
 	private array $config = [];
 	private string $config_file;
 	private Application $console_application;
@@ -72,7 +72,7 @@ class QITConfig {
 						throw new \RuntimeException( 'pre_test_build must contain a "command" key with a string value.' );
 					}
 					if ( ! isset( $value['output'] ) || ! is_string( $value['output'] ) ) {
-						throw new \RuntimeException( 'pre_test_build must contain a "output" key with a string value.' );
+						throw new \RuntimeException( 'pre_test_build must contain an "output" key with a string value.' );
 					}
 					break;
 				case 'tests':
@@ -101,16 +101,13 @@ class QITConfig {
 							}
 
 							if ( $test_type === 'e2e' ) {
-								// If there is a test_package, make sure it references a package in "custom_test_packages".
 								if ( isset( $config['test_package'] ) && ! isset( $this->config['custom_test_packages'][ $config['test_package'] ] ) ) {
 									throw new \RuntimeException( "Test package '{$config['test_package']}' not found in custom_test_packages." );
 								}
-								// Make sure at least a valid test_package or a non-empty "compatibility_tests" array are present.
 								if ( ! isset( $config['test_package'] ) && ( ! isset( $config['compatibility_tests'] ) || empty( $config['compatibility_tests'] ) ) ) {
 									throw new \RuntimeException( "Either 'test_package' or 'compatibility_tests' must be set for '$test_type:$profile'." );
 								}
 
-								// Check that "compatibility_tests" is an array of strings.
 								if ( isset( $config['compatibility_tests'] ) && ! is_array( $config['compatibility_tests'] ) ) {
 									throw new \RuntimeException( "compatibility_tests in '$test_type:$profile' must be an array." );
 								}
@@ -223,7 +220,7 @@ class QITConfig {
 										break;
 									case 'test_command':
 										if ( ! is_string( $config_value ) ) {
-											throw new \RuntimeException( "test_command in custom test package '$test_type:$package_name' must be a string." );
+											throw new \RuntimeException( "test_command in custom time package '$test_type:$package_name' must be a string." );
 										}
 										break;
 									case 'test_results':
