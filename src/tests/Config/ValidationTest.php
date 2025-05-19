@@ -2,40 +2,11 @@
 
 namespace QIT_CLI_Tests\Config;
 
-use QIT_CLI\App;
 use QIT_CLI\QITConfig;
-use PHPUnit\Framework\TestCase;
-use QIT_CLI_Tests\BarTestCommand;
-use QIT_CLI_Tests\BazTestCommand;
-use QIT_CLI_Tests\FooTestCommand;
-use QIT_CLI_Tests\TestConfigCommand;
 use Spatie\Snapshots\MatchesSnapshots;
-use Symfony\Component\Console\Application;
 
-class ValidationTest extends TestCase {
+class ValidationTest extends AbstractConfigTest {
 	use MatchesSnapshots;
-
-	protected Application $application;
-	protected array $files_to_clean = [ 'qit.json' ];
-
-	public function setUp(): void {
-		parent::setUp();
-		$this->application = App::make( Application::class );
-		$this->application->add( new TestConfigCommand() );
-		$this->application->add( new FooTestCommand() );
-		$this->application->add( new BarTestCommand() );
-		$this->application->add( new BazTestCommand() );
-	}
-
-	public function tearDown(): void {
-		foreach ( $this->files_to_clean as $file ) {
-			if ( file_exists( $file ) ) {
-				unlink( $file );
-			}
-		}
-		$this->files_to_clean = [ 'qit.json' ];
-		parent::tearDown();
-	}
 
 	public function test_invalid_top_level_key_type() {
 		file_put_contents( 'qit.json', <<<'JSON'
