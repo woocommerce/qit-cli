@@ -3,6 +3,7 @@
 namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\App;
+use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\EnvironmentSelectorTrait;
 use Symfony\Component\Console\Command\Command;
@@ -15,7 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Terminal;
 use function QIT_CLI\format_elapsed_time;
 
-class ListEnvironmentCommand extends Command {
+class ListEnvironmentCommand extends QITCommand {
 	use EnvironmentSelectorTrait;
 
 	protected static $defaultName = 'env:list'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase

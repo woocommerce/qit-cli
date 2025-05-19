@@ -3,7 +3,6 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\RequestBuilder;
-use QIT_CLI\Commands\QITCommand;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

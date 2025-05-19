@@ -4,11 +4,9 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\Commands\Partner\AddPartner;
 use QIT_CLI\RequestBuilder;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use QIT_CLI\Commands\QITCommand;
 use function QIT_CLI\get_manager_url;
 
 class ConnectCommand extends QITCommand {

@@ -2,14 +2,14 @@
 
 namespace QIT_CLI\Commands\Tunnel;
 
-use Symfony\Component\Console\Command\Command;
+use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Cache;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
-class TunnelSetDefaultCommand extends Command {
+class TunnelSetDefaultCommand extends QITCommand {
 	protected static $defaultName = 'tunnel:set-default'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	protected Cache $cache;

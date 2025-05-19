@@ -2,13 +2,11 @@
 
 namespace QIT_CLI\Commands\Environment;
 
+use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\EnvironmentSelectorTrait;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Docker;
-use QIT_CLI\LocalTests\E2E\ExtensionTestRunner;
-use QIT_CLI\LocalTests\E2E\SharedSetupRunner;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,7 +15,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 /**
  * Reloads the environment to the post-SUT setup state (i.e. plugin-setup-snapshot.sql).
  */
-class ReloadEnvironmentCommand extends Command {
+class ReloadEnvironmentCommand extends QITCommand {
 	use EnvironmentSelectorTrait;
 
 	protected static $defaultName = 'env:reload';

@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands\CustomTests;
 
+use QIT_CLI\Commands\QITCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,7 +13,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use function QIT_CLI\normalize_path;
 
-class ScaffoldE2ECommand extends Command {
+class ScaffoldE2ECommand extends QITCommand {
 	protected static $defaultName = 'scaffold:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	protected function configure(): void {

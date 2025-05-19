@@ -2,11 +2,11 @@
 
 namespace QIT_CLI\Commands\Environment;
 
+use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\EnvInfo;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use function QIT_CLI\format_elapsed_time;
 
-class EnterEnvironmentCommand extends Command {
+class EnterEnvironmentCommand extends QITCommand {
 	protected E2EEnvironment $e2e_environment;
 	protected EnvironmentMonitor $environment_monitor;
 	protected Docker $docker;

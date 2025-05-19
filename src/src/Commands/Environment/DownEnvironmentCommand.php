@@ -40,7 +40,7 @@ class DownEnvironmentCommand extends QITCommand {
 		if ( empty( $running_environments ) ) {
 			$output->writeln( '<info>No environments running.</info>' );
 
-			return Command::SUCCESS;
+			return self::SUCCESS;
 		}
 
 		$selected_environment = null;
@@ -90,7 +90,7 @@ class DownEnvironmentCommand extends QITCommand {
 
 		$output->write( "\r<info>Stopped all environments [{$total_environments}/{$total_environments}].</info>" );
 
-		return Command::SUCCESS;
+		return self::SUCCESS;
 	}
 
 	private function stop_environment( EnvInfo $environment, OutputInterface $output ): void {

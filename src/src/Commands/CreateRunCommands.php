@@ -338,6 +338,14 @@ class CreateRunCommands extends DynamicCommandCreator {
 			false
 		);
 
+		$command->addOption(
+			'profile',
+			'p',
+			InputOption::VALUE_OPTIONAL,
+			'The profile to use for the test. If not set, will use the default profile.',
+			'default'
+		);
+
 		$command->add_option_to_send( 'zip' );
 
 		if ( $test_type === 'api' ) {

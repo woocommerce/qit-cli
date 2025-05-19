@@ -113,7 +113,6 @@ class RunE2ECommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'volume' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_extension' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'require' )
-			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'config' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'object_cache' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'skip_activating_plugins' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'skip_activating_themes' )
@@ -133,7 +132,8 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen.' )
 			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' )
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the test run into a group.', false )
-			->addOption( 'no_group', 'ng', InputOption::VALUE_NEGATABLE, 'If set, the CLI will not attempt to match the local test run with a group.', false );
+			->addOption( 'no_group', 'ng', InputOption::VALUE_NEGATABLE, 'If set, the CLI will not attempt to match the local test run with a group.', false )
+			->addOption( 'profile', 'p', InputOption::VALUE_OPTIONAL, 'The profile to use for the test. If not set, will use the default profile.', 'default' );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {

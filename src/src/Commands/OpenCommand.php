@@ -6,7 +6,6 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use QIT_CLI\Commands\QITCommand;
 
 class OpenCommand extends QITCommand {
 	protected static $defaultName = 'open'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
