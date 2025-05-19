@@ -9,6 +9,7 @@ namespace QIT_CLI\Commands\CustomTests;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\PluginsAndThemesParser;
 use QIT_CLI\LocalTests\E2E\CustomE2ERunner;
 use QIT_CLI\OptionReuseTrait;
@@ -132,8 +133,9 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen.' )
 			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' )
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the test run into a group.', false )
-			->addOption( 'no_group', 'ng', InputOption::VALUE_NEGATABLE, 'If set, the CLI will not attempt to match the local test run with a group.', false )
-			->addOption( 'profile', 'p', InputOption::VALUE_OPTIONAL, 'The profile to use for the test. If not set, will use the default profile.', 'default' );
+			->addOption( 'no_group', 'ng', InputOption::VALUE_NEGATABLE, 'If set, the CLI will not attempt to match the local test run with a group.', false );
+
+		QITCommand::add_profile_option( $this );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
@@ -204,6 +206,7 @@ class RunE2ECommand extends DynamicCommand {
 				$this->test_group->create_or_update( $group_options, $test_type, $input, $env_vars );
 			} catch ( \Exception $e ) {
 				$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
+
 				return self::FAILURE;
 			}
 
@@ -398,7 +401,7 @@ class RunE2ECommand extends DynamicCommand {
 			if ( ! in_array( $option_name, $up_command_option_names, true ) ) {
 				$parsed_options['other'][ $option_name ] = $option_value;
 			} else {
-				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
+				$parsed_options['env_up']["--$option_name"] = $option_value;
 			}
 		}
 
@@ -432,7 +435,7 @@ class RunE2ECommand extends DynamicCommand {
 	}
 
 	/**
-	 * @param string|null     $woo_extension_raw
+	 * @param string|null $woo_extension_raw
 	 * @param OutputInterface $output
 	 *
 	 * @return array{0:int|null,1:string|null,2:string|int|null} Array containing:
@@ -523,9 +526,9 @@ class RunE2ECommand extends DynamicCommand {
 
 	/**
 	 * @param InputInterface $input
-	 * @param array<mixed>   $env_up_options
-	 * @param string|null    $woo_extension_slug
-	 * @param string|null    $sut_type 'plugin', 'theme', or null.
+	 * @param array<mixed> $env_up_options
+	 * @param string|null $woo_extension_slug
+	 * @param string|null $sut_type 'plugin', 'theme', or null.
 	 *
 	 * @return array<mixed> Updated env_up_options.
 	 */

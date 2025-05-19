@@ -21,6 +21,16 @@ abstract class QITCommand extends Command {
 		);
 	}
 
+	public static function add_profile_option( Command $command ) {
+		$command->addOption(
+			'profile',
+			null,
+			InputOption::VALUE_OPTIONAL,
+			'The profile to use for the test. If not set, will use the default profile.',
+			'default'
+		);
+	}
+
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		$configFile = $input->getOption( 'config' );
 		try {

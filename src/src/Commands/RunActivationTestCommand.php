@@ -18,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use function QIT_CLI\get_manager_url;
 
-class RunActivationTestCommand extends QITRunTestCommand {
+class RunActivationTestCommand extends QITCommand {
 	use OptionReuseTrait;
 
 	protected static $defaultName = 'run:activation'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
@@ -45,7 +45,8 @@ class RunActivationTestCommand extends QITRunTestCommand {
 			->reuseOption( RunE2ECommand::getDefaultName(), 'dependencies_mode' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'group' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'no_group' )
-			->reuseOption( RunE2ECommand::getDefaultName(), 'pw_test_tag' );
+			->reuseOption( RunE2ECommand::getDefaultName(), 'pw_test_tag' )
+			->reuseOption( RunE2ECommand::getDefaultName(), 'profile' );
 
 		$this->addOption(
 			'json',

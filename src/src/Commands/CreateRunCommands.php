@@ -19,7 +19,9 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Process;
 use function QIT_CLI\get_manager_url;
+use function QIT_CLI\is_option_explicitly_provided;
 
 class CreateRunCommands extends DynamicCommandCreator {
 	protected Cache $cache;
@@ -49,8 +51,8 @@ class CreateRunCommands extends DynamicCommandCreator {
 	}
 
 	/**
-	 * @param Application  $application An instance of the current DI.
-	 * @param string       $test_type The test type.
+	 * @param Application $application An instance of the current DI.
+	 * @param string $test_type The test type.
 	 * @param array<mixed> $schema The test type schema.
 	 *
 	 * @return void
@@ -73,12 +75,52 @@ class CreateRunCommands extends DynamicCommandCreator {
 			}
 
 			public function doExecute( InputInterface $input, OutputInterface $output ): int {
-				try {
-					$options = $this->parse_options( $input );
-				} catch ( \Exception $e ) {
-					$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+				$profile = $input->getOption( 'profile' ) ?: 'default';
+				$options = $this->parse_options( $input );
 
-					return Command::FAILURE;
+				// Load profile settings only if qit.json exists or --profile is explicit
+				$config_exists    = file_exists( $this->config->get_config_file() );
+				$profile_explicit = is_option_explicitly_provided( $input, 'profile' );
+
+				$profile_config = [];
+				if ( $config_exists || $profile_explicit ) {
+					try {
+						$profile_config = $this->config->get_test_config( $this->test_type, $profile );
+					} catch ( \RuntimeException $e ) {
+						if ( $profile_explicit ) {
+							$output->writeln( "<error>{$e->getMessage()}</error>" );
+
+							return Command::FAILURE;
+						}
+						// If implicit and no config, proceed without profile settings
+						$profile_config = [];
+					}
+				}
+
+				// Merge profile settings with command-line options
+				foreach ( $profile_config as $key => $value ) {
+					if ( ! isset( $options[ $key ] ) && $key !== 'env' && $key !== 'test_package' && $key !== 'pre_test_build' ) {
+						$options[ $key ] = $value;
+					}
+				}
+
+				// Handle pre_test_build if specified in profile
+				if ( isset( $profile_config['pre_test_build'] ) && ( $config_exists || $profile_explicit ) ) {
+					$build_command = $profile_config['pre_test_build']['command'];
+					$build_output  = $profile_config['pre_test_build']['output'];
+					$process       = new Process( explode( ' && ', $build_command ) );
+					$process->run();
+					if ( ! $process->isSuccessful() ) {
+						$output->writeln( "<error>Pre-test build failed: {$process->getErrorOutput()}</error>" );
+
+						return Command::FAILURE;
+					}
+					if ( ! file_exists( $build_output ) ) {
+						$output->writeln( "<error>Build output not found: $build_output</error>" );
+
+						return Command::FAILURE;
+					}
+					$options['zip'] = $build_output;
 				}
 
 				// Woo Extension ID / Slug.
@@ -139,6 +181,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 						$this->test_group->create_or_update( $options, $this->test_type, null );
 					} catch ( \Exception $e ) {
 						$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
+
 						return Command::FAILURE;
 					}
 
@@ -338,13 +381,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 			false
 		);
 
-		$command->addOption(
-			'profile',
-			'p',
-			InputOption::VALUE_OPTIONAL,
-			'The profile to use for the test. If not set, will use the default profile.',
-			'default'
-		);
+		QITCommand::add_profile_option( $command );
 
 		$command->add_option_to_send( 'zip' );
 

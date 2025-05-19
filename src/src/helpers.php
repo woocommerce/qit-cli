@@ -2,6 +2,9 @@
 
 namespace QIT_CLI;
 
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 function is_windows(): bool {
@@ -202,4 +205,32 @@ function banner( SymfonyStyle $io, string $label, bool $line_before = true, bool
 	if ( $line_after ) {
 		$io->writeln( '' );
 	}
+}
+
+/**
+ * Checks if an option was explicitly provided in the input.
+ *
+ * @param InputInterface $input The input interface.
+ * @param string $option_name The name of the option to check (e.g., 'profile').
+ *
+ * @return bool True if the option was explicitly provided, false otherwise.
+ */
+function is_option_explicitly_provided( InputInterface $input, string $option_name ): bool {
+	if ( $input instanceof ArgvInput ) {
+		// For ArgvInput, check if the option appears in the raw argv array
+		$argv = $_SERVER['argv'] ?? [];
+		foreach ( $argv as $arg ) {
+			if ( preg_match( "/^--{$option_name}(=.*)?$/", $arg ) || preg_match( "/^-p(=.*)?$/", $arg ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	} elseif ( $input instanceof ArrayInput ) {
+		// For ArrayInput, check if the option is present using hasParameterOption
+		return $input->hasParameterOption( [ "--{$option_name}", "-p" ], true );
+	}
+
+	// Default to false for other input types
+	return false;
 }
