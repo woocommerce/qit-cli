@@ -3,11 +3,8 @@
 namespace QIT_CLI_Tests\Config;
 
 use QIT_CLI\QITConfig;
-use Spatie\Snapshots\MatchesSnapshots;
 
 class GroupConfigTest extends AbstractConfigTest {
-	use MatchesSnapshots;
-
 	public function test_get_group_tests() {
 		file_put_contents( 'qit.json', <<<'JSON'
 {

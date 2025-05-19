@@ -115,8 +115,8 @@ class QITConfig {
 									throw new \RuntimeException( "compatibility_tests in '$test_type:$profile' must be an array." );
 								}
 								if ( isset( $config['compatibility_tests'] ) ) {
-									foreach ( $config['compatibility_tests'] as $compat_test ) {
-										if ( ! is_string( $compat_test ) ) {
+									foreach ( $config['compatibility_tests'] as $key => $compat_test ) {
+										if ( ! is_int( $key ) || ! is_string( $compat_test ) ) {
 											throw new \RuntimeException( "Compatibility test in '$test_type:$profile' must be a string." );
 										}
 									}
@@ -529,7 +529,11 @@ class QITConfig {
 	}
 
 	public function get_environment( string $name ): array {
-		return $this->config['environments'][ $name ] ?? [];
+		if ( ! isset( $this->config['environments'][ $name ] ) ) {
+			throw new \RuntimeException( "Configuration '$name' not found in section 'environments'." );
+		}
+
+		return $this->config['environments'][ $name ];
 	}
 
 	public function get_custom_test_package( string $name ): array {
@@ -542,13 +546,19 @@ class QITConfig {
 	}
 
 	public function get_test_config( string $test_type, string $profile ): array {
-		return $this->config['tests'][ $test_type ][ $profile ] ?? [];
+		if ( ! isset( $this->config['tests'][ $test_type ][ $profile ] ) ) {
+			throw new \RuntimeException( "Test configuration '$test_type:$profile' not found." );
+		}
+
+		return $this->config['tests'][ $test_type ][ $profile ];
 	}
 
 	public function get_group( string $group_name ): array {
-		$group = $this->config['groups'][ $group_name ] ?? [];
+		if ( ! isset( $this->config['groups'][ $group_name ] ) ) {
+			throw new \RuntimeException( "Group '$group_name' not found in configuration." );
+		}
 
-		return is_array( $group ) ? $group : [];
+		return $this->config['groups'][ $group_name ];
 	}
 
 	public function get_group_tests( string $group_name ): array {

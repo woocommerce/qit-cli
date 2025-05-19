@@ -2,13 +2,10 @@
 
 namespace QIT_CLI_Tests\Config;
 
-use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class CustomTestPackageTest extends AbstractConfigTest {
-	use MatchesSnapshots;
-
 	public function test_custom_test_package_config_retrieval() {
 		$testCases = [
 			'inheritance' => [

@@ -14,33 +14,34 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 abstract class AbstractConfigTest extends TestCase {
-    use MatchesSnapshots;
+	use MatchesSnapshots;
 
-    protected Application $application;
-    protected array $files_to_clean = [ 'qit.json', 'custom.json' ];
+	protected Application $application;
+	protected array $files_to_clean = [ 'qit.json', 'custom.json' ];
 
-    public function setUp(): void {
-        parent::setUp();
-	    $this->application = App::make( Application::class );
-	    $this->application->add( new TestConfigCommand() );
-	    $this->application->add( new FooTestCommand() );
-	    $this->application->add( new BarTestCommand() );
-	    $this->application->add( new BazTestCommand() );
-    }
+	public function setUp(): void {
+		require_once __DIR__ . '/test-config-classes.php';
+		parent::setUp();
+		$this->application = App::make( Application::class );
+		$this->application->add( new TestConfigCommand() );
+		$this->application->add( new FooTestCommand() );
+		$this->application->add( new BarTestCommand() );
+		$this->application->add( new BazTestCommand() );
+	}
 
-    public function tearDown(): void {
-        foreach ( $this->files_to_clean as $file ) {
-            if ( file_exists( $file ) ) {
-                unlink( $file );
-            }
-        }
-        $this->files_to_clean = [ 'qit.json', 'custom.json' ];
-        parent::tearDown();
-    }
+	public function tearDown(): void {
+		foreach ( $this->files_to_clean as $file ) {
+			if ( file_exists( $file ) ) {
+				unlink( $file );
+			}
+		}
+		$this->files_to_clean = [ 'qit.json', 'custom.json' ];
+		parent::tearDown();
+	}
 
 	protected function assertCommandOutput( CommandTester $tester, string $expectedOutput, int $expectedStatus ): void {
-        $this->assertStringContainsString( $expectedOutput, $tester->getDisplay() );
-        $this->assertEquals( $expectedStatus, $tester->getStatusCode() );
-    }
+		$this->assertStringContainsString( $expectedOutput, $tester->getDisplay() );
+		$this->assertEquals( $expectedStatus, $tester->getStatusCode() );
+	}
 }
 

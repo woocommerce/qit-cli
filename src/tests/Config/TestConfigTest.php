@@ -2,13 +2,10 @@
 
 namespace QIT_CLI_Tests\Config;
 
-use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class TestConfigTest extends AbstractConfigTest {
-	use MatchesSnapshots;
-
 	public function test_foo_config_with_compatibility_tests() {
 		file_put_contents( 'qit.json', <<<'JSON'
 {
@@ -76,7 +73,7 @@ JSON
 		$tester = new CommandTester( $this->application->find( 'run:baz' ) );
 		$tester->execute( [ '--profile' => 'legacy' ] );
 		$this->assertCommandOutput( $tester, '"env":"legacy"', Command::SUCCESS );
-		$this->assertCommandOutput( $tester, '"pre_test_build":{"command":"npm run compile-assets && npm run build","output":"./plugin.zip"}', Command::SUCCESS );
+		$this->assertCommandOutput($tester, '"pre_test_build":{"command":"npm run compile-assets && npm run build","output":".\/plugin.zip"}', Command::SUCCESS);
 	}
 }
 

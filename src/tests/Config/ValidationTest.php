@@ -3,11 +3,8 @@
 namespace QIT_CLI_Tests\Config;
 
 use QIT_CLI\QITConfig;
-use Spatie\Snapshots\MatchesSnapshots;
 
 class ValidationTest extends AbstractConfigTest {
-	use MatchesSnapshots;
-
 	public function test_invalid_top_level_key_type() {
 		file_put_contents( 'qit.json', <<<'JSON'
 {
@@ -20,7 +17,7 @@ JSON
 		new QITConfig( 'qit.json', $this->application );
 	}
 
-	public function test_get_test_matrix_invalid() {
+	public function test_get_compatibility_tests_invalid() {
 		file_put_contents( 'qit.json', <<<'JSON'
 {
 	"slug": "awesome-plugin",
@@ -38,7 +35,7 @@ JSON
 JSON
 		);
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( "Compatibility test in 'foo:default' must be a string." );
+		$this->expectExceptionMessage( "Compatibility test in 'e2e:default' must be a string." );
 		new QITConfig( 'qit.json', $this->application );
 	}
 

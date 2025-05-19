@@ -2,13 +2,10 @@
 
 namespace QIT_CLI_Tests\Config;
 
-use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class ConfigLoadingTest extends AbstractConfigTest {
-	use MatchesSnapshots;
-
 	public function test_loads_config_successfully() {
 		file_put_contents( 'qit.json', <<<'JSON'
 {
