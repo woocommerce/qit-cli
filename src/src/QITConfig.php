@@ -99,19 +99,33 @@ class QITConfig {
 							if ( ! is_array( $config ) ) {
 								throw new \RuntimeException( "Configuration for '$test_type:$profile' must be an array." );
 							}
-							foreach ( $config as $config_key => $config_value ) {
-								if ( $config_key !== 'settings' && ! in_array( $config_key, $valid_options ) ) {
-									throw new \RuntimeException( "Invalid key '$config_key' in profile '$test_type:$profile'. Must be one of: " . implode( ', ', $valid_options ) . ", or settings" );
+
+							if ( $test_type === 'e2e' ) {
+								// If there is a test_package, make sure it references a package in "custom_test_packages".
+								if ( isset( $config['test_package'] ) && ! isset( $this->config['custom_test_packages'][ $config['test_package'] ] ) ) {
+									throw new \RuntimeException( "Test package '{$config['test_package']}' not found in custom_test_packages." );
 								}
-								if ( $config_key === 'compatibility_tests' ) {
-									if ( ! is_array( $config_value ) ) {
-										throw new \RuntimeException( "compatibility_tests in '$test_type:$profile' must be an array." );
-									}
-									foreach ( $config_value as $compat_test ) {
+								// Make sure at least a valid test_package or a non-empty "compatibility_tests" array are present.
+								if ( ! isset( $config['test_package'] ) && ( ! isset( $config['compatibility_tests'] ) || empty( $config['compatibility_tests'] ) ) ) {
+									throw new \RuntimeException( "Either 'test_package' or 'compatibility_tests' must be set for '$test_type:$profile'." );
+								}
+
+								// Check that "compatibility_tests" is an array of strings.
+								if ( isset( $config['compatibility_tests'] ) && ! is_array( $config['compatibility_tests'] ) ) {
+									throw new \RuntimeException( "compatibility_tests in '$test_type:$profile' must be an array." );
+								}
+								if ( isset( $config['compatibility_tests'] ) ) {
+									foreach ( $config['compatibility_tests'] as $compat_test ) {
 										if ( ! is_string( $compat_test ) ) {
 											throw new \RuntimeException( "Compatibility test in '$test_type:$profile' must be a string." );
 										}
 									}
+								}
+							}
+
+							foreach ( $config as $config_key => $config_value ) {
+								if ( $config_key !== 'settings' && ! in_array( $config_key, $valid_options ) ) {
+									throw new \RuntimeException( "Invalid key '$config_key' in profile '$test_type:$profile'. Must be one of: " . implode( ', ', $valid_options ) . ", or settings" );
 								}
 								if ( $config_key === 'env' && ! is_string( $config_value ) ) {
 									throw new \RuntimeException( "Env in '$test_type:$profile' must be a string." );
@@ -124,13 +138,9 @@ class QITConfig {
 										throw new \RuntimeException( "Invalid pre_test_build in '$test_type:$profile'. Must be an array with 'command' and 'output' keys, both containing strings." );
 									}
 								}
-								if ( $config_key === 'test_package' && ! is_string( $config_value ) ) {
-									throw new \RuntimeException( "Test_package in '$test_type:$profile' must be a string." );
-								}
 							}
 						}
 					}
-					// Validate single-level inheritance for tests
 					foreach ( $value as $test_type => $profiles ) {
 						$this->validate_single_level_inheritance( $profiles, "test profile '$test_type'" );
 					}
@@ -164,7 +174,7 @@ class QITConfig {
 								if ( ! is_string( $profile ) ) {
 									throw new \RuntimeException( "Profile in group '$group_name' for test type '$test_type' must be a string." );
 								}
-								$ref_key = "$test_type.$profile"; // For duplicate checking
+								$ref_key = "$test_type.$profile";
 								if ( in_array( $ref_key, $seen_refs ) ) {
 									throw new \RuntimeException( "Duplicate test reference '$ref_key' in group '$group_name'." );
 								}
@@ -306,7 +316,6 @@ class QITConfig {
 								}
 							}
 						}
-						// Validate single-level inheritance for custom_test_packages
 						$this->validate_single_level_inheritance( $packages, "custom test package '$test_type'" );
 					}
 					break;
@@ -402,11 +411,40 @@ class QITConfig {
 							}
 						}
 					}
-					// Validate single-level inheritance for environments
 					$this->validate_single_level_inheritance( $value, 'environment' );
 					break;
 				default:
-					throw new \RuntimeException("Unknown top-level key '$key' in configuration.");
+					throw new \RuntimeException( "Unknown top-level key '$key' in configuration." );
+			}
+		}
+
+		// Resolve extends for environments
+		if ( isset( $this->config['environments'] ) ) {
+			$this->config['environments'] = $this->resolve_extends_section( $this->config['environments'], 'environment' );
+		}
+
+		// Resolve extends for custom_test_packages
+		if ( isset( $this->config['custom_test_packages'] ) ) {
+			foreach ( $this->config['custom_test_packages'] as $test_type => &$packages ) {
+				$packages = $this->resolve_extends_section( $packages, "custom test package '$test_type'" );
+			}
+		}
+
+		// Resolve extends for tests
+		if ( isset( $this->config['tests'] ) ) {
+			foreach ( $this->config['tests'] as $test_type => &$profiles ) {
+				$profiles = $this->resolve_extends_section( $profiles, "test profile '$test_type'" );
+			}
+		}
+
+		// Apply global pre_test_build to test profiles if not set
+		if ( isset( $this->config['pre_test_build'] ) && isset( $this->config['tests'] ) ) {
+			foreach ( $this->config['tests'] as $test_type => &$profiles ) {
+				foreach ( $profiles as $profile => &$config ) {
+					if ( ! isset( $config['pre_test_build'] ) ) {
+						$config['pre_test_build'] = $this->config['pre_test_build'];
+					}
+				}
 			}
 		}
 	}
@@ -423,6 +461,45 @@ class QITConfig {
 				}
 			}
 		}
+	}
+
+	private function resolve_extends_section( array $section, string $section_name ): array {
+		$resolved = [];
+		$pending  = $section;
+
+		while ( ! empty( $pending ) ) {
+			$resolved_something = false;
+
+			foreach ( $pending as $name => $config ) {
+				if ( ! isset( $config['extends'] ) ) {
+					$resolved[ $name ] = $config;
+					unset( $pending[ $name ] );
+					$resolved_something = true;
+					continue;
+				}
+
+				$base_name = $config['extends'];
+				if ( ! isset( $section[ $base_name ] ) ) {
+					throw new \RuntimeException( "Extended configuration '$base_name' not found in $section_name '$name'." );
+				}
+
+				if ( isset( $resolved[ $base_name ] ) ) {
+					$base_config  = $resolved[ $base_name ];
+					$child_config = $config;
+					unset( $child_config['extends'] );
+					$merged_config     = array_merge( $base_config, $child_config );
+					$resolved[ $name ] = $merged_config;
+					unset( $pending[ $name ] );
+					$resolved_something = true;
+				}
+			}
+
+			if ( ! $resolved_something && ! empty( $pending ) ) {
+				throw new \RuntimeException( "Circular dependency detected in $section_name configurations." );
+			}
+		}
+
+		return $resolved;
 	}
 
 	public function get( string $key, $default = null ) {
@@ -451,71 +528,21 @@ class QITConfig {
 		return $value;
 	}
 
-	private function resolve_extends( array $section, string $name ): array {
-		if ( ! isset( $section[ $name ] ) ) {
-			throw new \RuntimeException( "Configuration '$name' not found in section." );
-		}
-
-		$config = $section[ $name ];
-		if ( isset( $config['extends'] ) ) {
-			$base_name = $config['extends'];
-			if ( ! is_string( $base_name ) ) {
-				throw new \RuntimeException( "Invalid 'extends' value for '$name'. Must be a string." );
-			}
-			if ( ! isset( $section[ $base_name ] ) ) {
-				throw new \RuntimeException( "Extended configuration '$base_name' not found for '$name'." );
-			}
-			// No need to check for deep extends here, as it's validated in load_config
-			$base_config = $section[ $base_name ];
-			unset( $config['extends'] );
-			// Merge base config with child, child overrides base
-			$config = array_merge( $base_config, $config );
-		}
-
-		return $config;
-	}
-
 	public function get_environment( string $name ): array {
-		$envs = $this->config['environments'] ?? [];
-
-		return $this->resolve_extends( $envs, $name );
+		return $this->config['environments'][ $name ] ?? [];
 	}
 
 	public function get_custom_test_package( string $name ): array {
 		[ $test_type, $package_name ] = explode( '.', $name, 2 );
-		$packages = $this->config['custom_test_packages'][ $test_type ] ?? [];
-		if ( ! isset( $packages[ $package_name ] ) ) {
-			return [];
+		if ( ! isset( $this->config['custom_test_packages'][ $test_type ][ $package_name ] ) ) {
+			throw new \RuntimeException( "Configuration '$package_name' not found in section 'custom_test_packages.$test_type'." );
 		}
 
-		return $this->resolve_extends( $packages, $package_name );
+		return $this->config['custom_test_packages'][ $test_type ][ $package_name ];
 	}
 
 	public function get_test_config( string $test_type, string $profile ): array {
-		$tests = $this->config['tests'] ?? [];
-		if ( ! isset( $tests[ $test_type ] ) ) {
-			return [];
-		}
-		$section = $tests[ $test_type ];
-		try {
-			$resolved_config = $this->resolve_extends( $section, $profile );
-		} catch ( \RuntimeException $e ) {
-			throw new \RuntimeException( "Error resolving test profile '$test_type:$profile': " . $e->getMessage() );
-		}
-
-		if ( isset( $resolved_config['pre_test_build'] ) ) {
-			if ( ! is_array( $resolved_config['pre_test_build'] ) || ! isset( $resolved_config['pre_test_build']['command'] ) || ! is_string( $resolved_config['pre_test_build']['command'] ) || ! isset( $resolved_config['pre_test_build']['output'] ) || ! is_string( $resolved_config['pre_test_build']['output'] ) ) {
-				throw new \RuntimeException( "Invalid pre_test_build for '$test_type:$profile'. Must be an array with 'command' and 'output' keys, both containing strings." );
-			}
-		} elseif ( isset( $this->config['pre_test_build'] ) ) {
-			// Ensure top-level pre_test_build is valid before using as fallback
-			if ( ! is_array( $this->config['pre_test_build'] ) || ! isset( $this->config['pre_test_build']['command'] ) || ! is_string( $this->config['pre_test_build']['command'] ) || ! isset( $this->config['pre_test_build']['output'] ) || ! is_string( $this->config['pre_test_build']['output'] ) ) {
-				throw new \RuntimeException( "Invalid top-level pre_test_build. Must be an array with 'command' and 'output' keys, both containing strings." );
-			}
-			$resolved_config['pre_test_build'] = $this->config['pre_test_build'];
-		}
-
-		return $resolved_config;
+		return $this->config['tests'][ $test_type ][ $profile ] ?? [];
 	}
 
 	public function get_group( string $group_name ): array {
