@@ -6,91 +6,97 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class CustomTestPackageTest extends AbstractConfigTest {
-	public function test_custom_test_package_config_retrieval() {
-		$testCases = [
-			'inheritance' => [
-				'configData'     => [
-					'slug'                 => 'awesome-plugin',
-					'type'                 => 'plugin',
-					'custom_test_packages' => [
-						'foo' => [
-							'default' => [ 'root_path' => './tests/foo', 'test_command' => 'npx playwright test' ],
-							'basic'   => [ 'extends' => 'default', 'test_command' => 'npx playwright test --grep @basic' ],
-						],
-					],
-				],
-				'package'        => 'foo.basic',
-				'expectedOutput' => json_encode( [ 'root_path' => './tests/foo', 'test_command' => 'npx playwright test --grep @basic' ] ),
-				'expectedError'  => null,
-				'expectedStatus' => Command::SUCCESS,
-			],
-			'missing'     => [
-				'configData'     => [ 'slug' => 'awesome-plugin', 'type' => 'plugin' ],
-				'package'        => 'foo.non_existing',
-				'expectedOutput' => null,
-				'expectedError'  => "Configuration 'non_existing' not found in section 'custom_test_packages.foo",
-				'expectedStatus' => Command::FAILURE,
-			],
-		];
-
-		foreach ( $testCases as $caseName => $case ) {
-			file_put_contents( 'qit.json', <<<'JSON'
+	public function test_custom_test_package_config_retrieval_inheritance() {
+		file_put_contents( 'qit.json', <<<'JSON'
 {
 	"slug": "awesome-plugin",
 	"type": "plugin",
 	"custom_test_packages": {
 		"foo": {
-			"default": { "root_path": "./tests/foo", "test_command": "npx playwright test" },
-			"basic": { "extends": "default", "test_command": "npx playwright test --grep @basic" }
+			"default": {
+				"root_path": "./tests/foo",
+				"test_command": "npx playwright test"
+			},
+			"basic": {
+				"extends": "default",
+				"test_command": "npx playwright test --grep @basic"
+			}
 		}
 	}
 }
 JSON
-			);
-			$tester = new CommandTester( $this->application->find( 'test:config' ) );
-			$tester->execute( [ '--get-package' => $case['package'] ] );
-			if ( $case['expectedOutput'] ) {
-				$this->assertCommandOutput( $tester, $case['expectedOutput'], $case['expectedStatus'] );
-			} elseif ( $case['expectedError'] ) {
-				$this->assertCommandOutput( $tester, $case['expectedError'], $case['expectedStatus'] );
-			}
-		}
+		);
+
+		$tester = new CommandTester( $this->application->find( 'test:config' ) );
+		$tester->execute( [ '--get-package' => 'foo.basic' ] );
+
+		$expectedOutput = json_encode( [ 'root_path' => './tests/foo', 'test_command' => 'npx playwright test --grep @basic' ] );
+		$this->assertCommandOutput( $tester, $expectedOutput, Command::SUCCESS );
+	}
+
+	public function test_custom_test_package_config_retrieval_missing() {
+		file_put_contents( 'qit.json', <<<'JSON'
+{
+	"slug": "awesome-plugin",
+	"type": "plugin"
+}
+JSON
+		);
+
+		$tester = new CommandTester( $this->application->find( 'test:config' ) );
+		$tester->execute( [ '--get-package' => 'foo.non_existing' ] );
+
+		$expectedError = "Configuration 'non_existing' not found in section 'custom_test_packages.foo";
+		$this->assertCommandOutput( $tester, $expectedError, Command::FAILURE );
 	}
 
 	public function test_inheritance_nested_fields() {
-		// Write qit.json with custom test package configuration
-		file_put_contents( 'qit.json', json_encode( [
-			'slug'                 => 'awesome-plugin',
-			'type'                 => 'plugin',
-			'pre_test_build'       => [ 'command' => 'npm run build', 'output' => './plugin.zip' ],
-			'custom_test_packages' => [
-				'foo' => [
-					'default' => [
-						'root_path'        => './tests/foo',
-						'test_command'     => 'npx playwright test',
-						'test_results'     => [
-							'ctrf'   => './results/ctrf.json',
-							'allure' => './results/allure-results',
-						],
-						'mu_plugins'       => [ './bootstrap/mu-plugin.php' ],
-						'env_vars'         => [ 'QIT_FOO_DEBUG' => 'true' ],
-						'required_secrets' => [ 'MY_API_KEY' ],
-						'lifecycle'        => [
-							'setup'    => './bootstrap/setup.sh',
-							'teardown' => './bootstrap/teardown.sh',
-						],
-						'constraints'      => [
-							'wordpress'        => '^6 || ^7',
-							'requires_plugins' => [ 'plugin' => '^1.0.0' ],
-						],
-					],
-					'basic'   => [
-						'extends'      => 'default',
-						'test_command' => 'npx playwright test --grep @basic',
-					],
+		file_put_contents( 'qit.json', <<<'JSON'
+{
+	"slug": "awesome-plugin",
+	"type": "plugin",
+	"pre_test_build": {
+		"command": "npm run build",
+		"output": "./plugin.zip"
+	},
+	"custom_test_packages": {
+		"foo": {
+			"default": {
+				"root_path": "./tests/foo",
+				"test_command": "npx playwright test",
+				"test_results": {
+					"ctrf": "./results/ctrf.json",
+					"allure": "./results/allure-results"
+				},
+				"mu_plugins": [
+					"./bootstrap/mu-plugin.php"
 				],
-			],
-		] ) );
+				"env_vars": {
+					"QIT_FOO_DEBUG": "true"
+				},
+				"required_secrets": [
+					"MY_API_KEY"
+				],
+				"lifecycle": {
+					"setup": "./bootstrap/setup.sh",
+					"teardown": "./bootstrap/teardown.sh"
+				},
+				"constraints": {
+					"wordpress": "^6 || ^7",
+					"requires_plugins": {
+						"plugin": "^1.0.0"
+					}
+				}
+			},
+			"basic": {
+				"extends": "default",
+				"test_command": "npx playwright test --grep @basic"
+			}
+		}
+	}
+}
+JSON
+		);
 
 		// Execute test:config --get-package foo.basic
 		$tester = new CommandTester( $this->application->find( 'test:config' ) );

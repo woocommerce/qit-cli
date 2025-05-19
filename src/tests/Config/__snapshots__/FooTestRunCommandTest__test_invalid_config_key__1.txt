@@ -1,0 +1,1 @@
+Invalid key 'invalid_key' in profile 'foo:default'. Must be one of: config, param, profile, help, quiet, verbose, version, ansi, no-interaction, pre_test_build, compatibility_tests, env, extends, test_package, or settings

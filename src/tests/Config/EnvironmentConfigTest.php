@@ -7,16 +7,27 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 class EnvironmentConfigTest extends AbstractConfigTest {
 	public function test_environment_config_inheritance() {
-		$configData = [
-			'slug'         => 'awesome-plugin',
-			'type'         => 'plugin',
-			'environments' => [
-				'base'   => [ 'php_version' => '8.2', 'wordpress_version' => 'stable', 'plugins' => [ 'plugin' ] ],
-				'legacy' => [ 'extends' => 'base', 'php_version' => '7.4', 'wordpress_version' => '6.1' ],
-			],
-		];
-
-		file_put_contents( 'qit.json', json_encode( $configData, JSON_PRETTY_PRINT ) );
+		file_put_contents( 'qit.json', <<<'JSON'
+{
+	"slug": "awesome-plugin",
+	"type": "plugin",
+	"environments": {
+		"base": {
+			"php_version": "8.2",
+			"wordpress_version": "stable",
+			"plugins": [
+				"plugin"
+			]
+		},
+		"legacy": {
+			"extends": "base",
+			"php_version": "7.4",
+			"wordpress_version": "6.1"
+		}
+	}
+}
+JSON
+		);
 
 		$tester = new CommandTester( $this->application->find( 'test:config' ) );
 		$tester->execute( [ '--get-environment' => 'legacy' ] );
@@ -31,12 +42,13 @@ class EnvironmentConfigTest extends AbstractConfigTest {
 	}
 
 	public function test_missing_environment_config() {
-		$configData = [
-			'slug' => 'awesome-plugin',
-			'type' => 'plugin'
-		];
-
-		file_put_contents( 'qit.json', json_encode( $configData, JSON_PRETTY_PRINT ) );
+		file_put_contents( 'qit.json', <<<'JSON'
+{
+	"slug": "awesome-plugin",
+	"type": "plugin"
+}
+JSON
+		);
 
 		$tester = new CommandTester( $this->application->find( 'test:config' ) );
 		$tester->execute( [ '--get-environment' => 'non_existing' ] );
@@ -49,28 +61,41 @@ class EnvironmentConfigTest extends AbstractConfigTest {
 	}
 
 	public function test_inheritance_nested_fields() {
-		file_put_contents( 'qit.json', json_encode( [
-			'slug'         => 'awesome-plugin',
-			'type'         => 'plugin',
-			'environments' => [
-				'base'   => [
-					'php_version'       => '8.2',
-					'wordpress_version' => 'stable',
-					'object_cache'      => true,
-					'plugins'           => [ 'plugin', 'akismet' ],
-					'env_vars'          => [ 'QIT_DEBUG' => 'true' ],
-					'bootstrap'         => [
-						[ 'slug' => 'akismet', 'test_package' => 'foo:helpers' ],
-					],
-					'volumes'           => [ './:/var/www/html/wp-content/plugins/awesome-plugin' ],
-				],
-				'legacy' => [
-					'extends'           => 'base',
-					'php_version'       => '7.4',
-					'wordpress_version' => '6.1',
-				],
+		file_put_contents( 'qit.json', <<<'JSON'
+{
+	"slug": "awesome-plugin",
+	"type": "plugin",
+	"environments": {
+		"base": {
+			"php_version": "8.2",
+			"wordpress_version": "stable",
+			"object_cache": true,
+			"plugins": [
+				"plugin",
+				"akismet"
 			],
-		] ) );
+			"env_vars": {
+				"QIT_DEBUG": "true"
+			},
+			"bootstrap": [
+				{
+					"slug": "akismet",
+					"test_package": "foo:helpers"
+				}
+			],
+			"volumes": [
+				"./:/var/www/html/wp-content/plugins/awesome-plugin"
+			]
+		},
+		"legacy": {
+			"extends": "base",
+			"php_version": "7.4",
+			"wordpress_version": "6.1"
+		}
+	}
+}
+JSON
+		);
 
 		$tester = new CommandTester( $this->application->find( 'test:config' ) );
 		$tester->execute( [ '--get-environment' => 'legacy' ] );
