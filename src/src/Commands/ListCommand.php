@@ -4,6 +4,7 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
@@ -45,7 +46,7 @@ HELP
 			);
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		if ( $input->getOption( 'extensions' ) ) {
 			foreach ( explode( ',', $input->getOption( 'extensions' ) ) as $e ) {
 				if ( is_numeric( $e ) ) {

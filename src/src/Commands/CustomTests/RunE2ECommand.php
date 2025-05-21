@@ -10,6 +10,7 @@ namespace QIT_CLI\Commands\CustomTests;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Config\PluginDependencies;
 use QIT_CLI\LocalTests\E2E\CustomE2ERunner;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\DynamicCommand;
@@ -22,7 +23,6 @@ use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\Extension;
 use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
-use QIT_CLI\PluginDependencies;
 use QIT_CLI\TestGroup;
 use QIT_CLI\Tunnel\TunnelRunner;
 use QIT_CLI\WooExtensionsList;
@@ -112,7 +112,6 @@ class RunE2ECommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'theme' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'volume' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_extension' )
-			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'require' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'object_cache' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'skip_activating_plugins' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'skip_activating_themes' )
@@ -121,7 +120,6 @@ class RunE2ECommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'volume' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'env' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'env_file' )
-			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'extension_set' )
 			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright Sharding argument.' )
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
@@ -137,7 +135,7 @@ class RunE2ECommand extends DynamicCommand {
 		QITCommand::add_profile_option( $this );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$this->prepare_output( $output );
 
 		if ( is_windows() ) {
@@ -411,7 +409,7 @@ class RunE2ECommand extends DynamicCommand {
 	 * @param array<string> $env_vars
 	 *
 	 * @return void
-	 */
+	 *
 	protected function parse_env_vars( array $env_vars ): void {
 		$parsed_vars = [];
 		foreach ( $env_vars as $env_var ) {
@@ -431,7 +429,7 @@ class RunE2ECommand extends DynamicCommand {
 		}
 
 		App::setVar( 'QIT_PW_ENV_VARS', $parsed_vars );
-	}
+	}*/
 
 	/**
 	 * @param string|null $woo_extension_raw

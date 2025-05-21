@@ -4,6 +4,7 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,7 +23,7 @@ class CacheCommand extends QITCommand {
 			->addArgument( 'expiration', InputArgument::OPTIONAL, 'The expiration when (set).' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$action = $input->getArgument( 'action' );
 		$key    = $input->getArgument( 'key' );
 		$cache  = App::make( Cache::class );

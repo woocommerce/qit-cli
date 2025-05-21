@@ -3,6 +3,7 @@
 namespace QIT_CLI\Commands\Group;
 
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\TestGroup;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,7 +27,7 @@ class GroupRegisterCommand extends QITCommand {
 			->addOption( 'group-identifier', 'i', InputOption::VALUE_OPTIONAL, 'The group identifier.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$group_identifier = $input->getOption( 'group-identifier' );
 
 		$group = $this->test_group->get();

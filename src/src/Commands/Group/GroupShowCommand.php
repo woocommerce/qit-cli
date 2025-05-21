@@ -3,6 +3,7 @@
 namespace QIT_CLI\Commands\Group;
 
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\TestGroup;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,7 +24,7 @@ class GroupShowCommand extends QITCommand {
 			->setDescription( 'Show the currently cached group' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$group = $this->test_group->get();
 
 		if ( empty( $group ) ) {

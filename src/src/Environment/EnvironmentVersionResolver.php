@@ -13,7 +13,7 @@ class EnvironmentVersionResolver {
 	 * @return string|array{slug: string, source: string} A plugin syntax, can be a string or an array.
 	 */
 	public static function resolve_woo( string $woo, array $plugins ) {
-		$plugins = App::make( PluginsAndThemesParser::class )->parse_extensions( $plugins, Extension::TYPES['plugin'] );
+		//$plugins = App::make( PluginsAndThemesParser::class )->parse_extensions( $plugins, Extension::TYPES['plugin'] );
 
 		$versions = App::make( Cache::class )->get_manager_sync_data( 'versions' );
 

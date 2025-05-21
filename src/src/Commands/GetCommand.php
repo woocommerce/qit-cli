@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands;
 
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
@@ -25,7 +26,7 @@ class GetCommand extends QITCommand {
 			->addOption( 'check_finished', null, InputOption::VALUE_NONE, 'Return success if test has finished. Failure if not.', null );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		try {
 			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get-single' ) )
 				->with_method( 'POST' )

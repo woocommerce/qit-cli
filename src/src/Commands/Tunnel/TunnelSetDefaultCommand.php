@@ -4,6 +4,7 @@ namespace QIT_CLI\Commands\Tunnel;
 
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Cache;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,7 +27,7 @@ class TunnelSetDefaultCommand extends QITCommand {
 			->setHelp( 'Allows you to set your preferred default tunneling method.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$available_methods = array_keys( TunnelRunner::$tunnel_map );
 
 		$usable_methods = [];

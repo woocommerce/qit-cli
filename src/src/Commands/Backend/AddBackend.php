@@ -5,6 +5,7 @@ namespace QIT_CLI\Commands\Backend;
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\ManagerBackend;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
@@ -40,7 +41,7 @@ class AddBackend extends QITCommand {
 			->addOption( 'manager_url', 'u', InputOption::VALUE_OPTIONAL, '(Optional) The Manager URL to use. Eg: http://manager.loc (local), or Manager Staging/Prod URLs.', '' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$qit_secret      = $input->getOption( 'qit_secret' );
 		$manager_url     = $input->getOption( 'manager_url' );
 		$manager_backend = $input->getOption( 'environment' );

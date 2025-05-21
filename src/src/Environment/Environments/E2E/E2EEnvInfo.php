@@ -6,43 +6,47 @@ use QIT_CLI\Environment\Environments\EnvInfo;
 
 class E2EEnvInfo extends EnvInfo {
 	/** @var string */
-	public $environment = 'e2e';
+	public string $environment = 'e2e';
 
 	/** @var string The site URL, if any. */
-	public $site_url;
+	public string $site_url;
 
 	/** @var array<string,string> */
-	public $runner_args = [];
+	public array $runner_args = [];
 
 	/** @var string */
-	public $wp = '';
+	public string $wp = '';
 
 	/** @var bool */
-	public $object_cache = false;
+	public bool $object_cache = false;
 
 	/** @var string */
-	public $php_version;
+	public string $php_version;
 
 	/** @var string */
-	public $nginx_port;
+	public string $nginx_port;
 
 	/** @var string The slug of the extension under test. */
-	public $sut_slug;
+	public string $sut_slug;
 
 	/** @var string The type of the SUT, either "plugin" or "theme". */
-	public $sut_type;
+	public string $sut_type;
 
 	/** @var string The entrypoint of the extension under test. */
-	public $sut_entrypoint;
+	public string $sut_entrypoint;
 
 	/** @var string The path to the SUT on the host. */
-	public $sut_path;
+	public string $sut_path;
 
 	/** @var int The Woo ID of the extension under test. */
-	public $sut_id;
+	public int $sut_id;
 
 	/** @var string The domain being used. */
-	public $domain;
+	public string $domain;
+
+	public bool $skip_activating_plugins = false;
+
+	public bool $skip_activating_themes = false;
 
 	/** @var array<int,array{
 	 *     slug:string,
@@ -53,20 +57,20 @@ class E2EEnvInfo extends EnvInfo {
 	 *     path_in_host:string
 	 * }> $tests
 	 */
-	public $tests = [];
+	public array $tests = [];
 
 	/** @var array<mixed>> */
-	public $playwright_config = [];
+	public array $playwright_config = [];
 
 	/** @var string The playwright test tag to be executed*/
-	public $pw_test_tag = '';
+	public string $pw_test_tag = '';
 
 	/** @var string The WooCommerce version, if any. */
-	public $woo_version = 'none';
+	public string $woo_version = 'none';
 
 	/** @var bool Whether this test run is for a development build. */
-	public $is_development_build;
+	public bool $is_development_build;
 
 	/** @var string Whether to notify the developer about the result of this test run. */
-	public $notify;
+	public string $notify;
 }

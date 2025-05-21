@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands;
 
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
@@ -25,7 +26,7 @@ class GetMultipleCommand extends QITCommand {
 			->addOption( 'check_finished', null, InputOption::VALUE_NONE, 'Return success if all tests have finished. Failure if any not finished.', null );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$test_run_ids = $input->getArgument( 'test_run_ids' );
 		$test_run_ids = array_filter( array_map( 'trim', explode( ',', $test_run_ids ) ) );
 

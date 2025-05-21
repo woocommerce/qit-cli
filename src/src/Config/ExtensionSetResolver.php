@@ -1,10 +1,11 @@
 <?php
 
-namespace QIT_CLI;
+namespace QIT_CLI\Config;
 
+use QIT_CLI\Cache;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Extension;
-use QIT_CLI\Environment\PluginsAndThemesParser;
+use QIT_CLI\ManagerSync;
 
 class ExtensionSetResolver {
 	/** @var ManagerSync $manager_sync */
@@ -13,13 +14,9 @@ class ExtensionSetResolver {
 	/** @var Cache $cache */
 	protected $cache;
 
-	/** @var PluginsAndThemesParser */
-	protected $plugins_and_themes_parser;
-
-	public function __construct( Cache $cache, ManagerSync $manager_sync, PluginsAndThemesParser $plugins_and_themes_parser ) {
+	public function __construct( Cache $cache, ManagerSync $manager_sync ) {
 		$this->cache                     = $cache;
 		$this->manager_sync              = $manager_sync;
-		$this->plugins_and_themes_parser = $plugins_and_themes_parser;
 	}
 
 	/**

@@ -47,7 +47,7 @@ class ExecEnvironmentCommand extends QITCommand {
 			->addOption( 'image', null, InputOption::VALUE_OPTIONAL, 'The Docker image to use', 'php' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$running_environments = $this->environment_monitor->get();
 
 		if ( empty( $running_environments ) ) {
@@ -113,7 +113,7 @@ class ExecEnvironmentCommand extends QITCommand {
 	 * @param array<string,scalar> $env_var_options
 	 *
 	 * @return array<string,string>
-	 */
+	 *
 	private function parse_env_vars( array $env_var_options ): array {
 		$env_vars = [];
 		foreach ( $env_var_options as $e ) {
@@ -125,4 +125,5 @@ class ExecEnvironmentCommand extends QITCommand {
 
 		return $env_vars;
 	}
+	 */
 }

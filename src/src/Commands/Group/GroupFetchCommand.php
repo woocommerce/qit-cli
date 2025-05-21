@@ -3,6 +3,7 @@
 namespace QIT_CLI\Commands\Group;
 
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\TestGroup;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -29,10 +30,11 @@ class GroupFetchCommand extends QITCommand {
 	/**
 	 * @param InputInterface  $input
 	 * @param OutputInterface $output
+	 * @param EnvInfo|null $env_info
 	 *
 	 * @return int
 	 */
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$group_identifier = $input->getOption( 'group-identifier' );
 		$group            = $this->test_group->fetch( $group_identifier );
 

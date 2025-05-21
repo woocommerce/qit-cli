@@ -4,6 +4,7 @@ namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\EnvironmentMonitor;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\EnvironmentSelectorTrait;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Docker;
@@ -43,7 +44,7 @@ class ReloadEnvironmentCommand extends QITCommand {
 			);
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$io      = new SymfonyStyle( $input, $output );
 		$running = $this->environment_monitor->get();
 		$env_id  = $input->getArgument( 'env_id' );

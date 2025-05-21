@@ -3,6 +3,7 @@
 namespace QIT_CLI\Commands\Tunnel;
 
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use Symfony\Component\Console\Command\Command;
 use QIT_CLI\Cache;
 use QIT_CLI\Tunnel\TunnelRunner;
@@ -72,7 +73,7 @@ TXT
 			);
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		if ( $input->getOption( 'reset' ) ) {
 			$this->cache->delete( 'tunnel_configs' );
 			$this->cache->delete( 'tunnel_default' );

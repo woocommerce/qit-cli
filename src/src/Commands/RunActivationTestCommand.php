@@ -4,6 +4,7 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Extension;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
@@ -40,8 +41,6 @@ class RunActivationTestCommand extends QITCommand {
 			->reuseOption( RunE2ECommand::getDefaultName(), 'notify' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'php_extension' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'tunnel' )
-			->reuseOption( RunE2ECommand::getDefaultName(), 'require' )
-			->reuseOption( RunE2ECommand::getDefaultName(), 'extension_set' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'dependencies_mode' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'group' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'no_group' )
@@ -80,7 +79,7 @@ class RunActivationTestCommand extends QITCommand {
 		);
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$run_e2e_command = App::make( RunE2ECommand::class );
 		$run_e2e_command->setApplication( $this->getApplication() );
 

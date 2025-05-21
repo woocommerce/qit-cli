@@ -40,7 +40,7 @@ class EnterEnvironmentCommand extends QITCommand {
 			->setDescription( 'Enter the PHP container of a running test environment.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$running_environments = $this->environment_monitor->get();
 
 		if ( empty( $running_environments ) ) {

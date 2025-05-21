@@ -4,6 +4,7 @@ namespace QIT_CLI\Commands\Partner;
 
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\ManagerBackend;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\Commands\QITCommand;
@@ -43,7 +44,7 @@ class AddPartner extends QITCommand {
 			->addOption( 'application_password', 'p', InputOption::VALUE_OPTIONAL, '(DEPRECATED) This has been renamed to "QIT Token" and will be removed. A regular application password will not work.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		// User.
 		if ( ! empty( $input->getOption( 'user' ) ) ) {
 			$user = $input->getOption( 'user' );

@@ -1,10 +1,12 @@
 <?php
 
-namespace QIT_CLI;
+namespace QIT_CLI\Config;
 
+use QIT_CLI\Cache;
 use QIT_CLI\Environment\Extension;
-use QIT_CLI\Environment\PluginsAndThemesParser;
 use QIT_CLI\Exceptions\NetworkErrorException;
+use QIT_CLI\RequestBuilder;
+use QIT_CLI\WooExtensionsList;
 
 class PluginDependencies {
 	/** @var Cache $cache */
@@ -12,9 +14,6 @@ class PluginDependencies {
 
 	/** @var WooExtensionsList $woo_extensions_list */
 	protected $woo_extensions_list;
-
-	/** @var PluginsAndThemesParser $parser */
-	protected $parser;
 
 	const DEPENDENCY_MODES = [
 		'env_only' => [

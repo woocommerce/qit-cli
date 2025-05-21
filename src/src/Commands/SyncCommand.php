@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands;
 
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\ManagerSync;
 use QIT_CLI\Commands\QITCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,7 +24,7 @@ class SyncCommand extends QITCommand {
 			->setDescription( 'Re-syncs with the Manager.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$this->manager_sync->maybe_sync( true );
 
 		$output->writeln( 'Sync completed.' );

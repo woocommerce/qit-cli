@@ -3,6 +3,7 @@
 namespace QIT_CLI_Tests;
 
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\TestConfig;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -24,7 +25,7 @@ class FooTestCommand extends QITCommand {
 		     ->addOption( 'profile', null, InputOption::VALUE_OPTIONAL, 'Test profile', 'default' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$profile = $input->getOption( 'profile' );
 		try {
 			$testConfigData = $this->config->get_test_config( 'foo', $profile );
@@ -57,7 +58,7 @@ class BarTestCommand extends QITCommand {
 		     ->addOption( 'profile', null, InputOption::VALUE_OPTIONAL, 'Test profile', 'default' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$profile = $input->getOption( 'profile' );
 		try {
 			$testConfigData = $this->config->get_test_config( 'bar', $profile );
@@ -90,7 +91,7 @@ class BazTestCommand extends QITCommand {
 		     ->addOption( 'profile', null, InputOption::VALUE_OPTIONAL, 'Test profile', 'default' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$profile = $input->getOption( 'profile' );
 		try {
 			$testConfigData = $this->config->get_test_config( 'baz', $profile );
@@ -119,7 +120,7 @@ class TestConfigCommand extends QITCommand {
 		     ->addOption( 'get-package', null, InputOption::VALUE_OPTIONAL, 'Get specific custom test package' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		// Get specific environment
 		if ( $env = $input->getOption( 'get-environment' ) ) {
 			try {

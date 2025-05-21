@@ -24,22 +24,22 @@ abstract class EnvInfo implements \JsonSerializable {
 	];
 
 	/** @var string */
-	public $environment;
+	public string $environment;
 
 	/** @var string */
-	public $dependencies_mode;
+	public string $dependencies_mode;
 
 	/** @var string */
-	public $temporary_env;
+	public string $temporary_env;
 
 	/** @var int */
-	public $created_at;
+	public int $created_at;
 
 	/** @var string */
-	public $status;
+	public string $status;
 
 	/** @var string */
-	public $env_id;
+	public string $env_id;
 
 	/**
 	 * Holds an array of volume mappings, where each key is a container path and its value is the corresponding local path.
@@ -48,36 +48,38 @@ abstract class EnvInfo implements \JsonSerializable {
 	 *                                    - Key: Container path (string)
 	 *                                    - Value: Local path (string) (Optional ":<FLAGS>", such as ":ro" for read-only)
 	 */
-	public $volumes = [];
+	public array $volumes = [];
 
 	/**
 	 * @var array<string> Array of docker images associated with this environment.
 	 * @example [ 'qit_php_123456', 'qit_db_123456', 'qit_nginx_123456' ]
 	 */
-	public $docker_images = [];
+	public array $docker_images = [];
 
 	/** @var string */
-	public $docker_network;
+	public string $docker_network;
 
 	/**
 	 * @var array<string> Array of PHP extensions to be installed in the environment.
 	 */
-	public $php_extensions = [];
+	public array $php_extensions = [];
 
 	/**
 	 * @var array<Extension> Array of plugins to feed to WP CLI.
 	 */
-	public $plugins = [];
+	public array $plugins = [];
 
 	/**
 	 * @var array<Extension> Array of themes to feed to WP CLI.
 	 */
-	public $themes = [];
+	public array $themes = [];
 
 	/**
 	 * @var bool Whether to use tunnels to expose the environment.
 	 */
-	public $tunnel = false;
+	public bool $tunnel = false;
+
+	public string $tunnel_type = 'no_tunnel';
 
 	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
@@ -102,7 +104,7 @@ abstract class EnvInfo implements \JsonSerializable {
 
 	/**
 	 * @param array<string,scalar|array<scalar>> $env_info_array
-	 */
+	 *
 	public static function from_array( array $env_info_array ): EnvInfo {
 		switch ( $env_info_array['environment'] ?? 'e2e' ) {
 			case 'e2e':
@@ -167,4 +169,5 @@ abstract class EnvInfo implements \JsonSerializable {
 
 		return $env_info;
 	}
+	 */
 }

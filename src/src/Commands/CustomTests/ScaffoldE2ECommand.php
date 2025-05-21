@@ -3,6 +3,7 @@
 namespace QIT_CLI\Commands\CustomTests;
 
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,7 +26,7 @@ class ScaffoldE2ECommand extends QITCommand {
 			->setDescription( 'Scaffold an example E2E test.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$path = $input->getArgument( 'path' );
 
 		$path_to_generate = normalize_path( $path );

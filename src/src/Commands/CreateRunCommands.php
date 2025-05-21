@@ -6,6 +6,7 @@ use QIT_CLI\App;
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\TestGroup;
@@ -74,7 +75,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 				parent::__construct();
 			}
 
-			public function doExecute( InputInterface $input, OutputInterface $output ): int {
+			public function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 				$profile = $input->getOption( 'profile' ) ?: 'default';
 				$options = $this->parse_options( $input );
 

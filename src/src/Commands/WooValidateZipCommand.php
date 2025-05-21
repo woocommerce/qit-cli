@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands;
 
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Woo\ZipValidator;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,7 +27,7 @@ class WooValidateZipCommand extends QITCommand {
 			->addArgument( 'path', InputArgument::REQUIRED, 'The ZIP file path' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		try {
 			$zip_file = $input->getArgument( 'path' );
 

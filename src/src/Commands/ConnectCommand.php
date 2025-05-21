@@ -3,6 +3,7 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\Commands\Partner\AddPartner;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,7 +19,7 @@ class ConnectCommand extends QITCommand {
 			->setDescription( 'Connect to manage your extensions and test runs.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$io = new SymfonyStyle( $input, $output );
 		$io->title( 'Quality Insights Toolkit (QIT)' );
 

@@ -5,6 +5,7 @@ namespace QIT_CLI\Commands;
 use QIT_CLI\App;
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\IO\Output;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Application;
@@ -27,7 +28,7 @@ class CreateMassTestCommands extends DynamicCommandCreator {
 
 	public function register_commands( Application $application ): void {
 		$command = new class() extends DynamicCommand {
-			public function doExecute( InputInterface $input, OutputInterface $output ): int {
+			public function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 				try {
 					$options = $this->parse_options( $input );
 

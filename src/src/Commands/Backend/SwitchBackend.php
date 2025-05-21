@@ -4,6 +4,7 @@ namespace QIT_CLI\Commands\Backend;
 
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Config;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\ManagerBackend;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,7 +29,7 @@ class SwitchBackend extends QITCommand {
 			->setAliases( [ 'switch' ] );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		// Optionaly allow the environment to be passed as an argument.
 		if ( ! empty( $input->getArgument( 'backend' ) ) ) {
 			$this->manager_backend->switch_to_manager_backend( strtolower( $input->getArgument( 'backend' ) ) );

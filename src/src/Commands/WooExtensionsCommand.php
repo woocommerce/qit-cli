@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands;
 
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,7 +28,7 @@ class WooExtensionsCommand extends QITCommand {
 			->addOption( 'deps', 'd', InputOption::VALUE_NONE, '(Optional) Include dependencies in the list.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		if ( $input->getOption( 'refresh' ) === true ) {
 			$this->woo_extensions_list->fetch_woo_extensions_available();
 

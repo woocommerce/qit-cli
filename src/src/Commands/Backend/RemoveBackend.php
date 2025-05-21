@@ -3,6 +3,7 @@
 namespace QIT_CLI\Commands\Backend;
 
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\ManagerBackend;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -26,7 +27,7 @@ class RemoveBackend extends QITCommand {
 			->addArgument( 'environment', InputArgument::REQUIRED, 'The environment to remove.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$manager_backend = $input->getArgument( 'environment' );
 
 		try {

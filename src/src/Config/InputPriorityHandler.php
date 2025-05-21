@@ -17,11 +17,26 @@ class InputPriorityHandler {
 	}
 
 	public function get_config_from_input( InputInterface $input, array $config_values, array $command_defaults ): array {
-		$cli_params = [];
+		$cli_params   = [];
+		$key_mappings = [
+			'wp'                => 'wordpress_version',
+			'woo'               => 'woocommerce_version',
+			'php_version'       => 'php_version',
+			'plugin'            => 'plugins',
+			'theme'             => 'themes',
+			'volume'            => 'volumes',
+			'php_extension'     => 'php_extensions',
+			'env'               => 'env',
+			'env_file'          => 'env_file',
+			'dependencies_mode' => 'dependencies_mode',
+			'environment'       => 'environment',
+		];
+
 		foreach ( $input->getOptions() as $key => $value ) {
-			// Only include explicitly provided options using is_option_explicitly_provided
-			if ( is_option_explicitly_provided( $input, $key ) ) {
-				$cli_params[ $key ] = $value;
+			// Include options that are explicitly provided or have non-default values
+			if ( $value !== $command_defaults[ $key ] && $value !== null ) {
+				$config_key                = $key_mappings[ $key ] ?? $key;
+				$cli_params[ $config_key ] = $value;
 			}
 		}
 

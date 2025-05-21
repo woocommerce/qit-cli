@@ -3,6 +3,7 @@
 namespace QIT_CLI\Commands\Tags;
 
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Upload;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\Zipper;
@@ -36,7 +37,7 @@ class UploadTestTagsCommand extends QITCommand {
 			->setDescription( 'Uploads your custom test to QIT.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$test_path = $input->getArgument( 'test_path' );
 		$test_type = $input->getArgument( 'test_type' );
 		$tag       = $input->getArgument( 'test_tag' );

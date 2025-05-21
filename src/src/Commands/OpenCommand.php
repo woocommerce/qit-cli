@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands;
 
+use QIT_CLI\Environment\Environments\EnvInfo;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,7 +18,7 @@ class OpenCommand extends QITCommand {
 			->addArgument( 'test_run_id', InputArgument::REQUIRED );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$command = $this->getApplication()->find( GetCommand::getDefaultName() );
 		$command->run( new ArrayInput( [
 			'test_run_id' => $input->getArgument( 'test_run_id' ),
