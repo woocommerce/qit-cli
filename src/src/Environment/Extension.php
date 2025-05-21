@@ -2,47 +2,71 @@
 
 namespace QIT_CLI\Environment;
 
-class Extension {
-	/** @var array<string> */
+class Extension implements \JsonSerializable {
+	/** @var array<string> Supported extension types. */
 	const TYPES = [
 		'plugin' => 'plugin',
 		'theme'  => 'theme',
 	];
 
-	const PRIORITY_LOW    = 10;
+	const ACTIONS = [
+		'activate' => 'activate',
+		'bootstrap' => 'bootstrap',
+		'test' => 'test',
+	];
+
+	const PRIORITY_LOW = 10;
 	const PRIORITY_MEDIUM = 50;
-	const PRIORITY_HIGH   = 100;
-	
-	public string $slug;
+	const PRIORITY_HIGH = 100;
 
-	/** @var string The entrypoint of the extension, the main PHP file if a plugin or style.css if a theme. */
-	public string $entrypoint;
+	/** @var string The unique identifier (slug) of the extension. */
+	public $slug;
 
-	/** @var string|int The "source" can be a slug, a URL, a directory or a zip file. */
+	/** @var string|null The entrypoint file (e.g., main PHP file for plugins, style.css for themes). */
+	public $entrypoint;
+
+	/** @var string|int|null The source (slug, URL, directory, or zip file). */
 	public $source;
 
-	/** @var string|int|null The file or directory of the source once it's downloaded (or, if it was already a local file, points to it). */
+	/** @var string|int|null The path to the downloaded source, if applicable. */
 	public $downloaded_source;
 
-	/**
-	 * @see Extension::TYPES
-	 * @var string
-	 */
-	public string $type;
+	/** @var string The type of extension ('plugin' or 'theme'). */
+	public $type;
 
-	/** @var string A FQDN for an instance of Handler. */
-	public string $handler;
+	/** @var string|null Fully qualified domain name for the handler class. */
+	public $handler;
 
-	public string $version = 'undefined';
+	/** @var string Version of the extension, defaults to 'undefined'. */
+	public $version = 'undefined';
 
 	/** @var string|null Action for the extension, set by commands (e.g., 'activate', 'test'). */
-	public ?string $action;
+	public $action;
 
 	/** @var array<string>|null Test tags for testing, set by testing commands. */
-	public ?array $test_tags;
+	public $test_tags;
 
-	public int $priority = self::PRIORITY_MEDIUM;
+	/** @var int Priority for processing, defaults to PRIORITY_MEDIUM. */
+	public $priority = self::PRIORITY_MEDIUM;
 
-	/** @var int|null */
-	public ?int $wccom_id;
+	/** @var int|null WooCommerce.com ID, if applicable. */
+	public $wccom_id;
+
+	/**
+	 * @param string $slug The extension slug.
+	 * @param string $type The extension type ('plugin' or 'theme').
+	 * @param string|int|null $source Optional source (slug, URL, directory, or zip file).
+	 */
+	public function __construct( string $slug, string $type, $source = null ) {
+		if ( ! in_array( $type, self::TYPES, true ) ) {
+			throw new \InvalidArgumentException( "Invalid extension type: $type. Must be one of: " . implode( ', ', self::TYPES ) );
+		}
+		$this->slug   = $slug;
+		$this->type   = $type;
+		$this->source = $source;
+	}
+
+	public function jsonSerialize() {
+		return $this->slug;
+	}
 }

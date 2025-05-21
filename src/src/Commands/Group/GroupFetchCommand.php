@@ -29,6 +29,7 @@ class GroupFetchCommand extends QITCommand {
 	/**
 	 * @param InputInterface  $input
 	 * @param OutputInterface $output
+	 *
 	 * @return int
 	 */
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {

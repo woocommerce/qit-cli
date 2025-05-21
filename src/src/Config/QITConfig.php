@@ -2,19 +2,15 @@
 
 namespace QIT_CLI\Config;
 
-use Symfony\Component\Console\Application;
-
 class QITConfig {
 	private ConfigFileLoader $config_loader;
 	private ParserFactory $parser_factory;
 	private array $parsed_config = [];
-	private InputPriorityHandler $input_priority_handler;
 
-	public function __construct( string $config_file = 'qit.json', Application $console_application = null ) {
-		$this->config_loader          = new ConfigFileLoader();
-		$this->parser_factory         = new ParserFactory( $console_application ?? new Application() );
-		$this->input_priority_handler = new InputPriorityHandler();
-		$raw_config                   = $this->config_loader->load_config( $config_file );
+	public function __construct( string $config_file, ConfigFileLoader $config_loader, ParserFactory $parser_factory ) {
+		$this->config_loader  = $config_loader;
+		$this->parser_factory = $parser_factory;
+		$raw_config           = $this->config_loader->load_config( $config_file );
 
 		foreach ( $raw_config as $key => $value ) {
 			$parser                      = $this->parser_factory->get_parser( $key );

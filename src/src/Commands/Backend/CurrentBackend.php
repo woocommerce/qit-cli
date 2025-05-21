@@ -16,7 +16,7 @@ class CurrentBackend extends QITCommand {
 			->setDescription( 'Prints the current environment.' );
 	}
 
-	protected function doExecute(InputInterface $input, OutputInterface $output): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$output->writeln( Config::get_current_manager_backend() );
 
 		return self::SUCCESS;

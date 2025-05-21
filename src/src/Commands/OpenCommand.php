@@ -17,7 +17,7 @@ class OpenCommand extends QITCommand {
 			->addArgument( 'test_run_id', InputArgument::REQUIRED );
 	}
 
-	protected function doExecute(InputInterface $input, OutputInterface $output): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$command = $this->getApplication()->find( GetCommand::getDefaultName() );
 		$command->run( new ArrayInput( [
 			'test_run_id' => $input->getArgument( 'test_run_id' ),

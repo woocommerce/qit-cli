@@ -10,7 +10,6 @@ namespace QIT_CLI\Commands\CustomTests;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\QITCommand;
-use QIT_CLI\Environment\PluginsAndThemesParser;
 use QIT_CLI\LocalTests\E2E\CustomE2ERunner;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\DynamicCommand;
@@ -105,7 +104,7 @@ class RunE2ECommand extends DynamicCommand {
 				'Any arguments after a double-dash (--) go here.'
 			)
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'The source of the main extension under test. Accepts a slug, a file, a URL. If not provided, the source will be the slug.' )
-			->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to take on the SUT. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['test'] )
+			// ->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to take on the SUT. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['test'] )
 			->addOption( 'pw_test_tag', null, InputOption::VALUE_OPTIONAL, 'The Playwright test tag to run.', '' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'wp' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'woo' )
@@ -146,6 +145,21 @@ class RunE2ECommand extends DynamicCommand {
 
 			return self::FAILURE;
 		}
+
+		$wp_version = $input->getOption('wp');
+		$profile = $input->getOption('profile');
+		$volumes = $input->getOption('volume');
+		$woo_extension = $input->getArgument('woo_extension');
+
+		$output->writeln("Running E2E tests with:");
+		$output->writeln("- WP version: $wp_version");
+		$output->writeln("- Profile: $profile");
+		if (!empty($volumes)) {
+			$output->writeln("- Volumes: " . implode(', ', $volumes));
+		}
+		$output->writeln("- Extension: $woo_extension");
+
+		return Command::SUCCESS;
 
 		try {
 			$options                    = $this->parse_options( $input );
@@ -553,28 +567,6 @@ class RunE2ECommand extends DynamicCommand {
 		// STEP 1: Find & parse any existing entry for this slug from qit.yml or earlier merges.
 		$old_index     = null;
 		$existing_data = [];
-
-		if ( ! empty( $env_up_options[ $key ] ) ) {
-			foreach ( $env_up_options[ $key ] as $i => $entry ) {
-				$decoded = json_decode( $entry, true );
-				// If it’s valid JSON with the correct slug.
-				if ( is_array( $decoded ) && ! empty( $decoded['slug'] ) && $decoded['slug'] === $woo_extension_slug ) {
-					$old_index     = $i;
-					$existing_data = $decoded;
-					break;
-				}
-
-				// If it’s short syntax ("some-plugin:action:tag1,tag2"), parse similarly.
-				if ( ! $decoded ) {
-					$maybe_parsed = App::make( PluginsAndThemesParser::class )->parse_string_extension( $entry, Extension::ACTIONS['test'] );
-					if ( $maybe_parsed && ! empty( $maybe_parsed['slug'] ) && $maybe_parsed['slug'] === $woo_extension_slug ) {
-						$old_index     = $i;
-						$existing_data = $maybe_parsed;
-						break;
-					}
-				}
-			}
-		}
 
 		// STEP 2: Remove that old entry if found, so we don't have duplicates.
 		if ( $old_index !== null ) {

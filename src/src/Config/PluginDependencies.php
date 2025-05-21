@@ -29,10 +29,9 @@ class PluginDependencies {
 		],
 	];
 
-	public function __construct( Cache $cache, WooExtensionsList $woo_extensions_list, PluginsAndThemesParser $parser ) {
+	public function __construct( Cache $cache, WooExtensionsList $woo_extensions_list ) {
 		$this->cache               = $cache;
 		$this->woo_extensions_list = $woo_extensions_list;
-		$this->parser              = $parser;
 	}
 
 	/**

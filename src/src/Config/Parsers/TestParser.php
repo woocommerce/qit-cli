@@ -93,12 +93,4 @@ class TestParser extends AbstractConfigParser {
 			throw new \RuntimeException( "No command found for test type '$test_type'. Expected a 'run:$test_type' command." );
 		}
 	}
-
-	public function get( string $test_type, string $profile ): array {
-		if ( ! isset( $this->parsed_tests[ $test_type ][ $profile ] ) ) {
-			throw new \RuntimeException( "Test configuration '$test_type:$profile' not found." );
-		}
-
-		return $this->parsed_tests[ $test_type ][ $profile ];
-	}
 }
