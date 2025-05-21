@@ -146,21 +146,6 @@ class RunE2ECommand extends DynamicCommand {
 			return self::FAILURE;
 		}
 
-		$wp_version = $input->getOption('wp');
-		$profile = $input->getOption('profile');
-		$volumes = $input->getOption('volume');
-		$woo_extension = $input->getArgument('woo_extension');
-
-		$output->writeln("Running E2E tests with:");
-		$output->writeln("- WP version: $wp_version");
-		$output->writeln("- Profile: $profile");
-		if (!empty($volumes)) {
-			$output->writeln("- Volumes: " . implode(', ', $volumes));
-		}
-		$output->writeln("- Extension: $woo_extension");
-
-		return Command::SUCCESS;
-
 		try {
 			$options                    = $this->parse_options( $input );
 			$env_up_options             = $options['env_up'];
