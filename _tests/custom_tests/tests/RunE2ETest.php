@@ -8,6 +8,41 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 	use SnapshotHelpers;
 	use ScaffoldHelpers;
 
+	/**
+	 * @param array<string,mixed> $qit_json_array The array to convert to JSON.
+	 * @return string The absolute path to the created qit.json file.
+	 * @throws \RuntimeException If file creation fails.
+	 */
+	private static function create_temporary_qit_json( array $qit_json_array ): string {
+		$qit_json_path = __DIR__ . '/qit.json';
+		$json_content  = json_encode( $qit_json_array, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
+
+		if ( $json_content === false ) {
+			throw new \RuntimeException( 'Failed to encode JSON for qit.json: ' . json_last_error_msg() );
+		}
+
+		if ( file_put_contents( $qit_json_path, $json_content ) === false ) {
+			throw new \RuntimeException( "Failed to create temporary qit.json file at $qit_json_path." );
+		}
+
+		return realpath( $qit_json_path );
+	}
+
+	/**
+	 * @param string $qit_json_path The absolute path to the qit.json file.
+	 * @return void
+	 * @throws \RuntimeException If file deletion fails.
+	 */
+	private static function delete_temporary_qit_json( string $qit_json_path ): void {
+		if ( file_exists( $qit_json_path ) ) {
+			if ( ! unlink( $qit_json_path ) ) {
+				// Try to provide more context if possible, though unlink() itself doesn't give much.
+				$error_details = error_get_last()['message'] ?? 'Unknown error';
+				throw new \RuntimeException( "Failed to delete temporary qit.json file at $qit_json_path. Error: $error_details" );
+			}
+		}
+	}
+
 	public function test_runs_scaffolded_e2e() {
 		$output = qit( [
 				'run:e2e',
