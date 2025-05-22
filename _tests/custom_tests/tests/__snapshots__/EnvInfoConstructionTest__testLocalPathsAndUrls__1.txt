@@ -17,7 +17,7 @@
     ],
     "themes": [
         "storefront",
-        "\/absolute\/path\/normalized-theme.zip"
+        "\/tmp-normalized\/normalized-theme.zip"
     ],
     "env": {
         "WP_CLI_CONFIG_PATH": "\/qit\/wp-cli.yml"

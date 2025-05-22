@@ -71,7 +71,6 @@ class EnvInfoConstructionTest extends TestCase {
 		// Normalize paths
 		$real_temp_dir = realpath( sys_get_temp_dir() );
 		if ( $real_temp_dir ) {
-			// Normalize temp dir path to avoid double slashes
 			$real_temp_dir = rtrim( $real_temp_dir, '/' );
 			$env_info      = json_decode( str_replace(
 				[ $real_temp_dir . '/', $real_temp_dir ],
@@ -94,12 +93,12 @@ class EnvInfoConstructionTest extends TestCase {
 				if ( ! is_string( $plugin ) ) {
 					throw new \RuntimeException( 'Plugin must be a string, got ' . gettype( $plugin ) );
 				}
-				// Normalize local plugin paths in strings
-				if ( preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/fake-plugin_[a-f0-9]+\.zip$/i', $plugin ) ) {
+				// Normalize local plugin and theme paths
+				if ( preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/test-plugin-[a-f0-9]+\.zip$/i', $plugin ) ) {
 					$plugin = '/tmp-normalized/normalized-plugin.zip';
 				}
 			}
-			unset( $plugin ); // Unset reference to avoid issues
+			unset( $plugin );
 		}
 
 		if ( ! empty( $env_info['themes'] ) && is_array( $env_info['themes'] ) ) {
@@ -107,13 +106,8 @@ class EnvInfoConstructionTest extends TestCase {
 				if ( ! is_string( $theme ) ) {
 					throw new \RuntimeException( 'Theme must be a string, got ' . gettype( $theme ) );
 				}
-				// Normalize local theme paths in strings
-				if ( preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/fake-theme_[a-f0-9]+\.zip$/i', $theme ) ) {
+				if ( preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/test-theme-[a-f0-9]+\.zip$/i', $theme ) ) {
 					$theme = '/tmp-normalized/normalized-theme.zip';
-				}
-				// Normalize absolute theme paths
-				if ( $theme === '/absolute/path/to/theme.zip' ) {
-					$theme = '/absolute/path/normalized-theme.zip';
 				}
 			}
 			unset( $theme );
@@ -329,8 +323,10 @@ class EnvInfoConstructionTest extends TestCase {
 	}
 
 	public function testLocalPathsAndUrls() {
-		$dummyPluginZip = $this->tempDir . '/fake-plugin_' . uniqid() . '.zip';
+		$dummyPluginZip = $this->tempDir . '/test-plugin-' . uniqid() . '.zip';
+		$dummyThemeZip  = $this->tempDir . '/test-theme-' . uniqid() . '.zip';
 		file_put_contents( $dummyPluginZip, 'fake plugin contents' );
+		file_put_contents( $dummyThemeZip, 'fake theme contents' );
 
 		$config = [
 			'environments' => [
@@ -344,16 +340,15 @@ class EnvInfoConstructionTest extends TestCase {
 
 		$cliArgs = [
 			'--plugin=' . $dummyPluginZip,
-			'--theme=/absolute/path/to/theme.zip'
+			'--theme=' . $dummyThemeZip
 		];
 
 		$envInfo = $this->runQitConfigTest( $config, $cliArgs );
-		// Debug: Log envInfo['plugins'] and envInfo['themes']
 		file_put_contents( '/tmp/qit_debug_test.log', "testLocalPathsAndUrls envInfo['plugins']: " . print_r( $envInfo['plugins'], true ) . "\n", FILE_APPEND );
 		file_put_contents( '/tmp/qit_debug_test.log', "testLocalPathsAndUrls envInfo['themes']: " . print_r( $envInfo['themes'], true ) . "\n", FILE_APPEND );
 		$this->assertTrue( in_array( 'woocommerce', $envInfo['plugins'] ) );
 		$this->assertTrue( in_array( '/tmp-normalized/normalized-plugin.zip', $envInfo['plugins'] ) );
-		$this->assertTrue( in_array( '/absolute/path/normalized-theme.zip', $envInfo['themes'] ) ); // Fails
+		$this->assertTrue( in_array( '/tmp-normalized/normalized-theme.zip', $envInfo['themes'] ) );
 		$this->assertMatchesSnapshot( json_encode( $envInfo, JSON_PRETTY_PRINT ) );
 	}
 
@@ -541,32 +536,25 @@ class EnvInfoConstructionTest extends TestCase {
 		$this->assertMatchesSnapshot( json_encode( $envInfo, JSON_PRETTY_PRINT ) );
 	}
 
-	/**
-	 * Test that EnvInfo correctly includes a local plugin path from qit.json.
-	 */
 	public function testLocalPluginPath() {
-		// Create a dummy plugin ZIP
-		$pluginZip = $this->tempDir . '/fake_plugin_' . uniqid() . '.zip';
+		// Create a dummy plugin ZIP with consistent naming
+		$pluginZip = $this->tempDir . '/test-plugin-' . uniqid() . '.zip';
 		file_put_contents( $pluginZip, 'fake plugin contents' );
 
-		$config = array(
-			'environments' => array(
-				'default' => array(
-					'plugins'             => array( 'woocommerce', $pluginZip ),
+		$config = [
+			'environments' => [
+				'default' => [
+					'plugins'             => [ 'woocommerce', $pluginZip ],
 					'woocommerce_version' => ''
-				)
-			)
-		);
+				]
+			]
+		];
 
 		$envInfo = $this->runQitConfigTest( $config );
-		// Debug output to inspect plugins
 		file_put_contents( '/tmp/test_debug.log', 'testLocalPluginPath plugins: ' . print_r( $envInfo['plugins'], true ) . "\n", FILE_APPEND );
-		// Check for woocommerce slug
-		$this->assertTrue( in_array( 'woocommerce', $envInfo['plugins'] ), 'Plugin slug from qit.json should be included' );
-		// Check for normalized plugin path
-		$this->assertTrue( in_array( '/tmp-normalized/normalized-plugin.zip', $envInfo['plugins'] ), 'Normalized local plugin path should be included' );
-		// Verify no duplicates
-		$this->assertEquals( count( $envInfo['plugins'] ), count( array_unique( $envInfo['plugins'] ) ), 'Plugin list should contain no duplicate slugs' );
+		$this->assertTrue( in_array( 'woocommerce', $envInfo['plugins'] ) );
+		$this->assertTrue( in_array( '/tmp-normalized/normalized-plugin.zip', $envInfo['plugins'] ) );
+		$this->assertEquals( count( $envInfo['plugins'] ), count( array_unique( $envInfo['plugins'] ) ) );
 		try {
 			$snapshotData = json_encode( $envInfo, JSON_PRETTY_PRINT );
 			file_put_contents( '/tmp/test_debug.log', 'testLocalPluginPath snapshot: ' . $snapshotData . "\n", FILE_APPEND );
