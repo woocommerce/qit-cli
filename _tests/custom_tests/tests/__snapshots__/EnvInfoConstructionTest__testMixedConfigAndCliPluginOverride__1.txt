@@ -11,14 +11,17 @@
     "docker_images": [],
     "docker_network": "",
     "php_extensions": [],
-    "plugins": {
-        "0": "woocommerce",
-        "1": "my-plugin",
-        "3": "contact-form-7"
-    },
+    "plugins": [
+        "woocommerce",
+        "my-plugin",
+        "contact-form-7"
+    ],
     "themes": [
         "storefront"
     ],
+    "env": {
+        "WP_CLI_CONFIG_PATH": "\/qit\/wp-cli.yml"
+    },
     "tunnel": false,
     "tunnel_type": "no_tunnel",
     "runner_args": [],

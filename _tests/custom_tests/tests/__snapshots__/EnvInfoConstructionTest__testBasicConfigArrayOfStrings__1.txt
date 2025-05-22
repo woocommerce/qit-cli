@@ -13,14 +13,15 @@
     "php_extensions": [],
     "plugins": [
         "woocommerce",
-        "wordpress-importer",
-        "woocommerce",
         "wordpress-importer"
     ],
     "themes": [
         "storefront",
         "twentytwentyone"
     ],
+    "env": {
+        "WP_CLI_CONFIG_PATH": "\/qit\/wp-cli.yml"
+    },
     "tunnel": false,
     "tunnel_type": "no_tunnel",
     "runner_args": [],
