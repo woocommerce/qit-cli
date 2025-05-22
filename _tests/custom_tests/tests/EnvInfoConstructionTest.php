@@ -58,8 +58,8 @@ class EnvInfoConstructionTest extends TestCase {
 	 *
 	 * @return array Normalized E2EEnvInfo array.
 	 */
-	private function normalize_env_info( array $env_info ): array {
-		$original_env_id = $env_info['env_id'] ?? null;
+	private function normalize_env_info( array $env_info ) {
+		$original_env_id = isset( $env_info['env_id'] ) ? $env_info['env_id'] : null;
 		if ( $original_env_id ) {
 			$env_info['env_id']        = 'ENV_ID_NORMALIZED';
 			$env_info['temporary_env'] = str_replace( $original_env_id, 'ENV_ID_NORMALIZED', $env_info['temporary_env'] );
@@ -73,7 +73,7 @@ class EnvInfoConstructionTest extends TestCase {
 		if ( $real_temp_dir ) {
 			// Avoid double slashes by normalizing temp dir path
 			$env_info = json_decode( str_replace(
-				[ $real_temp_dir, rtrim( $real_temp_dir, '/' ) . '/' ],
+				array( $real_temp_dir, rtrim( $real_temp_dir, '/' ) . '/' ),
 				'/tmp-normalized/',
 				json_encode( $env_info )
 			), true );
@@ -90,59 +90,33 @@ class EnvInfoConstructionTest extends TestCase {
 
 		if ( ! empty( $env_info['plugins'] ) && is_array( $env_info['plugins'] ) ) {
 			foreach ( $env_info['plugins'] as &$plugin ) {
-				if ( is_object( $plugin ) ) {
-					$plugin = (array) $plugin;
+				if ( ! is_string( $plugin ) ) {
+					throw new \RuntimeException( 'Plugin must be a string, got ' . gettype( $plugin ) );
 				}
-				if ( isset( $plugin['version'] ) ) {
-					$plugin['version'] = 'NORMALIZED_VERSION';
-				}
-				if ( isset( $plugin['downloaded_source'] ) ) {
-					$plugin['downloaded_source'] = '/normalized/path.zip';
-				}
-				if ( isset( $plugin['source'] ) && strpos( $plugin['source'], 'http' ) === 0 ) {
-					$filename         = basename( parse_url( $plugin['source'], PHP_URL_PATH ) );
-					$plugin['source'] = "https://normalized-remote-source/$filename";
-				}
-				// Normalize local zip file paths in plugins
-				if ( is_string( $plugin ) && preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/fake_plugin_[a-f0-9]+\.zip$/i', $plugin ) ) {
+				// Normalize local plugin paths in strings
+				if ( preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/fake_plugin_[a-f0-9]+\.zip$/i', $plugin ) ) {
 					$plugin = '/tmp-normalized/normalized-plugin.zip';
 				}
-				// Handle Extension objects with local path slugs
-				if ( is_array( $plugin ) && isset( $plugin['slug'] ) && preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/fake_plugin_[a-f0-9]+\.zip$/i', $plugin['slug'] ) ) {
-					$plugin['slug'] = '/tmp-normalized/normalized-plugin.zip';
-				}
 			}
+			unset( $plugin ); // Unset reference to avoid issues
 		}
 
 		if ( ! empty( $env_info['themes'] ) && is_array( $env_info['themes'] ) ) {
 			foreach ( $env_info['themes'] as &$theme ) {
-				if ( is_object( $theme ) ) {
-					$theme = (array) $theme;
+				if ( ! is_string( $theme ) ) {
+					throw new \RuntimeException( 'Theme must be a string, got ' . gettype( $theme ) );
 				}
-				if ( isset( $theme['version'] ) ) {
-					$theme['version'] = 'NORMALIZED_VERSION';
-				}
-				if ( isset( $theme['downloaded_source'] ) ) {
-					$theme['downloaded_source'] = '/normalized/path.zip';
-				}
-				if ( isset( $theme['source'] ) && strpos( $theme['source'], 'http' ) === 0 ) {
-					$filename        = basename( parse_url( $theme['source'], PHP_URL_PATH ) );
-					$theme['source'] = "https://normalized-remote-source/$filename";
-				}
-				// Normalize local zip file paths in themes
-				if ( is_string( $theme ) && preg_match( '#^/absolute/path/to/theme\.zip$#', $theme ) ) {
-					$theme = '/absolute/path/normalized-theme.zip';
-				}
-				// Handle Extension objects with local path slugs
-				if ( is_array( $theme ) && isset( $theme['slug'] ) && preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/fake_theme_[a-f0-9]+\.zip$/i', $theme['slug'] ) ) {
-					$theme['slug'] = '/tmp-normalized/normalized-theme.zip';
+				// Normalize local theme paths in strings
+				if ( preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/fake_theme_[a-f0-9]+\.zip$/i', $theme ) ) {
+					$theme = '/tmp-normalized/normalized-theme.zip';
 				}
 			}
+			unset( $theme );
 		}
 
 		// Normalize volumes
 		if ( ! empty( $env_info['volumes'] ) && is_array( $env_info['volumes'] ) ) {
-			$normalized_volumes = [];
+			$normalized_volumes = array();
 			foreach ( $env_info['volumes'] as $container_path => $host_path ) {
 				$normalized_host_path                  = str_replace(
 					realpath( dirname( $host_path ) ) . '/',
@@ -570,18 +544,30 @@ class EnvInfoConstructionTest extends TestCase {
 		$pluginZip = $this->tempDir . '/fake_plugin_' . uniqid() . '.zip';
 		file_put_contents( $pluginZip, 'fake plugin contents' );
 
-		$config = [
-			'environments' => [
-				'default' => [
-					'plugins'             => [ 'woocommerce', $pluginZip ],
+		$config = array(
+			'environments' => array(
+				'default' => array(
+					'plugins'             => array( 'woocommerce', $pluginZip ),
 					'woocommerce_version' => ''
-				]
-			]
-		];
+				)
+			)
+		);
 
 		$envInfo = $this->runQitConfigTest( $config );
+		// Debug output to inspect plugins
+		file_put_contents( '/tmp/test_debug.log', 'testLocalPluginPath plugins: ' . print_r( $envInfo['plugins'], true ) . "\n", FILE_APPEND );
+		// Check for woocommerce slug
 		$this->assertTrue( in_array( 'woocommerce', $envInfo['plugins'] ), 'Plugin slug from qit.json should be included' );
+		// Check for normalized plugin path
 		$this->assertTrue( in_array( '/tmp-normalized/normalized-plugin.zip', $envInfo['plugins'] ), 'Normalized local plugin path should be included' );
-		$this->assertMatchesSnapshot( json_encode( $envInfo, JSON_PRETTY_PRINT ) );
+		// Verify no duplicates
+		$this->assertEquals( count( $envInfo['plugins'] ), count( array_unique( $envInfo['plugins'] ) ), 'Plugin list should contain no duplicate slugs' );
+		try {
+			$snapshotData = json_encode( $envInfo, JSON_PRETTY_PRINT );
+			file_put_contents( '/tmp/test_debug.log', 'testLocalPluginPath snapshot: ' . $snapshotData . "\n", FILE_APPEND );
+			$this->assertMatchesSnapshot( $snapshotData );
+		} catch ( Exception $e ) {
+			$this->fail( 'Snapshot assertion failed: ' . $e->getMessage() );
+		}
 	}
 }
