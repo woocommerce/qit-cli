@@ -19,7 +19,7 @@
     "env": {
         "WP_CLI_CONFIG_PATH": "\/qit\/wp-cli.yml"
     },
-    "tunnel": true,
+    "tunnel": false,
     "tunnel_type": "no_tunnel",
     "runner_args": [],
     "wp": "latest",
