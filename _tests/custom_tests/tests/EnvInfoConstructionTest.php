@@ -71,9 +71,10 @@ class EnvInfoConstructionTest extends TestCase {
 		// Normalize paths
 		$real_temp_dir = realpath( sys_get_temp_dir() );
 		if ( $real_temp_dir ) {
-			// Avoid double slashes by normalizing temp dir path
-			$env_info = json_decode( str_replace(
-				array( $real_temp_dir, rtrim( $real_temp_dir, '/' ) . '/' ),
+			// Normalize temp dir path to avoid double slashes
+			$real_temp_dir = rtrim( $real_temp_dir, '/' );
+			$env_info      = json_decode( str_replace(
+				[ $real_temp_dir . '/', $real_temp_dir ],
 				'/tmp-normalized/',
 				json_encode( $env_info )
 			), true );
@@ -94,7 +95,7 @@ class EnvInfoConstructionTest extends TestCase {
 					throw new \RuntimeException( 'Plugin must be a string, got ' . gettype( $plugin ) );
 				}
 				// Normalize local plugin paths in strings
-				if ( preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/fake_plugin_[a-f0-9]+\.zip$/i', $plugin ) ) {
+				if ( preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/fake-plugin_[a-f0-9]+\.zip$/i', $plugin ) ) {
 					$plugin = '/tmp-normalized/normalized-plugin.zip';
 				}
 			}
@@ -107,8 +108,12 @@ class EnvInfoConstructionTest extends TestCase {
 					throw new \RuntimeException( 'Theme must be a string, got ' . gettype( $theme ) );
 				}
 				// Normalize local theme paths in strings
-				if ( preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/fake_theme_[a-f0-9]+\.zip$/i', $theme ) ) {
+				if ( preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/fake-theme_[a-f0-9]+\.zip$/i', $theme ) ) {
 					$theme = '/tmp-normalized/normalized-theme.zip';
+				}
+				// Normalize absolute theme paths
+				if ( $theme === '/absolute/path/to/theme.zip' ) {
+					$theme = '/absolute/path/normalized-theme.zip';
 				}
 			}
 			unset( $theme );
@@ -116,7 +121,7 @@ class EnvInfoConstructionTest extends TestCase {
 
 		// Normalize volumes
 		if ( ! empty( $env_info['volumes'] ) && is_array( $env_info['volumes'] ) ) {
-			$normalized_volumes = array();
+			$normalized_volumes = [];
 			foreach ( $env_info['volumes'] as $container_path => $host_path ) {
 				$normalized_host_path                  = str_replace(
 					realpath( dirname( $host_path ) ) . '/',

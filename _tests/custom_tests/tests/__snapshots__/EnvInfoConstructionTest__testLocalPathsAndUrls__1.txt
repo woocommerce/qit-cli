@@ -16,8 +16,12 @@
         "\/tmp-normalized\/normalized-plugin.zip"
     ],
     "themes": [
+        "storefront",
         "\/absolute\/path\/normalized-theme.zip"
     ],
+    "env": {
+        "WP_CLI_CONFIG_PATH": "\/qit\/wp-cli.yml"
+    },
     "tunnel": false,
     "tunnel_type": "no_tunnel",
     "runner_args": [],
