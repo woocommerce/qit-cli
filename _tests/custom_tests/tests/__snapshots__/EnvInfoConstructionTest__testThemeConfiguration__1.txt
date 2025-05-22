@@ -15,7 +15,10 @@
         "woocommerce",
         "woocommerce"
     ],
-    "themes": [],
+    "themes": [
+        "storefront",
+        "twentytwentyone"
+    ],
     "tunnel": false,
     "tunnel_type": "no_tunnel",
     "runner_args": [],

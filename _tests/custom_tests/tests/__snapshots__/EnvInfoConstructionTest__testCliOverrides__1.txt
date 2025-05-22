@@ -13,15 +13,15 @@
     "php_extensions": [],
     "plugins": [
         "woocommerce",
-        "woocommerce"
+        "wordpress-importer"
     ],
     "themes": [],
     "tunnel": false,
     "tunnel_type": "no_tunnel",
     "runner_args": [],
-    "wp": "latest",
+    "wp": "6.1",
     "object_cache": false,
-    "php_version": "8.2",
+    "php_version": "8.0",
     "domain": "normalized.localhost",
     "skip_activating_plugins": false,
     "skip_activating_themes": false,

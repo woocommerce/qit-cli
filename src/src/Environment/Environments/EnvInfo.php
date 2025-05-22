@@ -75,6 +75,11 @@ abstract class EnvInfo implements \JsonSerializable {
 	public array $themes = [];
 
 	/**
+	 * @var array<string> Array of environment variables to be passed to the test runner.
+	 */
+	public array $env = [];
+
+	/**
 	 * @var bool Whether to use tunnels to expose the environment.
 	 */
 	public bool $tunnel = false;
