@@ -15,8 +15,7 @@ class GroupClearCommand extends QITCommand {
 
 	protected Cache $cache;
 
-	/** @var TestGroup */
-	protected $test_group;
+	protected TestGroup $test_group;
 
 	public function __construct( Cache $cache, TestGroup $test_group ) {
 		$this->cache      = $cache;
@@ -30,7 +29,7 @@ class GroupClearCommand extends QITCommand {
 			->setDescription( 'Clear the group cache.' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ) {
+	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$group = $this->test_group->get();
 
 		if ( empty( $group ) ) {
