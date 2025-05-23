@@ -200,7 +200,7 @@ class RunE2ECommand extends DynamicCommand {
 			try {
 				$env_vars      = getenv();
 				$input_options = $input;
-				$this->test_group->create_or_update( $group_options, $test_type, $input, $env_vars );
+				$this->test_group->create_or_update( $group_options, $test_type, $output, $input_options, $env_vars );
 			} catch ( \Exception $e ) {
 				$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 

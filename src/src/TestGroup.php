@@ -46,17 +46,22 @@ class TestGroup {
 	 *
 	 * @param array<string, mixed>  $options The options for the test.
 	 * @param string                $test_type The type of test.
+	 * @param OutputInterface       $output The output.
 	 * @param InputInterface|null   $input The input.
 	 * @param array<string, string> $env_vars The environment variables.
 	 */
-	public function create_or_update( array $options, string $test_type, ?InputInterface $input = null, array $env_vars = [] ): void {
+	public function create_or_update( array $options, string $test_type, OutputInterface $output, ?InputInterface $input = null, array $env_vars = [] ): void {
 		$group = $this->cache->get( 'group' );
 
 		if (
 			isset( $group['status'] ) &&
 			self::STATUS_COMPLETED === $group['status']
 		) {
-			throw new \Exception( 'The test group has already been completed. Please delete it with `group:clear` and create a new one.' );
+			$output->writeln( '<comment>A completed test group already exists. It will be displayed and clear in order to complete your action.</comment>' );
+			$this->output_group( $output );
+
+			$this->cache->delete( 'group' );
+			$group = [];
 		}
 
 		if (
@@ -534,5 +539,36 @@ class TestGroup {
 			->request();
 
 		return json_decode( $response, true );
+	}
+
+	public function output_group( OutputInterface $output ): void {
+		$group = $this->get();
+		if ( ! array_key_exists( 'group_identifier', $group ) ) {
+			return;
+		}
+
+		$output->writeln( '--------------------------------' );
+		$output->writeln( sprintf( '<info>Group Identifier: %s</info>', $group['group_identifier'] ) );
+		$output->writeln( '--------------------------------' );
+
+		if ( array_key_exists( 'test_runs', $group ) ) {
+			foreach ( $group['test_runs'] as $test_run ) {
+				$output->writeln( sprintf( '<info>Test Run ID: %s</info>', $test_run['test_run_id'] ) );
+				$output->writeln( sprintf( '<info>Woo ID: %s</info>', $test_run['woo_extension']['id'] ) );
+				$output->writeln( sprintf( '<info>Extension Name: %s</info>', $test_run['woo_extension']['name'] ) );
+				$output->writeln( sprintf( '<info>Test Type: %s</info>', $test_run['test_type_display'] ) );
+				$output->writeln( sprintf( '<info>Test Results Manager URL: %s</info>', $test_run['test_results_manager_url'] ) );
+				$output->writeln( sprintf( '<info>Test Run Status: %s</info>', $test_run['status'] ) );
+				$output->writeln( '--------------------------------' );
+			}
+		} else {
+			foreach ( $group['tests'] as $test ) {
+				$output->writeln( sprintf( '<info>Test Run ID: %s</info>', $test['test_run']['test_run_id'] ) );
+				$output->writeln( sprintf( '<info>Woo ID: %s</info>', $test['test_run']['woo_id'] ) );
+				$output->writeln( sprintf( '<info>Extension Slug: %s</info>', $test['test_run']['slug'] ) );
+				$output->writeln( sprintf( '<info>Test Type: %s</info>', $test['test_run']['test_type_display'] ) );
+				$output->writeln( '--------------------------------' );
+			}
+		}
 	}
 }

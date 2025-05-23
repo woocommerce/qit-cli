@@ -3,6 +3,8 @@
 namespace QIT_CLI\Commands\Group;
 
 use QIT_CLI\Cache;
+use QIT_CLI\TestGroup;
+use Symfony\Component\Console\Command\Command;
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,8 +15,12 @@ class GroupClearCommand extends QITCommand {
 
 	protected Cache $cache;
 
-	public function __construct( Cache $cache ) {
-		$this->cache = $cache;
+	/** @var TestGroup */
+	protected $test_group;
+
+	public function __construct( Cache $cache, TestGroup $test_group ) {
+		$this->cache      = $cache;
+		$this->test_group = $test_group;
 		parent::__construct();
 	}
 
@@ -24,9 +30,17 @@ class GroupClearCommand extends QITCommand {
 			->setDescription( 'Clear the group cache.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
-		$this->cache->delete( 'group' );
+	protected function execute( InputInterface $input, OutputInterface $output ) {
+		$group = $this->test_group->get();
 
+		if ( empty( $group ) ) {
+			$output->writeln( '<error>No group found.</error>' );
+			return Command::FAILURE;
+		}
+
+		$this->test_group->output_group( $output );
+
+		$this->cache->delete( 'group' );
 		$output->writeln( '<info>Group cleared.</info>' );
 
 		return self::SUCCESS;

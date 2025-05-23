@@ -24,7 +24,8 @@ class GroupFetchCommand extends QITCommand {
 		parent::configure();
 		$this
 			->setDescription( 'Fetch a group of tests using a group identifier.' )
-			->addOption( 'group-identifier', 'i', InputOption::VALUE_REQUIRED, 'The group identifier.' );
+			->addOption( 'group-identifier', 'i', InputOption::VALUE_REQUIRED, 'The group identifier.' )
+			->addOption( 'json', 'j', InputOption::VALUE_NONE, 'Output the results in JSON format.' );
 	}
 
 	/**
@@ -36,11 +37,22 @@ class GroupFetchCommand extends QITCommand {
 	 */
 	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
 		$group_identifier = $input->getOption( 'group-identifier' );
-		$group            = $this->test_group->fetch( $group_identifier );
+
+		if ( empty( $group_identifier ) ) {
+			$output->writeln( '<error>Group identifier is required.</error>' );
+			return Command::FAILURE;
+		}
+
+		$group = $this->test_group->fetch( $group_identifier );
 
 		if ( empty( $group ) ) {
 			$output->writeln( '<error>No group found.</error>' );
 			return self::FAILURE;
+		}
+
+		if ( $input->getOption( 'json' ) ) {
+			$output->writeln( json_encode( $group, JSON_PRETTY_PRINT ) );
+			return Command::SUCCESS;
 		}
 
 		$output->writeln( '--------------------------------' );
