@@ -4,6 +4,7 @@ namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
+use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -54,43 +55,44 @@ class UpEnvironmentCommand extends QITCommand {
 			return Command::FAILURE;
 		}
 
-		if ( ! $this->envInfo ) {
-			$output->writeln( '<error>No environment configuration provided.</error>' );
+		$env_info = $this->get_env_info();
+		if ( ! $env_info instanceof E2EEnvInfo ) {
+			$output->writeln( '<error>Expected E2E environment configuration.</error>' );
 
 			return Command::FAILURE;
 		}
 
 		// Handle tunnel
-		if ( $this->envInfo->tunnel ) {
+		if ( $env_info->tunnel ) {
 			try {
-				$this->tunnel_runner->check_tunnel_support( $this->envInfo->tunnel_type );
-				$this->envInfo->tunnel = true;
+				$this->tunnel_runner->check_tunnel_support( $env_info->tunnel_type );
+				$env_info->tunnel = true;
 			} catch ( \Exception $e ) {
 				$output->writeln( '<error>' . $e->getMessage() . '</error>' );
 
 				return Command::FAILURE;
 			}
 		} else {
-			$this->envInfo->tunnel = false;
+			$env_info->tunnel = false;
 		}
 
 		// Set skip flags
-		if ( $this->envInfo->skip_activating_plugins ) {
+		if ( $env_info->skip_activating_plugins ) {
 			$this->e2e_environment->set_skip_activating_plugins( true );
 		}
-		if ( $this->envInfo->skip_activating_themes ) {
+		if ( $env_info->skip_activating_themes ) {
 			$this->e2e_environment->set_skip_activating_themes( true );
 		}
 
 		// Initialize and run environment
-		$this->e2e_environment->init( $this->envInfo );
+		$this->e2e_environment->init( $env_info );
 		$this->e2e_environment->up( 'up' );
 
 		// Output
 		if ( $input->getOption( 'json' ) ) {
-			$output->write( json_encode( $this->envInfo ) );
+			$output->write( json_encode( $env_info ) );
 		} else {
-			$output->writeln( $this->envInfo->site_url );
+			$output->writeln( $env_info->site_url );
 		}
 
 		return Command::SUCCESS;

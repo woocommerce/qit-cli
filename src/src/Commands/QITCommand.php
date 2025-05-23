@@ -10,8 +10,8 @@ use QIT_CLI\Config\ParserFactory;
 use QIT_CLI\Config\PluginDependencies;
 use QIT_CLI\Config\QITConfig;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\EnvironmentVersionResolver;
 use QIT_CLI\Environment\ExtensionSetResolver;
 use Symfony\Component\Console\Application;
@@ -90,9 +90,9 @@ abstract class QITCommand extends Command {
 	/**
 	 * Get the environment configuration, if available.
 	 *
-	 * @return ?E2EEnvInfo The environment configuration, or null if not needed.
+	 * @return ?EnvInfo The environment configuration, or null if not needed.
 	 */
-	protected function getEnvInfo(): ?E2EEnvInfo {
+	protected function get_env_info(): ?EnvInfo {
 		return $this->env_info;
 	}
 
