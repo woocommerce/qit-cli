@@ -1,13 +1,11 @@
 {
     "environment": "default",
     "dependencies_mode": "activate",
-    "temporary_env": "\/home\/lucas\/automattic\/qit-cli\/_tests\/custom_tests\/tmp-normalized\/\/tmp-normalized\/_qit_config-normalized\/temporary-envs\/default-ENV_ID_NORMALIZED\/",
+    "temporary_env": "\/tmp-normalized\/\/.woo-qit-tests\/temporary-envs\/default-ENV_ID_NORMALIZED\/",
     "created_at": 1700000000,
     "status": "pending",
     "env_id": "ENV_ID_NORMALIZED",
-    "volumes": {
-        "\/var\/www\/html\/wp-content\/mu-plugins\/custom-test-mu-plugin.php:ro": "\/normalized\/path\/custom-test-mu-plugin.php"
-    },
+    "volumes": [],
     "docker_images": [],
     "docker_network": "",
     "php_extensions": [],
@@ -16,9 +14,6 @@
     ],
     "themes": [],
     "env": {
-        "HELLO": "world",
-        "FOO": "bar",
-        "DB_NAME": "wp_test",
         "WP_CLI_CONFIG_PATH": "\/qit\/wp-cli.yml"
     },
     "tunnel": false,
@@ -33,7 +28,7 @@
     "tests": [],
     "playwright_config": [],
     "pw_test_tag": "",
-    "woo_version": "",
+    "woo_version": "stable",
     "is_development_build": false,
     "notify": "no"
 }

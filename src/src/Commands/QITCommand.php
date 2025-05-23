@@ -54,7 +54,7 @@ abstract class QITCommand extends Command {
 		);
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	public function execute( InputInterface $input, OutputInterface $output ): int {
 		$config_file = $input->getOption( 'config' );
 		try {
 			$config = new QITConfig( $config_file, App::make( ConfigFileLoader::class ), App::make( ParserFactory::class ) );
@@ -363,7 +363,7 @@ abstract class QITCommand extends Command {
 		$env_info->tests                   = $env_config['tests'];
 		$env_info->playwright_config       = isset( $env_config['playwright_config'] ) ? $env_config['playwright_config'] : [];
 		$env_info->pw_test_tag             = $env_config['pw_test_tag'];
-		$env_info->woo_version             = $env_config['woo_version'];
+		$env_info->woo_version             = $env_config['woo_version'] ?? '';
 		$env_info->is_development_build    = $env_config['is_development_build'];
 		$env_info->notify                  = $env_config['notify'];
 		$env_info->env                     = $env_config['env'];
