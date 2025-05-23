@@ -24,7 +24,7 @@ class GroupShowCommand extends QITCommand {
 			->setDescription( 'Show the currently cached group' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$group = $this->test_group->get();
 
 		if ( empty( $group ) ) {

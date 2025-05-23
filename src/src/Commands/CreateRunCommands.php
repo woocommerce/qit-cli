@@ -75,7 +75,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 				parent::__construct();
 			}
 
-			public function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+			public function doExecute( InputInterface $input, OutputInterface $output ): int {
 				$profile = $input->getOption( 'profile' ) ?: 'default';
 				$options = $this->parse_options( $input );
 

@@ -34,7 +34,7 @@ class DownEnvironmentCommand extends QITCommand {
 			->setAliases( [ 'env:stop' ] );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$running_environments = $this->environment_monitor->get();
 
 		if ( empty( $running_environments ) ) {

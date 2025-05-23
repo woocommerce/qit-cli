@@ -26,7 +26,7 @@ class ScaffoldE2ECommand extends QITCommand {
 			->setDescription( 'Scaffold an example E2E test.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$path = $input->getArgument( 'path' );
 
 		$path_to_generate = normalize_path( $path );

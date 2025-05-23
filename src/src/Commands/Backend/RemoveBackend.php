@@ -27,7 +27,7 @@ class RemoveBackend extends QITCommand {
 			->addArgument( 'environment', InputArgument::REQUIRED, 'The environment to remove.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$manager_backend = $input->getArgument( 'environment' );
 
 		try {

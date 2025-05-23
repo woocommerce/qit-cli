@@ -26,7 +26,7 @@ class GetCommand extends QITCommand {
 			->addOption( 'check_finished', null, InputOption::VALUE_NONE, 'Return success if test has finished. Failure if not.', null );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		try {
 			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get-single' ) )
 				->with_method( 'POST' )

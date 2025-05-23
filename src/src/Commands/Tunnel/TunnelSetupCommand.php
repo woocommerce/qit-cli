@@ -73,7 +73,7 @@ TXT
 			);
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		if ( $input->getOption( 'reset' ) ) {
 			$this->cache->delete( 'tunnel_configs' );
 			$this->cache->delete( 'tunnel_default' );

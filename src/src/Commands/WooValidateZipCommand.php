@@ -27,7 +27,7 @@ class WooValidateZipCommand extends QITCommand {
 			->addArgument( 'path', InputArgument::REQUIRED, 'The ZIP file path' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		try {
 			$zip_file = $input->getArgument( 'path' );
 

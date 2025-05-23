@@ -27,7 +27,7 @@ class TunnelSetDefaultCommand extends QITCommand {
 			->setHelp( 'Allows you to set your preferred default tunneling method.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$available_methods = array_keys( TunnelRunner::$tunnel_map );
 
 		$usable_methods = [];

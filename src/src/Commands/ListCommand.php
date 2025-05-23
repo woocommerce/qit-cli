@@ -46,7 +46,7 @@ HELP
 			);
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		if ( $input->getOption( 'extensions' ) ) {
 			foreach ( explode( ',', $input->getOption( 'extensions' ) ) as $e ) {
 				if ( is_numeric( $e ) ) {

@@ -28,7 +28,7 @@ class WooExtensionsCommand extends QITCommand {
 			->addOption( 'deps', 'd', InputOption::VALUE_NONE, '(Optional) Include dependencies in the list.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		if ( $input->getOption( 'refresh' ) === true ) {
 			$this->woo_extensions_list->fetch_woo_extensions_available();
 

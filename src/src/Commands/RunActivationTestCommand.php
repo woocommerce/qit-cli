@@ -79,7 +79,7 @@ class RunActivationTestCommand extends QITCommand {
 		);
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$run_e2e_command = App::make( RunE2ECommand::class );
 		$run_e2e_command->setApplication( $this->getApplication() );
 

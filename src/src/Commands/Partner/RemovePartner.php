@@ -26,7 +26,7 @@ class RemovePartner extends QITCommand {
 			->addArgument( 'user', InputArgument::REQUIRED, 'The partner user config to remove.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$user = $input->getArgument( 'user' );
 
 		try {

@@ -19,7 +19,7 @@ class ConnectCommand extends QITCommand {
 			->setDescription( 'Connect to manage your extensions and test runs.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$io = new SymfonyStyle( $input, $output );
 		$io->title( 'Quality Insights Toolkit (QIT)' );
 

@@ -10,6 +10,7 @@ use QIT_CLI\Config\ParserFactory;
 use QIT_CLI\Config\PluginDependencies;
 use QIT_CLI\Config\QITConfig;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\EnvironmentVersionResolver;
 use QIT_CLI\Environment\ExtensionSetResolver;
@@ -22,11 +23,9 @@ use function QIT_CLI\is_option_explicitly_provided;
 use function QIT_CLI\normalize_path;
 
 abstract class QITCommand extends Command {
-	/** @var string The root section in qit.json (e.g., 'tests', 'environments') */
-	protected string $config_root_section = '';
-
-	/** @var string The test type for test commands (e.g., 'e2e') */
-	protected string $test_type = '';
+	protected bool $needs_environment = false;
+	private ?EnvInfo $env_info = null;
+	protected InputInterface $input;
 
 	protected function configure(): void {
 		$this->addOption(
@@ -38,8 +37,6 @@ abstract class QITCommand extends Command {
 		);
 
 		if ( static::$defaultName && str_starts_with( static::$defaultName, 'run:' ) ) {
-			$this->config_root_section = 'tests';
-			$this->test_type           = substr( static::$defaultName, 4 );
 			self::add_profile_option( $this );
 		}
 	}
@@ -55,6 +52,7 @@ abstract class QITCommand extends Command {
 	}
 
 	public function execute( InputInterface $input, OutputInterface $output ): int {
+		$this->input = $input;
 		$config_file = $input->getOption( 'config' );
 		try {
 			$config = new QITConfig( $config_file, App::make( ConfigFileLoader::class ), App::make( ParserFactory::class ) );
@@ -64,42 +62,50 @@ abstract class QITCommand extends Command {
 			return Command::FAILURE;
 		}
 
-		try {
-			$config_section = $this->get_config_section( $config, $input );
-		} catch ( \RuntimeException $e ) {
-			$output->writeln( "<error>Error accessing config section: {$e->getMessage()}</error>" );
-
-			return Command::FAILURE;
-		}
-
-		$command_defaults       = $this->get_command_defaults();
-		$input_priority_handler = new InputPriorityHandler();
-		$merged_options         = $input_priority_handler->get_config_from_input( $input, $config_section, $command_defaults );
-
-		$env_info = null;
-		if ( $this->config_root_section === 'environments' ) {
-			try {
-				$env_info = $this->build_env_info( $input, $output, $merged_options, $config, $config_section );
-			} catch ( \Exception $e ) {
-				$output->writeln( "<error>Error creating EnvInfo: {$e->getMessage()}</error>" );
-
-				return Command::FAILURE;
-			}
+		if ( $this->needs_environment ) {
+			// Get environment from CLI input, defaulting to 'default'
+			$environment            = $input->getOption( 'environment' ) ?? 'default';
+			$config_section         = $config->get_environment( $environment );
+			$command_defaults       = $this->get_command_defaults();
+			$input_priority_handler = new InputPriorityHandler();
+			$merged_options         = $input_priority_handler->get_config_from_input( $input, $config_section, $command_defaults );
+			$this->env_info         = $this->build_env_info( $input, $output, $merged_options, $config, $config_section );
 		}
 
 		if ( getenv( 'QIT_TESTING_ENV_INFO' ) ) {
-			$output->writeln( json_encode( $env_info ) );
+			$output->writeln( json_encode( $this->env_info ) );
 
 			return Command::SUCCESS;
 		}
 
 		try {
-			return $this->doExecute( $input, $output, $env_info );
+			return $this->doExecute( $input, $output );
 		} catch ( \RuntimeException $e ) {
 			$output->writeln( "<error>{$e->getMessage()}</error>" );
 
 			return Command::FAILURE;
 		}
+	}
+
+	/**
+	 * Get the environment configuration, if available.
+	 *
+	 * @return ?E2EEnvInfo The environment configuration, or null if not needed.
+	 */
+	protected function getEnvInfo(): ?E2EEnvInfo {
+		return $this->env_info;
+	}
+
+	/**
+	 * Extract default values from the command’s option definitions.
+	 */
+	protected function get_command_defaults(): array {
+		$defaults = [];
+		foreach ( $this->getDefinition()->getOptions() as $option ) {
+			$defaults[ $option->getName() ] = $option->getDefault();
+		}
+
+		return $defaults;
 	}
 
 	/**
@@ -287,7 +293,7 @@ abstract class QITCommand extends Command {
 		}
 
 		// Handle dependencies
-		$deps = App::make( 'QIT_CLI\Config\PluginDependencies' )->get_dependencies(
+		$deps = App::make( PluginDependencies::class )->get_dependencies(
 			$env_config['plugins'] ?: [],
 			$env_config['themes'] ?: [],
 			$env_config['dependencies_mode'] ?: 'activate'
@@ -301,11 +307,11 @@ abstract class QITCommand extends Command {
 				$seen_slugs[]            = $dep_slug;
 			}
 		}
-		App::make( 'QIT_CLI\Config\PluginDependencies' )->maybe_add_theme_dependencies( $deps['theme'], $env_config['themes'] );
+		App::make( PluginDependencies::class )->maybe_add_theme_dependencies( $deps['theme'], $env_config['themes'] );
 		if ( empty( $env_config['php_extensions'] ) ) {
 			$env_config['php_extensions'] = [];
 		}
-		App::make( 'QIT_CLI\Config\PluginDependencies' )->maybe_add_php_extensions( $deps['php_extension'], $env_config['php_extensions'] );
+		App::make( PluginDependencies::class )->maybe_add_php_extensions( $deps['php_extension'], $env_config['php_extensions'] );
 
 		// Parse volumes
 		$env_config['volumes'] = App::make( 'QIT_CLI\Environment\EnvVolumeParser' )->parse_volumes( $env_config['volumes'] ?: [] );
@@ -328,7 +334,6 @@ abstract class QITCommand extends Command {
 					$value = EnvironmentVersionResolver::resolve_wp( $value );
 					break;
 				case 'woo_version':
-					// $value = EnvironmentVersionResolver::resolve_woo($value, $env_config['plugins'] ?? []);
 					break;
 			}
 		}
@@ -413,50 +418,5 @@ abstract class QITCommand extends Command {
 		return $parsed_vars;
 	}
 
-	/**
-	 * Get the relevant section of the config based on the command’s needs.
-	 */
-	protected function get_config_section( QITConfig $config, InputInterface $input ): array {
-		if ( empty( $this->config_root_section ) ) {
-			return [];
-		}
-
-		if ( $this->config_root_section === 'tests' ) {
-			if ( empty( $this->test_type ) ) {
-				throw new \RuntimeException( "Test type must be set for commands using 'tests' config." );
-			}
-			$profile = $input->getOption( 'profile' ) ?? 'default';
-
-			return $config->get_test_config( $this->test_type, $profile );
-		} elseif ( $this->config_root_section === 'environments' ) {
-			$environment = $input->getOption( 'environment' ) ?? 'default';
-
-			return $config->get_environment( $environment );
-		}
-
-		throw new \RuntimeException( "Unknown config root section: {$this->config_root_section}" );
-	}
-
-	/**
-	 * Extract default values from the command’s option definitions.
-	 */
-	protected function get_command_defaults(): array {
-		$defaults = [];
-		foreach ( $this->getDefinition()->getOptions() as $option ) {
-			$defaults[ $option->getName() ] = $option->getDefault();
-		}
-
-		return $defaults;
-	}
-
-	/**
-	 * Abstract method for child commands to implement their logic.
-	 *
-	 * @param InputInterface $input Original input for arguments or rare cases.
-	 * @param OutputInterface $output For writing output.
-	 * @param E2EEnvInfo|null $env_info Environment information, if applicable.
-	 *
-	 * @return int Command exit code.
-	 */
-	abstract protected function doExecute( InputInterface $input, OutputInterface $output, ?E2EEnvInfo $env_info ): int;
+	abstract protected function doExecute( InputInterface $input, OutputInterface $output ): int;
 }

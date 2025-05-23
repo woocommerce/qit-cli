@@ -44,7 +44,7 @@ class AddPartner extends QITCommand {
 			->addOption( 'application_password', 'p', InputOption::VALUE_OPTIONAL, '(DEPRECATED) This has been renamed to "QIT Token" and will be removed. A regular application password will not work.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		// User.
 		if ( ! empty( $input->getOption( 'user' ) ) ) {
 			$user = $input->getOption( 'user' );

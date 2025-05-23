@@ -26,7 +26,7 @@ class GetMultipleCommand extends QITCommand {
 			->addOption( 'check_finished', null, InputOption::VALUE_NONE, 'Return success if all tests have finished. Failure if any not finished.', null );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$test_run_ids = $input->getArgument( 'test_run_ids' );
 		$test_run_ids = array_filter( array_map( 'trim', explode( ',', $test_run_ids ) ) );
 

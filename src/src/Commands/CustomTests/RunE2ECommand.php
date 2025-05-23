@@ -135,7 +135,7 @@ class RunE2ECommand extends DynamicCommand {
 		QITCommand::add_profile_option( $this );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$this->prepare_output( $output );
 
 		if ( is_windows() ) {

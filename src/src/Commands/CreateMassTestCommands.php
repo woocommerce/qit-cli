@@ -28,7 +28,7 @@ class CreateMassTestCommands extends DynamicCommandCreator {
 
 	public function register_commands( Application $application ): void {
 		$command = new class() extends DynamicCommand {
-			public function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+			public function doExecute( InputInterface $input, OutputInterface $output ): int {
 				try {
 					$options = $this->parse_options( $input );
 

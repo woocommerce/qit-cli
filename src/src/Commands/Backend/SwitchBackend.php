@@ -29,7 +29,7 @@ class SwitchBackend extends QITCommand {
 			->setAliases( [ 'switch' ] );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		// Optionaly allow the environment to be passed as an argument.
 		if ( ! empty( $input->getArgument( 'backend' ) ) ) {
 			$this->manager_backend->switch_to_manager_backend( strtolower( $input->getArgument( 'backend' ) ) );

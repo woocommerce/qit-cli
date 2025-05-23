@@ -27,7 +27,7 @@ class GroupRegisterCommand extends QITCommand {
 			->addOption( 'group-identifier', 'i', InputOption::VALUE_OPTIONAL, 'The group identifier.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$group_identifier = $input->getOption( 'group-identifier' );
 
 		$group = $this->test_group->get();

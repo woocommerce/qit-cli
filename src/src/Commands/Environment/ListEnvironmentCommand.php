@@ -37,7 +37,7 @@ class ListEnvironmentCommand extends QITCommand {
 			->addOption( 'field', 'f', InputOption::VALUE_OPTIONAL, 'Show just a specific field.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$io      = new SymfonyStyle( $input, $output );
 		$running = $this->environment_monitor->get();
 		$env_id  = $input->getArgument( 'env_id' );

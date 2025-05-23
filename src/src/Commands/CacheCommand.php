@@ -23,7 +23,7 @@ class CacheCommand extends QITCommand {
 			->addArgument( 'expiration', InputArgument::OPTIONAL, 'The expiration when (set).' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$action = $input->getArgument( 'action' );
 		$key    = $input->getArgument( 'key' );
 		$cache  = App::make( Cache::class );

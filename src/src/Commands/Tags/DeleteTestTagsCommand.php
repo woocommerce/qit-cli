@@ -36,7 +36,7 @@ class DeleteTestTagsCommand extends QITCommand {
 			->setDescription( /** @lang text */ 'Delete your custom test from QIT.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$test_tag  = $input->getArgument( 'test_tag' );
 		$test_type = $input->getArgument( 'test_type' );
 

@@ -27,7 +27,7 @@ class GroupRunCommand extends QITCommand {
 			->addOption( 'skip-grouping', 's', InputOption::VALUE_NEGATABLE, 'Skip triggering tests as a logical group and instead treats them as a batch.', false );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$group_identifier = $input->getOption( 'group-identifier' );
 		$skip_grouping    = $input->getOption( 'skip-grouping' );
 		$group            = $this->test_group->get();

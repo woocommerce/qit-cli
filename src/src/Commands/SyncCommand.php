@@ -24,7 +24,7 @@ class SyncCommand extends QITCommand {
 			->setDescription( 'Re-syncs with the Manager.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$this->manager_sync->maybe_sync( true );
 
 		$output->writeln( 'Sync completed.' );

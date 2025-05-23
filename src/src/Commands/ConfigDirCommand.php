@@ -16,7 +16,7 @@ class ConfigDirCommand extends QITCommand {
 			->setDescription( 'Prints the QIT config directory path.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$output->writeln( Config::get_qit_dir() );
 		return self::SUCCESS;
 	}

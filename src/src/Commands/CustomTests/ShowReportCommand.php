@@ -32,7 +32,7 @@ class ShowReportCommand extends QITCommand {
 			->setDescription( 'Shows a test report.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		// Determine the report directories.
 		if ( ! is_null( $input->getArgument( 'report_dir' ) ) ) {
 			$local_report  = $input->getArgument( 'report_dir' );

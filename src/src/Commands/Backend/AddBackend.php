@@ -41,7 +41,7 @@ class AddBackend extends QITCommand {
 			->addOption( 'manager_url', 'u', InputOption::VALUE_OPTIONAL, '(Optional) The Manager URL to use. Eg: http://manager.loc (local), or Manager Staging/Prod URLs.', '' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$qit_secret      = $input->getOption( 'qit_secret' );
 		$manager_url     = $input->getOption( 'manager_url' );
 		$manager_backend = $input->getOption( 'environment' );

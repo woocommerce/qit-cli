@@ -3,9 +3,7 @@
 namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\Commands\QITCommand;
-use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,17 +12,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\is_windows;
 
 class UpEnvironmentCommand extends QITCommand {
+	protected bool $needs_environment = true;
 	protected E2EEnvironment $e2e_environment;
 	protected TunnelRunner $tunnel_runner;
-
-	protected string $config_root_section = 'environments';
 
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	public function __construct( E2EEnvironment $e2e_environment, TunnelRunner $tunnel_runner ) {
+		parent::__construct();
 		$this->e2e_environment = $e2e_environment;
 		$this->tunnel_runner   = $tunnel_runner;
-		parent::__construct();
 	}
 
 	protected function configure(): void {
@@ -50,53 +47,50 @@ class UpEnvironmentCommand extends QITCommand {
 		     ->addOption( 'environment', null, InputOption::VALUE_OPTIONAL, 'Environment from qit.json', 'default' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
-		/**
-		 * @var $env_info E2EEnvInfo
-		 */
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		if ( is_windows() ) {
 			$output->writeln( '<comment>Use WSL on Windows.</comment>' );
 
 			return Command::FAILURE;
 		}
 
-		if ( ! $env_info ) {
+		if ( ! $this->envInfo ) {
 			$output->writeln( '<error>No environment configuration provided.</error>' );
 
 			return Command::FAILURE;
 		}
 
 		// Handle tunnel
-		if ( $env_info->tunnel ) {
+		if ( $this->envInfo->tunnel ) {
 			try {
-				$this->tunnel_runner->check_tunnel_support( $env_info->tunnel_type );
-				$env_info->tunnel = true;
+				$this->tunnel_runner->check_tunnel_support( $this->envInfo->tunnel_type );
+				$this->envInfo->tunnel = true;
 			} catch ( \Exception $e ) {
 				$output->writeln( '<error>' . $e->getMessage() . '</error>' );
 
 				return Command::FAILURE;
 			}
 		} else {
-			$env_info->tunnel = false;
+			$this->envInfo->tunnel = false;
 		}
 
 		// Set skip flags
-		if ( $env_info->skip_activating_plugins ) {
+		if ( $this->envInfo->skip_activating_plugins ) {
 			$this->e2e_environment->set_skip_activating_plugins( true );
 		}
-		if ( $env_info->skip_activating_themes ) {
+		if ( $this->envInfo->skip_activating_themes ) {
 			$this->e2e_environment->set_skip_activating_themes( true );
 		}
 
 		// Initialize and run environment
-		$this->e2e_environment->init( $env_info );
+		$this->e2e_environment->init( $this->envInfo );
 		$this->e2e_environment->up( 'up' );
 
 		// Output
 		if ( $input->getOption( 'json' ) ) {
-			$output->write( json_encode( $env_info ) );
+			$output->write( json_encode( $this->envInfo ) );
 		} else {
-			$output->writeln( $env_info->site_url );
+			$output->writeln( $this->envInfo->site_url );
 		}
 
 		return Command::SUCCESS;

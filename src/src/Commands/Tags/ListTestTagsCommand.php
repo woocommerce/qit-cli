@@ -23,7 +23,7 @@ class ListTestTagsCommand extends QITCommand {
 			->setDescription( 'List the Test Tags you have access to test.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		try {
 			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get_extensions' ) )
 				->with_method( 'POST' )

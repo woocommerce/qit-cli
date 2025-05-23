@@ -29,7 +29,7 @@ class GroupClearCommand extends QITCommand {
 			->setDescription( 'Clear the group cache.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$group = $this->test_group->get();
 
 		if ( empty( $group ) ) {

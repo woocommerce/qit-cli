@@ -31,11 +31,10 @@ class GroupFetchCommand extends QITCommand {
 	/**
 	 * @param InputInterface  $input
 	 * @param OutputInterface $output
-	 * @param EnvInfo|null $env_info
 	 *
 	 * @return int
 	 */
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$group_identifier = $input->getOption( 'group-identifier' );
 
 		if ( empty( $group_identifier ) ) {
