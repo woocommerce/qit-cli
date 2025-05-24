@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\Config\Parsers;
+namespace QIT_CLI\PreCommand\Parsers;
 
 use QIT_CLI\Environment\Extension;
 

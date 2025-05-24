@@ -1,9 +1,9 @@
 <?php
 
-namespace QIT_CLI\Config\Parsers;
+namespace QIT_CLI\PreCommand\Parsers;
 
 abstract class AbstractConfigParser {
-	abstract public function parse( $value, array $context = [] ): mixed;
+	abstract public function parse( $value, array $context = [] );
 
 	protected function validate_single_level_inheritance( array $section, string $section_name ): void {
 		foreach ( $section as $name => $config ) {

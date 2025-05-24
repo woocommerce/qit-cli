@@ -10,7 +10,7 @@ namespace QIT_CLI\Commands\CustomTests;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\QITCommand;
-use QIT_CLI\Config\PluginDependencies;
+use QIT_CLI\PreCommand\PluginDependencies;
 use QIT_CLI\LocalTests\E2E\CustomE2ERunner;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\DynamicCommand;

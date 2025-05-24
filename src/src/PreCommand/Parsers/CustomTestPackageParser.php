@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\Config\Parsers;
+namespace QIT_CLI\PreCommand\Parsers;
 
 class CustomTestPackageParser extends AbstractConfigParser {
 	public function parse( $value, array $context = [] ): array {
@@ -104,9 +104,9 @@ class CustomTestPackageParser extends AbstractConfigParser {
 								}
 							}
 							break;
-						case 'env_vars':
+						case 'envs':
 							if ( ! is_array( $config_value ) ) {
-								throw new \RuntimeException( "env_vars in custom test package '$test_type:$package_name' must be an array." );
+								throw new \RuntimeException( "envs in custom test package '$test_type:$package_name' must be an array." );
 							}
 							foreach ( $config_value as $var_name => $var_value ) {
 								if ( ! is_string( $var_name ) ) {

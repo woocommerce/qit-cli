@@ -3,10 +3,10 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
-use QIT_CLI\Config\InputPriorityHandler;
-use QIT_CLI\Config\ParserFactory;
-use QIT_CLI\Config\PluginDependencies;
-use QIT_CLI\Config\QITConfig;
+use QIT_CLI\PreCommand\InputPriorityHandler;
+use QIT_CLI\PreCommand\ParserFactory;
+use QIT_CLI\PreCommand\PluginDependencies;
+use QIT_CLI\PreCommand\QITConfig;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\Environments\EnvInfo;

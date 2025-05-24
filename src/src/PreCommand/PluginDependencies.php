@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\Config;
+namespace QIT_CLI\PreCommand;
 
 use QIT_CLI\Cache;
 use QIT_CLI\Environment\Extension;

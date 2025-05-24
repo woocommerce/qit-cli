@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\Config\Parsers;
+namespace QIT_CLI\PreCommand\Parsers;
 
 use Symfony\Component\Console\Application;
 
@@ -26,7 +26,7 @@ class TestParser extends AbstractConfigParser {
 			$valid_options   = $this->get_valid_options_for_test_type( $test_type );
 			$valid_options[] = 'pre_test_build';
 			$valid_options[] = 'compatibility_tests';
-			$valid_options[] = 'env';
+			$valid_options[] = 'environment';
 			$valid_options[] = 'extends';
 			$valid_options[] = 'test_package';
 			foreach ( $profiles as $profile => $config ) {
@@ -61,8 +61,8 @@ class TestParser extends AbstractConfigParser {
 					if ( $config_key !== 'settings' && ! in_array( $config_key, $valid_options ) ) {
 						throw new \RuntimeException( "Invalid key '$config_key' in profile '$test_type:$profile'. Must be one of: " . implode( ', ', $valid_options ) . ", or settings" );
 					}
-					if ( $config_key === 'env' && ! is_string( $config_value ) ) {
-						throw new \RuntimeException( "Env in '$test_type:$profile' must be a string." );
+					if ( $config_key === 'environment' && ! is_string( $config_value ) ) {
+						throw new \RuntimeException( "Environment in '$test_type:$profile' must be a string." );
 					}
 					if ( $config_key === 'extends' && ! is_string( $config_value ) ) {
 						throw new \RuntimeException( "Extends in '$test_type:$profile' must be a string." );
