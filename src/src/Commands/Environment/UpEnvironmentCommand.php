@@ -30,8 +30,8 @@ class UpEnvironmentCommand extends QITCommand {
 
 		$this->setName( 'env:up' )
 		     ->setDescription( 'Creates a temporary local test environment.' )
-		     ->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'WordPress version', 'stable' )
-		     ->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version' )
+		     ->addOption( 'wp_version', null, InputOption::VALUE_OPTIONAL, 'WordPress version', 'stable' )
+		     ->addOption( 'woo_version', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version' )
 		     ->addOption( 'php_version', null, InputOption::VALUE_OPTIONAL, 'PHP version', '8.2' )
 		     ->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Plugins to activate', [] )
 		     ->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Themes to install', [] )

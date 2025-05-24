@@ -29,8 +29,8 @@ class EnvironmentParser extends AbstractConfigParser {
 							throw new \RuntimeException( "Invalid php_version in environment '$env_name'. Must be a valid PHP version string (e.g., '8.2')." );
 						}
 						break;
-					case 'wordpress_version':
-					case 'woocommerce_version':
+					case 'wp_version':
+					case 'woo_version':
 						if ( ! is_string( $env_value ) ) {
 							throw new \RuntimeException( "$env_key in environment '$env_name' must be a string." );
 						}

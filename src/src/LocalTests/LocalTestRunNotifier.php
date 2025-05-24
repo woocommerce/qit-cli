@@ -82,8 +82,8 @@ class LocalTestRunNotifier {
 
 		$body = [
 			'woo_id'                  => $woo_extension_id,
-			'woocommerce_version'     => $woocommerce_version,
-			'wordpress_version'       => $env_info->wp,
+			'woo_version'     => $woocommerce_version,
+			'wp_version'       => $env_info->wp_version,
 			'php_version'             => $env_info->php_version,
 			'additional_plugins'      => $additional_plugins,
 			'will_have_allure_report' => App::getVar( 'should_upload_report' ) ? 'true' : 'false',

@@ -179,12 +179,11 @@ SECTION
 		$io->writeln( "\n<info>Running a WooCommerce Core E2E test with configurable options using a development build:</info>" );
 		$io->writeln(<<<COMMAND
 ./qit run:woo-e2e my-extension-slug \
-	--woocommerce_version=rc \
-	--wordpress_version=rc \
+	--woo_version=rc \
+	--wp_version=rc \
 	--php_version=8.2 \
 	--optional_features=hpos \
-	--additional_woo_plugins=woocommerce-shipping \
-	--additional_wordpress_plugins=hello-dolly \
+	--additional_plugins=woocommerce-shipping,hello-dolly \
 	--zip
 
 COMMAND

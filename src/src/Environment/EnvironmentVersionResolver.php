@@ -4,78 +4,49 @@ namespace QIT_CLI\Environment;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\Environment\Extension;
 
 class EnvironmentVersionResolver {
 	/**
 	 * @param string       $woo
 	 * @param array<mixed> $plugins
 	 *
-	 * @return string|array{slug: string, source: string} A plugin syntax, can be a string or an array.
+	 * @return Extension A WooCommerce Extension object.
 	 */
-	public static function resolve_woo( string $woo, array $plugins ) {
-		//$plugins = App::make( PluginsAndThemesParser::class )->parse_extensions( $plugins, Extension::TYPES['plugin'] );
+	public static function resolve_woo(string $woo, array $plugins): Extension {
+		$versions = App::make(Cache::class)->get_manager_sync_data('versions');
 
-		$versions = App::make( Cache::class )->get_manager_sync_data( 'versions' );
-
-		$action    = 'activate';
-		$test_tags = 'default';
-
-		foreach ( $plugins as $plugin ) {
-			if ( $plugin->slug === 'woocommerce' ) {
-				$action    = $plugin->action;
-				$test_tags = $plugin->test_tags;
+		// Find existing WooCommerce Extension in plugins
+		$woo_extension = null;
+		foreach ($plugins as $plugin) {
+			if (is_object($plugin) && $plugin->slug === 'woocommerce') {
+				$woo_extension = $plugin;
+				break;
 			}
 		}
 
-		if ( $woo === 'nightly' ) {
-			$woo = [
-				'slug'      => 'woocommerce',
-				'source'    => 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip',
-				'action'    => $action,
-				'test_tags' => $test_tags,
-			];
-		} elseif ( $woo === 'rc' ) {
-			if ( empty( $versions['woocommerce']['rc_unsynced'] ) ) {
-				throw new \InvalidArgumentException( 'No unsynced RC version available. Please specify a RC version, such as "1.2.3-rc.1".' );
-			}
+		// If WooCommerce is not in plugins, create a new Extension
+		if (!$woo_extension) {
+			$woo_extension = new Extension('woocommerce', 'plugin');
+		}
 
-			$woo = [
-				'slug'      => 'woocommerce',
-				'source'    => "https://github.com/woocommerce/woocommerce/releases/download/{$versions['woocommerce']['rc_unsynced']}/woocommerce.zip",
-				'action'    => $action,
-				'test_tags' => $test_tags,
-			];
-		} elseif ( $woo === 'stable' ) {
-			$woo = [
-				'slug'      => 'woocommerce',
-				'source'    => 'https://downloads.wordpress.org/plugin/woocommerce.latest-stable.zip',
-				'action'    => $action,
-				'test_tags' => $test_tags,
-			];
-		} elseif ( filter_var( $woo, FILTER_VALIDATE_URL ) ) {
-			$woo = [
-				'slug'      => 'woocommerce',
-				'source'    => $woo,
-				'action'    => $action,
-				'test_tags' => $test_tags,
-			];
+		// Set source based on $woo
+		if ($woo === 'nightly') {
+			$woo_extension->source = 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
+		} elseif ($woo === 'rc') {
+			if (empty($versions['woocommerce']['rc_unsynced'])) {
+				throw new \InvalidArgumentException('No unsynced RC version available. Please specify a RC version, such as "1.2.3-rc.1".');
+			}
+			$woo_extension->source = "https://github.com/woocommerce/woocommerce/releases/download/{$versions['woocommerce']['rc_unsynced']}/woocommerce.zip";
+		} elseif ($woo === 'stable') {
+			$woo_extension->source = 'https://downloads.wordpress.org/plugin/woocommerce.latest-stable.zip';
+		} elseif (filter_var($woo, FILTER_VALIDATE_URL)) {
+			$woo_extension->source = $woo;
 		} else {
-			$woo = [
-				'slug'      => 'woocommerce',
-				'source'    => "https://github.com/woocommerce/woocommerce/releases/download/$woo/woocommerce.zip",
-				'action'    => $action,
-				'test_tags' => $test_tags,
-			];
-
+			$woo_extension->source = "https://github.com/woocommerce/woocommerce/releases/download/$woo/woocommerce.zip";
 		}
 
-		// On the lines above, "$test_tags" is a string, whereas "$plugin->test_tags" might return an array.
-		// If it's already an array, keep it like that. If it's a string, make it an array with that string as the only value.
-		if ( is_string( $woo['test_tags'] ) ) {
-			$woo['test_tags'] = [ $woo['test_tags'] ];
-		}
-
-		return $woo;
+		return $woo_extension;
 	}
 
 	/**
@@ -89,19 +60,17 @@ class EnvironmentVersionResolver {
 	 *
 	 * @return string The parsed value of WP, to be feed to WP CLI.
 	 */
-	public static function resolve_wp( string $wp ): string {
-		if ( $wp === 'stable' ) {
+	public static function resolve_wp(string $wp): string {
+		if ($wp === 'stable') {
 			$wp = 'latest';
-		} elseif ( $wp === 'rc' ) {
-			$versions = App::make( Cache::class )->get_manager_sync_data( 'versions' );
-
-			if ( ! empty( $versions['wordpress']['rc'] ) ) {
+		} elseif ($wp === 'rc') {
+			$versions = App::make(Cache::class)->get_manager_sync_data('versions');
+			if (!empty($versions['wordpress']['rc'])) {
 				$wp = $versions['wordpress']['rc'];
 			} else {
-				throw new \InvalidArgumentException( 'No RC version available. Please specify a RC version, such as "1.2.3-rc.1".' );
+				throw new \InvalidArgumentException('No RC version available. Please specify a RC version, such as "1.2.3-rc.1".');
 			}
 		}
-
 		return $wp;
 	}
 }

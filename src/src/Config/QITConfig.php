@@ -3,14 +3,12 @@
 namespace QIT_CLI\Config;
 
 class QITConfig {
-	private ConfigFileLoader $config_loader;
 	private ParserFactory $parser_factory;
 	private array $parsed_config = [];
 
-	public function __construct( string $config_file, ConfigFileLoader $config_loader, ParserFactory $parser_factory ) {
-		$this->config_loader  = $config_loader;
+	public function __construct( string $config_file, ParserFactory $parser_factory ) {
 		$this->parser_factory = $parser_factory;
-		$raw_config           = $this->config_loader->load_config( $config_file );
+		$raw_config           = $this->load_config( $config_file );
 
 		foreach ( $raw_config as $key => $value ) {
 			$parser                      = $this->parser_factory->get_parser( $key );
@@ -33,16 +31,28 @@ class QITConfig {
 		}
 	}
 
+	private function load_config( string $config_file ): array {
+		if ( ! file_exists( $config_file ) ) {
+			return [];
+		}
+
+		$contents = file_get_contents( $config_file );
+		$decoded  = json_decode( $contents, true );
+
+		if ( json_last_error() !== JSON_ERROR_NONE || ! is_array( $decoded ) ) {
+			throw new \RuntimeException( 'Invalid qit.json format. Must be a JSON object.' );
+		}
+
+		return $decoded;
+	}
+
+	// Rest of the methods remain unchanged
 	public function get( string $key, $default = null ) {
 		return $this->parsed_config[ $key ] ?? $default;
 	}
 
 	public function get_all(): array {
 		return $this->parsed_config;
-	}
-
-	public function get_config_file(): string {
-		return $this->config_loader->get_config_file();
 	}
 
 	public function get_environment( string $name ): array {

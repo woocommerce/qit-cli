@@ -137,11 +137,10 @@ class EnvInfoConstructionTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'plugins'             => [ 'woocommerce', 'wordpress-importer' ],
-					'themes'              => [ 'storefront', 'twentytwentyone' ],
-					'wordpress_version'   => 'stable',
-					'php_version'         => '8.2',
-					'woocommerce_version' => ''
+					'plugins'     => [ 'woocommerce', 'wordpress-importer' ],
+					'themes'      => [ 'storefront', 'twentytwentyone' ],
+					'wp_version'  => 'stable',
+					'php_version' => '8.2'
 				]
 			]
 		];
@@ -151,9 +150,8 @@ class EnvInfoConstructionTest extends TestCase {
 		$this->assertTrue( in_array( 'wordpress-importer', array_map( fn( $p ) => $p['slug'] ?? $p, $env_info['plugins'] ) ) );
 		$this->assertTrue( in_array( 'storefront', $env_info['themes'] ) );
 		$this->assertTrue( in_array( 'twentytwentyone', $env_info['themes'] ) );
-		$this->assertEquals( 'latest', $env_info['wp'] );
+		$this->assertEquals( 'latest', $env_info['wp_version'] );
 		$this->assertEquals( '8.2', $env_info['php_version'] );
-		$this->assertEquals( '', $env_info['woo_version'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
@@ -161,9 +159,8 @@ class EnvInfoConstructionTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'plugins'             => [ 'woocommerce', 'wordpress-importer' ],
-					'themes'              => [ 'twentytwentyone' ],
-					'woocommerce_version' => ''
+					'plugins' => [ 'woocommerce', 'wordpress-importer' ],
+					'themes'  => [ 'twentytwentyone' ]
 				]
 			]
 		];
@@ -182,15 +179,15 @@ class EnvInfoConstructionTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'wordpress_version'   => 'latest',
-					'woocommerce_version' => 'stable',
-					'plugins'             => [ 'woocommerce' ]
+					'wp_version'  => 'latest',
+					'woo_version' => 'stable',
+					'plugins'     => [ 'woocommerce' ]
 				]
 			]
 		];
 
 		$env_info = $this->run_unit_test( $config );
-		$this->assertEquals( 'latest', $env_info['wp'] );
+		$this->assertEquals( 'latest', $env_info['wp_version'] );
 		$this->assertEquals( 'stable', $env_info['woo_version'] );
 		$this->assertTrue( in_array( 'woocommerce', array_map( fn( $p ) => $p['slug'] ?? $p, $env_info['plugins'] ) ) );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
@@ -200,23 +197,22 @@ class EnvInfoConstructionTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'plugins'             => [ 'woocommerce' ],
-					'themes'              => [ 'storefront' ],
-					'wordpress_version'   => '6.0',
-					'php_version'         => '7.4',
-					'woocommerce_version' => ''
+					'plugins'     => [ 'woocommerce' ],
+					'themes'      => [ 'storefront' ],
+					'wp_version'  => '6.0',
+					'php_version' => '7.4'
 				]
 			]
 		];
 
 		$cli_args = [
-			'--wp'          => '6.1',
+			'--wp_version'  => '6.1',
 			'--php_version' => '8.0',
 			'--plugin'      => [ 'wordpress-importer' ]
 		];
 
 		$env_info = $this->run_unit_test( $config, $cli_args );
-		$this->assertEquals( '6.1', $env_info['wp'] );
+		$this->assertEquals( '6.1', $env_info['wp_version'] );
 		$this->assertEquals( '8.0', $env_info['php_version'] );
 		$this->assertTrue( in_array( 'woocommerce', array_map( fn( $p ) => $p['slug'] ?? $p, $env_info['plugins'] ) ) );
 		$this->assertTrue( in_array( 'wordpress-importer', array_map( fn( $p ) => $p['slug'] ?? $p, $env_info['plugins'] ) ) );
@@ -228,8 +224,7 @@ class EnvInfoConstructionTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'plugins'             => [ 'woocommerce' ],
-					'woocommerce_version' => ''
+					'plugins' => [ 'woocommerce' ]
 				]
 			]
 		];
@@ -243,8 +238,7 @@ class EnvInfoConstructionTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'plugins'             => [ 'woocommerce' ],
-					'woocommerce_version' => ''
+					'plugins' => [ 'woocommerce' ]
 				]
 			]
 		];
@@ -262,8 +256,7 @@ class EnvInfoConstructionTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'plugins'             => [ 'woocommerce' ],
-					'woocommerce_version' => ''
+					'plugins' => [ 'woocommerce' ]
 				]
 			]
 		];
@@ -293,9 +286,8 @@ class EnvInfoConstructionTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'plugins'             => [ 'woocommerce' ],
-					'themes'              => [ 'storefront' ],
-					'woocommerce_version' => ''
+					'plugins' => [ 'woocommerce' ],
+					'themes'  => [ 'storefront' ]
 				]
 			]
 		];
@@ -316,9 +308,8 @@ class EnvInfoConstructionTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'plugins'             => [ 'woocommerce' ],
-					'themes'              => [ 'storefront' ],
-					'woocommerce_version' => ''
+					'plugins' => [ 'woocommerce' ],
+					'themes'  => [ 'storefront' ]
 				]
 			]
 		];
@@ -338,9 +329,8 @@ class EnvInfoConstructionTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'plugins'             => [ 'woocommerce', 'my-plugin' ],
-					'themes'              => [ 'storefront' ],
-					'woocommerce_version' => ''
+					'plugins' => [ 'woocommerce', 'my-plugin' ],
+					'themes'  => [ 'storefront' ]
 				]
 			]
 		];
@@ -360,9 +350,8 @@ class EnvInfoConstructionTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'plugins'             => [ 'woocommerce' ],
-					'themes'              => [ 'storefront' ],
-					'woocommerce_version' => ''
+					'plugins' => [ 'woocommerce' ],
+					'themes'  => [ 'storefront' ]
 				]
 			]
 		];
@@ -381,8 +370,7 @@ class EnvInfoConstructionTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'plugins'             => [ 'woocommerce' ],
-					'woocommerce_version' => ''
+					'plugins' => [ 'woocommerce' ]
 				]
 			]
 		];
@@ -406,8 +394,7 @@ class EnvInfoConstructionTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'plugins'             => [ 'woocommerce' ],
-					'woocommerce_version' => ''
+					'plugins' => [ 'woocommerce' ]
 				]
 			]
 		];
@@ -428,8 +415,7 @@ class EnvInfoConstructionTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'plugins'             => [ 'woocommerce' ],
-					'woocommerce_version' => ''
+					'plugins' => [ 'woocommerce' ]
 				]
 			]
 		];
@@ -449,8 +435,7 @@ class EnvInfoConstructionTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'plugins'             => [ 'woocommerce', $plugin_zip ],
-					'woocommerce_version' => ''
+					'plugins' => [ 'woocommerce', $plugin_zip ]
 				]
 			]
 		];

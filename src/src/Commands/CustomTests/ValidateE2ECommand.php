@@ -20,7 +20,7 @@ class ValidateE2ECommand extends QITCommand {
 			->addArgument( 'directory', InputArgument::REQUIRED, 'The test directory to validate' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output, ?EnvInfo $env_info ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$directory = rtrim( $input->getArgument( 'directory' ), '/' );
 
 		$checks = [];

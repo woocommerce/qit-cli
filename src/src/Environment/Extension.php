@@ -66,6 +66,7 @@ class Extension implements \JsonSerializable {
 		$this->source = $source;
 	}
 
+	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
 		return $this->slug;
 	}

@@ -106,8 +106,8 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'The source of the main extension under test. Accepts a slug, a file, a URL. If not provided, the source will be the slug.' )
 			// ->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to take on the SUT. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['test'] )
 			->addOption( 'pw_test_tag', null, InputOption::VALUE_OPTIONAL, 'The Playwright test tag to run.', '' )
-			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'wp' )
-			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'woo' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'wp_version' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'woo_version' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'plugin' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'theme' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'volume' )
@@ -464,7 +464,7 @@ class RunE2ECommand extends DynamicCommand {
 	}
 
 	private function validate_input( InputInterface $input, OutputInterface $output, bool $wait ): int {
-		$woo     = $input->getOption( 'woo' );
+		$woo     = $input->getOption( 'woo_version' );
 		$plugins = $input->getOption( 'plugin' );
 
 		if ( ! empty( $woo ) && ! empty( $plugins ) && in_array( 'woocommerce', $plugins, true ) ) {

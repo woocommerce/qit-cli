@@ -4,7 +4,6 @@ namespace QIT_CLI\Config;
 
 use QIT_CLI\Cache;
 use QIT_CLI\Environment\Environments\EnvInfo;
-use QIT_CLI\Environment\Extension;
 use QIT_CLI\ManagerSync;
 
 class ExtensionSetResolver {
@@ -15,8 +14,8 @@ class ExtensionSetResolver {
 	protected $cache;
 
 	public function __construct( Cache $cache, ManagerSync $manager_sync ) {
-		$this->cache                     = $cache;
-		$this->manager_sync              = $manager_sync;
+		$this->cache        = $cache;
+		$this->manager_sync = $manager_sync;
 	}
 
 	/**
@@ -50,8 +49,9 @@ class ExtensionSetResolver {
 	 * Looks for extension_set in options, resolves them to actual extensions,
 	 * and adds any non-duplicate extensions to the env info plugins list.
 	 *
-	 * @param EnvInfo                           $env_info The current environment info object.
+	 * @param EnvInfo $env_info The current environment info object.
 	 * @param array<string,array<string,mixed>> $options_to_env_info The parsed options containing possible extension sets.
+	 *
 	 * @return EnvInfo The updated environment info object with resolved extensions
 	 */
 	public function resolve( EnvInfo $env_info, array $options_to_env_info ): EnvInfo {
@@ -80,23 +80,8 @@ class ExtensionSetResolver {
 		);
 
 		// Convert extensions to array format for parser.
-		$extensions_to_parse = [];
-		foreach ( $extensions as $extension ) {
-			$extensions_to_parse[ $extension ] = [
-				'slug' => $extension,
-			];
-		}
-
-		// Parse extensions using the parser.
-		$parsed_extensions = $this->plugins_and_themes_parser->parse_extensions(
-			$extensions_to_parse,
-			Extension::TYPES['plugin'],
-			Extension::ACTIONS['activate']
-		);
-
-		// Add each parsed extension that isn't already in the plugins list.
-		foreach ( $parsed_extensions as $extension ) {
-			if ( ! in_array( $extension->slug, $existing_slugs, true ) ) {
+		foreach ( $existing_slugs as $extension ) {
+			if ( ! in_array( $extension, $existing_slugs, true ) ) {
 				$env_info->plugins[] = $extension;
 			}
 		}

@@ -98,7 +98,7 @@ class E2EEnvironment extends Environment {
 		$this->output->writeln( '<info>Installing WordPress...</info>' );
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/wordpress-setup.sh 2>&1' ], [
 			'TUNNEL'            => $this->env_info->tunnel ? 'yes' : 'no',
-			'WORDPRESS_VERSION' => $this->env_info->wp,
+			'WORDPRESS_VERSION' => $this->env_info->wp_version,
 			'SITE_URL'          => $this->env_info->site_url,
 			'QIT_DOCKER_REDIS'  => $this->env_info->object_cache ? 'yes' : 'no',
 		] );
@@ -166,7 +166,7 @@ class E2EEnvironment extends Environment {
 				sprintf( 'Admin URL: %s/wp-admin', $this->env_info->site_url ),
 				'Admin Credentials: admin/password',
 				sprintf( 'PHP Version: %s', $this->env_info->php_version ),
-				sprintf( 'WordPress Version: %s', $this->env_info->wp ),
+				sprintf( 'WordPress Version: %s', $this->env_info->wp_version ),
 				sprintf( 'Redis Object Cache? %s', $this->env_info->object_cache ? 'Yes' : 'No' ),
 				sprintf( 'Path: %s', $this->env_info->temporary_env ),
 			];

@@ -21,7 +21,7 @@
     "tunnel": false,
     "tunnel_type": "no_tunnel",
     "runner_args": [],
-    "wp": "latest",
+    "wp_version": "latest",
     "object_cache": false,
     "php_version": "8.2",
     "domain": "normalized.localhost",

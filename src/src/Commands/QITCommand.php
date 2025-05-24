@@ -4,7 +4,6 @@ namespace QIT_CLI\Commands;
 
 use Dotenv\Dotenv;
 use QIT_CLI\App;
-use QIT_CLI\Config\ConfigFileLoader;
 use QIT_CLI\Config\InputPriorityHandler;
 use QIT_CLI\Config\ParserFactory;
 use QIT_CLI\Config\PluginDependencies;
@@ -55,7 +54,7 @@ abstract class QITCommand extends Command {
 		$this->input = $input;
 		$config_file = $input->getOption( 'config' );
 		try {
-			$config = new QITConfig( $config_file, App::make( ConfigFileLoader::class ), App::make( ParserFactory::class ) );
+			$config = new QITConfig( $config_file, App::make( ParserFactory::class ) );
 		} catch ( \RuntimeException $e ) {
 			$output->writeln( "<error>Error loading config: {$e->getMessage()}</error>" );
 
@@ -63,7 +62,6 @@ abstract class QITCommand extends Command {
 		}
 
 		if ( $this->needs_environment ) {
-			// Get environment from CLI input, defaulting to 'default'
 			$environment            = $input->getOption( 'environment' ) ?? 'default';
 			$config_section         = $config->get_environment( $environment );
 			$command_defaults       = $this->get_command_defaults();
@@ -87,18 +85,10 @@ abstract class QITCommand extends Command {
 		}
 	}
 
-	/**
-	 * Get the environment configuration, if available.
-	 *
-	 * @return ?EnvInfo The environment configuration, or null if not needed.
-	 */
 	protected function get_env_info(): ?EnvInfo {
 		return $this->env_info;
 	}
 
-	/**
-	 * Extract default values from the command’s option definitions.
-	 */
 	protected function get_command_defaults(): array {
 		$defaults = [];
 		foreach ( $this->getDefinition()->getOptions() as $option ) {
@@ -108,18 +98,6 @@ abstract class QITCommand extends Command {
 		return $defaults;
 	}
 
-	/**
-	 * Build EnvInfo for environment-related commands.
-	 *
-	 * @param InputInterface $input
-	 * @param OutputInterface $output
-	 * @param array<string, mixed> $merged_options
-	 * @param QITConfig $config
-	 * @param array<string, mixed> $config_section
-	 *
-	 * @return E2EEnvInfo
-	 * @throws \RuntimeException
-	 */
 	protected function build_env_info(
 		InputInterface $input,
 		OutputInterface $output,
@@ -127,13 +105,13 @@ abstract class QITCommand extends Command {
 		QITConfig $config,
 		array $config_section
 	) {
-		$environment = $input->getOption( 'environment' ) ? $input->getOption( 'environment' ) : 'default';
-		$woo         = isset( $merged_options['woo'] ) ? $merged_options['woo'] : null;
+		$environment = $input->getOption( 'environment' ) ?: 'default';
+		$woo_version = isset( $merged_options['woo_version'] ) ? $merged_options['woo_version'] : null;
 
 		// Parse environment variables from CLI
 		$cli_env = $this->parse_env_vars(
-			$input->getOption( 'env' ) ? $input->getOption( 'env' ) : [],
-			$input->getOption( 'env_file' ) ? $input->getOption( 'env_file' ) : []
+			$input->getOption( 'env' ) ?: [],
+			$input->getOption( 'env_file' ) ?: []
 		);
 
 		// Parse environment variables from config
@@ -161,13 +139,10 @@ abstract class QITCommand extends Command {
 
 		// Map input keys to EnvInfo properties
 		$key_mappings = [
-			'plugin'              => 'plugins',
-			'theme'               => 'themes',
-			'volume'              => 'volumes',
-			'php_extension'       => 'php_extensions',
-			'wordpress_version'   => 'wp',
-			'woocommerce_version' => 'woo_version',
-			'woo'                 => 'woo_version',
+			'plugin'        => 'plugins',
+			'theme'         => 'themes',
+			'volume'        => 'volumes',
+			'php_extension' => 'php_extensions',
 		];
 
 		// Initialize env_config with config section, excluding 'env'
@@ -246,7 +221,7 @@ abstract class QITCommand extends Command {
 			'environment'             => 'e2e',
 			'dependencies_mode'       => 'activate',
 			'php_version'             => '8.0',
-			'wp'                      => 'stable',
+			'wp_version'              => 'stable',
 			'woo_version'             => null,
 			'plugins'                 => [],
 			'themes'                  => [],
@@ -280,8 +255,8 @@ abstract class QITCommand extends Command {
 		$env_config['tunnel_type'] = $tunnel;
 
 		// Handle WooCommerce version
-		if ( ! empty( $woo ) ) {
-			$woo_plugin = EnvironmentVersionResolver::resolve_woo( $woo, $env_config['plugins'] ?: [] );
+		if ( ! empty( $woo_version ) ) {
+			$woo_plugin = EnvironmentVersionResolver::resolve_woo( $woo_version, $env_config['plugins'] ?: [] );
 			$woo_slug   = is_object( $woo_plugin ) ? $woo_plugin->slug : ( is_string( $woo_plugin ) ? $woo_plugin : null );
 			if ( ! is_string( $woo_slug ) ) {
 				throw new \RuntimeException( 'Woo plugin slug must be a string, got ' . gettype( $woo_slug ) );
@@ -330,7 +305,7 @@ abstract class QITCommand extends Command {
 						}
 					}
 					break;
-				case 'wp':
+				case 'wp_version':
 					$value = EnvironmentVersionResolver::resolve_wp( $value );
 					break;
 				case 'woo_version':
@@ -359,7 +334,7 @@ abstract class QITCommand extends Command {
 		$env_info->tunnel                  = $env_config['tunnel'];
 		$env_info->tunnel_type             = $env_config['tunnel_type'];
 		$env_info->runner_args             = $env_config['runner_args'];
-		$env_info->wp                      = $env_config['wp'];
+		$env_info->wp_version              = $env_config['wp_version'];
 		$env_info->object_cache            = $env_config['object_cache'];
 		$env_info->php_version             = $env_config['php_version'];
 		$env_info->domain                  = ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) ? "qitenvnginx{$env_info->env_id}" : ( getenv( 'QIT_DOMAIN' ) ? getenv( 'QIT_DOMAIN' ) : 'localhost' );

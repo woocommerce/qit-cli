@@ -185,10 +185,10 @@ HELP
 					case 'test_type':
 						$t['Test'] = $v;
 						break;
-					case 'wordpress_version':
+					case 'wp_version':
 						$t['WP'] = $v;
 						break;
-					case 'woocommerce_version':
+					case 'woo_version':
 						$t['WC'] = $v;
 						break;
 					case 'test_result_aws_url':

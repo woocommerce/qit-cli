@@ -15,7 +15,7 @@ class E2EEnvInfo extends EnvInfo {
 	public array $runner_args = [];
 
 	/** @var string */
-	public string $wp = '';
+	public string $wp_version = '';
 
 	/** @var bool */
 	public bool $object_cache = false;
@@ -62,7 +62,7 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var array<mixed>> */
 	public array $playwright_config = [];
 
-	/** @var string The playwright test tag to be executed*/
+	/** @var string The playwright test tag to be executed */
 	public string $pw_test_tag = '';
 
 	/** @var string The WooCommerce version, if any. */
