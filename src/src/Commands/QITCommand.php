@@ -125,7 +125,7 @@ abstract class QITCommand extends Command {
 
 		$input_priority_handler = App::make( InputPriorityHandler::class );
 
-		return $input_priority_handler->get_config_from_input( $input, $config_section, $command_defaults, $this->get_pluralizable_keys() );
+		return $input_priority_handler->get_config_from_input( $input, $config_section, $command_defaults, EnvironmentHandler::get_pluralizable_keys() );
 	}
 
 	protected function get_test_type(): string {
@@ -142,16 +142,6 @@ abstract class QITCommand extends Command {
 		}
 
 		return $defaults;
-	}
-
-	protected function get_pluralizable_keys(): array {
-		return [
-			'plugin'        => 'plugins',
-			'theme'         => 'themes',
-			'volume'        => 'volumes',
-			'php_extension' => 'php_extensions',
-			'env'           => 'envs',
-		];
 	}
 
 	protected function get_merged_options_array(): array {

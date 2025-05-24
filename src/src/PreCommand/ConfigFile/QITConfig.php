@@ -74,4 +74,8 @@ class QITConfig {
 
 		return $this->parsed_config['environments'][ $name ];
 	}
+
+	public function get_test_config( string $test_type, string $profile ): array {
+		return $this->parsed_config['tests'][ $test_type ][ $profile ] ?? [];
+	}
 }

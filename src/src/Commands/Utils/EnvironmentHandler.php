@@ -15,6 +15,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\normalize_path;
 
 class EnvironmentHandler {
+	public static function get_pluralizable_keys(): array {
+		return [
+			'plugin'        => 'plugins',
+			'theme'         => 'themes',
+			'volume'        => 'volumes',
+			'php_extension' => 'php_extensions',
+			'env'           => 'envs',
+		];
+	}
+
 	public function build_env_info( InputInterface $input, OutputInterface $output, array $merged_options, QITConfig $config ): EnvInfo {
 		$environment = $input->getOption( 'environment' ) ?: 'default';
 		$woo_version = isset( $merged_options['woo_version'] ) ? $merged_options['woo_version'] : null;
@@ -33,19 +43,12 @@ class EnvironmentHandler {
 		$env_vars       = array_merge( $config_envs, $env_vars );
 
 		// Initialize env_config
-		$env_config        = [];
-		$pluralizable_keys = [
-			'plugin'        => 'plugins',
-			'theme'         => 'themes',
-			'volume'        => 'volumes',
-			'php_extension' => 'php_extensions',
-			'env'           => 'envs',
-		];
+		$env_config = [];
 		foreach ( $config_section as $key => $value ) {
 			if ( $key === 'envs' ) {
 				continue;
 			}
-			$mapped_key                = $pluralizable_keys[ $key ] ?? $key;
+			$mapped_key                = self::get_pluralizable_keys()[ $key ] ?? $key;
 			$env_config[ $mapped_key ] = $value;
 		}
 
@@ -54,7 +57,7 @@ class EnvironmentHandler {
 			if ( $key === 'env' || $key === 'env_file' ) {
 				continue;
 			}
-			$mapped_key = $pluralizable_keys[ $key ] ?? $key;
+			$mapped_key = self::get_pluralizable_keys()[ $key ] ?? $key;
 			if ( $mapped_key === 'plugins' && ! empty( $value ) ) {
 				$cli_plugins = [];
 				$cli_values  = is_array( $value ) ? $value : [ $value ];
