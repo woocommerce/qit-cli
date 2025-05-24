@@ -2,16 +2,37 @@
 
 namespace QIT_CLI\PreCommand\ConfigFile;
 
+use QIT_CLI\App;
+use QIT_CLI\PreCommand\ConfigFile\Parsers\CustomTestPackageParser;
+use QIT_CLI\PreCommand\ConfigFile\Parsers\EnvironmentParser;
+use QIT_CLI\PreCommand\ConfigFile\Parsers\GroupParser;
+use QIT_CLI\PreCommand\ConfigFile\Parsers\PreTestBuildParser;
+use QIT_CLI\PreCommand\ConfigFile\Parsers\SimpleValueParser;
+use QIT_CLI\PreCommand\ConfigFile\Parsers\TestParser;
+
 class QITConfig {
-	private ParserFactory $parser_factory;
 	private array $parsed_config = [];
 
-	public function __construct( string $config_file, ParserFactory $parser_factory ) {
-		$this->parser_factory = $parser_factory;
-		$raw_config           = $this->load_config( $config_file );
+	public function __construct( string $config_file ) {
+		$raw_config = $this->load_config( $config_file );
+
+		$parsers = [
+			'$schema'              => SimpleValueParser::class,
+			'slug'                 => SimpleValueParser::class,
+			'type'                 => SimpleValueParser::class,
+			'pre_test_build'       => PreTestBuildParser::class,
+			'environments'         => EnvironmentParser::class,
+			'tests'                => TestParser::class,
+			'custom_test_packages' => CustomTestPackageParser::class,
+			'groups'               => GroupParser::class,
+		];
 
 		foreach ( $raw_config as $key => $value ) {
-			$parser                      = $this->parser_factory->get_parser( $key );
+			if ( ! isset( $parsers[ $key ] ) ) {
+				throw new \RuntimeException( "No parser found for configuration key '$key'." );
+			}
+
+			$parser                      = App::make( $parsers[ $key ] );
 			$context                     = [
 				'key'                  => $key,
 				'custom_test_packages' => $raw_config['custom_test_packages'] ?? [],
