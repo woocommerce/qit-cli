@@ -131,8 +131,6 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' )
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the test run into a group.', false )
 			->addOption( 'no_group', 'ng', InputOption::VALUE_NEGATABLE, 'If set, the CLI will not attempt to match the local test run with a group.', false );
-
-		QITCommand::add_profile_option( $this );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {

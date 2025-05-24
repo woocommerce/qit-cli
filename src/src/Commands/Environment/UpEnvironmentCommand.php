@@ -13,7 +13,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\is_windows;
 
 class UpEnvironmentCommand extends QITCommand {
-	protected bool $needs_environment = true;
 	protected E2EEnvironment $e2e_environment;
 	protected TunnelRunner $tunnel_runner;
 
