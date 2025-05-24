@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\PreCommand\Parsers;
+namespace QIT_CLI\PreCommand\ConfigFile\Parsers;
 
 class PreTestBuildParser extends AbstractConfigParser {
 	public function parse( $value, array $context = [] ): array {

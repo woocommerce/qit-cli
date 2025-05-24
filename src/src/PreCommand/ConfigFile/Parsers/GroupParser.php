@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\PreCommand\Parsers;
+namespace QIT_CLI\PreCommand\ConfigFile\Parsers;
 
 class GroupParser extends AbstractConfigParser {
 	private TestParser $test_parser;

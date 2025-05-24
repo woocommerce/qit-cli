@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\PreCommand\Parsers;
+namespace QIT_CLI\PreCommand\ConfigFile\Parsers;
 
 abstract class AbstractConfigParser {
 	abstract public function parse( $value, array $context = [] );

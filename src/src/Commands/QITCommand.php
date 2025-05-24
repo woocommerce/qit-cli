@@ -3,16 +3,16 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
-use QIT_CLI\PreCommand\InputPriorityHandler;
-use QIT_CLI\PreCommand\ParserFactory;
-use QIT_CLI\PreCommand\PluginDependencies;
-use QIT_CLI\PreCommand\QITConfig;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
-use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\Environments\EnvInfo;
+use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\EnvironmentVersionResolver;
 use QIT_CLI\Environment\EnvParser;
 use QIT_CLI\Environment\ExtensionSetResolver;
+use QIT_CLI\PreCommand\ConfigFile\ParserFactory;
+use QIT_CLI\PreCommand\ConfigFile\QITConfig;
+use QIT_CLI\PreCommand\InputPriorityHandler;
+use QIT_CLI\PreCommand\PluginDependencies;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

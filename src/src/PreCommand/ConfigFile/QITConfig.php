@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\PreCommand;
+namespace QIT_CLI\PreCommand\ConfigFile;
 
 class QITConfig {
 	private ParserFactory $parser_factory;

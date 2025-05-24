@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\PreCommand\Parsers;
+namespace QIT_CLI\PreCommand\ConfigFile\Parsers;
 
 use Symfony\Component\Console\Application;
 
