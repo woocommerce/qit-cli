@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI_Tests;
+namespace QIT_CLI_Tests\PreCommand;
 
 use QIT_CLI\App;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
