@@ -15,19 +15,12 @@ class InputPriorityHandler {
 		} );
 	}
 
-	public function get_config_from_input( InputInterface $input, array $config_values, array $command_defaults ): array {
-		$cli_params   = [];
-		$key_mappings = [
-			'plugin'        => 'plugins',
-			'theme'         => 'themes',
-			'volume'        => 'volumes',
-			'php_extension' => 'php_extensions',
-		];
-
+	public function get_config_from_input( InputInterface $input, array $config_values, array $command_defaults, array $pluralizable_keys ): array {
+		$cli_params = [];
 		foreach ( $input->getOptions() as $key => $value ) {
 			// Include options that are explicitly provided or have non-default values
 			if ( $value !== $command_defaults[ $key ] && $value !== null ) {
-				$config_key                = $key_mappings[ $key ] ?? $key; // Use key directly if no mapping
+				$config_key                = $pluralizable_keys[ $key ] ?? $key;
 				$cli_params[ $config_key ] = $value;
 			}
 		}

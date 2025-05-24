@@ -2,10 +2,12 @@
 
 namespace QIT_CLI\Commands\Environment;
 
+use QIT_CLI\App;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Environment\EnvParser;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -93,7 +95,7 @@ class ExecEnvironmentCommand extends QITCommand {
 
 		$command_to_run = $input->getArgument( 'command_to_run' );
 		// Use "PAGER=more" because we run Alpine images that have a minimalist version of "less".
-		$env_vars = array_merge( [ 'PAGER' => 'more' ], $this->parse_env_vars( $input->getOption( 'env_var' ) ) );
+		$env_vars = array_merge( [ 'PAGER' => 'more' ], App::make( EnvParser::class )->parse( $input->getOption( 'env_var' ) ) );
 		$user     = $input->getOption( 'user' );
 		$timeout  = $input->getOption( 'timeout' ) !== null ? (int) $input->getOption( 'timeout' ) : 300;
 		$image    = $input->getOption( 'image' ) ?: 'php';

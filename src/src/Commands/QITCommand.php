@@ -12,6 +12,7 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\EnvironmentVersionResolver;
+use QIT_CLI\Environment\EnvParser;
 use QIT_CLI\Environment\ExtensionSetResolver;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
@@ -25,6 +26,14 @@ abstract class QITCommand extends Command {
 	protected bool $needs_environment = false;
 	private ?EnvInfo $env_info = null;
 	protected InputInterface $input;
+	protected EnvParser $env_parser;
+
+	private array $pluralizable_keys = [
+		'plugin'        => 'plugins',
+		'theme'         => 'themes',
+		'volume'        => 'volumes',
+		'php_extension' => 'php_extensions',
+	];
 
 	protected function configure(): void {
 		$this->addOption(
@@ -51,8 +60,9 @@ abstract class QITCommand extends Command {
 	}
 
 	public function execute( InputInterface $input, OutputInterface $output ): int {
-		$this->input = $input;
-		$config_file = $input->getOption( 'config' );
+		$this->env_parser = App::make( EnvParser::class );
+		$this->input      = $input;
+		$config_file      = $input->getOption( 'config' );
 		try {
 			$config = new QITConfig( $config_file, App::make( ParserFactory::class ) );
 		} catch ( \RuntimeException $e ) {
@@ -66,7 +76,7 @@ abstract class QITCommand extends Command {
 			$config_section         = $config->get_environment( $environment );
 			$command_defaults       = $this->get_command_defaults();
 			$input_priority_handler = new InputPriorityHandler();
-			$merged_options         = $input_priority_handler->get_config_from_input( $input, $config_section, $command_defaults );
+			$merged_options         = $input_priority_handler->get_config_from_input( $input, $config_section, $command_defaults, $this->pluralizable_keys );
 			$this->env_info         = $this->build_env_info( $input, $output, $merged_options, $config, $config_section );
 		}
 
@@ -109,10 +119,13 @@ abstract class QITCommand extends Command {
 		$woo_version = isset( $merged_options['woo_version'] ) ? $merged_options['woo_version'] : null;
 
 		// Parse environment variables from CLI
-		$cli_env = $this->parse_env_vars(
+		$cli_env = $this->env_parser->parse(
 			$input->getOption( 'env' ) ?: [],
 			$input->getOption( 'env_file' ) ?: []
 		);
+
+		// Set default WP_CLI_CONFIG_PATH
+		$cli_env['WP_CLI_CONFIG_PATH'] = '/qit/wp-cli.yml';
 
 		// Parse environment variables from config
 		$config_env        = isset( $config_section['env'] ) ? $config_section['env'] : [];
@@ -137,21 +150,13 @@ abstract class QITCommand extends Command {
 		// Merge config env with CLI env
 		$env_vars = array_merge( $parsed_config_env, $cli_env );
 
-		// Map input keys to EnvInfo properties
-		$key_mappings = [
-			'plugin'        => 'plugins',
-			'theme'         => 'themes',
-			'volume'        => 'volumes',
-			'php_extension' => 'php_extensions',
-		];
-
 		// Initialize env_config with config section, excluding 'env'
 		$env_config = [];
 		foreach ( $config_section as $key => $value ) {
 			if ( $key === 'env' ) {
 				continue; // Skip env to avoid unparsed data
 			}
-			$mapped_key                = isset( $key_mappings[ $key ] ) ? $key_mappings[ $key ] : $key;
+			$mapped_key                = $this->pluralizable_keys[ $key ] ?? $key;
 			$env_config[ $mapped_key ] = $value;
 		}
 
@@ -186,7 +191,7 @@ abstract class QITCommand extends Command {
 			if ( $key === 'env' || $key === 'env_file' ) {
 				continue; // Skip to avoid re-merging unparsed env data
 			}
-			$mapped_key = isset( $key_mappings[ $key ] ) ? $key_mappings[ $key ] : $key;
+			$mapped_key = $this->pluralizable_keys[ $key ] ?? $key;
 			if ( $mapped_key === 'plugins' && ! empty( $value ) ) {
 				$cli_plugins = [];
 				$cli_values  = is_array( $value ) ? $value : [ $value ];
@@ -357,40 +362,6 @@ abstract class QITCommand extends Command {
 		}
 
 		return $env_info;
-	}
-
-	protected function parse_env_vars( array $env_vars, array $env_files ): array {
-		$parsed_vars = [];
-
-		// Parse .env files
-		foreach ( $env_files as $env_file ) {
-			if ( ! file_exists( $env_file ) ) {
-				throw new \RuntimeException( sprintf( 'Environment file "%s" does not exist.', $env_file ) );
-			}
-			$parsed_vars = array_merge( $parsed_vars, Dotenv::parse( file_get_contents( $env_file ) ) );
-		}
-
-		// Parse CLI --env variables
-		foreach ( $env_vars as $env_var ) {
-			if ( ! is_string( $env_var ) ) {
-				throw new \RuntimeException( 'Environment variable must be a string, got ' . gettype( $env_var ) );
-			}
-			$parts = explode( '=', $env_var, 2 );
-			if ( count( $parts ) !== 2 ) {
-				throw new \RuntimeException( 'Invalid environment variable format. Should be in the format "--env FOO=bar".' );
-			}
-			$key   = trim( $parts[0] );
-			$value = trim( $parts[1] );
-			if ( ! preg_match( '/^[A-Za-z0-9_]+$/', $key ) ) {
-				throw new \RuntimeException( 'Invalid environment variable name. Must contain only letters, numbers, and underscores.' );
-			}
-			$parsed_vars[ $key ] = $value;
-		}
-
-		// Set default WP_CLI_CONFIG_PATH
-		$parsed_vars['WP_CLI_CONFIG_PATH'] = '/qit/wp-cli.yml';
-
-		return $parsed_vars;
 	}
 
 	abstract protected function doExecute( InputInterface $input, OutputInterface $output ): int;
