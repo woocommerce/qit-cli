@@ -40,9 +40,9 @@ class EnvironmentParser extends AbstractConfigParser {
 							throw new \RuntimeException( "object_cache in environment '$env_name' must be a boolean." );
 						}
 						break;
-					case 'env_vars':
+					case 'envs':
 						if ( ! is_array( $env_value ) ) {
-							throw new \RuntimeException( "env_vars in environment '$env_name' must be an array." );
+							throw new \RuntimeException( "envs in environment '$env_name' must be an array." );
 						}
 						foreach ( $env_value as $var_name => $var_value ) {
 							if ( ! is_string( $var_name ) ) {

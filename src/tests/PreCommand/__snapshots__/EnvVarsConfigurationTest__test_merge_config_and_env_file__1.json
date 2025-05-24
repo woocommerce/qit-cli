@@ -10,21 +10,21 @@
     "docker_network": "",
     "php_extensions": [],
     "plugins": [
-        "woocommerce",
-        "wordpress-importer"
+        "woocommerce"
     ],
-    "themes": [
-        "storefront"
-    ],
+    "themes": [],
     "env": {
+        "QIT_DEBUG": "true",
+        "SHARED_VAR": "file",
+        "FILE_VAR": "file",
         "WP_CLI_CONFIG_PATH": "\/qit\/wp-cli.yml"
     },
     "tunnel": false,
     "tunnel_type": "no_tunnel",
     "runner_args": [],
-    "wp_version": "6.1",
+    "wp_version": "latest",
     "object_cache": false,
-    "php_version": "8.0",
+    "php_version": "8.2",
     "domain": "normalized.localhost",
     "skip_activating_plugins": false,
     "skip_activating_themes": false,

@@ -10,13 +10,13 @@
     "docker_network": "",
     "php_extensions": [],
     "plugins": [
-        "woocommerce"
+        "woocommerce",
+        "\/tmp-normalized\/normalized-plugin.zip"
     ],
-    "themes": [],
+    "themes": [
+        "storefront"
+    ],
     "env": {
-        "HELLO": "world",
-        "FOO": "bar",
-        "DB_NAME": "wp_test",
         "WP_CLI_CONFIG_PATH": "\/qit\/wp-cli.yml"
     },
     "tunnel": false,

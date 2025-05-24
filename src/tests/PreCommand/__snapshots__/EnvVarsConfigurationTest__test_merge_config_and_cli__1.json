@@ -10,11 +10,13 @@
     "docker_network": "",
     "php_extensions": [],
     "plugins": [
-        "woocommerce",
-        "\/tmp-normalized\/normalized-plugin.zip"
+        "woocommerce"
     ],
     "themes": [],
     "env": {
+        "QIT_DEBUG": "true",
+        "SHARED_VAR": "cli",
+        "CLI_VAR": "cli",
         "WP_CLI_CONFIG_PATH": "\/qit\/wp-cli.yml"
     },
     "tunnel": false,
