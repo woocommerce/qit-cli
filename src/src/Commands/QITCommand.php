@@ -2,7 +2,6 @@
 
 namespace QIT_CLI\Commands;
 
-use Dotenv\Dotenv;
 use QIT_CLI\App;
 use QIT_CLI\Config\InputPriorityHandler;
 use QIT_CLI\Config\ParserFactory;
@@ -14,25 +13,23 @@ use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\EnvironmentVersionResolver;
 use QIT_CLI\Environment\EnvParser;
 use QIT_CLI\Environment\ExtensionSetResolver;
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use function QIT_CLI\is_option_explicitly_provided;
 use function QIT_CLI\normalize_path;
 
 abstract class QITCommand extends Command {
 	protected bool $needs_environment = false;
 	private ?EnvInfo $env_info = null;
 	protected InputInterface $input;
-	protected EnvParser $env_parser;
 
 	private array $pluralizable_keys = [
 		'plugin'        => 'plugins',
 		'theme'         => 'themes',
 		'volume'        => 'volumes',
 		'php_extension' => 'php_extensions',
+		'env'           => 'envs',
 	];
 
 	protected function configure(): void {
@@ -60,9 +57,8 @@ abstract class QITCommand extends Command {
 	}
 
 	public function execute( InputInterface $input, OutputInterface $output ): int {
-		$this->env_parser = App::make( EnvParser::class );
-		$this->input      = $input;
-		$config_file      = $input->getOption( 'config' );
+		$this->input = $input;
+		$config_file = $input->getOption( 'config' );
 		try {
 			$config = new QITConfig( $config_file, App::make( ParserFactory::class ) );
 		} catch ( \RuntimeException $e ) {
@@ -118,89 +114,41 @@ abstract class QITCommand extends Command {
 		$environment = $input->getOption( 'environment' ) ?: 'default';
 		$woo_version = isset( $merged_options['woo_version'] ) ? $merged_options['woo_version'] : null;
 
-		// Parse environment variables from CLI
-		$cli_env = $this->env_parser->parse(
+		// Parse CLI and .env file environment variables
+		$env_parser                     = App::make( EnvParser::class );
+		$env_vars                       = $env_parser->parse(
 			$input->getOption( 'env' ) ?: [],
 			$input->getOption( 'env_file' ) ?: []
 		);
+		$env_vars['WP_CLI_CONFIG_PATH'] = '/qit/wp-cli.yml';
 
-		// Set default WP_CLI_CONFIG_PATH
-		$cli_env['WP_CLI_CONFIG_PATH'] = '/qit/wp-cli.yml';
+		// Merge with config envs (already a key-value array)
+		$config_envs = isset( $config_section['envs'] ) && is_array( $config_section['envs'] ) ? $config_section['envs'] : [];
+		$env_vars    = array_merge( $config_envs, $env_vars );
 
-		// Parse environment variables from config
-		$config_env        = isset( $config_section['env'] ) ? $config_section['env'] : [];
-		$parsed_config_env = [];
-		if ( is_array( $config_env ) ) {
-			foreach ( $config_env as $key => $value ) {
-				if ( is_string( $key ) && is_string( $value ) ) {
-					$parsed_config_env[ $key ] = $value;
-				} elseif ( is_int( $key ) && is_string( $value ) ) {
-					$parts = explode( '=', $value, 2 );
-					if ( count( $parts ) === 2 ) {
-						$parsed_config_env[ trim( $parts[0] ) ] = trim( $parts[1] );
-					} else {
-						throw new \RuntimeException( "Invalid environment variable format in config: $value" );
-					}
-				} else {
-					throw new \RuntimeException( "Invalid environment variable format in config" );
-				}
-			}
-		}
-
-		// Merge config env with CLI env
-		$env_vars = array_merge( $parsed_config_env, $cli_env );
-
-		// Initialize env_config with config section, excluding 'env'
+		// Initialize env_config with config section, excluding 'envs'
 		$env_config = [];
 		foreach ( $config_section as $key => $value ) {
-			if ( $key === 'env' ) {
-				continue; // Skip env to avoid unparsed data
+			if ( $key === 'envs' ) {
+				continue; // Skip envs to avoid unparsed data
 			}
 			$mapped_key                = $this->pluralizable_keys[ $key ] ?? $key;
 			$env_config[ $mapped_key ] = $value;
 		}
 
-		// Set parsed environment variables
-		$env_config['env'] = $env_vars;
-
-		// Convert config plugins to Extensions, deduplicating by slug
-		$config_plugins = [];
-		$seen_slugs     = [];
-		foreach ( isset( $env_config['plugins'] ) ? $env_config['plugins'] : [] as $plugin ) {
-			if ( is_object( $plugin ) && isset( $plugin->slug ) ) {
-				$slug = $plugin->slug;
-			} elseif ( is_string( $plugin ) ) {
-				$slug = $plugin;
-			} else {
-				throw new \RuntimeException( 'Plugin must be a string or Extension object, got ' . gettype( $plugin ) );
-			}
-			if ( ! in_array( $slug, $seen_slugs, true ) ) {
-				$config_plugins[] = is_object( $plugin ) ? $plugin : new \QIT_CLI\Environment\Extension( $slug, 'plugin' );
-				$seen_slugs[]     = $slug;
-			}
-		}
-		$env_config['plugins'] = $config_plugins;
-
-		// Debug: Write to file
-		file_put_contents( '/tmp/qit_debug.log', "Config Section: " . print_r( $config_section, true ) . "\n", FILE_APPEND );
-		file_put_contents( '/tmp/qit_debug.log', "Merged Options: " . print_r( $merged_options, true ) . "\n", FILE_APPEND );
-		file_put_contents( '/tmp/qit_debug.log', "Env Config Before CLI Merge: " . print_r( $env_config, true ) . "\n", FILE_APPEND );
-
-		// Merge CLI options, preserving config values unless overridden, skip 'env' and 'env_file'
+		// Merge CLI options, preserving config values unless overridden
 		foreach ( $merged_options as $key => $value ) {
 			if ( $key === 'env' || $key === 'env_file' ) {
-				continue; // Skip to avoid re-merging unparsed env data
+				continue; // Skip to avoid re-merging
 			}
 			$mapped_key = $this->pluralizable_keys[ $key ] ?? $key;
 			if ( $mapped_key === 'plugins' && ! empty( $value ) ) {
 				$cli_plugins = [];
 				$cli_values  = is_array( $value ) ? $value : [ $value ];
+				$seen_slugs  = array_map( fn( $p ) => is_object( $p ) ? $p->slug : $p, $env_config['plugins'] ?? [] );
 				foreach ( $cli_values as $plugin ) {
-					if ( is_object( $plugin ) && isset( $plugin->slug ) ) {
-						$slug = $plugin->slug;
-					} elseif ( is_string( $plugin ) ) {
-						$slug = $plugin;
-					} else {
+					$slug = is_object( $plugin ) && isset( $plugin->slug ) ? $plugin->slug : ( is_string( $plugin ) ? $plugin : null );
+					if ( ! is_string( $slug ) ) {
 						throw new \RuntimeException( 'CLI plugin must be a string or Extension object, got ' . gettype( $plugin ) );
 					}
 					if ( ! in_array( $slug, $seen_slugs, true ) ) {
@@ -208,7 +156,7 @@ abstract class QITCommand extends Command {
 						$seen_slugs[]  = $slug;
 					}
 				}
-				$env_config['plugins'] = array_merge( $env_config['plugins'], $cli_plugins );
+				$env_config['plugins'] = array_merge( $env_config['plugins'] ?? [], $cli_plugins );
 			} elseif ( ( isset( $env_config[ $mapped_key ] ) && is_array( $env_config[ $mapped_key ] ) ) || is_array( $value ) ) {
 				$cli_values                = is_array( $value ) ? $value : [ $value ];
 				$config_values             = isset( $env_config[ $mapped_key ] ) ? (array) $env_config[ $mapped_key ] : [];
@@ -218,8 +166,13 @@ abstract class QITCommand extends Command {
 			}
 		}
 
-		// Debug: Write after CLI merge
-		file_put_contents( '/tmp/qit_debug.log', "Env Config After CLI Merge: " . print_r( $env_config, true ) . "\n", FILE_APPEND );
+		// Set parsed environment variables
+		$env_config['envs'] = $env_vars;
+
+		// Debug: Write to file
+		file_put_contents( '/tmp/qit_debug.log', "Config Section: " . print_r( $config_section, true ) . "\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit_debug.log', "Merged Options: " . print_r( $merged_options, true ) . "\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit_debug.log', "Env Config: " . print_r( $env_config, true ) . "\n", FILE_APPEND );
 
 		// Apply defaults
 		$env_config = array_merge( [
@@ -233,7 +186,7 @@ abstract class QITCommand extends Command {
 			'volumes'                 => [],
 			'php_extensions'          => [],
 			'object_cache'            => false,
-			'env'                     => [],
+			'envs'                    => [],
 			'extension_set'           => null,
 			'tunnel'                  => false,
 			'tunnel_type'             => 'no_tunnel',
@@ -266,9 +219,9 @@ abstract class QITCommand extends Command {
 			if ( ! is_string( $woo_slug ) ) {
 				throw new \RuntimeException( 'Woo plugin slug must be a string, got ' . gettype( $woo_slug ) );
 			}
+			$seen_slugs = array_map( fn( $p ) => is_object( $p ) ? $p->slug : $p, $env_config['plugins'] ?? [] );
 			if ( ! in_array( $woo_slug, $seen_slugs, true ) ) {
 				$env_config['plugins'][] = is_object( $woo_plugin ) ? $woo_plugin : new \QIT_CLI\Environment\Extension( $woo_slug, 'plugin' );
-				$seen_slugs[]            = $woo_slug;
 			}
 		}
 
@@ -280,6 +233,7 @@ abstract class QITCommand extends Command {
 		);
 
 		// Add dependencies, avoiding duplicates
+		$seen_slugs = array_map( fn( $p ) => is_object( $p ) ? $p->slug : $p, $env_config['plugins'] ?? [] );
 		foreach ( $deps['plugin'] as $dep_plugin ) {
 			$dep_slug = $dep_plugin->slug;
 			if ( ! in_array( $dep_slug, $seen_slugs, true ) ) {
@@ -351,7 +305,7 @@ abstract class QITCommand extends Command {
 		$env_info->woo_version             = $env_config['woo_version'] ?? '';
 		$env_info->is_development_build    = $env_config['is_development_build'];
 		$env_info->notify                  = $env_config['notify'];
-		$env_info->env                     = $env_config['env'];
+		$env_info->env                     = $env_config['envs'];
 
 		// Debug: Write final env_info
 		file_put_contents( '/tmp/qit_debug.log', "Final Env Info: " . print_r( (array) $env_info, true ) . "\n", FILE_APPEND );
