@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\Commands\Utils;
+namespace QIT_CLI\PreCommand;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
@@ -9,7 +9,6 @@ use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\EnvironmentVersionResolver;
 use QIT_CLI\Environment\EnvParser;
 use QIT_CLI\PreCommand\ConfigFile\QITConfig;
-use QIT_CLI\PreCommand\PluginDependencies;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\normalize_path;

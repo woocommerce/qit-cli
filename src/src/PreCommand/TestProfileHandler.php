@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\Commands\Utils;
+namespace QIT_CLI\PreCommand;
 
 use QIT_CLI\PreCommand\ConfigFile\QITConfig;
 
