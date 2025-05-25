@@ -73,7 +73,7 @@ class CustomTestPackageParser extends AbstractConfigParser {
 								throw new \RuntimeException( "constraints in custom test package '$test_type:$package_name' must be an array." );
 							}
 							foreach ( $config_value as $constraint_type => $constraint_value ) {
-								if ( $constraint_type === 'wordpress' ) {
+								if ( $constraint_type === 'WordPress' ) {
 									if ( ! is_string( $constraint_value ) ) {
 										throw new \RuntimeException( "WordPress constraint in '$test_type:$package_name' must be a string." );
 									}

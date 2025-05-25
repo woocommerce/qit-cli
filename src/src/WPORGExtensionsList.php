@@ -6,12 +6,12 @@ class WPORGExtensionsList {
 	/**
 	 * @var string
 	 */
-	protected $plugin_api_url = 'https://api.wordpress.org/plugins/info/1.0/%s';
+	public $plugin_api_url = 'https://api.wordpress.org/plugins/info/1.0/%s';
 
 	/**
 	 * @var string
 	 */
-	protected $theme_api_url = 'https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]=%s';
+	public $theme_api_url = 'https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]=%s';
 
 	/** @var Cache */
 	protected $cache;

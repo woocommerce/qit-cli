@@ -85,9 +85,9 @@ class EnvironmentHandler {
 		$env_config['envs'] = $env_vars;
 
 		// Debug: Write to file
-		file_put_contents( '/tmp/qit_debug.log', "Config Section: " . print_r( $config_section, true ) . "\n", FILE_APPEND );
-		file_put_contents( '/tmp/qit_debug.log', "Merged Options: " . print_r( $merged_options, true ) . "\n", FILE_APPEND );
-		file_put_contents( '/tmp/qit_debug.log', "Env Config: " . print_r( $env_config, true ) . "\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit_debug.log', 'Config Section: ' . print_r( $config_section, true ) . "\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit_debug.log', 'Merged Options: ' . print_r( $merged_options, true ) . "\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit_debug.log', 'Env Config: ' . print_r( $env_config, true ) . "\n", FILE_APPEND );
 
 		// Apply defaults
 		$env_config = array_merge( [
@@ -119,7 +119,7 @@ class EnvironmentHandler {
 			'sut_id'                  => null,
 			'nginx_port'              => null,
 			'notify'                  => null,
-			'is_development_build'    => null
+			'is_development_build'    => null,
 		], $env_config );
 
 		// Set tunnel and tunnel_type
@@ -223,7 +223,7 @@ class EnvironmentHandler {
 		$env_info->env                     = $env_config['envs'];
 
 		// Debug: Write final env_info
-		file_put_contents( '/tmp/qit_debug.log', "Final Env Info: " . print_r( (array) $env_info, true ) . "\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit_debug.log', 'Final Env Info: ' . print_r( (array) $env_info, true ) . "\n", FILE_APPEND );
 
 		// Parse extension set
 		if ( ! empty( $env_config['extension_set'] ) ) {

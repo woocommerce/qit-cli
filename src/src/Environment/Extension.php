@@ -10,14 +10,14 @@ class Extension implements \JsonSerializable {
 	];
 
 	const ACTIONS = [
-		'activate' => 'activate',
+		'activate'  => 'activate',
 		'bootstrap' => 'bootstrap',
-		'test' => 'test',
+		'test'      => 'test',
 	];
 
-	const PRIORITY_LOW = 10;
+	const PRIORITY_LOW    = 10;
 	const PRIORITY_MEDIUM = 50;
-	const PRIORITY_HIGH = 100;
+	const PRIORITY_HIGH   = 100;
 
 	/** @var string The unique identifier (slug) of the extension. */
 	public $slug;
@@ -27,6 +27,9 @@ class Extension implements \JsonSerializable {
 
 	/** @var string|int|null The source (slug, URL, directory, or zip file). */
 	public $source;
+
+	/** @var string|null The path to the local directory, if applicable. */
+	public $directory;
 
 	/** @var string|int|null The path to the downloaded source, if applicable. */
 	public $downloaded_source;
@@ -53,8 +56,8 @@ class Extension implements \JsonSerializable {
 	public $wccom_id;
 
 	/**
-	 * @param string $slug The extension slug.
-	 * @param string $type The extension type ('plugin' or 'theme').
+	 * @param string          $slug The extension slug.
+	 * @param string          $type The extension type ('plugin' or 'theme').
 	 * @param string|int|null $source Optional source (slug, URL, directory, or zip file).
 	 */
 	public function __construct( string $slug, string $type, $source = null ) {

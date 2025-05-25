@@ -52,8 +52,8 @@ class CreateRunCommands extends DynamicCommandCreator {
 	}
 
 	/**
-	 * @param Application $application An instance of the current DI.
-	 * @param string $test_type The test type.
+	 * @param Application  $application An instance of the current DI.
+	 * @param string       $test_type The test type.
 	 * @param array<mixed> $schema The test type schema.
 	 *
 	 * @return void

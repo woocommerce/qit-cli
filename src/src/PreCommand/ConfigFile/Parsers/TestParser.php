@@ -59,7 +59,7 @@ class TestParser extends AbstractConfigParser {
 
 				foreach ( $config as $config_key => $config_value ) {
 					if ( $config_key !== 'settings' && ! in_array( $config_key, $valid_options ) ) {
-						throw new \RuntimeException( "Invalid key '$config_key' in profile '$test_type:$profile'. Must be one of: " . implode( ', ', $valid_options ) . ", or settings" );
+						throw new \RuntimeException( "Invalid key '$config_key' in profile '$test_type:$profile'. Must be one of: " . implode( ', ', $valid_options ) . ', or settings' );
 					}
 					if ( $config_key === 'environment' && ! is_string( $config_value ) ) {
 						throw new \RuntimeException( "Environment in '$test_type:$profile' must be a string." );

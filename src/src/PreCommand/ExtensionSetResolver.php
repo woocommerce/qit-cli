@@ -49,7 +49,7 @@ class ExtensionSetResolver {
 	 * Looks for extension_set in options, resolves them to actual extensions,
 	 * and adds any non-duplicate extensions to the env info plugins list.
 	 *
-	 * @param EnvInfo $env_info The current environment info object.
+	 * @param EnvInfo                           $env_info The current environment info object.
 	 * @param array<string,array<string,mixed>> $options_to_env_info The parsed options containing possible extension sets.
 	 *
 	 * @return EnvInfo The updated environment info object with resolved extensions

@@ -22,7 +22,7 @@ class E2EEnvironment extends Environment {
 	 */
 	protected EnvInfo $env_info;
 	protected bool $skip_activating_plugins = false;
-	protected bool $skip_activating_themes = false;
+	protected bool $skip_activating_themes  = false;
 
 	public function get_name(): string {
 		return 'e2e';

@@ -62,7 +62,7 @@ class TunnelSetDefaultCommand extends QITCommand {
 		);
 		$question->setErrorMessage( 'Method %s is invalid.' );
 
-		 $default_method = $helper->ask( $input, $output, $question );
+		$default_method = $helper->ask( $input, $output, $question );
 
 		$this->cache->set( 'tunnel_default', $default_method, -1 );
 

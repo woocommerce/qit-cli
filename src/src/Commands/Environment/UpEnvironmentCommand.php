@@ -28,23 +28,23 @@ class UpEnvironmentCommand extends QITCommand {
 		parent::configure();
 
 		$this->setName( 'env:up' )
-		     ->setDescription( 'Creates a temporary local test environment.' )
-		     ->addOption( 'wp_version', null, InputOption::VALUE_OPTIONAL, 'WordPress version', 'stable' )
-		     ->addOption( 'woo_version', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version' )
-		     ->addOption( 'php_version', null, InputOption::VALUE_OPTIONAL, 'PHP version', '8.2' )
-		     ->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Plugins to activate', [] )
-		     ->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Themes to install', [] )
-		     ->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional volume mappings', [] )
-		     ->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
-		     ->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Object Cache' )
-		     ->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins' )
-		     ->addOption( 'skip_activating_themes', 'st', InputOption::VALUE_NONE, 'Skip activating themes' )
-		     ->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Return JSON format', false )
-		     ->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling', 'no_tunnel' )
-		     ->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables', [] )
-		     ->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment files', [] )
-		     ->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'Dependencies mode', 'activate' )
-		     ->addOption( 'environment', null, InputOption::VALUE_OPTIONAL, 'Environment from qit.json', 'default' );
+			->setDescription( 'Creates a temporary local test environment.' )
+			->addOption( 'wp_version', null, InputOption::VALUE_OPTIONAL, 'WordPress version', 'stable' )
+			->addOption( 'woo_version', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version' )
+			->addOption( 'php_version', null, InputOption::VALUE_OPTIONAL, 'PHP version', '8.2' )
+			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Plugins to activate', [] )
+			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Themes to install', [] )
+			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional volume mappings', [] )
+			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
+			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Object Cache' )
+			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins' )
+			->addOption( 'skip_activating_themes', 'st', InputOption::VALUE_NONE, 'Skip activating themes' )
+			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Return JSON format', false )
+			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling', 'no_tunnel' )
+			->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables', [] )
+			->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment files', [] )
+			->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'Dependencies mode', 'activate' )
+			->addOption( 'environment', null, InputOption::VALUE_OPTIONAL, 'Environment from qit.json', 'default' );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {

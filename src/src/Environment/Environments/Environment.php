@@ -318,7 +318,7 @@ abstract class Environment {
 				$env_info->temporary_env . '/docker-compose.yml',
 				'down',
 				'--volumes',
-				'--remove-orphans'
+				'--remove-orphans',
 			] ) );
 			$down_process->setTimeout( 300 );
 			$down_process->setIdleTimeout( 300 );
