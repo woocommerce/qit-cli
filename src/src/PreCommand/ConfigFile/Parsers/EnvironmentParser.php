@@ -121,6 +121,11 @@ class EnvironmentParser extends AbstractConfigParser {
 							}
 						}
 						break;
+					case 'extension_set':
+						if ( ! is_string( $env_value ) ) {
+							throw new \RuntimeException( "extension_set in environment '$env_name' must be a string." );
+						}
+						break;
 					default:
 						throw new \RuntimeException( "Unknown key '$env_key' in environment '$env_name' configuration." );
 				}
@@ -146,7 +151,7 @@ class EnvironmentParser extends AbstractConfigParser {
 	 * Creates an Extension object from a plugin or theme item (string or object).
 	 *
 	 * @param string|array<string, mixed> $item The plugin or theme item (string slug or object with slug and source).
-	 * @param string                      $type The type ('plugin' or 'theme').
+	 * @param string $type The type ('plugin' or 'theme').
 	 *
 	 * @return Extension The created Extension object.
 	 */

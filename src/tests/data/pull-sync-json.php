@@ -1,4 +1,5 @@
 <?php
+
 function post_request( $url ) {
 	$attempts_429   = 3; // how many times to retry if 429.
 	$attempts_other = 1; // how many times to retry for any other error.
@@ -54,7 +55,7 @@ try {
 	// Fetch sync data from API
 	$response = post_request( $sync_url );
 
-	// 1) Override the 'extensions' array
+	// Override the 'extensions' array
 	$response['extensions'] = [
 		[ 'id' => 123, 'slug' => 'foo-extension' ],
 		[ 'id' => 456, 'slug' => 'bar-extension' ],
@@ -63,9 +64,18 @@ try {
 		[ 'id' => 12345, 'slug' => 'qit-cat' ],
 		[ 'id' => 12346, 'slug' => 'qit-dog' ],
 		[ 'id' => 2165910, 'slug' => 'woocommerce-shipping' ],
+		[ 'id' => 123456, 'slug' => 'woocommerce' ], // Added for ExtensionSetTest
+		[ 'id' => 123457, 'slug' => 'plugin-a' ], // Added for ExtensionSetTest
+		[ 'id' => 123458, 'slug' => 'plugin-b' ], // Added for ExtensionSetTest
 	];
 
-	// Normalize data.
+	// Override the 'extension_sets' array
+	$response['extension_sets'] = [
+		'test-set'  => [ 'plugin-a', 'plugin-b' ],
+		'empty-set' => [],
+	];
+
+	// Normalize data
 	if ( isset( $response['latest_cli_version'] ) ) {
 		$response['latest_cli_version'] = '0.8.2';
 	}

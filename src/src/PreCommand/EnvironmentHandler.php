@@ -227,7 +227,7 @@ class EnvironmentHandler {
 
 		// Parse extension set
 		if ( ! empty( $env_config['extension_set'] ) ) {
-			$env_info = App::make( 'QIT_CLI\Environment\ExtensionSetResolver' )->resolve( $env_info, [ 'overrides' => [ 'extension_set' => $env_config['extension_set'] ] ] );
+			$env_info = App::make( ExtensionSetResolver::class )->resolve( $env_info, [ 'overrides' => [ 'extension_set' => $env_config['extension_set'] ] ] );
 		}
 
 		return $env_info;
