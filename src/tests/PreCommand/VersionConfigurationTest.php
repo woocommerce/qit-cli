@@ -2,12 +2,10 @@
 
 namespace QIT_CLI_Tests\PreCommand;
 
-use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
-class VersionConfigurationTest extends TestCase {
+class VersionConfigurationTest extends PreCommandTestCase {
 	use MatchesSnapshots;
-	use PreCommandTestTrait;
 
 	public function test_wp_and_woo_versions() {
 		$config = [

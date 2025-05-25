@@ -7,6 +7,7 @@ use QIT_CLI\Environment\Extension;
 use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\WooExtensionsList;
+use function QIT_CLI\get_manager_url;
 
 class PluginDependencies {
 	/** @var Cache $cache */
@@ -34,7 +35,7 @@ class PluginDependencies {
 	}
 
 	/**
-	 * @param int        $woo_id
+	 * @param int $woo_id
 	 * @param array<int> $additional_woo_extension_ids
 	 *
 	 * @return array{
@@ -50,8 +51,10 @@ class PluginDependencies {
 
 		if ( $cached ) {
 			$response = json_decode( $cached, true );
+			if ( ! is_array( $response ) ) {
+				throw new \UnexpectedValueException( 'Cached response is not a valid JSON array.' );
+			}
 		} else {
-			// Example response: "{\"plugins\":[\"woocommerce-payments\",\"automatewoo-birthdays\"],\"themes\":[],\"php_extensions\":[]}".
 			try {
 				$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' ) )
 					->with_method( 'POST' )
@@ -60,8 +63,10 @@ class PluginDependencies {
 						'additional_woo_extension_ids' => implode( ',', $additional_woo_extension_ids ),
 					] )
 					->request();
+				if ( $json === 'NULL_RESPONSE' || $json === '' ) {
+					throw new NetworkErrorException( 'Received null or empty response from dependency API.' );
+				}
 			} catch ( NetworkErrorException $e ) {
-				// Could not get download URLs for any of the dependencies and/or the SUT.
 				throw $e;
 			}
 
@@ -83,9 +88,9 @@ class PluginDependencies {
 		}
 
 		return [
-			'plugin'        => $response['plugins'],         // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
-			'theme'         => $response['themes'] ?? [],    // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
-			'php_extension' => $response['php_extensions'],  // @phan-suppress-current-line PhanTypeArraySuspiciousNullable
+			'plugin'        => $response['plugins'],
+			'theme'         => $response['themes'] ?? [],
+			'php_extension' => $response['php_extensions'],
 		];
 	}
 
@@ -94,7 +99,7 @@ class PluginDependencies {
 	 *
 	 * @param array<Extension> $plugins
 	 * @param array<Extension> $themes
-	 * @param string           $dependencies_mode
+	 * @param string $dependencies_mode
 	 *
 	 * @return array{
 	 *     plugin: array<Extension>,
@@ -104,7 +109,6 @@ class PluginDependencies {
 	 */
 	public function get_dependencies( array $plugins, array $themes, string $dependencies_mode ): array {
 		if ( $dependencies_mode === self::DEPENDENCY_MODES['env_only']['none'] ) {
-			// Always include 'theme' => [] so the array shape matches the docblock.
 			return [
 				'plugin'        => [],
 				'theme'         => [],
@@ -115,10 +119,7 @@ class PluginDependencies {
 		$woo_extension_ids = [];
 
 		foreach ( array_merge( $plugins, $themes ) as $ext ) {
-			if ( ! isset( $ext->wccom_id ) ) {
-				continue;
-			}
-			if ( ! $ext->wccom_id ) {
+			if ( ! isset( $ext->wccom_id ) || ! $ext->wccom_id ) {
 				continue;
 			}
 			$woo_extension_ids[] = $ext->wccom_id;
@@ -127,7 +128,6 @@ class PluginDependencies {
 		$woo_extension_ids = array_unique( $woo_extension_ids );
 
 		if ( empty( $woo_extension_ids ) ) {
-			// Always include 'theme' => [] so the array shape matches the docblock.
 			return [
 				'plugin'        => [],
 				'theme'         => [],
@@ -139,41 +139,35 @@ class PluginDependencies {
 
 		$dependencies_data = $this->get_plugin_and_php_ext_dependencies( $first_id, $woo_extension_ids );
 
-		$plugins = [];
-
+		$plugins_result = [];
 		foreach ( $dependencies_data['plugin'] as $plugin_slug ) {
-			$exists = array_filter( $plugins, function ( $ext ) use ( $plugin_slug ) {
+			$exists = array_filter( $plugins_result, function ( $ext ) use ( $plugin_slug ) {
 				return $ext->slug === $plugin_slug;
 			} );
 
 			if ( empty( $exists ) ) {
-				$p         = $this->parser->parse_extensions( [ $plugin_slug ], 'plugin', $dependencies_mode );
-				$plugins[] = array_shift( $p );
+				$plugin           = new Extension( $plugin_slug, 'plugin' );
+				$plugin->priority = Extension::PRIORITY_LOW;
+				$plugins_result[] = $plugin;
 			}
 		}
 
-		$themes = [];
+		$themes_result = [];
 		foreach ( $dependencies_data['theme'] as $theme_slug ) {
-			$exists = array_filter( $plugins, function ( $ext ) use ( $theme_slug ) {
+			$exists = array_filter( $themes_result, function ( $ext ) use ( $theme_slug ) {
 				return $ext->slug === $theme_slug;
 			} );
 
 			if ( empty( $exists ) ) {
-				$t        = $this->parser->parse_extensions( [ $theme_slug ], 'theme', $dependencies_mode );
-				$themes[] = array_shift( $t );
+				$theme           = new Extension( $theme_slug, 'theme' );
+				$theme->priority = Extension::PRIORITY_LOW;
+				$themes_result[] = $theme;
 			}
 		}
 
-		foreach ( $plugins as $plugin ) {
-			$plugin->priority = Extension::PRIORITY_LOW;
-		}
-		foreach ( $themes as $theme ) {
-			$theme->priority = Extension::PRIORITY_LOW;
-		}
-
 		return [
-			'plugin'        => $plugins,
-			'theme'         => $themes,
+			'plugin'        => $plugins_result,
+			'theme'         => $themes_result,
 			'php_extension' => $dependencies_data['php_extension'],
 		];
 	}
@@ -181,7 +175,7 @@ class PluginDependencies {
 	/**
 	 * @param array<Extension> $new_deps
 	 * @param array<Extension> $existing_plugins
-	 * @param int              $default_priority
+	 * @param int $default_priority
 	 */
 	public function maybe_add_plugin_dependencies( array $new_deps, array &$existing_plugins, int $default_priority = Extension::PRIORITY_LOW ): void {
 		foreach ( $new_deps as $dep_ext ) {

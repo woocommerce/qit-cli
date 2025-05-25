@@ -2,12 +2,10 @@
 
 namespace QIT_CLI_Tests\PreCommand;
 
-use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
-class ThemeConfigurationTest extends TestCase {
+class ThemeConfigurationTest extends PreCommandTestCase {
 	use MatchesSnapshots;
-	use PreCommandTestTrait;
 
 	public function test_theme_configuration() {
 		$config = [

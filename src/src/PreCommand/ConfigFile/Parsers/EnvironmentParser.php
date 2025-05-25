@@ -3,8 +3,15 @@
 namespace QIT_CLI\PreCommand\ConfigFile\Parsers;
 
 use QIT_CLI\Environment\Extension;
+use QIT_CLI\WooExtensionsList;
 
 class EnvironmentParser extends AbstractConfigParser {
+	protected WooExtensionsList $woo_extension_list;
+
+	public function __construct( WooExtensionsList $woo_extension_list ) {
+		$this->woo_extension_list = $woo_extension_list;
+	}
+
 	public function parse( $value, array $context = [] ): array {
 		if ( ! is_array( $value ) ) {
 			throw new \RuntimeException( 'Environments must be an array.' );
@@ -58,9 +65,25 @@ class EnvironmentParser extends AbstractConfigParser {
 						if ( ! is_array( $env_value ) ) {
 							throw new \RuntimeException( "$env_key in environment '$env_name' must be an array." );
 						}
-						foreach ( $env_value as $item ) {
-							if ( ! is_string( $item ) ) {
-								throw new \RuntimeException( ucfirst( $env_key ) . " in environment '$env_name' must be strings." );
+						foreach ( $env_value as $index => $item ) {
+							if ( is_string( $item ) ) {
+								continue;
+							}
+							if ( is_array( $item ) ) {
+								if ( ! isset( $item['slug'] ) || ! is_string( $item['slug'] ) ) {
+									throw new \RuntimeException( "Item at index $index in $env_key for environment '$env_name' must have a 'slug' string." );
+								}
+								if ( isset( $item['marketplace'] ) && ! is_string( $item['marketplace'] ) ) {
+									throw new \RuntimeException( "Marketplace for $env_key item '{$item['slug']}' in environment '$env_name' must be a string." );
+								}
+								if ( isset( $item['directory'] ) && ! is_string( $item['directory'] ) ) {
+									throw new \RuntimeException( "Directory for $env_key item '{$item['slug']}' in environment '$env_name' must be a string." );
+								}
+								if ( isset( $item['zip'] ) && ! is_string( $item['zip'] ) ) {
+									throw new \RuntimeException( "Zip for $env_key item '{$item['slug']}' in environment '$env_name' must be a string." );
+								}
+							} else {
+								throw new \RuntimeException( "Item at index $index in $env_key for environment '$env_name' must be a string or an object with 'slug'." );
 							}
 						}
 						break;
@@ -96,14 +119,36 @@ class EnvironmentParser extends AbstractConfigParser {
 		$resolved = $this->resolve_extends( $value, 'environment' );
 
 		foreach ( $resolved as &$env ) {
-			$env['plugins'] = array_map( function ( $slug ) {
-				return new Extension( $slug, 'plugin' );
+			$env['plugins'] = array_map( function ( $item ) {
+				return $this->create_extension( $item, 'plugin' );
 			}, $env['plugins'] ?? [] );
-			$env['themes']  = array_map( function ( $slug ) {
-				return new Extension( $slug, 'theme' );
+
+			$env['themes'] = array_map( function ( $item ) {
+				return $this->create_extension( $item, 'theme' );
 			}, $env['themes'] ?? [] );
 		}
 
 		return $resolved;
+	}
+
+	/**
+	 * Creates an Extension object from a plugin or theme item (string or object).
+	 *
+	 * @param string|array<string, string> $item The plugin or theme item (string slug or object).
+	 * @param string $type The type ('plugin' or 'theme').
+	 *
+	 * @return Extension The created Extension object.
+	 */
+	protected function create_extension( $item, string $type ): Extension {
+		$slug = is_string( $item ) ? $item : $item['slug'];
+		$ext  = new Extension( $slug, $type );
+
+		try {
+			$ext->wccom_id = $this->woo_extension_list->get_woo_extension_id_by_slug( $slug );
+		} catch ( \UnexpectedValueException $e ) {
+			// Skip if slug not found in woocommerce.com
+		}
+
+		return $ext;
 	}
 }

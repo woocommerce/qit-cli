@@ -2,12 +2,10 @@
 
 namespace QIT_CLI_Tests\PreCommand;
 
-use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
-class EnvironmentSetupTest extends TestCase {
+class EnvironmentSetupTest extends PreCommandTestCase {
 	use MatchesSnapshots;
-	use PreCommandTestTrait;
 
 	public function test_basic_config_with_plugins_themes_versions() {
 		$config = [

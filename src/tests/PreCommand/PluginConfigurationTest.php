@@ -2,12 +2,10 @@
 
 namespace QIT_CLI_Tests\PreCommand;
 
-use PHPUnit\Framework\TestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 
-class PluginConfigurationTest extends TestCase {
+class PluginConfigurationTest extends PreCommandTestCase {
 	use MatchesSnapshots;
-	use PreCommandTestTrait;
 
 	public function test_cli_plugin_override_with_config() {
 		$config = [

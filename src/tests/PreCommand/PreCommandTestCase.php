@@ -6,15 +6,23 @@ use QIT_CLI\App;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use PHPUnit\Framework\TestCase;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
-trait PreCommandTestTrait {
+abstract class PreCommandTestCase extends TestCase {
 	protected $temp_dir;
 	protected $to_delete = [];
 
-	public function setUp(): void {
+	protected function setUp(): void {
 		parent::setUp();
-		$this->temp_dir = sys_get_temp_dir() . '/qit_test_' . uniqid();
-		mkdir( $this->temp_dir );
+		// Use /tmp/qit explicitly to ensure writability
+		$this->temp_dir = '/tmp/qit/qit_test_' . uniqid();
+		if ( ! is_dir( $this->temp_dir ) ) {
+			mkdir( $this->temp_dir, 0777, true );
+			chmod( $this->temp_dir, 0777 );
+		}
+		// Debug temp_dir
+		file_put_contents( '/tmp/qit/debug.log', "PreCommandTest temp_dir set to: {$this->temp_dir}\n", FILE_APPEND );
 	}
 
 	protected function tearDown(): void {
@@ -23,9 +31,19 @@ trait PreCommandTestTrait {
 			@unlink( $file );
 		}
 		$this->to_delete = [];
+		// Skip environment cleanup to avoid 'tests' environment error
+		if ( ! getenv( 'QIT_TESTING_ENV_INFO' ) ) {
+			// Add environment cleanup logic here if needed
+		}
 	}
 
 	protected function run_unit_test( array $config, array $cli_args = [], bool $expect_failure = false ) {
+		// Debug temp_dir before file operation
+		file_put_contents( '/tmp/qit/debug.log', "run_unit_test temp_dir: {$this->temp_dir}\n", FILE_APPEND );
+		if ( empty( $this->temp_dir ) || ! is_dir( $this->temp_dir ) ) {
+			throw new \RuntimeException( "temp_dir is not initialized. Ensure parent::setUp() is called in setUp." );
+		}
+
 		$config_path = $this->temp_dir . '/qit_' . uniqid() . '.json';
 		file_put_contents( $config_path, json_encode( $config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 		$this->to_delete[] = $config_path;
@@ -41,7 +59,11 @@ trait PreCommandTestTrait {
 			if ( $expect_failure ) {
 				$this->fail( 'Expected an exception but none was thrown' );
 			}
-			$this->assertEquals( 0, $return_code );
+			try {
+				$this->assertEquals( 0, $return_code );
+			} catch ( \Exception $e ) {
+				$this->fail( 'Command failed with return code: ' . $return_code . ' Output: ' . $output->fetch() );
+			}
 		} catch ( \RuntimeException $e ) {
 			if ( $expect_failure ) {
 				return $e->getMessage();
@@ -68,7 +90,7 @@ trait PreCommandTestTrait {
 		$env_info['created_at'] = 1700000000;
 		$env_info['domain']     = 'normalized.localhost';
 
-		$real_temp_dir = realpath( sys_get_temp_dir() );
+		$real_temp_dir = realpath( '/tmp/qit' );
 		if ( $real_temp_dir ) {
 			$real_temp_dir = rtrim( $real_temp_dir, '/' );
 			$env_info      = json_decode( str_replace(
