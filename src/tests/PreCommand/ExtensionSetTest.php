@@ -77,10 +77,8 @@ class ExtensionSetTest extends PreCommandTestCase {
 		$woocommerce = reset( $woocommerce );
 		$this->assertIsArray( $woocommerce, "woocommerce is not an array" );
 		$this->assertEquals( 'woocommerce', $woocommerce['slug'], "woocommerce slug incorrect" );
-		$this->assertFalse( $woocommerce['is_dynamic'], "woocommerce should not be dynamic" );
-		$this->assertNull( $woocommerce['dynamic_reason'], "woocommerce should have no dynamic reason" );
+		$this->assertNull( $woocommerce['added_automatically'], "woocommerce should have no dynamic reason" );
 		$this->assertEquals( 'wporg', $woocommerce['from'], "woocommerce should be from wporg" );
-		$this->assertEquals( 'config', $woocommerce['added_by'], "woocommerce should be added by config" );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
@@ -117,10 +115,8 @@ class ExtensionSetTest extends PreCommandTestCase {
 		$woocommerce = reset( $woocommerce );
 		$this->assertIsArray( $woocommerce, "woocommerce is not an array" );
 		$this->assertEquals( 'woocommerce', $woocommerce['slug'], "woocommerce slug incorrect" );
-		$this->assertFalse( $woocommerce['is_dynamic'], "woocommerce should not be dynamic" );
-		$this->assertNull( $woocommerce['dynamic_reason'], "woocommerce should have no dynamic reason" );
+		$this->assertNull( $woocommerce['added_automatically'], "woocommerce should have no dynamic reason" );
 		$this->assertEquals( 'wporg', $woocommerce['from'], "woocommerce should be from wporg" );
-		$this->assertEquals( 'config', $woocommerce['added_by'], "woocommerce should be added by config" );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
@@ -159,10 +155,8 @@ class ExtensionSetTest extends PreCommandTestCase {
 		$woocommerce = reset( $woocommerce );
 		$this->assertIsArray( $woocommerce, "woocommerce is not an array" );
 		$this->assertEquals( 'woocommerce', $woocommerce['slug'], "woocommerce slug incorrect" );
-		$this->assertFalse( $woocommerce['is_dynamic'], "woocommerce should not be dynamic" );
-		$this->assertNull( $woocommerce['dynamic_reason'], "woocommerce should have no dynamic reason" );
+		$this->assertNull( $woocommerce['added_automatically'], "woocommerce should have no dynamic reason" );
 		$this->assertEquals( 'wporg', $woocommerce['from'], "woocommerce should be from wporg" );
-		$this->assertEquals( 'config', $woocommerce['added_by'], "woocommerce should be added by config" );
 
 		// Verify plugin-a is an array and dynamic
 		$plugin_a = array_filter(
@@ -172,10 +166,8 @@ class ExtensionSetTest extends PreCommandTestCase {
 		$plugin_a = reset( $plugin_a );
 		$this->assertIsArray( $plugin_a, "plugin-a is not an array" );
 		$this->assertEquals( 'plugin-a', $plugin_a['slug'], "plugin-a slug incorrect" );
-		$this->assertTrue( $plugin_a['is_dynamic'], "plugin-a should be dynamic" );
-		$this->assertEquals( 'Added via extension set', $plugin_a['dynamic_reason'], "plugin-a dynamic reason incorrect" );
+		$this->assertEquals( 'Added via extension set', $plugin_a['added_automatically'], "plugin-a dynamic reason incorrect" );
 		$this->assertEquals( 'wporg', $plugin_a['from'], "plugin-a should be from wporg" );
-		$this->assertEquals( 'extension_set', $plugin_a['added_by'], "plugin-a should be added by extension_set" );
 
 		// Verify plugin-b is an array and dynamic
 		$plugin_b = array_filter(
@@ -185,10 +177,8 @@ class ExtensionSetTest extends PreCommandTestCase {
 		$plugin_b = reset( $plugin_b );
 		$this->assertIsArray( $plugin_b, "plugin-b is not an array" );
 		$this->assertEquals( 'plugin-b', $plugin_b['slug'], "plugin-b slug incorrect" );
-		$this->assertTrue( $plugin_b['is_dynamic'], "plugin-b should be dynamic" );
-		$this->assertEquals( 'Added via extension set', $plugin_b['dynamic_reason'], "plugin-b dynamic reason incorrect" );
+		$this->assertEquals( 'Added via extension set', $plugin_b['added_automatically'], "plugin-b dynamic reason incorrect" );
 		$this->assertEquals( 'wporg', $plugin_b['from'], "plugin-b should be from wporg" );
-		$this->assertEquals( 'extension_set', $plugin_b['added_by'], "plugin-b should be added by extension_set" );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
@@ -226,10 +216,8 @@ class ExtensionSetTest extends PreCommandTestCase {
 		$plugin_a = reset( $plugin_a );
 		$this->assertIsArray( $plugin_a, "plugin-a is not an array" );
 		$this->assertEquals( 'plugin-a', $plugin_a['slug'], "plugin-a slug incorrect" );
-		$this->assertFalse( $plugin_a['is_dynamic'], "plugin-a should not be dynamic" );
-		$this->assertNull( $plugin_a['dynamic_reason'], "plugin-a should have no dynamic reason" );
+		$this->assertNull( $plugin_a['added_automatically'], "plugin-a should have no dynamic reason" );
 		$this->assertEquals( 'wporg', $plugin_a['from'], "plugin-a should be from wporg" );
-		$this->assertEquals( 'config', $plugin_a['added_by'], "plugin-a should be added by config" );
 
 		// Verify plugin-b is an array and dynamic
 		$plugin_b = array_filter(
@@ -239,10 +227,8 @@ class ExtensionSetTest extends PreCommandTestCase {
 		$plugin_b = reset( $plugin_b );
 		$this->assertIsArray( $plugin_b, "plugin-b is not an array" );
 		$this->assertEquals( 'plugin-b', $plugin_b['slug'], "plugin-b slug incorrect" );
-		$this->assertTrue( $plugin_b['is_dynamic'], "plugin-b should be dynamic" );
-		$this->assertEquals( 'Added via extension set', $plugin_b['dynamic_reason'], "plugin-b dynamic reason incorrect" );
+		$this->assertEquals( 'Added via extension set', $plugin_b['added_automatically'], "plugin-b dynamic reason incorrect" );
 		$this->assertEquals( 'wporg', $plugin_b['from'], "plugin-b should be from wporg" );
-		$this->assertEquals( 'extension_set', $plugin_b['added_by'], "plugin-b should be added by extension_set" );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
@@ -279,10 +265,8 @@ class ExtensionSetTest extends PreCommandTestCase {
 		$woocommerce = reset( $woocommerce );
 		$this->assertIsArray( $woocommerce, "woocommerce is not an array" );
 		$this->assertEquals( 'woocommerce', $woocommerce['slug'], "woocommerce slug incorrect" );
-		$this->assertFalse( $woocommerce['is_dynamic'], "woocommerce should not be dynamic" );
-		$this->assertNull( $woocommerce['dynamic_reason'], "woocommerce should have no dynamic reason" );
+		$this->assertNull( $woocommerce['added_automatically'], "woocommerce should have no dynamic reason" );
 		$this->assertEquals( 'wporg', $woocommerce['from'], "woocommerce should be from wporg" );
-		$this->assertEquals( 'config', $woocommerce['added_by'], "woocommerce should be added by config" );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
@@ -322,10 +306,8 @@ class ExtensionSetTest extends PreCommandTestCase {
 		$this->assertIsArray( $plugin_b, "plugin-b is not an array" );
 		$this->assertEquals( 'plugin-b', $plugin_b['slug'], "plugin-b slug incorrect" );
 		$this->assertEquals( '/path/to/plugin-b', $plugin_b['directory'], "plugin-b directory property not preserved" );
-		$this->assertFalse( $plugin_b['is_dynamic'], "plugin-b should not be dynamic" );
-		$this->assertNull( $plugin_b['dynamic_reason'], "plugin-b should have no dynamic reason" );
+		$this->assertNull( $plugin_b['added_automatically'], "plugin-b should have no dynamic reason" );
 		$this->assertEquals( 'local', $plugin_b['from'], "plugin-b should be from local" );
-		$this->assertEquals( 'config', $plugin_b['added_by'], "plugin-b should be added by config" );
 
 		// Verify plugin-a is an array and dynamic
 		$plugin_a = array_filter(
@@ -335,10 +317,8 @@ class ExtensionSetTest extends PreCommandTestCase {
 		$plugin_a = reset( $plugin_a );
 		$this->assertIsArray( $plugin_a, "plugin-a is not an array" );
 		$this->assertEquals( 'plugin-a', $plugin_a['slug'], "plugin-a slug incorrect" );
-		$this->assertTrue( $plugin_a['is_dynamic'], "plugin-a should be dynamic" );
-		$this->assertEquals( 'Added via extension set', $plugin_a['dynamic_reason'], "plugin-a dynamic reason incorrect" );
+		$this->assertEquals( 'Added via extension set', $plugin_a['added_automatically'], "plugin-a dynamic reason incorrect" );
 		$this->assertEquals( 'wporg', $plugin_a['from'], "plugin-a should be from wporg" );
-		$this->assertEquals( 'extension_set', $plugin_a['added_by'], "plugin-a should be added by extension_set" );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}

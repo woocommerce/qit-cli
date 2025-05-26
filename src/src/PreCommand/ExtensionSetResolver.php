@@ -6,6 +6,8 @@ use QIT_CLI\Cache;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\ManagerSync;
 use QIT_CLI\Environment\Extension;
+use QIT_CLI\WPORGExtensionsList;
+use QIT_CLI\App;
 
 class ExtensionSetResolver {
 	/** @var ManagerSync $manager_sync */
@@ -68,14 +70,27 @@ class ExtensionSetResolver {
 			$env_info->plugins
 		);
 
+		$wporg_extensions_list = App::make( WPORGExtensionsList::class );
+
 		foreach ( $extensions as $extension ) {
 			if ( ! in_array( $extension, $existing_slugs, true ) ) {
-				$ext_obj                      = new \QIT_CLI\Environment\Extension( $extension, 'plugin' );
+				$ext_obj                      = new Extension( $extension, 'plugin' );
 				$ext_obj->added_automatically = 'Added via extension set';
-				$ext_obj->populate_from();
+				if ( $wporg_extensions_list->is_wporg_plugin( $extension ) ) {
+					$ext_obj->from = 'wporg';
+					try {
+						$info             = $wporg_extensions_list->get_plugin_download_info( $extension );
+						$ext_obj->source  = $info['url'];
+						$ext_obj->version = $info['version'];
+					} catch ( \Exception $e ) {
+						file_put_contents( '/tmp/qit_debug.log', "Failed to fetch WP.org info for $extension: " . $e->getMessage() . "\n", FILE_APPEND );
+					}
+				} else {
+					$ext_obj->populate_from(); // Fallback for non-wporg plugins
+				}
 				$env_info->plugins[] = $ext_obj;
 				$existing_slugs[]    = $extension;
-				file_put_contents( '/tmp/qit_debug.log', "Added extension: $extension with properties is_dynamic=true, dynamic_reason='Added via extension set', from='wporg', added_by='extension_set'\n", FILE_APPEND );
+				file_put_contents( '/tmp/qit_debug.log', "Added extension: $extension with properties added_automatically='Added via extension set', from='" . ( $ext_obj->from ?? 'null' ) . "'\n", FILE_APPEND );
 			}
 		}
 
