@@ -8,6 +8,7 @@ use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\EnvironmentVersionResolver;
 use QIT_CLI\Environment\EnvParser;
+use QIT_CLI\Environment\EnvVolumeParser;
 use QIT_CLI\PreCommand\ConfigFile\QITConfig;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -47,8 +48,34 @@ class EnvironmentHandler {
 			if ( $key === 'envs' ) {
 				continue;
 			}
-			$mapped_key                = self::get_pluralizable_keys()[ $key ] ?? $key;
-			$env_config[ $mapped_key ] = $value;
+			$mapped_key = self::get_pluralizable_keys()[ $key ] ?? $key;
+			if ( in_array( $mapped_key, [ 'plugins', 'themes' ], true ) && is_array( $value ) ) {
+				$env_config[ $mapped_key ] = array_map( function ( $item ) use ( $mapped_key ) {
+					$type = $mapped_key === 'plugins' ? 'plugin' : 'theme';
+					if ( is_string( $item ) ) {
+						$extension = new \QIT_CLI\Environment\Extension( $item, $type );
+					} elseif ( is_array( $item ) && isset( $item['slug'] ) ) {
+						$extension = new \QIT_CLI\Environment\Extension( $item['slug'], $type );
+						if ( isset( $item['source']['from'] ) ) {
+							$extension->from = $item['source']['from'];
+						}
+						if ( isset( $item['source']['path'] ) ) {
+							$extension->directory = $item['source']['path'];
+						}
+					} elseif ( $item instanceof \QIT_CLI\Environment\Extension ) {
+						$extension = $item;
+					} else {
+						throw new \RuntimeException( "Invalid $mapped_key config entry: " . json_encode( $item ) );
+					}
+					if ( ! isset( $extension->from ) ) {
+						$extension->from = 'wporg';
+					}
+
+					return $extension;
+				}, $value );
+			} else {
+				$env_config[ $mapped_key ] = $value;
+			}
 		}
 
 		// Merge CLI options
@@ -67,8 +94,14 @@ class EnvironmentHandler {
 						throw new \RuntimeException( 'CLI plugin must be a string or Extension object, got ' . gettype( $plugin ) );
 					}
 					if ( ! in_array( $slug, $seen_slugs, true ) ) {
-						$cli_plugins[] = is_object( $plugin ) ? $plugin : new \QIT_CLI\Environment\Extension( $slug, 'plugin' );
-						$seen_slugs[]  = $slug;
+						if ( is_object( $plugin ) ) {
+							$cli_plugins[] = $plugin;
+						} else {
+							$extension       = new \QIT_CLI\Environment\Extension( $slug, 'plugin' );
+							$extension->from = 'wporg';
+							$cli_plugins[]   = $extension;
+						}
+						$seen_slugs[] = $slug;
 					}
 				}
 				$env_config['plugins'] = array_merge( $env_config['plugins'] ?? [], $cli_plugins );
@@ -127,62 +160,72 @@ class EnvironmentHandler {
 		$env_config['tunnel']      = $tunnel !== 'no_tunnel';
 		$env_config['tunnel_type'] = $tunnel;
 
+		$has_woocommerce = false;
+
 		// Handle WooCommerce version
+		foreach ( $env_config['plugins'] as $k => $plugin ) {
+			if ( $plugin->slug === 'woocommerce' ) {
+				$has_woocommerce = $k;
+				break;
+			}
+		}
+
+		if ( ! empty( $woo_version ) && $has_woocommerce !== false ) {
+			// Show a warning that we are overriding the WooCommerce version that is declared in the config or through --plugin woocommerce based on --woo parameter.
+			$output->writeln( "<comment>Overriding WooCommerce version to: $woo_version</comment>" );
+			unset( $env_config['plugins'][ $has_woocommerce ] );
+		}
+
 		if ( ! empty( $woo_version ) ) {
-			$woo_plugin = EnvironmentVersionResolver::resolve_woo( $woo_version, $env_config['plugins'] ?: [] );
-			$woo_slug   = is_object( $woo_plugin ) ? $woo_plugin->slug : ( is_string( $woo_plugin ) ? $woo_plugin : null );
-			if ( ! is_string( $woo_slug ) ) {
-				throw new \RuntimeException( 'Woo plugin slug must be a string, got ' . gettype( $woo_slug ) );
-			}
-			$seen_slugs = array_map( fn( $p ) => is_object( $p ) ? $p->slug : $p, $env_config['plugins'] ?? [] );
-			if ( ! in_array( $woo_slug, $seen_slugs, true ) ) {
-				$env_config['plugins'][] = is_object( $woo_plugin ) ? $woo_plugin : new \QIT_CLI\Environment\Extension( $woo_slug, 'plugin' );
-			}
+			$woo_plugin                      = EnvironmentVersionResolver::resolve_woo( $woo_version, $env_config['plugins'] );
+			$woo_plugin->added_automatically = 'Added due to specified WooCommerce version';
+			$woo_plugin->populate_from();
+			$env_config['plugins'] = $woo_plugin;
 		}
 
 		// Handle dependencies
 		$deps = App::make( PluginDependencies::class )->get_dependencies(
-			$env_config['plugins'] ?: [],
-			$env_config['themes'] ?: [],
+			$env_config['plugins'],
+			$env_config['themes'],
 			$env_config['dependencies_mode'] ?: 'activate'
 		);
 
 		// Add dependencies, avoiding duplicates
-		$seen_slugs = array_map( fn( $p ) => is_object( $p ) ? $p->slug : $p, $env_config['plugins'] ?? [] );
+		$seen_slugs = array_map( function ( $p ) {
+			return $p->slug;
+		}, $env_config['plugins'] ?? [] );
+
 		foreach ( $deps['plugin'] as $dep_plugin ) {
-			$dep_slug = $dep_plugin->slug;
-			if ( ! in_array( $dep_slug, $seen_slugs, true ) ) {
+			if ( ! in_array( $dep_plugin->slug, $seen_slugs, true ) ) {
 				$env_config['plugins'][] = $dep_plugin;
-				$seen_slugs[]            = $dep_slug;
+				$seen_slugs[]            = $dep_plugin->slug;
 			}
 		}
 		App::make( PluginDependencies::class )->maybe_add_theme_dependencies( $deps['theme'], $env_config['themes'] );
-		if ( empty( $env_config['php_extensions'] ) ) {
-			$env_config['php_extensions'] = [];
-		}
 		App::make( PluginDependencies::class )->maybe_add_php_extensions( $deps['php_extension'], $env_config['php_extensions'] );
 
 		// Parse volumes
-		$env_config['volumes'] = App::make( 'QIT_CLI\Environment\EnvVolumeParser' )->parse_volumes( $env_config['volumes'] ?: [] );
+		$env_config['volumes'] = App::make( EnvVolumeParser::class )->parse_volumes( $env_config['volumes'] ?: [] );
 
 		// Normalize and validate
 		foreach ( $env_config as $key => &$value ) {
 			switch ( $key ) {
 				case 'php_extensions':
-					$value = array_map( 'trim', $value );
-					foreach ( $value as $ext ) {
-						if ( ! preg_match( '/^[a-z0-9_-]+$/i', $ext ) ) {
-							throw new \RuntimeException( 'Invalid PHP extension name: ' . $ext );
+					if ( ! is_array( $value ) ) {
+						throw new \RuntimeException( 'PHP extensions must be an array' );
+					}
+					$value = array_unique( array_filter( $value, 'is_string' ) );
+					foreach ( $value as $ext_name ) {
+						if ( ! preg_match( '/^[a-z0-9_-]+$/i', $ext_name ) ) {
+							throw new \RuntimeException( 'Invalid PHP extension name: ' . $ext_name );
 						}
-						if ( strlen( $ext ) > 50 ) {
-							throw new \RuntimeException( 'PHP extension name too long: ' . $ext );
+						if ( strlen( $ext_name ) > 50 ) {
+							throw new \RuntimeException( 'PHP extension name too long: ' . $ext_name );
 						}
 					}
 					break;
 				case 'wp_version':
 					$value = EnvironmentVersionResolver::resolve_wp( $value );
-					break;
-				case 'woo_version':
 					break;
 			}
 		}
@@ -200,8 +243,8 @@ class EnvironmentHandler {
 		$env_info->created_at              = time();
 		$env_info->status                  = 'pending';
 		$env_info->volumes                 = $env_config['volumes'];
-		$env_info->docker_images           = isset( $env_config['docker_images'] ) ? $env_config['docker_images'] : [];
-		$env_info->docker_network          = isset( $env_config['docker_network'] ) ? $env_config['docker_network'] : '';
+		$env_info->docker_images           = $env_config['docker_images'] ?? [];
+		$env_info->docker_network          = $env_config['docker_network'] ?? '';
 		$env_info->php_extensions          = $env_config['php_extensions'];
 		$env_info->plugins                 = $env_config['plugins'];
 		$env_info->themes                  = $env_config['themes'];
@@ -215,7 +258,7 @@ class EnvironmentHandler {
 		$env_info->skip_activating_plugins = $env_config['skip_activating_plugins'];
 		$env_info->skip_activating_themes  = $env_config['skip_activating_themes'];
 		$env_info->tests                   = $env_config['tests'];
-		$env_info->playwright_config       = isset( $env_config['playwright_config'] ) ? $env_config['playwright_config'] : [];
+		$env_info->playwright_config       = $env_config['playwright_config'] ?? [];
 		$env_info->pw_test_tag             = $env_config['pw_test_tag'];
 		$env_info->woo_version             = $env_config['woo_version'] ?? '';
 		$env_info->is_development_build    = $env_config['is_development_build'];

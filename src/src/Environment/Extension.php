@@ -2,7 +2,10 @@
 
 namespace QIT_CLI\Environment;
 
-class Extension implements \JsonSerializable {
+use lucatume\DI52\App;
+use QIT_CLI\WooExtensionsList;
+
+class Extension {
 	/** @var array<string> Supported extension types. */
 	const TYPES = [
 		'plugin' => 'plugin',
@@ -15,9 +18,9 @@ class Extension implements \JsonSerializable {
 		'test'      => 'test',
 	];
 
-	const PRIORITY_LOW    = 10;
+	const PRIORITY_LOW = 10;
 	const PRIORITY_MEDIUM = 50;
-	const PRIORITY_HIGH   = 100;
+	const PRIORITY_HIGH = 100;
 
 	/** @var string The unique identifier (slug) of the extension. */
 	public $slug;
@@ -55,9 +58,32 @@ class Extension implements \JsonSerializable {
 	/** @var int|null WooCommerce.com ID, if applicable. */
 	public $wccom_id;
 
+	/** @var string|null Reason for automatic addition, if applicable. */
+	public $added_automatically = null;
+
+	/** @var string|null The source type of the extension ('wporg', 'wccom', 'local', 'zip'). */
+	public $from = null;
+
+	public function populate_from(): void {
+		if ( ! $this->source ) {
+			return;
+		}
+
+		if ( strpos( $this->source, 'wordpress.org' ) !== false ) {
+			$this->from = 'wporg';
+		} elseif ( strpos( $this->source, 'woocommerce.com' ) !== false ) {
+			$this->from     = 'wccom';
+			$this->wccom_id = App::make( WooExtensionsList::class )->get_woo_extension_id_by_slug( $this->slug );
+		} elseif ( is_dir( $this->source ) || is_file( $this->source ) ) {
+			$this->from = 'local';
+		} elseif ( strpos( $this->source, '.zip' ) !== false ) {
+			$this->from = 'zip';
+		}
+	}
+
 	/**
-	 * @param string          $slug The extension slug.
-	 * @param string          $type The extension type ('plugin' or 'theme').
+	 * @param string $slug The extension slug.
+	 * @param string $type The extension type ('plugin' or 'theme').
 	 * @param string|int|null $source Optional source (slug, URL, directory, or zip file).
 	 */
 	public function __construct( string $slug, string $type, $source = null ) {
@@ -67,10 +93,5 @@ class Extension implements \JsonSerializable {
 		$this->slug   = $slug;
 		$this->type   = $type;
 		$this->source = $source;
-	}
-
-	#[\ReturnTypeWillChange]
-	public function jsonSerialize() {
-		return $this->slug;
 	}
 }

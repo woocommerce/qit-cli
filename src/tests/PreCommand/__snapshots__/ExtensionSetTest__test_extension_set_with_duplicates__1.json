@@ -10,8 +10,42 @@
     "docker_network": "",
     "php_extensions": [],
     "plugins": [
-        "plugin-a",
-        "plugin-b"
+        {
+            "slug": "plugin-a",
+            "entrypoint": null,
+            "source": "https:\/\/downloads.wordpress.org\/plugin\/plugin-a.zip",
+            "directory": null,
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "1.0.0",
+            "action": null,
+            "test_tags": null,
+            "priority": 50,
+            "wccom_id": null,
+            "is_dynamic": false,
+            "dynamic_reason": null,
+            "from": "wporg",
+            "added_by": "config"
+        },
+        {
+            "slug": "plugin-b",
+            "entrypoint": null,
+            "source": null,
+            "directory": null,
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "undefined",
+            "action": null,
+            "test_tags": null,
+            "priority": 50,
+            "wccom_id": null,
+            "is_dynamic": true,
+            "dynamic_reason": "Added via extension set",
+            "from": "wporg",
+            "added_by": "extension_set"
+        }
     ],
     "themes": [],
     "env": {

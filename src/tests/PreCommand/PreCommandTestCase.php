@@ -110,14 +110,20 @@ abstract class PreCommandTestCase extends TestCase {
 
 		if ( ! empty( $env_info['plugins'] ) && is_array( $env_info['plugins'] ) ) {
 			foreach ( $env_info['plugins'] as &$plugin ) {
-				if ( is_array( $plugin ) && isset( $plugin['slug'] ) ) {
-					$plugin = $plugin['slug'];
+				if ( is_object( $plugin ) ) {
+					// Handle Extension objects by serializing
+					$plugin = $plugin->jsonSerialize();
 				}
-				if ( ! is_string( $plugin ) ) {
-					throw new \RuntimeException( 'Plugin must be a string, got ' . gettype( $plugin ) );
-				}
-				if ( preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/test-plugin-[a-f0-9]+\.zip$/i', $plugin ) ) {
-					$plugin = '/tmp-normalized/normalized-plugin.zip';
+				if ( is_array( $plugin ) ) {
+					// Preserve all plugin arrays, regardless of structure
+					// No modifications to array contents
+				} elseif ( is_string( $plugin ) ) {
+					// Normalize zip file paths for string plugins
+					if ( preg_match( '/^\/tmp-normalized\/+q[a-f0-9]+\/test-plugin_[a-f0-9]+\.zip$/i', $plugin ) ) {
+						$plugin = '/tmp-normalized/normalized-plugin.zip';
+					}
+				} else {
+					throw new \RuntimeException( 'Plugin must be a string or array, got ' . gettype( $plugin ) );
 				}
 			}
 			unset( $plugin );
@@ -125,11 +131,20 @@ abstract class PreCommandTestCase extends TestCase {
 
 		if ( ! empty( $env_info['themes'] ) && is_array( $env_info['themes'] ) ) {
 			foreach ( $env_info['themes'] as &$theme ) {
-				if ( ! is_string( $theme ) ) {
-					throw new \RuntimeException( 'Theme must be a string, got ' . gettype( $theme ) );
+				if ( is_object( $theme ) ) {
+					// Handle Extension objects by serializing
+					$theme = $theme->jsonSerialize();
 				}
-				if ( preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/test-theme-[a-f0-9]+\.zip$/i', $theme ) ) {
-					$theme = '/tmp-normalized/normalized-theme.zip';
+				if ( is_array( $theme ) ) {
+					// Preserve all theme arrays, regardless of structure
+					// No modifications to array contents
+				} elseif ( is_string( $theme ) ) {
+					// Normalize zip file paths for string themes
+					if ( preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/test-theme-[a-f0-9]+\.zip$/i', $theme ) ) {
+						$theme = '/tmp-normalized/normalized-theme.zip';
+					}
+				} else {
+					throw new \RuntimeException( 'Theme must be a string or array, got ' . gettype( $theme ) );
 				}
 			}
 			unset( $theme );

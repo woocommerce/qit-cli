@@ -70,9 +70,12 @@ class ExtensionSetResolver {
 
 		foreach ( $extensions as $extension ) {
 			if ( ! in_array( $extension, $existing_slugs, true ) ) {
-				$env_info->plugins[] = new Extension( $extension, 'plugin' );
+				$ext_obj                      = new \QIT_CLI\Environment\Extension( $extension, 'plugin' );
+				$ext_obj->added_automatically = 'Added via extension set';
+				$ext_obj->populate_from();
+				$env_info->plugins[] = $ext_obj;
 				$existing_slugs[]    = $extension;
-				file_put_contents( '/tmp/qit_debug.log', "Added extension: $extension\n", FILE_APPEND );
+				file_put_contents( '/tmp/qit_debug.log', "Added extension: $extension with properties is_dynamic=true, dynamic_reason='Added via extension set', from='wporg', added_by='extension_set'\n", FILE_APPEND );
 			}
 		}
 

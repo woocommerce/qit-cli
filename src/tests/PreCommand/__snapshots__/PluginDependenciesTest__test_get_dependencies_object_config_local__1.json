@@ -10,7 +10,22 @@
     "docker_network": "",
     "php_extensions": [],
     "plugins": [
-        "custom-plugin"
+        {
+            "slug": "custom-plugin",
+            "entrypoint": null,
+            "source": null,
+            "directory": "\/path\/to\/custom-plugin",
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "undefined",
+            "action": null,
+            "test_tags": null,
+            "priority": 50,
+            "wccom_id": null,
+            "added_automatically": null,
+            "from": "local"
+        }
     ],
     "themes": [],
     "env": {

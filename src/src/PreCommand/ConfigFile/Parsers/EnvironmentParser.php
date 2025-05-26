@@ -157,48 +157,52 @@ class EnvironmentParser extends AbstractConfigParser {
 	 */
 	protected function create_extension( $item, string $type ): Extension {
 		if ( is_string( $item ) ) {
-			$slug = $item;
-			$ext  = new Extension( $slug, $type );
+			$slug      = $item;
+			$ext       = new Extension( $slug, $type );
 
-			// Try wccom first.
+			// Try wccom first
 			try {
 				$ext->wccom_id = $this->woo_extension_list->get_woo_extension_id_by_slug( $slug );
+				$ext->from     = 'wccom';
 
 				return $ext;
 			} catch ( \UnexpectedValueException $e ) {
-				// Not in wccom, try wporg.
+				// Not in wccom, try wporg
 			}
 
-			// Try wporg.
+			// Try wporg
 			try {
 				if ( $type === 'plugin' && $this->wporg_extension_list->is_wporg_plugin( $slug ) ) {
 					$info         = $this->wporg_extension_list->get_plugin_download_info( $slug );
 					$ext->source  = $info['url'];
 					$ext->version = $info['version'];
+					$ext->from    = 'wporg';
 
 					return $ext;
 				} elseif ( $type === 'theme' && $this->wporg_extension_list->is_wporg_theme( $slug ) ) {
 					$info         = $this->wporg_extension_list->get_theme_download_info( $slug );
 					$ext->source  = $info['url'];
 					$ext->version = $info['version'];
+					$ext->from    = 'wporg';
 
 					return $ext;
 				}
 			} catch ( \Exception $e ) {
-				// Not in wporg, fail.
+				// Not in wporg, fail
 			}
 
 			throw new \RuntimeException( "Extension '$slug' ($type) not found in WooCommerce.com or WordPress.org." );
 		}
 
-		// Object case.
+		// Object case
 		if ( ! is_array( $item ) || ! isset( $item['slug'], $item['source']['from'] ) ) {
 			throw new \RuntimeException( "Extension object must have 'slug' and 'source' with 'from'." );
 		}
 
-		$slug = $item['slug'];
-		$from = $item['source']['from'];
-		$ext  = new Extension( $slug, $type );
+		$slug      = $item['slug'];
+		$from      = $item['source']['from'];
+		$ext       = new Extension( $slug, $type );
+		$ext->from = $from;
 
 		switch ( $from ) {
 			case 'wporg':

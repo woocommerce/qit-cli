@@ -10,7 +10,22 @@
     "docker_network": "",
     "php_extensions": [],
     "plugins": [
-        "premium-plugin"
+        {
+            "slug": "premium-plugin",
+            "entrypoint": null,
+            "source": "https:\/\/example.com\/premium-plugin.zip",
+            "directory": null,
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "undefined",
+            "action": null,
+            "test_tags": null,
+            "priority": 50,
+            "wccom_id": null,
+            "added_automatically": null,
+            "from": "zip"
+        }
     ],
     "themes": [],
     "env": {

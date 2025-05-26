@@ -10,7 +10,24 @@
     "docker_network": "",
     "php_extensions": [],
     "plugins": [
-        "woocommerce"
+        {
+            "slug": "woocommerce",
+            "entrypoint": null,
+            "source": "https:\/\/downloads.wordpress.org\/plugin\/woocommerce.zip",
+            "directory": null,
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "8.0.0",
+            "action": null,
+            "test_tags": null,
+            "priority": 50,
+            "wccom_id": null,
+            "is_dynamic": false,
+            "dynamic_reason": null,
+            "from": "wporg",
+            "added_by": "config"
+        }
     ],
     "themes": [],
     "env": {

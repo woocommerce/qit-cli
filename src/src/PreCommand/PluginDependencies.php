@@ -82,9 +82,25 @@ class PluginDependencies {
 			$this->cache->set( $cache_key, $json, HOUR_IN_SECONDS );
 		}
 
+		// Convert plugin slugs to Extension objects
+		$plugin_extensions = array_map( function ( $slug ) {
+			$ext = new Extension( $slug, 'plugin' );
+			$ext->populate_from();
+
+			return $ext;
+		}, $response['plugins'] );
+
+		// Convert theme slugs to Extension objects
+		$theme_extensions = array_map( function ( $slug ) {
+			$ext = new Extension( $slug, 'theme' );
+			$ext->populate_from();
+
+			return $ext;
+		}, $response['themes'] ?? [] );
+
 		return [
-			'plugin'        => $response['plugins'],
-			'theme'         => $response['themes'] ?? [],
+			'plugin'        => $plugin_extensions,
+			'theme'         => $theme_extensions,
 			'php_extension' => $response['php_extensions'],
 		];
 	}
@@ -111,9 +127,24 @@ class PluginDependencies {
 				$requires_plugins = (array) $raw_info->requires_plugins;
 			}
 
+			// Convert plugin slugs to Extension objects
+			$plugin_extensions = array_map( function ( $slug ) {
+				$ext = new Extension( $slug, 'plugin' );
+				$ext->populate_from();
+				try {
+					$info         = $this->wporg_extensions_list->get_plugin_download_info( $slug );
+					$ext->source  = $info['url'];
+					$ext->version = $info['version'];
+				} catch ( \Exception $e ) {
+					// Skip if unable to fetch info
+				}
+
+				return $ext;
+			}, $requires_plugins );
+
 			$dependencies = [
-				'plugin'        => $requires_plugins,
-				'theme'         => [],
+				'plugin'        => $plugin_extensions,
+				'theme'         => [], // Themes remain empty as WP.org plugins don't specify theme dependencies
 				'php_extension' => [],
 			];
 
@@ -129,6 +160,19 @@ class PluginDependencies {
 		}
 	}
 
+	/**
+	 * Get dependencies for plugins and themes.
+	 *
+	 * @param array<Extension> $plugins
+	 * @param array<Extension> $themes
+	 * @param string $dependencies_mode
+	 *
+	 * @return array{
+	 *     plugin: array<Extension>,
+	 *     theme: array<Extension>,
+	 *     php_extension: array<string>
+	 * }
+	 */
 	public function get_dependencies( array $plugins, array $themes, string $dependencies_mode ): array {
 		if ( $dependencies_mode === self::DEPENDENCY_MODES['env_only']['none'] ) {
 			return [
@@ -171,65 +215,88 @@ class PluginDependencies {
 			}
 		}
 
-		$all_deps['plugin']        = array_values( array_unique( $all_deps['plugin'] ) );
-		$all_deps['theme']         = array_values( array_unique( $all_deps['theme'] ) );
+		// Deduplicate plugins by slug, keeping the first occurrence
+		$unique_plugins = [];
+		foreach ( $all_deps['plugin'] as $plugin ) {
+			if ( ! isset( $unique_plugins[ $plugin->slug ] ) ) {
+				$unique_plugins[ $plugin->slug ] = $plugin;
+			}
+		}
+		$all_deps['plugin'] = array_values( $unique_plugins );
+
+		// Deduplicate themes by slug, keeping the first occurrence
+		$unique_themes = [];
+		foreach ( $all_deps['theme'] as $theme ) {
+			if ( ! isset( $unique_themes[ $theme->slug ] ) ) {
+				$unique_themes[ $theme->slug ] = $theme;
+			}
+		}
+		$all_deps['theme'] = array_values( $unique_themes );
+
+		// Deduplicate PHP extensions (still strings)
 		$all_deps['php_extension'] = array_values( array_unique( $all_deps['php_extension'] ) );
 
+		// Initialize plugins result with input plugins
 		$plugins_result = [];
-		foreach ( $all_deps['plugin'] as $plugin_slug ) {
-			$exists = array_filter( $plugins_result, function ( $ext ) use ( $plugin_slug ) {
-				return $ext->slug === $plugin_slug;
+		foreach ( $plugins as $plugin ) {
+			$exists = array_filter( $plugins_result, function ( $ext ) use ( $plugin ) {
+				return $ext->slug === $plugin->slug;
 			} );
-
 			if ( empty( $exists ) ) {
-				$plugin           = new Extension( $plugin_slug, 'plugin' );
-				$plugin->priority = Extension::PRIORITY_LOW;
-
-				if ( $this->wporg_extensions_list->is_wporg_plugin( $plugin_slug ) ) {
-					try {
-						$info            = $this->wporg_extensions_list->get_plugin_download_info( $plugin_slug );
-						$plugin->source  = $info['url'];
-						$plugin->version = $info['version'];
-					} catch ( \Exception $e ) {
-						// Skip if unable to fetch info.
-					}
-				}
-
 				$plugins_result[] = $plugin;
 			}
 		}
 
-		$themes_result = [];
-		foreach ( $all_deps['theme'] as $theme_slug ) {
-			$exists = array_filter( $themes_result, function ( $ext ) use ( $theme_slug ) {
-				return $ext->slug === $theme_slug;
+		// Add dependency plugins not already present
+		foreach ( $all_deps['plugin'] as $plugin ) {
+			$exists = array_filter( $plugins_result, function ( $ext ) use ( $plugin ) {
+				return $ext->slug === $plugin->slug;
 			} );
 
 			if ( empty( $exists ) ) {
-				$theme           = new Extension( $theme_slug, 'theme' );
-				$theme->priority = Extension::PRIORITY_LOW;
+				$plugin->priority            = Extension::PRIORITY_LOW;
+				$plugin->added_automatically = 'Added as a dependency';
+				$plugins_result[]            = $plugin;
+			}
+		}
 
-				if ( $this->wporg_extensions_list->is_wporg_theme( $theme_slug ) ) {
-					try {
-						$info           = $this->wporg_extensions_list->get_theme_download_info( $theme_slug );
-						$theme->source  = $info['url'];
-						$theme->version = $info['version'];
-					} catch ( \Exception $e ) {
-						// Skip if unable to fetch info.
-					}
-				}
+		// Initialize themes result with input themes
+		$themes_result = [];
+		foreach ( $themes as $theme ) {
+			$exists = array_filter( $themes_result, function ( $ext ) use ( $theme ) {
+				return $ext->slug === $theme->slug;
+			} );
+			if ( empty( $exists ) ) {
+				$themes_result[] = $theme;
+			}
+		}
 
+		// Add dependency themes not already present
+		foreach ( $all_deps['theme'] as $theme ) {
+			$exists = array_filter( $themes_result, function ( $ext ) use ( $theme ) {
+				return $ext->slug === $theme->slug;
+			} );
+
+			if ( empty( $exists ) ) {
+				$theme->added_automatically = 'Added as a dependency';
+				$theme->populate_from();
 				$themes_result[] = $theme;
 			}
 		}
 
 		return [
 			'plugin'        => $plugins_result,
-			'theme'         => array_values( $themes_result ),
+			'theme'         => $themes_result,
 			'php_extension' => $all_deps['php_extension'],
 		];
 	}
 
+	/**
+	 * @param array<Extension> $new_deps
+	 * @param array<Extension> $existing_plugins
+	 *
+	 * @return void
+	 */
 	public function maybe_add_plugin_dependencies( array $new_deps, array &$existing_plugins, int $default_priority = Extension::PRIORITY_LOW ): void {
 		foreach ( $new_deps as $dep_ext ) {
 			$dep_ext->priority = $default_priority;
@@ -251,6 +318,12 @@ class PluginDependencies {
 		}
 	}
 
+	/**
+	 * @param array<Extension> $new_deps
+	 * @param array<Extension> $existing_themes
+	 *
+	 * @return void
+	 */
 	public function maybe_add_theme_dependencies( array $new_deps, array &$existing_themes ): void {
 		foreach ( $new_deps as $dep_ext ) {
 			$found_index = null;
@@ -262,15 +335,26 @@ class PluginDependencies {
 			}
 
 			if ( $found_index === null ) {
+				$dep_ext->added_automatically = 'Added as a dependency';
+				$dep_ext->populate_from();
 				$existing_themes[] = $dep_ext;
 			}
 		}
 	}
 
+	/**
+	 * @param array<string> $new_extensions
+	 * @param array<string> $existing
+	 *
+	 * @return void
+	 */
 	public function maybe_add_php_extensions( array $new_extensions, array &$existing ): void {
-		foreach ( $new_extensions as $ext_name ) {
-			if ( ! in_array( $ext_name, $existing, true ) ) {
-				$existing[] = $ext_name;
+		foreach ( $new_extensions as $ext ) {
+			if ( ! is_string( $ext ) ) {
+				throw new \InvalidArgumentException( "PHP extension must be a string, got " . gettype( $ext ) );
+			}
+			if ( ! in_array( $ext, $existing, true ) ) {
+				$existing[] = $ext;
 			}
 		}
 	}
