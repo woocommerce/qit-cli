@@ -6,6 +6,11 @@ use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Extension;
+use QIT_CLI\PreCommand\Download\Extensions\Handlers\CustomHandler;
+use QIT_CLI\PreCommand\Download\Extensions\Handlers\LocalDownloadHandler;
+use QIT_CLI\PreCommand\Download\Extensions\Handlers\WCCOMDownloadHandler;
+use QIT_CLI\PreCommand\Download\Extensions\Handlers\WPOrgDownloadHandler;
+use QIT_CLI\PreCommand\Download\Extensions\Handlers\ZipDownloadHandler;
 use QIT_CLI\Zipper;
 use Symfony\Component\Console\Output\OutputInterface;
 

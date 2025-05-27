@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\PreCommand\Download\Extensions;
+namespace QIT_CLI\PreCommand\Download\Extensions\Handlers;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Extension;

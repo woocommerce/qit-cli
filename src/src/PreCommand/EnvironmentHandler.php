@@ -9,7 +9,10 @@ use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\EnvironmentVersionResolver;
 use QIT_CLI\Environment\EnvParser;
 use QIT_CLI\Environment\EnvVolumeParser;
-use QIT_CLI\PreCommand\ConfigFile\ConfigParser;
+use QIT_CLI\PreCommand\ConfigFile\QITConfig;
+use QIT_CLI\Environment\Extension;
+use QIT_CLI\PreCommand\Download\Extensions\ExtensionDownloader;
+use QIT_CLI\PreCommand\Download\Extensions\DependencyParser;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\normalize_path;
@@ -25,11 +28,10 @@ class EnvironmentHandler {
 		];
 	}
 
-	public function build_env_info( InputInterface $input, OutputInterface $output, array $merged_options, ConfigParser $config ): EnvInfo {
+	public function build_env_info( InputInterface $input, OutputInterface $output, array $merged_options, QITConfig $config ): EnvInfo {
 		$environment = $input->getOption( 'environment' ) ?: 'default';
 		$woo_version = isset( $merged_options['woo_version'] ) ? $merged_options['woo_version'] : null;
 
-		// Parse CLI and .env file environment variables
 		$env_parser                     = App::make( EnvParser::class );
 		$env_vars                       = $env_parser->parse(
 			$input->getOption( 'env' ) ?: [],
@@ -37,12 +39,10 @@ class EnvironmentHandler {
 		);
 		$env_vars['WP_CLI_CONFIG_PATH'] = '/qit/wp-cli.yml';
 
-		// Merge with config envs
 		$config_section = $config->get_environment( $environment );
 		$config_envs    = isset( $config_section['envs'] ) && is_array( $config_section['envs'] ) ? $config_section['envs'] : [];
 		$env_vars       = array_merge( $config_envs, $env_vars );
 
-		// Initialize env_config
 		$env_config = [];
 		foreach ( $config_section as $key => $value ) {
 			if ( $key === 'envs' ) {
@@ -53,16 +53,19 @@ class EnvironmentHandler {
 				$env_config[ $mapped_key ] = array_map( function ( $item ) use ( $mapped_key ) {
 					$type = $mapped_key === 'plugins' ? 'plugin' : 'theme';
 					if ( is_string( $item ) ) {
-						$extension = new \QIT_CLI\Environment\Extension( $item, $type );
+						$extension = new Extension( $item, $type );
 					} elseif ( is_array( $item ) && isset( $item['slug'] ) ) {
-						$extension = new \QIT_CLI\Environment\Extension( $item['slug'], $type );
+						$extension = new Extension( $item['slug'], $type );
 						if ( isset( $item['source']['from'] ) ) {
 							$extension->from = $item['source']['from'];
 						}
 						if ( isset( $item['source']['path'] ) ) {
 							$extension->directory = $item['source']['path'];
 						}
-					} elseif ( $item instanceof \QIT_CLI\Environment\Extension ) {
+						if ( isset( $item['source']['url'] ) ) {
+							$extension->source = $item['source']['url'];
+						}
+					} elseif ( $item instanceof Extension ) {
 						$extension = $item;
 					} else {
 						throw new \RuntimeException( "Invalid $mapped_key config entry: " . json_encode( $item ) );
@@ -78,7 +81,6 @@ class EnvironmentHandler {
 			}
 		}
 
-		// Merge CLI options
 		foreach ( $merged_options as $key => $value ) {
 			if ( $key === 'env' || $key === 'env_file' ) {
 				continue;
@@ -97,7 +99,7 @@ class EnvironmentHandler {
 						if ( is_object( $plugin ) ) {
 							$cli_plugins[] = $plugin;
 						} else {
-							$extension       = new \QIT_CLI\Environment\Extension( $slug, 'plugin' );
+							$extension       = new Extension( $slug, 'plugin' );
 							$extension->from = 'wporg';
 							$cli_plugins[]   = $extension;
 						}
@@ -114,15 +116,8 @@ class EnvironmentHandler {
 			}
 		}
 
-		// Set parsed environment variables
 		$env_config['envs'] = $env_vars;
 
-		// Debug: Write to file
-		file_put_contents( '/tmp/qit_debug.log', 'Config Section: ' . print_r( $config_section, true ) . "\n", FILE_APPEND );
-		file_put_contents( '/tmp/qit_debug.log', 'Merged Options: ' . print_r( $merged_options, true ) . "\n", FILE_APPEND );
-		file_put_contents( '/tmp/qit_debug.log', 'Env Config: ' . print_r( $env_config, true ) . "\n", FILE_APPEND );
-
-		// Apply defaults
 		$env_config = array_merge( [
 			'environment'             => 'e2e',
 			'dependencies_mode'       => 'activate',
@@ -152,18 +147,58 @@ class EnvironmentHandler {
 			'sut_id'                  => null,
 			'nginx_port'              => null,
 			'notify'                  => null,
-			'is_development_build'    => null,
+			'is_development_build'    => false,
 		], $env_config );
 
-		// Set tunnel and tunnel_type
 		$tunnel                    = $merged_options['tunnel'] ?? 'no_tunnel';
 		$env_config['tunnel']      = $tunnel !== 'no_tunnel';
 		$env_config['tunnel_type'] = $tunnel;
 
-		$has_woocommerce = false;
+		$env_info = new E2EEnvInfo();
+		if ( ! empty( $env_config['extension_set'] ) ) {
+			$env_info              = App::make( ExtensionSetResolver::class )->resolve( $env_info, [ 'overrides' => [ 'extension_set' => $env_config['extension_set'] ] ] );
+			$env_config['plugins'] = array_merge( $env_config['plugins'], $env_info->plugins );
+			$env_config['themes']  = array_merge( $env_config['themes'], $env_info->themes );
+		}
 
-		// Handle WooCommerce version
-		foreach ( $env_config['plugins'] as $k => $plugin ) {
+		$extension_downloader = App::make( ExtensionDownloader::class );
+		$dependency_parser    = App::make( DependencyParser::class );
+		$cache_dir            = normalize_path( Config::get_qit_dir() . 'cache' );
+		$seen_slugs           = [];
+		$pending_extensions   = array_merge( $env_config['plugins'], $env_config['themes'] );
+		$final_plugins        = $env_config['plugins'];
+		$final_themes         = $env_config['themes'];
+		$php_extensions       = $env_config['php_extensions'];
+
+		while ( ! empty( $pending_extensions ) ) {
+			$current_batch      = $pending_extensions;
+			$pending_extensions = [];
+
+			$extension_downloader->download( $env_info, $cache_dir, array_filter( $current_batch, fn( $e ) => $e->type === 'plugin' ), array_filter( $current_batch, fn( $e ) => $e->type === 'theme' ) );
+
+			foreach ( $current_batch as $ext ) {
+				if ( in_array( $ext->slug, $seen_slugs, true ) ) {
+					continue;
+				}
+				$seen_slugs[] = $ext->slug;
+
+				if ( ! empty( $ext->downloaded_source ) ) {
+					$deps = $dependency_parser->parse( $ext->downloaded_source, $ext->type );
+					foreach ( $deps as $dep_slug ) {
+						if ( ! in_array( $dep_slug, $seen_slugs, true ) ) {
+							$dep_ext                      = new Extension( $dep_slug, 'plugin' );
+							$dep_ext->from                = 'wporg';
+							$dep_ext->added_automatically = 'Added as a dependency';
+							$pending_extensions[]         = $dep_ext;
+							$final_plugins[]              = $dep_ext;
+						}
+					}
+				}
+			}
+		}
+
+		$has_woocommerce = false;
+		foreach ( $final_plugins as $k => $plugin ) {
 			if ( $plugin->slug === 'woocommerce' ) {
 				$has_woocommerce = $k;
 				break;
@@ -171,43 +206,19 @@ class EnvironmentHandler {
 		}
 
 		if ( ! empty( $woo_version ) && $has_woocommerce !== false ) {
-			// Show a warning that we are overriding the WooCommerce version that is declared in the config or through --plugin woocommerce based on --woo parameter.
 			$output->writeln( "<comment>Overriding WooCommerce version to: $woo_version</comment>" );
-			unset( $env_config['plugins'][ $has_woocommerce ] );
+			unset( $final_plugins[ $has_woocommerce ] );
 		}
 
 		if ( ! empty( $woo_version ) ) {
-			$woo_plugin                      = EnvironmentVersionResolver::resolve_woo( $woo_version, $env_config['plugins'] );
+			$woo_plugin                      = EnvironmentVersionResolver::resolve_woo( $woo_version, $final_plugins );
 			$woo_plugin->added_automatically = 'Added due to specified WooCommerce version';
 			$woo_plugin->populate_from();
-			$env_config['plugins'] = $woo_plugin;
+			$final_plugins[] = $woo_plugin;
 		}
 
-		// Handle dependencies
-		$deps = App::make( PluginDependencies::class )->get_dependencies(
-			$env_config['plugins'],
-			$env_config['themes'],
-			$env_config['dependencies_mode'] ?: 'activate'
-		);
-
-		// Add dependencies, avoiding duplicates
-		$seen_slugs = array_map( function ( $p ) {
-			return $p->slug;
-		}, $env_config['plugins'] ?? [] );
-
-		foreach ( $deps['plugin'] as $dep_plugin ) {
-			if ( ! in_array( $dep_plugin->slug, $seen_slugs, true ) ) {
-				$env_config['plugins'][] = $dep_plugin;
-				$seen_slugs[]            = $dep_plugin->slug;
-			}
-		}
-		App::make( PluginDependencies::class )->maybe_add_theme_dependencies( $deps['theme'], $env_config['themes'] );
-		App::make( PluginDependencies::class )->maybe_add_php_extensions( $deps['php_extension'], $env_config['php_extensions'] );
-
-		// Parse volumes
 		$env_config['volumes'] = App::make( EnvVolumeParser::class )->parse_volumes( $env_config['volumes'] ?: [] );
 
-		// Normalize and validate
 		foreach ( $env_config as $key => &$value ) {
 			switch ( $key ) {
 				case 'php_extensions':
@@ -230,12 +241,6 @@ class EnvironmentHandler {
 			}
 		}
 
-		// Mock for now
-		$env_config['is_development_build'] = false;
-		$env_config['notify']               = 'no';
-
-		// Construct E2EEnvInfo
-		$env_info                          = new E2EEnvInfo();
 		$env_info->environment             = $env_config['environment'];
 		$env_info->dependencies_mode       = $env_config['dependencies_mode'];
 		$env_info->env_id                  = uniqid();
@@ -245,9 +250,9 @@ class EnvironmentHandler {
 		$env_info->volumes                 = $env_config['volumes'];
 		$env_info->docker_images           = $env_config['docker_images'] ?? [];
 		$env_info->docker_network          = $env_config['docker_network'] ?? '';
-		$env_info->php_extensions          = $env_config['php_extensions'];
-		$env_info->plugins                 = $env_config['plugins'];
-		$env_info->themes                  = $env_config['themes'];
+		$env_info->php_extensions          = $php_extensions;
+		$env_info->plugins                 = $final_plugins;
+		$env_info->themes                  = $final_themes;
 		$env_info->tunnel                  = $env_config['tunnel'];
 		$env_info->tunnel_type             = $env_config['tunnel_type'];
 		$env_info->runner_args             = $env_config['runner_args'];
@@ -261,17 +266,11 @@ class EnvironmentHandler {
 		$env_info->playwright_config       = $env_config['playwright_config'] ?? [];
 		$env_info->pw_test_tag             = $env_config['pw_test_tag'];
 		$env_info->woo_version             = $env_config['woo_version'] ?? '';
-		$env_info->is_development_build    = $env_config['is_development_build'];
-		$env_info->notify                  = $env_config['notify'];
+		$env_info->is_development_build    = $env_config['is_development_build'] = false;
+		$env_info->notify                  = $env_config['notify'] = 'no';
 		$env_info->env                     = $env_config['envs'];
 
-		// Debug: Write final env_info
 		file_put_contents( '/tmp/qit_debug.log', 'Final Env Info: ' . print_r( (array) $env_info, true ) . "\n", FILE_APPEND );
-
-		// Parse extension set
-		if ( ! empty( $env_config['extension_set'] ) ) {
-			$env_info = App::make( ExtensionSetResolver::class )->resolve( $env_info, [ 'overrides' => [ 'extension_set' => $env_config['extension_set'] ] ] );
-		}
 
 		return $env_info;
 	}
