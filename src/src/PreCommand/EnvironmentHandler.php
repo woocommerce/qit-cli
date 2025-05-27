@@ -9,7 +9,7 @@ use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\EnvironmentVersionResolver;
 use QIT_CLI\Environment\EnvParser;
 use QIT_CLI\Environment\EnvVolumeParser;
-use QIT_CLI\PreCommand\ConfigFile\QITConfig;
+use QIT_CLI\PreCommand\ConfigFile\ConfigParser;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\normalize_path;
@@ -25,7 +25,7 @@ class EnvironmentHandler {
 		];
 	}
 
-	public function build_env_info( InputInterface $input, OutputInterface $output, array $merged_options, QITConfig $config ): EnvInfo {
+	public function build_env_info( InputInterface $input, OutputInterface $output, array $merged_options, ConfigParser $config ): EnvInfo {
 		$environment = $input->getOption( 'environment' ) ?: 'default';
 		$woo_version = isset( $merged_options['woo_version'] ) ? $merged_options['woo_version'] : null;
 

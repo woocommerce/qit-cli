@@ -4,7 +4,7 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\EnvInfo;
-use QIT_CLI\PreCommand\ConfigFile\QITConfig;
+use QIT_CLI\PreCommand\ConfigFile\ConfigParser;
 use QIT_CLI\PreCommand\InputPriorityHandler;
 use QIT_CLI\PreCommand\EnvironmentHandler;
 use QIT_CLI\PreCommand\TestProfileHandler;
@@ -49,7 +49,7 @@ abstract class QITCommand extends Command {
 		$this->input = $input;
 		$config_file = $input->getOption( 'config' );
 		try {
-			$config = new QITConfig( $config_file );
+			$config = new ConfigParser( $config_file );
 		} catch ( \RuntimeException $e ) {
 			$output->writeln( "<error>Error loading config: {$e->getMessage()}</error>" );
 
@@ -86,7 +86,7 @@ abstract class QITCommand extends Command {
 		return str_starts_with( static::getDefaultName(), 'run:' );
 	}
 
-	protected function get_merged_options( InputInterface $input, OutputInterface $output, QITConfig $config ): array {
+	protected function get_merged_options( InputInterface $input, OutputInterface $output, ConfigParser $config ): array {
 		$command_defaults = $this->get_command_defaults();
 		$config_section   = [];
 

@@ -11,7 +11,7 @@ class TestParser extends AbstractConfigParser {
 		$this->console_application = $console_application;
 	}
 
-	public function parse( $value, array $context = [] ): array {
+	public function parse( $value, array $custom_test_packages = [] ): array {
 		if ( ! is_array( $value ) ) {
 			throw new \RuntimeException( 'Tests must be an array.' );
 		}
@@ -38,7 +38,7 @@ class TestParser extends AbstractConfigParser {
 				}
 
 				if ( $test_type === 'e2e' ) {
-					if ( isset( $config['test_package'] ) && ! isset( $context['custom_test_packages'][ $config['test_package'] ] ) ) {
+					if ( isset( $config['test_package'] ) && ! isset( $custom_test_packages[ $config['test_package'] ] ) ) {
 						throw new \RuntimeException( "Test package '{$config['test_package']}' not found in custom_test_packages." );
 					}
 					if ( ! isset( $config['test_package'] ) && ( ! isset( $config['compatibility_tests'] ) || empty( $config['compatibility_tests'] ) ) ) {
