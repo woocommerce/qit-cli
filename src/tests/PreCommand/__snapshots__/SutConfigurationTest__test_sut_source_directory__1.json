@@ -3,9 +3,8 @@
         "sut": {
             "type": "plugin",
             "slug": "awesome-plugin",
-            "source_type": "build",
-            "command": "npm run build",
-            "output": "\/normalized\/path\/plugin.zip"
+            "source_type": "directory",
+            "path": "\/normalized\/path\/plugin-folder"
         }
     },
     "environment": "default",
@@ -38,9 +37,9 @@
         {
             "slug": "awesome-plugin",
             "entrypoint": null,
-            "source": "\/tmp-normalized\/plugin.zip",
-            "directory": null,
-            "downloaded_source": "\/tmp-normalized\/plugin.zip",
+            "source": null,
+            "directory": "\/tmp-normalized\/plugin-folder",
+            "downloaded_source": "\/tmp-normalized\/plugin-folder",
             "type": "plugin",
             "handler": null,
             "version": "undefined",
@@ -49,7 +48,7 @@
             "priority": 50,
             "wccom_id": null,
             "added_automatically": null,
-            "from": "build"
+            "from": "directory"
         }
     ],
     "themes": [],

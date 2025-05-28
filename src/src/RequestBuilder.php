@@ -131,16 +131,17 @@ class RequestBuilder {
 		return $this;
 	}
 
-
 	/**
 	 * Allows adding your own headers (like "Header-Name: value").
 	 *
 	 * @param string[] $headers
+	 *
 	 * @return $this
 	 */
 	public function with_additional_headers( array $headers ): self {
 		// Merge them into our $additional_headers property.
 		$this->additional_headers = array_merge( $this->additional_headers, $headers );
+
 		return $this;
 	}
 
@@ -302,7 +303,7 @@ class RequestBuilder {
 
 			if ( $response_status_code === 429 ) {
 				if ( $this->retry_429 > 0 ) {
-					--$this->retry_429;
+					-- $this->retry_429;
 					$sleep_seconds = $this->wait_after_429( $headers );
 					App::make( Output::class )->writeln( sprintf( '<comment>Request failed... Waiting %d seconds and retrying (429 Too many Requests)</comment>', $sleep_seconds ) );
 
@@ -311,7 +312,7 @@ class RequestBuilder {
 				}
 			} else {
 				if ( $this->retry > 0 ) {
-					--$this->retry;
+					-- $this->retry;
 					App::make( Output::class )->writeln( sprintf( '<comment>Request failed... Retrying (HTTP Status Code %s) %s</comment>', $response_status_code, $error_message ) );
 
 					// Between 1 and 5s.
@@ -331,14 +332,13 @@ class RequestBuilder {
 					$response_status_code
 				);
 			} else {
-
 				$json_decoded = json_decode( $body, true );
 
 				/**
 				 * If the errors is a rest_invalid_group_param, it must be parsed and printed.
 				 */
 				if ( isset( $json_decoded['code'] ) &&
-					$json_decoded['code'] === 'rest_invalid_group_param'
+				     $json_decoded['code'] === 'rest_invalid_group_param'
 				) {
 					return $body;
 				}
@@ -349,7 +349,6 @@ class RequestBuilder {
 		return $body;
 	}
 
-
 	/**
 	 * Downloads a file from the specified URL and writes it to the specified path.
 	 *
@@ -357,12 +356,32 @@ class RequestBuilder {
 	 * @param string $file_path The path of the file to write to.
 	 *
 	 * @throws \RuntimeException If an error occurs during downloading or file handling.
+	 * @throws \LogicException If no mock is found for the URL during unit tests.
 	 */
 	public static function download_file( string $url, string $file_path ): void {
 		$output = App::make( Output::class );
 
 		if ( $output->isVeryVerbose() ) {
 			$output->writeln( "Downloading $url into $file_path..." );
+		}
+
+		// Check for mock response in unit tests
+		if ( defined( 'UNIT_TESTS' ) ) {
+			$mocked = App::getVar( 'mock_' . $url );
+			if ( is_null( $mocked ) ) {
+				throw new \LogicException( 'No mock found for ' . $url );
+			}
+
+			// Write mock response to file
+			if ( file_put_contents( $file_path, $mocked ) === false ) {
+				throw new \RuntimeException( 'Could not write mock response to file: ' . $file_path );
+			}
+
+			if ( $output->isVerbose() ) {
+				$output->writeln( "Used mock response for $url, written to $file_path" );
+			}
+
+			return;
 		}
 
 		// Open file for writing, create it if it doesn't exist.

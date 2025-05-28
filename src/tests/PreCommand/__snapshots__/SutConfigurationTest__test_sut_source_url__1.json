@@ -2,10 +2,9 @@
     "extra": {
         "sut": {
             "type": "plugin",
-            "slug": "awesome-plugin",
-            "source_type": "build",
-            "command": "npm run build",
-            "output": "\/normalized\/path\/plugin.zip"
+            "slug": "my-awesome-plugin",
+            "source_type": "url",
+            "url": "https:\/\/example.com\/plugin.zip"
         }
     },
     "environment": "default",
@@ -36,11 +35,11 @@
             "from": "wporg"
         },
         {
-            "slug": "awesome-plugin",
+            "slug": "my-awesome-plugin",
             "entrypoint": null,
-            "source": "\/tmp-normalized\/plugin.zip",
+            "source": "https:\/\/example.com\/plugin.zip",
             "directory": null,
-            "downloaded_source": "\/tmp-normalized\/plugin.zip",
+            "downloaded_source": "\/tmp\/.woo-qit-tests\/cache\/\/plugin\/my-awesome-plugin-c1f541b68935f72cc8ee6c9c71d39e11-undefined-147-21-7.zip",
             "type": "plugin",
             "handler": null,
             "version": "undefined",
@@ -49,7 +48,7 @@
             "priority": 50,
             "wccom_id": null,
             "added_automatically": null,
-            "from": "build"
+            "from": "url"
         }
     ],
     "themes": [],
@@ -62,7 +61,7 @@
     "wp_version": "latest",
     "object_cache": false,
     "php_version": "8.2",
-    "sut_slug": "awesome-plugin",
+    "sut_slug": "my-awesome-plugin",
     "sut_type": "plugin",
     "domain": "normalized.localhost",
     "skip_activating_plugins": false,

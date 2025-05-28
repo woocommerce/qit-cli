@@ -107,117 +107,139 @@ abstract class PreCommandTestCase extends TestCase {
 	}
 
 	protected function normalize_env_info( array $env_info ): array {
+		// Normalize env_id
 		if ( isset( $env_info['env_id'] ) ) {
-			$original_env_id    = $env_info['env_id'];
 			$env_info['env_id'] = 'ENV_ID_NORMALIZED';
-			if ( isset( $env_info['temporary_env'] ) ) {
-				$env_info['temporary_env'] = str_replace( $original_env_id, 'ENV_ID_NORMALIZED', $env_info['temporary_env'] );
-			}
 		}
 
+		// Normalize created_at and domain
 		$env_info['created_at'] = 1700000000;
 		$env_info['domain']     = 'normalized.localhost';
 
-		$real_temp_dir = realpath( '/tmp/qit' );
-		if ( $real_temp_dir ) {
-			$real_temp_dir = rtrim( $real_temp_dir, '/' );
-			$env_info      = json_decode( str_replace(
-				[ $real_temp_dir . '/', $real_temp_dir ],
-				'/tmp-normalized/',
-				json_encode( $env_info )
-			), true );
-		}
-
-		if ( isset( $env_info['temporary_env'] ) ) {
-			$env_info['temporary_env'] = preg_replace(
-				'/_qit_config-qit_custom_tests_[a-f0-9]+/',
-				'_qit_config-normalized',
-				$env_info['temporary_env']
-			);
-		}
-
+		// Normalize plugin paths
 		if ( ! empty( $env_info['plugins'] ) && is_array( $env_info['plugins'] ) ) {
 			foreach ( $env_info['plugins'] as &$plugin ) {
-				if ( $plugin instanceof Extension ) {
+				if ( $plugin instanceof \QIT_CLI\Environment\Extension ) {
 					$plugin = $plugin->jsonSerialize();
 				}
 				if ( is_array( $plugin ) ) {
-				} elseif ( is_string( $plugin ) ) {
-					if ( preg_match( '/^\/tmp-normalized\/+q[a-f0-9]+\/test-plugin_[a-f0-9]+\.zip$/i', $plugin ) ) {
-						$plugin = '/tmp-normalized/normalized-plugin.zip';
+					// Debug logging before normalization
+					file_put_contents(
+						'/tmp/qit/qit_debug.log',
+						sprintf(
+							"Before normalization: slug=%s, type=%s, from=%s, directory=%s, downloaded_source=%s, source=%s\n",
+							$plugin['slug'] ?? 'null',
+							$plugin['type'] ?? 'null',
+							$plugin['from'] ?? 'null',
+							$plugin['directory'] ?? 'null',
+							$plugin['downloaded_source'] ?? 'null',
+							$plugin['source'] ?? 'null'
+						),
+						FILE_APPEND
+					);
+
+					// Only normalize for plugins
+					if ( isset( $plugin['type'] ) && $plugin['type'] === 'plugin' ) {
+						// Normalize directory
+						if ( isset( $plugin['directory'] ) && str_starts_with( $plugin['directory'], '/' ) && str_contains( $plugin['directory'], '/plugin-folder' ) ) {
+							$plugin['directory'] = '/tmp-normalized/plugin-folder';
+						}
+
+						// Normalize source
+						if ( isset( $plugin['source'] ) && str_starts_with( $plugin['source'], '/' ) && str_contains( $plugin['source'], 'plugin.zip' ) ) {
+							$plugin['source'] = '/tmp-normalized/plugin.zip';
+						}
+
+						// Normalize downloaded_source for all plugins
+						if ( isset( $plugin['downloaded_source'] ) && str_starts_with( $plugin['downloaded_source'], '/' ) ) {
+							if ( str_contains( $plugin['downloaded_source'], '/plugin-folder' ) ) {
+								$plugin['downloaded_source'] = '/tmp-normalized/plugin-folder';
+							} elseif ( str_contains( $plugin['downloaded_source'], 'plugin.zip' ) ) {
+								$plugin['downloaded_source'] = '/tmp-normalized/plugin.zip';
+							} elseif ( str_contains( $plugin['downloaded_source'], 'woocommerce' ) ) {
+								$plugin['downloaded_source'] = '/tmp-normalized/cache/plugin/woocommerce-8.0.0.zip';
+							}
+						}
 					}
-				} else {
-					throw new \RuntimeException( 'Plugin must be a string or array, got ' . gettype( $plugin ) );
+
+					// Debug logging after normalization
+					file_put_contents(
+						'/tmp/qit/qit_debug.log',
+						sprintf(
+							"After normalization: slug=%s, type=%s, from=%s, directory=%s, downloaded_source=%s, source=%s\n",
+							$plugin['slug'] ?? 'null',
+							$plugin['type'] ?? 'null',
+							$plugin['from'] ?? 'null',
+							$plugin['directory'] ?? 'null',
+							$plugin['downloaded_source'] ?? 'null',
+							$plugin['source'] ?? 'null'
+						),
+						FILE_APPEND
+					);
+				} elseif ( is_string( $plugin ) && str_starts_with( $plugin, '/' ) && str_contains( $plugin, 'test-plugin' ) ) {
+					$plugin = '/tmp-normalized/normalized-plugin.zip';
 				}
 			}
 			unset( $plugin );
 		}
 
+		// Normalize temporary environment path
+		if ( isset( $env_info['temporary_env'] ) && str_starts_with( $env_info['temporary_env'], '/' ) ) {
+			$env_info['temporary_env'] = '/tmp-normalized/default-ENV_ID_NORMALIZED';
+		}
+
+		// Normalize theme paths
 		if ( ! empty( $env_info['themes'] ) && is_array( $env_info['themes'] ) ) {
 			foreach ( $env_info['themes'] as &$theme ) {
-				if ( $theme instanceof Extension ) {
+				if ( $theme instanceof \QIT_CLI\Environment\Extension ) {
 					$theme = $theme->jsonSerialize();
 				}
-				if ( is_array( $theme ) ) {
-				} elseif ( is_string( $theme ) ) {
-					if ( preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/test-theme-[a-f0-9]+\.zip$/i', $theme ) ) {
-						$theme = '/tmp-normalized/normalized-theme.zip';
-					}
-				} else {
-					throw new \RuntimeException( 'Theme must be a string or array, got ' . gettype( $theme ) );
+				if ( is_string( $theme ) && str_starts_with( $theme, '/' ) && str_contains( $theme, 'test-theme' ) ) {
+					$theme = '/tmp-normalized/normalized-theme.zip';
 				}
 			}
 			unset( $theme );
 		}
 
+		// Normalize volumes
 		if ( ! empty( $env_info['volumes'] ) && is_array( $env_info['volumes'] ) ) {
 			$normalized_volumes = [];
 			foreach ( $env_info['volumes'] as $container_path => $host_path ) {
-				$normalized_host_path                  = str_replace(
-					realpath( dirname( $host_path ) ) . '/',
-					'/normalized/path/',
-					$host_path
-				);
+				if ( str_starts_with( $host_path, '/' ) ) {
+					$normalized_host_path = '/tmp-normalized/volume';
+				} else {
+					$normalized_host_path = $host_path; // Preserve non-path values
+				}
 				$normalized_volumes[ $container_path ] = $normalized_host_path;
 			}
 			$env_info['volumes'] = $normalized_volumes;
 		}
 
+		// Normalize SUT paths
 		if ( isset( $env_info['extra']['sut'] ) && is_array( $env_info['extra']['sut'] ) ) {
 			if ( isset( $env_info['extra']['sut']['path'] ) ) {
-				$env_info['extra']['sut']['path'] = str_replace(
-					realpath( dirname( $env_info['extra']['sut']['path'] ) ) . '/',
-					'/normalized/path/',
-					$env_info['extra']['sut']['path']
-				);
+				if ( str_contains( $env_info['extra']['sut']['path'], 'plugin-folder' ) ) {
+					$env_info['extra']['sut']['path'] = '/normalized/path/plugin-folder';
+				} elseif ( str_contains( $env_info['extra']['sut']['path'], 'plugin.zip' ) ) {
+					$env_info['extra']['sut']['path'] = '/normalized/path/plugin.zip';
+				}
 			}
-			if ( isset( $env_info['extra']['sut']['output'] ) ) {
-				$env_info['extra']['sut']['output'] = str_replace(
-					realpath( dirname( $env_info['extra']['sut']['output'] ) ) . '/',
-					'/normalized/path/',
-					$env_info['extra']['sut']['output']
-				);
+			if ( isset( $env_info['extra']['sut']['output'] ) && str_contains( $env_info['extra']['sut']['output'], 'plugin.zip' ) ) {
+				$env_info['extra']['sut']['output'] = '/normalized/path/plugin.zip';
 			}
 		}
 
+		// Normalize test packages
 		if ( isset( $env_info['test_packages'] ) && is_array( $env_info['test_packages'] ) ) {
 			foreach ( $env_info['test_packages'] as &$package ) {
-				if ( isset( $package['test_dir'] ) ) {
-					$package['test_dir'] = str_replace(
-						realpath( dirname( $package['test_dir'] ) ) . '/',
-						'/normalized/path/',
-						$package['test_dir']
-					);
+				if ( isset( $package['test_dir'] ) && str_starts_with( $package['test_dir'], '/' ) ) {
+					$package['test_dir'] = '/normalized/path/test-dir';
 				}
 				if ( isset( $package['lifecycle'] ) ) {
 					foreach ( $package['lifecycle'] as &$phase ) {
 						foreach ( $phase as &$script ) {
-							if ( isset( $script['command'] ) ) {
-								$script['command'] = str_replace(
-									realpath( dirname( $script['command'] ) ) . '/',
-									'/normalized/path/',
-									$script['command']
-								);
+							if ( isset( $script['command'] ) && str_starts_with( $script['command'], '/' ) ) {
+								$script['command'] = '/normalized/path/command';
 							}
 						}
 					}

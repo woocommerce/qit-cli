@@ -3,9 +3,8 @@
         "sut": {
             "type": "plugin",
             "slug": "awesome-plugin",
-            "source_type": "build",
-            "command": "npm run build",
-            "output": "\/normalized\/path\/plugin.zip"
+            "source_type": "zip",
+            "path": "\/normalized\/path\/plugin.zip"
         }
     },
     "environment": "default",
@@ -49,7 +48,7 @@
             "priority": 50,
             "wccom_id": null,
             "added_automatically": null,
-            "from": "build"
+            "from": "zip"
         }
     ],
     "themes": [],
