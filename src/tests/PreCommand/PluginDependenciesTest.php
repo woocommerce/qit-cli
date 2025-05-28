@@ -11,49 +11,34 @@ class PluginDependenciesTest extends PreCommandTestCase {
 
 	public function setUp(): void {
 		parent::setUp();
-
-		// Mock wccom get-dependencies endpoint
-		App::setVar(
-			sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' ),
-			json_encode( [
-				'plugins'        => [ 'bar-extension', 'baz-extension' ],
-				'themes'         => [ 'qit-beaver' ],
-				'php_extensions' => [ 'gd' ],
-			] )
+		$this->mockWooComDependencies(
+			[ 'bar-extension', 'baz-extension' ],
+			[ 'qit-beaver' ],
+			[ 'gd' ]
 		);
-
-		// Mock wporg plugin API
-		App::setVar(
-			sprintf( 'mock_%s', 'https://api.wordpress.org/plugins/info/1.0/woocommerce-gateway-stripe' ),
-			serialize( (object) [
-				'slug'             => 'woocommerce-gateway-stripe',
-				'version'          => '9.5.2',
-				'download_link'    => 'https://downloads.wordpress.org/plugin/woocommerce-gateway-stripe.9.5.2.zip',
-				'requires_plugins' => [ 'woocommerce' ],
-			] )
-		);
-
-		// Mock wporg theme API
-		App::setVar(
-			sprintf( 'mock_%s', 'https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]=twentytwentyfive' ),
-			json_encode( [
-				'slug'          => 'twentytwentyfive',
-				'version'       => '1.0',
-				'download_link' => 'https://downloads.wordpress.org/theme/twentytwentyfive.1.0.zip',
-			] )
-		);
-	}
-
-	public function tearDown(): void {
-		parent::tearDown();
-		// Clear mocks
-		App::setVar( sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' ), null );
-		App::setVar( sprintf( 'mock_%s', 'https://api.wordpress.org/plugins/info/1.0/woocommerce-gateway-stripe' ), null );
-		App::setVar( sprintf( 'mock_%s', 'https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]=twentytwentyfive' ), null );
+		$this->mockWooComDownloadUrls( [
+			'foo-extension' => 'https://qit.woo.com/downloads/foo-extension.zip',
+			'bar-extension' => 'https://qit.woo.com/downloads/bar-extension.zip',
+			'baz-extension' => 'https://qit.woo.com/downloads/baz-extension.zip',
+			'plugin-b'      => 'https://qit.woo.com/downloads/plugin-b.zip',
+			'plugin-a'      => 'https://qit.woo.com/downloads/plugin-a.zip',
+			'woocommerce'   => 'https://qit.woo.com/downloads/woocommerce.zip',
+		] );
+		$this->mockWpOrgPlugin( 'woocommerce-gateway-stripe', '9.5.2', 'https://downloads.wordpress.org/plugin/woocommerce-gateway-stripe.9.5.2.zip', [ 'woocommerce' ] );
+		$this->mockWpOrgPlugin( 'woocommerce', '8.0.0', 'https://downloads.wordpress.org/plugin/woocommerce.8.0.0.zip' );
+		$this->mockWpOrgTheme( 'twentytwentyfive', '1.0', 'https://downloads.wordpress.org/theme/twentytwentyfive.1.0.zip' );
 	}
 
 	public function test_get_dependencies_cache_hit_string_config(): void {
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins' => [ 'foo-extension' ],
@@ -61,23 +46,30 @@ class PluginDependenciesTest extends PreCommandTestCase {
 			],
 		];
 
-		// Run once to populate cache
-		$this->run_unit_test( $config );
-
-		// Run again to hit cache
+		$this->run_unit_test( $config ); // Populate cache
 		$env_info = $this->run_unit_test( $config );
 
 		$plugins = array_map( fn( $p ) => $p['slug'] ?? $p, $env_info['plugins'] );
 		$themes  = array_map( fn( $t ) => $t['slug'] ?? $t, $env_info['themes'] );
-		$this->assertNotEmpty( $plugins, "No plugins found: " . json_encode( $plugins ) );
-		$this->assertContains( 'bar-extension', $plugins, "bar-extension not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'baz-extension', $plugins, "baz-extension not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'qit-beaver', $themes, "qit-beaver not found: " . json_encode( $themes ) );
-		$this->assertEquals( [ 'gd' ], $env_info['php_extensions'], "php_extensions mismatch: " . json_encode( $env_info['php_extensions'] ) );
+		$this->assertNotEmpty( $plugins );
+		$this->assertContains( 'foo-extension', $plugins );
+		$this->assertContains( 'bar-extension', $plugins );
+		$this->assertContains( 'baz-extension', $plugins );
+		$this->assertContains( 'qit-beaver', $themes );
+		$this->assertEquals( [ 'gd' ], $env_info['php_extensions'] );
+		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
 	public function test_get_dependencies_api_fetch_string_config(): void {
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins' => [ 'foo-extension' ],
@@ -89,15 +81,25 @@ class PluginDependenciesTest extends PreCommandTestCase {
 
 		$plugins = array_map( fn( $p ) => $p['slug'] ?? $p, $env_info['plugins'] );
 		$themes  = array_map( fn( $t ) => $t['slug'] ?? $t, $env_info['themes'] );
-		$this->assertNotEmpty( $plugins, "No plugins found: " . json_encode( $plugins ) );
-		$this->assertContains( 'bar-extension', $plugins, "bar-extension not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'baz-extension', $plugins, "baz-extension not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'qit-beaver', $themes, "qit-beaver not found: " . json_encode( $themes ) );
-		$this->assertEquals( [ 'gd' ], $env_info['php_extensions'], "php_extensions mismatch: " . json_encode( $env_info['php_extensions'] ) );
+		$this->assertNotEmpty( $plugins );
+		$this->assertContains( 'foo-extension', $plugins );
+		$this->assertContains( 'bar-extension', $plugins );
+		$this->assertContains( 'baz-extension', $plugins );
+		$this->assertContains( 'qit-beaver', $themes );
+		$this->assertEquals( [ 'gd' ], $env_info['php_extensions'] );
+		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
 	public function test_get_dependencies_none_mode_string_config(): void {
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins' => [ 'foo-extension' ],
@@ -108,21 +110,27 @@ class PluginDependenciesTest extends PreCommandTestCase {
 		$env_info = $this->run_unit_test( $config, [ '--dependencies_mode' => 'none' ] );
 
 		$plugins = array_map( fn( $p ) => $p['slug'] ?? $p, $env_info['plugins'] );
-		$this->assertCount( 1, $plugins, "Expected only one plugin: " . json_encode( $plugins ) );
-		$this->assertContains( 'foo-extension', $plugins, "foo-extension not found: " . json_encode( $plugins ) );
-		$this->assertEmpty( $env_info['themes'], "Themes not empty: " . json_encode( $env_info['themes'] ) );
-		$this->assertEmpty( $env_info['php_extensions'], "php_extensions not empty: " . json_encode( $env_info['php_extensions'] ) );
+		$this->assertCount( 1, $plugins );
+		$this->assertContains( 'foo-extension', $plugins );
+		$this->assertEmpty( $env_info['themes'] );
+		$this->assertEmpty( $env_info['php_extensions'] );
+		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
 	public function test_get_dependencies_object_config_wccom(): void {
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins' => [
-						[
-							'slug'   => 'foo-extension',
-							'source' => [ 'from' => 'wccom' ]
-						]
+						[ 'slug' => 'foo-extension', 'from' => 'wccom' ],
 					],
 				],
 			],
@@ -132,24 +140,29 @@ class PluginDependenciesTest extends PreCommandTestCase {
 
 		$plugins = array_map( fn( $p ) => $p['slug'] ?? $p, $env_info['plugins'] );
 		$themes  = array_map( fn( $t ) => $t['slug'] ?? $t, $env_info['themes'] );
-		$this->assertNotEmpty( $plugins, "No plugins found: " . json_encode( $plugins ) );
-		$this->assertContains( 'foo-extension', $plugins, "foo-extension not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'bar-extension', $plugins, "bar-extension not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'baz-extension', $plugins, "baz-extension not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'qit-beaver', $themes, "qit-beaver not found: " . json_encode( $themes ) );
-		$this->assertEquals( [ 'gd' ], $env_info['php_extensions'], "php_extensions mismatch: " . json_encode( $env_info['php_extensions'] ) );
+		$this->assertNotEmpty( $plugins );
+		$this->assertContains( 'foo-extension', $plugins );
+		$this->assertContains( 'bar-extension', $plugins );
+		$this->assertContains( 'baz-extension', $plugins );
+		$this->assertContains( 'qit-beaver', $themes );
+		$this->assertEquals( [ 'gd' ], $env_info['php_extensions'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
 	public function test_get_dependencies_object_config_wporg(): void {
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins' => [
-						[
-							'slug'   => 'woocommerce-gateway-stripe',
-							'source' => [ 'from' => 'wporg' ]
-						]
+						[ 'slug' => 'woocommerce-gateway-stripe', 'from' => 'wporg' ],
 					],
 				],
 			],
@@ -158,23 +171,32 @@ class PluginDependenciesTest extends PreCommandTestCase {
 		$env_info = $this->run_unit_test( $config );
 
 		$plugins = array_map( fn( $p ) => $p['slug'] ?? $p, $env_info['plugins'] );
-		$this->assertNotEmpty( $plugins, "No plugins found: " . json_encode( $plugins ) );
-		$this->assertContains( 'woocommerce-gateway-stripe', $plugins, "woocommerce-gateway-stripe not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'woocommerce', $plugins, "woocommerce dependency not found: " . json_encode( $plugins ) );
-		$this->assertEmpty( $env_info['themes'], "Themes not empty: " . json_encode( $env_info['themes'] ) );
-		$this->assertEmpty( $env_info['php_extensions'], "php_extensions not empty: " . json_encode( $env_info['php_extensions'] ) );
+		$this->assertNotEmpty( $plugins );
+		$this->assertContains( 'woocommerce-gateway-stripe', $plugins );
+		$this->assertContains( 'woocommerce', $plugins );
+		$this->assertEmpty( $env_info['themes'] );
+		$this->assertEmpty( $env_info['php_extensions'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
 	public function test_get_dependencies_object_config_local(): void {
+		$local_path = $this->temp_dir . '/custom-plugin';
+		mkdir( $local_path, 0777, true );
+		$this->to_delete[] = $local_path;
+
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins' => [
-						[
-							'slug'   => 'custom-plugin',
-							'source' => [ 'from' => 'local', 'path' => '/path/to/custom-plugin' ]
-						]
+						[ 'slug' => 'custom-plugin', 'from' => 'local', 'path' => $local_path ],
 					],
 				],
 			],
@@ -183,22 +205,31 @@ class PluginDependenciesTest extends PreCommandTestCase {
 		$env_info = $this->run_unit_test( $config );
 
 		$plugins = array_map( fn( $p ) => $p['slug'] ?? $p, $env_info['plugins'] );
-		$this->assertCount( 1, $plugins, "Expected only one plugin: " . json_encode( $plugins ) );
-		$this->assertContains( 'custom-plugin', $plugins, "custom-plugin not found: " . json_encode( $plugins ) );
-		$this->assertEmpty( $env_info['themes'], "Themes not empty: " . json_encode( $env_info['themes'] ) );
-		$this->assertEmpty( $env_info['php_extensions'], "php_extensions not empty: " . json_encode( $env_info['php_extensions'] ) );
+		$this->assertCount( 1, $plugins );
+		$this->assertContains( 'custom-plugin', $plugins );
+		$this->assertEmpty( $env_info['themes'] );
+		$this->assertEmpty( $env_info['php_extensions'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
 	public function test_get_dependencies_object_config_zip(): void {
+		$zip_path = $this->temp_dir . '/premium-plugin.zip';
+		touch( $zip_path );
+		$this->to_delete[] = $zip_path;
+
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins' => [
-						[
-							'slug'   => 'premium-plugin',
-							'source' => [ 'from' => 'zip', 'url' => 'https://example.com/premium-plugin.zip' ]
-						]
+						[ 'slug' => 'premium-plugin', 'from' => 'zip', 'path' => $zip_path ],
 					],
 				],
 			],
@@ -207,34 +238,40 @@ class PluginDependenciesTest extends PreCommandTestCase {
 		$env_info = $this->run_unit_test( $config );
 
 		$plugins = array_map( fn( $p ) => $p['slug'] ?? $p, $env_info['plugins'] );
-		$this->assertCount( 1, $plugins, "Expected only one plugin: " . json_encode( $plugins ) );
-		$this->assertContains( 'premium-plugin', $plugins, "premium-plugin not found: " . json_encode( $plugins ) );
-		$this->assertEmpty( $env_info['themes'], "Themes not empty: " . json_encode( $env_info['themes'] ) );
-		$this->assertEmpty( $env_info['php_extensions'], "php_extensions not empty: " . json_encode( $env_info['php_extensions'] ) );
+		$this->assertCount( 1, $plugins );
+		$this->assertContains( 'premium-plugin', $plugins );
+		$this->assertEmpty( $env_info['themes'] );
+		$this->assertEmpty( $env_info['php_extensions'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
 	public function test_integration_plugin_and_theme_dependencies_hybrid(): void {
+		$local_path = $this->temp_dir . '/custom-plugin';
+		mkdir( $local_path, 0777, true );
+		$theme_path = $this->temp_dir . '/custom-theme';
+		mkdir( $theme_path, 0777, true );
+		$this->to_delete[] = $local_path;
+		$this->to_delete[] = $theme_path;
+
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins' => [
 						'woocommerce-gateway-stripe',
-						[
-							'slug'   => 'foo-extension',
-							'source' => [ 'from' => 'wccom' ]
-						],
-						[
-							'slug'   => 'custom-plugin',
-							'source' => [ 'from' => 'local', 'path' => '/path/to/custom-plugin' ]
-						]
+						[ 'slug' => 'foo-extension', 'from' => 'wccom' ],
+						[ 'slug' => 'custom-plugin', 'from' => 'local', 'path' => $local_path ],
 					],
 					'themes'  => [
 						'twentytwentyfive',
-						[
-							'slug'   => 'custom-theme',
-							'source' => [ 'from' => 'local', 'path' => '/path/to/custom-theme' ]
-						]
+						[ 'slug' => 'custom-theme', 'from' => 'local', 'path' => $theme_path ],
 					],
 				],
 			],
@@ -244,56 +281,29 @@ class PluginDependenciesTest extends PreCommandTestCase {
 
 		$plugins = array_map( fn( $p ) => $p['slug'] ?? $p, $env_info['plugins'] );
 		$themes  = array_map( fn( $t ) => $t['slug'] ?? $t, $env_info['themes'] );
-		$this->assertContains( 'woocommerce-gateway-stripe', $plugins, "woocommerce-gateway-stripe not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'woocommerce', $plugins, "woocommerce dependency not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'foo-extension', $plugins, "foo-extension not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'bar-extension', $plugins, "bar-extension not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'baz-extension', $plugins, "baz-extension not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'custom-plugin', $plugins, "custom-plugin not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'twentytwentyfive', $themes, "twentytwentyfive not found: " . json_encode( $themes ) );
-		$this->assertContains( 'qit-beaver', $themes, "qit-beaver not found: " . json_encode( $themes ) );
-		$this->assertContains( 'custom-theme', $themes, "custom-theme not found: " . json_encode( $themes ) );
-		$this->assertEquals( [ 'gd' ], $env_info['php_extensions'], "php_extensions mismatch: " . json_encode( $env_info['php_extensions'] ) );
-		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
-	}
-
-	public function test_integration_with_bootstrap_hybrid(): void {
-		$config = [
-			'environments' => [
-				'default' => [
-					'plugins'   => [
-						'woocommerce-gateway-stripe',
-						[
-							'slug'   => 'foo-extension',
-							'source' => [ 'from' => 'wccom' ]
-						]
-					],
-					'bootstrap' => [
-						[
-							'slug'         => 'qit-beaver',
-							'test_package' => 'helpers:default'
-						]
-					],
-				],
-			],
-		];
-
-		$env_info = $this->run_unit_test( $config );
-
-		$plugins = array_map( fn( $p ) => $p['slug'] ?? $p, $env_info['plugins'] );
-		$themes  = array_map( fn( $t ) => $t['slug'] ?? $t, $env_info['themes'] );
-		$this->assertContains( 'woocommerce-gateway-stripe', $plugins, "woocommerce-gateway-stripe not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'woocommerce', $plugins, "woocommerce dependency not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'foo-extension', $plugins, "foo-extension not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'bar-extension', $plugins, "bar-extension not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'baz-extension', $plugins, "baz-extension not found: " . json_encode( $plugins ) );
-		$this->assertContains( 'qit-beaver', $themes, "qit-beaver not found: " . json_encode( $themes ) );
-		$this->assertEquals( [ 'gd' ], $env_info['php_extensions'], "php_extensions mismatch: " . json_encode( $env_info['php_extensions'] ) );
+		$this->assertContains( 'woocommerce-gateway-stripe', $plugins );
+		$this->assertContains( 'woocommerce', $plugins );
+		$this->assertContains( 'foo-extension', $plugins );
+		$this->assertContains( 'bar-extension', $plugins );
+		$this->assertContains( 'baz-extension', $plugins );
+		$this->assertContains( 'custom-plugin', $plugins );
+		$this->assertContains( 'twentytwentyfive', $themes );
+		$this->assertContains( 'qit-beaver', $themes );
+		$this->assertContains( 'custom-theme', $themes );
+		$this->assertEquals( [ 'gd' ], $env_info['php_extensions'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
 	public function test_invalid_slug_string_config(): void {
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins' => [ 'invalid-slug' ],
@@ -301,77 +311,72 @@ class PluginDependenciesTest extends PreCommandTestCase {
 			],
 		];
 
-		try {
-			$this->run_unit_test( $config );
-			$this->fail( 'Expected command to fail due to invalid slug.' );
-		} catch ( \RuntimeException $e ) {
-			$this->assertStringContainsString( "Error loading config: Extension 'invalid-slug' (plugin) not found in WooCommerce.com or WordPress.org.", $e->getMessage() );
-		}
+		$error = $this->run_unit_test( $config, [], true );
+		$this->assertStringContainsString( 'Extension \'invalid-slug\' (plugin) not found in WooCommerce.com or WordPress.org', $error );
 	}
 
 	public function test_invalid_from_object_config(): void {
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins' => [
-						[
-							'slug'   => 'some-plugin',
-							'source' => [ 'from' => 'invalid' ]
-						]
+						[ 'slug' => 'some-plugin', 'from' => 'invalid' ],
 					],
 				],
 			],
 		];
 
-		try {
-			$this->run_unit_test( $config );
-			$this->fail( 'Expected command to fail due to invalid from value.' );
-		} catch ( \RuntimeException $e ) {
-			$this->assertStringContainsString( "Error loading config: Invalid 'from' value 'invalid' for 'some-plugin' in plugins. Must be one of: wporg, wccom, local, zip", $e->getMessage() );
-		}
+		$error = $this->run_unit_test( $config, [], true );
+		$this->assertStringContainsString( 'Invalid \'from\' value \'invalid\' for \'some-plugin\' in plugins', $error );
 	}
 
 	public function test_missing_path_local_object_config(): void {
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins' => [
-						[
-							'slug'   => 'custom-plugin',
-							'source' => [ 'from' => 'local' ]
-						]
+						[ 'slug' => 'custom-plugin', 'from' => 'local' ],
 					],
 				],
 			],
 		];
 
-		try {
-			$this->run_unit_test( $config );
-			$this->fail( 'Expected command to fail due to missing path.' );
-		} catch ( \RuntimeException $e ) {
-			$this->assertStringContainsString( "Error loading config: Local source for 'custom-plugin' in plugins must have a non-empty 'path' string.", $e->getMessage() );
-		}
+		$error = $this->run_unit_test( $config, [], true );
+		$this->assertStringContainsString( 'Local extension \'custom-plugin\' (plugin) must have a non-empty \'path\'', $error );
 	}
 
 	public function test_local_plugin_b_with_dependency(): void {
-		// Mock wccom get-dependencies endpoint to include plugin-b as a dependency
-		App::setVar(
-			sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' ),
-			json_encode( [
-				'plugins'        => [ 'woocommerce', 'plugin-a', 'plugin-b' ],
-				'themes'         => [],
-				'php_extensions' => [],
-			] )
-		);
+		$this->mockWooComDependencies( [ 'woocommerce', 'plugin-a', 'plugin-b' ], [], [] );
 
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins' => [
-						[
-							'slug'   => 'plugin-b',
-							'source' => [ 'from' => 'wccom' ], // Change to wccom
-						],
+						[ 'slug' => 'plugin-b', 'from' => 'wccom' ],
 					],
 				],
 			],
@@ -379,43 +384,27 @@ class PluginDependenciesTest extends PreCommandTestCase {
 
 		$env_info = $this->run_unit_test( $config );
 
-		$plugin_slugs = array_map( fn( $plugin ) => $plugin['slug'], $env_info['plugins'] );
+		$plugin_slugs = array_map( fn( $p ) => $p['slug'], $env_info['plugins'] );
+		$this->assertCount( 3, $plugin_slugs );
+		$this->assertContains( 'plugin-b', $plugin_slugs );
+		$this->assertContains( 'woocommerce', $plugin_slugs );
+		$this->assertContains( 'plugin-a', $plugin_slugs );
 
-		// Verify plugins
-		$this->assertCount( 3, $plugin_slugs, "Expected three plugins: " . json_encode( $plugin_slugs ) );
-		$this->assertContains( 'plugin-b', $plugin_slugs, "plugin-b not found: " . json_encode( $plugin_slugs ) );
-		$this->assertContains( 'woocommerce', $plugin_slugs, "woocommerce not found: " . json_encode( $plugin_slugs ) );
-		$this->assertContains( 'plugin-a', $plugin_slugs, "plugin-a not found: " . json_encode( $plugin_slugs ) );
-
-		// Verify plugin-b is an Extension object
-		$plugin_b = array_filter(
-			$env_info['plugins'],
-			fn( $plugin ) => $plugin['slug'] === 'plugin-b'
-		);
+		$plugin_b = array_filter( $env_info['plugins'], fn( $p ) => $p['slug'] === 'plugin-b' );
 		$plugin_b = reset( $plugin_b );
-		$this->assertEquals( 'plugin-b', $plugin_b['slug'], "plugin-b slug incorrect" );
-		$this->assertEquals( 'wccom', $plugin_b['from'], "plugin-b source incorrect" );
+		$this->assertEquals( 'plugin-b', $plugin_b['slug'] );
+		$this->assertEquals( 'wccom', $plugin_b['from'] );
 
-		// Verify woocommerce is an Extension object
-		$woocommerce = array_filter(
-			$env_info['plugins'],
-			fn( $plugin ) => $plugin['slug'] === 'woocommerce'
-		);
+		$woocommerce = array_filter( $env_info['plugins'], fn( $p ) => $p['slug'] === 'woocommerce' );
 		$woocommerce = reset( $woocommerce );
-		$this->assertEquals( 'woocommerce', $woocommerce['slug'], "woocommerce slug incorrect" );
+		$this->assertEquals( 'woocommerce', $woocommerce['slug'] );
 
-		// Verify plugin-a is an Extension object
-		$plugin_a = array_filter(
-			$env_info['plugins'],
-			fn( $plugin ) => $plugin['slug'] === 'plugin-a'
-		);
+		$plugin_a = array_filter( $env_info['plugins'], fn( $p ) => $p['slug'] === 'plugin-a' );
 		$plugin_a = reset( $plugin_a );
-		$this->assertEquals( 'plugin-a', $plugin_a['slug'], "plugin-a slug incorrect" );
+		$this->assertEquals( 'plugin-a', $plugin_a['slug'] );
 
-		// Verify no unexpected themes or PHP extensions
-		$this->assertEmpty( $env_info['themes'], "Themes not empty: " . json_encode( $env_info['themes'] ) );
-		$this->assertEmpty( $env_info['php_extensions'], "php_extensions not empty: " . json_encode( $env_info['php_extensions'] ) );
-
+		$this->assertEmpty( $env_info['themes'] );
+		$this->assertEmpty( $env_info['php_extensions'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 }

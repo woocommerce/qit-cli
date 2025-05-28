@@ -10,52 +10,33 @@ class ExtensionSetTest extends PreCommandTestCase {
 	use MatchesSnapshots;
 
 	public function setUp(): void {
-		file_put_contents( '/tmp/qit/qit_debug.log', "Starting ExtensionSetTest::setUp\n", FILE_APPEND );
 		parent::setUp();
-
-		// Mock WooCommerce.com get-dependencies endpoint
-		App::setVar(
-			sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' ),
-			json_encode( [
-				'plugins'        => [ 'woocommerce', 'plugin-a', 'plugin-b' ],
-				'themes'         => [],
-				'php_extensions' => [],
-			] )
-		);
-
-		// Mock WordPress.org plugin API for all plugins
+		file_put_contents( '/tmp/qit/qit_debug.log', "Starting ExtensionSetTest::setUp\n", FILE_APPEND );
+		$this->mockWooComDependencies( [ 'woocommerce', 'plugin-a', 'plugin-b' ], [], [] );
+		$this->mockWooComDownloadUrls( [
+			'woocommerce' => 'https://qit.woo.com/downloads/woocommerce.zip',
+			'plugin-a'    => 'https://qit.woo.com/downloads/plugin-a.zip',
+			'plugin-b'    => 'https://qit.woo.com/downloads/plugin-b.zip',
+		] );
 		foreach ( [ 'woocommerce', 'plugin-a', 'plugin-b' ] as $slug ) {
-			App::setVar(
-				sprintf( 'mock_%s', "https://api.wordpress.org/plugins/info/1.0/{$slug}" ),
-				serialize( (object) [
-					'slug'             => $slug,
-					'version'          => $slug === 'woocommerce' ? '8.0.0' : '1.0.0',
-					'download_link'    => "https://downloads.wordpress.org/plugin/{$slug}.zip",
-					'requires_plugins' => [],
-				] )
-			);
+			$this->mockWpOrgPlugin( $slug, $slug === 'woocommerce' ? '8.0.0' : '1.0.0', "https://downloads.wordpress.org/plugin/{$slug}.zip" );
 		}
-	}
-
-	public function tearDown(): void {
-		parent::tearDown();
-		// Clear mocks
-		App::setVar( sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' ), null );
-		foreach ( [ 'woocommerce', 'plugin-a', 'plugin-b' ] as $slug ) {
-			App::setVar( sprintf( 'mock_%s', "https://api.wordpress.org/plugins/info/1.0/{$slug}" ), null );
-		}
-		file_put_contents( '/tmp/qit/qit_debug.log', "Finished ExtensionSetTest::tearDown\n", FILE_APPEND );
 	}
 
 	public function test_no_extension_set(): void {
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins' => [
-						[
-							'slug'   => 'woocommerce',
-							'source' => [ 'from' => 'wporg' ],
-						],
+						[ 'slug' => 'woocommerce', 'from' => 'wporg' ],
 					],
 				],
 			],
@@ -63,35 +44,33 @@ class ExtensionSetTest extends PreCommandTestCase {
 
 		$env_info = $this->run_unit_test( $config );
 
-		$plugin_slugs = array_map( fn( $plugin ) => $plugin['slug'], $env_info['plugins'] );
+		$plugin_slugs = array_map( fn( $p ) => $p['slug'], $env_info['plugins'] );
+		$this->assertCount( 1, $plugin_slugs );
+		$this->assertContains( 'woocommerce', $plugin_slugs );
 
-		// Verify plugins
-		$this->assertCount( 1, $plugin_slugs, "Expected one plugin: " . json_encode( $plugin_slugs ) );
-		$this->assertContains( 'woocommerce', $plugin_slugs, "woocommerce not found: " . json_encode( $plugin_slugs ) );
-
-		// Verify woocommerce is an array and not dynamic
-		$woocommerce = array_filter(
-			$env_info['plugins'],
-			fn( $plugin ) => is_array( $plugin ) && $plugin['slug'] === 'woocommerce'
-		);
+		$woocommerce = array_filter( $env_info['plugins'], fn( $p ) => $p['slug'] === 'woocommerce' );
 		$woocommerce = reset( $woocommerce );
-		$this->assertIsArray( $woocommerce, "woocommerce is not an array" );
-		$this->assertEquals( 'woocommerce', $woocommerce['slug'], "woocommerce slug incorrect" );
-		$this->assertNull( $woocommerce['added_automatically'], "woocommerce should have no dynamic reason" );
-		$this->assertEquals( 'wporg', $woocommerce['from'], "woocommerce should be from wporg" );
-
+		$this->assertIsArray( $woocommerce );
+		$this->assertEquals( 'woocommerce', $woocommerce['slug'] );
+		$this->assertNull( $woocommerce['added_automatically'] );
+		$this->assertEquals( 'wporg', $woocommerce['from'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
 	public function test_empty_extension_set(): void {
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins' => [
-						[
-							'slug'   => 'woocommerce',
-							'source' => [ 'from' => 'wporg' ],
-						],
+						[ 'slug' => 'woocommerce', 'from' => 'wporg' ],
 					],
 				],
 			],
@@ -101,35 +80,33 @@ class ExtensionSetTest extends PreCommandTestCase {
 
 		$env_info = $this->run_unit_test( $config, [ '--extension_set' => 'empty-set' ] );
 
-		$plugin_slugs = array_map( fn( $plugin ) => $plugin['slug'], $env_info['plugins'] );
+		$plugin_slugs = array_map( fn( $p ) => $p['slug'], $env_info['plugins'] );
+		$this->assertCount( 1, $plugin_slugs );
+		$this->assertContains( 'woocommerce', $plugin_slugs );
 
-		// Verify plugins
-		$this->assertCount( 1, $plugin_slugs, "Expected one plugin: " . json_encode( $plugin_slugs ) );
-		$this->assertContains( 'woocommerce', $plugin_slugs, "woocommerce not found: " . json_encode( $plugin_slugs ) );
-
-		// Verify woocommerce is an array and not dynamic
-		$woocommerce = array_filter(
-			$env_info['plugins'],
-			fn( $plugin ) => is_array( $plugin ) && $plugin['slug'] === 'woocommerce'
-		);
+		$woocommerce = array_filter( $env_info['plugins'], fn( $p ) => $p['slug'] === 'woocommerce' );
 		$woocommerce = reset( $woocommerce );
-		$this->assertIsArray( $woocommerce, "woocommerce is not an array" );
-		$this->assertEquals( 'woocommerce', $woocommerce['slug'], "woocommerce slug incorrect" );
-		$this->assertNull( $woocommerce['added_automatically'], "woocommerce should have no dynamic reason" );
-		$this->assertEquals( 'wporg', $woocommerce['from'], "woocommerce should be from wporg" );
-
+		$this->assertIsArray( $woocommerce );
+		$this->assertEquals( 'woocommerce', $woocommerce['slug'] );
+		$this->assertNull( $woocommerce['added_automatically'] );
+		$this->assertEquals( 'wporg', $woocommerce['from'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
 	public function test_valid_extension_set(): void {
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins' => [
-						[
-							'slug'   => 'woocommerce',
-							'source' => [ 'from' => 'wporg' ],
-						],
+						[ 'slug' => 'woocommerce', 'from' => 'wporg' ],
 					],
 				],
 			],
@@ -139,59 +116,49 @@ class ExtensionSetTest extends PreCommandTestCase {
 
 		$env_info = $this->run_unit_test( $config, [ '--extension_set' => 'test-set' ] );
 
-		$plugin_slugs = array_map( fn( $plugin ) => $plugin['slug'], $env_info['plugins'] );
+		$plugin_slugs = array_map( fn( $p ) => $p['slug'], $env_info['plugins'] );
+		$this->assertCount( 3, $plugin_slugs );
+		$this->assertContains( 'woocommerce', $plugin_slugs );
+		$this->assertContains( 'plugin-a', $plugin_slugs );
+		$this->assertContains( 'plugin-b', $plugin_slugs );
 
-		// Verify plugins
-		$this->assertCount( 3, $plugin_slugs, "Expected three plugins: " . json_encode( $plugin_slugs ) );
-		$this->assertContains( 'woocommerce', $plugin_slugs, "woocommerce not found: " . json_encode( $plugin_slugs ) );
-		$this->assertContains( 'plugin-a', $plugin_slugs, "plugin-a not found: " . json_encode( $plugin_slugs ) );
-		$this->assertContains( 'plugin-b', $plugin_slugs, "plugin-b not found: " . json_encode( $plugin_slugs ) );
-
-		// Verify woocommerce is an array and not dynamic
-		$woocommerce = array_filter(
-			$env_info['plugins'],
-			fn( $plugin ) => is_array( $plugin ) && $plugin['slug'] === 'woocommerce'
-		);
+		$woocommerce = array_filter( $env_info['plugins'], fn( $p ) => $p['slug'] === 'woocommerce' );
 		$woocommerce = reset( $woocommerce );
-		$this->assertIsArray( $woocommerce, "woocommerce is not an array" );
-		$this->assertEquals( 'woocommerce', $woocommerce['slug'], "woocommerce slug incorrect" );
-		$this->assertNull( $woocommerce['added_automatically'], "woocommerce should have no dynamic reason" );
-		$this->assertEquals( 'wporg', $woocommerce['from'], "woocommerce should be from wporg" );
+		$this->assertIsArray( $woocommerce );
+		$this->assertEquals( 'woocommerce', $woocommerce['slug'] );
+		$this->assertNull( $woocommerce['added_automatically'] );
+		$this->assertEquals( 'wporg', $woocommerce['from'] );
 
-		// Verify plugin-a is an array and dynamic
-		$plugin_a = array_filter(
-			$env_info['plugins'],
-			fn( $plugin ) => is_array( $plugin ) && $plugin['slug'] === 'plugin-a'
-		);
+		$plugin_a = array_filter( $env_info['plugins'], fn( $p ) => $p['slug'] === 'plugin-a' );
 		$plugin_a = reset( $plugin_a );
-		$this->assertIsArray( $plugin_a, "plugin-a is not an array" );
-		$this->assertEquals( 'plugin-a', $plugin_a['slug'], "plugin-a slug incorrect" );
-		$this->assertEquals( 'Added via extension set', $plugin_a['added_automatically'], "plugin-a dynamic reason incorrect" );
-		$this->assertEquals( 'wporg', $plugin_a['from'], "plugin-a should be from wporg" );
+		$this->assertIsArray( $plugin_a );
+		$this->assertEquals( 'plugin-a', $plugin_a['slug'] );
+		$this->assertEquals( 'Added via extension set', $plugin_a['added_automatically'] );
+		$this->assertEquals( 'wporg', $plugin_a['from'] );
 
-		// Verify plugin-b is an array and dynamic
-		$plugin_b = array_filter(
-			$env_info['plugins'],
-			fn( $plugin ) => is_array( $plugin ) && $plugin['slug'] === 'plugin-b'
-		);
+		$plugin_b = array_filter( $env_info['plugins'], fn( $p ) => $p['slug'] === 'plugin-b' );
 		$plugin_b = reset( $plugin_b );
-		$this->assertIsArray( $plugin_b, "plugin-b is not an array" );
-		$this->assertEquals( 'plugin-b', $plugin_b['slug'], "plugin-b slug incorrect" );
-		$this->assertEquals( 'Added via extension set', $plugin_b['added_automatically'], "plugin-b dynamic reason incorrect" );
-		$this->assertEquals( 'wporg', $plugin_b['from'], "plugin-b should be from wporg" );
-
+		$this->assertIsArray( $plugin_b );
+		$this->assertEquals( 'plugin-b', $plugin_b['slug'] );
+		$this->assertEquals( 'Added via extension set', $plugin_b['added_automatically'] );
+		$this->assertEquals( 'wporg', $plugin_b['from'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
 	public function test_extension_set_with_duplicates(): void {
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins' => [
-						[
-							'slug'   => 'plugin-a',
-							'source' => [ 'from' => 'wporg' ],
-						],
+						[ 'slug' => 'plugin-a', 'from' => 'wporg' ],
 					],
 				],
 			],
@@ -201,47 +168,41 @@ class ExtensionSetTest extends PreCommandTestCase {
 
 		$env_info = $this->run_unit_test( $config, [ '--extension_set' => 'test-set' ] );
 
-		$plugin_slugs = array_map( fn( $plugin ) => $plugin['slug'], $env_info['plugins'] );
+		$plugin_slugs = array_map( fn( $p ) => $p['slug'], $env_info['plugins'] );
+		$this->assertCount( 2, $plugin_slugs );
+		$this->assertContains( 'plugin-a', $plugin_slugs );
+		$this->assertContains( 'plugin-b', $plugin_slugs );
 
-		// Verify plugins
-		$this->assertCount( 2, $plugin_slugs, "Expected two plugins: " . json_encode( $plugin_slugs ) );
-		$this->assertContains( 'plugin-a', $plugin_slugs, "plugin-a not found: " . json_encode( $plugin_slugs ) );
-		$this->assertContains( 'plugin-b', $plugin_slugs, "plugin-b not found: " . json_encode( $plugin_slugs ) );
-
-		// Verify plugin-a is an array and not dynamic
-		$plugin_a = array_filter(
-			$env_info['plugins'],
-			fn( $plugin ) => is_array( $plugin ) && $plugin['slug'] === 'plugin-a'
-		);
+		$plugin_a = array_filter( $env_info['plugins'], fn( $p ) => $p['slug'] === 'plugin-a' );
 		$plugin_a = reset( $plugin_a );
-		$this->assertIsArray( $plugin_a, "plugin-a is not an array" );
-		$this->assertEquals( 'plugin-a', $plugin_a['slug'], "plugin-a slug incorrect" );
-		$this->assertNull( $plugin_a['added_automatically'], "plugin-a should have no dynamic reason" );
-		$this->assertEquals( 'wporg', $plugin_a['from'], "plugin-a should be from wporg" );
+		$this->assertIsArray( $plugin_a );
+		$this->assertEquals( 'plugin-a', $plugin_a['slug'] );
+		$this->assertNull( $plugin_a['added_automatically'] );
+		$this->assertEquals( 'wporg', $plugin_a['from'] );
 
-		// Verify plugin-b is an array and dynamic
-		$plugin_b = array_filter(
-			$env_info['plugins'],
-			fn( $plugin ) => is_array( $plugin ) && $plugin['slug'] === 'plugin-b'
-		);
+		$plugin_b = array_filter( $env_info['plugins'], fn( $p ) => $p['slug'] === 'plugin-b' );
 		$plugin_b = reset( $plugin_b );
-		$this->assertIsArray( $plugin_b, "plugin-b is not an array" );
-		$this->assertEquals( 'plugin-b', $plugin_b['slug'], "plugin-b slug incorrect" );
-		$this->assertEquals( 'Added via extension set', $plugin_b['added_automatically'], "plugin-b dynamic reason incorrect" );
-		$this->assertEquals( 'wporg', $plugin_b['from'], "plugin-b should be from wporg" );
-
+		$this->assertIsArray( $plugin_b );
+		$this->assertEquals( 'plugin-b', $plugin_b['slug'] );
+		$this->assertEquals( 'Added via extension set', $plugin_b['added_automatically'] );
+		$this->assertEquals( 'wporg', $plugin_b['from'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
 	public function test_non_existent_extension_set(): void {
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins' => [
-						[
-							'slug'   => 'woocommerce',
-							'source' => [ 'from' => 'wporg' ],
-						],
+						[ 'slug' => 'woocommerce', 'from' => 'wporg' ],
 					],
 				],
 			],
@@ -251,37 +212,39 @@ class ExtensionSetTest extends PreCommandTestCase {
 
 		$env_info = $this->run_unit_test( $config, [ '--extension_set' => 'non-existent-set' ] );
 
-		$plugin_slugs = array_map( fn( $plugin ) => $plugin['slug'], $env_info['plugins'] );
+		$plugin_slugs = array_map( fn( $p ) => $p['slug'], $env_info['plugins'] );
+		$this->assertCount( 1, $plugin_slugs );
+		$this->assertContains( 'woocommerce', $plugin_slugs );
 
-		// Verify plugins
-		$this->assertCount( 1, $plugin_slugs, "Expected one plugin: " . json_encode( $plugin_slugs ) );
-		$this->assertContains( 'woocommerce', $plugin_slugs, "woocommerce not found: " . json_encode( $plugin_slugs ) );
-
-		// Verify woocommerce is an array and not dynamic
-		$woocommerce = array_filter(
-			$env_info['plugins'],
-			fn( $plugin ) => is_array( $plugin ) && $plugin['slug'] === 'woocommerce'
-		);
+		$woocommerce = array_filter( $env_info['plugins'], fn( $p ) => $p['slug'] === 'woocommerce' );
 		$woocommerce = reset( $woocommerce );
-		$this->assertIsArray( $woocommerce, "woocommerce is not an array" );
-		$this->assertEquals( 'woocommerce', $woocommerce['slug'], "woocommerce slug incorrect" );
-		$this->assertNull( $woocommerce['added_automatically'], "woocommerce should have no dynamic reason" );
-		$this->assertEquals( 'wporg', $woocommerce['from'], "woocommerce should be from wporg" );
-
+		$this->assertIsArray( $woocommerce );
+		$this->assertEquals( 'woocommerce', $woocommerce['slug'] );
+		$this->assertNull( $woocommerce['added_automatically'] );
+		$this->assertEquals( 'wporg', $woocommerce['from'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
 	public function test_local_plugin_b_with_dependency(): void {
+		$local_path = $this->temp_dir . '/plugin-b';
+		mkdir( $local_path, 0777, true );
+		$this->to_delete[] = $local_path;
+
 		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'awesome-plugin',
+				'source' => [
+					'type' => 'directory',
+					'path' => './plugin-folder',
+				],
+			],
 			'environments' => [
 				'default' => [
 					'plugins'       => [
-						[
-							'slug'   => 'plugin-b',
-							'source' => [ 'from' => 'local', 'path' => '/path/to/plugin-b' ],
-						],
+						[ 'slug' => 'plugin-b', 'from' => 'local', 'path' => $local_path ],
 					],
-					'extension_set' => 'test-set', // Includes plugin-a, plugin-b
+					'extension_set' => 'test-set',
 				],
 			],
 		];
@@ -290,36 +253,33 @@ class ExtensionSetTest extends PreCommandTestCase {
 
 		$env_info = $this->run_unit_test( $config, [ '--extension_set' => 'test-set' ] );
 
-		$plugin_slugs = array_map( fn( $plugin ) => $plugin['slug'], $env_info['plugins'] );
+		$plugin_slugs = array_map( fn( $p ) => $p['slug'], $env_info['plugins'] );
+		$this->assertCount( 3, $plugin_slugs );
+		$this->assertContains( 'plugin-b', $plugin_slugs );
+		$this->assertContains( 'plugin-a', $plugin_slugs );
+		$this->assertContains( 'woocommerce', $plugin_slugs );
 
-		// Verify plugins
-		$this->assertCount( 2, $plugin_slugs, "Expected two plugins: " . json_encode( $plugin_slugs ) );
-		$this->assertContains( 'plugin-b', $plugin_slugs, "plugin-b not found: " . json_encode( $plugin_slugs ) );
-		$this->assertContains( 'plugin-a', $plugin_slugs, "plugin-a not found: " . json_encode( $plugin_slugs ) );
-
-		// Verify plugin-b is an array with directory and not dynamic
-		$plugin_b = array_filter(
-			$env_info['plugins'],
-			fn( $plugin ) => is_array( $plugin ) && $plugin['slug'] === 'plugin-b'
-		);
+		$plugin_b = array_filter( $env_info['plugins'], fn( $p ) => $p['slug'] === 'plugin-b' );
 		$plugin_b = reset( $plugin_b );
-		$this->assertIsArray( $plugin_b, "plugin-b is not an array" );
-		$this->assertEquals( 'plugin-b', $plugin_b['slug'], "plugin-b slug incorrect" );
-		$this->assertEquals( '/path/to/plugin-b', $plugin_b['directory'], "plugin-b directory property not preserved" );
-		$this->assertNull( $plugin_b['added_automatically'], "plugin-b should have no dynamic reason" );
-		$this->assertEquals( 'local', $plugin_b['from'], "plugin-b should be from local" );
+		$this->assertIsArray( $plugin_b );
+		$this->assertEquals( 'plugin-b', $plugin_b['slug'] );
+		$this->assertStringContainsString( '/tmp-normalized', $plugin_b['directory'] );
+		$this->assertNull( $plugin_b['added_automatically'] );
+		$this->assertEquals( 'local', $plugin_b['from'] );
 
-		// Verify plugin-a is an array and dynamic
-		$plugin_a = array_filter(
-			$env_info['plugins'],
-			fn( $plugin ) => is_array( $plugin ) && $plugin['slug'] === 'plugin-a'
-		);
+		$plugin_a = array_filter( $env_info['plugins'], fn( $p ) => $p['slug'] === 'plugin-a' );
 		$plugin_a = reset( $plugin_a );
-		$this->assertIsArray( $plugin_a, "plugin-a is not an array" );
-		$this->assertEquals( 'plugin-a', $plugin_a['slug'], "plugin-a slug incorrect" );
-		$this->assertEquals( 'Added via extension set', $plugin_a['added_automatically'], "plugin-a dynamic reason incorrect" );
-		$this->assertEquals( 'wporg', $plugin_a['from'], "plugin-a should be from wporg" );
+		$this->assertIsArray( $plugin_a );
+		$this->assertEquals( 'plugin-a', $plugin_a['slug'] );
+		$this->assertEquals( 'Added via extension set', $plugin_a['added_automatically'] );
+		$this->assertEquals( 'wporg', $plugin_a['from'] );
 
+		$woocommerce = array_filter( $env_info['plugins'], fn( $p ) => $p['slug'] === 'woocommerce' );
+		$woocommerce = reset( $woocommerce );
+		$this->assertIsArray( $woocommerce );
+		$this->assertEquals( 'woocommerce', $woocommerce['slug'] );
+		$this->assertEquals( 'Added via extension set', $woocommerce['added_automatically'] );
+		$this->assertEquals( 'wporg', $woocommerce['from'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 }

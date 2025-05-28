@@ -6,7 +6,7 @@ class WPORGExtensionsList {
 	/**
 	 * @var string
 	 */
-	public $plugin_api_url = 'https://api.wordpress.org/plugins/info/1.0/%s';
+	public $plugin_api_url = 'https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]=%s';
 
 	/**
 	 * @var string
@@ -61,8 +61,8 @@ class WPORGExtensionsList {
 			return $cached;
 		}
 
-		// Example: https://api.wordpress.org/plugins/info/1.0/slug.
-		$url = sprintf( $this->plugin_api_url, $slug );
+		// Example: https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]={$slug}
+		$url = sprintf( $this->plugin_api_url, urlencode( $slug ) );
 
 		try {
 			$response_body = ( new RequestBuilder( $url ) )
@@ -73,17 +73,15 @@ class WPORGExtensionsList {
 			throw new \RuntimeException( "HTTP error fetching plugin info for '$slug': " . $e->getMessage() );
 		}
 
-		// The WP.org plugin info endpoint returns a serialized object.
-		$raw_info = @unserialize( $response_body ); // phpcs:ignore
-
-		if ( ! is_object( $raw_info ) || empty( $raw_info->download_link ) ) {
+		$json = json_decode( $response_body, true );
+		if ( ! is_array( $json ) || empty( $json['download_link'] ) ) {
 			throw new \RuntimeException( "Could not parse plugin info for slug '$slug' from WP.org." );
 		}
 
 		$info = [
 			'slug'    => $slug,
-			'version' => $raw_info->version ?? '',
-			'url'     => $raw_info->download_link,
+			'version' => $json['version'] ?? '',
+			'url'     => $json['download_link'],
 		];
 
 		$this->cache->set( $cache_key, $info, 300 );
@@ -105,8 +103,8 @@ class WPORGExtensionsList {
 			return $cached;
 		}
 
-		// Example: https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]=$slug.
-		$url = sprintf( $this->theme_api_url, $slug );
+		// Example: https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]={$slug}
+		$url = sprintf( $this->theme_api_url, urlencode( $slug ) );
 
 		try {
 			$response_body = ( new RequestBuilder( $url ) )

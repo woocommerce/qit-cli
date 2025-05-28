@@ -9,7 +9,7 @@ use QIT_CLI\Environment\CustomTests\CustomTestsDownloader;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\EnvironmentDownloader;
 use QIT_CLI\Environment\EnvironmentMonitor;
-use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
+use QIT_CLI\PreCommand\Download\Extensions\ExtensionDownloader;
 use QIT_CLI\SafeRemove;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Output\OutputInterface;

@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI_Tests\PreCommand;
+namespace QIT_CLI_Tests\PreCommand2;
 
 use Spatie\Snapshots\MatchesSnapshots;
 

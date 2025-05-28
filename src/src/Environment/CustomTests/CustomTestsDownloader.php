@@ -7,7 +7,7 @@ use QIT_CLI\Config;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Extension;
-use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
+use QIT_CLI\PreCommand\Download\Extensions\ExtensionDownloader;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Zipper;
 use Symfony\Component\Console\Input\ArrayInput;

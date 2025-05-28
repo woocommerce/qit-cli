@@ -20,6 +20,7 @@ class EnvironmentParser extends AbstractConfigParser {
 			throw new \RuntimeException( 'Environments must be an array.' );
 		}
 
+		$seen_slugs = [];
 		foreach ( $value as $env_name => $config ) {
 			if ( ! is_string( $env_name ) ) {
 				throw new \RuntimeException( 'Environment name must be a string.' );
@@ -50,9 +51,9 @@ class EnvironmentParser extends AbstractConfigParser {
 							throw new \RuntimeException( "object_cache in environment '$env_name' must be a boolean." );
 						}
 						break;
-					case 'envs':
+					case 'env_vars':
 						if ( ! is_array( $env_value ) ) {
-							throw new \RuntimeException( "envs in environment '$env_name' must be an array." );
+							throw new \RuntimeException( "env_vars in environment '$env_name' must be an array." );
 						}
 						foreach ( $env_value as $var_name => $var_value ) {
 							if ( ! is_string( $var_name ) ) {
@@ -69,6 +70,15 @@ class EnvironmentParser extends AbstractConfigParser {
 							throw new \RuntimeException( "$env_key in environment '$env_name' must be an array." );
 						}
 						foreach ( $env_value as $index => $item ) {
+							$slug = is_string( $item ) ? $item : ( is_array( $item ) && isset( $item['slug'] ) ? $item['slug'] : null );
+							if ( ! $slug ) {
+								throw new \RuntimeException( "Item at index $index in $env_key for environment '$env_name' must have a 'slug'." );
+							}
+							if ( in_array( $slug, $seen_slugs ) ) {
+								throw new \RuntimeException( "Duplicate slug '$slug' in $env_key for environment '$env_name'." );
+							}
+							$seen_slugs[] = $slug;
+
 							if ( is_string( $item ) ) {
 								if ( empty( $item ) ) {
 									throw new \RuntimeException( "Empty slug at index $index in $env_key for environment '$env_name'." );
@@ -79,35 +89,53 @@ class EnvironmentParser extends AbstractConfigParser {
 								if ( ! isset( $item['slug'] ) || ! is_string( $item['slug'] ) || empty( $item['slug'] ) ) {
 									throw new \RuntimeException( "Item at index $index in $env_key for environment '$env_name' must have a non-empty 'slug' string." );
 								}
-								if ( ! isset( $item['source'] ) || ! is_array( $item['source'] ) || ! isset( $item['source']['from'] ) ) {
-									throw new \RuntimeException( "Item '{$item['slug']}' in $env_key for environment '$env_name' must have a 'source' object with a 'from' field." );
-								}
-								$from       = $item['source']['from'];
-								$valid_from = [ 'wporg', 'wccom', 'local', 'zip' ];
-								if ( ! in_array( $from, $valid_from, true ) ) {
-									throw new \RuntimeException( "Invalid 'from' value '$from' for '{$item['slug']}' in $env_key. Must be one of: " . implode( ', ', $valid_from ) );
-								}
-								if ( $from === 'local' && ( ! isset( $item['source']['path'] ) || ! is_string( $item['source']['path'] ) || empty( $item['source']['path'] ) ) ) {
-									throw new \RuntimeException( "Local source for '{$item['slug']}' in $env_key must have a non-empty 'path' string." );
-								}
-								if ( $from === 'zip' && ( ! isset( $item['source']['url'] ) || ! is_string( $item['source']['url'] ) || empty( $item['source']['url'] ) ) ) {
-									throw new \RuntimeException( "Zip source for '{$item['slug']}' in $env_key must have a non-empty 'url' string." );
+								if ( isset( $item['from'] ) ) {
+									$valid_from = [ 'wporg', 'wccom', 'local', 'url', 'zip' ];
+									if ( ! in_array( $item['from'], $valid_from, true ) ) {
+										throw new \RuntimeException( "Invalid 'from' value '{$item['from']}' for '{$item['slug']}' in $env_key. Must be one of: " . implode( ', ', $valid_from ) );
+									}
+									if ( $item['from'] === 'local' && ( ! isset( $item['path'] ) || ! is_string( $item['path'] ) || empty( $item['path'] ) ) ) {
+										throw new \RuntimeException( "Local source for '{$item['slug']}' in $env_key must have a non-empty 'path' string." );
+									}
+									if ( in_array( $item['from'], [
+											'url',
+											'zip'
+										] ) && ( ! isset( $item['url'] ) || ! is_string( $item['url'] ) || empty( $item['url'] ) ) ) {
+										throw new \RuntimeException( "URL or zip source for '{$item['slug']}' in $env_key must have a non-empty 'url' string." );
+									}
+									if ( in_array( $item['from'], [
+											'url',
+											'zip'
+										] ) && isset( $item['url'] ) && ! preg_match( '/^https?:\/\/.+\/.+\.zip$/', $item['url'] ) ) {
+										throw new \RuntimeException( "Invalid URL format for '{$item['slug']}' in $env_key. Must be a valid HTTPS URL ending in .zip." );
+									}
 								}
 							} else {
-								throw new \RuntimeException( "Item at index $index in $env_key for environment '$env_name' must be a string or an object with 'slug' and 'source'." );
+								throw new \RuntimeException( "Item at index $index in $env_key for environment '$env_name' must be a string or an object with 'slug' and optional 'from'." );
 							}
 						}
 						break;
-					case 'bootstrap':
+					case 'setup':
 						if ( ! is_array( $env_value ) ) {
-							throw new \RuntimeException( "bootstrap in environment '$env_name' must be an array." );
+							throw new \RuntimeException( "setup in environment '$env_name' must be an array." );
 						}
-						foreach ( $env_value as $bootstrap_item ) {
-							if ( ! is_array( $bootstrap_item ) || ! isset( $bootstrap_item['slug'], $bootstrap_item['test_package'] ) ) {
-								throw new \RuntimeException( "Bootstrap item in environment '$env_name' must be an object with 'slug' and 'test_package' fields." );
+						if ( isset( $env_value['test_packages'] ) ) {
+							if ( ! is_array( $env_value['test_packages'] ) ) {
+								throw new \RuntimeException( "test_packages in setup for environment '$env_name' must be an array." );
 							}
-							if ( ! is_string( $bootstrap_item['slug'] ) || ! is_string( $bootstrap_item['test_package'] ) ) {
-								throw new \RuntimeException( "Bootstrap slug and test_package in environment '$env_name' must be strings." );
+							foreach ( $env_value['test_packages'] as $index => $test_package ) {
+								if ( ! is_string( $test_package ) ) {
+									throw new \RuntimeException( "Test package at index $index in setup for environment '$env_name' must be a string." );
+								}
+								if ( isset( $context['test_packages'] ) ) {
+									$parts = explode( '/', $test_package, 2 );
+									if ( count( $parts ) === 2 ) {
+										[ $package_source, $package_name ] = $parts;
+										if ( $package_source !== 'local' && ! isset( $context['test_packages'][ $package_source ][ $package_name ] ) ) {
+											throw new \RuntimeException( "Test package '$test_package' in setup for environment '$env_name' not found in test_packages." );
+										}
+									}
+								}
 							}
 						}
 						break;
@@ -147,20 +175,11 @@ class EnvironmentParser extends AbstractConfigParser {
 		return $resolved;
 	}
 
-	/**
-	 * Creates an Extension object from a plugin or theme item (string or object).
-	 *
-	 * @param string|array<string, mixed> $item The plugin or theme item (string slug or object with slug and source).
-	 * @param string $type The type ('plugin' or 'theme').
-	 *
-	 * @return Extension The created Extension object.
-	 */
 	protected function create_extension( $item, string $type ): Extension {
 		if ( is_string( $item ) ) {
-			$slug      = $item;
-			$ext       = new Extension( $slug, $type );
+			$slug = $item;
+			$ext  = new Extension( $slug, $type );
 
-			// Try wccom first
 			try {
 				$ext->wccom_id = $this->woo_extension_list->get_woo_extension_id_by_slug( $slug );
 				$ext->from     = 'wccom';
@@ -170,7 +189,6 @@ class EnvironmentParser extends AbstractConfigParser {
 				// Not in wccom, try wporg
 			}
 
-			// Try wporg
 			try {
 				if ( $type === 'plugin' && $this->wporg_extension_list->is_wporg_plugin( $slug ) ) {
 					$info         = $this->wporg_extension_list->get_plugin_download_info( $slug );
@@ -188,23 +206,21 @@ class EnvironmentParser extends AbstractConfigParser {
 					return $ext;
 				}
 			} catch ( \Exception $e ) {
-				// Not in wporg, fail
+				// Not in wporg
 			}
 
 			throw new \RuntimeException( "Extension '$slug' ($type) not found in WooCommerce.com or WordPress.org." );
 		}
 
-		// Object case
-		if ( ! is_array( $item ) || ! isset( $item['slug'], $item['source']['from'] ) ) {
-			throw new \RuntimeException( "Extension object must have 'slug' and 'source' with 'from'." );
+		if ( ! is_array( $item ) || ! isset( $item['slug'] ) ) {
+			throw new \RuntimeException( "Extension object must have 'slug'." );
 		}
 
 		$slug      = $item['slug'];
-		$from      = $item['source']['from'];
 		$ext       = new Extension( $slug, $type );
-		$ext->from = $from;
+		$ext->from = isset( $item['from'] ) ? $item['from'] : 'wporg';
 
-		switch ( $from ) {
+		switch ( $ext->from ) {
 			case 'wporg':
 				try {
 					if ( $type === 'plugin' && $this->wporg_extension_list->is_wporg_plugin( $slug ) ) {
@@ -219,7 +235,7 @@ class EnvironmentParser extends AbstractConfigParser {
 						throw new \RuntimeException( "Extension '$slug' ($type) not found in WordPress.org." );
 					}
 				} catch ( \Exception $e ) {
-					throw new \RuntimeException( "Failed to fetch WordPress.org info for '$slug' ($type): " . $e->getMessage() );
+					throw new \RuntimeException( "2 Failed to fetch WordPress.org info for '$slug' ($type): " . $e->getMessage() );
 				}
 				break;
 			case 'wccom':
@@ -230,19 +246,20 @@ class EnvironmentParser extends AbstractConfigParser {
 				}
 				break;
 			case 'local':
-				if ( ! isset( $item['source']['path'] ) || ! is_string( $item['source']['path'] ) || empty( $item['source']['path'] ) ) {
+				if ( ! isset( $item['path'] ) || ! is_string( $item['path'] ) || empty( $item['path'] ) ) {
 					throw new \RuntimeException( "Local extension '$slug' ($type) must have a non-empty 'path'." );
 				}
-				$ext->directory = $item['source']['path'];
+				$ext->directory = $item['path'];
 				break;
+			case 'url':
 			case 'zip':
-				if ( ! isset( $item['source']['url'] ) || ! is_string( $item['source']['url'] ) || empty( $item['source']['url'] ) ) {
-					throw new \RuntimeException( "Zip extension '$slug' ($type) must have a non-empty 'url'." );
+				if ( ! isset( $item['url'] ) || ! is_string( $item['url'] ) || empty( $item['url'] ) ) {
+					throw new \RuntimeException( "URL or zip extension '$slug' ($type) must have a non-empty 'url'." );
 				}
-				$ext->source = $item['source']['url'];
+				$ext->source = $item['url'];
 				break;
 			default:
-				throw new \RuntimeException( "Invalid 'from' value '$from' for extension '$slug' ($type)." );
+				throw new \RuntimeException( "Invalid 'from' value '{$ext->from}' for extension '$slug' ($type)." );
 		}
 
 		return $ext;

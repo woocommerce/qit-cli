@@ -4,10 +4,11 @@ namespace QIT_CLI_Tests\PreCommand;
 
 use QIT_CLI\App;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
+use QIT_CLI\Environment\Extension;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Output\ConsoleOutput;
+use function QIT_CLI\get_manager_url;
 
 abstract class PreCommandTestCase extends TestCase {
 	protected $temp_dir;
@@ -15,33 +16,48 @@ abstract class PreCommandTestCase extends TestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		// Use /tmp/qit explicitly to ensure writability
 		$this->temp_dir = '/tmp/qit/qit_test_' . uniqid();
 		if ( ! is_dir( $this->temp_dir ) ) {
 			mkdir( $this->temp_dir, 0777, true );
 			chmod( $this->temp_dir, 0777 );
 		}
-		// Debug temp_dir
 		file_put_contents( '/tmp/qit/debug.log', "PreCommandTest temp_dir set to: {$this->temp_dir}\n", FILE_APPEND );
 	}
 
 	protected function tearDown(): void {
 		parent::tearDown();
 		foreach ( $this->to_delete as $file ) {
-			@unlink( $file );
+			if ( is_dir( $file ) ) {
+				$this->rmdir_recursive( $file );
+			} else {
+				@unlink( $file );
+			}
 		}
 		$this->to_delete = [];
-		// Skip environment cleanup to avoid 'tests' environment error
 		if ( ! getenv( 'QIT_TESTING_ENV_INFO' ) ) {
-			// Add environment cleanup logic here if needed
+			// Add environment cleanup if needed
 		}
 	}
 
+	protected function rmdir_recursive( string $dir ): void {
+		if ( ! is_dir( $dir ) ) {
+			return;
+		}
+		$files = array_diff( scandir( $dir ), [ '.', '..' ] );
+		foreach ( $files as $file ) {
+			$path = "$dir/$file";
+			if ( is_dir( $path ) ) {
+				$this->rmdir_recursive( $path );
+			} else {
+				unlink( $path );
+			}
+		}
+		rmdir( $dir );
+	}
+
 	protected function run_unit_test( array $config, array $cli_args = [], bool $expect_failure = false ) {
-		// Debug temp_dir before file operation
-		file_put_contents( '/tmp/qit/debug.log', "run_unit_test temp_dir: {$this->temp_dir}\n", FILE_APPEND );
 		if ( empty( $this->temp_dir ) || ! is_dir( $this->temp_dir ) ) {
-			throw new \RuntimeException( "temp_dir is not initialized. Ensure parent::setUp() is called in setUp." );
+			throw new \RuntimeException( 'temp_dir is not initialized. Ensure parent::setUp() is called.' );
 		}
 
 		$config_path = $this->temp_dir . '/qit_' . uniqid() . '.json';
@@ -55,15 +71,12 @@ abstract class PreCommandTestCase extends TestCase {
 		$output = new BufferedOutput();
 
 		try {
-			$return_code = $command->execute( $input, $output );
+			$return_code   = $command->execute( $input, $output );
+			$output_string = $output->fetch();
 			if ( $expect_failure ) {
 				$this->fail( 'Expected an exception but none was thrown' );
 			}
-			try {
-				$this->assertEquals( 0, $return_code );
-			} catch ( \Exception $e ) {
-				$this->fail( 'Command failed with return code: ' . $return_code . ' Output: ' . $output->fetch() );
-			}
+			$this->assertEquals( 0, $return_code, 'Command failed: ' . $output_string );
 		} catch ( \RuntimeException $e ) {
 			if ( $expect_failure ) {
 				return $e->getMessage();
@@ -73,18 +86,32 @@ abstract class PreCommandTestCase extends TestCase {
 			putenv( 'QIT_TESTING_ENV_INFO' );
 		}
 
-		$output_string = $output->fetch();
-		$env_info      = json_decode( $output_string, true );
+		// Split output into lines and find the first valid JSON
+		$lines    = explode( "\n", trim( $output_string ) );
+		$env_info = null;
+		foreach ( $lines as $line ) {
+			$line = trim( $line );
+			if ( str_starts_with( $line, '{' ) ) {
+				$decoded = json_decode( $line, true );
+				if ( is_array( $decoded ) ) {
+					$env_info = $decoded;
+					break;
+				}
+			}
+		}
+
 		$this->assertIsArray( $env_info, "Invalid JSON output: $output_string" );
 
 		return $this->normalize_env_info( $env_info );
 	}
 
 	protected function normalize_env_info( array $env_info ): array {
-		$original_env_id = isset( $env_info['env_id'] ) ? $env_info['env_id'] : null;
-		if ( $original_env_id ) {
-			$env_info['env_id']        = 'ENV_ID_NORMALIZED';
-			$env_info['temporary_env'] = str_replace( $original_env_id, 'ENV_ID_NORMALIZED', $env_info['temporary_env'] );
+		if ( isset( $env_info['env_id'] ) ) {
+			$original_env_id    = $env_info['env_id'];
+			$env_info['env_id'] = 'ENV_ID_NORMALIZED';
+			if ( isset( $env_info['temporary_env'] ) ) {
+				$env_info['temporary_env'] = str_replace( $original_env_id, 'ENV_ID_NORMALIZED', $env_info['temporary_env'] );
+			}
 		}
 
 		$env_info['created_at'] = 1700000000;
@@ -110,15 +137,12 @@ abstract class PreCommandTestCase extends TestCase {
 
 		if ( ! empty( $env_info['plugins'] ) && is_array( $env_info['plugins'] ) ) {
 			foreach ( $env_info['plugins'] as &$plugin ) {
-				if ( is_object( $plugin ) ) {
-					// Handle Extension objects by serializing
+				if ( $plugin instanceof Extension ) {
 					$plugin = $plugin->jsonSerialize();
 				}
 				if ( is_array( $plugin ) ) {
-					// Preserve all plugin arrays, regardless of structure
-					// No modifications to array contents
+					// Preserve array structure
 				} elseif ( is_string( $plugin ) ) {
-					// Normalize zip file paths for string plugins
 					if ( preg_match( '/^\/tmp-normalized\/+q[a-f0-9]+\/test-plugin_[a-f0-9]+\.zip$/i', $plugin ) ) {
 						$plugin = '/tmp-normalized/normalized-plugin.zip';
 					}
@@ -131,15 +155,12 @@ abstract class PreCommandTestCase extends TestCase {
 
 		if ( ! empty( $env_info['themes'] ) && is_array( $env_info['themes'] ) ) {
 			foreach ( $env_info['themes'] as &$theme ) {
-				if ( is_object( $theme ) ) {
-					// Handle Extension objects by serializing
+				if ( $theme instanceof Extension ) {
 					$theme = $theme->jsonSerialize();
 				}
 				if ( is_array( $theme ) ) {
-					// Preserve all theme arrays, regardless of structure
-					// No modifications to array contents
+					// Preserve array structure
 				} elseif ( is_string( $theme ) ) {
-					// Normalize zip file paths for string themes
 					if ( preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/test-theme-[a-f0-9]+\.zip$/i', $theme ) ) {
 						$theme = '/tmp-normalized/normalized-theme.zip';
 					}
@@ -163,6 +184,96 @@ abstract class PreCommandTestCase extends TestCase {
 			$env_info['volumes'] = $normalized_volumes;
 		}
 
+		if ( isset( $env_info['sut'] ) && is_array( $env_info['sut'] ) ) {
+			if ( isset( $env_info['sut']['source']['path'] ) ) {
+				$env_info['sut']['source']['path'] = str_replace(
+					realpath( dirname( $env_info['sut']['source']['path'] ) ) . '/',
+					'/normalized/path/',
+					$env_info['sut']['source']['path']
+				);
+			}
+			if ( isset( $env_info['sut']['source']['output'] ) ) {
+				$env_info['sut']['source']['output'] = str_replace(
+					realpath( dirname( $env_info['sut']['source']['output'] ) ) . '/',
+					'/normalized/path/',
+					$env_info['sut']['source']['output']
+				);
+			}
+		}
+
+		if ( isset( $env_info['test_packages'] ) && is_array( $env_info['test_packages'] ) ) {
+			foreach ( $env_info['test_packages'] as &$package ) {
+				if ( isset( $package['test_dir'] ) ) {
+					$package['test_dir'] = str_replace(
+						realpath( dirname( $package['test_dir'] ) ) . '/',
+						'/normalized/path/',
+						$package['test_dir']
+					);
+				}
+				if ( isset( $package['lifecycle'] ) ) {
+					foreach ( $package['lifecycle'] as &$phase ) {
+						foreach ( $phase as &$script ) {
+							if ( isset( $script['command'] ) ) {
+								$script['command'] = str_replace(
+									realpath( dirname( $script['command'] ) ) . '/',
+									'/normalized/path/',
+									$script['command']
+								);
+							}
+						}
+					}
+				}
+			}
+		}
+
 		return $env_info;
+	}
+
+	protected function mockWpOrgPlugin( string $slug, string $version, string $download_link, array $requires_plugins = [] ): void {
+		App::setVar(
+			sprintf( 'mock_%s', "https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]={$slug}" ),
+			json_encode( [
+				'slug'             => $slug,
+				'version'          => $version,
+				'download_link'    => $download_link,
+				'requires_plugins' => $requires_plugins,
+			] )
+		);
+	}
+
+	protected function mockWpOrgTheme( string $slug, string $version, string $download_link ): void {
+		App::setVar(
+			sprintf( 'mock_%s', "https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]={$slug}" ),
+			json_encode( [
+				'slug'          => $slug,
+				'version'       => $version,
+				'download_link' => $download_link,
+			] )
+		);
+	}
+
+	protected function mockWooComDependencies( array $plugins = [], array $themes = [], array $php_extensions = [] ): void {
+		App::setVar(
+			sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' ),
+			json_encode( [
+				'plugins'        => $plugins,
+				'themes'         => $themes,
+				'php_extensions' => $php_extensions,
+			] )
+		);
+	}
+
+	protected function mockWooComDownloadUrls( array $urls = [] ): void {
+		App::setVar(
+			sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/download-urls' ),
+			json_encode( $urls )
+		);
+	}
+
+	protected function mockDownloadUrl( string $url, string $response ): void {
+		App::setVar(
+			sprintf( 'mock_%s', $url ),
+			$response
+		);
 	}
 }

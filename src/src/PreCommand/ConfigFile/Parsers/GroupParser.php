@@ -14,6 +14,8 @@ class GroupParser extends AbstractConfigParser {
 			throw new \RuntimeException( 'Groups must be an array.' );
 		}
 
+		$test_types = $context['test_types'] ?? []; // Assume test_types are passed via context
+
 		foreach ( $value as $group_name => $test_refs ) {
 			if ( ! is_string( $group_name ) ) {
 				throw new \RuntimeException( 'Group name must be a string.' );
@@ -32,6 +34,9 @@ class GroupParser extends AbstractConfigParser {
 				if ( ! is_array( $profiles ) ) {
 					throw new \RuntimeException( "Profiles for test type '$test_type' in group '$group_name' must be an array." );
 				}
+				if ( ! isset( $test_types[ $test_type ] ) ) {
+					throw new \RuntimeException( "Test type '$test_type' in group '$group_name' not found in test_types configuration." );
+				}
 				foreach ( $profiles as $profile ) {
 					if ( ! is_string( $profile ) ) {
 						throw new \RuntimeException( "Profile in group '$group_name' for test type '$test_type' must be a string." );
@@ -41,10 +46,8 @@ class GroupParser extends AbstractConfigParser {
 						throw new \RuntimeException( "Duplicate test reference '$ref_key' in group '$group_name'." );
 					}
 					$seen_refs[] = $ref_key;
-					try {
-						$this->test_parser->get( $test_type, $profile );
-					} catch ( \RuntimeException $e ) {
-						throw new \RuntimeException( "Test profile '$profile' for type '$test_type' in group '$group_name' not found in tests configuration." );
+					if ( ! isset( $test_types[ $test_type ][ $profile ] ) ) {
+						throw new \RuntimeException( "Test profile '$profile' for type '$test_type' in group '$group_name' not found in test_types configuration." );
 					}
 				}
 			}

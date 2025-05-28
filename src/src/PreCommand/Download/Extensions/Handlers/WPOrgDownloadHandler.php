@@ -161,7 +161,7 @@ class WPOrgDownloadHandler extends Handler {
 				$ext->source  = $info['url'];
 				$ext->version = $info['version'];
 			} catch ( \Exception $e ) {
-				throw new \RuntimeException( "Failed to fetch WordPress.org info for '{$ext->slug}' ({$ext->type}): " . $e->getMessage() );
+				throw new \RuntimeException( "1 Failed to fetch WordPress.org info for '{$ext->slug}' ({$ext->type}): " . $e->getMessage() );
 			}
 		}
 
