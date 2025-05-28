@@ -5,7 +5,7 @@
             "slug": "awesome-plugin",
             "source_type": "build",
             "command": "npm run build",
-            "output": "\/tmp\/qit\/qit_test_6836975d44ed3\/plugin.zip"
+            "output": "\/normalized\/path\/plugin.zip"
         }
     },
     "environment": "default",
@@ -38,9 +38,9 @@
         {
             "slug": "awesome-plugin",
             "entrypoint": null,
-            "source": "\/tmp\/qit\/qit_test_6836975d44ed3\/plugin.zip",
+            "source": "\/tmp\/qit\/qit_test_683698cca4360\/plugin.zip",
             "directory": null,
-            "downloaded_source": "\/tmp\/qit\/qit_test_6836975d44ed3\/plugin.zip",
+            "downloaded_source": "\/tmp\/qit\/qit_test_683698cca4360\/plugin.zip",
             "type": "plugin",
             "handler": null,
             "version": "undefined",

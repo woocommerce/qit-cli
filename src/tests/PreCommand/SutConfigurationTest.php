@@ -39,7 +39,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 				'slug'        => 'awesome-plugin',
 				'source_type' => 'build',
 				'command'     => 'npm run build',
-				'output'      => $path, // Use actual ZIP path
+				'output'      => $path,
 			],
 			'environments' => [
 				'default' => [
@@ -49,7 +49,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 							'slug'        => 'awesome-plugin',
 							'source_type' => 'build',
 							'command'     => 'npm run build',
-							'output'      => $path, // Use actual ZIP path
+							'output'      => $path,
 						],
 					],
 				],
@@ -63,7 +63,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 		$this->assertEquals( 'awesome-plugin', $env_info['extra']['sut']['slug'] );
 		$this->assertEquals( 'build', $env_info['extra']['sut']['source_type'] );
 		$this->assertEquals( 'npm run build', $env_info['extra']['sut']['command'] );
-		$this->assertEquals( $path, $env_info['extra']['sut']['output'] );
+		$this->assertEquals( '/normalized/path/plugin.zip', $env_info['extra']['sut']['output'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
@@ -81,7 +81,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 				'type'        => 'plugin',
 				'slug'        => 'awesome-plugin',
 				'source_type' => 'directory',
-				'path'        => $path, // Use actual directory path
+				'path'        => $path,
 			],
 			'environments' => [
 				'default' => [
@@ -90,7 +90,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 						[
 							'slug'        => 'awesome-plugin',
 							'source_type' => 'directory',
-							'path'        => $path, // Use actual directory path
+							'path'        => $path,
 						],
 					],
 				],
@@ -103,7 +103,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 		$this->assertEquals( 'plugin', $env_info['extra']['sut']['type'] );
 		$this->assertEquals( 'awesome-plugin', $env_info['extra']['sut']['slug'] );
 		$this->assertEquals( 'directory', $env_info['extra']['sut']['source_type'] );
-		$this->assertEquals( $path, $env_info['extra']['sut']['path'] );
+		$this->assertEquals( '/normalized/path/plugin-folder', $env_info['extra']['sut']['path'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
@@ -167,7 +167,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 				'type'        => 'plugin',
 				'slug'        => 'awesome-plugin',
 				'source_type' => 'zip',
-				'path'        => $path, // Use actual ZIP path
+				'path'        => $path,
 			],
 			'environments' => [
 				'default' => [
@@ -176,7 +176,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 						[
 							'slug'        => 'awesome-plugin',
 							'source_type' => 'zip',
-							'path'        => $path, // Use actual ZIP path
+							'path'        => $path,
 						],
 					],
 				],
@@ -189,7 +189,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 		$this->assertEquals( 'plugin', $env_info['extra']['sut']['type'] );
 		$this->assertEquals( 'awesome-plugin', $env_info['extra']['sut']['slug'] );
 		$this->assertEquals( 'zip', $env_info['extra']['sut']['source_type'] );
-		$this->assertEquals( $path, $env_info['extra']['sut']['path'] );
+		$this->assertEquals( '/normalized/path/plugin.zip', $env_info['extra']['sut']['path'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
