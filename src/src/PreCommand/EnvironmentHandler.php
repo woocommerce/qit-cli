@@ -83,6 +83,40 @@ class EnvironmentHandler {
 			}
 		}
 
+		// Process SUT from config
+		if ( isset( $config->parsed_config['sut'] ) ) {
+			$sut_config = $config->parsed_config['sut'];
+			if ( $sut_config['type'] === 'plugin' ) {
+				$sut_extension       = new Extension( $sut_config['slug'], 'plugin' );
+				$sut_extension->from = $sut_config['source']['type'];
+				if ( $sut_config['source']['type'] === 'local' || $sut_config['source']['type'] === 'directory' ) {
+					$sut_extension->downloaded_source = $sut_config['source']['path'];
+				} elseif ( $sut_config['source']['type'] === 'zip' || $sut_config['source']['type'] === 'build' ) {
+					$sut_extension->downloaded_source = $sut_config['source']['path'] ?? $sut_config['source']['output'];
+				} elseif ( $sut_config['source']['type'] === 'url' ) {
+					$sut_extension->source = $sut_config['source']['url'];
+				} elseif ( $sut_config['source']['type'] === 'wporg' || $sut_config['source']['type'] === 'wccom' ) {
+					$sut_extension->from    = $sut_config['source']['type'];
+					$sut_extension->version = $sut_config['source']['version'] ?? 'stable';
+				}
+				$env_config['plugins'] = array_merge( $env_config['plugins'] ?? [], [ $sut_extension ] );
+			} elseif ( $sut_config['type'] === 'theme' ) {
+				$sut_extension       = new Extension( $sut_config['slug'], 'theme' );
+				$sut_extension->from = $sut_config['source']['type'];
+				if ( $sut_config['source']['type'] === 'local' || $sut_config['source']['type'] === 'directory' ) {
+					$sut_extension->downloaded_source = $sut_config['source']['path'];
+				} elseif ( $sut_config['source']['type'] === 'zip' || $sut_config['source']['type'] === 'build' ) {
+					$sut_extension->downloaded_source = $sut_config['source']['path'] ?? $sut_config['source']['output'];
+				} elseif ( $sut_config['source']['type'] === 'url' ) {
+					$sut_extension->source = $sut_config['source']['url'];
+				} elseif ( $sut_config['source']['type'] === 'wporg' || $sut_config['source']['type'] === 'wccom' ) {
+					$sut_extension->from    = $sut_config['source']['type'];
+					$sut_extension->version = $sut_config['source']['version'] ?? 'stable';
+				}
+				$env_config['themes'] = array_merge( $env_config['themes'] ?? [], [ $sut_extension ] );
+			}
+		}
+
 		foreach ( $merged_options as $key => $value ) {
 			if ( $key === 'env' || $key === 'env_file' ) {
 				continue;
@@ -189,6 +223,14 @@ class EnvironmentHandler {
 		$env_info->temporary_env = normalize_path( Environment::get_temp_envs_dir() . $env_info->environment . '-' . $env_info->env_id );
 		$env_info->created_at    = time();
 		$env_info->status        = 'pending';
+
+		// Set SUT from config
+		if ( isset( $config->parsed_config['sut'] ) ) {
+			$env_info->sut      = $config->parsed_config['sut'];
+			$env_info->sut_slug = $config->parsed_config['sut']['slug'];
+			$env_info->sut_type = $config->parsed_config['sut']['type'];
+		}
+
 		if ( ! empty( $env_config['extension_set'] ) ) {
 			$env_info              = App::make( ExtensionSetResolver::class )->resolve( $env_info, [ 'overrides' => [ 'extension_set' => $env_config['extension_set'] ] ] );
 			$env_config['plugins'] = array_merge( $env_config['plugins'], $env_info->plugins );
@@ -250,10 +292,9 @@ class EnvironmentHandler {
 		if ( ! empty( $woo_version ) ) {
 			$woo_plugin                      = EnvironmentVersionResolver::resolve_woo( $woo_version, $final_plugins );
 			$woo_plugin->added_automatically = 'Added due to specified WooCommerce version';
-			// Preserve original 'from' setting
-			$woo_plugin->from   = 'wporg';
-			$woo_plugin->source = 'https://downloads.wordpress.org/plugin/woocommerce.8.0.0.zip';
-			$final_plugins[]    = $woo_plugin;
+			$woo_plugin->from                = 'wporg';
+			$woo_plugin->source              = 'https://downloads.wordpress.org/plugin/woocommerce.8.0.0.zip';
+			$final_plugins[]                 = $woo_plugin;
 		}
 
 		$env_config['volumes'] = App::make( EnvVolumeParser::class )->parse_volumes( $env_config['volumes'] ?: [] );

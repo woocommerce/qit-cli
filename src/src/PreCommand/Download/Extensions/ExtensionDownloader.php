@@ -29,16 +29,6 @@ class ExtensionDownloader {
 		$this->extension_zip = $extension_zip;
 	}
 
-	/**
-	 * Downloads and extracts extensions, setting up volume mappings.
-	 *
-	 * @param EnvInfo $env_info
-	 * @param string $cache_dir
-	 * @param array<Extension> $plugins
-	 * @param array<Extension> $themes
-	 *
-	 * @return void
-	 */
 	public function download( EnvInfo $env_info, string $cache_dir, array $plugins = [], array $themes = [] ): void {
 		$extensions = $this->categorize_extensions( $plugins, $themes );
 
@@ -85,6 +75,8 @@ class ExtensionDownloader {
 
 			clearstatcache( true, $e->downloaded_source );
 
+			$is_sut = $env_info instanceof E2EEnvInfo && isset( $env_info->sut['slug'] ) && $e->slug === $env_info->sut['slug'];
+
 			if ( is_file( $e->downloaded_source ) ) {
 				$this->extension_zip->extract_zip( $e->downloaded_source, "$env_info->temporary_env/html/wp-content/{$e->type}s" );
 				if ( ! file_exists( "$env_info->temporary_env/html/wp-content/{$e->type}s/{$e->slug}" ) ) {
@@ -94,10 +86,29 @@ class ExtensionDownloader {
 				if ( ! isset( $e->entrypoint ) ) {
 					throw new \RuntimeException( "We could not find a valid entrypoint for the zip extracted at '{$e->downloaded_source}'." );
 				}
-				if ( getenv( 'QIT_SUT' ) === $e->slug && $env_info instanceof E2EEnvInfo ) {
+				if ( $is_sut ) {
 					$env_info->sut_entrypoint = $e->entrypoint;
 					$env_info->sut_slug       = $e->slug;
 					$env_info->sut_path       = "$env_info->temporary_env/html/wp-content/{$e->type}s/{$e->slug}";
+					// Set full sut config
+					$env_info->sut = [
+						'type'   => $e->type,
+						'slug'   => $e->slug,
+						'source' => [
+							'type' => $e->from,
+						],
+					];
+					if ( $e->from === 'local' || $e->from === 'zip' ) {
+						$env_info->sut['source']['path'] = $e->downloaded_source;
+					} elseif ( $e->from === 'url' ) {
+						$env_info->sut['source']['url'] = $e->source;
+					} elseif ( $e->from === 'build' ) {
+						$env_info->sut['source']['output']  = $e->downloaded_source;
+						$env_info->sut['source']['command'] = 'mocked-build-command'; // Adjust as needed
+					} elseif ( $e->from === 'wporg' || $e->from === 'wccom' ) {
+						$env_info->sut['source']['slug']    = $e->slug;
+						$env_info->sut['source']['version'] = $e->version ?? 'stable';
+					}
 				}
 				$env_info->volumes["/var/www/html/wp-content/{$e->type}s/{$e->slug}"] = "$env_info->temporary_env/html/wp-content/{$e->type}s/{$e->slug}";
 			} elseif ( is_dir( $e->downloaded_source ) ) {
@@ -111,10 +122,29 @@ class ExtensionDownloader {
 				if ( ! isset( $e->entrypoint ) ) {
 					throw new \RuntimeException( "We could not find a valid entrypoint for the directory '{$e->downloaded_source}'." );
 				}
-				if ( getenv( 'QIT_SUT' ) === $e->slug && $env_info instanceof E2EEnvInfo ) {
+				if ( $is_sut ) {
 					$env_info->sut_entrypoint = $e->entrypoint;
 					$env_info->sut_slug       = $e->slug;
 					$env_info->sut_path       = $e->downloaded_source;
+					// Set full sut config
+					$env_info->sut = [
+						'type'   => $e->type,
+						'slug'   => $e->slug,
+						'source' => [
+							'type' => $e->from,
+						],
+					];
+					if ( $e->from === 'local' || $e->from === 'zip' ) {
+						$env_info->sut['source']['path'] = $e->downloaded_source;
+					} elseif ( $e->from === 'url' ) {
+						$env_info->sut['source']['url'] = $e->source;
+					} elseif ( $e->from === 'build' ) {
+						$env_info->sut['source']['output']  = $e->downloaded_source;
+						$env_info->sut['source']['command'] = 'mocked-build-command'; // Adjust as needed
+					} elseif ( $e->from === 'wporg' || $e->from === 'wccom' ) {
+						$env_info->sut['source']['slug']    = $e->slug;
+						$env_info->sut['source']['version'] = $e->version ?? 'stable';
+					}
 				}
 			} else {
 				throw new \RuntimeException( 'Download failed for ' . $e->slug );
@@ -122,14 +152,6 @@ class ExtensionDownloader {
 		}
 	}
 
-	/**
-	 * Categorizes extensions by their 'from' property and assigns handlers.
-	 *
-	 * @param array<Extension> $plugins
-	 * @param array<Extension> $themes
-	 *
-	 * @return array<Extension>
-	 */
 	public function categorize_extensions( array $plugins, array $themes ): array {
 		$categorized_extensions = [];
 
@@ -186,9 +208,6 @@ class ExtensionDownloader {
 		return $categorized_extensions;
 	}
 
-	/**
-	 * Validate if the given string is a valid slug.
-	 */
 	public static function is_valid_plugin_slug( string $slug ): bool {
 		return preg_match( '/^[a-z0-9_]+([-\.][a-z0-9_]+)*$/', $slug );
 	}

@@ -12,7 +12,7 @@ class SourceParser extends AbstractConfigParser {
 			throw new \RuntimeException( 'Source must contain a "type" key with a string value.' );
 		}
 
-		$valid_types = [ 'build', 'directory', 'url', 'zip' ];
+		$valid_types = [ 'build', 'directory', 'url', 'zip', 'local', 'wccom', 'wporg' ];
 		if ( ! in_array( $value['type'], $valid_types, true ) ) {
 			throw new \RuntimeException( "Invalid source type '{$value['type']}'. Must be one of: " . implode( ', ', $valid_types ) );
 		}
@@ -30,8 +30,9 @@ class SourceParser extends AbstractConfigParser {
 				}
 				break;
 			case 'directory':
+			case 'local':
 				if ( ! isset( $value['path'] ) || ! is_string( $value['path'] ) || empty( $value['path'] ) ) {
-					throw new \RuntimeException( 'Directory source must contain a non-empty "path" string.' );
+					throw new \RuntimeException( 'Directory or local source must contain a non-empty "path" string.' );
 				}
 				break;
 			case 'url':
@@ -48,6 +49,15 @@ class SourceParser extends AbstractConfigParser {
 				}
 				if ( ! preg_match( '/\.zip$/', $value['path'] ) ) {
 					throw new \RuntimeException( 'Zip source path must be a .zip file.' );
+				}
+				break;
+			case 'wccom':
+			case 'wporg':
+				if ( ! isset( $value['slug'] ) || ! is_string( $value['slug'] ) || empty( $value['slug'] ) ) {
+					throw new \RuntimeException( 'wccom or wporg source must contain a non-empty "slug" string.' );
+				}
+				if ( isset( $value['version'] ) && ( ! is_string( $value['version'] ) || empty( $value['version'] ) ) ) {
+					throw new \RuntimeException( 'If version is provided for wccom or wporg source, it must be a non-empty string.' );
 				}
 				break;
 		}

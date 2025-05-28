@@ -11,7 +11,7 @@ use QIT_CLI\PreCommand\ConfigFile\Parsers\SutParser;
 use QIT_CLI\PreCommand\ConfigFile\Parsers\TestParser;
 
 class ConfigParser {
-	private array $parsed_config = [];
+	public array $parsed_config = [];
 
 	public function __construct( string $config_file ) {
 		if ( ! file_exists( $config_file ) ) {

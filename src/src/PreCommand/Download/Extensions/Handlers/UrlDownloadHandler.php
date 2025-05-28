@@ -9,7 +9,7 @@ use QIT_CLI\RequestBuilder;
 use QIT_CLI\Zipper;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ZipDownloadHandler extends Handler {
+class UrlDownloadHandler extends Handler {
 	public function __construct( OutputInterface $output ) {
 		parent::__construct( $output );
 	}

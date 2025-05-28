@@ -5,8 +5,7 @@ namespace QIT_CLI_Tests\PreCommand;
 use QIT_CLI\App;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Environment\Extension;
-use QIT_CLI\PreCommand\Download\Extensions\ExtensionDownloader;
-use QIT_CLI\PreCommand\Download\Extensions\DependencyParser;
+use QIT_CLI\PreCommand\ConfigFile\ConfigParser;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use PHPUnit\Framework\TestCase;
@@ -24,10 +23,6 @@ abstract class PreCommandTestCase extends TestCase {
 			chmod( $this->temp_dir, 0777 );
 		}
 		file_put_contents( '/tmp/qit/debug.log', "PreCommandTest temp_dir set to: {$this->temp_dir}\n", FILE_APPEND );
-
-		// Mock ExtensionDownloader and DependencyParser
-		$this->mockExtensionDownloader();
-		$this->mockDependencyParser();
 	}
 
 	protected function tearDown(): void {
@@ -69,6 +64,55 @@ abstract class PreCommandTestCase extends TestCase {
 		$config_path = $this->temp_dir . '/qit_' . uniqid() . '.json';
 		file_put_contents( $config_path, json_encode( $config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 		$this->to_delete[] = $config_path;
+
+		// Validate config with ConfigParser
+		try {
+			$config_parser = new ConfigParser( $config_path );
+		} catch ( \RuntimeException $e ) {
+			if ( $expect_failure ) {
+				return $e->getMessage();
+			}
+			throw $e;
+		}
+
+		// Mock SUT remote requests and add to plugins/themes
+		if ( isset( $config['sut']['slug'] ) ) {
+			$source_path = null;
+			$from        = 'local';
+			$source_type = $config['sut']['source']['type'] ?? null;
+			if ( $source_type ) {
+				if ( $source_type === 'directory' || $source_type === 'zip' || $source_type === 'local' ) {
+					$source_path = $config['sut']['source']['path'] ?? null;
+				} elseif ( $source_type === 'url' ) {
+					$source_path = $config['sut']['source']['url'] ?? null;
+					$from        = 'url';
+				} elseif ( $source_type === 'build' ) {
+					$source_path = $config['sut']['source']['output'] ?? null;
+					$from        = 'build';
+				} elseif ( $source_type === 'wporg' ) {
+					$from        = 'wporg';
+					$source_path = "https://downloads.wordpress.org/plugin/{$config['sut']['slug']}.zip";
+				} elseif ( $source_type === 'wccom' ) {
+					$from        = 'wccom';
+					$source_path = "https://qit.woo.com/downloads/{$config['sut']['slug']}.zip";
+				}
+			}
+			$this->mockExtension(
+				$config['sut']['slug'],
+				$config['sut']['type'],
+				'1.0.0',
+				$from,
+				$source_path
+			);
+			// Add SUT to plugins or themes
+			if ( $config['sut']['type'] === 'plugin' ) {
+				$config['environments']['default']['plugins'][] = $config['sut']['slug'];
+			} else {
+				$config['environments']['default']['themes'][] = $config['sut']['slug'];
+			}
+			// Update config file with modified plugins/themes
+			file_put_contents( $config_path, json_encode( $config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+		}
 
 		putenv( 'QIT_TESTING_ENV_INFO=1' );
 		$command = App::make( UpEnvironmentCommand::class );
@@ -283,22 +327,23 @@ abstract class PreCommandTestCase extends TestCase {
 		);
 	}
 
-	protected function mockExtension( string $slug, string $type, string $version, string $from = 'wporg' ): void {
+	protected function mockExtension( string $slug, string $type, string $version, string $from = 'wporg', ?string $source_path = null ): void {
 		$cache_dir  = '/tmp/qit/cache';
-		$cache_file = "$cache_dir/$type/$slug-$version.zip";
+		$cache_file = $from === 'local' && $source_path ? $source_path : "$cache_dir/$type/$slug-$version.zip";
 		$entrypoint = $type === 'plugin' ? "$slug/$slug.php" : "$slug/style.css";
+		$source     = $from === 'wporg' ? "https://downloads.wordpress.org/$type/$slug.$version.zip" : ( $from === 'local' ? null : "https://qit.woo.com/downloads/$slug.zip" );
 
 		// Mock API response
 		if ( $from === 'wporg' ) {
-			$download_link = "https://downloads.wordpress.org/$type/$slug.$version.zip";
 			if ( $type === 'plugin' ) {
-				$this->mockWpOrgPlugin( $slug, $version, $download_link );
+				$this->mockWpOrgPlugin( $slug, $version, $source );
 			} else {
-				$this->mockWpOrgTheme( $slug, $version, $download_link );
+				$this->mockWpOrgTheme( $slug, $version, $source );
 			}
 		} elseif ( $from === 'wccom' ) {
-			$download_link = "https://qit.woo.com/downloads/$slug.zip";
-			$this->mockWooComDownloadUrls( [ $slug => $download_link ] );
+			$this->mockWooComDownloadUrls( [ $slug => $source ] );
+		} elseif ( $from === 'url' ) {
+			$this->mockDownloadUrl( $source_path, 'mocked-zip-content' );
 		}
 
 		// Store extension mock data
@@ -309,37 +354,7 @@ abstract class PreCommandTestCase extends TestCase {
 			'from'              => $from,
 			'downloaded_source' => $cache_file,
 			'entrypoint'        => $entrypoint,
+			'source'            => $source,
 		] );
-	}
-
-	protected function mockExtensionDownloader(): void {
-		$downloaderMock = $this->createMock( ExtensionDownloader::class );
-		$downloaderMock->method( 'download' )->willReturnCallback( function ( $env_info, $cache_dir, $plugins, $themes ) {
-			foreach ( array_merge( $plugins, $themes ) as $ext ) {
-				$mock_data = App::getVar( "mock_extension_{$ext->slug}" );
-				if ( $mock_data ) {
-					$ext->downloaded_source                                                   = $mock_data['downloaded_source'];
-					$ext->entrypoint                                                          = $mock_data['entrypoint'];
-					$ext->version                                                             = $mock_data['version'];
-					$env_info->volumes["/var/www/html/wp-content/{$ext->type}s/{$ext->slug}"] = "$env_info->temporary_env/html/wp-content/{$ext->type}s/{$ext->slug}";
-					if ( getenv( 'QIT_SUT' ) === $ext->slug && $env_info instanceof \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo ) {
-						$env_info->sut_entrypoint = $ext->entrypoint;
-						$env_info->sut_slug       = $ext->slug;
-						$env_info->sut_path       = "$env_info->temporary_env/html/wp-content/{$ext->type}s/{$ext->slug}";
-					}
-				}
-			}
-		} );
-		App::bind( ExtensionDownloader::class, function () use ( $downloaderMock ) {
-			return $downloaderMock;
-		} );
-	}
-
-	protected function mockDependencyParser(): void {
-		$parserMock = $this->createMock( DependencyParser::class );
-		$parserMock->method( 'parse' )->willReturn( [] );
-		App::bind( DependencyParser::class, function () use ( $parserMock ) {
-			return $parserMock;
-		} );
 	}
 }
