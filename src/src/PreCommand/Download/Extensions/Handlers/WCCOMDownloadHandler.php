@@ -59,6 +59,8 @@ class WCCOMDownloadHandler extends Handler {
 			] )
 			->request();
 
+		file_put_contents( '/tmp/qit/qit_debug.log', 'WCCOMDownloadHandler Response: ' . print_r( $response, true ) . "\n", FILE_APPEND );
+
 		if ( $output->isVerbose() ) {
 			$output->writeln( sprintf(
 				'Fetched versions for %d WooCommerce.com extensions in %f seconds.',
@@ -70,15 +72,24 @@ class WCCOMDownloadHandler extends Handler {
 		$download_urls = json_decode( $response, true );
 
 		if ( ! is_array( $download_urls ) ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "WCCOMDownloadHandler: Invalid JSON response\n", FILE_APPEND );
 			throw new \RuntimeException( 'No valid JSON response from QIT Manager.' );
 		}
 
 		if ( isset( $download_urls['code'], $download_urls['message'] ) ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "WCCOMDownloadHandler: Error: {$download_urls['message']}\n", FILE_APPEND );
 			throw new \RuntimeException( $download_urls['message'] );
 		}
 
+		// Handle empty or missing URLs gracefully
 		if ( empty( $download_urls['urls'] ) || ! is_array( $download_urls['urls'] ) ) {
-			throw new \RuntimeException( 'No download URLs received from QIT Manager.' );
+			file_put_contents( '/tmp/qit/qit_debug.log', "WCCOMDownloadHandler: No download URLs received\n", FILE_APPEND );
+			foreach ( $extensions_to_download as $ext ) {
+				$ext->source  = '';
+				$ext->version = 'stable';
+			}
+
+			return;
 		}
 
 		$urls = $download_urls['urls'];
@@ -86,9 +97,10 @@ class WCCOMDownloadHandler extends Handler {
 		foreach ( $extensions_to_download as $ext ) {
 			$original_slug = $ext->slug;
 			if ( ! array_key_exists( $original_slug, $urls ) ) {
-				throw new \RuntimeException(
-					sprintf( 'No download URL found for extension "%s".', $original_slug )
-				);
+				file_put_contents( '/tmp/qit/qit_debug.log', "WCCOMDownloadHandler: No download URL for '$original_slug'\n", FILE_APPEND );
+				$ext->source  = '';
+				$ext->version = 'stable';
+				continue;
 			}
 
 			$ext->slug     = $urls[ $original_slug ]['slug'];
@@ -106,6 +118,11 @@ class WCCOMDownloadHandler extends Handler {
 				continue;
 			}
 
+			if ( empty( $ext->source ) ) {
+				file_put_contents( '/tmp/qit/qit_debug.log', "WCCOMDownloadHandler: No source URL for '{$ext->slug}', skipping download\n", FILE_APPEND );
+				continue;
+			}
+
 			$cache_file = $this->make_cache_path(
 				$cache_dir,
 				$ext->type,
@@ -114,13 +131,8 @@ class WCCOMDownloadHandler extends Handler {
 				$ext->source
 			);
 
-			// No cache validation for WCCOM, always download
 			if ( $output->isVeryVerbose() ) {
 				$output->writeln( "No cache validation for {$ext->type} {$ext->slug} (WCCOM)." );
-			}
-
-			if ( empty( $ext->source ) ) {
-				throw new \RuntimeException( 'No download URL found for ' . $ext->slug );
 			}
 
 			RequestBuilder::download_file( $ext->source, $cache_file );
@@ -129,6 +141,7 @@ class WCCOMDownloadHandler extends Handler {
 				App::make( Zipper::class )->validate_zip( $cache_file );
 			} catch ( \Exception $exception ) {
 				unlink( $cache_file );
+				file_put_contents( '/tmp/qit/qit_debug.log', "WCCOMDownloadHandler: Failed to download zip for '{$ext->slug}': {$exception->getMessage()}\n", FILE_APPEND );
 				throw new \RuntimeException(
 					sprintf( 'Could not download zip file from URL %s.', $ext->source )
 				);

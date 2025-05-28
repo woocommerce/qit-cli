@@ -23,6 +23,8 @@ abstract class EnvInfo implements \JsonSerializable {
 		'environment',
 	];
 
+	public array $extra = [];
+
 	/** @var string */
 	public string $environment;
 
@@ -110,69 +112,69 @@ abstract class EnvInfo implements \JsonSerializable {
 	/**
 	 * @param array<string,scalar|array<scalar>> $env_info_array
 	 *
-	public static function from_array( array $env_info_array ): EnvInfo {
-		switch ( $env_info_array['environment'] ?? 'e2e' ) {
-			case 'e2e':
-				$env_info = new E2EEnvInfo();
-				break;
-			default:
-				throw new \RuntimeException( 'Invalid environment type.' );
-		}
-
-		$env_info->environment   = $env_info_array['environment'] ?? 'e2e';
-		$env_info->env_id        = uniqid();
-		$env_info->temporary_env = normalize_path( Environment::get_temp_envs_dir() . $env_info->environment . '-' . $env_info->env_id );
-		$env_info->created_at    = time();
-		$env_info->status        = 'pending';
-
-		if ( ! empty( $env_info_array['tunnel'] ) ) {
-			$env_info->tunnel = true;
-		}
-
-		if ( $env_info instanceof E2EEnvInfo ) {
-			if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
-				// Environment accessible from inside Docker containers.
-				$env_info->domain = "qitenvnginx{$env_info->env_id}";
-			} else {
-				// Environment accessible from host.
-				$env_info->domain = getenv( 'QIT_DOMAIN' ) ?: 'localhost';
-			}
-		}
-
-		foreach ( $env_info_array as $key => $value ) {
-			if ( property_exists( $env_info, $key ) ) {
-				$env_info->$key = $value;
-			} else {
-				// Boilerplate options added by Symfony Console.
-				$boilerplate_keys = [
-					'json',
-					'help',
-					'quiet',
-					'verbose',
-					'version',
-					'no-interaction',
-				];
-
-				$non_overridable_keys = [
-					'env',
-					'env_file',
-				];
-
-				$handled_elsewhere_keys = [
-					'extension_set',
-				];
-
-				$ignore_keys = array_merge( $boilerplate_keys, $non_overridable_keys, $handled_elsewhere_keys );
-
-				if ( in_array( $key, $ignore_keys, true ) ) {
-					continue;
-				}
-
-				App::make( Output::class )->writeln( sprintf( '<comment>Warning: Key "%s" not found in environment info.</comment>', $key ) );
-			}
-		}
-
-		return $env_info;
-	}
+	 * public static function from_array( array $env_info_array ): EnvInfo {
+	 * switch ( $env_info_array['environment'] ?? 'e2e' ) {
+	 * case 'e2e':
+	 * $env_info = new E2EEnvInfo();
+	 * break;
+	 * default:
+	 * throw new \RuntimeException( 'Invalid environment type.' );
+	 * }
+	 *
+	 * $env_info->environment   = $env_info_array['environment'] ?? 'e2e';
+	 * $env_info->env_id        = uniqid();
+	 * $env_info->temporary_env = normalize_path( Environment::get_temp_envs_dir() . $env_info->environment . '-' . $env_info->env_id );
+	 * $env_info->created_at    = time();
+	 * $env_info->status        = 'pending';
+	 *
+	 * if ( ! empty( $env_info_array['tunnel'] ) ) {
+	 * $env_info->tunnel = true;
+	 * }
+	 *
+	 * if ( $env_info instanceof E2EEnvInfo ) {
+	 * if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
+	 * // Environment accessible from inside Docker containers.
+	 * $env_info->domain = "qitenvnginx{$env_info->env_id}";
+	 * } else {
+	 * // Environment accessible from host.
+	 * $env_info->domain = getenv( 'QIT_DOMAIN' ) ?: 'localhost';
+	 * }
+	 * }
+	 *
+	 * foreach ( $env_info_array as $key => $value ) {
+	 * if ( property_exists( $env_info, $key ) ) {
+	 * $env_info->$key = $value;
+	 * } else {
+	 * // Boilerplate options added by Symfony Console.
+	 * $boilerplate_keys = [
+	 * 'json',
+	 * 'help',
+	 * 'quiet',
+	 * 'verbose',
+	 * 'version',
+	 * 'no-interaction',
+	 * ];
+	 *
+	 * $non_overridable_keys = [
+	 * 'env',
+	 * 'env_file',
+	 * ];
+	 *
+	 * $handled_elsewhere_keys = [
+	 * 'extension_set',
+	 * ];
+	 *
+	 * $ignore_keys = array_merge( $boilerplate_keys, $non_overridable_keys, $handled_elsewhere_keys );
+	 *
+	 * if ( in_array( $key, $ignore_keys, true ) ) {
+	 * continue;
+	 * }
+	 *
+	 * App::make( Output::class )->writeln( sprintf( '<comment>Warning: Key "%s" not found in environment info.</comment>', $key ) );
+	 * }
+	 * }
+	 *
+	 * return $env_info;
+	 * }
 	 */
 }

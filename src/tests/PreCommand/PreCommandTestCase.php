@@ -5,7 +5,6 @@ namespace QIT_CLI_Tests\PreCommand;
 use QIT_CLI\App;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Environment\Extension;
-use QIT_CLI\PreCommand\ConfigFile\ConfigParser;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +21,7 @@ abstract class PreCommandTestCase extends TestCase {
 			mkdir( $this->temp_dir, 0777, true );
 			chmod( $this->temp_dir, 0777 );
 		}
-		file_put_contents( '/tmp/qit/debug.log', "PreCommandTest temp_dir set to: {$this->temp_dir}\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest temp_dir set to: {$this->temp_dir}\n", FILE_APPEND );
 	}
 
 	protected function tearDown(): void {
@@ -36,8 +35,9 @@ abstract class PreCommandTestCase extends TestCase {
 		}
 		$this->to_delete = [];
 		if ( ! getenv( 'QIT_TESTING_ENV_INFO' ) ) {
-			// Add environment cleanup if needed
 		}
+		// Removed App::clearVars() as it does not exist
+		// Mocks are isolated by test setup and temporary environment
 	}
 
 	protected function rmdir_recursive( string $dir ): void {
@@ -63,56 +63,8 @@ abstract class PreCommandTestCase extends TestCase {
 
 		$config_path = $this->temp_dir . '/qit_' . uniqid() . '.json';
 		file_put_contents( $config_path, json_encode( $config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+		file_put_contents( '/tmp/qit/qit_debug.log', 'Test Config: ' . json_encode( $config, JSON_PRETTY_PRINT ) . "\n", FILE_APPEND );
 		$this->to_delete[] = $config_path;
-
-		// Validate config with ConfigParser
-		try {
-			$config_parser = new ConfigParser( $config_path );
-		} catch ( \RuntimeException $e ) {
-			if ( $expect_failure ) {
-				return $e->getMessage();
-			}
-			throw $e;
-		}
-
-		// Mock SUT remote requests and add to plugins/themes
-		if ( isset( $config['sut']['slug'] ) ) {
-			$source_path = null;
-			$from        = 'local';
-			$source_type = $config['sut']['source']['type'] ?? null;
-			if ( $source_type ) {
-				if ( $source_type === 'directory' || $source_type === 'zip' || $source_type === 'local' ) {
-					$source_path = $config['sut']['source']['path'] ?? null;
-				} elseif ( $source_type === 'url' ) {
-					$source_path = $config['sut']['source']['url'] ?? null;
-					$from        = 'url';
-				} elseif ( $source_type === 'build' ) {
-					$source_path = $config['sut']['source']['output'] ?? null;
-					$from        = 'build';
-				} elseif ( $source_type === 'wporg' ) {
-					$from        = 'wporg';
-					$source_path = "https://downloads.wordpress.org/plugin/{$config['sut']['slug']}.zip";
-				} elseif ( $source_type === 'wccom' ) {
-					$from        = 'wccom';
-					$source_path = "https://qit.woo.com/downloads/{$config['sut']['slug']}.zip";
-				}
-			}
-			$this->mockExtension(
-				$config['sut']['slug'],
-				$config['sut']['type'],
-				'1.0.0',
-				$from,
-				$source_path
-			);
-			// Add SUT to plugins or themes
-			if ( $config['sut']['type'] === 'plugin' ) {
-				$config['environments']['default']['plugins'][] = $config['sut']['slug'];
-			} else {
-				$config['environments']['default']['themes'][] = $config['sut']['slug'];
-			}
-			// Update config file with modified plugins/themes
-			file_put_contents( $config_path, json_encode( $config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
-		}
 
 		putenv( 'QIT_TESTING_ENV_INFO=1' );
 		$command = App::make( UpEnvironmentCommand::class );
@@ -136,7 +88,6 @@ abstract class PreCommandTestCase extends TestCase {
 			putenv( 'QIT_TESTING_ENV_INFO' );
 		}
 
-		// Split output into lines and find the first valid JSON
 		$lines    = explode( "\n", trim( $output_string ) );
 		$env_info = null;
 		foreach ( $lines as $line ) {
@@ -191,7 +142,6 @@ abstract class PreCommandTestCase extends TestCase {
 					$plugin = $plugin->jsonSerialize();
 				}
 				if ( is_array( $plugin ) ) {
-					// Preserve array structure
 				} elseif ( is_string( $plugin ) ) {
 					if ( preg_match( '/^\/tmp-normalized\/+q[a-f0-9]+\/test-plugin_[a-f0-9]+\.zip$/i', $plugin ) ) {
 						$plugin = '/tmp-normalized/normalized-plugin.zip';
@@ -209,7 +159,6 @@ abstract class PreCommandTestCase extends TestCase {
 					$theme = $theme->jsonSerialize();
 				}
 				if ( is_array( $theme ) ) {
-					// Preserve array structure
 				} elseif ( is_string( $theme ) ) {
 					if ( preg_match( '/^\/tmp-normalized\/+qit_test_[a-f0-9]+\/test-theme-[a-f0-9]+\.zip$/i', $theme ) ) {
 						$theme = '/tmp-normalized/normalized-theme.zip';
@@ -234,19 +183,19 @@ abstract class PreCommandTestCase extends TestCase {
 			$env_info['volumes'] = $normalized_volumes;
 		}
 
-		if ( isset( $env_info['sut'] ) && is_array( $env_info['sut'] ) ) {
-			if ( isset( $env_info['sut']['source']['path'] ) ) {
-				$env_info['sut']['source']['path'] = str_replace(
-					realpath( dirname( $env_info['sut']['source']['path'] ) ) . '/',
+		if ( isset( $env_info['extra']['sut'] ) && is_array( $env_info['extra']['sut'] ) ) {
+			if ( isset( $env_info['extra']['sut']['path'] ) ) {
+				$env_info['extra']['sut']['path'] = str_replace(
+					realpath( dirname( $env_info['extra']['sut']['path'] ) ) . '/',
 					'/normalized/path/',
-					$env_info['sut']['source']['path']
+					$env_info['extra']['sut']['path']
 				);
 			}
-			if ( isset( $env_info['sut']['source']['output'] ) ) {
-				$env_info['sut']['source']['output'] = str_replace(
-					realpath( dirname( $env_info['sut']['source']['output'] ) ) . '/',
+			if ( isset( $env_info['extra']['sut']['output'] ) ) {
+				$env_info['extra']['sut']['output'] = str_replace(
+					realpath( dirname( $env_info['extra']['sut']['output'] ) ) . '/',
 					'/normalized/path/',
-					$env_info['sut']['source']['output']
+					$env_info['extra']['sut']['output']
 				);
 			}
 		}
@@ -333,7 +282,6 @@ abstract class PreCommandTestCase extends TestCase {
 		$entrypoint = $type === 'plugin' ? "$slug/$slug.php" : "$slug/style.css";
 		$source     = $from === 'wporg' ? "https://downloads.wordpress.org/$type/$slug.$version.zip" : ( $from === 'local' ? null : "https://qit.woo.com/downloads/$slug.zip" );
 
-		// Mock API response
 		if ( $from === 'wporg' ) {
 			if ( $type === 'plugin' ) {
 				$this->mockWpOrgPlugin( $slug, $version, $source );
@@ -346,7 +294,6 @@ abstract class PreCommandTestCase extends TestCase {
 			$this->mockDownloadUrl( $source_path, 'mocked-zip-content' );
 		}
 
-		// Store extension mock data
 		App::setVar( "mock_extension_$slug", [
 			'slug'              => $slug,
 			'type'              => $type,

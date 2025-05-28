@@ -22,7 +22,7 @@ abstract class QITCommand extends Command {
 	];
 
 	protected InputInterface $input;
-	protected ?EnvInfo $env_info    = null;
+	protected ?EnvInfo $env_info = null;
 	protected array $merged_options = [];
 
 	protected function configure(): void {
@@ -48,9 +48,12 @@ abstract class QITCommand extends Command {
 	public function execute( InputInterface $input, OutputInterface $output ): int {
 		$this->input = $input;
 		$config_file = $input->getOption( 'config' );
+		file_put_contents( '/tmp/qit/qit_debug.log', "QITCommand: Loading config file: $config_file\n", FILE_APPEND );
 		try {
 			$config = new ConfigParser( $config_file );
+			file_put_contents( '/tmp/qit/qit_debug.log', "QITCommand: Config parsed successfully\n", FILE_APPEND );
 		} catch ( \RuntimeException $e ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "QITCommand: Config parsing failed: {$e->getMessage()}\n", FILE_APPEND );
 			$output->writeln( "<error>Error loading config: {$e->getMessage()}</error>" );
 
 			return Command::FAILURE;
@@ -60,7 +63,8 @@ abstract class QITCommand extends Command {
 
 		if ( $this->needs_environment() ) {
 			$environment_handler = App::make( EnvironmentHandler::class );
-			$this->env_info      = $environment_handler->build_env_info( $input, $output, $this->merged_options, $config );
+			file_put_contents( '/tmp/qit/qit_debug.log', "QITCommand: Building environment info\n", FILE_APPEND );
+			$this->env_info = $environment_handler->build_env_info( $input, $output, $this->merged_options, $config );
 		}
 
 		if ( getenv( 'QIT_TESTING_ENV_INFO' ) && $this->env_info ) {
@@ -72,6 +76,7 @@ abstract class QITCommand extends Command {
 		try {
 			return $this->doExecute( $input, $output );
 		} catch ( \RuntimeException $e ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "QITCommand: Execution failed: {$e->getMessage()}\n", FILE_APPEND );
 			$output->writeln( "<error>{$e->getMessage()}</error>" );
 
 			return Command::FAILURE;

@@ -58,18 +58,24 @@ class EnvironmentHandler {
 						$extension = new Extension( $item, $type );
 					} elseif ( is_array( $item ) && isset( $item['slug'] ) ) {
 						$extension = new Extension( $item['slug'], $type );
-						if ( isset( $item['from'] ) ) {
-							$extension->from = $item['from'];
-						}
-						if ( isset( $item['path'] ) ) {
-							$extension->directory = $item['path'];
-						}
-						if ( isset( $item['url'] ) ) {
-							$extension->source = $item['url'];
+						if ( isset( $item['source_type'] ) ) {
+							$extension->from = $item['source_type'];
+							if ( $item['source_type'] === 'directory' ) {
+								$extension->downloaded_source = $item['path'] ?? '';
+							} elseif ( $item['source_type'] === 'zip' ) {
+								$extension->downloaded_source = $item['path'] ?? '';
+							} elseif ( $item['source_type'] === 'url' ) {
+								$extension->source = $item['url'] ?? '';
+							} elseif ( $item['source_type'] === 'build' ) {
+								$extension->downloaded_source = $item['output'] ?? '';
+							} elseif ( in_array( $item['source_type'], [ 'wporg', 'wccom' ], true ) ) {
+								$extension->version = $item['version'] ?? 'stable';
+							}
 						}
 					} elseif ( $item instanceof Extension ) {
 						$extension = $item;
 					} else {
+						file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentHandler: Invalid $mapped_key config entry: " . json_encode( $item ) . "\n", FILE_APPEND );
 						throw new \RuntimeException( "Invalid $mapped_key config entry: " . json_encode( $item ) );
 					}
 					if ( ! isset( $extension->from ) ) {
@@ -86,34 +92,45 @@ class EnvironmentHandler {
 		// Process SUT from config
 		if ( isset( $config->parsed_config['sut'] ) ) {
 			$sut_config = $config->parsed_config['sut'];
-			if ( $sut_config['type'] === 'plugin' ) {
-				$sut_extension       = new Extension( $sut_config['slug'], 'plugin' );
-				$sut_extension->from = $sut_config['source']['type'];
-				if ( $sut_config['source']['type'] === 'local' || $sut_config['source']['type'] === 'directory' ) {
-					$sut_extension->downloaded_source = $sut_config['source']['path'];
-				} elseif ( $sut_config['source']['type'] === 'zip' || $sut_config['source']['type'] === 'build' ) {
-					$sut_extension->downloaded_source = $sut_config['source']['path'] ?? $sut_config['source']['output'];
-				} elseif ( $sut_config['source']['type'] === 'url' ) {
-					$sut_extension->source = $sut_config['source']['url'];
-				} elseif ( $sut_config['source']['type'] === 'wporg' || $sut_config['source']['type'] === 'wccom' ) {
-					$sut_extension->from    = $sut_config['source']['type'];
-					$sut_extension->version = $sut_config['source']['version'] ?? 'stable';
+			file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentHandler: Processing SUT: " . print_r( $sut_config, true ) . "\n", FILE_APPEND );
+			$source_type = $sut_config['source_type'] ?? '';
+			file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentHandler: SUT source_type: $source_type\n", FILE_APPEND );
+
+			$target_key          = $sut_config['type'] === 'plugin' ? 'plugins' : 'themes';
+			$existing_extensions = $env_config[ $target_key ] ?? [];
+			$existing_index      = array_search( $sut_config['slug'], array_map( fn( $e ) => $e->slug, $existing_extensions ), true );
+
+			if ( $existing_index !== false ) {
+				// Merge SUT properties
+				$extension       = $existing_extensions[ $existing_index ];
+				$extension->from = $source_type;
+				if ( $source_type === 'directory' ) {
+					$extension->downloaded_source = $sut_config['path'] ?? '';
+				} elseif ( $source_type === 'zip' || $source_type === 'build' ) {
+					$extension->downloaded_source = $sut_config['path'] ?? $sut_config['output'] ?? '';
+				} elseif ( $source_type === 'url' ) {
+					$extension->source = $sut_config['url'] ?? '';
+				} elseif ( $source_type === 'wporg' || $source_type === 'wccom' ) {
+					$extension->version = $sut_config['version'] ?? 'stable';
 				}
-				$env_config['plugins'] = array_merge( $env_config['plugins'] ?? [], [ $sut_extension ] );
-			} elseif ( $sut_config['type'] === 'theme' ) {
-				$sut_extension       = new Extension( $sut_config['slug'], 'theme' );
-				$sut_extension->from = $sut_config['source']['type'];
-				if ( $sut_config['source']['type'] === 'local' || $sut_config['source']['type'] === 'directory' ) {
-					$sut_extension->downloaded_source = $sut_config['source']['path'];
-				} elseif ( $sut_config['source']['type'] === 'zip' || $sut_config['source']['type'] === 'build' ) {
-					$sut_extension->downloaded_source = $sut_config['source']['path'] ?? $sut_config['source']['output'];
-				} elseif ( $sut_config['source']['type'] === 'url' ) {
-					$sut_extension->source = $sut_config['source']['url'];
-				} elseif ( $sut_config['source']['type'] === 'wporg' || $sut_config['source']['type'] === 'wccom' ) {
-					$sut_extension->from    = $sut_config['source']['type'];
-					$sut_extension->version = $sut_config['source']['version'] ?? 'stable';
+				file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentHandler: Updated SUT extension: " . print_r( (array) $extension, true ) . "\n", FILE_APPEND );
+				$existing_extensions[ $existing_index ] = $extension;
+				$env_config[ $target_key ]              = $existing_extensions;
+			} else {
+				// Add new SUT extension
+				$sut_extension       = new Extension( $sut_config['slug'], $sut_config['type'] );
+				$sut_extension->from = $source_type;
+				if ( $source_type === 'directory' ) {
+					$sut_extension->downloaded_source = $sut_config['path'] ?? '';
+				} elseif ( $source_type === 'zip' || $source_type === 'build' ) {
+					$sut_extension->downloaded_source = $sut_config['path'] ?? $sut_config['output'] ?? '';
+				} elseif ( $source_type === 'url' ) {
+					$sut_extension->source = $sut_config['url'] ?? '';
+				} elseif ( $source_type === 'wporg' || $source_type === 'wccom' ) {
+					$sut_extension->version = $sut_config['version'] ?? 'stable';
 				}
-				$env_config['themes'] = array_merge( $env_config['themes'] ?? [], [ $sut_extension ] );
+				file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentHandler: Added new SUT extension: " . print_r( (array) $sut_extension, true ) . "\n", FILE_APPEND );
+				$env_config[ $target_key ][] = $sut_extension;
 			}
 		}
 
@@ -128,20 +145,37 @@ class EnvironmentHandler {
 				$seen_slugs  = array_map( fn( $p ) => is_object( $p ) ? $p->slug : $p, $env_config['plugins'] ?? [] );
 				foreach ( $cli_values as $plugin ) {
 					if ( is_object( $plugin ) && isset( $plugin->slug ) ) {
-						$slug = $plugin->slug;
-						if ( ! in_array( $slug, $seen_slugs, true ) ) {
-							$cli_plugins[] = $plugin;
-							$seen_slugs[]  = $slug;
+						$slug           = $plugin->slug;
+						$existing_index = array_search( $slug, $seen_slugs, true );
+						if ( $existing_index !== false ) {
+							// Merge properties if SUT
+							if ( isset( $config->parsed_config['sut'] ) && $config->parsed_config['sut']['slug'] === $slug ) {
+								$extension                                = $env_config['plugins'][ $existing_index ];
+								$extension->from                          = $config->parsed_config['sut']['source_type'];
+								$env_config['plugins'][ $existing_index ] = $extension;
+							}
+							continue;
 						}
+						$cli_plugins[] = $plugin;
+						$seen_slugs[]  = $slug;
 					} elseif ( is_string( $plugin ) ) {
-						$slug = $plugin;
-						if ( ! in_array( $slug, $seen_slugs, true ) ) {
-							$extension       = new Extension( $slug, 'plugin' );
-							$extension->from = 'wporg';
-							$cli_plugins[]   = $extension;
-							$seen_slugs[]    = $slug;
+						$slug           = $plugin;
+						$existing_index = array_search( $slug, $seen_slugs, true );
+						if ( $existing_index !== false ) {
+							// Merge properties if SUT
+							if ( isset( $config->parsed_config['sut'] ) && $config->parsed_config['sut']['slug'] === $slug ) {
+								$extension                                = $env_config['plugins'][ $existing_index ];
+								$extension->from                          = $config->parsed_config['sut']['source_type'];
+								$env_config['plugins'][ $existing_index ] = $extension;
+							}
+							continue;
 						}
+						$extension       = new Extension( $slug, 'plugin' );
+						$extension->from = 'wporg';
+						$cli_plugins[]   = $extension;
+						$seen_slugs[]    = $slug;
 					} else {
+						file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentHandler: CLI plugin must be a string or Extension object, got " . gettype( $plugin ) . "\n", FILE_APPEND );
 						throw new \RuntimeException( 'CLI plugin must be a string or Extension object, got ' . gettype( $plugin ) );
 					}
 				}
@@ -152,20 +186,37 @@ class EnvironmentHandler {
 				$seen_slugs = array_map( fn( $t ) => is_object( $t ) ? $t->slug : $t, $env_config['themes'] ?? [] );
 				foreach ( $cli_values as $theme ) {
 					if ( is_object( $theme ) && isset( $theme->slug ) ) {
-						$slug = $theme->slug;
-						if ( ! in_array( $slug, $seen_slugs, true ) ) {
-							$cli_themes[] = $theme;
-							$seen_slugs[] = $slug;
+						$slug           = $theme->slug;
+						$existing_index = array_search( $slug, $seen_slugs, true );
+						if ( $existing_index !== false ) {
+							// Merge properties if SUT
+							if ( isset( $config->parsed_config['sut'] ) && $config->parsed_config['sut']['slug'] === $slug ) {
+								$extension                               = $env_config['themes'][ $existing_index ];
+								$extension->from                         = $config->parsed_config['sut']['source_type'];
+								$env_config['themes'][ $existing_index ] = $extension;
+							}
+							continue;
 						}
+						$cli_themes[] = $theme;
+						$seen_slugs[] = $slug;
 					} elseif ( is_string( $theme ) ) {
-						$slug = $theme;
-						if ( ! in_array( $slug, $seen_slugs, true ) ) {
-							$extension       = new Extension( $slug, 'theme' );
-							$extension->from = 'wporg';
-							$cli_themes[]    = $extension;
-							$seen_slugs[]    = $slug;
+						$slug           = $theme;
+						$existing_index = array_search( $slug, $seen_slugs, true );
+						if ( $existing_index !== false ) {
+							// Merge properties if SUT
+							if ( isset( $config->parsed_config['sut'] ) && $config->parsed_config['sut']['slug'] === $slug ) {
+								$extension                               = $env_config['themes'][ $existing_index ];
+								$extension->from                         = $config->parsed_config['sut']['source_type'];
+								$env_config['themes'][ $existing_index ] = $extension;
+							}
+							continue;
 						}
+						$extension       = new Extension( $slug, 'theme' );
+						$extension->from = 'wporg';
+						$cli_themes[]    = $extension;
+						$seen_slugs[]    = $slug;
 					} else {
+						file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentHandler: CLI theme must be a string or Extension object, got " . gettype( $theme ) . "\n", FILE_APPEND );
 						throw new \RuntimeException( 'CLI theme must be a string or Extension object, got ' . gettype( $theme ) );
 					}
 				}
@@ -224,11 +275,10 @@ class EnvironmentHandler {
 		$env_info->created_at    = time();
 		$env_info->status        = 'pending';
 
-		// Set SUT from config
 		if ( isset( $config->parsed_config['sut'] ) ) {
-			$env_info->sut      = $config->parsed_config['sut'];
-			$env_info->sut_slug = $config->parsed_config['sut']['slug'];
-			$env_info->sut_type = $config->parsed_config['sut']['type'];
+			$env_info->extra['sut'] = $config->parsed_config['sut'];
+			$env_info->sut_slug     = $config->parsed_config['sut']['slug'];
+			$env_info->sut_type     = $config->parsed_config['sut']['type'];
 		}
 
 		if ( ! empty( $env_config['extension_set'] ) ) {
@@ -246,6 +296,8 @@ class EnvironmentHandler {
 		$final_plugins        = $env_config['plugins'];
 		$final_themes         = $env_config['themes'];
 		$php_extensions       = $env_config['php_extensions'];
+
+		file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentHandler: Preparing to download extensions: " . print_r( array_map( fn( $e ) => (array) $e, $pending_extensions ), true ) . "\n", FILE_APPEND );
 
 		while ( ! empty( $pending_extensions ) ) {
 			$current_batch      = $pending_extensions;
@@ -303,14 +355,17 @@ class EnvironmentHandler {
 			switch ( $key ) {
 				case 'php_extensions':
 					if ( ! is_array( $value ) ) {
+						file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentHandler: PHP extensions must be an array\n", FILE_APPEND );
 						throw new \RuntimeException( 'PHP extensions must be an array' );
 					}
 					$value = array_unique( array_filter( $value, 'is_string' ) );
 					foreach ( $value as $ext_name ) {
 						if ( ! preg_match( '/^[a-z0-9_-]+$/i', $ext_name ) ) {
+							file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentHandler: Invalid PHP extension name: $ext_name\n", FILE_APPEND );
 							throw new \RuntimeException( 'Invalid PHP extension name: ' . $ext_name );
 						}
 						if ( strlen( $ext_name ) > 50 ) {
+							file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentHandler: PHP extension name too long: $ext_name\n", FILE_APPEND );
 							throw new \RuntimeException( 'PHP extension name too long: ' . $ext_name );
 						}
 					}
@@ -345,7 +400,7 @@ class EnvironmentHandler {
 		$env_info->notify                  = $env_config['notify'] ?? '';
 		$env_info->env                     = $env_config['env_vars'];
 
-		file_put_contents( '/tmp/qit_debug.log', 'Final Env Info: ' . print_r( (array) $env_info, true ) . "\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit/qit_debug.log', 'EnvironmentHandler: Final Env Info: ' . print_r( (array) $env_info, true ) . "\n", FILE_APPEND );
 
 		return $env_info;
 	}
