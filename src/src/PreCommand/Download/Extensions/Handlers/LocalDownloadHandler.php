@@ -14,7 +14,6 @@ class LocalDownloadHandler extends Handler {
 	}
 
 	public function populate_extension_versions( array $extensions ): void {
-		// No-op: Version is not determined for local sources
 		file_put_contents( '/tmp/qit/qit_debug.log', "LocalDownloadHandler: Skipping version population for local extensions\n", FILE_APPEND );
 	}
 
@@ -23,11 +22,6 @@ class LocalDownloadHandler extends Handler {
 
 		foreach ( $extensions as $ext ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "LocalDownloadHandler: Processing extension '{$ext->slug}' with source_type: {$ext->from}\n", FILE_APPEND );
-
-			if ( ! empty( $ext->downloaded_source ) ) {
-				file_put_contents( '/tmp/qit/qit_debug.log', "LocalDownloadHandler: Skipping download for '{$ext->slug}' as downloaded_source is set: {$ext->downloaded_source}\n", FILE_APPEND );
-				continue;
-			}
 
 			$source_path = null;
 			if ( $ext->from === 'directory' ) {
@@ -53,6 +47,15 @@ class LocalDownloadHandler extends Handler {
 			}
 
 			if ( in_array( $ext->from, [ 'zip', 'build' ], true ) && is_file( $source_path ) && pathinfo( $source_path, PATHINFO_EXTENSION ) === 'zip' ) {
+				// Validate ZIP even if downloaded_source is set
+				try {
+					App::make( Zipper::class )->validate_zip( $source_path );
+					file_put_contents( '/tmp/qit/qit_debug.log', "LocalDownloadHandler: Validated ZIP for '{$ext->slug}' at '$source_path'\n", FILE_APPEND );
+				} catch ( \Exception $e ) {
+					file_put_contents( '/tmp/qit/qit_debug.log', "LocalDownloadHandler: Invalid ZIP for '{$ext->slug}' at '$source_path': {$e->getMessage()}\n", FILE_APPEND );
+					throw new \RuntimeException( "Invalid ZIP file: $source_path" );
+				}
+
 				$cache_file = $this->make_cache_path(
 					$cache_dir,
 					$ext->type,
@@ -64,14 +67,6 @@ class LocalDownloadHandler extends Handler {
 				if ( ! file_exists( $cache_file ) ) {
 					file_put_contents( '/tmp/qit/qit_debug.log', "LocalDownloadHandler: Copying ZIP for '{$ext->slug}' from '$source_path' to '$cache_file'\n", FILE_APPEND );
 					copy( $source_path, $cache_file );
-					try {
-						App::make( Zipper::class )->validate_zip( $cache_file );
-						file_put_contents( '/tmp/qit/qit_debug.log', "LocalDownloadHandler: Validated ZIP for '{$ext->slug}' at '$cache_file'\n", FILE_APPEND );
-					} catch ( \Exception $e ) {
-						unlink( $cache_file );
-						file_put_contents( '/tmp/qit/qit_debug.log', "LocalDownloadHandler: Invalid ZIP for '{$ext->slug}' at '$cache_file': {$e->getMessage()}\n", FILE_APPEND );
-						throw new \RuntimeException( "Invalid local zip file for '{$ext->slug}' at '$source_path': {$e->getMessage()}" );
-					}
 				}
 				$ext->downloaded_source = $cache_file;
 			} elseif ( $ext->from === 'directory' && is_dir( $source_path ) ) {

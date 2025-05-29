@@ -39,8 +39,8 @@ class ExtensionDownloader {
 		foreach ( $extensions as $extension ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionDownloader: Processing extension '{$extension->slug}' with source_type: {$extension->from}\n", FILE_APPEND );
 
-			// Skip download if downloaded_source is set for non-remote sources
-			if ( in_array( $extension->from, [ 'directory', 'zip', 'build' ], true ) && ! empty( $extension->downloaded_source ) ) {
+			// Skip download if downloaded_source is set for directory or build sources
+			if ( in_array( $extension->from, [ 'directory', 'build' ], true ) && ! empty( $extension->downloaded_source ) ) {
 				file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionDownloader: Skipping download for '{$extension->slug}' as downloaded_source is set: {$extension->downloaded_source}\n", FILE_APPEND );
 				continue;
 			}

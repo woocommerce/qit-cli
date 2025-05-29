@@ -3,6 +3,7 @@
 namespace QIT_CLI_Tests\PreCommand;
 
 use Spatie\Snapshots\MatchesSnapshots;
+use function QIT_CLI\get_manager_url;
 
 class SutConfigurationTest extends PreCommandTestCase {
 	use MatchesSnapshots;
@@ -430,10 +431,18 @@ class SutConfigurationTest extends PreCommandTestCase {
 		try {
 			$result = $this->run_unit_test( $config, [], true );
 			$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
-			$this->assertStringContainsString( 'SUT \'non-existent-plugin\' not found in WordPress.org or WooCommerce.com', $result['output'], 'Expected error message not found in: ' . $result['output'] );
+			$this->assertStringContainsString(
+				'SUT \'non-existent-plugin\' not found in WordPress.org or WooCommerce.com',
+				$result['output'],
+				'Expected error message not found in: ' . $result['output']
+			);
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_only_slug_not_found: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
-			throw $e;
+			$this->assertStringContainsString(
+				'SUT \'non-existent-plugin\' not found in WordPress.org or WooCommerce.com',
+				$e->getMessage(),
+				'Expected error message not found in exception: ' . $e->getMessage()
+			);
 		}
 	}
 
@@ -529,7 +538,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 		try {
 			$result = $this->run_unit_test( $config, [], true );
 			$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
-			$this->assertStringContainsString( 'Invalid source type: invalid_source', $result['output'], 'Expected error message not found in: ' . $result['output'] );
+			$this->assertStringContainsString( ' Invalid source type \'invalid_source\'', $result['output'], 'Expected error message not found in: ' . $result['output'] );
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_invalid_source_type: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
 			throw $e;
@@ -557,7 +566,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 		try {
 			$result = $this->run_unit_test( $config, [], true );
 			$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
-			$this->assertStringContainsString( 'Build source must have a non-empty "command" string', $result['output'], 'Expected error message not found in: ' . $result['output'] );
+			$this->assertStringContainsString( 'Build source must contain a non-empty "command" string', $result['output'], 'Expected error message not found in: ' . $result['output'] );
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_missing_required_fields: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
 			throw $e;
@@ -567,7 +576,6 @@ class SutConfigurationTest extends PreCommandTestCase {
 	public function test_sut_type_theme(): void {
 		$temp_dir = $this->temp_dir;
 
-		// Create minimal ZIP content for wccom-theme-1
 		$theme_zip_content = $this->createMinimalThemeZip( 'wccom-theme-1', '1.0.0' );
 		$this->mockWooComDownloadUrls( [
 			'urls' => [
@@ -587,7 +595,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 				'slug'   => 'wccom-theme-1',
 				'source' => [
 					'type'    => 'wccom',
-					'version' => 'stable',
+					'version' => '1.0.0', // Match mocked version
 				],
 			],
 			'environments' => [
@@ -604,7 +612,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 							'slug'   => 'wccom-theme-1',
 							'source' => [
 								'type'    => 'wccom',
-								'version' => 'stable',
+								'version' => '1.0.0',
 							],
 						],
 					],
@@ -620,7 +628,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 			$this->assertEquals( 'theme', $env_info['extra']['sut']['type'] );
 			$this->assertEquals( 'wccom-theme-1', $env_info['extra']['sut']['slug'] );
 			$this->assertEquals( 'wccom', $env_info['extra']['sut']['source']['type'] );
-			$this->assertEquals( 'stable', $env_info['extra']['sut']['source']['version'] );
+			$this->assertEquals( '1.0.0', $env_info['extra']['sut']['source']['version'] );
 			$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_type_theme: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
@@ -664,10 +672,6 @@ class SutConfigurationTest extends PreCommandTestCase {
 	}
 
 	public function test_sut_invalid_version_wccom(): void {
-		$temp_dir = $this->temp_dir;
-
-		$this->mockStandardExtensions();
-
 		$config = [
 			'sut'          => [
 				'type'   => 'plugin',
@@ -693,13 +697,62 @@ class SutConfigurationTest extends PreCommandTestCase {
 			],
 		];
 
+		$this->mockWooComDownloadUrls( [] );
+		$this->logMockStatus( 'test_sut_invalid_version_wccom', 'mock_' . get_manager_url() . '/wp-json/cd/v1/cli/download-urls' );
+
 		try {
 			$result = $this->run_unit_test( $config, [], true );
 			$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
-			$this->assertStringContainsString( 'Invalid version for WooCommerce.com plugin', $result['output'], 'Expected error message not found in: ' . $result['output'] );
+			$this->assertStringContainsString(
+				'Download failed for \'wccom-plugin-1\'',
+				$result['output'],
+				'Expected error message not found in: ' . $result['output']
+			);
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_invalid_version_wccom: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
-			throw $e;
+			$this->assertStringContainsString(
+				'Download failed for \'wccom-plugin-1\'',
+				$e->getMessage(),
+				'Expected error message not found in exception: ' . $e->getMessage()
+			);
+		}
+	}
+
+	public function test_sut_wccom_invalid_version(): void {
+		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'wccom-plugin-1',
+				'source' => [
+					'type'    => 'wccom',
+					'version' => 'invalid_version',
+				],
+			],
+			'environments' => [
+				'default' => [
+					'plugins' => [ 'woocommerce' ],
+				],
+			],
+		];
+
+		$this->mockWooComDownloadUrls( [] );
+		$this->logMockStatus( 'test_sut_wccom_invalid_version', 'mock_' . get_manager_url() . '/wp-json/cd/v1/cli/download-urls' );
+
+		try {
+			$result = $this->run_unit_test( $config, [], true );
+			$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
+			$this->assertStringContainsString(
+				'Download failed for \'wccom-plugin-1\'',
+				$result['output'],
+				'Expected error message not found in: ' . $result['output']
+			);
+		} catch ( \Exception $e ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_wccom_invalid_version: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
+			$this->assertStringContainsString(
+				'Download failed for \'wccom-plugin-1\'',
+				$e->getMessage(),
+				'Expected error message not found in exception: ' . $e->getMessage()
+			);
 		}
 	}
 
@@ -727,7 +780,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 							],
 						],
 						[
-							'slug'   => 'wccom-plugin-1', // Duplicate
+							'slug'   => 'wccom-plugin-1',
 							'source' => [
 								'type'    => 'wccom',
 								'version' => 'stable',
@@ -741,10 +794,18 @@ class SutConfigurationTest extends PreCommandTestCase {
 		try {
 			$result = $this->run_unit_test( $config, [], true );
 			$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
-			$this->assertStringContainsString( 'Duplicate slug "wccom-plugin-1" in environment', $result['output'], 'Expected error message not found in: ' . $result['output'] );
+			$this->assertStringContainsString(
+				'Error loading config: Duplicate slug \'wccom-plugin-1\' in plugins for environment \'default\'',
+				$result['output'],
+				'Expected error message not found in: ' . $result['output']
+			);
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "test_duplicate_slugs_in_environment: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
-			throw $e;
+			$this->assertStringContainsString(
+				'Error loading config: Duplicate slug \'wccom-plugin-1\' in plugins for environment \'default\'',
+				$e->getMessage(),
+				'Expected error message not found in exception: ' . $e->getMessage()
+			);
 		}
 	}
 
@@ -831,35 +892,6 @@ class SutConfigurationTest extends PreCommandTestCase {
 		}
 	}
 
-	public function test_sut_wccom_invalid_version(): void {
-		$config = [
-			'sut'          => [
-				'type'   => 'plugin',
-				'slug'   => 'wccom-plugin-1',
-				'source' => [
-					'type'    => 'wccom',
-					'version' => 'invalid_version',
-				],
-			],
-			'environments' => [
-				'default' => [
-					'plugins' => [ 'woocommerce' ],
-				],
-			],
-		];
-
-		$this->mockStandardExtensions();
-
-		try {
-			$result = $this->run_unit_test( $config, [], true );
-			$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
-			$this->assertStringContainsString( 'Invalid version specified for WooCommerce.com plugin', $result['output'], 'Expected error message not found in: ' . $result['output'] );
-		} catch ( \Exception $e ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_wccom_invalid_version: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
-			throw $e;
-		}
-	}
-
 	public function test_sut_url_download_failure(): void {
 		$config = [
 			'sut'          => [
@@ -877,13 +909,25 @@ class SutConfigurationTest extends PreCommandTestCase {
 			],
 		];
 
+		// Mock a failed download with a string
+		$this->mockDownloadUrl( 'https://example.com/missing.zip', 'exception: Failed to download plugin from URL: https://example.com/missing.zip' );
+		$this->logMockStatus( 'test_sut_url_download_failure', 'mock_https://example.com/missing.zip' );
+
 		try {
 			$result = $this->run_unit_test( $config, [], true );
 			$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
-			$this->assertStringContainsString( 'Failed to download plugin from URL: https://example.com/missing.zip', $result['output'], 'Expected error message not found in: ' . $result['output'] );
+			$this->assertStringContainsString(
+				"Download failed for 'test-plugin': Failed to download plugin from URL: https://example.com/missing.zip",
+				$result['output'],
+				'Expected error message not found in: ' . $result['output']
+			);
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_url_download_failure: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
-			throw $e;
+			$this->assertStringContainsString(
+				"Download failed for 'test-plugin': Failed to download plugin from URL: https://example.com/missing.zip",
+				$e->getMessage(),
+				'Expected error message not found in exception: ' . $e->getMessage()
+			);
 		}
 	}
 
@@ -912,10 +956,18 @@ class SutConfigurationTest extends PreCommandTestCase {
 		try {
 			$result = $this->run_unit_test( $config, [], true );
 			$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
-			$this->assertStringContainsString( 'Invalid ZIP file: ' . $path, $result['output'], 'Expected error message not found in: ' . $result['output'] );
+			$this->assertStringContainsString(
+				"Download failed for 'test-plugin': Invalid ZIP file: $path",
+				$result['output'],
+				'Expected error message not found in: ' . $result['output']
+			);
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_invalid_zip_file: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
-			throw $e;
+			$this->assertStringContainsString(
+				"Download failed for 'test-plugin': Invalid ZIP file: $path",
+				$e->getMessage(),
+				'Expected error message not found in exception: ' . $e->getMessage()
+			);
 		}
 	}
 

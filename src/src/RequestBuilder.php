@@ -153,6 +153,12 @@ class RequestBuilder {
 				throw new \LogicException( 'No mock found for ' . $this->url );
 			}
 
+			// Convert error strings to exceptions
+			if ( is_string( $mocked ) && strpos( $mocked, 'exception: ' ) === 0 ) {
+				$error_message = substr( $mocked, strlen( 'exception: ' ) );
+				throw new \RuntimeException( $error_message );
+			}
+
 			App::setVar( 'mocked_request', $this->to_array() );
 
 			return $mocked;
@@ -370,6 +376,12 @@ class RequestBuilder {
 			$mocked = App::getVar( 'mock_' . $url );
 			if ( is_null( $mocked ) ) {
 				throw new \LogicException( 'No mock found for ' . $url );
+			}
+
+			// Convert error strings to exceptions
+			if ( is_string( $mocked ) && strpos( $mocked, 'exception: ' ) === 0 ) {
+				$error_message = substr( $mocked, strlen( 'exception: ' ) );
+				throw new \RuntimeException( $error_message );
 			}
 
 			// Write mock response to file

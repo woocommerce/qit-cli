@@ -61,13 +61,13 @@ class EnvironmentHandler {
 						if ( isset( $item['source'] ) && is_array( $item['source'] ) ) {
 							$extension->from = $item['source']['type'] ?? 'wporg';
 							if ( $extension->from === 'directory' ) {
-								$extension->downloaded_source = $item['source']['path'] ?? '';
+								$extension->directory = $item['source']['path'] ?? '';
 							} elseif ( $extension->from === 'zip' ) {
-								$extension->downloaded_source = $item['source']['path'] ?? '';
+								$extension->source = $item['source']['path'] ?? '';
 							} elseif ( $extension->from === 'url' ) {
 								$extension->source = $item['source']['url'] ?? '';
 							} elseif ( $extension->from === 'build' ) {
-								$extension->downloaded_source = $item['source']['output'] ?? '';
+								$extension->source = $item['source']['output'] ?? '';
 							} elseif ( in_array( $extension->from, [ 'wporg', 'wccom' ], true ) ) {
 								$extension->version = $item['source']['version'] ?? 'stable';
 							}
@@ -105,9 +105,9 @@ class EnvironmentHandler {
 				$extension       = $existing_extensions[ $existing_index ];
 				$extension->from = $source_type;
 				if ( $source_type === 'directory' ) {
-					$extension->downloaded_source = $sut_config['source']['path'] ?? '';
+					$extension->directory = $sut_config['source']['path'] ?? '';
 				} elseif ( $source_type === 'zip' || $source_type === 'build' ) {
-					$extension->downloaded_source = $sut_config['source']['path'] ?? $sut_config['source']['output'] ?? '';
+					$extension->source = $sut_config['source']['path'] ?? $sut_config['source']['output'] ?? '';
 				} elseif ( $source_type === 'url' ) {
 					$extension->source = $sut_config['source']['url'] ?? '';
 				} elseif ( $source_type === 'wporg' || $source_type === 'wccom' ) {
@@ -121,9 +121,9 @@ class EnvironmentHandler {
 				$sut_extension       = new Extension( $sut_config['slug'], $sut_config['type'] );
 				$sut_extension->from = $source_type;
 				if ( $source_type === 'directory' ) {
-					$sut_extension->downloaded_source = $sut_config['source']['path'] ?? '';
+					$sut_extension->directory = $sut_config['source']['path'] ?? '';
 				} elseif ( $source_type === 'zip' || $source_type === 'build' ) {
-					$sut_extension->downloaded_source = $sut_config['source']['path'] ?? $sut_config['source']['output'] ?? '';
+					$sut_extension->source = $sut_config['source']['path'] ?? $sut_config['source']['output'] ?? '';
 				} elseif ( $source_type === 'url' ) {
 					$sut_extension->source = $sut_config['source']['url'] ?? '';
 				} elseif ( $source_type === 'wporg' || $source_type === 'wccom' ) {
@@ -302,6 +302,8 @@ class EnvironmentHandler {
 		while ( ! empty( $pending_extensions ) ) {
 			$current_batch      = $pending_extensions;
 			$pending_extensions = [];
+
+			file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentHandler: Current batch for download: " . print_r( array_map( fn( $e ) => (array) $e, $current_batch ), true ) . "\n", FILE_APPEND );
 
 			$extension_downloader->download( $env_info, $cache_dir, array_filter( $current_batch, fn( $e ) => $e->type === 'plugin' ), array_filter( $current_batch, fn( $e ) => $e->type === 'theme' ) );
 

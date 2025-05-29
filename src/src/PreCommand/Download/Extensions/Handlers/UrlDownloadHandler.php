@@ -47,13 +47,19 @@ class UrlDownloadHandler extends Handler {
 				}
 			}
 
-			RequestBuilder::download_file( $ext->source, $cache_file );
+			try {
+				RequestBuilder::download_file( $ext->source, $cache_file );
+			} catch ( \Exception $e ) {
+				file_put_contents( '/tmp/qit/qit_debug.log', "UrlDownloadHandler: Download failed for '{$ext->slug}' from {$ext->source}: {$e->getMessage()}\n", FILE_APPEND );
+				throw new \RuntimeException( "Failed to download {$ext->type} from URL: {$ext->source}" );
+			}
 
 			try {
 				App::make( Zipper::class )->validate_zip( $cache_file );
-			} catch ( \Exception $exception ) {
+			} catch ( \Exception $e ) {
 				unlink( $cache_file );
-				throw new \RuntimeException( sprintf( 'Could not download zip file from URL %s.', $ext->source ) );
+				file_put_contents( '/tmp/qit/qit_debug.log', "UrlDownloadHandler: Invalid ZIP for '{$ext->slug}' from {$ext->source}: {$e->getMessage()}\n", FILE_APPEND );
+				throw new \RuntimeException( "Invalid ZIP file downloaded from URL: {$ext->source}" );
 			}
 
 			$ext->downloaded_source = $cache_file;
