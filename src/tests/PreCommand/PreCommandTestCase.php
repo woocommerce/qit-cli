@@ -13,6 +13,8 @@ use function QIT_CLI\get_manager_url;
 abstract class PreCommandTestCase extends TestCase {
 	protected $temp_dir;
 	protected $to_delete = [];
+	protected $to_reset = []; // New list for mock keys
+	protected $non_normalized_env_info = null;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -22,6 +24,8 @@ abstract class PreCommandTestCase extends TestCase {
 				mkdir( $this->temp_dir, 0777, true );
 				chmod( $this->temp_dir, 0777 );
 			}
+			$this->non_normalized_env_info = null;
+			$this->to_reset                = []; // Reset mock keys
 			file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: setUp temp_dir set to: {$this->temp_dir}\n", FILE_APPEND );
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: setUp exception: " . $e->getMessage() . "\n", FILE_APPEND );
@@ -39,6 +43,12 @@ abstract class PreCommandTestCase extends TestCase {
 				}
 			}
 			$this->to_delete = [];
+			// Clear mocks
+			foreach ( $this->to_reset as $key ) {
+				App::offsetUnset( $key );
+			}
+			$this->to_reset                = [];
+			$this->non_normalized_env_info = null;
 			if ( ! getenv( 'QIT_TESTING_ENV_INFO' ) ) {
 				// Add environment cleanup logic if needed
 			}
@@ -67,6 +77,7 @@ abstract class PreCommandTestCase extends TestCase {
 	}
 
 	protected function run_unit_test( array $config, array $cli_args = [], bool $expect_failure = false ) {
+		$this->non_normalized_env_info = null;
 		if ( empty( $this->temp_dir ) || ! is_dir( $this->temp_dir ) ) {
 			throw new \RuntimeException( 'temp_dir is not initialized. Ensure parent::setUp() is called.' );
 		}
@@ -115,10 +126,150 @@ abstract class PreCommandTestCase extends TestCase {
 
 			$this->assertIsArray( $env_info, "Invalid JSON output: $output_string" );
 
-			return $this->normalize_env_info( $env_info );
+			// Store non-normalized env_info
+			$this->non_normalized_env_info = $env_info;
+			$normalized_env_info           = $this->normalize_env_info( $env_info );
+
+			return $normalized_env_info;
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: run_unit_test exception: " . $e->getMessage() . "\n", FILE_APPEND );
 			throw $e;
+		}
+	}
+
+	protected function get_non_normalized_output(): ?array {
+		return $this->non_normalized_env_info;
+	}
+
+	protected function mockWpOrgPlugin( string $slug, string $version, string $download_link, array $requires_plugins = [] ): void {
+		$key = sprintf( 'mock_%s', "https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]={$slug}" );
+		App::setVar( $key, json_encode( [
+			'slug'             => $slug,
+			'version'          => $version,
+			'download_link'    => $download_link,
+			'requires_plugins' => $requires_plugins,
+		] ) );
+		$this->to_reset[] = $key; // Track mock key
+	}
+
+	protected function mockWpOrgTheme( string $slug, string $version, string $download_link ): void {
+		$key = sprintf( 'mock_%s', "https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]={$slug}" );
+		App::setVar( $key, json_encode( [
+			'slug'          => $slug,
+			'version'       => $version,
+			'download_link' => $download_link,
+		] ) );
+		$this->to_reset[] = $key; // Track mock key
+	}
+
+	protected function mockWooComDependencies( array $plugins = [], array $themes = [], array $php_extensions = [] ): void {
+		$key = sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' );
+		App::setVar( $key, json_encode( [
+			'plugins'        => $plugins,
+			'themes'         => $themes,
+			'php_extensions' => $php_extensions,
+		] ) );
+		$this->to_reset[] = $key; // Track mock key
+	}
+
+	protected function mockWooComDownloadUrls( array $urls = [] ): void {
+		$key = sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/download-urls' );
+		App::setVar( $key, json_encode( $urls ) );
+		$this->to_reset[] = $key; // Track mock key
+	}
+
+	protected function mockDownloadUrl( string $url, string $response ): void {
+		$key = sprintf( 'mock_%s', $url );
+		App::setVar( $key, $response );
+		$this->to_reset[] = $key; // Track mock key
+	}
+
+	protected function mockExtension( string $slug, string $type, string $version, string $from = 'wporg', ?string $source_path = null ): void {
+		$cache_dir  = '/tmp/qit/cache';
+		$cache_file = $from === 'local' && $source_path ? $source_path : "$cache_dir/$type/$slug-$version.zip";
+		$entrypoint = $type === 'plugin' ? "$slug/$slug.php" : "$slug/style.css";
+		$source     = $from === 'wporg' ? "https://downloads.wordpress.org/$type/$slug.$version.zip" : ( $from === 'local' ? null : "https://qit.woo.com/downloads/$slug.zip" );
+
+		if ( $from === 'wporg' ) {
+			if ( $type === 'plugin' ) {
+				$this->mockWpOrgPlugin( $slug, $version, $source );
+			} else {
+				$this->mockWpOrgTheme( $slug, $version, $source );
+			}
+		} elseif ( $from === 'wccom' ) {
+			$this->mockWooComDownloadUrls( [ $slug => $source ] );
+		} elseif ( $from === 'url' ) {
+			$this->mockDownloadUrl( $source_path, 'mocked-zip-content' );
+		}
+
+		$key = "mock_extension_$slug";
+		App::setVar( $key, [
+			'slug'              => $slug,
+			'type'              => $type,
+			'version'           => $version,
+			'from'              => $from,
+			'downloaded_source' => $cache_file,
+			'entrypoint'        => $entrypoint,
+			'source'            => $source,
+		] );
+		$this->to_reset[] = $key; // Track mock key
+	}
+
+	protected function mockStandardExtensions(): void {
+		$this->mockWooComDownloadUrls( [
+			'urls' => [
+				'wccom-plugin-1' => [
+					'slug'    => 'wccom-plugin-1',
+					'version' => '1.0.0',
+					'url'     => 'https://qit.woo.com/downloads/wccom-plugin-1.zip',
+				],
+				'wccom-plugin-2' => [
+					'slug'    => 'wccom-plugin-2',
+					'version' => '1.0.0',
+					'url'     => 'https://qit.woo.com/downloads/wccom-plugin-2.zip',
+				],
+				'woocommerce'    => [
+					'slug'    => 'woocommerce',
+					'version' => '8.0.0',
+					'url'     => 'https://qit.woo.com/downloads/woocommerce.zip',
+				],
+			],
+		] );
+
+		$this->mockWpOrgPlugin( 'wporg-plugin-1', '1.0.0', 'https://downloads.wordpress.org/plugin/wporg-plugin-1.zip' );
+		$this->mockWpOrgPlugin( 'wporg-plugin-2', '1.0.0', 'https://downloads.wordpress.org/plugin/wporg-plugin-2.zip' );
+
+		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/wccom-plugin-1.zip', $this->createMinimalPluginZip( 'wccom-plugin-1', '1.0.0' ) );
+		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/wccom-plugin-2.zip', $this->createMinimalPluginZip( 'wccom-plugin-2', '1.0.0' ) );
+		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/woocommerce.zip', $this->createMinimalPluginZip( 'woocommerce', '8.0.0' ) );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/wporg-plugin-1.zip', $this->createMinimalPluginZip( 'wporg-plugin-1', '1.0.0' ) );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/wporg-plugin-2.zip', $this->createMinimalPluginZip( 'wporg-plugin-2', '1.0.0' ) );
+	}
+
+	protected function createMinimalPluginZip( string $slug, string $version ): string {
+		$filename = "{$slug}.php";
+		$content  = "<?php\n/**\n * Plugin Name: " . ucwords( str_replace( '-', ' ', $slug ) ) . "\n * Version: {$version}\n */";
+
+		$zip  = new \ZipArchive();
+		$temp = tempnam( sys_get_temp_dir(), 'zip' );
+		if ( $temp === false ) {
+			$this->fail( "Failed to create temporary file for ZIP" );
+		}
+		try {
+			if ( ! $zip->open( $temp, \ZipArchive::CREATE | \ZipArchive::OVERWRITE ) ) {
+				$this->fail( "Failed to create ZIP file at $temp" );
+			}
+			$zip->addFromString( "{$slug}/{$filename}", $content );
+			$zip->close();
+
+			$zipContent = file_get_contents( $temp );
+			if ( $zipContent === false ) {
+				$this->fail( "Failed to read ZIP content from $temp" );
+			}
+
+			return $zipContent;
+		} finally {
+			unlink( $temp );
 		}
 	}
 
@@ -304,148 +455,5 @@ abstract class PreCommandTestCase extends TestCase {
 		file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: Normalized env_info: " . print_r( $env_info, true ) . "\n", FILE_APPEND );
 
 		return $env_info;
-	}
-
-	protected function mockWpOrgPlugin( string $slug, string $version, string $download_link, array $requires_plugins = [] ): void {
-		App::setVar(
-			sprintf( 'mock_%s', "https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]={$slug}" ),
-			json_encode( [
-				'slug'             => $slug,
-				'version'          => $version,
-				'download_link'    => $download_link,
-				'requires_plugins' => $requires_plugins,
-			] )
-		);
-	}
-
-	protected function mockWpOrgTheme( string $slug, string $version, string $download_link ): void {
-		App::setVar(
-			sprintf( 'mock_%s', "https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]={$slug}" ),
-			json_encode( [
-				'slug'          => $slug,
-				'version'       => $version,
-				'download_link' => $download_link,
-			] )
-		);
-	}
-
-	protected function mockWooComDependencies( array $plugins = [], array $themes = [], array $php_extensions = [] ): void {
-		App::setVar(
-			sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' ),
-			json_encode( [
-				'plugins'        => $plugins,
-				'themes'         => $themes,
-				'php_extensions' => $php_extensions,
-			] )
-		);
-	}
-
-	protected function mockWooComDownloadUrls( array $urls = [] ): void {
-		App::setVar(
-			sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/download-urls' ),
-			json_encode( $urls )
-		);
-	}
-
-	protected function mockDownloadUrl( string $url, string $response ): void {
-		App::setVar(
-			sprintf( 'mock_%s', $url ),
-			$response
-		);
-	}
-
-	protected function mockExtension( string $slug, string $type, string $version, string $from = 'wporg', ?string $source_path = null ): void {
-		$cache_dir  = '/tmp/qit/cache';
-		$cache_file = $from === 'local' && $source_path ? $source_path : "$cache_dir/$type/$slug-$version.zip";
-		$entrypoint = $type === 'plugin' ? "$slug/$slug.php" : "$slug/style.css";
-		$source     = $from === 'wporg' ? "https://downloads.wordpress.org/$type/$slug.$version.zip" : ( $from === 'local' ? null : "https://qit.woo.com/downloads/$slug.zip" );
-
-		if ( $from === 'wporg' ) {
-			if ( $type === 'plugin' ) {
-				$this->mockWpOrgPlugin( $slug, $version, $source );
-			} else {
-				$this->mockWpOrgTheme( $slug, $version, $source );
-			}
-		} elseif ( $from === 'wccom' ) {
-			$this->mockWooComDownloadUrls( [ $slug => $source ] );
-		} elseif ( $from === 'url' ) {
-			$this->mockDownloadUrl( $source_path, 'mocked-zip-content' );
-		}
-
-		App::setVar( "mock_extension_$slug", [
-			'slug'              => $slug,
-			'type'              => $type,
-			'version'           => $version,
-			'from'              => $from,
-			'downloaded_source' => $cache_file,
-			'entrypoint'        => $entrypoint,
-			'source'            => $source,
-		] );
-	}
-
-	protected function mockStandardExtensions(): void {
-		$this->mockWooComDownloadUrls( [
-			'urls' => [
-				'wccom-plugin-1' => [
-					'slug'    => 'wccom-plugin-1',
-					'version' => '1.0.0',
-					'url'     => 'https://qit.woo.com/downloads/wccom-plugin-1.zip',
-				],
-				'wccom-plugin-2' => [
-					'slug'    => 'wccom-plugin-2',
-					'version' => '1.0.0',
-					'url'     => 'https://qit.woo.com/downloads/wccom-plugin-2.zip',
-				],
-				'woocommerce'    => [
-					'slug'    => 'woocommerce',
-					'version' => '8.0.0',
-					'url'     => 'https://qit.woo.com/downloads/woocommerce.zip',
-				],
-			],
-		] );
-
-		$this->mockWpOrgPlugin(
-			'wporg-plugin-1',
-			'1.0.0',
-			'https://downloads.wordpress.org/plugin/wporg-plugin-1.zip'
-		);
-		$this->mockWpOrgPlugin(
-			'wporg-plugin-2',
-			'1.0.0',
-			'https://downloads.wordpress.org/plugin/wporg-plugin-2.zip'
-		);
-
-		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/wccom-plugin-1.zip', $this->createMinimalPluginZip( 'wccom-plugin-1', '1.0.0' ) );
-		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/wccom-plugin-2.zip', $this->createMinimalPluginZip( 'wccom-plugin-2', '1.0.0' ) );
-		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/woocommerce.zip', $this->createMinimalPluginZip( 'woocommerce', '8.0.0' ) );
-		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/wporg-plugin-1.zip', $this->createMinimalPluginZip( 'wporg-plugin-1', '1.0.0' ) );
-		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/wporg-plugin-2.zip', $this->createMinimalPluginZip( 'wporg-plugin-2', '1.0.0' ) );
-	}
-
-	protected function createMinimalPluginZip( string $slug, string $version ): string {
-		$filename = "{$slug}.php";
-		$content  = "<?php\n/**\n * Plugin Name: " . ucwords( str_replace( '-', ' ', $slug ) ) . "\n * Version: {$version}\n */";
-
-		$zip  = new \ZipArchive();
-		$temp = tempnam( sys_get_temp_dir(), 'zip' );
-		if ( $temp === false ) {
-			$this->fail( "Failed to create temporary file for ZIP" );
-		}
-		try {
-			if ( ! $zip->open( $temp, \ZipArchive::CREATE | \ZipArchive::OVERWRITE ) ) {
-				$this->fail( "Failed to create ZIP file at $temp" );
-			}
-			$zip->addFromString( "{$slug}/{$filename}", $content );
-			$zip->close();
-
-			$zipContent = file_get_contents( $temp );
-			if ( $zipContent === false ) {
-				$this->fail( "Failed to read ZIP content from $temp" );
-			}
-
-			return $zipContent;
-		} finally {
-			unlink( $temp );
-		}
 	}
 }

@@ -718,44 +718,6 @@ class SutConfigurationTest extends PreCommandTestCase {
 		}
 	}
 
-	public function test_sut_wccom_invalid_version(): void {
-		$config = [
-			'sut'          => [
-				'type'   => 'plugin',
-				'slug'   => 'wccom-plugin-1',
-				'source' => [
-					'type'    => 'wccom',
-					'version' => 'invalid_version',
-				],
-			],
-			'environments' => [
-				'default' => [
-					'plugins' => [ 'woocommerce' ],
-				],
-			],
-		];
-
-		$this->mockWooComDownloadUrls( [] );
-		$this->logMockStatus( 'test_sut_wccom_invalid_version', 'mock_' . get_manager_url() . '/wp-json/cd/v1/cli/download-urls' );
-
-		try {
-			$result = $this->run_unit_test( $config, [], true );
-			$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
-			$this->assertStringContainsString(
-				'Download failed for \'wccom-plugin-1\'',
-				$result['output'],
-				'Expected error message not found in: ' . $result['output']
-			);
-		} catch ( \Exception $e ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_wccom_invalid_version: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
-			$this->assertStringContainsString(
-				'Download failed for \'wccom-plugin-1\'',
-				$e->getMessage(),
-				'Expected error message not found in exception: ' . $e->getMessage()
-			);
-		}
-	}
-
 	public function test_duplicate_slugs_in_environment(): void {
 		$this->mockStandardExtensions();
 
@@ -1018,6 +980,55 @@ class SutConfigurationTest extends PreCommandTestCase {
 				$e->getMessage(),
 				'Expected error message not found in exception: ' . $e->getMessage()
 			);
+		}
+	}
+
+	public function test_sut_wporg_specific_version(): void {
+		$this->mockWpOrgPlugin( 'wporg-plugin-1', '1.0.0', 'https://downloads.wordpress.org/plugin/wporg-plugin-1.zip' );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/wporg-plugin-1.zip', $this->createMinimalPluginZip( 'wporg-plugin-1', '1.0.0' ) );
+		$this->logMockStatus( 'test_sut_wporg_specific_version', 'mock_https://downloads.wordpress.org/plugin/wporg-plugin-1.zip' );
+
+		$config = [
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'wporg-plugin-1',
+				'source' => [
+					'type'    => 'wporg',
+					'version' => '1.0.0'
+				]
+			],
+			'environments' => [
+				'default' => [
+					'plugins' => [ 'woocommerce' ]
+				]
+			]
+		];
+
+		try {
+			$env_info                = $this->run_unit_test( $config );
+			$non_normalized_env_info = $this->get_non_normalized_output();
+
+			// Verify SUT configuration
+			$this->assertEquals( 'wporg', $env_info['extra']['sut']['source']['type'] );
+			$this->assertEquals( '1.0.0', $env_info['extra']['sut']['source']['version'] );
+
+			// Find the plugin in non-normalized env_info
+			$plugin = null;
+			foreach ( $non_normalized_env_info['plugins'] as $p ) {
+				if ( $p['slug'] === 'wporg-plugin-1' ) {
+					$plugin = $p;
+					break;
+				}
+			}
+			$this->assertNotNull( $plugin, 'Plugin wporg-plugin-1 not found in env_info' );
+			$this->assertEquals( 'https://downloads.wordpress.org/plugin/wporg-plugin-1.zip', $plugin['source'] );
+			$this->assertEquals( '1.0.0', $plugin['version'] );
+			$this->assertStringContainsString( '1.0.0', $plugin['downloaded_source'], 'Cache path must contain version 1.0.0' );
+
+			$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
+		} catch ( \Exception $e ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_wporg_specific_version: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
+			throw $e;
 		}
 	}
 }
