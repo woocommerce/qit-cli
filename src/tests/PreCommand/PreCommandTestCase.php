@@ -16,28 +16,38 @@ abstract class PreCommandTestCase extends TestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->temp_dir = '/tmp/qit/qit_test_' . uniqid();
-		if ( ! is_dir( $this->temp_dir ) ) {
-			mkdir( $this->temp_dir, 0777, true );
-			chmod( $this->temp_dir, 0777 );
+		try {
+			$this->temp_dir = '/tmp/qit/qit_test_' . uniqid();
+			if ( ! is_dir( $this->temp_dir ) ) {
+				mkdir( $this->temp_dir, 0777, true );
+				chmod( $this->temp_dir, 0777 );
+			}
+			file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: setUp temp_dir set to: {$this->temp_dir}\n", FILE_APPEND );
+		} catch ( \Exception $e ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: setUp exception: " . $e->getMessage() . "\n", FILE_APPEND );
+			throw $e;
 		}
-		file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest temp_dir set to: {$this->temp_dir}\n", FILE_APPEND );
 	}
 
 	protected function tearDown(): void {
-		parent::tearDown();
-		foreach ( $this->to_delete as $file ) {
-			if ( is_dir( $file ) ) {
-				$this->rmdir_recursive( $file );
-			} else {
-				@unlink( $file );
+		try {
+			foreach ( $this->to_delete as $file ) {
+				if ( is_dir( $file ) ) {
+					$this->rmdir_recursive( $file );
+				} else {
+					@unlink( $file );
+				}
 			}
+			$this->to_delete = [];
+			if ( ! getenv( 'QIT_TESTING_ENV_INFO' ) ) {
+				// Add environment cleanup logic if needed
+			}
+			file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: tearDown completed for temp_dir: {$this->temp_dir}\n", FILE_APPEND );
+		} catch ( \Exception $e ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: tearDown exception: " . $e->getMessage() . "\n", FILE_APPEND );
+			throw $e;
 		}
-		$this->to_delete = [];
-		if ( ! getenv( 'QIT_TESTING_ENV_INFO' ) ) {
-		}
-		// Removed App::clearVars() as it does not exist
-		// Mocks are isolated by test setup and temporary environment
+		parent::tearDown();
 	}
 
 	protected function rmdir_recursive( string $dir ): void {
@@ -61,54 +71,60 @@ abstract class PreCommandTestCase extends TestCase {
 			throw new \RuntimeException( 'temp_dir is not initialized. Ensure parent::setUp() is called.' );
 		}
 
-		$config_path = $this->temp_dir . '/qit_' . uniqid() . '.json';
-		file_put_contents( $config_path, json_encode( $config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
-		file_put_contents( '/tmp/qit/qit_debug.log', 'Test Config: ' . json_encode( $config, JSON_PRETTY_PRINT ) . "\n", FILE_APPEND );
-		$this->to_delete[] = $config_path;
+		try {
+			$config_path = $this->temp_dir . '/qit_' . uniqid() . '.json';
+			file_put_contents( $config_path, json_encode( $config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			file_put_contents( '/tmp/qit/qit_debug.log', 'Test Config: ' . json_encode( $config, JSON_PRETTY_PRINT ) . "\n", FILE_APPEND );
+			$this->to_delete[] = $config_path;
 
-		putenv( 'QIT_TESTING_ENV_INFO=1' );
-		$command = App::make( UpEnvironmentCommand::class );
-		$input   = new ArrayInput( array_merge( [ '--config' => $config_path ], $cli_args ) );
-		$input->bind( $command->getDefinition() );
-		$output = new BufferedOutput();
+			putenv( 'QIT_TESTING_ENV_INFO=1' );
+			$command = App::make( UpEnvironmentCommand::class );
+			$input   = new ArrayInput( array_merge( [ '--config' => $config_path ], $cli_args ) );
+			$input->bind( $command->getDefinition() );
+			$output = new BufferedOutput();
 
-		$return_code   = $command->execute( $input, $output );
-		$output_string = $output->fetch();
-		file_put_contents( '/tmp/qit/qit_debug.log', "run_unit_test: Command executed with return code $return_code, output: $output_string\n", FILE_APPEND );
+			$return_code   = $command->execute( $input, $output );
+			$output_string = $output->fetch();
+			file_put_contents( '/tmp/qit/qit_debug.log', "run_unit_test: Command executed with return code $return_code, output: $output_string\n", FILE_APPEND );
 
-		if ( $expect_failure ) {
-			if ( $return_code === 0 ) {
-				$this->fail( 'Expected command failure but it succeeded' );
+			if ( $expect_failure ) {
+				if ( $return_code === 0 ) {
+					$this->fail( 'Expected command failure but it succeeded' );
+				}
+				if ( preg_match( '/<error>(.*?)<\/error>/', $output_string, $matches ) ) {
+					return [ 'exit_code' => $return_code, 'output' => $matches[1] ];
+				}
+
+				return [ 'exit_code' => $return_code, 'output' => $output_string ];
 			}
-			// Extract error message from output (e.g., "<error>Error loading config: message</error>")
-			if ( preg_match( '/<error>(.*?)<\/error>/', $output_string, $matches ) ) {
-				return [ 'exit_code' => $return_code, 'output' => $matches[1] ];
-			}
 
-			return [ 'exit_code' => $return_code, 'output' => $output_string ]; // Fallback to full output
-		}
+			$this->assertEquals( 0, $return_code, 'Command failed: ' . $output_string );
 
-		$this->assertEquals( 0, $return_code, 'Command failed: ' . $output_string );
-
-		$lines    = explode( "\n", trim( $output_string ) );
-		$env_info = null;
-		foreach ( $lines as $line ) {
-			$line = trim( $line );
-			if ( str_starts_with( $line, '{' ) ) {
-				$decoded = json_decode( $line, true );
-				if ( is_array( $decoded ) ) {
-					$env_info = $decoded;
-					break;
+			$lines    = explode( "\n", trim( $output_string ) );
+			$env_info = null;
+			foreach ( $lines as $line ) {
+				$line = trim( $line );
+				if ( str_starts_with( $line, '{' ) ) {
+					$decoded = json_decode( $line, true );
+					if ( is_array( $decoded ) ) {
+						$env_info = $decoded;
+						break;
+					}
 				}
 			}
+
+			$this->assertIsArray( $env_info, "Invalid JSON output: $output_string" );
+
+			return $this->normalize_env_info( $env_info );
+		} catch ( \Exception $e ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: run_unit_test exception: " . $e->getMessage() . "\n", FILE_APPEND );
+			throw $e;
 		}
-
-		$this->assertIsArray( $env_info, "Invalid JSON output: $output_string" );
-
-		return $this->normalize_env_info( $env_info );
 	}
 
 	protected function normalize_env_info( array $env_info ): array {
+		file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: Normalizing env_info: " . print_r( $env_info, true ) . "\n", FILE_APPEND );
+
 		// Normalize env_id
 		if ( isset( $env_info['env_id'] ) ) {
 			$env_info['env_id'] = 'ENV_ID_NORMALIZED';
@@ -161,10 +177,8 @@ abstract class PreCommandTestCase extends TestCase {
 							} elseif ( str_contains( $plugin['downloaded_source'], 'woocommerce' ) ) {
 								$plugin['downloaded_source'] = '/tmp-normalized/cache/plugin/woocommerce-8.0.0.zip';
 							} elseif ( isset( $plugin['from'] ) && $plugin['from'] === 'url' ) {
-								// Normalize URL-sourced plugin paths
 								$plugin['downloaded_source'] = '/tmp-normalized/cache/plugin/' . $plugin['slug'] . '.zip';
 							} else {
-								// Fallback for other plugins
 								$plugin['downloaded_source'] = sprintf(
 									'/tmp-normalized/cache/plugin/%s.zip',
 									$plugin['slug'] ?? 'unknown-plugin'
@@ -219,7 +233,7 @@ abstract class PreCommandTestCase extends TestCase {
 				if ( str_starts_with( $host_path, '/' ) ) {
 					$normalized_host_path = '/tmp-normalized/volume';
 				} else {
-					$normalized_host_path = $host_path; // Preserve non-path values
+					$normalized_host_path = $host_path;
 				}
 				$normalized_volumes[ $container_path ] = $normalized_host_path;
 			}
@@ -235,8 +249,9 @@ abstract class PreCommandTestCase extends TestCase {
 					$env_info['extra']['sut']['path'] = '/normalized/path/plugin.zip';
 				}
 			}
-			if ( isset( $env_info['extra']['sut']['output'] ) && str_contains( $env_info['extra']['sut']['output'], 'plugin.zip' ) ) {
-				$env_info['extra']['sut']['output'] = '/normalized/path/plugin.zip';
+			// Fix: Normalize sut.source.output
+			if ( isset( $env_info['extra']['sut']['source']['output'] ) && str_contains( $env_info['extra']['sut']['source']['output'], 'plugin.zip' ) ) {
+				$env_info['extra']['sut']['source']['output'] = '/normalized/path/plugin.zip';
 			}
 		}
 
@@ -257,6 +272,8 @@ abstract class PreCommandTestCase extends TestCase {
 				}
 			}
 		}
+
+		file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: Normalized env_info: " . print_r( $env_info, true ) . "\n", FILE_APPEND );
 
 		return $env_info;
 	}
@@ -339,7 +356,6 @@ abstract class PreCommandTestCase extends TestCase {
 	}
 
 	protected function mockStandardExtensions(): void {
-		// Mock WooCommerce.com download URLs for wccom plugins
 		$this->mockWooComDownloadUrls( [
 			'urls' => [
 				'wccom-plugin-1' => [
@@ -360,7 +376,6 @@ abstract class PreCommandTestCase extends TestCase {
 			],
 		] );
 
-		// Mock WordPress.org plugin API responses
 		$this->mockWpOrgPlugin(
 			'wporg-plugin-1',
 			'1.0.0',
@@ -372,11 +387,37 @@ abstract class PreCommandTestCase extends TestCase {
 			'https://downloads.wordpress.org/plugin/wporg-plugin-2.zip'
 		);
 
-		// Mock download URLs for all standard extensions
 		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/wccom-plugin-1.zip', $this->createMinimalPluginZip( 'wccom-plugin-1', '1.0.0' ) );
 		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/wccom-plugin-2.zip', $this->createMinimalPluginZip( 'wccom-plugin-2', '1.0.0' ) );
 		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/woocommerce.zip', $this->createMinimalPluginZip( 'woocommerce', '8.0.0' ) );
 		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/wporg-plugin-1.zip', $this->createMinimalPluginZip( 'wporg-plugin-1', '1.0.0' ) );
 		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/wporg-plugin-2.zip', $this->createMinimalPluginZip( 'wporg-plugin-2', '1.0.0' ) );
+	}
+
+	protected function createMinimalPluginZip( string $slug, string $version ): string {
+		$filename = "{$slug}.php";
+		$content  = "<?php\n/**\n * Plugin Name: " . ucwords( str_replace( '-', ' ', $slug ) ) . "\n * Version: {$version}\n */";
+
+		$zip  = new \ZipArchive();
+		$temp = tempnam( sys_get_temp_dir(), 'zip' );
+		if ( $temp === false ) {
+			$this->fail( "Failed to create temporary file for ZIP" );
+		}
+		try {
+			if ( ! $zip->open( $temp, \ZipArchive::CREATE | \ZipArchive::OVERWRITE ) ) {
+				$this->fail( "Failed to create ZIP file at $temp" );
+			}
+			$zip->addFromString( "{$slug}/{$filename}", $content );
+			$zip->close();
+
+			$zipContent = file_get_contents( $temp );
+			if ( $zipContent === false ) {
+				$this->fail( "Failed to read ZIP content from $temp" );
+			}
+
+			return $zipContent;
+		} finally {
+			unlink( $temp );
+		}
 	}
 }

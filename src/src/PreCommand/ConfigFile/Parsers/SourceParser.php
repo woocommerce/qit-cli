@@ -11,18 +11,18 @@ class SourceParser extends AbstractConfigParser {
 			throw new \RuntimeException( 'Source config must be an array.' );
 		}
 
-		if ( ! isset( $value['source_type'] ) || ! is_string( $value['source_type'] ) ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "SourceParser: Source missing source_type\n", FILE_APPEND );
-			throw new \RuntimeException( 'Source must contain a "source_type" key with a string value.' );
+		if ( ! isset( $value['type'] ) || ! is_string( $value['type'] ) ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "SourceParser: Source missing type\n", FILE_APPEND );
+			throw new \RuntimeException( 'Source must contain a "type" key with a string value.' );
 		}
 
 		$valid_types = [ 'build', 'directory', 'url', 'zip', 'wccom', 'wporg' ];
-		if ( ! in_array( $value['source_type'], $valid_types, true ) ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "SourceParser: Invalid source_type: {$value['source_type']}\n", FILE_APPEND );
-			throw new \RuntimeException( "Invalid source_type '{$value['source_type']}'. Must be one of: " . implode( ', ', $valid_types ) );
+		if ( ! in_array( $value['type'], $valid_types, true ) ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "SourceParser: Invalid source type: {$value['type']}\n", FILE_APPEND );
+			throw new \RuntimeException( "Invalid source type '{$value['type']}'. Must be one of: " . implode( ', ', $valid_types ) );
 		}
 
-		switch ( $value['source_type'] ) {
+		switch ( $value['type'] ) {
 			case 'build':
 				if ( ! isset( $value['command'] ) || ! is_string( $value['command'] ) || empty( $value['command'] ) ) {
 					file_put_contents( '/tmp/qit/qit_debug.log', "SourceParser: Build source missing command\n", FILE_APPEND );
@@ -65,13 +65,13 @@ class SourceParser extends AbstractConfigParser {
 				break;
 			case 'wccom':
 			case 'wporg':
-				if ( ! isset( $value['slug'] ) || ! is_string( $value['slug'] ) || empty( $value['slug'] ) ) {
-					file_put_contents( '/tmp/qit/qit_debug.log', "SourceParser: {$value['source_type']} source missing slug\n", FILE_APPEND );
-					throw new \RuntimeException( "{$value['source_type']} source must contain a non-empty 'slug' string." );
+				if ( ! isset( $context['slug'] ) || ! is_string( $context['slug'] ) || empty( $context['slug'] ) ) {
+					file_put_contents( '/tmp/qit/qit_debug.log', "SourceParser: {$value['type']} source missing slug\n", FILE_APPEND );
+					throw new \RuntimeException( "{$value['type']} source must have a non-empty 'slug' from context." );
 				}
 				if ( isset( $value['version'] ) && ( ! is_string( $value['version'] ) || empty( $value['version'] ) ) ) {
-					file_put_contents( '/tmp/qit/qit_debug.log', "SourceParser: {$value['source_type']} source version invalid\n", FILE_APPEND );
-					throw new \RuntimeException( "If version is provided for {$value['source_type']} source, it must be a non-empty string." );
+					file_put_contents( '/tmp/qit/qit_debug.log', "SourceParser: {$value['type']} source version invalid\n", FILE_APPEND );
+					throw new \RuntimeException( "If version is provided for {$value['type']} source, it must be a non-empty string." );
 				}
 				break;
 		}

@@ -21,34 +21,6 @@ class SutConfigurationTest extends PreCommandTestCase {
 		$this->mockWooComDownloadUrls( [] );
 	}
 
-	// Helper method to create minimal plugin ZIPs
-	protected function createMinimalPluginZip( string $slug, string $version ): string {
-		$filename = "{$slug}.php";
-		$content  = "<?php\n/**\n * Plugin Name: " . ucwords( str_replace( '-', ' ', $slug ) ) . "\n * Version: {$version}\n */";
-
-		$zip  = new \ZipArchive();
-		$temp = tempnam( sys_get_temp_dir(), 'zip' );
-		if ( $temp === false ) {
-			$this->fail( "Failed to create temporary file for ZIP" );
-		}
-		try {
-			if ( ! $zip->open( $temp, \ZipArchive::CREATE | \ZipArchive::OVERWRITE ) ) {
-				$this->fail( "Failed to create ZIP file at $temp" );
-			}
-			$zip->addFromString( "{$slug}/{$filename}", $content );
-			$zip->close();
-
-			$zipContent = file_get_contents( $temp );
-			if ( $zipContent === false ) {
-				$this->fail( "Failed to read ZIP content from $temp" );
-			}
-
-			return $zipContent;
-		} finally {
-			unlink( $temp );
-		}
-	}
-
 	// Helper method to log mock status
 	protected function logMockStatus( string $test_name, string $mock_key ): void {
 		$mock_value = \QIT_CLI\App::getVar( $mock_key, null );
@@ -350,5 +322,341 @@ class SutConfigurationTest extends PreCommandTestCase {
 		$result = $this->run_unit_test( $config, [], true );
 		$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
 		$this->assertStringContainsString( 'SUT must contain a non-empty "slug" string', $result['output'], 'Expected error message not found in: ' . $result['output'] );
+	}
+
+	public function test_sut_missing(): void {
+		$config = [
+			'environments' => [
+				'default' => [
+					'plugins' => [ 'woocommerce' ],
+				],
+			],
+		];
+
+		$result = $this->run_unit_test( $config, [], true );
+		$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
+		$this->assertStringContainsString( 'SUT configuration is required', $result['output'], 'Expected error message not found in: ' . $result['output'] );
+	}
+
+	public function test_sut_invalid_source_type(): void {
+		$config = [
+			'sut'          => [
+				'type'        => 'plugin',
+				'slug'        => 'awesome-plugin',
+				'source_type' => 'invalid_source',
+			],
+			'environments' => [
+				'default' => [
+					'plugins' => [ 'woocommerce' ],
+				],
+			],
+		];
+
+		$result = $this->run_unit_test( $config, [], true );
+		$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
+		$this->assertStringContainsString( 'Invalid source_type', $result['output'], 'Expected error message not found in: ' . $result['output'] );
+	}
+
+	public function test_sut_missing_required_fields(): void {
+		$temp_dir = $this->temp_dir;
+
+		$config = [
+			'sut'          => [
+				'type'        => 'plugin',
+				'slug'        => 'awesome-plugin',
+				'source_type' => 'build', // Missing 'command' and 'output'
+			],
+			'environments' => [
+				'default' => [
+					'plugins' => [ 'woocommerce' ],
+				],
+			],
+		];
+
+		$result = $this->run_unit_test( $config, [], true );
+		$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
+		$this->assertStringContainsString( 'Build source must have a non-empty "command" string', $result['output'], 'Expected error message not found in: ' . $result['output'] );
+	}
+
+	public function test_sut_type_theme(): void {
+		$temp_dir = $this->temp_dir;
+
+		// Create minimal ZIP content for wccom-theme-1
+		$theme_zip_content = $this->createMinimalPluginZip( 'wccom-theme-1', '1.0.0' ); // Reusing plugin ZIP for simplicity
+		$this->mockStandardExtensions(); // Assuming it includes wccom-theme-1
+
+		$config = [
+			'sut'          => [
+				'type'        => 'theme',
+				'slug'        => 'wccom-theme-1',
+				'source_type' => 'wccom',
+				'version'     => 'stable',
+			],
+			'environments' => [
+				'default' => [
+					'themes'  => [
+						[
+							'slug'        => 'wccom-theme-1',
+							'source_type' => 'wccom',
+							'version'     => 'stable',
+						],
+					],
+					'plugins' => [ 'woocommerce' ],
+				],
+			],
+		];
+
+		$env_info = $this->run_unit_test( $config );
+		$this->assertArrayHasKey( 'extra', $env_info, 'env_info is missing the extra key' );
+		$this->assertArrayHasKey( 'sut', $env_info['extra'], 'env_info.extra is missing the sut key' );
+		$this->assertEquals( 'theme', $env_info['extra']['sut']['type'] );
+		$this->assertEquals( 'wccom-theme-1', $env_info['extra']['sut']['slug'] );
+		$this->assertEquals( 'wccom', $env_info['extra']['sut']['source_type'] );
+		$this->assertEquals( 'stable', $env_info['extra']['sut']['version'] );
+		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
+	}
+
+	public function test_sut_missing_from_environment(): void {
+		$config = [
+			'sut'          => [
+				'type'        => 'plugin',
+				'slug'        => 'wccom-plugin-1',
+				'source_type' => 'wccom',
+				'version'     => 'stable',
+			],
+			'environments' => [
+				'default' => [
+					'plugins' => [ 'woocommerce' ], // SUT not included
+				],
+			],
+		];
+
+		$this->mockStandardExtensions();
+
+		$env_info = $this->run_unit_test( $config );
+		$this->assertArrayHasKey( 'extra', $env_info, 'env_info is missing the extra key' );
+		$this->assertArrayHasKey( 'sut', $env_info['extra'], 'env_info.extra is missing the sut key' );
+		$this->assertEquals( 'plugin', $env_info['extra']['sut']['type'] );
+		$this->assertEquals( 'wccom-plugin-1', $env_info['extra']['sut']['slug'] );
+		$this->assertContains( 'wccom-plugin-1', array_map( fn( $p ) => $p['slug'], $env_info['plugins'] ), 'SUT should be added to environment plugins' );
+		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
+	}
+
+	public function test_sut_invalid_version_wccom(): void {
+		$temp_dir = $this->temp_dir;
+
+		$this->mockStandardExtensions();
+
+		$config = [
+			'sut'          => [
+				'type'        => 'plugin',
+				'slug'        => 'wccom-plugin-1',
+				'source_type' => 'wccom',
+				'version'     => 'non-existent-version',
+			],
+			'environments' => [
+				'default' => [
+					'plugins' => [
+						'woocommerce',
+						[
+							'slug'        => 'wccom-plugin-1',
+							'source_type' => 'wccom',
+							'version'     => 'non-existent-version',
+						],
+					],
+				],
+			],
+		];
+
+		$result = $this->run_unit_test( $config, [], true );
+		$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
+		$this->assertStringContainsString( 'Invalid version', $result['output'], 'Expected error message not found in: ' . $result['output'] );
+	}
+
+	public function test_duplicate_slugs_in_environment(): void {
+		$config = [
+			'sut'          => [
+				'type'        => 'plugin',
+				'slug'        => 'wccom-plugin-1',
+				'source_type' => 'wccom',
+				'version'     => 'stable',
+			],
+			'environments' => [
+				'default' => [
+					'plugins' => [
+						'woocommerce',
+						[
+							'slug'        => 'wccom-plugin-1',
+							'source_type' => 'wccom',
+							'version'     => 'stable',
+						],
+						[
+							'slug'        => 'wccom-plugin-1', // Duplicate
+							'source_type' => 'wccom',
+							'version'     => 'stable',
+						],
+					],
+				],
+			],
+		];
+
+		$this->mockStandardExtensions();
+
+		$result = $this->run_unit_test( $config, [], true );
+		$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
+		$this->assertStringContainsString( 'Duplicate slug', $result['output'], 'Expected error message not found in: ' . $result['output'] );
+	}
+
+	public function test_sut_theme_source_directory(): void {
+		$temp_dir = $this->temp_dir;
+		$path     = "$temp_dir/theme-folder";
+		mkdir( $path, 0777, true );
+		file_put_contents( "$path/style.css", "/*\nTheme Name: Awesome Theme\n*/" );
+
+		$config = [
+			'sut'          => [
+				'type'        => 'theme',
+				'slug'        => 'awesome-theme',
+				'source_type' => 'directory',
+				'path'        => $path,
+			],
+			'environments' => [
+				'default' => [
+					'themes' => [
+						'storefront',
+						[
+							'slug'        => 'awesome-theme',
+							'source_type' => 'directory',
+							'path'        => $path,
+						],
+					],
+				],
+			],
+		];
+
+		$env_info = $this->run_unit_test( $config );
+		// Assertions similar to plugin tests
+	}
+
+	public function test_sut_directory_nonexistent_path(): void {
+		$config = [
+			'sut'          => [
+				'type'        => 'plugin',
+				'slug'        => 'test-plugin',
+				'source_type' => 'directory',
+				'path'        => '/nonexistent/path',
+			],
+			'environments' => [
+				'default' => [
+					'plugins' => [ 'woocommerce' ],
+				],
+			],
+		];
+
+		$result = $this->run_unit_test( $config, [], true );
+		$this->assertStringContainsString(
+			'Directory does not exist',
+			$result['output']
+		);
+	}
+
+	public function test_sut_wccom_invalid_version(): void {
+		$config = [
+			'sut'          => [
+				'type'        => 'plugin',
+				'slug'        => 'wccom-plugin',
+				'source_type' => 'wccom',
+				'version'     => 'invalid_version',
+			],
+			'environments' => [
+				'default' => [
+					'plugins' => [ 'woocommerce' ],
+				],
+			],
+		];
+
+		$result = $this->run_unit_test( $config, [], true );
+		$this->assertStringContainsString(
+			'Invalid version specified',
+			$result['output']
+		);
+	}
+
+	public function test_sut_url_download_failure(): void {
+		$config = [
+			'sut'          => [
+				'type'        => 'plugin',
+				'slug'        => 'test-plugin',
+				'source_type' => 'url',
+				'url'         => 'https://example.com/missing.zip',
+			],
+			'environments' => [
+				'default' => [
+					'plugins' => [ 'woocommerce' ],
+				],
+			],
+		];
+
+		// Don't mock this URL to simulate failure
+		$result = $this->run_unit_test( $config, [], true );
+		$this->assertStringContainsString(
+			'Failed to download',
+			$result['output']
+		);
+	}
+
+	public function test_sut_invalid_zip_file(): void {
+		$temp_dir = $this->temp_dir;
+		$path     = "$temp_dir/invalid.zip";
+		file_put_contents( $path, "This is not a valid ZIP file" );
+
+		$config = [
+			'sut'          => [
+				'type'        => 'plugin',
+				'slug'        => 'test-plugin',
+				'source_type' => 'zip',
+				'path'        => $path,
+			],
+			'environments' => [
+				'default' => [
+					'plugins' => [ 'woocommerce' ],
+				],
+			],
+		];
+
+		$result = $this->run_unit_test( $config, [], true );
+		$this->assertStringContainsString(
+			'Invalid ZIP file',
+			$result['output']
+		);
+	}
+
+	public function test_sut_mismatched_environment_config(): void {
+		$config = [
+			'sut'          => [
+				'type'        => 'plugin',
+				'slug'        => 'test-plugin',
+				'source_type' => 'directory',
+				'path'        => '/valid/path',
+			],
+			'environments' => [
+				'default' => [
+					'plugins' => [
+						'woocommerce',
+						[
+							'slug'        => 'test-plugin',
+							'source_type' => 'zip', // Mismatch!
+							'path'        => '/different/path.zip',
+						],
+					],
+				],
+			],
+		];
+
+		$result = $this->run_unit_test( $config, [], true );
+		$this->assertStringContainsString(
+			'SUT configuration mismatch between main config and environment',
+			$result['output']
+		);
 	}
 }

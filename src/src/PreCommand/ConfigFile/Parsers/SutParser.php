@@ -33,13 +33,13 @@ class SutParser extends AbstractConfigParser {
 			throw new \RuntimeException( 'SUT must contain a non-empty "slug" string.' );
 		}
 
-		if ( ! isset( $value['source_type'] ) ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "SutParser: SUT missing source_type\n", FILE_APPEND );
-			throw new \RuntimeException( 'SUT must contain a "source_type" key.' );
+		if ( ! isset( $value['source'] ) || ! is_array( $value['source'] ) ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "SutParser: SUT missing source\n", FILE_APPEND );
+			throw new \RuntimeException( 'SUT must contain a "source" object.' );
 		}
 
 		// Delegate source validation to SourceParser
-		$value = $this->source_parser->parse( $value );
+		$value['source'] = $this->source_parser->parse( $value['source'], [ 'slug' => $value['slug'] ] );
 
 		file_put_contents( '/tmp/qit/qit_debug.log', "SutParser: SUT parsing completed\n", FILE_APPEND );
 

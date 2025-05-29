@@ -16,9 +16,9 @@ use function QIT_CLI\is_option_explicitly_provided;
 
 abstract class QITCommand extends Command {
 	protected static array $commands_with_environments = [
-		'env:up',         // UpEnvironmentCommand
-		'run:e2e',        // RunE2ECommand
-		'run:activation', // RunActivationTestCommand
+		'env:up',
+		'run:e2e',
+		'run:activation',
 	];
 
 	protected InputInterface $input;
@@ -30,7 +30,7 @@ abstract class QITCommand extends Command {
 			'config',
 			null,
 			InputOption::VALUE_OPTIONAL,
-			'Path to the qit.json configuration file.',
+			'Path to the qit.json configuration file, which may extend a base configuration.',
 			'qit.json'
 		);
 
