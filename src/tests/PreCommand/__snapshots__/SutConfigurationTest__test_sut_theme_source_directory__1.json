@@ -1,11 +1,11 @@
 {
     "extra": {
         "sut": {
-            "type": "plugin",
-            "slug": "awesome-plugin",
+            "type": "theme",
+            "slug": "awesome-theme",
             "source": {
-                "type": "zip",
-                "path": "\/normalized\/path\/plugin.zip"
+                "type": "directory",
+                "path": "\/normalized\/path\/theme-folder"
             }
         }
     },
@@ -35,14 +35,32 @@
             "wccom_id": null,
             "added_automatically": null,
             "from": "wporg"
+        }
+    ],
+    "themes": [
+        {
+            "slug": "storefront",
+            "entrypoint": null,
+            "source": "https:\/\/downloads.wordpress.org\/theme\/storefront.zip",
+            "directory": null,
+            "downloaded_source": "\/tmp-normalized\/cache\/theme\/storefront.zip",
+            "type": "theme",
+            "handler": null,
+            "version": "4.5.0",
+            "action": null,
+            "test_tags": null,
+            "priority": 50,
+            "wccom_id": null,
+            "added_automatically": null,
+            "from": "wporg"
         },
         {
-            "slug": "awesome-plugin",
+            "slug": "awesome-theme",
             "entrypoint": null,
-            "source": "\/tmp-normalized\/plugin.zip",
-            "directory": null,
-            "downloaded_source": "\/tmp-normalized\/plugin.zip",
-            "type": "plugin",
+            "source": null,
+            "directory": "\/tmp-normalized\/theme-folder",
+            "downloaded_source": "\/tmp-normalized\/theme-folder",
+            "type": "theme",
             "handler": null,
             "version": "undefined",
             "action": null,
@@ -50,10 +68,9 @@
             "priority": 50,
             "wccom_id": null,
             "added_automatically": null,
-            "from": "zip"
+            "from": "directory"
         }
     ],
-    "themes": [],
     "env": {
         "WP_CLI_CONFIG_PATH": "\/qit\/wp-cli.yml"
     },
@@ -63,8 +80,8 @@
     "wp_version": "latest",
     "object_cache": false,
     "php_version": "8.2",
-    "sut_slug": "awesome-plugin",
-    "sut_type": "plugin",
+    "sut_slug": "awesome-theme",
+    "sut_type": "theme",
     "domain": "normalized.localhost",
     "skip_activating_plugins": false,
     "skip_activating_themes": false,

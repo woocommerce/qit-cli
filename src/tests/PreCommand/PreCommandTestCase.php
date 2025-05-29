@@ -219,7 +219,26 @@ abstract class PreCommandTestCase extends TestCase {
 				if ( $theme instanceof \QIT_CLI\Environment\Extension ) {
 					$theme = $theme->jsonSerialize();
 				}
-				if ( is_string( $theme ) && str_starts_with( $theme, '/' ) && str_contains( $theme, 'test-theme' ) ) {
+				if ( is_array( $theme ) ) {
+					// Normalize directory
+					if ( isset( $theme['directory'] ) && str_starts_with( $theme['directory'], '/' ) && str_contains( $theme['directory'], '/theme-folder' ) ) {
+						$theme['directory'] = '/tmp-normalized/theme-folder';
+					}
+
+					// Normalize downloaded_source
+					if ( isset( $theme['downloaded_source'] ) && str_starts_with( $theme['downloaded_source'], '/' ) ) {
+						if ( str_contains( $theme['downloaded_source'], '/theme-folder' ) ) {
+							$theme['downloaded_source'] = '/tmp-normalized/theme-folder';
+						} elseif ( str_contains( $theme['downloaded_source'], 'theme.zip' ) ) {
+							$theme['downloaded_source'] = '/tmp-normalized/theme.zip';
+						} else {
+							$theme['downloaded_source'] = sprintf(
+								'/tmp-normalized/cache/theme/%s.zip',
+								$theme['slug'] ?? 'unknown-theme'
+							);
+						}
+					}
+				} elseif ( is_string( $theme ) && str_starts_with( $theme, '/' ) && str_contains( $theme, 'test-theme' ) ) {
 					$theme = '/tmp-normalized/normalized-theme.zip';
 				}
 			}
@@ -242,14 +261,23 @@ abstract class PreCommandTestCase extends TestCase {
 
 		// Normalize SUT paths
 		if ( isset( $env_info['extra']['sut'] ) && is_array( $env_info['extra']['sut'] ) ) {
-			if ( isset( $env_info['extra']['sut']['path'] ) ) {
-				if ( str_contains( $env_info['extra']['sut']['path'], 'plugin-folder' ) ) {
-					$env_info['extra']['sut']['path'] = '/normalized/path/plugin-folder';
-				} elseif ( str_contains( $env_info['extra']['sut']['path'], 'plugin.zip' ) ) {
-					$env_info['extra']['sut']['path'] = '/normalized/path/plugin.zip';
+			// Normalize source.path based on SUT type
+			if ( isset( $env_info['extra']['sut']['source']['path'] ) && str_starts_with( $env_info['extra']['sut']['source']['path'], '/' ) ) {
+				if ( $env_info['extra']['sut']['type'] === 'plugin' ) {
+					if ( str_contains( $env_info['extra']['sut']['source']['path'], 'plugin-folder' ) ) {
+						$env_info['extra']['sut']['source']['path'] = '/normalized/path/plugin-folder';
+					} elseif ( str_contains( $env_info['extra']['sut']['source']['path'], 'plugin.zip' ) ) {
+						$env_info['extra']['sut']['source']['path'] = '/normalized/path/plugin.zip';
+					}
+				} elseif ( $env_info['extra']['sut']['type'] === 'theme' ) {
+					if ( str_contains( $env_info['extra']['sut']['source']['path'], 'theme-folder' ) ) {
+						$env_info['extra']['sut']['source']['path'] = '/normalized/path/theme-folder';
+					} elseif ( str_contains( $env_info['extra']['sut']['source']['path'], 'theme.zip' ) ) {
+						$env_info['extra']['sut']['source']['path'] = '/normalized/path/theme.zip';
+					}
 				}
 			}
-			// Fix: Normalize sut.source.output
+			// Normalize source.output for build sources
 			if ( isset( $env_info['extra']['sut']['source']['output'] ) && str_contains( $env_info['extra']['sut']['source']['output'], 'plugin.zip' ) ) {
 				$env_info['extra']['sut']['source']['output'] = '/normalized/path/plugin.zip';
 			}

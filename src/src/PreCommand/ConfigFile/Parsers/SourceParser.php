@@ -42,6 +42,11 @@ class SourceParser extends AbstractConfigParser {
 					file_put_contents( '/tmp/qit/qit_debug.log', "SourceParser: Directory source missing path\n", FILE_APPEND );
 					throw new \RuntimeException( 'Directory source must contain a non-empty "path" string.' );
 				}
+				// Validate directory existence
+				if ( ! is_dir( $value['path'] ) ) {
+					file_put_contents( '/tmp/qit/qit_debug.log', "SourceParser: Directory does not exist: {$value['path']}\n", FILE_APPEND );
+					throw new \RuntimeException( "Directory does not exist: {$value['path']}" );
+				}
 				break;
 			case 'url':
 				if ( ! isset( $value['url'] ) || ! is_string( $value['url'] ) || empty( $value['url'] ) ) {

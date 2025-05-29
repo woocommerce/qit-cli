@@ -3,8 +3,10 @@
         "sut": {
             "type": "plugin",
             "slug": "wccom-plugin-1",
-            "source_type": "wccom",
-            "version": "stable"
+            "source": {
+                "type": "wccom",
+                "version": "stable"
+            }
         }
     },
     "environment": "default",

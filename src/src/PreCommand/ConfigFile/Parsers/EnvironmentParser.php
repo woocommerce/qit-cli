@@ -86,82 +86,23 @@ class EnvironmentParser extends AbstractConfigParser {
 					case 'themes':
 						if ( ! is_array( $env_value ) ) {
 							file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: $env_key in environment '$env_name' must be an array\n", FILE_APPEND );
-							throw new \RuntimeException( "$env_key in environment '$env_name' must be an array." );
+							throw new \RuntimeException( "$env_key in $env_name must be an array." );
 						}
-						foreach ( $env_value as $index => $item ) {
-							$slug = is_string( $item ) ? $item : ( is_array( $item ) && isset( $item['slug'] ) ? $item['slug'] : null );
-							if ( ! $slug ) {
-								file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Item at index $index in $env_key for environment '$env_name' must have a 'slug'\n", FILE_APPEND );
-								throw new \RuntimeException( "Item at index $index in $env_key for environment '$env_name' must have a 'slug'." );
+						// Normalize string items to arrays
+						$value[ $env_name ][ $env_key ] = array_map( function ( $item ) {
+							return is_string( $item ) ? [ 'slug' => $item ] : $item;
+						}, $env_value );
+						foreach ( $value[ $env_name ][ $env_key ] as $index => $item ) {
+							if ( ! is_array( $item ) || ! isset( $item['slug'] ) || ! is_string( $item['slug'] ) || empty( $item['slug'] ) ) {
+								file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Item at index $index in $env_key for environment '$env_name' must have a non-empty 'slug'\n", FILE_APPEND );
+								throw new \RuntimeException( "Item at index $index in $env_key for environment '$env_name' must have a non-empty 'slug'." );
 							}
+							$slug = $item['slug'];
 							if ( in_array( $slug, $seen_slugs ) ) {
 								file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Duplicate slug '$slug' in $env_key for environment '$env_name'\n", FILE_APPEND );
 								throw new \RuntimeException( "Duplicate slug '$slug' in $env_key for environment '$env_name'." );
 							}
 							$seen_slugs[] = $slug;
-
-							if ( is_string( $item ) ) {
-								if ( empty( $item ) ) {
-									file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Empty slug at index $index in $env_key for environment '$env_name'\n", FILE_APPEND );
-									throw new \RuntimeException( "Empty slug at index $index in $env_key for environment '$env_name'." );
-								}
-								// Strings imply wporg/wccom, but check if it's the SUT with non-remote source
-								if ( $sut_slug === $slug && $sut_source && in_array( $sut_source['type'], $non_remote_sources, true ) ) {
-									file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Treating string '$slug' as SUT with source type: {$sut_source['type']}\n", FILE_APPEND );
-									continue;
-								}
-								continue;
-							}
-							if ( is_array( $item ) ) {
-								if ( ! isset( $item['slug'] ) || ! is_string( $item['slug'] ) || empty( $item['slug'] ) ) {
-									file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Item at index $index in $env_key for environment '$env_name' must have a non-empty 'slug' string\n", FILE_APPEND );
-									throw new \RuntimeException( "Item at index $index in $env_key for environment '$env_name' must have a non-empty 'slug' string." );
-								}
-								if ( isset( $item['source'] ) ) {
-									if ( ! is_array( $item['source'] ) || ! isset( $item['source']['type'] ) ) {
-										file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Source for '{$item['slug']}' in $env_key must be an object with 'type'\n", FILE_APPEND );
-										throw new \RuntimeException( "Source for '{$item['slug']}' in $env_key must be an object with 'type'." );
-									}
-									$valid_source_types = [ 'wporg', 'wccom', 'directory', 'zip', 'url', 'build' ];
-									if ( ! in_array( $item['source']['type'], $valid_source_types, true ) ) {
-										file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Invalid source type '{$item['source']['type']}' for '{$item['slug']}' in $env_key\n", FILE_APPEND );
-										throw new \RuntimeException( "Invalid source type '{$item['source']['type']}' for '{$item['slug']}' in $env_key. Must be one of: " . implode( ', ', $valid_source_types ) );
-									}
-									if ( $item['source']['type'] === 'directory' && ( ! isset( $item['source']['path'] ) || ! is_string( $item['source']['path'] ) || empty( $item['source']['path'] ) ) ) {
-										file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Directory source for '{$item['slug']}' in $env_key must have a non-empty 'path' string\n", FILE_APPEND );
-										throw new \RuntimeException( "Directory source for '{$item['slug']}' in $env_key must have a non-empty 'path' string." );
-									}
-									if ( $item['source']['type'] === 'zip' && ( ! isset( $item['source']['path'] ) || ! is_string( $item['source']['path'] ) || empty( $item['source']['path'] ) ) ) {
-										file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Zip source for '{$item['slug']}' in $env_key must have a non-empty 'path' string\n", FILE_APPEND );
-										throw new \RuntimeException( "Zip source for '{$item['slug']}' in $env_key must have a non-empty 'path' string." );
-									}
-									if ( $item['source']['type'] === 'url' && ( ! isset( $item['source']['url'] ) || ! is_string( $item['source']['url'] ) || empty( $item['source']['url'] ) ) ) {
-										file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: URL source for '{$item['slug']}' in $env_key must have a non-empty 'url' string\n", FILE_APPEND );
-										throw new \RuntimeException( "URL source for '{$item['slug']}' in $env_key must have a non-empty 'url' string." );
-									}
-									if ( $item['source']['type'] === 'url' && ! preg_match( '/^https?:\/\/.+\/.+\.zip$/', $item['source']['url'] ) ) {
-										file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Invalid URL format for '{$item['slug']}' in $env_key\n", FILE_APPEND );
-										throw new \RuntimeException( "Invalid URL format for '{$item['slug']}' in $env_key. Must be a valid HTTPS URL ending in .zip." );
-									}
-									if ( $item['source']['type'] === 'build' ) {
-										if ( ! isset( $item['source']['command'] ) || ! is_string( $item['source']['command'] ) || empty( $item['source']['command'] ) ) {
-											file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Build source for '{$item['slug']}' in $env_key must have a non-empty 'command' string\n", FILE_APPEND );
-											throw new \RuntimeException( "Build source for '{$item['slug']}' in $env_key must have a non-empty 'command' string." );
-										}
-										if ( ! isset( $item['source']['output'] ) || ! is_string( $item['source']['output'] ) || empty( $item['source']['output'] ) ) {
-											file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Build source for '{$item['slug']}' in $env_key must have a non-empty 'output' string\n", FILE_APPEND );
-											throw new \RuntimeException( "Build source for '{$item['slug']}' in $env_key must have a non-empty 'output' string." );
-										}
-										if ( ! preg_match( '/\.zip$/', $item['source']['output'] ) ) {
-											file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Build source output for '{$item['slug']}' in $env_key must be a .zip file\n", FILE_APPEND );
-											throw new \RuntimeException( "Build source output for '{$item['slug']}' in $env_key must be a .zip file." );
-										}
-									}
-								}
-							} else {
-								file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Item at index $index in $env_key for environment '$env_name' must be a string or an object with 'slug' and optional 'source'\n", FILE_APPEND );
-								throw new \RuntimeException( "Item at index $index in $env_key for environment '$env_name' must be a string or an object with 'slug' and optional 'source'." );
-							}
 						}
 						break;
 					case 'setup':
@@ -172,7 +113,7 @@ class EnvironmentParser extends AbstractConfigParser {
 						if ( isset( $env_value['test_packages'] ) ) {
 							if ( ! is_array( $env_value['test_packages'] ) ) {
 								file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: test_packages in setup for environment '$env_name' must be an array\n", FILE_APPEND );
-								throw new \RuntimeException( "test_packages in setup for environment '$env_name' must be an array." );
+								throw new \RuntimeException( "test_packages decompress must be an array." );
 							}
 							foreach ( $env_value['test_packages'] as $index => $test_package ) {
 								if ( ! is_string( $test_package ) ) {
@@ -237,87 +178,72 @@ class EnvironmentParser extends AbstractConfigParser {
 	protected function create_extension( $item, string $type, ?array $sut_config, array $non_remote_sources ): Extension {
 		file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Creating extension: item=" . print_r( $item, true ) . ", type=$type\n", FILE_APPEND );
 
+		if ( ! is_array( $item ) || ! isset( $item['slug'] ) || ! is_string( $item['slug'] ) || empty( $item['slug'] ) ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Extension must have a non-empty 'slug'\n", FILE_APPEND );
+			throw new \RuntimeException( "Extension must have a non-empty 'slug'." );
+		}
+
+		$slug       = $item['slug'];
+		$ext        = new Extension( $slug, $type );
 		$sut_slug   = $sut_config['slug'] ?? null;
 		$sut_source = $sut_config['source'] ?? null;
 
-		if ( is_string( $item ) ) {
-			$slug = $item;
-			$ext  = new Extension( $slug, $type );
-
-			// If this is the SUT with a non-remote source, use its source
-			if ( $sut_slug === $slug && $sut_source && in_array( $sut_source['type'], $non_remote_sources, true ) ) {
-				file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Skipping remote validation for SUT '$slug' with source type: {$sut_source['type']}\n", FILE_APPEND );
-				$ext->from = $sut_source['type'];
-				if ( $sut_source['type'] === 'directory' ) {
-					$ext->directory = $sut_source['path'] ?? '';
-				} elseif ( $sut_source['type'] === 'zip' ) {
-					$ext->source = $sut_source['path'] ?? '';
-				} elseif ( $sut_source['type'] === 'url' ) {
-					$ext->source = $sut_source['url'] ?? '';
-				} elseif ( $sut_source['type'] === 'build' ) {
-					$ext->source = $sut_source['output'] ?? '';
-				}
-
-				return $ext;
+		// Handle SUT with non-remote source
+		if ( $sut_slug === $slug && $sut_source && in_array( $sut_source['type'], $non_remote_sources, true ) ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Using SUT source for '$slug' with type: {$sut_source['type']}\n", FILE_APPEND );
+			$ext->from = $sut_source['type'];
+			if ( $sut_source['type'] === 'directory' ) {
+				$ext->directory = $sut_source['path'] ?? '';
+			} elseif ( $sut_source['type'] === 'zip' ) {
+				$ext->source = $sut_source['path'] ?? '';
+			} elseif ( $sut_source['type'] === 'url' ) {
+				$ext->source = $sut_source['url'] ?? '';
+			} elseif ( $sut_source['type'] === 'build' ) {
+				$ext->source = $sut_source['output'] ?? '';
 			}
 
-			// Check wporg first if a mock response exists
-			$wporg_mock_key = sprintf( 'mock_%s', "https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]={$slug}" );
-			$wporg_mock     = App::getVar( $wporg_mock_key, null );
-			if ( $wporg_mock !== null ) {
-				try {
-					if ( $type === 'plugin' && $this->wporg_extension_list->is_wporg_plugin( $slug ) ) {
-						$info         = $this->wporg_extension_list->get_plugin_download_info( $slug );
-						$ext->source  = $info['url'];
-						$ext->version = $info['version'];
-						$ext->from    = 'wporg';
-						file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Extension '$slug' found in WordPress.org\n", FILE_APPEND );
+			return $ext;
+		}
 
-						return $ext;
-					} elseif ( $type === 'theme' && $this->wporg_extension_list->is_wporg_theme( $slug ) ) {
-						$info         = $this->wporg_extension_list->get_theme_download_info( $slug );
-						$ext->source  = $info['url'];
-						$ext->version = $info['version'];
-						$ext->from    = 'wporg';
-						file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Extension '$slug' found in WordPress.org\n", FILE_APPEND );
+		// If no source is provided, infer wporg or wccom
+		if ( ! isset( $item['source'] ) || ! is_array( $item['source'] ) || ! isset( $item['source']['type'] ) ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: No source for '$slug', attempting to infer\n", FILE_APPEND );
+			try {
+				if ( $type === 'plugin' && $this->wporg_extension_list->is_wporg_plugin( $slug ) ) {
+					$info         = $this->wporg_extension_list->get_plugin_download_info( $slug );
+					$ext->source  = $info['url'];
+					$ext->version = $info['version'];
+					$ext->from    = 'wporg';
+					file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Inferred wporg source for '$slug'\n", FILE_APPEND );
 
-						return $ext;
-					}
-				} catch ( \Exception $e ) {
-					file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Extension '$slug' not found in WordPress.org: " . $e->getMessage() . "\n", FILE_APPEND );
+					return $ext;
+				} elseif ( $type === 'theme' && $this->wporg_extension_list->is_wporg_theme( $slug ) ) {
+					$info         = $this->wporg_extension_list->get_theme_download_info( $slug );
+					$ext->source  = $info['url'];
+					$ext->version = $info['version'];
+					$ext->from    = 'wporg';
+					file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Inferred wporg source for '$slug'\n", FILE_APPEND );
+
+					return $ext;
 				}
+			} catch ( \Exception $e ) {
+				file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Failed to check WPOrg for '$slug': " . $e->getMessage() . "\n", FILE_APPEND );
 			}
-
-			// Fallback to wccom
 			try {
 				$ext->wccom_id = $this->woo_extension_list->get_woo_extension_id_by_slug( $slug );
+				$ext->version  = 'stable';
 				$ext->from     = 'wccom';
-				file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Extension '$slug' found in WooCommerce.com\n", FILE_APPEND );
+				file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Inferred wccom source for '$slug'\n", FILE_APPEND );
 
 				return $ext;
 			} catch ( \UnexpectedValueException $e ) {
-				file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Extension '$slug' not found in WooCommerce.com: " . $e->getMessage() . "\n", FILE_APPEND );
+				file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Extension '$slug' not found in WPOrg or WCCOM\n", FILE_APPEND );
+				throw new \RuntimeException( "Extension '$slug' ($type) not found in WordPress.org or WooCommerce.com. Use a 'source' object for non-remote sources." );
 			}
-
-			file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Extension '$slug' ($type) not found in WooCommerce.com or WordPress.org\n", FILE_APPEND );
-			throw new \RuntimeException( "Extension '$slug' ($type) not found in WooCommerce.com or WordPress.org. Use an array with 'source' for non-remote sources." );
 		}
 
-		if ( ! is_array( $item ) || ! isset( $item['slug'] ) ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Extension object must have 'slug'\n", FILE_APPEND );
-			throw new \RuntimeException( "Extension object must have 'slug'." );
-		}
-
-		$slug = $item['slug'];
-		$ext  = new Extension( $slug, $type );
-
-		if ( ! isset( $item['source'] ) || ! is_array( $item['source'] ) || ! isset( $item['source']['type'] ) ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentParser: Extension '$slug' ($type) must have a 'source' object with 'type'\n", FILE_APPEND );
-			throw new \RuntimeException( "Extension '$slug' ($type) must have a 'source' object with 'type'." );
-		}
-
+		// Handle explicit source
 		$ext->from = $item['source']['type'];
-
 		switch ( $ext->from ) {
 			case 'wporg':
 				try {

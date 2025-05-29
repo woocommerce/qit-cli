@@ -3,9 +3,11 @@
         "sut": {
             "type": "plugin",
             "slug": "local-plugin-1",
-            "source_type": "build",
-            "command": "npm run build",
-            "output": "\/normalized\/path\/plugin.zip"
+            "source": {
+                "type": "build",
+                "command": "npm run build",
+                "output": "\/normalized\/path\/plugin.zip"
+            }
         }
     },
     "environment": "default",
