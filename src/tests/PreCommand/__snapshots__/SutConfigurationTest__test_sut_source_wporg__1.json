@@ -2,9 +2,9 @@
     "extra": {
         "sut": {
             "type": "plugin",
-            "slug": "wccom-plugin-2",
-            "source_type": "url",
-            "url": "https:\/\/example.com\/wccom-plugin-2.zip"
+            "slug": "wporg-plugin-1",
+            "source_type": "wporg",
+            "version": "stable"
         }
     },
     "environment": "default",
@@ -35,20 +35,20 @@
             "from": "wporg"
         },
         {
-            "slug": "wccom-plugin-2",
+            "slug": "wporg-plugin-1",
             "entrypoint": null,
-            "source": "https:\/\/example.com\/wccom-plugin-2.zip",
+            "source": "https:\/\/downloads.wordpress.org\/plugin\/wporg-plugin-1.zip",
             "directory": null,
-            "downloaded_source": "\/tmp-normalized\/cache\/plugin\/wccom-plugin-2.zip",
+            "downloaded_source": "\/tmp-normalized\/cache\/plugin\/wporg-plugin-1.zip",
             "type": "plugin",
             "handler": null,
-            "version": "undefined",
+            "version": "1.0.0",
             "action": null,
             "test_tags": null,
             "priority": 50,
             "wccom_id": null,
             "added_automatically": null,
-            "from": "url"
+            "from": "wporg"
         }
     ],
     "themes": [],
@@ -61,7 +61,7 @@
     "wp_version": "latest",
     "object_cache": false,
     "php_version": "8.2",
-    "sut_slug": "wccom-plugin-2",
+    "sut_slug": "wporg-plugin-1",
     "sut_type": "plugin",
     "domain": "normalized.localhost",
     "skip_activating_plugins": false,

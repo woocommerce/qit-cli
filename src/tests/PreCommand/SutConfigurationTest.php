@@ -9,34 +9,67 @@ class SutConfigurationTest extends PreCommandTestCase {
 
 	public function setUp(): void {
 		parent::setUp();
+
+		// Create minimal WooCommerce ZIP content
+		$woo_zip_content = $this->createMinimalPluginZip( 'woocommerce', '8.0.0' );
+
+		// Mock WooCommerce API response and ZIP download
 		$this->mockWpOrgPlugin( 'woocommerce', '8.0.0', 'https://downloads.wordpress.org/plugin/woocommerce.zip' );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/woocommerce.zip', $woo_zip_content );
+
 		// Mock empty WooCommerce.com response to prevent unmocked requests
 		$this->mockWooComDownloadUrls( [] );
 	}
 
+	// Helper method to create minimal plugin ZIPs
+	protected function createMinimalPluginZip( string $slug, string $version ): string {
+		$filename = "{$slug}.php";
+		$content  = "<?php\n/**\n * Plugin Name: " . ucwords( str_replace( '-', ' ', $slug ) ) . "\n * Version: {$version}\n */";
+
+		$zip  = new \ZipArchive();
+		$temp = tempnam( sys_get_temp_dir(), 'zip' );
+		if ( $temp === false ) {
+			$this->fail( "Failed to create temporary file for ZIP" );
+		}
+		try {
+			if ( ! $zip->open( $temp, \ZipArchive::CREATE | \ZipArchive::OVERWRITE ) ) {
+				$this->fail( "Failed to create ZIP file at $temp" );
+			}
+			$zip->addFromString( "{$slug}/{$filename}", $content );
+			$zip->close();
+
+			$zipContent = file_get_contents( $temp );
+			if ( $zipContent === false ) {
+				$this->fail( "Failed to read ZIP content from $temp" );
+			}
+
+			return $zipContent;
+		} finally {
+			unlink( $temp );
+		}
+	}
+
+	// Helper method to log mock status
+	protected function logMockStatus( string $test_name, string $mock_key ): void {
+		$mock_value = \QIT_CLI\App::getVar( $mock_key, null );
+		file_put_contents( '/tmp/qit/qit_debug.log', "$test_name: Mock set for $mock_key: " . ( is_string( $mock_value ) ? "set (length: " . strlen( $mock_value ) . ")" : "not set" ) . "\n", FILE_APPEND );
+	}
+
+	// Example for test_sut_source_build
 	public function test_sut_source_build(): void {
 		$temp_dir = $this->temp_dir;
 
-		// Create ZIP with consistent name
-		$path = "$temp_dir/plugin.zip";
-		$zip  = new \ZipArchive();
-		if ( ! $zip->open( $path, \ZipArchive::CREATE ) ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "Failed to create ZIP file at $path\n", FILE_APPEND );
-			$this->fail( "Failed to create ZIP file at $path" );
-		}
-		$zip->addFromString( 'awesome-plugin/awesome-plugin.php', "<?php\n// Plugin Name: Awesome Plugin" );
-		$zip->close();
-		if ( ! file_exists( $path ) ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "ZIP file not found after creation: $path\n", FILE_APPEND );
-			$this->fail( "ZIP file not found after creation: $path" );
-		}
+		// Create minimal ZIP content for local-plugin-1
+		$plugin_zip = $this->createMinimalPluginZip( 'local-plugin-1', '1.0.0' );
+		$path       = "$temp_dir/plugin.zip";
+		file_put_contents( $path, $plugin_zip );
 		$this->to_delete[] = $path;
 		file_put_contents( '/tmp/qit/qit_debug.log', "Created ZIP file for build test: $path\n", FILE_APPEND );
 
 		$config = [
 			'sut'          => [
 				'type'        => 'plugin',
-				'slug'        => 'awesome-plugin',
+				'slug'        => 'local-plugin-1',
 				'source_type' => 'build',
 				'command'     => 'npm run build',
 				'output'      => $path,
@@ -46,7 +79,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 					'plugins' => [
 						'woocommerce',
 						[
-							'slug'        => 'awesome-plugin',
+							'slug'        => 'local-plugin-1',
 							'source_type' => 'build',
 							'command'     => 'npm run build',
 							'output'      => $path,
@@ -60,7 +93,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 		$this->assertArrayHasKey( 'extra', $env_info, 'env_info is missing the extra key' );
 		$this->assertArrayHasKey( 'sut', $env_info['extra'], 'env_info.extra is missing the sut key' );
 		$this->assertEquals( 'plugin', $env_info['extra']['sut']['type'] );
-		$this->assertEquals( 'awesome-plugin', $env_info['extra']['sut']['slug'] );
+		$this->assertEquals( 'local-plugin-1', $env_info['extra']['sut']['slug'] );
 		$this->assertEquals( 'build', $env_info['extra']['sut']['source_type'] );
 		$this->assertEquals( 'npm run build', $env_info['extra']['sut']['command'] );
 		$this->assertEquals( '/normalized/path/plugin.zip', $env_info['extra']['sut']['output'] );
@@ -110,79 +143,49 @@ class SutConfigurationTest extends PreCommandTestCase {
 	public function test_sut_source_url(): void {
 		$temp_dir = $this->temp_dir;
 
-		// Read the valid ZIP file contents for mocking
-		$zip_path         = __DIR__ . '/../data/plugins/my-awesome-plugin.zip';
-		$mock_zip_content = file_get_contents( $zip_path );
-		if ( $mock_zip_content === false ) {
-			$this->fail( "Failed to read ZIP file at $zip_path" );
-		}
-
-		// Log the ZIP content length for debugging
-		file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_source_url: ZIP content length: " . strlen( $mock_zip_content ) . "\n", FILE_APPEND );
+		$mock_zip_content = $this->createMinimalPluginZip( 'wccom-plugin-2', '1.0.0' );
 
 		$config = [
 			'sut'          => [
 				'type'        => 'plugin',
-				'slug'        => 'my-awesome-plugin',
+				'slug'        => 'wccom-plugin-2',
 				'source_type' => 'url',
-				'url'         => 'https://example.com/plugin.zip',
+				'url'         => 'https://example.com/wccom-plugin-2.zip',
 			],
 			'environments' => [
 				'default' => [
 					'plugins' => [
 						'woocommerce',
 						[
-							'slug'        => 'my-awesome-plugin',
+							'slug'        => 'wccom-plugin-2',
 							'source_type' => 'url',
-							'url'         => 'https://example.com/plugin.zip',
+							'url'         => 'https://example.com/wccom-plugin-2.zip',
 						],
 					],
 				],
 			],
 		];
 
-		// Mock the WordPress.org download URL for woocommerce
-		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/woocommerce.zip', $mock_zip_content );
-
-		// Mock the URL download for my-awesome-plugin
-		$this->mockDownloadUrl( 'https://example.com/plugin.zip', $mock_zip_content );
-
-		// Log to confirm mocks are set
-		$mock_urls = [
-			'mock_https://downloads.wordpress.org/plugin/woocommerce.zip',
-			'mock_https://example.com/plugin.zip',
-		];
-		foreach ( $mock_urls as $mock_key ) {
-			$mock_value = \QIT_CLI\App::getVar( $mock_key, null );
-			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_source_url: Mock set for $mock_key: " . ( is_string( $mock_value ) ? "set (length: " . strlen( $mock_value ) . ")" : "not set" ) . "\n", FILE_APPEND );
-		}
+		$this->mockDownloadUrl( 'https://example.com/wccom-plugin-2.zip', $mock_zip_content );
+		$this->logMockStatus( 'test_sut_source_url', 'mock_https://example.com/wccom-plugin-2.zip' );
 
 		$env_info = $this->run_unit_test( $config );
 		$this->assertArrayHasKey( 'extra', $env_info, 'env_info is missing the extra key' );
 		$this->assertArrayHasKey( 'sut', $env_info['extra'], 'env_info.extra is missing the sut key' );
 		$this->assertEquals( 'plugin', $env_info['extra']['sut']['type'] );
-		$this->assertEquals( 'my-awesome-plugin', $env_info['extra']['sut']['slug'] );
+		$this->assertEquals( 'wccom-plugin-2', $env_info['extra']['sut']['slug'] );
 		$this->assertEquals( 'url', $env_info['extra']['sut']['source_type'] );
-		$this->assertEquals( 'https://example.com/plugin.zip', $env_info['extra']['sut']['url'] );
+		$this->assertEquals( 'https://example.com/wccom-plugin-2.zip', $env_info['extra']['sut']['url'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
 	public function test_sut_source_zip(): void {
 		$temp_dir = $this->temp_dir;
 
-		// Create ZIP with consistent name
-		$path = "$temp_dir/plugin.zip";
-		$zip  = new \ZipArchive();
-		if ( ! $zip->open( $path, \ZipArchive::CREATE ) ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "Failed to create ZIP file at $path\n", FILE_APPEND );
-			$this->fail( "Failed to create ZIP file at $path" );
-		}
-		$zip->addFromString( 'awesome-plugin/awesome-plugin.php', "<?php\n// Plugin Name: Awesome Plugin" );
-		$zip->close();
-		if ( ! file_exists( $path ) ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "ZIP file not found after creation: $path\n", FILE_APPEND );
-			$this->fail( "ZIP file not found after creation: $path" );
-		}
+		// Create minimal ZIP content for awesome-plugin
+		$plugin_zip = $this->createMinimalPluginZip( 'awesome-plugin', '1.0.0' );
+		$path       = "$temp_dir/plugin.zip";
+		file_put_contents( $path, $plugin_zip );
 		$this->to_delete[] = $path;
 		file_put_contents( '/tmp/qit/qit_debug.log', "Created ZIP file for zip test: $path\n", FILE_APPEND );
 
@@ -220,10 +223,13 @@ class SutConfigurationTest extends PreCommandTestCase {
 	public function test_sut_source_wporg(): void {
 		$temp_dir = $this->temp_dir;
 
+		// Set up standard extension mocks
+		$this->mockStandardExtensions();
+
 		$config = [
 			'sut'          => [
 				'type'        => 'plugin',
-				'slug'        => 'awesome-plugin',
+				'slug'        => 'wporg-plugin-1',
 				'source_type' => 'wporg',
 				'version'     => 'stable',
 			],
@@ -232,7 +238,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 					'plugins' => [
 						'woocommerce',
 						[
-							'slug'        => 'awesome-plugin',
+							'slug'        => 'wporg-plugin-1',
 							'source_type' => 'wporg',
 							'version'     => 'stable',
 						],
@@ -241,13 +247,11 @@ class SutConfigurationTest extends PreCommandTestCase {
 			],
 		];
 
-		$this->mockWpOrgPlugin( 'awesome-plugin', '1.0.0', 'https://downloads.wordpress.org/plugin/awesome-plugin.zip' );
-
 		$env_info = $this->run_unit_test( $config );
 		$this->assertArrayHasKey( 'extra', $env_info, 'env_info is missing the extra key' );
 		$this->assertArrayHasKey( 'sut', $env_info['extra'], 'env_info.extra is missing the sut key' );
 		$this->assertEquals( 'plugin', $env_info['extra']['sut']['type'] );
-		$this->assertEquals( 'awesome-plugin', $env_info['extra']['sut']['slug'] );
+		$this->assertEquals( 'wporg-plugin-1', $env_info['extra']['sut']['slug'] );
 		$this->assertEquals( 'wporg', $env_info['extra']['sut']['source_type'] );
 		$this->assertEquals( 'stable', $env_info['extra']['sut']['version'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
@@ -256,10 +260,13 @@ class SutConfigurationTest extends PreCommandTestCase {
 	public function test_sut_source_wccom(): void {
 		$temp_dir = $this->temp_dir;
 
+		// Set up standard extension mocks
+		$this->mockStandardExtensions();
+
 		$config = [
 			'sut'          => [
 				'type'        => 'plugin',
-				'slug'        => 'awesome-plugin',
+				'slug'        => 'wccom-plugin-1',
 				'source_type' => 'wccom',
 				'version'     => 'stable',
 			],
@@ -268,7 +275,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 					'plugins' => [
 						'woocommerce',
 						[
-							'slug'        => 'awesome-plugin',
+							'slug'        => 'wccom-plugin-1',
 							'source_type' => 'wccom',
 							'version'     => 'stable',
 						],
@@ -277,14 +284,11 @@ class SutConfigurationTest extends PreCommandTestCase {
 			],
 		];
 
-		$this->mockWooComDownloadUrls( [ 'awesome-plugin' => 'https://qit.woo.com/downloads/awesome-plugin.zip' ] );
-		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/awesome-plugin.zip', 'mocked-zip-content' );
-
 		$env_info = $this->run_unit_test( $config );
 		$this->assertArrayHasKey( 'extra', $env_info, 'env_info is missing the extra key' );
 		$this->assertArrayHasKey( 'sut', $env_info['extra'], 'env_info.extra is missing the sut key' );
 		$this->assertEquals( 'plugin', $env_info['extra']['sut']['type'] );
-		$this->assertEquals( 'awesome-plugin', $env_info['extra']['sut']['slug'] );
+		$this->assertEquals( 'wccom-plugin-1', $env_info['extra']['sut']['slug'] );
 		$this->assertEquals( 'wccom', $env_info['extra']['sut']['source_type'] );
 		$this->assertEquals( 'stable', $env_info['extra']['sut']['version'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
@@ -303,8 +307,9 @@ class SutConfigurationTest extends PreCommandTestCase {
 			],
 		];
 
-		$error = $this->run_unit_test( $config, [], true );
-		$this->assertStringContainsString( 'SUT must contain a "source_type" key', $error );
+		$result = $this->run_unit_test( $config, [], true );
+		$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
+		$this->assertStringContainsString( 'SUT must contain a "source_type" key', $result['output'], 'Expected error message not found in: ' . $result['output'] );
 	}
 
 	public function test_sut_invalid_type(): void {
@@ -322,8 +327,9 @@ class SutConfigurationTest extends PreCommandTestCase {
 			],
 		];
 
-		$error = $this->run_unit_test( $config, [], true );
-		$this->assertStringContainsString( 'Invalid SUT type \'invalid\'', $error );
+		$result = $this->run_unit_test( $config, [], true );
+		$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
+		$this->assertStringContainsString( 'Invalid SUT type \'invalid\'', $result['output'], 'Expected error message not found in: ' . $result['output'] );
 	}
 
 	public function test_sut_empty_slug(): void {
@@ -341,7 +347,8 @@ class SutConfigurationTest extends PreCommandTestCase {
 			],
 		];
 
-		$error = $this->run_unit_test( $config, [], true );
-		$this->assertStringContainsString( 'SUT must contain a non-empty "slug" string', $error );
+		$result = $this->run_unit_test( $config, [], true );
+		$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
+		$this->assertStringContainsString( 'SUT must contain a non-empty "slug" string', $result['output'], 'Expected error message not found in: ' . $result['output'] );
 	}
 }

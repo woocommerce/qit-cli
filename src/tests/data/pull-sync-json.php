@@ -52,21 +52,19 @@ function post_request( $url ) {
 try {
 	$sync_url = 'https://qit.woo.com/wp-json/cd/v1/cli/sync';
 
-	// Fetch sync data from API
 	$response = post_request( $sync_url );
 
-	// Override the 'extensions' array
+	// Override the 'extensions' array with wccom extensions only
 	$response['extensions'] = [
-		[ 'id' => 123, 'slug' => 'foo-extension' ],
-		[ 'id' => 456, 'slug' => 'bar-extension' ],
-		[ 'id' => 789, 'slug' => 'baz-extension' ],
-		[ 'id' => 1234, 'slug' => 'qit-beaver' ],
-		[ 'id' => 12345, 'slug' => 'qit-cat' ],
-		[ 'id' => 12346, 'slug' => 'qit-dog' ],
-		[ 'id' => 2165910, 'slug' => 'woocommerce-shipping' ],
-		[ 'id' => 123456, 'slug' => 'woocommerce' ], // Added for ExtensionSetTest
-		[ 'id' => 123457, 'slug' => 'plugin-a' ], // Added for ExtensionSetTest
-		[ 'id' => 123458, 'slug' => 'plugin-b' ], // Added for ExtensionSetTest
+		[ 'id' => 10001, 'slug' => 'wccom-plugin-1', 'type' => 'plugin' ],
+		[ 'id' => 10002, 'slug' => 'wccom-plugin-2', 'type' => 'plugin' ],
+		[ 'id' => 123456, 'slug' => 'woocommerce', 'type' => 'plugin' ],
+		[ 'id' => 2165910, 'slug' => 'woocommerce-shipping', 'type' => 'plugin' ],
+		[ 'id' => 123457, 'slug' => 'plugin-a', 'type' => 'plugin' ],
+		[ 'id' => 123458, 'slug' => 'plugin-b', 'type' => 'plugin' ],
+		[ 'id' => 1234, 'slug' => 'qit-beaver', 'type' => 'plugin' ],
+		[ 'id' => 12345, 'slug' => 'qit-cat', 'type' => 'plugin' ],
+		[ 'id' => 12346, 'slug' => 'qit-dog', 'type' => 'plugin' ],
 	];
 
 	// Override the 'extension_sets' array

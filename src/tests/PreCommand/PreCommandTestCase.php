@@ -72,21 +72,23 @@ abstract class PreCommandTestCase extends TestCase {
 		$input->bind( $command->getDefinition() );
 		$output = new BufferedOutput();
 
-		try {
-			$return_code   = $command->execute( $input, $output );
-			$output_string = $output->fetch();
-			if ( $expect_failure ) {
-				$this->fail( 'Expected an exception but none was thrown' );
+		$return_code   = $command->execute( $input, $output );
+		$output_string = $output->fetch();
+		file_put_contents( '/tmp/qit/qit_debug.log', "run_unit_test: Command executed with return code $return_code, output: $output_string\n", FILE_APPEND );
+
+		if ( $expect_failure ) {
+			if ( $return_code === 0 ) {
+				$this->fail( 'Expected command failure but it succeeded' );
 			}
-			$this->assertEquals( 0, $return_code, 'Command failed: ' . $output_string );
-		} catch ( \RuntimeException $e ) {
-			if ( $expect_failure ) {
-				return $e->getMessage();
+			// Extract error message from output (e.g., "<error>Error loading config: message</error>")
+			if ( preg_match( '/<error>(.*?)<\/error>/', $output_string, $matches ) ) {
+				return [ 'exit_code' => $return_code, 'output' => $matches[1] ];
 			}
-			throw $e;
-		} finally {
-			putenv( 'QIT_TESTING_ENV_INFO' );
+
+			return [ 'exit_code' => $return_code, 'output' => $output_string ]; // Fallback to full output
 		}
+
+		$this->assertEquals( 0, $return_code, 'Command failed: ' . $output_string );
 
 		$lines    = explode( "\n", trim( $output_string ) );
 		$env_info = null;
@@ -158,6 +160,15 @@ abstract class PreCommandTestCase extends TestCase {
 								$plugin['downloaded_source'] = '/tmp-normalized/plugin.zip';
 							} elseif ( str_contains( $plugin['downloaded_source'], 'woocommerce' ) ) {
 								$plugin['downloaded_source'] = '/tmp-normalized/cache/plugin/woocommerce-8.0.0.zip';
+							} elseif ( isset( $plugin['from'] ) && $plugin['from'] === 'url' ) {
+								// Normalize URL-sourced plugin paths
+								$plugin['downloaded_source'] = '/tmp-normalized/cache/plugin/' . $plugin['slug'] . '.zip';
+							} else {
+								// Fallback for other plugins
+								$plugin['downloaded_source'] = sprintf(
+									'/tmp-normalized/cache/plugin/%s.zip',
+									$plugin['slug'] ?? 'unknown-plugin'
+								);
 							}
 						}
 					}
@@ -325,5 +336,47 @@ abstract class PreCommandTestCase extends TestCase {
 			'entrypoint'        => $entrypoint,
 			'source'            => $source,
 		] );
+	}
+
+	protected function mockStandardExtensions(): void {
+		// Mock WooCommerce.com download URLs for wccom plugins
+		$this->mockWooComDownloadUrls( [
+			'urls' => [
+				'wccom-plugin-1' => [
+					'slug'    => 'wccom-plugin-1',
+					'version' => '1.0.0',
+					'url'     => 'https://qit.woo.com/downloads/wccom-plugin-1.zip',
+				],
+				'wccom-plugin-2' => [
+					'slug'    => 'wccom-plugin-2',
+					'version' => '1.0.0',
+					'url'     => 'https://qit.woo.com/downloads/wccom-plugin-2.zip',
+				],
+				'woocommerce'    => [
+					'slug'    => 'woocommerce',
+					'version' => '8.0.0',
+					'url'     => 'https://qit.woo.com/downloads/woocommerce.zip',
+				],
+			],
+		] );
+
+		// Mock WordPress.org plugin API responses
+		$this->mockWpOrgPlugin(
+			'wporg-plugin-1',
+			'1.0.0',
+			'https://downloads.wordpress.org/plugin/wporg-plugin-1.zip'
+		);
+		$this->mockWpOrgPlugin(
+			'wporg-plugin-2',
+			'1.0.0',
+			'https://downloads.wordpress.org/plugin/wporg-plugin-2.zip'
+		);
+
+		// Mock download URLs for all standard extensions
+		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/wccom-plugin-1.zip', $this->createMinimalPluginZip( 'wccom-plugin-1', '1.0.0' ) );
+		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/wccom-plugin-2.zip', $this->createMinimalPluginZip( 'wccom-plugin-2', '1.0.0' ) );
+		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/woocommerce.zip', $this->createMinimalPluginZip( 'woocommerce', '8.0.0' ) );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/wporg-plugin-1.zip', $this->createMinimalPluginZip( 'wporg-plugin-1', '1.0.0' ) );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/wporg-plugin-2.zip', $this->createMinimalPluginZip( 'wporg-plugin-2', '1.0.0' ) );
 	}
 }
