@@ -4,8 +4,6 @@ namespace QIT_CLI\PreCommand\ConfigFile;
 
 use QIT_CLI\App;
 use QIT_CLI\RequestBuilder;
-
-// Add import
 use QIT_CLI\PreCommand\ConfigFile\Parsers\CustomTestPackageParser;
 use QIT_CLI\PreCommand\ConfigFile\Parsers\EnvironmentParser;
 use QIT_CLI\PreCommand\ConfigFile\Parsers\GroupParser;
@@ -46,20 +44,25 @@ class ConfigParser {
 		$parsed_config = [];
 		file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: Initial parsed_config for $config_file: " . print_r( $parsed_config, true ) . "\n", FILE_APPEND );
 
-		// Parse all fields first, except extends
+		// Parse SUT first to validate against environments
+		if ( isset( $raw_config['sut'] ) ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: Parsing SUT for $config_file: " . print_r( $raw_config['sut'], true ) . "\n", FILE_APPEND );
+			$parsed_config['sut'] = App::make( SutParser::class )->parse( $raw_config['sut'] );
+			file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: Parsed SUT for $config_file: " . print_r( $parsed_config['sut'], true ) . "\n", FILE_APPEND );
+		}
+
+		// Validate SUT against raw environment config
+		if ( isset( $parsed_config['sut'] ) && isset( $raw_config['environments'] ) ) {
+			$this->validate_sut_consistency( $parsed_config['sut'], $raw_config['environments'] );
+		}
+
+		// Parse remaining fields
 		foreach ( $raw_config as $key => $value ) {
-			if ( $key === 'extends' ) {
-				continue; // Handle extends last
+			if ( $key === 'extends' || $key === 'sut' ) {
+				continue;
 			}
 			file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: Processing key '$key' for $config_file\n", FILE_APPEND );
 			switch ( $key ) {
-				case 'sut':
-					if ( isset( $value ) ) {
-						file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: Parsing SUT for $config_file: " . print_r( $value, true ) . "\n", FILE_APPEND );
-						$parsed_config[ $key ] = App::make( SutParser::class )->parse( $value );
-						file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: Parsed SUT for $config_file: " . print_r( $parsed_config[ $key ], true ) . "\n", FILE_APPEND );
-					}
-					break;
 				case '$schema':
 					$parsed_config[ $key ] = App::make( SimpleValueParser::class )->parse( $value, $key );
 					file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: Parsed schema for $config_file\n", FILE_APPEND );
@@ -87,7 +90,6 @@ class ConfigParser {
 			}
 		}
 
-		// Handle extends last
 		if ( isset( $raw_config['extends'] ) ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: Handling extends '{$raw_config['extends']}' for $config_file with parsed_config: " . print_r( $parsed_config, true ) . "\n", FILE_APPEND );
 			$base_file   = $this->resolve_extends_path( $raw_config['extends'], $config_file );
@@ -99,13 +101,59 @@ class ConfigParser {
 
 		file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: Parsing completed for $config_file with final parsed_config: " . print_r( $parsed_config, true ) . "\n", FILE_APPEND );
 
-		// Require sut only for the top-level configuration
 		if ( $is_top_level && ! isset( $parsed_config['sut'] ) ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: SUT configuration is required for top-level config $config_file\n", FILE_APPEND );
 			throw new \RuntimeException( "SUT configuration is required." );
 		}
 
 		return $parsed_config;
+	}
+
+	protected function validate_sut_consistency( array $sut_config, array $raw_environments ): void {
+		foreach ( $raw_environments as $env_name => $env_config ) {
+			if ( isset( $env_config['plugins'] ) ) {
+				foreach ( $env_config['plugins'] as $plugin ) {
+					if ( ! is_array( $plugin ) || ! isset( $plugin['slug'] ) ) {
+						continue; // Skip non-array or invalid plugins
+					}
+					if ( $plugin['slug'] === $sut_config['slug'] ) {
+						if ( ! isset( $plugin['source']['type'] ) || $plugin['source']['type'] !== $sut_config['source']['type'] ) {
+							file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: SUT configuration mismatch for '{$sut_config['slug']}' in environment '$env_name': source type '" . ( $plugin['source']['type'] ?? 'none' ) . "' vs '{$sut_config['source']['type']}'\n", FILE_APPEND );
+							throw new \RuntimeException( "SUT configuration mismatch between main config and environment" );
+						}
+						if ( $sut_config['source']['type'] === 'directory' && ( ! isset( $plugin['source']['path'] ) || $plugin['source']['path'] !== $sut_config['source']['path'] ) ) {
+							file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: SUT path mismatch for '{$sut_config['slug']}' in environment '$env_name': path '" . ( $plugin['source']['path'] ?? 'none' ) . "' vs '{$sut_config['source']['path']}'\n", FILE_APPEND );
+							throw new \RuntimeException( "SUT configuration mismatch between main config and environment" );
+						}
+						if ( $sut_config['source']['type'] === 'zip' && ( ! isset( $plugin['source']['path'] ) || $plugin['source']['path'] !== $sut_config['source']['path'] ) ) {
+							file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: SUT path mismatch for '{$sut_config['slug']}' in environment '$env_name': path '" . ( $plugin['source']['path'] ?? 'none' ) . "' vs '{$sut_config['source']['path']}'\n", FILE_APPEND );
+							throw new \RuntimeException( "SUT configuration mismatch between main config and environment" );
+						}
+					}
+				}
+			}
+			if ( isset( $env_config['themes'] ) ) {
+				foreach ( $env_config['themes'] as $theme ) {
+					if ( ! is_array( $theme ) || ! isset( $theme['slug'] ) ) {
+						continue;
+					}
+					if ( $theme['slug'] === $sut_config['slug'] ) {
+						if ( ! isset( $theme['source']['type'] ) || $theme['source']['type'] !== $sut_config['source']['type'] ) {
+							file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: SUT configuration mismatch for '{$sut_config['slug']}' in environment '$env_name': source type '" . ( $theme['source']['type'] ?? 'none' ) . "' vs '{$sut_config['source']['type']}'\n", FILE_APPEND );
+							throw new \RuntimeException( "SUT configuration mismatch between main config and environment" );
+						}
+						if ( $sut_config['source']['type'] === 'directory' && ( ! isset( $theme['source']['path'] ) || $theme['source']['path'] !== $sut_config['source']['path'] ) ) {
+							file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: SUT path mismatch for '{$sut_config['slug']}' in environment '$env_name': path '" . ( $theme['source']['path'] ?? 'none' ) . "' vs '{$sut_config['source']['path']}'\n", FILE_APPEND );
+							throw new \RuntimeException( "SUT configuration mismatch between main config and environment" );
+						}
+						if ( $sut_config['source']['type'] === 'zip' && ( ! isset( $theme['source']['path'] ) || $theme['source']['path'] !== $sut_config['source']['path'] ) ) {
+							file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: SUT path mismatch for '{$sut_config['slug']}' in environment '$env_name': path '" . ( $theme['source']['path'] ?? 'none' ) . "' vs '{$sut_config['source']['path']}'\n", FILE_APPEND );
+							throw new \RuntimeException( "SUT configuration mismatch between main config and environment" );
+						}
+					}
+				}
+			}
+		}
 	}
 
 	protected function resolve_extends_path( string $extends, string $current_file ): string {
@@ -120,7 +168,6 @@ class ConfigParser {
 			return $resolved_path;
 		}
 
-		// Use RequestBuilder for URL-based extends
 		file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: Fetching base config from URL '$extends' using RequestBuilder\n", FILE_APPEND );
 		try {
 			$request  = new RequestBuilder( $extends );
@@ -141,7 +188,6 @@ class ConfigParser {
 
 		$merged = $base;
 
-		// Preserve child's parsed SUT if available
 		if ( isset( $child['sut'] ) ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: Using child's parsed SUT: " . print_r( $child['sut'], true ) . "\n", FILE_APPEND );
 			$merged['sut'] = $child['sut'];
@@ -152,7 +198,6 @@ class ConfigParser {
 			file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: No SUT in child parsed or raw config\n", FILE_APPEND );
 		}
 
-		// Merge other fields from child_raw
 		foreach ( $child_raw as $key => $value ) {
 			if ( $key === 'extends' || $key === 'sut' ) {
 				continue;
@@ -168,7 +213,6 @@ class ConfigParser {
 			}
 		}
 
-		// Merge parsed fields from child (except sut, handled above)
 		foreach ( $child as $key => $value ) {
 			if ( $key === 'sut' ) {
 				continue;

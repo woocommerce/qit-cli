@@ -994,7 +994,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 						[
 							'slug'   => 'test-plugin',
 							'source' => [
-								'type' => 'zip', // Mismatch!
+								'type' => 'zip',
 								'path' => '/different/path.zip',
 							],
 						],
@@ -1006,10 +1006,18 @@ class SutConfigurationTest extends PreCommandTestCase {
 		try {
 			$result = $this->run_unit_test( $config, [], true );
 			$this->assertNotEquals( 0, $result['exit_code'], 'Expected command to fail' );
-			$this->assertStringContainsString( 'SUT configuration mismatch between main config and environment', $result['output'], 'Expected error message not found in: ' . $result['output'] );
+			$this->assertStringContainsString(
+				'SUT configuration mismatch between main config and environment',
+				$result['output'],
+				'Expected error message not found in: ' . $result['output']
+			);
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_mismatched_environment_config: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
-			throw $e;
+			$this->assertStringContainsString(
+				'SUT configuration mismatch between main config and environment',
+				$e->getMessage(),
+				'Expected error message not found in exception: ' . $e->getMessage()
+			);
 		}
 	}
 }

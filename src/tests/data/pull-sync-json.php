@@ -65,6 +65,8 @@ try {
 		[ 'id' => 1234, 'slug' => 'qit-beaver', 'type' => 'plugin' ],
 		[ 'id' => 12345, 'slug' => 'qit-cat', 'type' => 'plugin' ],
 		[ 'id' => 12346, 'slug' => 'qit-dog', 'type' => 'plugin' ],
+		['id' => 10003, 'slug' => 'wccom-theme-1', 'type' => 'theme'],
+		['id' => 10004, 'slug' => 'wccom-theme-2', 'type' => 'theme'],
 	];
 
 	// Override the 'extension_sets' array

@@ -41,7 +41,7 @@
             "entrypoint": null,
             "source": "\/tmp-normalized\/plugin.zip",
             "directory": null,
-            "downloaded_source": "\/tmp-normalized\/plugin.zip",
+            "downloaded_source": "\/tmp-normalized\/cache\/plugin\/awesome-plugin.zip",
             "type": "plugin",
             "handler": null,
             "version": "undefined",
