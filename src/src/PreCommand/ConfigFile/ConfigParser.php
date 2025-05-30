@@ -81,7 +81,7 @@ class ConfigParser {
 					file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: Environments parsed for $config_file\n", FILE_APPEND );
 					break;
 				case 'test_packages':
-					$parsed_config[ $key ] = App::make( CustomTestPackageParser::class )->parse( $value );
+					$parsed_config[ $key ] = App::make( CustomTestPackageParser::class )->parse( $value, [ 'root_path' => dirname( $config_file ) ] );
 					file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: Parsed test_packages for $config_file\n", FILE_APPEND );
 					break;
 				default:
