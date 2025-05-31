@@ -23,7 +23,7 @@
         {
             "slug": "woocommerce",
             "entrypoint": null,
-            "source": "https:\/\/downloads.wordpress.org\/plugin\/woocommerce.zip",
+            "source": "https:\/\/downloads.wordpress.org\/plugin\/woocommerce.8.0.0.zip",
             "directory": null,
             "downloaded_source": "\/tmp-normalized\/cache\/plugin\/woocommerce-8.0.0.zip",
             "type": "plugin",
@@ -41,12 +41,12 @@
         {
             "slug": "storefront",
             "entrypoint": null,
-            "source": "https:\/\/downloads.wordpress.org\/theme\/storefront.zip",
+            "source": "https:\/\/downloads.wordpress.org\/theme\/storefront.4.1.0.zip",
             "directory": null,
             "downloaded_source": "\/tmp-normalized\/cache\/theme\/storefront.zip",
             "type": "theme",
             "handler": null,
-            "version": "4.5.0",
+            "version": "4.1.0",
             "action": null,
             "test_tags": null,
             "priority": 50,

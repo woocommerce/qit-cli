@@ -5,7 +5,7 @@
             "slug": "awesome-plugin",
             "source": {
                 "type": "directory",
-                "path": "\/normalized\/path\/plugin-folder"
+                "path": "\/tmp\/qit\/qit_test_normalized\/my-awesome-plugin"
             }
         }
     },
@@ -40,8 +40,8 @@
             "slug": "awesome-plugin",
             "entrypoint": null,
             "source": null,
-            "directory": "\/tmp-normalized\/plugin-folder",
-            "downloaded_source": "\/tmp-normalized\/plugin-folder",
+            "directory": "\/tmp\/qit\/qit_test_normalized\/my-awesome-plugin",
+            "downloaded_source": "\/tmp-normalized\/cache\/plugin\/awesome-plugin.zip",
             "type": "plugin",
             "handler": null,
             "version": "undefined",
@@ -55,6 +55,8 @@
     ],
     "themes": [],
     "env": {
+        "QIT_DEBUG": "true",
+        "APP_ENV": "test",
         "WP_CLI_CONFIG_PATH": "\/qit\/wp-cli.yml"
     },
     "tunnel": false,
@@ -74,32 +76,5 @@
     "woo_version": "",
     "is_development_build": false,
     "notify": "",
-    "test_packages": {
-        "e2e": {
-            "default": {
-                "version": "1.0",
-                "author": "Awesome Team",
-                "description": "Full checkout flow test for awesome-plugin",
-                "test_command": "npm run playwright",
-                "lifecycle": {
-                    "before_all_tests": [
-                        {
-                            "command": ".\/default\/before_all.sh",
-                            "priority": 10,
-                            "runs_on": "docker"
-                        }
-                    ],
-                    "after_all_tests": [
-                        {
-                            "command": ".\/default\/after_all.sh",
-                            "runs_on": "docker"
-                        }
-                    ]
-                },
-                "env_vars": {
-                    "QIT_E2E_DEBUG": "true"
-                }
-            }
-        }
-    }
+    "test_packages": []
 }

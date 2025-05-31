@@ -17,16 +17,73 @@ class PluginDependenciesTest extends PreCommandTestCase {
 			[ 'gd' ]
 		);
 		$this->mockWooComDownloadUrls( [
-			'foo-extension' => 'https://qit.woo.com/downloads/foo-extension.zip',
-			'bar-extension' => 'https://qit.woo.com/downloads/bar-extension.zip',
-			'baz-extension' => 'https://qit.woo.com/downloads/baz-extension.zip',
-			'plugin-b'      => 'https://qit.woo.com/downloads/plugin-b.zip',
-			'plugin-a'      => 'https://qit.woo.com/downloads/plugin-a.zip',
-			'woocommerce'   => 'https://qit.woo.com/downloads/woocommerce.zip',
+			'urls' => [
+				'foo-extension' => [
+					'slug'    => 'foo-extension',
+					'version' => '1.0.0',
+					'url'     => 'https://qit.woo.com/downloads/foo-extension.zip',
+				],
+				'bar-extension' => [
+					'slug'    => 'bar-extension',
+					'version' => '1.0.0',
+					'url'     => 'https://qit.woo.com/downloads/bar-extension.zip',
+				],
+				'baz-extension' => [
+					'slug'    => 'baz-extension',
+					'version' => '1.0.0',
+					'url'     => 'https://qit.woo.com/downloads/baz-extension.zip',
+				],
+				'plugin-b'      => [
+					'slug'    => 'plugin-b',
+					'version' => '1.0.0',
+					'url'     => 'https://qit.woo.com/downloads/plugin-b.zip',
+				],
+				'plugin-a'      => [
+					'slug'    => 'plugin-a',
+					'version' => '1.0.0',
+					'url'     => 'https://qit.woo.com/downloads/plugin-a.zip',
+				],
+				'woocommerce'   => [
+					'slug'    => 'woocommerce',
+					'version' => '8.0.0',
+					'url'     => 'https://qit.woo.com/downloads/woocommerce.zip',
+				],
+			],
 		] );
 		$this->mockWpOrgPlugin( 'woocommerce-gateway-stripe', '9.5.2', 'https://downloads.wordpress.org/plugin/woocommerce-gateway-stripe.9.5.2.zip', [ 'woocommerce' ] );
 		$this->mockWpOrgPlugin( 'woocommerce', '8.0.0', 'https://downloads.wordpress.org/plugin/woocommerce.8.0.0.zip' );
 		$this->mockWpOrgTheme( 'twentytwentyfive', '1.0', 'https://downloads.wordpress.org/theme/twentytwentyfive.1.0.zip' );
+
+		// Mock download URLs for plugins
+		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/foo-extension.zip', $this->createMinimalPluginZip( 'foo-extension', '1.0.0' ) );
+		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/bar-extension.zip', $this->createMinimalPluginZip( 'bar-extension', '1.0.0' ) );
+		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/baz-extension.zip', $this->createMinimalPluginZip( 'baz-extension', '1.0.0' ) );
+		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/plugin-b.zip', $this->createMinimalPluginZip( 'plugin-b', '1.0.0' ) );
+		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/plugin-a.zip', $this->createMinimalPluginZip( 'plugin-a', '1.0.0' ) );
+		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/woocommerce.zip', $this->createMinimalPluginZip( 'woocommerce', '8.0.0' ) );
+
+		// Mock WordPress.org plugin downloads (both versioned and non-versioned URLs)
+		$woo_zip = $this->createMinimalPluginZip( 'woocommerce', '8.0.0' );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/woocommerce.zip', $woo_zip );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/woocommerce.8.0.0.zip', $woo_zip );
+
+		$stripe_zip = $this->createMinimalPluginZip( 'woocommerce-gateway-stripe', '9.5.2' );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/woocommerce-gateway-stripe.zip', $stripe_zip );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/woocommerce-gateway-stripe.9.5.2.zip', $stripe_zip );
+
+		// Mock other plugins that might be needed
+		foreach (['plugin-a', 'plugin-b', 'foo-extension', 'bar-extension', 'baz-extension'] as $slug) {
+			$zip = $this->createMinimalPluginZip( $slug, '1.0.0' );
+			$this->mockDownloadUrl( "https://downloads.wordpress.org/plugin/{$slug}.zip", $zip );
+			$this->mockDownloadUrl( "https://downloads.wordpress.org/plugin/{$slug}.1.0.0.zip", $zip );
+		}
+
+		// Mock theme downloads
+		$theme_zip = $this->createMinimalThemeZip( 'twentytwentyfive', '1.0' );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/theme/twentytwentyfive.zip', $theme_zip );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/theme/twentytwentyfive.1.0.zip', $theme_zip );
+
+		// Mock plugin directory is created by the parent class
 	}
 
 	public function test_get_dependencies_cache_hit_string_config(): void {
@@ -36,7 +93,7 @@ class PluginDependenciesTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -67,7 +124,7 @@ class PluginDependenciesTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -97,7 +154,7 @@ class PluginDependenciesTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -124,7 +181,7 @@ class PluginDependenciesTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -156,7 +213,7 @@ class PluginDependenciesTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -190,7 +247,7 @@ class PluginDependenciesTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -223,7 +280,7 @@ class PluginDependenciesTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -259,7 +316,7 @@ class PluginDependenciesTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -301,7 +358,7 @@ class PluginDependenciesTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -312,7 +369,7 @@ class PluginDependenciesTest extends PreCommandTestCase {
 		];
 
 		$error = $this->run_unit_test( $config, [], true );
-		$this->assertStringContainsString( 'Extension \'invalid-slug\' (plugin) not found in WooCommerce.com or WordPress.org', $error );
+		$this->assertStringContainsString( 'Extension \'invalid-slug\' (plugin) not found in WooCommerce.com or WordPress.org', $error['output'] );
 	}
 
 	public function test_invalid_from_object_config(): void {
@@ -322,7 +379,7 @@ class PluginDependenciesTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -335,7 +392,7 @@ class PluginDependenciesTest extends PreCommandTestCase {
 		];
 
 		$error = $this->run_unit_test( $config, [], true );
-		$this->assertStringContainsString( 'Invalid \'from\' value \'invalid\' for \'some-plugin\' in plugins', $error );
+		$this->assertStringContainsString( 'Invalid \'from\' value \'invalid\' for \'some-plugin\' in plugins', $error['output'] );
 	}
 
 	public function test_missing_path_local_object_config(): void {
@@ -345,7 +402,7 @@ class PluginDependenciesTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -358,7 +415,7 @@ class PluginDependenciesTest extends PreCommandTestCase {
 		];
 
 		$error = $this->run_unit_test( $config, [], true );
-		$this->assertStringContainsString( 'Local extension \'custom-plugin\' (plugin) must have a non-empty \'path\'', $error );
+		$this->assertStringContainsString( 'Local extension \'custom-plugin\' (plugin) must have a non-empty \'path\'', $error['output'] );
 	}
 
 	public function test_local_plugin_b_with_dependency(): void {
@@ -370,7 +427,7 @@ class PluginDependenciesTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [

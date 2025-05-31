@@ -279,7 +279,11 @@ class PluginDependencies {
 
 			if ( empty( $exists ) ) {
 				$theme->added_automatically = 'Added as a dependency';
+				$from = $theme->from; // Save the 'from' property
 				$theme->populate_from();
+				if ($from !== null) {
+					$theme->from = $from; // Restore the 'from' property if it was set
+				}
 				$themes_result[] = $theme;
 			}
 		}
@@ -313,6 +317,12 @@ class PluginDependencies {
 			}
 
 			if ( $found_index === null ) {
+				$dep_ext->added_automatically = 'Added as a dependency';
+				$from = $dep_ext->from; // Save the 'from' property
+				$dep_ext->populate_from();
+				if ($from !== null) {
+					$dep_ext->from = $from; // Restore the 'from' property if it was set
+				}
 				$existing_plugins[] = $dep_ext;
 			}
 		}
@@ -336,7 +346,11 @@ class PluginDependencies {
 
 			if ( $found_index === null ) {
 				$dep_ext->added_automatically = 'Added as a dependency';
+				$from = $dep_ext->from; // Save the 'from' property
 				$dep_ext->populate_from();
+				if ($from !== null) {
+					$dep_ext->from = $from; // Restore the 'from' property if it was set
+				}
 				$existing_themes[] = $dep_ext;
 			}
 		}

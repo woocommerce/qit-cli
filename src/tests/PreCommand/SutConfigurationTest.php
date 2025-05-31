@@ -15,13 +15,15 @@ class SutConfigurationTest extends PreCommandTestCase {
 		$woo_zip_content = $this->createMinimalPluginZip( 'woocommerce', '8.0.0' );
 
 		// Mock WooCommerce API response and ZIP download
-		$this->mockWpOrgPlugin( 'woocommerce', '8.0.0', 'https://downloads.wordpress.org/plugin/woocommerce.zip' );
+		$this->mockWpOrgPlugin( 'woocommerce', '8.0.0', 'https://downloads.wordpress.org/plugin/woocommerce.8.0.0.zip' );
 		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/woocommerce.zip', $woo_zip_content );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/woocommerce.8.0.0.zip', $woo_zip_content );
 
 		// Mock Storefront theme for tests requiring themes
 		$storefront_zip_content = $this->createMinimalThemeZip( 'storefront', '4.5.0' );
-		$this->mockWpOrgTheme( 'storefront', '4.5.0', 'https://downloads.wordpress.org/theme/storefront.zip' );
+		$this->mockWpOrgTheme( 'storefront', '4.5.0', 'https://downloads.wordpress.org/theme/storefront.4.5.0.zip' );
 		$this->mockDownloadUrl( 'https://downloads.wordpress.org/theme/storefront.zip', $storefront_zip_content );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/theme/storefront.4.5.0.zip', $storefront_zip_content );
 
 		// Mock empty WooCommerce.com response to prevent unmocked requests
 		$this->mockWooComDownloadUrls( [] );

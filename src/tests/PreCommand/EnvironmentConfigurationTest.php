@@ -9,9 +9,26 @@ class EnvironmentConfigurationTest extends PreCommandTestCase {
 
 	public function setUp(): void {
 		parent::setUp();
-		$this->mockWpOrgPlugin( 'woocommerce', '8.0.0', 'https://downloads.wordpress.org/plugin/woocommerce.zip' );
-		$this->mockWpOrgTheme( 'storefront', '2.0.0', 'https://downloads.wordpress.org/theme/storefront.zip' );
-		$this->mockWpOrgTheme( 'twentytwentyone', '1.0.0', 'https://downloads.wordpress.org/theme/twentytwentyone.zip' );
+
+		// Create minimal WooCommerce ZIP content
+		$woo_zip_content = $this->createMinimalPluginZip( 'woocommerce', '8.0.0' );
+
+		// Mock WooCommerce API response and ZIP download
+		$this->mockWpOrgPlugin( 'woocommerce', '8.0.0', 'https://downloads.wordpress.org/plugin/woocommerce.8.0.0.zip' );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/woocommerce.zip', $woo_zip_content );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/woocommerce.8.0.0.zip', $woo_zip_content );
+
+		// Mock Storefront theme
+		$storefront_zip_content = $this->createMinimalThemeZip( 'storefront', '4.5.0' );
+		$this->mockWpOrgTheme( 'storefront', '4.5.0', 'https://downloads.wordpress.org/theme/storefront.4.5.0.zip' );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/theme/storefront.zip', $storefront_zip_content );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/theme/storefront.4.5.0.zip', $storefront_zip_content );
+
+		// Mock Twenty Twenty-One theme
+		$twentytwentyone_zip_content = $this->createMinimalThemeZip( 'twentytwentyone', '1.0.0' );
+		$this->mockWpOrgTheme( 'twentytwentyone', '1.0.0', 'https://downloads.wordpress.org/theme/twentytwentyone.1.0.0.zip' );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/theme/twentytwentyone.zip', $twentytwentyone_zip_content );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/theme/twentytwentyone.1.0.0.zip', $twentytwentyone_zip_content );
 	}
 
 	public function test_environment_with_env_vars(): void {
@@ -21,7 +38,7 @@ class EnvironmentConfigurationTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -50,7 +67,7 @@ class EnvironmentConfigurationTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -88,7 +105,7 @@ class EnvironmentConfigurationTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'test_packages' => [
@@ -122,7 +139,7 @@ class EnvironmentConfigurationTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [

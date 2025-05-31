@@ -10,11 +10,30 @@ class CliOverridesTest extends PreCommandTestCase {
 
 	public function setUp(): void {
 		parent::setUp();
-		// Mock extensions used in tests
-		$this->mockExtension( 'woocommerce', 'plugin', '8.0.0', 'wporg' );
-		$this->mockExtension( 'contact-form-7', 'plugin', '5.6.0', 'wporg' );
-		$this->mockExtension( 'storefront', 'theme', '4.1.0', 'wporg' );
-		$this->mockExtension( 'twentytwentyone', 'theme', '1.7', 'wporg' );
+
+		// Create and mock WooCommerce plugin
+		$woo_zip = $this->createMinimalPluginZip( 'woocommerce', '8.0.0' );
+		$this->mockWpOrgPlugin( 'woocommerce', '8.0.0', 'https://downloads.wordpress.org/plugin/woocommerce.8.0.0.zip' );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/woocommerce.zip', $woo_zip );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/woocommerce.8.0.0.zip', $woo_zip );
+
+		// Create and mock Contact Form 7 plugin
+		$cf7_zip = $this->createMinimalPluginZip( 'contact-form-7', '5.6.0' );
+		$this->mockWpOrgPlugin( 'contact-form-7', '5.6.0', 'https://downloads.wordpress.org/plugin/contact-form-7.5.6.0.zip' );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/contact-form-7.zip', $cf7_zip );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/contact-form-7.5.6.0.zip', $cf7_zip );
+
+		// Create and mock Storefront theme
+		$storefront_zip = $this->createMinimalThemeZip( 'storefront', '4.1.0' );
+		$this->mockWpOrgTheme( 'storefront', '4.1.0', 'https://downloads.wordpress.org/theme/storefront.4.1.0.zip' );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/theme/storefront.zip', $storefront_zip );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/theme/storefront.4.1.0.zip', $storefront_zip );
+
+		// Create and mock Twenty Twenty-One theme
+		$twentytwentyone_zip = $this->createMinimalThemeZip( 'twentytwentyone', '1.7' );
+		$this->mockWpOrgTheme( 'twentytwentyone', '1.7', 'https://downloads.wordpress.org/theme/twentytwentyone.1.7.zip' );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/theme/twentytwentyone.zip', $twentytwentyone_zip );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/theme/twentytwentyone.1.7.zip', $twentytwentyone_zip );
 	}
 
 	public function test_version_overrides(): void {
@@ -24,7 +43,7 @@ class CliOverridesTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -57,7 +76,7 @@ class CliOverridesTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -94,7 +113,7 @@ class CliOverridesTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [

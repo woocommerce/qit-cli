@@ -11,10 +11,11 @@ use PHPUnit\Framework\TestCase;
 use function QIT_CLI\get_manager_url;
 
 abstract class PreCommandTestCase extends TestCase {
-	protected $temp_dir;
+ protected $temp_dir;
 	protected $to_delete = [];
 	protected $to_reset = [];
 	protected $non_normalized_env_info = null;
+	protected $mock_plugin_dir;
 
 	protected function setUp(): void {
 		parent::setUp();
@@ -26,6 +27,10 @@ abstract class PreCommandTestCase extends TestCase {
 			}
 			$this->non_normalized_env_info = null;
 			$this->to_reset                = [];
+
+			// Create a mock plugin directory
+			$this->createMockPluginDirectory();
+
 			file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: setUp temp_dir set to: {$this->temp_dir}\n", FILE_APPEND );
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: setUp exception: " . $e->getMessage() . "\n", FILE_APPEND );
@@ -93,6 +98,49 @@ abstract class PreCommandTestCase extends TestCase {
 			}
 		}
 		rmdir( $dir );
+	}
+
+	/**
+	 * Creates a mock plugin directory with the necessary files.
+	 */
+	protected function createMockPluginDirectory(): void {
+		// Create the plugin directory
+		$plugin_dir = $this->temp_dir . '/my-awesome-plugin';
+		if (!is_dir($plugin_dir)) {
+			mkdir($plugin_dir, 0777, true);
+		}
+
+		// Create a basic plugin file
+		$plugin_file = $plugin_dir . '/my-awesome-plugin.php';
+		$plugin_content = <<<PHP
+<?php
+/**
+ * Plugin Name: My Awesome Plugin
+ * Version: 1.0.0
+ * Description: A mock plugin for testing
+ * Author: QIT Tests
+ */
+
+// This is a mock plugin file for testing
+PHP;
+		file_put_contents($plugin_file, $plugin_content);
+
+		// Store the plugin directory path
+		$this->mock_plugin_dir = $plugin_dir;
+
+		// Add to the list of files to delete
+		$this->to_delete[] = $plugin_dir;
+
+		file_put_contents('/tmp/qit/qit_debug.log', "PreCommandTest: Created mock plugin directory at {$plugin_dir}\n", FILE_APPEND);
+	}
+
+	/**
+	 * Gets the path to the mock plugin directory.
+	 *
+	 * @return string The path to the mock plugin directory
+	 */
+	protected function getMockPluginDir(): string {
+		return $this->mock_plugin_dir;
 	}
 
 	protected function run_unit_test( array $config, array $cli_args = [], bool $expect_failure = false ) {
@@ -210,16 +258,43 @@ abstract class PreCommandTestCase extends TestCase {
 		$cache_dir  = '/tmp/qit/cache';
 		$cache_file = $from === 'local' && $source_path ? $source_path : "$cache_dir/$type/$slug-$version.zip";
 		$entrypoint = $type === 'plugin' ? "$slug/$slug.php" : "$slug/style.css";
-		$source     = $from === 'wporg' ? "https://downloads.wordpress.org/$type/$slug.$version.zip" : ( $from === 'local' ? null : "https://qit.woo.com/downloads/$slug.zip" );
+		$source     = $from === 'wporg' ? "https://downloads.wordpress.org/$type/$slug.zip" : ( $from === 'local' ? null : "https://qit.woo.com/downloads/$slug.zip" );
+		$versioned_source = $from === 'wporg' ? "https://downloads.wordpress.org/$type/$slug.$version.zip" : ( $from === 'local' ? null : "https://qit.woo.com/downloads/$slug.zip" );
 
 		if ( $from === 'wporg' ) {
 			if ( $type === 'plugin' ) {
-				$this->mockWpOrgPlugin( $slug, $version, $source );
+				$this->mockWpOrgPlugin( $slug, $version, $versioned_source );
+
+				// Create ZIP content for both URLs
+				$zip_content = $this->createMinimalPluginZip( $slug, $version );
+				$this->mockDownloadUrl( $source, $zip_content );
+				$this->mockDownloadUrl( $versioned_source, $zip_content );
+
+				// Also mock the format with version after slug
+				$alt_versioned_source = "https://downloads.wordpress.org/$type/$slug.$version.zip";
+				if ($alt_versioned_source !== $versioned_source) {
+					$this->mockDownloadUrl( $alt_versioned_source, $zip_content );
+				}
 			} else {
-				$this->mockWpOrgTheme( $slug, $version, $source );
+				$this->mockWpOrgTheme( $slug, $version, $versioned_source );
+
+				// Create ZIP content for both URLs
+				$zip_content = $this->createMinimalThemeZip( $slug, $version );
+				$this->mockDownloadUrl( $source, $zip_content );
+				$this->mockDownloadUrl( $versioned_source, $zip_content );
+
+				// Also mock the format with version after slug
+				$alt_versioned_source = "https://downloads.wordpress.org/$type/$slug.$version.zip";
+				if ($alt_versioned_source !== $versioned_source) {
+					$this->mockDownloadUrl( $alt_versioned_source, $zip_content );
+				}
 			}
 		} elseif ( $from === 'wccom' ) {
 			$this->mockWooComDownloadUrls( [ $slug => $source ] );
+
+			// Create ZIP content
+			$zip_content = $this->createMinimalPluginZip( $slug, $version );
+			$this->mockDownloadUrl( $source, $zip_content );
 		} elseif ( $from === 'url' ) {
 			$this->mockDownloadUrl( $source_path, 'mocked-zip-content' );
 		}
@@ -295,6 +370,33 @@ abstract class PreCommandTestCase extends TestCase {
 		}
 	}
 
+	protected function createMinimalThemeZip( string $slug, string $version ): string {
+		$filename = "style.css";
+		$content  = "/*\nTheme Name: " . ucwords( str_replace( '-', ' ', $slug ) ) . "\nVersion: {$version}\n*/";
+
+		$zip  = new \ZipArchive();
+		$temp = tempnam( sys_get_temp_dir(), 'zip' );
+		if ( $temp === false ) {
+			$this->fail( "Failed to create temporary file for ZIP" );
+		}
+		try {
+			if ( ! $zip->open( $temp, \ZipArchive::CREATE | \ZipArchive::OVERWRITE ) ) {
+				$this->fail( "Failed to create ZIP file at $temp" );
+			}
+			$zip->addFromString( "{$slug}/{$filename}", $content );
+			$zip->close();
+
+			$zipContent = file_get_contents( $temp );
+			if ( $zipContent === false ) {
+				$this->fail( "Failed to read ZIP content from $temp" );
+			}
+
+			return $zipContent;
+		} finally {
+			unlink( $temp );
+		}
+	}
+
 	protected function normalize_env_info( array $env_info ): array {
 		file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: Normalizing env_info: " . print_r( $env_info, true ) . "\n", FILE_APPEND );
 
@@ -304,6 +406,14 @@ abstract class PreCommandTestCase extends TestCase {
 
 		$env_info['created_at'] = 1700000000;
 		$env_info['domain']     = 'normalized.localhost';
+
+		// Normalize paths in extra.sut.source.path
+		if ( isset( $env_info['extra']['sut']['source']['path'] ) && str_starts_with( $env_info['extra']['sut']['source']['path'], '/tmp/qit/qit_test_' ) ) {
+			// Extract the plugin name from the path
+			$parts = explode('/', $env_info['extra']['sut']['source']['path']);
+			$plugin_name = end($parts);
+			$env_info['extra']['sut']['source']['path'] = '/tmp/qit/qit_test_normalized/' . $plugin_name;
+		}
 
 		if ( ! empty( $env_info['plugins'] ) && is_array( $env_info['plugins'] ) ) {
 			foreach ( $env_info['plugins'] as &$plugin ) {
@@ -326,30 +436,40 @@ abstract class PreCommandTestCase extends TestCase {
 					);
 
 					if ( isset( $plugin['type'] ) && $plugin['type'] === 'plugin' ) {
-						if ( isset( $plugin['directory'] ) && str_starts_with( $plugin['directory'], '/' ) && str_contains( $plugin['directory'], '/plugin-folder' ) ) {
-							$plugin['directory'] = '/tmp-normalized/plugin-folder';
-						}
+ 					// Normalize directory paths
+ 					if ( isset( $plugin['directory'] ) && str_starts_with( $plugin['directory'], '/' ) ) {
+ 						if ( str_contains( $plugin['directory'], '/plugin-folder' ) ) {
+ 							$plugin['directory'] = '/tmp-normalized/plugin-folder';
+ 						} elseif ( str_starts_with( $plugin['directory'], '/tmp/qit/qit_test_' ) ) {
+ 							// Extract the plugin name from the path
+ 							$parts = explode('/', $plugin['directory']);
+ 							$plugin_name = end($parts);
+ 							$plugin['directory'] = '/tmp/qit/qit_test_normalized/' . $plugin_name;
+ 						} else {
+ 							$plugin['directory'] = '/tmp-normalized/plugin-folder';
+ 						}
+ 					}
 
-						if ( isset( $plugin['source'] ) && str_starts_with( $plugin['source'], '/' ) && str_contains( $plugin['source'], 'plugin.zip' ) ) {
-							$plugin['source'] = '/tmp-normalized/plugin.zip';
-						}
+ 					if ( isset( $plugin['source'] ) && str_starts_with( $plugin['source'], '/' ) && str_contains( $plugin['source'], 'plugin.zip' ) ) {
+ 						$plugin['source'] = '/tmp-normalized/plugin.zip';
+ 					}
 
-						if ( isset( $plugin['downloaded_source'] ) && str_starts_with( $plugin['downloaded_source'], '/' ) ) {
-							if ( str_contains( $plugin['downloaded_source'], '/plugin-folder' ) ) {
-								$plugin['downloaded_source'] = '/tmp-normalized/plugin-folder';
-							} elseif ( str_contains( $plugin['downloaded_source'], 'plugin.zip' ) ) {
-								$plugin['downloaded_source'] = '/tmp-normalized/plugin.zip';
-							} elseif ( str_contains( $plugin['downloaded_source'], 'woocommerce' ) ) {
-								$plugin['downloaded_source'] = '/tmp-normalized/cache/plugin/woocommerce-8.0.0.zip';
-							} elseif ( isset( $plugin['from'] ) && $plugin['from'] === 'url' ) {
-								$plugin['downloaded_source'] = '/tmp-normalized/cache/plugin/' . $plugin['slug'] . '.zip';
-							} else {
-								$plugin['downloaded_source'] = sprintf(
-									'/tmp-normalized/cache/plugin/%s.zip',
-									$plugin['slug'] ?? 'unknown-plugin'
-								);
-							}
-						}
+ 					if ( isset( $plugin['downloaded_source'] ) && str_starts_with( $plugin['downloaded_source'], '/' ) ) {
+ 						if ( str_contains( $plugin['downloaded_source'], '/plugin-folder' ) ) {
+ 							$plugin['downloaded_source'] = '/tmp-normalized/plugin-folder';
+ 						} elseif ( str_contains( $plugin['downloaded_source'], 'plugin.zip' ) ) {
+ 							$plugin['downloaded_source'] = '/tmp-normalized/plugin.zip';
+ 						} elseif ( str_contains( $plugin['downloaded_source'], 'woocommerce' ) ) {
+ 							$plugin['downloaded_source'] = '/tmp-normalized/cache/plugin/woocommerce-8.0.0.zip';
+ 						} elseif ( isset( $plugin['from'] ) && $plugin['from'] === 'url' ) {
+ 							$plugin['downloaded_source'] = '/tmp-normalized/cache/plugin/' . $plugin['slug'] . '.zip';
+ 						} else {
+ 							$plugin['downloaded_source'] = sprintf(
+ 								'/tmp-normalized/cache/plugin/%s.zip',
+ 								$plugin['slug'] ?? 'unknown-plugin'
+ 							);
+ 						}
+ 					}
 					}
 
 					file_put_contents(

@@ -5,7 +5,7 @@
             "slug": "awesome-plugin",
             "source": {
                 "type": "directory",
-                "path": "\/normalized\/path\/plugin-folder"
+                "path": "\/tmp\/qit\/qit_test_normalized\/my-awesome-plugin"
             }
         }
     },
@@ -40,8 +40,8 @@
             "slug": "awesome-plugin",
             "entrypoint": null,
             "source": null,
-            "directory": "\/tmp-normalized\/plugin-folder",
-            "downloaded_source": "\/tmp-normalized\/plugin-folder",
+            "directory": "\/tmp\/qit\/qit_test_normalized\/my-awesome-plugin",
+            "downloaded_source": "\/tmp-normalized\/cache\/plugin\/awesome-plugin.zip",
             "type": "plugin",
             "handler": null,
             "version": "undefined",
@@ -53,7 +53,24 @@
             "from": "directory"
         }
     ],
-    "themes": [],
+    "themes": [
+        {
+            "slug": "storefront",
+            "entrypoint": null,
+            "source": "https:\/\/downloads.wordpress.org\/theme\/storefront.4.1.0.zip",
+            "directory": null,
+            "downloaded_source": "\/tmp-normalized\/cache\/theme\/storefront.zip",
+            "type": "theme",
+            "handler": null,
+            "version": "4.1.0",
+            "action": null,
+            "test_tags": null,
+            "priority": 50,
+            "wccom_id": null,
+            "added_automatically": null,
+            "from": "wporg"
+        }
+    ],
     "env": {
         "WP_CLI_CONFIG_PATH": "\/qit\/wp-cli.yml"
     },
@@ -66,40 +83,13 @@
     "sut_slug": "awesome-plugin",
     "sut_type": "plugin",
     "domain": "normalized.localhost",
-    "skip_activating_plugins": false,
-    "skip_activating_themes": false,
+    "skip_activating_plugins": true,
+    "skip_activating_themes": true,
     "tests": [],
     "playwright_config": [],
     "pw_test_tag": "",
     "woo_version": "",
     "is_development_build": false,
     "notify": "",
-    "test_packages": {
-        "e2e": {
-            "default": {
-                "version": "1.0",
-                "author": "Awesome Team",
-                "description": "Full checkout flow test for awesome-plugin",
-                "test_command": "npm run playwright",
-                "lifecycle": {
-                    "before_all_tests": [
-                        {
-                            "command": ".\/default\/before_all.sh",
-                            "priority": 10,
-                            "runs_on": "docker"
-                        }
-                    ],
-                    "after_all_tests": [
-                        {
-                            "command": ".\/default\/after_all.sh",
-                            "runs_on": "docker"
-                        }
-                    ]
-                },
-                "env_vars": {
-                    "QIT_E2E_DEBUG": "true"
-                }
-            }
-        }
-    }
+    "test_packages": []
 }

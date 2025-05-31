@@ -218,6 +218,9 @@ class ConfigParseTest extends PreCommandTestCase {
 			'test_packages' => [
 				'e2e' => [
 					'woocommerce.default' => [
+						'type'         => 'e2e',
+						'name'         => 'woocommerce.default',
+						'file'         => './tests/e2e/woocommerce/test.js',
 						'test_dir'     => './tests/e2e/woocommerce',
 						'test_command' => 'npm run playwright --project woocommerce',
 						'test_results' => [
@@ -251,6 +254,9 @@ class ConfigParseTest extends PreCommandTestCase {
 			'test_packages' => [
 				'e2e' => [
 					'local-plugin-1.default' => [
+						'type'         => 'e2e',
+						'name'         => 'local-plugin-1.default',
+						'file'         => './tests/e2e/test.js',
 						'test_dir'     => './tests/e2e',
 						'test_command' => 'npm run playwright --project local',
 						'test_results' => [

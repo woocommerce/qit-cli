@@ -23,7 +23,7 @@
         {
             "slug": "woocommerce",
             "entrypoint": null,
-            "source": "https:\/\/downloads.wordpress.org\/plugin\/woocommerce.zip",
+            "source": "https:\/\/downloads.wordpress.org\/plugin\/woocommerce.8.0.0.zip",
             "directory": null,
             "downloaded_source": "\/tmp-normalized\/cache\/plugin\/woocommerce-8.0.0.zip",
             "type": "plugin",

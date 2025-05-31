@@ -12,14 +12,31 @@ class ExtensionSetTest extends PreCommandTestCase {
 	public function setUp(): void {
 		parent::setUp();
 		file_put_contents( '/tmp/qit/qit_debug.log', "Starting ExtensionSetTest::setUp\n", FILE_APPEND );
+
+		// Mock dependencies
 		$this->mockWooComDependencies( [ 'woocommerce', 'plugin-a', 'plugin-b' ], [], [] );
+
+		// Mock WooCommerce.com download URLs
 		$this->mockWooComDownloadUrls( [
 			'woocommerce' => 'https://qit.woo.com/downloads/woocommerce.zip',
 			'plugin-a'    => 'https://qit.woo.com/downloads/plugin-a.zip',
 			'plugin-b'    => 'https://qit.woo.com/downloads/plugin-b.zip',
 		] );
+
+		// Create and mock plugins
 		foreach ( [ 'woocommerce', 'plugin-a', 'plugin-b' ] as $slug ) {
-			$this->mockWpOrgPlugin( $slug, $slug === 'woocommerce' ? '8.0.0' : '1.0.0', "https://downloads.wordpress.org/plugin/{$slug}.zip" );
+			$version = $slug === 'woocommerce' ? '8.0.0' : '1.0.0';
+			$zip_content = $this->createMinimalPluginZip( $slug, $version );
+
+			// Mock WordPress.org API response
+			$this->mockWpOrgPlugin( $slug, $version, "https://downloads.wordpress.org/plugin/{$slug}.{$version}.zip" );
+
+			// Mock download URLs
+			$this->mockDownloadUrl( "https://downloads.wordpress.org/plugin/{$slug}.zip", $zip_content );
+			$this->mockDownloadUrl( "https://downloads.wordpress.org/plugin/{$slug}.{$version}.zip", $zip_content );
+			$this->mockDownloadUrl( "https://qit.woo.com/downloads/{$slug}.zip", $zip_content );
+
+			file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionSetTest::setUp: Mocked download URLs for {$slug}\n", FILE_APPEND );
 		}
 	}
 
@@ -30,7 +47,7 @@ class ExtensionSetTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -64,7 +81,7 @@ class ExtensionSetTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -100,7 +117,7 @@ class ExtensionSetTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -152,7 +169,7 @@ class ExtensionSetTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -196,7 +213,7 @@ class ExtensionSetTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
@@ -236,7 +253,7 @@ class ExtensionSetTest extends PreCommandTestCase {
 				'slug'   => 'awesome-plugin',
 				'source' => [
 					'type' => 'directory',
-					'path' => './plugin-folder',
+					'path' => $this->getMockPluginDir(),
 				],
 			],
 			'environments' => [
