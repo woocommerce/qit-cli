@@ -407,7 +407,20 @@ PHP;
 		$env_info['created_at'] = 1700000000;
 		$env_info['domain']     = 'normalized.localhost';
 
-		// Normalize paths in extra.sut.source.path
+		// Normalize paths in sut.source.path
+		if ( isset( $env_info['sut']['source']['path'] ) && str_starts_with( $env_info['sut']['source']['path'], '/tmp/qit/qit_test_' ) ) {
+			// Extract the plugin name from the path
+			$parts = explode('/', $env_info['sut']['source']['path']);
+			$plugin_name = end($parts);
+			$env_info['sut']['source']['path'] = '/tmp/qit/qit_test_normalized/' . $plugin_name;
+		}
+
+		// Normalize paths in sut.source.output
+		if ( isset( $env_info['sut']['source']['output'] ) && str_starts_with( $env_info['sut']['source']['output'], '/tmp/qit/' ) ) {
+			$env_info['sut']['source']['output'] = '/tmp/qit/qit_test_normalized/plugin.zip';
+		}
+
+		// Normalize paths in extra.sut.source.path (for backward compatibility)
 		if ( isset( $env_info['extra']['sut']['source']['path'] ) && str_starts_with( $env_info['extra']['sut']['source']['path'], '/tmp/qit/qit_test_' ) ) {
 			// Extract the plugin name from the path
 			$parts = explode('/', $env_info['extra']['sut']['source']['path']);
@@ -554,8 +567,12 @@ PHP;
 					}
 				}
 			}
-			if ( isset( $env_info['extra']['sut']['source']['output'] ) && str_contains( $env_info['extra']['sut']['source']['output'], 'plugin.zip' ) ) {
-				$env_info['extra']['sut']['source']['output'] = '/normalized/path/plugin.zip';
+			if ( isset( $env_info['extra']['sut']['source']['output'] ) ) {
+				if ( str_starts_with( $env_info['extra']['sut']['source']['output'], '/tmp/qit/' ) ) {
+					$env_info['extra']['sut']['source']['output'] = '/tmp/qit/qit_test_normalized/plugin.zip';
+				} elseif ( str_contains( $env_info['extra']['sut']['source']['output'], 'plugin.zip' ) ) {
+					$env_info['extra']['sut']['source']['output'] = '/normalized/path/plugin.zip';
+				}
 			}
 		}
 

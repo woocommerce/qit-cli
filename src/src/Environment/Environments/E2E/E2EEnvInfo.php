@@ -26,20 +26,8 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var string */
 	public string $nginx_port;
 
-	/** @var string The slug of the extension under test. */
-	public string $sut_slug;
-
-	/** @var string The type of the SUT, either "plugin" or "theme". */
-	public string $sut_type;
-
-	/** @var string The entrypoint of the extension under test. */
-	public string $sut_entrypoint;
-
-	/** @var string The path to the SUT on the host. */
-	public string $sut_path;
-
-	/** @var int The Woo ID of the extension under test. */
-	public int $sut_id;
+	/** @var array<string,mixed> The system under test information. */
+	public array $sut;
 
 	/** @var string The domain being used. */
 	public string $domain;

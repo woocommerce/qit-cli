@@ -73,7 +73,7 @@ class LocalTestRunNotifier {
 				}
 			}
 
-			if ( $plugin['type'] === 'plugin' && $plugin['slug'] !== $env_info->sut_slug ) {
+			if ( $plugin['type'] === 'plugin' && isset($env_info->sut) && $plugin['slug'] !== $env_info->sut['slug'] ) {
 				$additional_plugins[] = $plugin['slug'];
 			}
 		}
@@ -158,8 +158,10 @@ class LocalTestRunNotifier {
 			],
 		];
 
-		$this->prepare_debug_log->set_sut_slug( $test_result->get_env_info()->sut_slug ?: '' );
-		$this->prepare_qm_log->set_sut_slug( $test_result->get_env_info()->sut_slug ?: '' );
+		$env_info = $test_result->get_env_info();
+		$sut_slug = isset($env_info->sut) ? ($env_info->sut['slug'] ?? '') : '';
+		$this->prepare_debug_log->set_sut_slug( $sut_slug );
+		$this->prepare_qm_log->set_sut_slug( $sut_slug );
 
 		if ( file_exists( $ctrf_file ) ) {
 			$result_json = json_decode( file_get_contents( $ctrf_file ), true );

@@ -25,6 +25,11 @@ class SutConfigurationTest extends PreCommandTestCase {
 		$this->mockDownloadUrl( 'https://downloads.wordpress.org/theme/storefront.zip', $storefront_zip_content );
 		$this->mockDownloadUrl( 'https://downloads.wordpress.org/theme/storefront.4.5.0.zip', $storefront_zip_content );
 
+		// Also mock version 4.1.0 which appears in some snapshots
+		$storefront_4_1_0_zip_content = $this->createMinimalThemeZip( 'storefront', '4.1.0' );
+		$this->mockWpOrgTheme( 'storefront', '4.1.0', 'https://downloads.wordpress.org/theme/storefront.4.1.0.zip' );
+		$this->mockDownloadUrl( 'https://downloads.wordpress.org/theme/storefront.4.1.0.zip', $storefront_4_1_0_zip_content );
+
 		// Mock empty WooCommerce.com response to prevent unmocked requests
 		$this->mockWooComDownloadUrls( [] );
 	}
@@ -102,13 +107,12 @@ class SutConfigurationTest extends PreCommandTestCase {
 
 		try {
 			$env_info = $this->run_unit_test( $config );
-			$this->assertArrayHasKey( 'extra', $env_info, 'env_info is missing the extra key' );
-			$this->assertArrayHasKey( 'sut', $env_info['extra'], 'env_info.extra is missing the sut key' );
-			$this->assertEquals( 'plugin', $env_info['extra']['sut']['type'] );
-			$this->assertEquals( 'local-plugin-1', $env_info['extra']['sut']['slug'] );
-			$this->assertEquals( 'build', $env_info['extra']['sut']['source']['type'] );
-			$this->assertEquals( 'npm run build', $env_info['extra']['sut']['source']['command'] );
-			$this->assertEquals( '/normalized/path/plugin.zip', $env_info['extra']['sut']['source']['output'] );
+			$this->assertArrayHasKey( 'sut', $env_info, 'env_info is missing the sut key' );
+			$this->assertEquals( 'plugin', $env_info['sut']['type'] );
+			$this->assertEquals( 'local-plugin-1', $env_info['sut']['slug'] );
+			$this->assertEquals( 'build', $env_info['sut']['source']['type'] );
+			$this->assertEquals( 'npm run build', $env_info['sut']['source']['command'] );
+			$this->assertStringContainsString( 'plugin.zip', $env_info['sut']['source']['output'] );
 			$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_source_build: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
@@ -152,12 +156,11 @@ class SutConfigurationTest extends PreCommandTestCase {
 
 		try {
 			$env_info = $this->run_unit_test( $config );
-			$this->assertArrayHasKey( 'extra', $env_info, 'env_info is missing the extra key' );
-			$this->assertArrayHasKey( 'sut', $env_info['extra'], 'env_info.extra is missing the sut key' );
-			$this->assertEquals( 'plugin', $env_info['extra']['sut']['type'] );
-			$this->assertEquals( 'awesome-plugin', $env_info['extra']['sut']['slug'] );
-			$this->assertEquals( 'directory', $env_info['extra']['sut']['source']['type'] );
-			$this->assertEquals( '/normalized/path/plugin-folder', $env_info['extra']['sut']['source']['path'] );
+			$this->assertArrayHasKey( 'sut', $env_info, 'env_info is missing the sut key' );
+			$this->assertEquals( 'plugin', $env_info['sut']['type'] );
+			$this->assertEquals( 'awesome-plugin', $env_info['sut']['slug'] );
+			$this->assertEquals( 'directory', $env_info['sut']['source']['type'] );
+			$this->assertEquals( '/tmp/qit/qit_test_normalized/plugin-folder', $env_info['sut']['source']['path'] );
 			$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_source_directory: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
@@ -200,12 +203,11 @@ class SutConfigurationTest extends PreCommandTestCase {
 
 		try {
 			$env_info = $this->run_unit_test( $config );
-			$this->assertArrayHasKey( 'extra', $env_info, 'env_info is missing the extra key' );
-			$this->assertArrayHasKey( 'sut', $env_info['extra'], 'env_info.extra is missing the sut key' );
-			$this->assertEquals( 'plugin', $env_info['extra']['sut']['type'] );
-			$this->assertEquals( 'wccom-plugin-2', $env_info['extra']['sut']['slug'] );
-			$this->assertEquals( 'url', $env_info['extra']['sut']['source']['type'] );
-			$this->assertEquals( 'https://example.com/wccom-plugin-2.zip', $env_info['extra']['sut']['source']['url'] );
+			$this->assertArrayHasKey( 'sut', $env_info, 'env_info is missing the sut key' );
+			$this->assertEquals( 'plugin', $env_info['sut']['type'] );
+			$this->assertEquals( 'wccom-plugin-2', $env_info['sut']['slug'] );
+			$this->assertEquals( 'url', $env_info['sut']['source']['type'] );
+			$this->assertEquals( 'https://example.com/wccom-plugin-2.zip', $env_info['sut']['source']['url'] );
 			$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_source_url: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
@@ -250,12 +252,11 @@ class SutConfigurationTest extends PreCommandTestCase {
 
 		try {
 			$env_info = $this->run_unit_test( $config );
-			$this->assertArrayHasKey( 'extra', $env_info, 'env_info is missing the extra key' );
-			$this->assertArrayHasKey( 'sut', $env_info['extra'], 'env_info.extra is missing the sut key' );
-			$this->assertEquals( 'plugin', $env_info['extra']['sut']['type'] );
-			$this->assertEquals( 'awesome-plugin', $env_info['extra']['sut']['slug'] );
-			$this->assertEquals( 'zip', $env_info['extra']['sut']['source']['type'] );
-			$this->assertEquals( '/normalized/path/plugin.zip', $env_info['extra']['sut']['source']['path'] );
+			$this->assertArrayHasKey( 'sut', $env_info, 'env_info is missing the sut key' );
+			$this->assertEquals( 'plugin', $env_info['sut']['type'] );
+			$this->assertEquals( 'awesome-plugin', $env_info['sut']['slug'] );
+			$this->assertEquals( 'zip', $env_info['sut']['source']['type'] );
+			$this->assertEquals( '/tmp/qit/qit_test_normalized/plugin.zip', $env_info['sut']['source']['path'] );
 			$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_source_zip: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
@@ -296,12 +297,11 @@ class SutConfigurationTest extends PreCommandTestCase {
 
 		try {
 			$env_info = $this->run_unit_test( $config );
-			$this->assertArrayHasKey( 'extra', $env_info, 'env_info is missing the extra key' );
-			$this->assertArrayHasKey( 'sut', $env_info['extra'], 'env_info.extra is missing the sut key' );
-			$this->assertEquals( 'plugin', $env_info['extra']['sut']['type'] );
-			$this->assertEquals( 'wporg-plugin-1', $env_info['extra']['sut']['slug'] );
-			$this->assertEquals( 'wporg', $env_info['extra']['sut']['source']['type'] );
-			$this->assertEquals( 'stable', $env_info['extra']['sut']['source']['version'] );
+			$this->assertArrayHasKey( 'sut', $env_info, 'env_info is missing the sut key' );
+			$this->assertEquals( 'plugin', $env_info['sut']['type'] );
+			$this->assertEquals( 'wporg-plugin-1', $env_info['sut']['slug'] );
+			$this->assertEquals( 'wporg', $env_info['sut']['source']['type'] );
+			$this->assertEquals( 'stable', $env_info['sut']['source']['version'] );
 			$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_source_wporg: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
@@ -342,12 +342,11 @@ class SutConfigurationTest extends PreCommandTestCase {
 
 		try {
 			$env_info = $this->run_unit_test( $config );
-			$this->assertArrayHasKey( 'extra', $env_info, 'env_info is missing the extra key' );
-			$this->assertArrayHasKey( 'sut', $env_info['extra'], 'env_info.extra is missing the sut key' );
-			$this->assertEquals( 'plugin', $env_info['extra']['sut']['type'] );
-			$this->assertEquals( 'wccom-plugin-1', $env_info['extra']['sut']['slug'] );
-			$this->assertEquals( 'wccom', $env_info['extra']['sut']['source']['type'] );
-			$this->assertEquals( 'stable', $env_info['extra']['sut']['source']['version'] );
+			$this->assertArrayHasKey( 'sut', $env_info, 'env_info is missing the sut key' );
+			$this->assertEquals( 'plugin', $env_info['sut']['type'] );
+			$this->assertEquals( 'wccom-plugin-1', $env_info['sut']['slug'] );
+			$this->assertEquals( 'wccom', $env_info['sut']['source']['type'] );
+			$this->assertEquals( 'stable', $env_info['sut']['source']['version'] );
 			$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_source_wccom: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
@@ -372,12 +371,11 @@ class SutConfigurationTest extends PreCommandTestCase {
 
 		try {
 			$env_info = $this->run_unit_test( $config );
-			$this->assertArrayHasKey( 'extra', $env_info, 'env_info is missing the extra key' );
-			$this->assertArrayHasKey( 'sut', $env_info['extra'], 'env_info.extra is missing the sut key' );
-			$this->assertEquals( 'plugin', $env_info['extra']['sut']['type'] );
-			$this->assertEquals( 'wporg-plugin-1', $env_info['extra']['sut']['slug'] );
-			$this->assertEquals( 'wporg', $env_info['extra']['sut']['source']['type'] );
-			$this->assertEquals( 'stable', $env_info['extra']['sut']['source']['version'] );
+			$this->assertArrayHasKey( 'sut', $env_info, 'env_info is missing the sut key' );
+			$this->assertEquals( 'plugin', $env_info['sut']['type'] );
+			$this->assertEquals( 'wporg-plugin-1', $env_info['sut']['slug'] );
+			$this->assertEquals( 'wporg', $env_info['sut']['source']['type'] );
+			$this->assertEquals( 'stable', $env_info['sut']['source']['version'] );
 			$this->assertContains( 'wporg-plugin-1', array_map( fn( $p ) => $p['slug'], $env_info['plugins'] ) );
 			$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 		} catch ( \Exception $e ) {
@@ -403,12 +401,11 @@ class SutConfigurationTest extends PreCommandTestCase {
 
 		try {
 			$env_info = $this->run_unit_test( $config );
-			$this->assertArrayHasKey( 'extra', $env_info, 'env_info is missing the extra key' );
-			$this->assertArrayHasKey( 'sut', $env_info['extra'], 'env_info.extra is missing the sut key' );
-			$this->assertEquals( 'plugin', $env_info['extra']['sut']['type'] );
-			$this->assertEquals( 'wccom-plugin-1', $env_info['extra']['sut']['slug'] );
-			$this->assertEquals( 'wccom', $env_info['extra']['sut']['source']['type'] );
-			$this->assertEquals( 'stable', $env_info['extra']['sut']['source']['version'] );
+			$this->assertArrayHasKey( 'sut', $env_info, 'env_info is missing the sut key' );
+			$this->assertEquals( 'plugin', $env_info['sut']['type'] );
+			$this->assertEquals( 'wccom-plugin-1', $env_info['sut']['slug'] );
+			$this->assertEquals( 'wccom', $env_info['sut']['source']['type'] );
+			$this->assertEquals( 'stable', $env_info['sut']['source']['version'] );
 			$this->assertContains( 'wccom-plugin-1', array_map( fn( $p ) => $p['slug'], $env_info['plugins'] ) );
 			$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 		} catch ( \Exception $e ) {
@@ -625,12 +622,11 @@ class SutConfigurationTest extends PreCommandTestCase {
 
 		try {
 			$env_info = $this->run_unit_test( $config );
-			$this->assertArrayHasKey( 'extra', $env_info, 'env_info is missing the extra key' );
-			$this->assertArrayHasKey( 'sut', $env_info['extra'], 'env_info.extra is missing the sut key' );
-			$this->assertEquals( 'theme', $env_info['extra']['sut']['type'] );
-			$this->assertEquals( 'wccom-theme-1', $env_info['extra']['sut']['slug'] );
-			$this->assertEquals( 'wccom', $env_info['extra']['sut']['source']['type'] );
-			$this->assertEquals( '1.0.0', $env_info['extra']['sut']['source']['version'] );
+			$this->assertArrayHasKey( 'sut', $env_info, 'env_info is missing the sut key' );
+			$this->assertEquals( 'theme', $env_info['sut']['type'] );
+			$this->assertEquals( 'wccom-theme-1', $env_info['sut']['slug'] );
+			$this->assertEquals( 'wccom', $env_info['sut']['source']['type'] );
+			$this->assertEquals( '1.0.0', $env_info['sut']['source']['version'] );
 			$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_type_theme: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
@@ -661,10 +657,9 @@ class SutConfigurationTest extends PreCommandTestCase {
 
 		try {
 			$env_info = $this->run_unit_test( $config );
-			$this->assertArrayHasKey( 'extra', $env_info, 'env_info is missing the extra key' );
-			$this->assertArrayHasKey( 'sut', $env_info['extra'], 'env_info.extra is missing the sut key' );
-			$this->assertEquals( 'plugin', $env_info['extra']['sut']['type'] );
-			$this->assertEquals( 'wccom-plugin-1', $env_info['extra']['sut']['slug'] );
+			$this->assertArrayHasKey( 'sut', $env_info, 'env_info is missing the sut key' );
+			$this->assertEquals( 'plugin', $env_info['sut']['type'] );
+			$this->assertEquals( 'wccom-plugin-1', $env_info['sut']['slug'] );
 			$this->assertContains( 'wccom-plugin-1', array_map( fn( $p ) => $p['slug'], $env_info['plugins'] ), 'SUT should be added to environment plugins' );
 			$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 		} catch ( \Exception $e ) {
@@ -816,12 +811,11 @@ class SutConfigurationTest extends PreCommandTestCase {
 
 		try {
 			$env_info = $this->run_unit_test( $config );
-			$this->assertArrayHasKey( 'extra', $env_info, 'env_info is missing the extra key' );
-			$this->assertArrayHasKey( 'sut', $env_info['extra'], 'env_info.extra is missing the sut key' );
-			$this->assertEquals( 'theme', $env_info['extra']['sut']['type'] );
-			$this->assertEquals( 'awesome-theme', $env_info['extra']['sut']['slug'] );
-			$this->assertEquals( 'directory', $env_info['extra']['sut']['source']['type'] );
-			$this->assertEquals( '/normalized/path/theme-folder', $env_info['extra']['sut']['source']['path'] );
+			$this->assertArrayHasKey( 'sut', $env_info, 'env_info is missing the sut key' );
+			$this->assertEquals( 'theme', $env_info['sut']['type'] );
+			$this->assertEquals( 'awesome-theme', $env_info['sut']['slug'] );
+			$this->assertEquals( 'directory', $env_info['sut']['source']['type'] );
+			$this->assertEquals( '/tmp/qit/qit_test_normalized/theme-folder', $env_info['sut']['source']['path'] );
 			$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "test_sut_theme_source_directory: Exception: " . $e->getMessage() . "\n", FILE_APPEND );
@@ -1011,8 +1005,8 @@ class SutConfigurationTest extends PreCommandTestCase {
 			$non_normalized_env_info = $this->get_non_normalized_output();
 
 			// Verify SUT configuration
-			$this->assertEquals( 'wporg', $env_info['extra']['sut']['source']['type'] );
-			$this->assertEquals( '1.0.0', $env_info['extra']['sut']['source']['version'] );
+			$this->assertEquals( 'wporg', $env_info['sut']['source']['type'] );
+			$this->assertEquals( '1.0.0', $env_info['sut']['source']['version'] );
 
 			// Find the plugin in non-normalized env_info
 			$plugin = null;

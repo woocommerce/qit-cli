@@ -1,14 +1,5 @@
 {
-    "extra": {
-        "sut": {
-            "type": "plugin",
-            "slug": "awesome-plugin",
-            "source": {
-                "type": "directory",
-                "path": "\/tmp\/qit\/qit_test_normalized\/my-awesome-plugin"
-            }
-        }
-    },
+    "extra": [],
     "environment": "default",
     "dependencies_mode": "activate",
     "temporary_env": "\/tmp-normalized\/default-ENV_ID_NORMALIZED",
@@ -63,8 +54,14 @@
     "wp_version": "6.1",
     "object_cache": false,
     "php_version": "8.0",
-    "sut_slug": "awesome-plugin",
-    "sut_type": "plugin",
+    "sut": {
+        "type": "plugin",
+        "slug": "awesome-plugin",
+        "source": {
+            "type": "directory",
+            "path": "\/tmp\/qit\/qit_test_normalized\/my-awesome-plugin"
+        }
+    },
     "domain": "normalized.localhost",
     "skip_activating_plugins": false,
     "skip_activating_themes": false,

@@ -254,11 +254,7 @@ class EnvironmentHandler {
 			'tests'                   => [],
 			'playwright_config'       => [],
 			'pw_test_tag'             => '',
-			'sut_slug'                => null,
-			'sut_type'                => null,
-			'sut_entrypoint'          => null,
-			'sut_path'                => null,
-			'sut_id'                  => null,
+			'sut'                     => null,
 			'nginx_port'              => null,
 			'notify'                  => null,
 			'is_development_build'    => false,
@@ -276,9 +272,7 @@ class EnvironmentHandler {
 		$env_info->status        = 'pending';
 
 		if ( isset( $config->parsed_config['sut'] ) ) {
-			$env_info->extra['sut'] = $config->parsed_config['sut'];
-			$env_info->sut_slug     = $config->parsed_config['sut']['slug'];
-			$env_info->sut_type     = $config->parsed_config['sut']['type'];
+			$env_info->sut = $config->parsed_config['sut'];
 		}
 
 		if ( ! empty( $env_config['extension_set'] ) ) {
