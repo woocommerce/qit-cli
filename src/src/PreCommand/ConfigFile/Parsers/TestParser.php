@@ -68,7 +68,32 @@ class TestParser extends AbstractConfigParser {
 							$parts = explode( '/', $test_package, 2 );
 							if ( count( $parts ) === 2 ) {
 								[ $package_source, $package_name ] = $parts;
-								if ( $package_source !== 'local' && ! isset( $custom_test_packages[ $package_source ][ $package_name ] ) ) {
+								// Extract version if specified (e.g., "local/default@1.1")
+								$name_parts                   = explode( '@', $package_name, 2 );
+								$package_name_without_version = $name_parts[0];
+								$package_version              = $name_parts[1] ?? null;
+
+								if ( $package_source === 'local' ) {
+									// Reject versioned local references
+									if ( $package_version ) {
+										throw new \RuntimeException( "Versioned reference '$test_package' in '$test_type:$profile' is not supported for local test packages. Use 'local/{$package_name_without_version}'." );
+									}
+
+									// For local packages, check if the package exists in the test_packages array
+									$found = false;
+									foreach ( $custom_test_packages as $package ) {
+										if ( is_array( $package ) &&
+										     isset( $package['type'] ) && $package['type'] === $test_type &&
+										     isset( $package['name'] ) && $package['name'] === $package_name_without_version ) {
+											$found = true;
+											break;
+										}
+									}
+
+									if ( ! $found ) {
+										throw new \RuntimeException( "Test package '$test_package' in '$test_type:$profile' not found in test_packages configuration. Ensure it is defined with matching type and name." );
+									}
+								} elseif ( ! isset( $custom_test_packages[ $package_source ][ $package_name_without_version ] ) ) {
 									throw new \RuntimeException( "Test package '$test_package' in '$test_type:$profile' not found in test_packages." );
 								}
 							}

@@ -403,9 +403,43 @@ class EnvironmentHandler {
 		$env_info->env                     = $env_config['env_vars'];
 
 		// Include test packages in the environment info if they exist in the parsed config
-		if (isset($config->parsed_config['test_packages'])) {
-			$env_info->test_packages = $config->parsed_config['test_packages'];
-			file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentHandler: Added test_packages to env_info: " . print_r( $env_info->test_packages, true ) . "\n", FILE_APPEND );
+		if (isset($config->parsed_config['test_packages']) && is_array($config->parsed_config['test_packages']) &&
+		    isset($config->parsed_config['test_types']) && is_array($config->parsed_config['test_types'])) {
+			$env_info->test_packages = [];
+			$referenced = [];
+
+			// Build a list of referenced test packages from test_types
+			foreach ($config->parsed_config['test_types'] as $test_type => $profiles) {
+				foreach ($profiles as $profile_name => $profile) {
+					if (isset($profile['run']['test_packages'])) {
+						foreach ($profile['run']['test_packages'] as $ref) {
+							if (preg_match('/^local\/(.+)$/', $ref, $matches)) {
+								$package_name = $matches[1];
+								// Remove version if present
+								if (strpos($package_name, '@') !== false) {
+									$package_name = explode('@', $package_name)[0];
+								}
+								$referenced["$test_type:$package_name"] = true;
+							}
+						}
+					}
+				}
+			}
+
+			// Only include referenced test packages in env_info
+			foreach ($config->parsed_config['test_packages'] as $test_type => $packages) {
+				if (!isset($env_info->test_packages[$test_type])) {
+					$env_info->test_packages[$test_type] = [];
+				}
+
+				foreach ($packages as $package_name => $package) {
+					if (isset($referenced["$test_type:$package_name"])) {
+						$env_info->test_packages[$test_type][$package_name] = $package;
+					}
+				}
+			}
+
+			file_put_contents( '/tmp/qit/qit_debug.log', "EnvironmentHandler: Added filtered test_packages to env_info: " . print_r( $env_info->test_packages, true ) . "\n", FILE_APPEND );
 		}
 
 		file_put_contents( '/tmp/qit/qit_debug.log', 'EnvironmentHandler: Final Env Info: ' . print_r( (array) $env_info, true ) . "\n", FILE_APPEND );

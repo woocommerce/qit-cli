@@ -79,45 +79,7 @@
             "default": {
                 "version": "1.0",
                 "author": "Awesome Team",
-                "description": "Full checkout flow test for awesome-plugin",
                 "test_command": "npm run playwright",
-                "lifecycle": {
-                    "before_all_tests": [
-                        {
-                            "command": "npm run playwright --project setup",
-                            "priority": 5,
-                            "runs_on": "host"
-                        },
-                        {
-                            "command": ".\/default\/before_all.sh",
-                            "priority": 10,
-                            "runs_on": "docker"
-                        }
-                    ],
-                    "after_all_tests": [
-                        {
-                            "command": ".\/default\/after_all.sh",
-                            "runs_on": "docker"
-                        }
-                    ],
-                    "before_sut_tests": [
-                        {
-                            "command": ".\/default\/after_all.sh",
-                            "runs_on": "docker"
-                        }
-                    ],
-                    "after_sut_tests": []
-                },
-                "test_results": {
-                    "ctrf": ".\/results\/ctrf.json",
-                    "allure": ".\/results\/allure-results"
-                },
-                "mu_plugins": [
-                    ".\/default\/mu-plugin.php"
-                ],
-                "required_secrets": [
-                    "CHECKOUT_KEY"
-                ],
                 "env_vars": {
                     "QIT_E2E_DEBUG": "true"
                 }

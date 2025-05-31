@@ -12,6 +12,7 @@ class CustomTestPackageParser extends AbstractConfigParser {
 
 		$this->root_path = $context['root_path'] ?? getcwd();
 		$packages        = [];
+		$seen_packages   = [];
 
 		foreach ( $value as $index => $package ) {
 			if ( ! isset( $package['type'], $package['name'], $package['file'] ) ||
@@ -25,12 +26,21 @@ class CustomTestPackageParser extends AbstractConfigParser {
 
 			$test_type         = $package['type'];
 			$package_name      = $package['name'];
+			$package_version   = $package['version'] ?? null;
+			$package_key       = "{$test_type}:{$package_name}" . ($package_version ? "@{$package_version}" : "");
+
+			// Check for duplicate package definitions (only if they don't have different versions)
+			if (in_array($package_key, $seen_packages, true)) {
+				throw new \RuntimeException( "Duplicate test package definition for '{$test_type}:{$package_name}' in test_packages. Each test package must have a unique type and name combination." );
+			}
+			$seen_packages[] = $package_key;
+
 			$file_path         = $this->root_path . DIRECTORY_SEPARATOR . $package['file'];
 			$file_dir          = dirname( $file_path );
 			$file_dir_relative = str_replace( $this->root_path . DIRECTORY_SEPARATOR, '', $file_dir ) . DIRECTORY_SEPARATOR;
 
 			if ( ! file_exists( $file_path ) ) {
-				throw new \RuntimeException( "Test package file '$file_path' for '{$test_type}:{$package_name}' not found." );
+				throw new \RuntimeException( "Test package file '$file_path' for '{$test_type}:{$package_name}' not found. Verify the file path in test_packages configuration." );
 			}
 
 			$contents = file_get_contents( $file_path );
@@ -79,11 +89,22 @@ class CustomTestPackageParser extends AbstractConfigParser {
 				foreach ( $config['lifecycle'] as $phase => &$scripts ) {
 					foreach ( $scripts as &$script ) {
 						if ( isset( $script['command'] ) ) {
+							// Preserve the './' prefix
+							$original_prefix = '';
+							if (strpos($script['command'], './') === 0) {
+								$original_prefix = './';
+							}
+
 							$path = ltrim( $script['command'], './' );
 							if ( strpos( $path, $file_dir_relative ) === 0 ) {
 								$path = substr( $path, strlen( $file_dir_relative ) );
 							}
-							$script['command'] = $path;
+							$script['command'] = $original_prefix . $path;
+
+							// Validate that the script file exists if it starts with './'
+							if ($original_prefix === './' && !file_exists($file_dir . DIRECTORY_SEPARATOR . $path)) {
+								throw new \RuntimeException("Lifecycle script file '{$file_dir}/{$path}' for '{$test_type}:{$package_name}' not found. Verify the file path in lifecycle configuration.");
+							}
 						}
 					}
 
@@ -98,19 +119,33 @@ class CustomTestPackageParser extends AbstractConfigParser {
 
 			if ( isset( $config['mu_plugins'] ) ) {
 				foreach ( $config['mu_plugins'] as &$plugin ) {
-					$plugin = ltrim( $plugin, './' );
-					if ( strpos( $plugin, $file_dir_relative ) === 0 ) {
-						$plugin = substr( $plugin, strlen( $file_dir_relative ) );
+					// Preserve the './' prefix
+					$original_prefix = '';
+					if (strpos($plugin, './') === 0) {
+						$original_prefix = './';
 					}
+
+					$path = ltrim( $plugin, './' );
+					if ( strpos( $path, $file_dir_relative ) === 0 ) {
+						$path = substr( $path, strlen( $file_dir_relative ) );
+					}
+					$plugin = $original_prefix . $path;
 				}
 			}
 
 			if ( isset( $config['test_results'] ) ) {
 				foreach ( $config['test_results'] as &$result ) {
-					$result = ltrim( $result, './' );
-					if ( strpos( $result, $file_dir_relative ) === 0 ) {
-						$result = substr( $result, strlen( $file_dir_relative ) );
+					// Preserve the './' prefix
+					$original_prefix = '';
+					if (strpos($result, './') === 0) {
+						$original_prefix = './';
 					}
+
+					$path = ltrim( $result, './' );
+					if ( strpos( $path, $file_dir_relative ) === 0 ) {
+						$path = substr( $path, strlen( $file_dir_relative ) );
+					}
+					$result = $original_prefix . $path;
 				}
 			}
 

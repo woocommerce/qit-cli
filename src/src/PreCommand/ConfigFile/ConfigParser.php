@@ -72,7 +72,10 @@ class ConfigParser {
 					], $parsed_config['sut'] ?? null );
 					break;
 				case 'test_packages':
-					$parsed_config[ $key ] = App::make( CustomTestPackageParser::class )->parse( $value, [ 'root_path' => dirname( $config_file ) ] );
+					$context = [ 
+						'root_path' => dirname( $config_file )
+					];
+					$parsed_config[ $key ] = App::make( CustomTestPackageParser::class )->parse( $value, $context );
 					break;
 				default:
 					throw new \RuntimeException( "Unknown configuration $key in qit.json." );
