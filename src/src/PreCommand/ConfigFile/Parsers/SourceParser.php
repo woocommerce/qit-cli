@@ -29,7 +29,7 @@ class SourceParser extends AbstractConfigParser {
 			case 'build':
 				if ( ! isset( $value['command'] ) || ! is_string( $value['command'] ) || empty( $value['command'] ) ) {
 					file_put_contents( '/tmp/qit/qit_debug.log', "SourceParser: Build source missing command for {$context_name}\n", FILE_APPEND );
-					throw new \RuntimeException( "Build source must contain a non-empty 'command' string for {$context_name}." );
+					throw new \RuntimeException( "Build source must contain a non-empty \"command\" string" );
 				}
 				if ( ! isset( $value['output'] ) || ! is_string( $value['output'] ) || empty( $value['output'] ) ) {
 					file_put_contents( '/tmp/qit/qit_debug.log', "SourceParser: Build source missing output for {$context_name}\n", FILE_APPEND );
@@ -52,7 +52,7 @@ class SourceParser extends AbstractConfigParser {
 				}
 				if ( ! is_dir( $full_path ) ) {
 					file_put_contents( '/tmp/qit/qit_debug.log', "SourceParser: Directory does not exist for {$context_name}: {$value['path']} (resolved as $full_path, base directory: $root_path)\n", FILE_APPEND );
-					throw new \RuntimeException( "Directory does not exist for '{$context_name}.path': {$value['path']} (resolved as $full_path, base directory: $root_path)" );
+					throw new \RuntimeException( "Directory does not exist: {$value['path']}" );
 				}
 				break;
 			case 'url':

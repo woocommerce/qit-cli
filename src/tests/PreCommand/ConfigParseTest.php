@@ -207,38 +207,6 @@ class ConfigParseTest extends PreCommandTestCase {
 		$temp_dir = $this->temp_dir;
 		$this->mockStandardExtensions();
 
-		// Create test package JSON files
-		$woocommerce_package = [
-			'$schema'      => 'https://qit.woo.com/json-schema/test-package',
-			'version'      => '1.0',
-			'author'       => 'WooCommerce Team',
-			'description'  => 'WooCommerce default test package',
-			'test_command' => 'npm run playwright --project woocommerce',
-			'test_results' => [
-				'ctrf' => './results/woocommerce/ctrf.json',
-			],
-		];
-
-		$local_package = [
-			'$schema'      => 'https://qit.woo.com/json-schema/test-package',
-			'version'      => '1.0',
-			'author'       => 'Plugin Team',
-			'description'  => 'Local plugin test package',
-			'test_command' => 'npm run playwright --project local',
-			'test_results' => [
-				'ctrf' => './results/ctrf.json',
-			],
-		];
-
-		// Create directories for test packages
-		$test_dir = $temp_dir . '/tests/e2e';
-		if (!is_dir($test_dir)) {
-			mkdir($test_dir, 0777, true);
-		}
-
-		file_put_contents("$test_dir/woocommerce.json", json_encode($woocommerce_package, JSON_PRETTY_PRINT));
-		file_put_contents("$test_dir/local.json", json_encode($local_package, JSON_PRETTY_PRINT));
-
 		$base_config = [
 			'environments'  => [
 				'default' => [
@@ -248,10 +216,14 @@ class ConfigParseTest extends PreCommandTestCase {
 				],
 			],
 			'test_packages' => [
-				[
-					'type' => 'e2e',
-					'name' => 'woocommerce',
-					'file' => "tests/e2e/woocommerce.json",
+				'e2e' => [
+					'woocommerce.default' => [
+						'test_dir'     => './tests/e2e/woocommerce',
+						'test_command' => 'npm run playwright --project woocommerce',
+						'test_results' => [
+							'ctrf' => './results/woocommerce/ctrf.json',
+						],
+					],
 				],
 			],
 		];
@@ -277,10 +249,14 @@ class ConfigParseTest extends PreCommandTestCase {
 				],
 			],
 			'test_packages' => [
-				[
-					'type' => 'e2e',
-					'name' => 'local',
-					'file' => "tests/e2e/local.json",
+				'e2e' => [
+					'local-plugin-1.default' => [
+						'test_dir'     => './tests/e2e',
+						'test_command' => 'npm run playwright --project local',
+						'test_results' => [
+							'ctrf' => './results/ctrf.json',
+						],
+					],
 				],
 			],
 		];

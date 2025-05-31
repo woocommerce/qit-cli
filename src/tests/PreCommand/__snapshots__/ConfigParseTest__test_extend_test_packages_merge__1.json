@@ -42,7 +42,7 @@
             "entrypoint": null,
             "source": "\/tmp-normalized\/plugin.zip",
             "directory": null,
-            "downloaded_source": "\/tmp-normalized\/cache\/plugin\/local-plugin-1.zip",
+            "downloaded_source": "\/tmp-normalized\/plugin.zip",
             "type": "plugin",
             "handler": null,
             "version": "undefined",
@@ -74,6 +74,5 @@
     "pw_test_tag": "",
     "woo_version": "",
     "is_development_build": false,
-    "notify": "",
-    "test_packages": []
+    "notify": ""
 }
