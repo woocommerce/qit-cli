@@ -90,5 +90,6 @@
     "pw_test_tag": "",
     "woo_version": "",
     "is_development_build": false,
-    "notify": ""
+    "notify": "",
+    "test_packages": []
 }
