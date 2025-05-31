@@ -3,13 +3,15 @@
 namespace QIT_CLI\PreCommand\ConfigFile\Parsers;
 
 class CustomTestPackageParser extends AbstractConfigParser {
+	protected string $root_path;
+
 	public function parse( $value, array $context = [] ): array {
 		if ( ! is_array( $value ) || empty( $value ) ) {
 			throw new \RuntimeException( 'Test packages must be an array of package definitions.' );
 		}
 
-		$packages  = [];
-		$root_path = $context['root_path'] ?? getcwd();
+		$this->root_path = $context['root_path'] ?? getcwd();
+		$packages        = [];
 
 		foreach ( $value as $index => $package ) {
 			if ( ! isset( $package['type'], $package['name'], $package['file'] ) ||
@@ -18,63 +20,61 @@ class CustomTestPackageParser extends AbstractConfigParser {
 			}
 
 			if ( isset( $package['extends'] ) && ! is_string( $package['extends'] ) ) {
-				throw new \RuntimeException( "Extends for test package '$package[type]:$package[name]' must be a string." );
+				throw new \RuntimeException( "Extends for test package '{$package['type']}:{$package['name']}' must be a string." );
 			}
 
 			$test_type         = $package['type'];
 			$package_name      = $package['name'];
-			$file_path         = $root_path . DIRECTORY_SEPARATOR . $package['file'];
+			$file_path         = $this->root_path . DIRECTORY_SEPARATOR . $package['file'];
 			$file_dir          = dirname( $file_path );
-			$file_dir_relative = str_replace( $root_path . DIRECTORY_SEPARATOR, '', $file_dir ) . DIRECTORY_SEPARATOR;
+			$file_dir_relative = str_replace( $this->root_path . DIRECTORY_SEPARATOR, '', $file_dir ) . DIRECTORY_SEPARATOR;
 
 			if ( ! file_exists( $file_path ) ) {
-				throw new \RuntimeException( "Test package file '$file_path' not found." );
+				throw new \RuntimeException( "Test package file '$file_path' for '{$test_type}:{$package_name}' not found." );
 			}
 
 			$contents = file_get_contents( $file_path );
 			$config   = json_decode( $contents, true );
 
 			if ( json_last_error() !== JSON_ERROR_NONE || ! is_array( $config ) ) {
-				throw new \RuntimeException( "Invalid JSON in test package file '$file_path': " . json_last_error_msg() );
+				throw new \RuntimeException( "Invalid JSON in test package file '$file_path' for '{$test_type}:{$package_name}': " . json_last_error_msg() );
 			}
 
-			// Validate schema
 			if ( ! isset( $config['$schema'] ) || $config['$schema'] !== 'https://qit.woo.com/json-schema/test-package' ) {
-				throw new \RuntimeException( "Test package '$test_type:$package_name' must have \$schema set to 'https://qit.woo.com/json-schema/test-package'." );
+				throw new \RuntimeException( "Test package '{$test_type}:{$package_name}' must have \$schema set to 'https://qit.woo.com/json-schema/test-package'." );
 			}
 
-			// Validate required fields
 			if ( ! isset( $config['version'], $config['author'] ) ) {
-				throw new \RuntimeException( "Test package '$test_type:$package_name' must include 'version' and 'author'." );
+				throw new \RuntimeException( "Test package '{$test_type}:{$package_name}' must include 'version' and 'author'." );
 			}
 
-			// Validate field types
 			if ( ! is_string( $config['version'] ) ) {
-				throw new \RuntimeException( "Version for test package '$test_type:$package_name' must be a string." );
+				throw new \RuntimeException( "Version for test package '{$test_type}:{$package_name}' must be a string." );
 			}
 			if ( ! is_string( $config['author'] ) && ! is_array( $config['author'] ) ) {
-				throw new \RuntimeException( "Author for test package '$test_type:$package_name' must be a string or array." );
+				throw new \RuntimeException( "Author for test package '{$test_type}:{$package_name}' must be a string or array." );
 			}
 			if ( isset( $config['test_command'] ) && ! is_string( $config['test_command'] ) ) {
-				throw new \RuntimeException( "Test command for test package '$test_type:$package_name' must be a string." );
+				throw new \RuntimeException( "Test command for test package '{$test_type}:{$package_name}' must be a string." );
 			}
 			if ( isset( $config['env_vars'] ) && ! is_array( $config['env_vars'] ) ) {
-				throw new \RuntimeException( "Environment variables for test package '$test_type:$package_name' must be an array." );
+				throw new \RuntimeException( "Environment variables for test package '{$test_type}:{$package_name}' must be an array." );
 			}
 
-			// Normalize env_vars values to strings
 			if ( isset( $config['env_vars'] ) ) {
-				foreach ( $config['env_vars'] as $key => &$value ) {
-					$config['env_vars'][ $key ] = (string) $value;
+				foreach ( $config['env_vars'] as $key => &$val ) {
+					if (is_bool($val)) {
+						$config['env_vars'][ $key ] = $val ? 'true' : 'false';
+					} else {
+						$config['env_vars'][ $key ] = (string) $val;
+					}
 				}
 			}
 
-			// Validate no extends in standalone file
 			if ( isset( $config['extends'] ) ) {
-				throw new \RuntimeException( "Test package '$test_type:$package_name' must not include 'extends' in standalone file." );
+				throw new \RuntimeException( "Test package '{$test_type}:{$package_name}' must not include 'extends' in standalone file." );
 			}
 
-			// Handle paths relative to file_dir
 			if ( isset( $config['lifecycle'] ) ) {
 				foreach ( $config['lifecycle'] as $phase => &$scripts ) {
 					foreach ( $scripts as &$script ) {
@@ -86,6 +86,13 @@ class CustomTestPackageParser extends AbstractConfigParser {
 							$script['command'] = $path;
 						}
 					}
+
+					// Sort scripts by priority
+					usort( $scripts, function ( $a, $b ) {
+						$priority_a = $a['priority'] ?? 0;
+						$priority_b = $b['priority'] ?? 0;
+						return $priority_a <=> $priority_b;
+					} );
 				}
 			}
 
@@ -116,13 +123,13 @@ class CustomTestPackageParser extends AbstractConfigParser {
 			];
 		}
 
-		return $this->resolve_extends( $packages, 'test package', $root_path );
+		return $this->resolve_extends( $packages, 'test package' );
 	}
 
-	protected function resolve_extends( array $packages, string $context, string $root_path ): array {
+	protected function resolve_extends( array $section, string $section_name ): array {
 		$resolved = [];
 
-		foreach ( $packages as $test_type => $package_list ) {
+		foreach ( $section as $test_type => $package_list ) {
 			$resolved[ $test_type ] = [];
 			foreach ( $package_list as $package_name => $data ) {
 				$resolved[ $test_type ][ $package_name ] = $this->resolve_package_extends(
@@ -130,8 +137,7 @@ class CustomTestPackageParser extends AbstractConfigParser {
 					$data['extends'],
 					$test_type,
 					$package_name,
-					$packages,
-					$root_path,
+					$section,
 					[]
 				);
 			}
@@ -140,7 +146,7 @@ class CustomTestPackageParser extends AbstractConfigParser {
 		return $resolved;
 	}
 
-	protected function resolve_package_extends( array $config, ?string $extends, string $test_type, string $package_name, array $packages, string $root_path, array $visited ): array {
+	protected function resolve_package_extends( array $config, ?string $extends, string $test_type, string $package_name, array $packages, array $visited ): array {
 		if ( ! $extends ) {
 			unset( $config['$schema'] );
 
@@ -148,21 +154,21 @@ class CustomTestPackageParser extends AbstractConfigParser {
 		}
 
 		if ( strpos( $extends, ':' ) !== false ) {
-			throw new \RuntimeException( "Unsupported external extends reference '$extends' for '$test_type:$package_name'." );
+			throw new \RuntimeException( "Unsupported external extends reference '$extends' for '{$test_type}:{$package_name}'." );
 		}
 
 		if ( ! is_string( $extends ) ) {
-			throw new \RuntimeException( "Extends for '$test_type:$package_name' must be a string." );
+			throw new \RuntimeException( "Extends for '{$test_type}:{$package_name}' must be a string." );
 		}
 
 		$current_key = "$test_type:$package_name";
 		if ( in_array( $current_key, $visited, true ) ) {
-			throw new \RuntimeException( "Circular dependency detected in test package '$test_type:$package_name'." );
+			throw new \RuntimeException( "Circular dependency detected in test package '{$test_type}:{$package_name}'." );
 		}
 		$visited[] = $current_key;
 
 		if ( ! isset( $packages[ $test_type ][ $extends ] ) ) {
-			throw new \RuntimeException( "Extended package '$extends' not found for '$test_type:$package_name'." );
+			throw new \RuntimeException( "Extended package '$extends' not found for '{$test_type}:{$package_name}' in test_packages." );
 		}
 
 		$base_config = $this->resolve_package_extends(
@@ -171,17 +177,16 @@ class CustomTestPackageParser extends AbstractConfigParser {
 			$test_type,
 			$extends,
 			$packages,
-			$root_path,
 			$visited
 		);
 
 		$merged = $this->merge_configs( $base_config, $config );
 
 		if ( ! is_string( $config['version'] ) ) {
-			throw new \RuntimeException( "Version for test package '$test_type:$package_name' must be a string." );
+			throw new \RuntimeException( "Version for test package '{$test_type}:{$package_name}' must be a string." );
 		}
 		if ( ! is_string( $config['author'] ) && ! is_array( $config['author'] ) ) {
-			throw new \RuntimeException( "Author for test package '$test_type:$package_name' must be a string or array." );
+			throw new \RuntimeException( "Author for test package '{$test_type}:{$package_name}' must be a string or array." );
 		}
 		$merged['version'] = $config['version'];
 		$merged['author']  = $config['author'];
@@ -211,7 +216,11 @@ class CustomTestPackageParser extends AbstractConfigParser {
 				}
 				if ( $field === 'env_vars' && is_array( $child[ $field ] ) ) {
 					foreach ( $child[ $field ] as $key => $value ) {
-						$child[ $field ][ $key ] = (string) $value;
+						if (is_bool($value)) {
+							$child[ $field ][ $key ] = $value ? 'true' : 'false';
+						} else {
+							$child[ $field ][ $key ] = (string) $value;
+						}
 					}
 				}
 				if ( ! isset( $base[ $field ] ) ) {
@@ -258,7 +267,7 @@ class CustomTestPackageParser extends AbstractConfigParser {
 			throw new \RuntimeException( "Invalid package format '$test_type:$package_name'. Expected 'test_type:package_name'." );
 		}
 		if ( ! isset( $packages[ $test_type ][ $package_name ] ) ) {
-			throw new \RuntimeException( "Package '$test_type:$package_name' not found." );
+			throw new \RuntimeException( "Package '$test_type:$package_name' not found in test_packages." );
 		}
 
 		return $this->resolve_package_extends(
@@ -267,7 +276,6 @@ class CustomTestPackageParser extends AbstractConfigParser {
 			$test_type,
 			$package_name,
 			$packages,
-			$root_path,
 			[]
 		);
 	}

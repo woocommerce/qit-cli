@@ -73,4 +73,7 @@ class E2EEnvInfo extends EnvInfo {
 
 	/** @var string Whether to notify the developer about the result of this test run. */
 	public string $notify;
+
+	/** @var array<string,array<string,array>> The test packages configuration. */
+	public array $test_packages = [];
 }

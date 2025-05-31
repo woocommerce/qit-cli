@@ -13,7 +13,7 @@ use function QIT_CLI\get_manager_url;
 abstract class PreCommandTestCase extends TestCase {
 	protected $temp_dir;
 	protected $to_delete = [];
-	protected $to_reset = []; // New list for mock keys
+	protected $to_reset = [];
 	protected $non_normalized_env_info = null;
 
 	protected function setUp(): void {
@@ -25,7 +25,7 @@ abstract class PreCommandTestCase extends TestCase {
 				chmod( $this->temp_dir, 0777 );
 			}
 			$this->non_normalized_env_info = null;
-			$this->to_reset                = []; // Reset mock keys
+			$this->to_reset                = [];
 			file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: setUp temp_dir set to: {$this->temp_dir}\n", FILE_APPEND );
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: setUp exception: " . $e->getMessage() . "\n", FILE_APPEND );
@@ -43,7 +43,6 @@ abstract class PreCommandTestCase extends TestCase {
 				}
 			}
 			$this->to_delete = [];
-			// Clear mocks
 			foreach ( $this->to_reset as $key ) {
 				App::offsetUnset( $key );
 			}
@@ -58,6 +57,26 @@ abstract class PreCommandTestCase extends TestCase {
 			throw $e;
 		}
 		parent::tearDown();
+	}
+
+	protected function mock_file( string $path, string $content ): void {
+		$full_path = $this->temp_dir . DIRECTORY_SEPARATOR . $path;
+		$dir       = dirname( $full_path );
+		if ( ! is_dir( $dir ) ) {
+			mkdir( $dir, 0777, true );
+		}
+		file_put_contents( $full_path, $content );
+		$this->to_delete[] = $full_path;
+		file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: Mocked file at $full_path\n", FILE_APPEND );
+	}
+
+	protected function create_temp_config_file( array $config ): string {
+		$config_path = $this->temp_dir . '/qit_' . uniqid() . '.json';
+		file_put_contents( $config_path, json_encode( $config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+		$this->to_delete[] = $config_path;
+		file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: Created temp config file at $config_path\n", FILE_APPEND );
+
+		return $config_path;
 	}
 
 	protected function rmdir_recursive( string $dir ): void {
@@ -83,10 +102,8 @@ abstract class PreCommandTestCase extends TestCase {
 		}
 
 		try {
-			$config_path = $this->temp_dir . '/qit_' . uniqid() . '.json';
-			file_put_contents( $config_path, json_encode( $config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			$config_path = $this->create_temp_config_file( $config );
 			file_put_contents( '/tmp/qit/qit_debug.log', 'Test Config: ' . json_encode( $config, JSON_PRETTY_PRINT ) . "\n", FILE_APPEND );
-			$this->to_delete[] = $config_path;
 
 			putenv( 'QIT_TESTING_ENV_INFO=1' );
 			$command = App::make( UpEnvironmentCommand::class );
@@ -126,9 +143,14 @@ abstract class PreCommandTestCase extends TestCase {
 
 			$this->assertIsArray( $env_info, "Invalid JSON output: $output_string" );
 
-			// Store non-normalized env_info
+			// Debug env_info before normalization
+			file_put_contents( '/tmp/qit/qit_debug.log', "run_unit_test: Raw env_info: " . print_r( $env_info, true ) . "\n", FILE_APPEND );
+
 			$this->non_normalized_env_info = $env_info;
 			$normalized_env_info           = $this->normalize_env_info( $env_info );
+
+			// Debug normalized env_info
+			file_put_contents( '/tmp/qit/qit_debug.log', "run_unit_test: Normalized env_info: " . print_r( $normalized_env_info, true ) . "\n", FILE_APPEND );
 
 			return $normalized_env_info;
 		} catch ( \Exception $e ) {
@@ -149,7 +171,7 @@ abstract class PreCommandTestCase extends TestCase {
 			'download_link'    => $download_link,
 			'requires_plugins' => $requires_plugins,
 		] ) );
-		$this->to_reset[] = $key; // Track mock key
+		$this->to_reset[] = $key;
 	}
 
 	protected function mockWpOrgTheme( string $slug, string $version, string $download_link ): void {
@@ -159,7 +181,7 @@ abstract class PreCommandTestCase extends TestCase {
 			'version'       => $version,
 			'download_link' => $download_link,
 		] ) );
-		$this->to_reset[] = $key; // Track mock key
+		$this->to_reset[] = $key;
 	}
 
 	protected function mockWooComDependencies( array $plugins = [], array $themes = [], array $php_extensions = [] ): void {
@@ -169,19 +191,19 @@ abstract class PreCommandTestCase extends TestCase {
 			'themes'         => $themes,
 			'php_extensions' => $php_extensions,
 		] ) );
-		$this->to_reset[] = $key; // Track mock key
+		$this->to_reset[] = $key;
 	}
 
 	protected function mockWooComDownloadUrls( array $urls = [] ): void {
 		$key = sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/download-urls' );
 		App::setVar( $key, json_encode( $urls ) );
-		$this->to_reset[] = $key; // Track mock key
+		$this->to_reset[] = $key;
 	}
 
 	protected function mockDownloadUrl( string $url, string $response ): void {
 		$key = sprintf( 'mock_%s', $url );
 		App::setVar( $key, $response );
-		$this->to_reset[] = $key; // Track mock key
+		$this->to_reset[] = $key;
 	}
 
 	protected function mockExtension( string $slug, string $type, string $version, string $from = 'wporg', ?string $source_path = null ): void {
@@ -212,7 +234,7 @@ abstract class PreCommandTestCase extends TestCase {
 			'entrypoint'        => $entrypoint,
 			'source'            => $source,
 		] );
-		$this->to_reset[] = $key; // Track mock key
+		$this->to_reset[] = $key;
 	}
 
 	protected function mockStandardExtensions(): void {
@@ -276,23 +298,19 @@ abstract class PreCommandTestCase extends TestCase {
 	protected function normalize_env_info( array $env_info ): array {
 		file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: Normalizing env_info: " . print_r( $env_info, true ) . "\n", FILE_APPEND );
 
-		// Normalize env_id
 		if ( isset( $env_info['env_id'] ) ) {
 			$env_info['env_id'] = 'ENV_ID_NORMALIZED';
 		}
 
-		// Normalize created_at and domain
 		$env_info['created_at'] = 1700000000;
 		$env_info['domain']     = 'normalized.localhost';
 
-		// Normalize plugin paths
 		if ( ! empty( $env_info['plugins'] ) && is_array( $env_info['plugins'] ) ) {
 			foreach ( $env_info['plugins'] as &$plugin ) {
 				if ( $plugin instanceof \QIT_CLI\Environment\Extension ) {
 					$plugin = $plugin->jsonSerialize();
 				}
 				if ( is_array( $plugin ) ) {
-					// Debug logging before normalization
 					file_put_contents(
 						'/tmp/qit/qit_debug.log',
 						sprintf(
@@ -307,19 +325,15 @@ abstract class PreCommandTestCase extends TestCase {
 						FILE_APPEND
 					);
 
-					// Only normalize for plugins
 					if ( isset( $plugin['type'] ) && $plugin['type'] === 'plugin' ) {
-						// Normalize directory
 						if ( isset( $plugin['directory'] ) && str_starts_with( $plugin['directory'], '/' ) && str_contains( $plugin['directory'], '/plugin-folder' ) ) {
 							$plugin['directory'] = '/tmp-normalized/plugin-folder';
 						}
 
-						// Normalize source
 						if ( isset( $plugin['source'] ) && str_starts_with( $plugin['source'], '/' ) && str_contains( $plugin['source'], 'plugin.zip' ) ) {
 							$plugin['source'] = '/tmp-normalized/plugin.zip';
 						}
 
-						// Normalize downloaded_source for all plugins
 						if ( isset( $plugin['downloaded_source'] ) && str_starts_with( $plugin['downloaded_source'], '/' ) ) {
 							if ( str_contains( $plugin['downloaded_source'], '/plugin-folder' ) ) {
 								$plugin['downloaded_source'] = '/tmp-normalized/plugin-folder';
@@ -338,7 +352,6 @@ abstract class PreCommandTestCase extends TestCase {
 						}
 					}
 
-					// Debug logging after normalization
 					file_put_contents(
 						'/tmp/qit/qit_debug.log',
 						sprintf(
@@ -359,24 +372,20 @@ abstract class PreCommandTestCase extends TestCase {
 			unset( $plugin );
 		}
 
-		// Normalize temporary environment path
 		if ( isset( $env_info['temporary_env'] ) && str_starts_with( $env_info['temporary_env'], '/' ) ) {
 			$env_info['temporary_env'] = '/tmp-normalized/default-ENV_ID_NORMALIZED';
 		}
 
-		// Normalize theme paths
 		if ( ! empty( $env_info['themes'] ) && is_array( $env_info['themes'] ) ) {
 			foreach ( $env_info['themes'] as &$theme ) {
 				if ( $theme instanceof \QIT_CLI\Environment\Extension ) {
 					$theme = $theme->jsonSerialize();
 				}
 				if ( is_array( $theme ) ) {
-					// Normalize directory
 					if ( isset( $theme['directory'] ) && str_starts_with( $theme['directory'], '/' ) && str_contains( $theme['directory'], '/theme-folder' ) ) {
 						$theme['directory'] = '/tmp-normalized/theme-folder';
 					}
 
-					// Normalize downloaded_source
 					if ( isset( $theme['downloaded_source'] ) && str_starts_with( $theme['downloaded_source'], '/' ) ) {
 						if ( str_contains( $theme['downloaded_source'], '/theme-folder' ) ) {
 							$theme['downloaded_source'] = '/tmp-normalized/theme-folder';
@@ -396,7 +405,6 @@ abstract class PreCommandTestCase extends TestCase {
 			unset( $theme );
 		}
 
-		// Normalize volumes
 		if ( ! empty( $env_info['volumes'] ) && is_array( $env_info['volumes'] ) ) {
 			$normalized_volumes = [];
 			foreach ( $env_info['volumes'] as $container_path => $host_path ) {
@@ -410,9 +418,7 @@ abstract class PreCommandTestCase extends TestCase {
 			$env_info['volumes'] = $normalized_volumes;
 		}
 
-		// Normalize SUT paths
 		if ( isset( $env_info['extra']['sut'] ) && is_array( $env_info['extra']['sut'] ) ) {
-			// Normalize source.path based on SUT type
 			if ( isset( $env_info['extra']['sut']['source']['path'] ) && str_starts_with( $env_info['extra']['sut']['source']['path'], '/' ) ) {
 				if ( $env_info['extra']['sut']['type'] === 'plugin' ) {
 					if ( str_contains( $env_info['extra']['sut']['source']['path'], 'plugin-folder' ) ) {
@@ -428,13 +434,11 @@ abstract class PreCommandTestCase extends TestCase {
 					}
 				}
 			}
-			// Normalize source.output for build sources
 			if ( isset( $env_info['extra']['sut']['source']['output'] ) && str_contains( $env_info['extra']['sut']['source']['output'], 'plugin.zip' ) ) {
 				$env_info['extra']['sut']['source']['output'] = '/normalized/path/plugin.zip';
 			}
 		}
 
-		// Normalize test packages
 		if ( isset( $env_info['test_packages'] ) && is_array( $env_info['test_packages'] ) ) {
 			foreach ( $env_info['test_packages'] as &$package ) {
 				if ( isset( $package['test_dir'] ) && str_starts_with( $package['test_dir'], '/' ) ) {
