@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 use function QIT_CLI\get_manager_url;
 
 abstract class PreCommandTestCase extends TestCase {
- protected $temp_dir;
+	protected $temp_dir;
 	protected $to_delete = [];
 	protected $to_reset = [];
 	protected $non_normalized_env_info = null;
@@ -100,18 +100,13 @@ abstract class PreCommandTestCase extends TestCase {
 		rmdir( $dir );
 	}
 
-	/**
-	 * Creates a mock plugin directory with the necessary files.
-	 */
 	protected function createMockPluginDirectory(): void {
-		// Create the plugin directory
 		$plugin_dir = $this->temp_dir . '/my-awesome-plugin';
-		if (!is_dir($plugin_dir)) {
-			mkdir($plugin_dir, 0777, true);
+		if ( ! is_dir( $plugin_dir ) ) {
+			mkdir( $plugin_dir, 0777, true );
 		}
 
-		// Create a basic plugin file
-		$plugin_file = $plugin_dir . '/my-awesome-plugin.php';
+		$plugin_file    = $plugin_dir . '/my-awesome-plugin.php';
 		$plugin_content = <<<PHP
 <?php
 /**
@@ -123,22 +118,14 @@ abstract class PreCommandTestCase extends TestCase {
 
 // This is a mock plugin file for testing
 PHP;
-		file_put_contents($plugin_file, $plugin_content);
+		file_put_contents( $plugin_file, $plugin_content );
 
-		// Store the plugin directory path
 		$this->mock_plugin_dir = $plugin_dir;
+		$this->to_delete[]     = $plugin_dir;
 
-		// Add to the list of files to delete
-		$this->to_delete[] = $plugin_dir;
-
-		file_put_contents('/tmp/qit/qit_debug.log', "PreCommandTest: Created mock plugin directory at {$plugin_dir}\n", FILE_APPEND);
+		file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: Created mock plugin directory at {$plugin_dir}\n", FILE_APPEND );
 	}
 
-	/**
-	 * Gets the path to the mock plugin directory.
-	 *
-	 * @return string The path to the mock plugin directory
-	 */
 	protected function getMockPluginDir(): string {
 		return $this->mock_plugin_dir;
 	}
@@ -161,7 +148,7 @@ PHP;
 
 			$return_code   = $command->execute( $input, $output );
 			$output_string = $output->fetch();
-			file_put_contents( '/tmp/qit/qit_debug.log', "run_unit_test: Command executed with return code $return_code, output: $output_string\n", FILE_APPEND );
+			file_put_contents( '/tmp/qit/qit_debug.log', "run_unit_test: Command executed with return code $return_code\nOutput: $output_string\n", FILE_APPEND );
 
 			if ( $expect_failure ) {
 				if ( $return_code === 0 ) {
@@ -171,7 +158,8 @@ PHP;
 					return [ 'exit_code' => $return_code, 'output' => $matches[1] ];
 				}
 
-				return [ 'exit_code' => $return_code, 'output' => $output_string ];
+				// Fallback if no <error> tags
+				return [ 'exit_code' => $return_code, 'output' => trim( $output_string ) ];
 			}
 
 			$this->assertEquals( 0, $return_code, 'Command failed: ' . $output_string );
@@ -191,18 +179,16 @@ PHP;
 
 			$this->assertIsArray( $env_info, "Invalid JSON output: $output_string" );
 
-			// Debug env_info before normalization
-			file_put_contents( '/tmp/qit/qit_debug.log', "run_unit_test: Raw env_info: " . print_r( $env_info, true ) . "\n", FILE_APPEND );
-
 			$this->non_normalized_env_info = $env_info;
 			$normalized_env_info           = $this->normalize_env_info( $env_info );
-
-			// Debug normalized env_info
-			file_put_contents( '/tmp/qit/qit_debug.log', "run_unit_test: Normalized env_info: " . print_r( $normalized_env_info, true ) . "\n", FILE_APPEND );
 
 			return $normalized_env_info;
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: run_unit_test exception: " . $e->getMessage() . "\n", FILE_APPEND );
+			if ( $expect_failure ) {
+				// Return the exception message as output for assertion
+				return [ 'exit_code' => 1, 'output' => $e->getMessage() ];
+			}
 			throw $e;
 		}
 	}
@@ -236,7 +222,7 @@ PHP;
 		$key = sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' );
 		App::setVar( $key, json_encode( [
 			'plugins'        => $plugins,
-			'themes'         => $themes,
+			'themes'         => [], // No plugin-theme dependency allowed.
 			'php_extensions' => $php_extensions,
 		] ) );
 		$this->to_reset[] = $key;
@@ -255,44 +241,39 @@ PHP;
 	}
 
 	protected function mockExtension( string $slug, string $type, string $version, string $from = 'wporg', ?string $source_path = null ): void {
-		$cache_dir  = '/tmp/qit/cache';
-		$cache_file = $from === 'local' && $source_path ? $source_path : "$cache_dir/$type/$slug-$version.zip";
-		$entrypoint = $type === 'plugin' ? "$slug/$slug.php" : "$slug/style.css";
-		$source     = $from === 'wporg' ? "https://downloads.wordpress.org/$type/$slug.zip" : ( $from === 'local' ? null : "https://qit.woo.com/downloads/$slug.zip" );
+		$cache_dir        = '/tmp/qit/cache';
+		$cache_file       = $from === 'local' && $source_path ? $source_path : "$cache_dir/$type/$slug-$version.zip";
+		$entrypoint       = $type === 'plugin' ? "$slug/$slug.php" : "$slug/style.css";
+		$source           = $from === 'wporg' ? "https://downloads.wordpress.org/$type/$slug.zip" : ( $from === 'local' ? null : "https://qit.woo.com/downloads/$slug.zip" );
 		$versioned_source = $from === 'wporg' ? "https://downloads.wordpress.org/$type/$slug.$version.zip" : ( $from === 'local' ? null : "https://qit.woo.com/downloads/$slug.zip" );
 
 		if ( $from === 'wporg' ) {
 			if ( $type === 'plugin' ) {
 				$this->mockWpOrgPlugin( $slug, $version, $versioned_source );
 
-				// Create ZIP content for both URLs
 				$zip_content = $this->createMinimalPluginZip( $slug, $version );
 				$this->mockDownloadUrl( $source, $zip_content );
 				$this->mockDownloadUrl( $versioned_source, $zip_content );
 
-				// Also mock the format with version after slug
 				$alt_versioned_source = "https://downloads.wordpress.org/$type/$slug.$version.zip";
-				if ($alt_versioned_source !== $versioned_source) {
+				if ( $alt_versioned_source !== $versioned_source ) {
 					$this->mockDownloadUrl( $alt_versioned_source, $zip_content );
 				}
 			} else {
 				$this->mockWpOrgTheme( $slug, $version, $versioned_source );
 
-				// Create ZIP content for both URLs
 				$zip_content = $this->createMinimalThemeZip( $slug, $version );
 				$this->mockDownloadUrl( $source, $zip_content );
 				$this->mockDownloadUrl( $versioned_source, $zip_content );
 
-				// Also mock the format with version after slug
 				$alt_versioned_source = "https://downloads.wordpress.org/$type/$slug.$version.zip";
-				if ($alt_versioned_source !== $versioned_source) {
+				if ( $alt_versioned_source !== $versioned_source ) {
 					$this->mockDownloadUrl( $alt_versioned_source, $zip_content );
 				}
 			}
 		} elseif ( $from === 'wccom' ) {
 			$this->mockWooComDownloadUrls( [ $slug => $source ] );
 
-			// Create ZIP content
 			$zip_content = $this->createMinimalPluginZip( $slug, $version );
 			$this->mockDownloadUrl( $source, $zip_content );
 		} elseif ( $from === 'url' ) {
@@ -333,14 +314,12 @@ PHP;
 			],
 		] );
 
-		$this->mockWpOrgPlugin( 'wporg-plugin-1', '1.0.0', 'https://downloads.wordpress.org/plugin/wporg-plugin-1.zip' );
-		$this->mockWpOrgPlugin( 'wporg-plugin-2', '1.0.0', 'https://downloads.wordpress.org/plugin/wporg-plugin-2.zip' );
+		$this->mockExtension( 'wporg-plugin-1', 'plugin', '1.0.0', 'wporg' );
+		$this->mockExtension( 'wporg-plugin-2', 'plugin', '1.0.0', 'wporg' );
 
 		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/wccom-plugin-1.zip', $this->createMinimalPluginZip( 'wccom-plugin-1', '1.0.0' ) );
 		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/wccom-plugin-2.zip', $this->createMinimalPluginZip( 'wccom-plugin-2', '1.0.0' ) );
 		$this->mockDownloadUrl( 'https://qit.woo.com/downloads/woocommerce.zip', $this->createMinimalPluginZip( 'woocommerce', '8.0.0' ) );
-		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/wporg-plugin-1.zip', $this->createMinimalPluginZip( 'wporg-plugin-1', '1.0.0' ) );
-		$this->mockDownloadUrl( 'https://downloads.wordpress.org/plugin/wporg-plugin-2.zip', $this->createMinimalPluginZip( 'wporg-plugin-2', '1.0.0' ) );
 	}
 
 	protected function createMinimalPluginZip( string $slug, string $version ): string {
@@ -397,9 +376,8 @@ PHP;
 		}
 	}
 
-	protected function normalize_env_info( array $env_info ): array {
-		file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: Normalizing env_info: " . print_r( $env_info, true ) . "\n", FILE_APPEND );
 
+	protected function normalize_env_info( array $env_info ): array {
 		if ( isset( $env_info['env_id'] ) ) {
 			$env_info['env_id'] = 'ENV_ID_NORMALIZED';
 		}
@@ -407,25 +385,25 @@ PHP;
 		$env_info['created_at'] = 1700000000;
 		$env_info['domain']     = 'normalized.localhost';
 
-		// Normalize paths in sut.source.path
 		if ( isset( $env_info['sut']['source']['path'] ) && str_starts_with( $env_info['sut']['source']['path'], '/tmp/qit/qit_test_' ) ) {
-			// Extract the plugin name from the path
-			$parts = explode('/', $env_info['sut']['source']['path']);
-			$plugin_name = end($parts);
-			$env_info['sut']['source']['path'] = '/tmp/qit/qit_test_normalized/' . $plugin_name;
+			$env_info['sut']['source']['path'] = str_replace(
+				$env_info['sut']['source']['path'],
+				'/tmp/qit/qit_test_' . substr( $env_info['sut']['source']['path'], strpos( $env_info['sut']['source']['path'], '/tmp/qit/qit_test_' ) + 19, 13 ),
+				'/tmp/qit/qit_test_normalized/' . basename( $env_info['sut']['source']['path'] )
+			);
+			file_put_contents( '/tmp/qit/qit_debug.log', "Normalized SUT path: {$env_info['sut']['source']['path']}\n", FILE_APPEND );
 		}
 
-		// Normalize paths in sut.source.output
 		if ( isset( $env_info['sut']['source']['output'] ) && str_starts_with( $env_info['sut']['source']['output'], '/tmp/qit/' ) ) {
 			$env_info['sut']['source']['output'] = '/tmp/qit/qit_test_normalized/plugin.zip';
 		}
 
-		// Normalize paths in extra.sut.source.path (for backward compatibility)
 		if ( isset( $env_info['extra']['sut']['source']['path'] ) && str_starts_with( $env_info['extra']['sut']['source']['path'], '/tmp/qit/qit_test_' ) ) {
-			// Extract the plugin name from the path
-			$parts = explode('/', $env_info['extra']['sut']['source']['path']);
-			$plugin_name = end($parts);
-			$env_info['extra']['sut']['source']['path'] = '/tmp/qit/qit_test_normalized/' . $plugin_name;
+			$env_info['extra']['sut']['source']['path'] = str_replace(
+				$env_info['extra']['sut']['source']['path'],
+				'/tmp/qit/qit_test_' . substr( $env_info['extra']['sut']['source']['path'], strpos( $env_info['extra']['sut']['source']['path'], '/tmp/qit/qit_test_' ) + 19, 13 ),
+				'/tmp/qit/qit_test_normalized/' . basename( $env_info['extra']['sut']['source']['path'] )
+			);
 		}
 
 		if ( ! empty( $env_info['plugins'] ) && is_array( $env_info['plugins'] ) ) {
@@ -434,70 +412,38 @@ PHP;
 					$plugin = $plugin->jsonSerialize();
 				}
 				if ( is_array( $plugin ) ) {
-					file_put_contents(
-						'/tmp/qit/qit_debug.log',
-						sprintf(
-							"Before normalization: slug=%s, type=%s, from=%s, directory=%s, downloaded_source=%s, source=%s\n",
-							$plugin['slug'] ?? 'null',
-							$plugin['type'] ?? 'null',
-							$plugin['from'] ?? 'null',
-							$plugin['directory'] ?? 'null',
-							$plugin['downloaded_source'] ?? 'null',
-							$plugin['source'] ?? 'null'
-						),
-						FILE_APPEND
-					);
-
 					if ( isset( $plugin['type'] ) && $plugin['type'] === 'plugin' ) {
- 					// Normalize directory paths
- 					if ( isset( $plugin['directory'] ) && str_starts_with( $plugin['directory'], '/' ) ) {
- 						if ( str_contains( $plugin['directory'], '/plugin-folder' ) ) {
- 							$plugin['directory'] = '/tmp-normalized/plugin-folder';
- 						} elseif ( str_starts_with( $plugin['directory'], '/tmp/qit/qit_test_' ) ) {
- 							// Extract the plugin name from the path
- 							$parts = explode('/', $plugin['directory']);
- 							$plugin_name = end($parts);
- 							$plugin['directory'] = '/tmp/qit/qit_test_normalized/' . $plugin_name;
- 						} else {
- 							$plugin['directory'] = '/tmp-normalized/plugin-folder';
- 						}
- 					}
+						if ( isset( $plugin['directory'] ) && str_starts_with( $plugin['directory'], '/' ) ) {
+							if ( str_contains( $plugin['directory'], '/plugin-folder' ) ) {
+								$plugin['directory'] = '/tmp-normalized/plugin-folder';
+							} elseif ( str_starts_with( $plugin['directory'], '/tmp/qit/qit_test_' ) ) {
+								$plugin['directory'] = '/tmp/qit/qit_test_normalized/' . basename( $plugin['directory'] );
+							} else {
+								$plugin['directory'] = '/tmp-normalized/plugin-folder';
+							}
+						}
 
- 					if ( isset( $plugin['source'] ) && str_starts_with( $plugin['source'], '/' ) && str_contains( $plugin['source'], 'plugin.zip' ) ) {
- 						$plugin['source'] = '/tmp-normalized/plugin.zip';
- 					}
+						if ( isset( $plugin['source'] ) && str_starts_with( $plugin['source'], '/tmp/qit/qit_test_' ) ) {
+							$plugin['source'] = '/tmp/qit/qit_test_normalized/' . basename( $plugin['source'] );
+						}
 
- 					if ( isset( $plugin['downloaded_source'] ) && str_starts_with( $plugin['downloaded_source'], '/' ) ) {
- 						if ( str_contains( $plugin['downloaded_source'], '/plugin-folder' ) ) {
- 							$plugin['downloaded_source'] = '/tmp-normalized/plugin-folder';
- 						} elseif ( str_contains( $plugin['downloaded_source'], 'plugin.zip' ) ) {
- 							$plugin['downloaded_source'] = '/tmp-normalized/plugin.zip';
- 						} elseif ( str_contains( $plugin['downloaded_source'], 'woocommerce' ) ) {
- 							$plugin['downloaded_source'] = '/tmp-normalized/cache/plugin/woocommerce-8.0.0.zip';
- 						} elseif ( isset( $plugin['from'] ) && $plugin['from'] === 'url' ) {
- 							$plugin['downloaded_source'] = '/tmp-normalized/cache/plugin/' . $plugin['slug'] . '.zip';
- 						} else {
- 							$plugin['downloaded_source'] = sprintf(
- 								'/tmp-normalized/cache/plugin/%s.zip',
- 								$plugin['slug'] ?? 'unknown-plugin'
- 							);
- 						}
- 					}
+						if ( isset( $plugin['downloaded_source'] ) && str_starts_with( $plugin['downloaded_source'], '/' ) ) {
+							if ( str_contains( $plugin['downloaded_source'], '/plugin-folder' ) ) {
+								$plugin['downloaded_source'] = '/tmp-normalized/plugin-folder';
+							} elseif ( str_contains( $plugin['downloaded_source'], 'plugin.zip' ) ) {
+								$plugin['downloaded_source'] = '/tmp-normalized/plugin.zip';
+							} elseif ( str_contains( $plugin['downloaded_source'], 'woocommerce' ) ) {
+								$plugin['downloaded_source'] = '/tmp-normalized/cache/plugin/woocommerce-8.0.0.zip';
+							} elseif ( isset( $plugin['from'] ) && $plugin['from'] === 'url' ) {
+								$plugin['downloaded_source'] = '/tmp-normalized/cache/plugin/' . $plugin['slug'] . '.zip';
+							} else {
+								$plugin['downloaded_source'] = sprintf(
+									'/tmp-normalized/cache/plugin/%s.zip',
+									$plugin['slug'] ?? 'unknown-plugin'
+								);
+							}
+						}
 					}
-
-					file_put_contents(
-						'/tmp/qit/qit_debug.log',
-						sprintf(
-							"After normalization: slug=%s, type=%s, from=%s, directory=%s, downloaded_source=%s, source=%s\n",
-							$plugin['slug'] ?? 'null',
-							$plugin['type'] ?? 'null',
-							$plugin['from'] ?? 'null',
-							$plugin['directory'] ?? 'null',
-							$plugin['downloaded_source'] ?? 'null',
-							$plugin['source'] ?? 'null'
-						),
-						FILE_APPEND
-					);
 				} elseif ( is_string( $plugin ) && str_starts_with( $plugin, '/' ) && str_contains( $plugin, 'test-plugin' ) ) {
 					$plugin = '/tmp-normalized/normalized-plugin.zip';
 				}
@@ -515,8 +461,22 @@ PHP;
 					$theme = $theme->jsonSerialize();
 				}
 				if ( is_array( $theme ) ) {
-					if ( isset( $theme['directory'] ) && str_starts_with( $theme['directory'], '/' ) && str_contains( $theme['directory'], '/theme-folder' ) ) {
-						$theme['directory'] = '/tmp-normalized/theme-folder';
+					if ( isset( $theme['directory'] ) && str_starts_with( $theme['directory'], '/' ) ) {
+						if ( str_contains( $theme['directory'], '/theme-folder' ) ) {
+							$theme['directory'] = '/tmp-normalized/theme-folder';
+						} elseif ( str_starts_with( $theme['directory'], '/tmp/qit/qit_test_' ) ) {
+							$parts              = explode( '/', $theme['directory'] );
+							$theme_name         = end( $parts );
+							$theme['directory'] = '/tmp/qit/qit_test_normalized/' . $theme_name;
+						} else {
+							$theme['directory'] = '/tmp-normalized/theme-folder';
+						}
+					}
+
+					if ( isset( $theme['source'] ) && str_starts_with( $theme['source'], '/tmp/qit/qit_test_' ) ) {
+						$parts           = explode( '/', $theme['source'] );
+						$theme_name      = end( $parts );
+						$theme['source'] = '/tmp/qit/qit_test_normalized/' . $theme_name;
 					}
 
 					if ( isset( $theme['downloaded_source'] ) && str_starts_with( $theme['downloaded_source'], '/' ) ) {
@@ -592,8 +552,6 @@ PHP;
 				}
 			}
 		}
-
-		file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: Normalized env_info: " . print_r( $env_info, true ) . "\n", FILE_APPEND );
 
 		return $env_info;
 	}

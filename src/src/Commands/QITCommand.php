@@ -6,7 +6,7 @@ use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\PreCommand\ConfigFile\ConfigParser;
 use QIT_CLI\PreCommand\InputPriorityHandler;
-use QIT_CLI\PreCommand\EnvironmentHandler;
+use QIT_CLI\PreCommand\EnvInfoBuilder;
 use QIT_CLI\PreCommand\TestProfileHandler;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -62,7 +62,7 @@ abstract class QITCommand extends Command {
 		$this->merged_options = $this->get_merged_options( $input, $output, $config );
 
 		if ( $this->needs_environment() ) {
-			$environment_handler = App::make( EnvironmentHandler::class );
+			$environment_handler = App::make( EnvInfoBuilder::class );
 			file_put_contents( '/tmp/qit/qit_debug.log', "QITCommand: Building environment info\n", FILE_APPEND );
 			$this->env_info = $environment_handler->build_env_info( $input, $output, $this->merged_options, $config );
 		}
@@ -130,7 +130,7 @@ abstract class QITCommand extends Command {
 
 		$input_priority_handler = App::make( InputPriorityHandler::class );
 
-		return $input_priority_handler->get_config_from_input( $input, $config_section, $command_defaults, EnvironmentHandler::get_pluralizable_keys() );
+		return $input_priority_handler->get_config_from_input( $input, $config_section, $command_defaults, EnvInfoBuilder::get_pluralizable_keys() );
 	}
 
 	protected function get_test_type(): string {

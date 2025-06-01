@@ -58,6 +58,8 @@ try {
 	$response['extensions'] = [
 		[ 'id' => 10001, 'slug' => 'wccom-plugin-1', 'type' => 'plugin' ],
 		[ 'id' => 10002, 'slug' => 'wccom-plugin-2', 'type' => 'plugin' ],
+		[ 'id' => 1000245, 'slug' => 'wccom-plugin-4', 'type' => 'plugin' ],
+		[ 'id' => 1000255, 'slug' => 'wccom-plugin-5', 'type' => 'plugin' ],
 		[ 'id' => 123456, 'slug' => 'woocommerce', 'type' => 'plugin' ],
 		[ 'id' => 2165910, 'slug' => 'woocommerce-shipping', 'type' => 'plugin' ],
 		[ 'id' => 123457, 'slug' => 'plugin-a', 'type' => 'plugin' ],
@@ -71,7 +73,7 @@ try {
 
 	// Override the 'extension_sets' array
 	$response['extension_sets'] = [
-		'test-set'  => [ 'plugin-a', 'plugin-b' ],
+		'test-set'  => [ 'wccom-plugin-4', 'wccom-plugin-5' ],
 		'empty-set' => [],
 	];
 

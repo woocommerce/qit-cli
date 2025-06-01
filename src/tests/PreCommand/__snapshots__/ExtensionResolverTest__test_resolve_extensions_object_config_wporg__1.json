@@ -1,7 +1,6 @@
 {
     "extra": [],
     "environment": "default",
-    "dependencies_mode": "activate",
     "temporary_env": "\/tmp-normalized\/default-ENV_ID_NORMALIZED",
     "created_at": 1700000000,
     "status": "pending",
@@ -9,8 +8,42 @@
     "volumes": [],
     "docker_images": [],
     "docker_network": "",
-    "php_extensions": [],
+    "php_extensions": [
+        "gd"
+    ],
     "plugins": [
+        {
+            "slug": "wporg-plugin-1",
+            "entrypoint": null,
+            "source": "https:\/\/downloads.wordpress.org\/plugin\/wporg-plugin-1.9.5.2.zip",
+            "directory": null,
+            "downloaded_source": "\/tmp-normalized\/cache\/plugin\/wporg-plugin-1.zip",
+            "type": "plugin",
+            "handler": null,
+            "version": "9.5.2",
+            "action": null,
+            "test_tags": null,
+            "priority": 50,
+            "wccom_id": null,
+            "added_automatically": null,
+            "from": "wporg"
+        },
+        {
+            "slug": "local-plugin-1",
+            "entrypoint": null,
+            "source": "\/tmp\/qit\/qit_test_normalized\/my-awesome-plugin",
+            "directory": "\/tmp\/qit\/qit_test_normalized\/my-awesome-plugin",
+            "downloaded_source": "\/tmp-normalized\/cache\/plugin\/local-plugin-1.zip",
+            "type": "plugin",
+            "handler": null,
+            "version": "local",
+            "action": null,
+            "test_tags": null,
+            "priority": 50,
+            "wccom_id": null,
+            "added_automatically": null,
+            "from": "directory"
+        },
         {
             "slug": "woocommerce",
             "entrypoint": null,
@@ -24,24 +57,8 @@
             "test_tags": null,
             "priority": 50,
             "wccom_id": null,
-            "added_automatically": null,
+            "added_automatically": "Added as a dependency",
             "from": "wporg"
-        },
-        {
-            "slug": "local-plugin-1",
-            "entrypoint": null,
-            "source": null,
-            "directory": "\/tmp-normalized\/plugin-folder",
-            "downloaded_source": "\/tmp-normalized\/plugin-folder",
-            "type": "plugin",
-            "handler": null,
-            "version": "undefined",
-            "action": null,
-            "test_tags": null,
-            "priority": 50,
-            "wccom_id": null,
-            "added_automatically": null,
-            "from": "directory"
         }
     ],
     "themes": [],
@@ -59,7 +76,7 @@
         "slug": "local-plugin-1",
         "source": {
             "type": "directory",
-            "path": "\/tmp\/qit\/qit_test_normalized\/plugin-folder"
+            "path": "\/tmp\/qit\/qit_test_normalized\/my-awesome-plugin"
         }
     },
     "domain": "normalized.localhost",
@@ -71,32 +88,5 @@
     "woo_version": "",
     "is_development_build": false,
     "notify": "",
-    "test_packages": {
-        "e2e": {
-            "default": {
-                "version": "1.0",
-                "author": "Awesome Team",
-                "description": "Full checkout flow test for awesome-plugin",
-                "test_command": "npm run playwright",
-                "lifecycle": {
-                    "before_all_tests": [
-                        {
-                            "command": ".\/default\/before_all.sh",
-                            "priority": 10,
-                            "runs_on": "docker"
-                        }
-                    ],
-                    "after_all_tests": [
-                        {
-                            "command": ".\/default\/after_all.sh",
-                            "runs_on": "docker"
-                        }
-                    ]
-                },
-                "env_vars": {
-                    "QIT_E2E_DEBUG": "true"
-                }
-            }
-        }
-    }
+    "test_packages": []
 }

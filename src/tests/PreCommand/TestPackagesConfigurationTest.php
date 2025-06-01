@@ -22,8 +22,8 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 			mkdir( $plugin_folder, 0777, true );
 		}
 		// Create minimal plugin file
-		$plugin_file = $plugin_folder . '/awesome-plugin.php';
-		file_put_contents( $plugin_file, "<?php\n/**\n * Plugin Name: Awesome Plugin\n * Version: 1.0\n */" );
+		$plugin_file = $plugin_folder . '/local-plugin-1.php';
+		file_put_contents( $plugin_file, "<?php\n/**\n * Plugin Name: Local Plugin 1\n * Version: 1.0\n */" );
 		$this->to_delete[] = $plugin_folder;
 		$this->to_delete[] = $plugin_file;
 	}
@@ -35,7 +35,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 		$config = [
 			'sut'           => [
 				'type'   => 'plugin',
-				'slug'   => 'awesome-plugin',
+				'slug'   => 'local-plugin-1',
 				'source' => [
 					'type' => 'directory',
 					'path' => $this->temp_dir . '/plugin-folder',
@@ -60,7 +60,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 			'$schema'      => 'https://qit.woo.com/json-schema/test-package',
 			'version'      => '1.0',
 			'author'       => 'Awesome Team',
-			'description'  => 'Full checkout flow test for awesome-plugin',
+			'description'  => 'Full checkout flow test for local-plugin-1',
 			'test_command' => 'npm run playwright',
 			'env_vars'     => [ 'QIT_E2E_DEBUG' => true ],
 		];
@@ -70,7 +70,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 			'version'      => '1.0.1',
 			'author'       => 'Default Author',
 			'test_command' => 'npm run playwright --project basic',
-			'description'  => 'Basic checkout flow test for awesome-plugin',
+			'description'  => 'Basic checkout flow test for local-plugin-1',
 		];
 
 		$this->mock_file( 'tests/e2e/default.json', json_encode( $default_json ) );
@@ -97,7 +97,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 		$config = [
 			'sut'           => [
 				'type'   => 'plugin',
-				'slug'   => 'awesome-plugin',
+				'slug'   => 'local-plugin-1',
 				'source' => [
 					'type' => 'directory',
 					'path' => $this->temp_dir . '/plugin-folder',
@@ -215,7 +215,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 		$config = [
 			'sut'           => [
 				'type'   => 'plugin',
-				'slug'   => 'awesome-plugin',
+				'slug'   => 'local-plugin-1',
 				'source' => [
 					'type' => 'directory',
 					'path' => $this->temp_dir . '/plugin-folder',
@@ -353,7 +353,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 		$config = [
 			'sut'           => [
 				'type'   => 'plugin',
-				'slug'   => 'awesome-plugin',
+				'slug'   => 'local-plugin-1',
 				'source' => [
 					'type' => 'directory',
 					'path' => $this->temp_dir . '/plugin-folder',
@@ -552,7 +552,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 		$config = [
 			'sut'           => [
 				'type'   => 'plugin',
-				'slug'   => 'awesome-plugin',
+				'slug'   => 'local-plugin-1',
 				'source' => [
 					'type' => 'directory',
 					'path' => $this->temp_dir . '/plugin-folder',
@@ -628,7 +628,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 		$config = [
 			'sut'           => [
 				'type'   => 'plugin',
-				'slug'   => 'awesome-plugin',
+				'slug'   => 'local-plugin-1',
 				'source' => [
 					'type' => 'directory',
 					'path' => $this->temp_dir . '/plugin-folder',
@@ -696,7 +696,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 		$config = [
 			'sut'           => [
 				'type'   => 'plugin',
-				'slug'   => 'awesome-plugin',
+				'slug'   => 'local-plugin-1',
 				'source' => [
 					'type' => 'directory',
 					'path' => $this->temp_dir . '/plugin-folder',
@@ -810,7 +810,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 		$config = [
 			'sut'           => [
 				'type'   => 'plugin',
-				'slug'   => 'awesome-plugin',
+				'slug'   => 'local-plugin-1',
 				'source' => [
 					'type' => 'directory',
 					'path' => $this->temp_dir . '/plugin-folder',
@@ -872,7 +872,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 		$config = [
 			'sut'           => [
 				'type'   => 'plugin',
-				'slug'   => 'awesome-plugin',
+				'slug'   => 'local-plugin-1',
 				'source' => [
 					'type' => 'directory',
 					'path' => $this->temp_dir . '/plugin-folder',
@@ -947,7 +947,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 		$config = [
 			'sut'           => [
 				'type'   => 'plugin',
-				'slug'   => 'awesome-plugin',
+				'slug'   => 'local-plugin-1',
 				'source' => [
 					'type' => 'directory',
 					'path' => $this->temp_dir . '/plugin-folder',
@@ -1000,10 +1000,10 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 	 *       one ("local/default") in the 'e2e:default' profile. She defines an unused package ("local/extra") in
 	 *       test_packages, expecting it to be ignored in env_info to keep the environment setup lean and avoid
 	 *       unnecessary processing.
-	 * System Behavior: EnvironmentHandler should only include test packages referenced in test_types in
+	 * System Behavior: EnvInfoBuilder should only include test packages referenced in test_types in
 	 *                  env_info['test_packages']. Unreferenced packages (e.g., "local/extra") should be excluded,
 	 *                  ensuring env_info contains only the relevant configurations. This should happen during
-	 *                  EnvironmentHandler::build_env_info to optimize environment setup.
+	 *                  EnvInfoBuilder::build_env_info to optimize environment setup.
 	 * Why Critical: Including unused test packages bloats env_info, potentially causing performance issues or
 	 *               conflicts in complex setups. Excluding them ensures efficiency and clarity, critical for
 	 *               large test suites. Low maintenance due to simple reference check and stable assertion.
@@ -1012,7 +1012,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 		$config = [
 			'sut'           => [
 				'type'   => 'plugin',
-				'slug'   => 'awesome-plugin',
+				'slug'   => 'local-plugin-1',
 				'source' => [
 					'type' => 'directory',
 					'path' => $this->temp_dir . '/plugin-folder',
@@ -1110,7 +1110,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 		$config = [
 			'sut'           => [
 				'type'   => 'plugin',
-				'slug'   => 'awesome-plugin',
+				'slug'   => 'local-plugin-1',
 				'source' => [
 					'type' => 'directory',
 					'path' => $this->temp_dir . '/plugin-folder',
@@ -1198,7 +1198,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 		$config = [
 			'sut'           => [
 				'type'   => 'plugin',
-				'slug'   => 'awesome-plugin',
+				'slug'   => 'local-plugin-1',
 				'source' => [
 					'type' => 'directory',
 					'path' => $this->temp_dir . '/plugin-folder',
@@ -1276,7 +1276,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 		$config = [
 			'sut'           => [
 				'type'   => 'plugin',
-				'slug'   => 'awesome-plugin',
+				'slug'   => 'local-plugin-1',
 				'source' => [
 					'type' => 'directory',
 					'path' => $this->temp_dir . '/plugin-folder',

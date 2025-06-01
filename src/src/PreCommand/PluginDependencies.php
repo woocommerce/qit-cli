@@ -110,6 +110,7 @@ class PluginDependencies {
 		$cached    = $this->cache->get( $cache_key );
 
 		if ( $cached ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "get_wporg_plugin_dependencies: Using cached dependencies for $slug: " . print_r( $cached, true ) . "\n", FILE_APPEND );
 			return $cached;
 		}
 
@@ -121,20 +122,25 @@ class PluginDependencies {
 				->request();
 			$raw_info      = @unserialize( $response_body );
 
+			file_put_contents( '/tmp/qit/qit_debug.log', "get_wporg_plugin_dependencies: Raw info for $slug: " . print_r( $raw_info, true ) . "\n", FILE_APPEND );
+
 			if ( ! is_object( $raw_info ) || ! isset( $raw_info->requires_plugins ) ) {
 				$requires_plugins = [];
+				file_put_contents( '/tmp/qit/qit_debug.log', "get_wporg_plugin_dependencies: No requires_plugins for $slug\n", FILE_APPEND );
 			} else {
 				$requires_plugins = (array) $raw_info->requires_plugins;
+				file_put_contents( '/tmp/qit/qit_debug.log', "get_wporg_plugin_dependencies: requires_plugins for $slug: " . print_r( $requires_plugins, true ) . "\n", FILE_APPEND );
 			}
 
 			// Convert plugin slugs to Extension objects
-			$plugin_extensions = array_map( function ( $slug ) {
-				$ext = new Extension( $slug, 'plugin' );
+			$plugin_extensions = array_map( function ( $dep_slug ) {
+				$ext = new Extension( $dep_slug, 'plugin' );
 				$ext->populate_from();
 				try {
-					$info         = $this->wporg_extensions_list->get_plugin_download_info( $slug );
+					$info         = $this->wporg_extensions_list->get_plugin_download_info( $dep_slug );
 					$ext->source  = $info['url'];
 					$ext->version = $info['version'];
+					$ext->added_automatically = 'Added as a dependency';
 				} catch ( \Exception $e ) {
 					// Skip if unable to fetch info
 				}
@@ -174,7 +180,10 @@ class PluginDependencies {
 	 * }
 	 */
 	public function get_dependencies( array $plugins, array $themes, string $dependencies_mode ): array {
+		file_put_contents( '/tmp/qit/qit_debug.log', "PluginDependencies: Delegating to DependencyResolver with mode: $dependencies_mode\n", FILE_APPEND );
+
 		if ( $dependencies_mode === self::DEPENDENCY_MODES['env_only']['none'] ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "PluginDependencies: Mode is 'none', returning empty arrays\n", FILE_APPEND );
 			return [
 				'plugin'        => [],
 				'theme'         => [],
@@ -182,117 +191,9 @@ class PluginDependencies {
 			];
 		}
 
-		$all_deps = [
-			'plugin'        => [],
-			'theme'         => [],
-			'php_extension' => [],
-		];
-
-		$woo_extension_ids = [];
-
-		foreach ( array_merge( $plugins, $themes ) as $ext ) {
-			if ( ! empty( $ext->wccom_id ) ) {
-				$woo_extension_ids[] = $ext->wccom_id;
-			}
-		}
-
-		$woo_extension_ids = array_unique( $woo_extension_ids );
-
-		if ( ! empty( $woo_extension_ids ) ) {
-			$first_id                  = array_shift( $woo_extension_ids );
-			$wccom_deps                = $this->get_plugin_and_php_ext_dependencies( $first_id, $woo_extension_ids );
-			$all_deps['plugin']        = array_merge( $all_deps['plugin'], $wccom_deps['plugin'] );
-			$all_deps['theme']         = array_merge( $all_deps['theme'], $wccom_deps['theme'] );
-			$all_deps['php_extension'] = array_merge( $all_deps['php_extension'], $wccom_deps['php_extension'] );
-		}
-
-		foreach ( $plugins as $ext ) {
-			if ( $this->wporg_extensions_list->is_wporg_plugin( $ext->slug ) ) {
-				$wporg_deps                = $this->get_wporg_plugin_dependencies( $ext->slug );
-				$all_deps['plugin']        = array_merge( $all_deps['plugin'], $wporg_deps['plugin'] );
-				$all_deps['theme']         = array_merge( $all_deps['theme'], $wporg_deps['theme'] );
-				$all_deps['php_extension'] = array_merge( $all_deps['php_extension'], $wporg_deps['php_extension'] );
-			}
-		}
-
-		// Deduplicate plugins by slug, keeping the first occurrence
-		$unique_plugins = [];
-		foreach ( $all_deps['plugin'] as $plugin ) {
-			if ( ! isset( $unique_plugins[ $plugin->slug ] ) ) {
-				$unique_plugins[ $plugin->slug ] = $plugin;
-			}
-		}
-		$all_deps['plugin'] = array_values( $unique_plugins );
-
-		// Deduplicate themes by slug, keeping the first occurrence
-		$unique_themes = [];
-		foreach ( $all_deps['theme'] as $theme ) {
-			if ( ! isset( $unique_themes[ $theme->slug ] ) ) {
-				$unique_themes[ $theme->slug ] = $theme;
-			}
-		}
-		$all_deps['theme'] = array_values( $unique_themes );
-
-		// Deduplicate PHP extensions (still strings)
-		$all_deps['php_extension'] = array_values( array_unique( $all_deps['php_extension'] ) );
-
-		// Initialize plugins result with input plugins
-		$plugins_result = [];
-		foreach ( $plugins as $plugin ) {
-			$exists = array_filter( $plugins_result, function ( $ext ) use ( $plugin ) {
-				return $ext->slug === $plugin->slug;
-			} );
-			if ( empty( $exists ) ) {
-				$plugins_result[] = $plugin;
-			}
-		}
-
-		// Add dependency plugins not already present
-		foreach ( $all_deps['plugin'] as $plugin ) {
-			$exists = array_filter( $plugins_result, function ( $ext ) use ( $plugin ) {
-				return $ext->slug === $plugin->slug;
-			} );
-
-			if ( empty( $exists ) ) {
-				$plugin->priority            = Extension::PRIORITY_LOW;
-				$plugin->added_automatically = 'Added as a dependency';
-				$plugins_result[]            = $plugin;
-			}
-		}
-
-		// Initialize themes result with input themes
-		$themes_result = [];
-		foreach ( $themes as $theme ) {
-			$exists = array_filter( $themes_result, function ( $ext ) use ( $theme ) {
-				return $ext->slug === $theme->slug;
-			} );
-			if ( empty( $exists ) ) {
-				$themes_result[] = $theme;
-			}
-		}
-
-		// Add dependency themes not already present
-		foreach ( $all_deps['theme'] as $theme ) {
-			$exists = array_filter( $themes_result, function ( $ext ) use ( $theme ) {
-				return $ext->slug === $theme->slug;
-			} );
-
-			if ( empty( $exists ) ) {
-				$theme->added_automatically = 'Added as a dependency';
-				$from = $theme->from; // Save the 'from' property
-				$theme->populate_from();
-				if ($from !== null) {
-					$theme->from = $from; // Restore the 'from' property if it was set
-				}
-				$themes_result[] = $theme;
-			}
-		}
-
-		return [
-			'plugin'        => $plugins_result,
-			'theme'         => $themes_result,
-			'php_extension' => $all_deps['php_extension'],
-		];
+		$resolver = \QIT_CLI\App::make(\QIT_CLI\respondent\PreCommand\Extension\DependencyResolver::class);
+		file_put_contents( '/tmp/qit/qit_debug.log', "PluginDependencies: Calling DependencyResolver::get_all_dependencies\n", FILE_APPEND );
+		return $resolver->get_all_dependencies(array_merge($plugins, $themes));
 	}
 
 	/**

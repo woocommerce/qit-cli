@@ -20,6 +20,47 @@ class ConfigParser {
 		$this->parsed_config = $this->parse_config( $config_file, [], true );
 	}
 
+	protected function resolvePaths( array $config, string $root_path ): array {
+		$resolved = $config;
+
+		// Helper to resolve a single path
+		$resolvePath = function ( $path ) use ( $root_path ) {
+			if ( is_string( $path ) && ! str_starts_with( $path, '/' ) && ! filter_var( $path, FILTER_VALIDATE_URL ) ) {
+				$full_path = $root_path . DIRECTORY_SEPARATOR . ltrim( $path, './' . DIRECTORY_SEPARATOR );
+
+				return \QIT_CLI\normalize_path( $full_path );
+			}
+
+			return $path;
+		};
+
+		// Process sut
+		if ( isset( $resolved['sut']['source']['path'] ) ) {
+			$resolved['sut']['source']['path'] = $resolvePath( $resolved['sut']['source']['path'] );
+		}
+
+		// Process environments (plugins and themes)
+		if ( isset( $resolved['environments'] ) ) {
+			foreach ( $resolved['environments'] as &$env ) {
+				foreach ( [ 'plugins', 'themes' ] as $type ) {
+					if ( isset( $env[ $type ] ) ) {
+						foreach ( $env[ $type ] as &$item ) {
+							if ( is_array( $item ) && isset( $item['source']['path'] ) ) {
+								$item['source']['path'] = $resolvePath( $item['source']['path'] );
+							}
+						}
+					}
+				}
+			}
+			unset( $env ); // Clear reference
+		}
+
+		// Log resolved config for debugging
+		file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: Resolved paths: " . json_encode( $resolved, JSON_PRETTY_PRINT ) . "\n", FILE_APPEND );
+
+		return $resolved;
+	}
+
 	protected function parse_config( string $config_file, array $parsed_files, bool $is_top_level = false ): array {
 		if ( in_array( $config_file, $parsed_files, true ) ) {
 			throw new \RuntimeException( "Circular dependency detected in qit.json configuration: $config_file" );
@@ -38,11 +79,15 @@ class ConfigParser {
 			throw new \RuntimeException( 'Invalid qit.json format. Must be a JSON object.' );
 		}
 
+		// Resolve relative paths
+		$root_path  = dirname( $config_file );
+		$raw_config = $this->resolvePaths( $raw_config, $root_path );
+
 		$parsed_config = [];
 
 		if ( isset( $raw_config['sut'] ) ) {
 			$parsed_config['sut'] = App::make( SutParser::class )->parse( $raw_config['sut'], [
-				'root_path' => dirname( $config_file ),
+				'root_path' => $root_path,
 				'context'   => 'sut.source'
 			] );
 		}
@@ -68,11 +113,11 @@ class ConfigParser {
 				case 'environments':
 					$parsed_config[ $key ] = App::make( EnvironmentParser::class )->parse( $value, [
 						'test_packages' => $raw_config['test_packages'] ?? [],
-						'root_path'     => dirname( $config_file )
+						'root_path'     => $root_path
 					], $parsed_config['sut'] ?? null );
 					break;
 				case 'test_packages':
-					$context = [ 
+					$context               = [
 						'root_path' => dirname( $config_file )
 					];
 					$parsed_config[ $key ] = App::make( CustomTestPackageParser::class )->parse( $value, $context );

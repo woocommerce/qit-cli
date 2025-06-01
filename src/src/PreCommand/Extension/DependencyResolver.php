@@ -1,0 +1,295 @@
+<?php
+
+namespace QIT_CLI\PreCommand\Extension;
+
+use QIT_CLI\App;
+use QIT_CLI\Cache;
+use QIT_CLI\Environment\Extension;
+use QIT_CLI\RequestBuilder;
+use QIT_CLI\WooExtensionsList;
+use QIT_CLI\WPORGExtensionsList;
+use function QIT_CLI\get_manager_url;
+
+/**
+ * Resolves dependencies for extensions.
+ */
+class DependencyResolver {
+	/** @var Cache */
+	protected $cache;
+
+	/** @var WooExtensionsList */
+	protected $woo_extensions_list;
+
+	/** @var WPORGExtensionsList */
+	protected $wporg_extensions_list;
+
+	/** @var DependencyParser */
+	protected $dependency_parser;
+
+	public function __construct(
+		Cache $cache,
+		WooExtensionsList $woo_extensions_list,
+		WPORGExtensionsList $wporg_extensions_list,
+		DependencyParser $dependency_parser
+	) {
+		$this->cache                 = $cache;
+		$this->woo_extensions_list   = $woo_extensions_list;
+		$this->wporg_extensions_list = $wporg_extensions_list;
+		$this->dependency_parser     = $dependency_parser;
+	}
+
+	/**
+	 * Resolve dependencies for a single extension.
+	 *
+	 * @param Extension $extension
+	 *
+	 * @return Extension[] Array of dependency extensions
+	 */
+	public function resolve_dependencies( Extension $extension ): array {
+		$dependencies = [];
+
+		// Parse dependencies from the extension files
+		if ( ! empty( $extension->downloaded_source ) ) {
+			$parsed_deps = $this->dependency_parser->parse( $extension->downloaded_source, $extension->type );
+
+			foreach ( $parsed_deps as $dep_slug ) {
+				$dep                      = new Extension( $dep_slug, 'plugin' );
+				$dep->added_automatically = 'Added as a dependency';
+				$dependencies[]           = $dep;
+			}
+		}
+
+		// Get additional dependencies from APIs
+		if ( $extension->from === 'wccom' && ! empty( $extension->wccom_id ) ) {
+			$wccom_deps   = $this->get_wccom_dependencies( $extension->wccom_id );
+			$dependencies = array_merge( $dependencies, $wccom_deps );
+		} elseif ( $extension->from === 'wporg' && $extension->type === 'plugin' ) {
+			$wporg_deps   = $this->get_wporg_dependencies( $extension->slug );
+			$dependencies = array_merge( $dependencies, $wporg_deps );
+		}
+
+		// Deduplicate by slug
+		$unique = [];
+		foreach ( $dependencies as $dep ) {
+			if ( ! isset( $unique[ $dep->slug ] ) ) {
+				$unique[ $dep->slug ] = $dep;
+			}
+		}
+
+		return array_values( $unique );
+	}
+
+	/**
+	 * Get dependencies for multiple extensions.
+	 *
+	 * @param Extension[] $extensions
+	 *
+	 * @return array{plugin: Extension[], theme: Extension[], php_extension: string[]}
+	 */
+	public function get_all_dependencies( array $extensions ): array {
+		$all_deps = [
+			'plugin'        => [],
+			'theme'         => [],
+			'php_extension' => [],
+		];
+
+		// Collect WCCOM extension IDs for bulk query
+		$wccom_ids = [];
+		foreach ( $extensions as $ext ) {
+			if ( ! empty( $ext->wccom_id ) ) {
+				$wccom_ids[] = $ext->wccom_id;
+			} elseif ( $ext->from === 'wccom' || $this->is_wccom_extension( $ext ) ) {
+				try {
+					$id          = $this->woo_extensions_list->get_woo_extension_id_by_slug( $ext->slug );
+					$wccom_ids[] = $id;
+				} catch ( \UnexpectedValueException $e ) {
+					// Not a WCCOM extension
+				}
+			}
+		}
+
+		// Get WCCOM dependencies in bulk
+		if ( ! empty( $wccom_ids ) ) {
+			$wccom_data                = $this->get_wccom_dependencies_bulk( $wccom_ids );
+			$all_deps['plugin']        = array_merge( $all_deps['plugin'], $wccom_data['plugins'] );
+			$all_deps['theme']         = array_merge( $all_deps['theme'], $wccom_data['themes'] );
+			$all_deps['php_extension'] = array_merge( $all_deps['php_extension'], $wccom_data['php_extensions'] );
+		}
+
+		// Get WPORG dependencies
+		foreach ( $extensions as $ext ) {
+			if ( $ext->from === 'wporg' && $ext->type === 'plugin' ) {
+				$wporg_deps         = $this->get_wporg_dependencies( $ext->slug );
+				$all_deps['plugin'] = array_merge( $all_deps['plugin'], $wporg_deps );
+			}
+		}
+
+		// Parse local dependencies
+		foreach ( $extensions as $ext ) {
+			if ( ! empty( $ext->downloaded_source ) ) {
+				$parsed = $this->dependency_parser->parse( $ext->downloaded_source, $ext->type );
+				foreach ( $parsed as $dep_slug ) {
+					$dep                      = new Extension( $dep_slug, 'plugin' );
+					$dep->added_automatically = 'Added as a dependency';
+					$all_deps['plugin'][]     = $dep;
+				}
+			}
+		}
+
+		// Deduplicate
+		$all_deps['plugin']        = $this->deduplicate_extensions( $all_deps['plugin'] );
+		$all_deps['theme']         = $this->deduplicate_extensions( $all_deps['theme'] );
+		$all_deps['php_extension'] = array_unique( $all_deps['php_extension'] );
+
+		return $all_deps;
+	}
+
+	/**
+	 * Check if extension is a WCCOM extension.
+	 */
+	protected function is_wccom_extension( Extension $extension ): bool {
+		try {
+			$this->woo_extensions_list->get_woo_extension_id_by_slug( $extension->slug );
+
+			return true;
+		} catch ( \UnexpectedValueException $e ) {
+			return false;
+		}
+	}
+
+	/**
+	 * Get dependencies from WCCOM API.
+	 */
+	protected function get_wccom_dependencies( int $wccom_id ): array {
+		$data = $this->get_wccom_dependencies_bulk( [ $wccom_id ] );
+
+		$dependencies = [];
+		foreach ( $data['plugins'] as $plugin ) {
+			$dependencies[] = $plugin;
+		}
+		foreach ( $data['themes'] as $theme ) {
+			$dependencies[] = $theme;
+		}
+
+		return $dependencies;
+	}
+
+	/**
+	 * Get dependencies from WCCOM API in bulk.
+	 */
+	protected function get_wccom_dependencies_bulk( array $wccom_ids ): array {
+		if ( empty( $wccom_ids ) ) {
+			return [
+				'plugins'        => [],
+				'themes'         => [],
+				'php_extensions' => [],
+			];
+		}
+
+		$cache_key = sprintf( 'wccom_deps_%s', md5( implode( ',', $wccom_ids ) ) );
+		$cached    = $this->cache->get( $cache_key );
+
+		if ( $cached ) {
+			$data = json_decode( $cached, true );
+		} else {
+			$first_id = array_shift( $wccom_ids );
+
+			$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/get-dependencies' ) )
+				->with_method( 'POST' )
+				->with_post_body( [
+					'sut_id'                       => $first_id,
+					'additional_woo_extension_ids' => implode( ',', $wccom_ids ),
+				] )
+				->request();
+
+			$data = json_decode( $response, true );
+			if ( ! is_array( $data ) || ! isset( $data['plugins'], $data['php_extensions'] ) ) {
+				throw new \RuntimeException( 'Invalid response from WCCOM dependencies API' );
+			}
+
+			$this->cache->set( $cache_key, $response, HOUR_IN_SECONDS );
+		}
+
+		// Convert to Extension objects
+		$result = [
+			'plugins'        => [],
+			'themes'         => [],
+			'php_extensions' => $data['php_extensions'] ?? [],
+		];
+
+		foreach ( $data['plugins'] ?? [] as $slug ) {
+			$ext                      = new Extension( $slug, 'plugin' );
+			$ext->added_automatically = 'Added as a dependency';
+			$result['plugins'][]      = $ext;
+		}
+
+		foreach ( $data['themes'] ?? [] as $slug ) {
+			$ext                      = new Extension( $slug, 'theme' );
+			$ext->added_automatically = 'Added as a dependency';
+			$result['themes'][]       = $ext;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Get dependencies from WPORG API.
+	 */
+	protected function get_wporg_dependencies( string $slug ): array {
+		$cache_key = "wporg_deps_$slug";
+		$cached    = $this->cache->get( $cache_key );
+
+		if ( $cached ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "DependencyResolver: Cached WPORG deps for $slug: " . print_r( $cached, true ) . "\n", FILE_APPEND );
+
+			return $cached;
+		}
+
+		try {
+			$response = ( new RequestBuilder( sprintf( $this->wporg_extensions_list->plugin_api_url, $slug ) ) )
+				->with_method( 'GET' )
+				->with_expected_status_codes( [ 200 ] )
+				->request();
+
+			$raw_info = json_decode( $response, true );
+			file_put_contents( '/tmp/qit/qit_debug.log', "DependencyResolver: Raw info for $slug: " . print_r( $raw_info, true ) . "\n", FILE_APPEND );
+			if ( ! is_array( $raw_info ) || ! isset( $raw_info['requires_plugins'] ) ) {
+				file_put_contents( '/tmp/qit/qit_debug.log', "DependencyResolver: No requires_plugins for $slug\n", FILE_APPEND );
+				$this->cache->set( $cache_key, [], HOUR_IN_SECONDS );
+
+				return [];
+			}
+
+			$dependencies = [];
+			foreach ( (array) $raw_info['requires_plugins'] as $dep_slug ) {
+				$ext                      = new Extension( $dep_slug, 'plugin' );
+				$ext->added_automatically = 'Added as a dependency';
+				$ext->from                = 'wporg';
+				$dependencies[]           = $ext;
+			}
+
+			file_put_contents( '/tmp/qit/qit_debug.log', "DependencyResolver: Resolved WPORG deps for $slug: " . print_r( array_map( fn( $e ) => $e->slug, $dependencies ), true ) . "\n", FILE_APPEND );
+			$this->cache->set( $cache_key, $dependencies, HOUR_IN_SECONDS );
+
+			return $dependencies;
+		} catch ( \Exception $e ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "DependencyResolver: Failed WPORG deps for $slug: " . $e->getMessage() . "\n", FILE_APPEND );
+
+			return [];
+		}
+	}
+
+	/**
+	 * Deduplicate extensions by slug.
+	 */
+	protected function deduplicate_extensions( array $extensions ): array {
+		$unique = [];
+		foreach ( $extensions as $ext ) {
+			if ( ! isset( $unique[ $ext->slug ] ) ) {
+				$unique[ $ext->slug ] = $ext;
+			}
+		}
+
+		return array_values( $unique );
+	}
+}

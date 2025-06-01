@@ -28,7 +28,7 @@
             "from": "wporg"
         },
         {
-            "slug": "awesome-plugin",
+            "slug": "local-plugin-1",
             "entrypoint": null,
             "source": null,
             "directory": "\/tmp-normalized\/plugin-folder",
@@ -56,7 +56,7 @@
     "php_version": "8.2",
     "sut": {
         "type": "plugin",
-        "slug": "awesome-plugin",
+        "slug": "local-plugin-1",
         "source": {
             "type": "directory",
             "path": "\/tmp\/qit\/qit_test_normalized\/plugin-folder"

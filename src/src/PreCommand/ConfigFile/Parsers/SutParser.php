@@ -41,8 +41,6 @@ class SutParser extends AbstractConfigParser {
 			throw new \RuntimeException( 'SUT must contain a non-empty "slug" string.' );
 		}
 
-		$root_path = $context['root_path'] ?? getcwd();
-
 		// If source is not provided, infer wporg or wccom
 		if ( ! isset( $value['source'] ) || ! is_array( $value['source'] ) ) {
 			$slug = $value['slug'];
@@ -85,9 +83,8 @@ class SutParser extends AbstractConfigParser {
 
 		// Delegate source validation to SourceParser
 		$value['source'] = $this->source_parser->parse( $value['source'], [
-			'slug'      => $value['slug'],
-			'context'   => 'sut.source',
-			'root_path' => $root_path
+			'slug'    => $value['slug'],
+			'context' => 'sut.source'
 		] );
 
 		file_put_contents( '/tmp/qit/qit_debug.log', "SutParser: SUT parsing completed\n", FILE_APPEND );

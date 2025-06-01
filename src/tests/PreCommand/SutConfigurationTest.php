@@ -126,13 +126,13 @@ class SutConfigurationTest extends PreCommandTestCase {
 		// Create directory with consistent name
 		$path = "$temp_dir/plugin-folder";
 		mkdir( $path, 0777, true );
-		file_put_contents( "$path/awesome-plugin.php", "<?php\n// Plugin Name: Awesome Plugin" );
+		file_put_contents( "$path/local-plugin-1.php", "<?php\n// Plugin Name: Local Plugin 1" );
 		$this->to_delete[] = $path;
 
 		$config = [
 			'sut'          => [
 				'type'   => 'plugin',
-				'slug'   => 'awesome-plugin',
+				'slug'   => 'local-plugin-1',
 				'source' => [
 					'type' => 'directory',
 					'path' => $path,
@@ -143,7 +143,7 @@ class SutConfigurationTest extends PreCommandTestCase {
 					'plugins' => [
 						'woocommerce',
 						[
-							'slug'   => 'awesome-plugin',
+							'slug'   => 'local-plugin-1',
 							'source' => [
 								'type' => 'directory',
 								'path' => $path,
