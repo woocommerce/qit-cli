@@ -11,7 +11,7 @@ use QIT_CLI\Environment\EnvironmentVersionResolver;
 use QIT_CLI\Environment\EnvParser;
 use QIT_CLI\Environment\EnvVolumeParser;
 use QIT_CLI\Environment\Extension;
-use QIT_CLI\PreCommand\Parsers\ConfigParser;
+use QIT_CLI\PreCommand\Configuration\QitJsonParser;
 use QIT_CLI\PreCommand\Extension\ExtensionResolver;
 use QIT_CLI\PreCommand\Extension\DependencyResolver;
 use QIT_CLI\PreCommand\Download\Tests\CustomTestsDownloader;
@@ -30,7 +30,7 @@ class EnvInfoBuilder {
 		];
 	}
 
-	public function build_env_info( InputInterface $input, OutputInterface $output, array $merged_options, ConfigParser $config ): EnvInfo {
+	public function build_env_info( InputInterface $input, OutputInterface $output, array $merged_options, QitJsonParser $config ): EnvInfo {
 		$environment = $input->getOption( 'environment' ) ?: 'default';
 		$woo_version = isset( $merged_options['woo_version'] ) ? $merged_options['woo_version'] : null;
 
@@ -180,7 +180,7 @@ class EnvInfoBuilder {
 	/**
 	 * Build environment configuration from various sources.
 	 */
-	protected function build_env_config( array $config_section, array $merged_options, ConfigParser $config, array $env_vars ): array {
+	protected function build_env_config( array $config_section, array $merged_options, QitJsonParser $config, array $env_vars ): array {
 		$env_config = [];
 
 		// Process config section
@@ -284,7 +284,7 @@ class EnvInfoBuilder {
 	/**
 	 * Merge CLI extensions with configuration.
 	 */
-	protected function merge_cli_extensions( array $config_extensions, $cli_value, string $type, ConfigParser $config ): array {
+	protected function merge_cli_extensions( array $config_extensions, $cli_value, string $type, QitJsonParser $config ): array {
 		$cli_extensions = [];
 		$cli_values     = is_array( $cli_value ) ? $cli_value : [ $cli_value ];
 		$seen_slugs     = array_map( fn( $e ) => $e['slug'], $config_extensions );
@@ -416,7 +416,7 @@ class EnvInfoBuilder {
 	/**
 	 * Add test packages to environment info.
 	 */
-	protected function add_test_packages( E2EEnvInfo $env_info, ConfigParser $config ): void {
+	protected function add_test_packages( E2EEnvInfo $env_info, QitJsonParser $config ): void {
 		if ( ! isset( $config->parsed_config['test_packages'] ) || ! is_array( $config->parsed_config['test_packages'] ) ||
 			! isset( $config->parsed_config['test_types'] ) || ! is_array( $config->parsed_config['test_types'] ) ) {
 			return;

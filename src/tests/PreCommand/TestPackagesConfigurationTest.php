@@ -4,7 +4,7 @@ namespace QIT_CLI_Tests\PreCommand;
 
 use QIT_CLI\App;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
-use QIT_CLI\PreCommand\Parsers\ConfigParser;
+use QIT_CLI\PreCommand\Configuration\QitJsonParser;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -77,7 +77,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 		$this->mock_file( 'tests/e2e/basic.json', json_encode( $basic_json ) );
 
 		$config_path = $this->create_temp_config_file( $config );
-		$parser      = new ConfigParser( $config_path );
+		$parser      = new QitJsonParser( $config_path );
 
 		$this->assertArrayHasKey( 'test_packages', $parser->parsed_config );
 		$this->assertIsArray( $parser->parsed_config['test_packages'] );
@@ -463,7 +463,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 		}
 
 		$config_path = $this->create_temp_config_file( $config );
-		$parser      = new ConfigParser( $config_path );
+		$parser      = new QitJsonParser( $config_path );
 
 		// Create the packages array with the expected structure
 		$packages = [
@@ -801,7 +801,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 	 *                  it should throw a RuntimeException with a message like:
 	 *                  "Test package file '/path/to/tests/e2e/missing.json' for 'e2e:default' not found.
 	 *                  Verify the file path in test_packages configuration."
-	 *                  The error should occur during ConfigParser::parse_config to fail fast.
+	 *                  The error should occur during QitJsonParser::parse_config to fail fast.
 	 * Why Critical: Missing files are a common configuration error that can halt environment setup.
 	 *               Early validation with clear errors prevents downstream failures and improves DevEx.
 	 *               Low maintenance due to simple file existence check and stable error expectation.
@@ -863,7 +863,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 	 *                  with a message like:
 	 *                  "Duplicate test package definition for 'e2e:default' in test_packages. Each test
 	 *                  package must have a unique type and name combination."
-	 *                  The error should occur in ConfigParser::parse_config to fail fast.
+	 *                  The error should occur in QitJsonParser::parse_config to fail fast.
 	 * Why Critical: Duplicate definitions can cause ambiguous test execution, leading to unpredictable
 	 *               results. Early detection ensures configuration integrity. Low maintenance due to
 	 *               straightforward uniqueness check and stable error expectation.
@@ -938,7 +938,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 	 *                  JSON is invalid, it should throw a RuntimeException with a message like:
 	 *                  "Invalid JSON in test package file '/path/to/tests/e2e/default.json' for 'e2e:default':
 	 *                  Syntax error. Verify the file contains valid JSON."
-	 *                  The error should occur in ConfigParser::parse_config to fail fast.
+	 *                  The error should occur in QitJsonParser::parse_config to fail fast.
 	 * Why Critical: Invalid JSON is a common error when editing configuration files, and it can halt environment
 	 *               setup. Early validation with clear errors prevents downstream failures and improves DevEx.
 	 *               Low maintenance due to simple JSON validation and stable error expectation.
@@ -1100,7 +1100,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 	 *                  like:
 	 *                  "Lifecycle script file '/path/to/tests/e2e/default/nonexistent.sh' for 'e2e:default'
 	 *                  not found. Verify the file path in lifecycle configuration."
-	 *                  The error should occur in ConfigParser::parse_config to fail fast.
+	 *                  The error should occur in QitJsonParser::parse_config to fail fast.
 	 * Why Critical: Non-existent lifecycle scripts can cause test execution to fail at runtime, disrupting
 	 *               CI/CD pipelines or local testing. Early validation ensures reliability, critical for
 	 *               senior developers like Raj. Low maintenance due to simple file existence check and
@@ -1189,7 +1189,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 	 *                  during parsing (e.g., in resolve_extends). If a circular dependency is found, it
 	 *                  should throw a RuntimeException with a message like:
 	 *                  "Circular dependency detected in test package 'e2e:package_a'. Check 'extends' references."
-	 *                  The error should occur in ConfigParser::parse_config to fail fast.
+	 *                  The error should occur in QitJsonParser::parse_config to fail fast.
 	 * Why Critical: Circular dependencies can cause infinite loops or crashes, halting all test workflows.
 	 *               Early detection is essential for system stability. Low maintenance due to simple
 	 *               configuration and stable error expectation.
@@ -1267,7 +1267,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 	 *                  should throw a RuntimeException with a message like:
 	 *                  "Test package 'e2e:default' is missing required field 'author'. Ensure all required
 	 *                  fields are defined."
-	 *                  The error should occur in ConfigParser::parse_config to fail fast.
+	 *                  The error should occur in QitJsonParser::parse_config to fail fast.
 	 * Why Critical: Missing required fields can lead to incomplete configurations, causing runtime errors
 	 *               or silent failures during test execution. Early validation ensures reliable setups.
 	 *               Low maintenance due to simple field check and stable error expectation.

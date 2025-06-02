@@ -1,11 +1,11 @@
 <?php
 
-namespace QIT_CLI\PreCommand\Parsers;
+namespace QIT_CLI\PreCommand\Configuration;
 
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Application;
 
-class ConfigParser {
+class QitJsonParser {
 	public array $parsed_config = [];
 	protected string $config_file;
 	protected string $root_path;
@@ -957,7 +957,7 @@ class ConfigParser {
 			unset( $env );
 		}
 
-		file_put_contents( '/tmp/qit/qit_debug.log', 'ConfigParser: Resolved paths: ' . json_encode( $resolved, JSON_PRETTY_PRINT ) . "\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit/qit_debug.log', 'QitJsonParser: Resolved paths: ' . json_encode( $resolved, JSON_PRETTY_PRINT ) . "\n", FILE_APPEND );
 
 		return $resolved;
 	}

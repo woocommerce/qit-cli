@@ -1,12 +1,12 @@
 <?php
 
-namespace QIT_CLI_Tests\PreCommand\Parsers;
+namespace QIT_CLI_Tests\PreCommand\Configuration;
 
 use PHPUnit\Framework\TestCase;
-use QIT_CLI\PreCommand\Parsers\ConfigParser;
+use QIT_CLI\PreCommand\Configuration\QitJsonParser;
 use Spatie\Snapshots\MatchesSnapshots;
 
-class ConfigParserTest extends TestCase {
+class QitJsonParserTest extends TestCase {
 	use MatchesSnapshots;
 
 	private $tempDir = '/tmp/qit_test_fixed';
@@ -41,7 +41,7 @@ JSON;
 		mkdir( $this->tempDir . '/plugin', 0777, true );
 		file_put_contents( $configFile, $config );
 
-		$parser       = new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 		$parsedConfig = $parser->parsed_config;
 
 		$this->assertArrayHasKey( 'sut', $parsedConfig );
@@ -80,7 +80,7 @@ JSON;
 		mkdir( $this->tempDir . '/plugin', 0777, true );
 		file_put_contents( $configFile, $config );
 
-		$parser       = new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 		$parsedConfig = $parser->parsed_config;
 
 		$this->assertArrayHasKey( 'environments', $parsedConfig );
@@ -129,7 +129,7 @@ JSON;
 		] ) );
 		file_put_contents( $configFile, $config );
 
-		$parser       = new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 		$parsedConfig = $parser->parsed_config;
 
 		$this->assertArrayHasKey( 'test_types', $parsedConfig );
@@ -162,7 +162,7 @@ JSON;
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( "Unknown key 'invalid_key' in environment 'default' configuration." );
-		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
 	public function testMissingSourceInSut(): void {
@@ -179,14 +179,14 @@ JSON;
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( "SUT 'test-plugin' must specify a 'source' object." );
-		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		new \QIT_CLI\PreCommand\Configuration\QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
 	public function testParseConfigMissingFile(): void {
 		$configFile = $this->tempDir . '/nonexistent.json';
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( "Config file '$configFile' not found." );
-		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		new \QIT_CLI\PreCommand\Configuration\QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
 	public function testParseInvalidJson(): void {
@@ -195,7 +195,7 @@ JSON;
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( 'Invalid qit.json format. Must be a JSON object.' );
-		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
 	public function testParseMissingSut(): void {
@@ -213,7 +213,7 @@ JSON;
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( 'SUT configuration is required.' );
-		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
 	public function testParseSutInvalidType(): void {
@@ -235,7 +235,7 @@ JSON;
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( "Invalid SUT type 'invalid'. Must be one of: plugin, theme" );
-		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
 	public function testParseSourceBuild(): void {
@@ -255,7 +255,7 @@ JSON;
 JSON;
 		file_put_contents( $configFile, $config );
 
-		$parser       = new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 		$parsedConfig = $parser->parsed_config;
 
 		$this->assertEquals( 'build', $parsedConfig['sut']['source']['type'] );
@@ -300,7 +300,7 @@ JSON;
 		mkdir( $this->tempDir . '/plugin', 0777, true );
 		file_put_contents( $configFile, $config );
 
-		$parser       = new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 		$parsedConfig = $parser->parsed_config;
 
 		$this->assertArrayHasKey( 'environments', $parsedConfig );
@@ -329,7 +329,7 @@ JSON;
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( 'Circular dependency detected in qit.json configuration' );
-		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
 	public function testParseTestPackages(): void {
@@ -367,7 +367,7 @@ JSON;
 		mkdir( $this->tempDir . '/plugin', 0777, true );
 		file_put_contents( $configFile, $config );
 
-		$parser       = new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 		$parsedConfig = $parser->parsed_config;
 
 		$this->assertArrayHasKey( 'test_packages', $parsedConfig );
@@ -393,7 +393,7 @@ JSON;
 JSON;
 		file_put_contents( $configFile, $config );
 
-		$parser       = new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 		$parsedConfig = $parser->parsed_config;
 
 		$this->assertEquals( 'url', $parsedConfig['sut']['source']['type'] );
@@ -416,7 +416,7 @@ JSON;
 		file_put_contents( $this->tempDir . '/plugin.zip', 'dummy' );
 		file_put_contents( $configFile, $config );
 
-		$parser       = new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 		$parsedConfig = $parser->parsed_config;
 
 		$this->assertEquals( 'zip', $parsedConfig['sut']['source']['type'] );
@@ -437,7 +437,7 @@ JSON;
 JSON;
 		file_put_contents( $configFile, $config );
 
-		$parser       = new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 		$parsedConfig = $parser->parsed_config;
 
 		$this->assertEquals( 'wporg', $parsedConfig['sut']['source']['type'] );
@@ -471,7 +471,7 @@ JSON;
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( "SUT configuration mismatch between main config and environment 'default' for plugin 'test-plugin'" );
-		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
 	public function testInvalidTestPackage(): void {
@@ -507,7 +507,7 @@ JSON;
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( "Test package 'e2e:test-package' must have \$schema set to 'https://qit.woo.com/json-schema/test-package'." );
-		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
 	public function testExtendsMissingBase(): void {
@@ -530,7 +530,7 @@ JSON;
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( "Base config file 'nonexistent.json' not found." );
-		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
 	public function testInvalidSourceType(): void {
@@ -550,7 +550,7 @@ JSON;
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( "Invalid source type 'invalid' for sut.source. Must be one of: build, directory, url, zip, wccom, wporg" );
-		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
 	public function testEnvironmentSetupTestPackages(): void {
@@ -592,7 +592,7 @@ JSON;
 		mkdir( $this->tempDir . '/plugin', 0777, true );
 		file_put_contents( $configFile, $config );
 
-		$parser       = new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 		$parsedConfig = $parser->parsed_config;
 
 		$this->assertArrayHasKey( 'setup', $parsedConfig['environments']['default'] );
@@ -623,7 +623,7 @@ JSON;
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( "Invalid test package format 'invalid_package'" );
-		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
 	public function testInvalidTestTypeProfile(): void {
@@ -652,7 +652,7 @@ JSON;
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( "run in 'e2e:default' must be an array with a 'test_packages' array." );
-		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
 	private function deleteDir( string $dir ): void {

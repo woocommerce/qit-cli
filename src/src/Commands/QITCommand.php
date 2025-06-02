@@ -4,7 +4,7 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\EnvInfo;
-use QIT_CLI\PreCommand\Parsers\ConfigParser;
+use QIT_CLI\PreCommand\Configuration\QitJsonParser;
 use QIT_CLI\PreCommand\InputPriorityHandler;
 use QIT_CLI\PreCommand\EnvInfoBuilder;
 use QIT_CLI\PreCommand\TestProfileHandler;
@@ -50,7 +50,7 @@ abstract class QITCommand extends Command {
 		$config_file = $input->getOption( 'config' );
 		file_put_contents( '/tmp/qit/qit_debug.log', "QITCommand: Loading config file: $config_file\n", FILE_APPEND );
 		try {
-			$config = new ConfigParser( $config_file, $this->getApplication() );
+			$config = new QitJsonParser( $config_file, $this->getApplication() );
 			file_put_contents( '/tmp/qit/qit_debug.log', "QITCommand: Config parsed successfully\n", FILE_APPEND );
 		} catch ( \RuntimeException $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "QITCommand: Config parsing failed: {$e->getMessage()}\n", FILE_APPEND );
@@ -91,7 +91,7 @@ abstract class QITCommand extends Command {
 		return str_starts_with( static::getDefaultName(), 'run:' );
 	}
 
-	protected function get_merged_options( InputInterface $input, OutputInterface $output, ConfigParser $config ): array {
+	protected function get_merged_options( InputInterface $input, OutputInterface $output, QitJsonParser $config ): array {
 		$command_defaults = $this->get_command_defaults();
 		$config_section   = [];
 
