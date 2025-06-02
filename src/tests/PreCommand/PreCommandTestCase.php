@@ -141,8 +141,18 @@ PHP;
 			file_put_contents( '/tmp/qit/qit_debug.log', 'Test Config: ' . json_encode( $config, JSON_PRETTY_PRINT ) . "\n", FILE_APPEND );
 
 			putenv( 'QIT_TESTING_ENV_INFO=1' );
-			$command = App::make( UpEnvironmentCommand::class );
-			$input   = new ArrayInput( array_merge( [ '--config' => $config_path ], $cli_args ) );
+
+			// Get the UpEnvironmentCommand from the global application
+			global $qit_application;
+			if ( ! $qit_application instanceof \Symfony\Component\Console\Application ) {
+				throw new \RuntimeException( 'Global $qit_application is not set or not an Application instance.' );
+			}
+			$command = $qit_application->get( 'env:up' ); // Retrieve the registered command
+			if ( ! $command instanceof \QIT_CLI\Commands\Environment\UpEnvironmentCommand ) {
+				throw new \RuntimeException( 'Command env:up is not an instance of UpEnvironmentCommand.' );
+			}
+
+			$input = new ArrayInput( array_merge( [ '--config' => $config_path ], $cli_args ) );
 			$input->bind( $command->getDefinition() );
 			$output = new BufferedOutput();
 
@@ -186,7 +196,6 @@ PHP;
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "PreCommandTest: run_unit_test exception: " . $e->getMessage() . "\n", FILE_APPEND );
 			if ( $expect_failure ) {
-				// Return the exception message as output for assertion
 				return [ 'exit_code' => 1, 'output' => $e->getMessage() ];
 			}
 			throw $e;

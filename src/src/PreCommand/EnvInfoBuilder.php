@@ -11,7 +11,7 @@ use QIT_CLI\Environment\EnvironmentVersionResolver;
 use QIT_CLI\Environment\EnvParser;
 use QIT_CLI\Environment\EnvVolumeParser;
 use QIT_CLI\Environment\Extension;
-use QIT_CLI\PreCommand\ConfigFile\ConfigParser;
+use QIT_CLI\PreCommand\Parsers\ConfigParser;
 use QIT_CLI\PreCommand\Extension\ExtensionResolver;
 use QIT_CLI\PreCommand\Extension\DependencyResolver;
 use QIT_CLI\PreCommand\Download\Tests\CustomTestsDownloader;

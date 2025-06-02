@@ -4,7 +4,7 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\EnvInfo;
-use QIT_CLI\PreCommand\ConfigFile\ConfigParser;
+use QIT_CLI\PreCommand\Parsers\ConfigParser;
 use QIT_CLI\PreCommand\InputPriorityHandler;
 use QIT_CLI\PreCommand\EnvInfoBuilder;
 use QIT_CLI\PreCommand\TestProfileHandler;
@@ -50,7 +50,7 @@ abstract class QITCommand extends Command {
 		$config_file = $input->getOption( 'config' );
 		file_put_contents( '/tmp/qit/qit_debug.log', "QITCommand: Loading config file: $config_file\n", FILE_APPEND );
 		try {
-			$config = new ConfigParser( $config_file );
+			$config = new ConfigParser( $config_file, $this->getApplication() );
 			file_put_contents( '/tmp/qit/qit_debug.log', "QITCommand: Config parsed successfully\n", FILE_APPEND );
 		} catch ( \RuntimeException $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "QITCommand: Config parsing failed: {$e->getMessage()}\n", FILE_APPEND );

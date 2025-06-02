@@ -2,7 +2,7 @@
 
 namespace QIT_CLI\PreCommand;
 
-use QIT_CLI\PreCommand\ConfigFile\ConfigParser;
+use QIT_CLI\PreCommand\Parsers\ConfigParser;
 
 class TestProfileHandler {
 	public function load_profile( string $test_type, string $profile, ConfigParser $config ): array {

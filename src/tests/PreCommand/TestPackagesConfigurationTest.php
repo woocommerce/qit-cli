@@ -4,7 +4,7 @@ namespace QIT_CLI_Tests\PreCommand;
 
 use QIT_CLI\App;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
-use QIT_CLI\PreCommand\ConfigFile\ConfigParser;
+use QIT_CLI\PreCommand\Parsers\ConfigParser;
 use Spatie\Snapshots\MatchesSnapshots;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -479,7 +479,7 @@ class TestPackagesConfigurationTest extends PreCommandTestCase {
 			],
 		];
 
-		$resolved_package = App::make( \QIT_CLI\PreCommand\ConfigFile\Parsers\CustomTestPackageParser::class )
+		$resolved_package = App::make( \QIT_CLI\PreCommand\Parsers\CustomTestPackageParser::class )
 		                       ->get_resolved_package( 'e2e', 'basic', $packages, dirname( $config_path ) );
 
 		$expected = [
