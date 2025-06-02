@@ -32,10 +32,10 @@ class DependencyResolver {
 		WPORGExtensionsList $wporg_extensions_list,
 		PluginMetadataParser $plugin_metadata_parser
 	) {
-		$this->cache                 = $cache;
-		$this->woo_extensions_list   = $woo_extensions_list;
-		$this->wporg_extensions_list = $wporg_extensions_list;
-		$this->plugin_metadata_parser     = $plugin_metadata_parser;
+		$this->cache                  = $cache;
+		$this->woo_extensions_list    = $woo_extensions_list;
+		$this->wporg_extensions_list  = $wporg_extensions_list;
+		$this->plugin_metadata_parser = $plugin_metadata_parser;
 	}
 
 	/**

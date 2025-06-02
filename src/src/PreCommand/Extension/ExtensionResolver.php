@@ -46,14 +46,14 @@ class ExtensionResolver {
 	 * Main entry point for resolving extensions.
 	 *
 	 * @param Extension[] $extensions Initial list of extensions to resolve
-	 * @param EnvInfo $env_info Environment information
-	 * @param string $cache_dir Cache directory path
+	 * @param EnvInfo     $env_info Environment information
+	 * @param string      $cache_dir Cache directory path
 	 *
 	 * @return ResolvedExtensions
 	 * @throws \RuntimeException If resolution fails
 	 */
 	public function resolve( array $extensions, EnvInfo $env_info, string $cache_dir ): ResolvedExtensions {
-		file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionResolver: Starting resolution for " . count( $extensions ) . " extensions\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit/qit_debug.log', 'ExtensionResolver: Starting resolution for ' . count( $extensions ) . " extensions\n", FILE_APPEND );
 
 		$resolved = new ResolvedExtensions();
 		$pending  = $extensions;
@@ -108,7 +108,7 @@ class ExtensionResolver {
 			}
 		}
 
-		file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionResolver: Resolved " . $resolved->count() . " total extensions\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit/qit_debug.log', 'ExtensionResolver: Resolved ' . $resolved->count() . " total extensions\n", FILE_APPEND );
 
 		return $resolved;
 	}

@@ -76,7 +76,7 @@ class EnvInfoBuilder {
 		$extension_resolver = App::make( ExtensionResolver::class );
 		$cache_dir          = normalize_path( QITConfig::get_qit_dir() . 'cache' );
 
-		file_put_contents( '/tmp/qit/qit_debug.log', "EnvInfoBuilder: Starting extension resolution for " . count( $all_extensions ) . " extensions\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit/qit_debug.log', 'EnvInfoBuilder: Starting extension resolution for ' . count( $all_extensions ) . " extensions\n", FILE_APPEND );
 
 		$resolved_extensions = $extension_resolver->resolve( $all_extensions, $env_info, $cache_dir );
 
@@ -256,7 +256,7 @@ class EnvInfoBuilder {
 	 * Process SUT configuration.
 	 */
 	protected function process_sut_config( array &$env_config, array $sut_config ): void {
-		file_put_contents( '/tmp/qit/qit_debug.log', "EnvInfoBuilder: Processing SUT: " . print_r( $sut_config, true ) . "\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit/qit_debug.log', 'EnvInfoBuilder: Processing SUT: ' . print_r( $sut_config, true ) . "\n", FILE_APPEND );
 
 		$source_type = $sut_config['source']['type'] ?? '';
 		$target_key  = $sut_config['type'] === 'plugin' ? 'plugins' : 'themes';
@@ -418,7 +418,7 @@ class EnvInfoBuilder {
 	 */
 	protected function add_test_packages( E2EEnvInfo $env_info, ConfigParser $config ): void {
 		if ( ! isset( $config->parsed_config['test_packages'] ) || ! is_array( $config->parsed_config['test_packages'] ) ||
-		     ! isset( $config->parsed_config['test_types'] ) || ! is_array( $config->parsed_config['test_types'] ) ) {
+			! isset( $config->parsed_config['test_types'] ) || ! is_array( $config->parsed_config['test_types'] ) ) {
 			return;
 		}
 
@@ -436,7 +436,7 @@ class EnvInfoBuilder {
 							if ( strpos( $package_name, '@' ) !== false ) {
 								$package_name = explode( '@', $package_name )[0];
 							}
-							$referenced["$test_type:$package_name"] = true;
+							$referenced[ "$test_type:$package_name" ] = true;
 						}
 					}
 				}
@@ -450,12 +450,12 @@ class EnvInfoBuilder {
 			}
 
 			foreach ( $packages as $package_name => $package ) {
-				if ( isset( $referenced["$test_type:$package_name"] ) ) {
+				if ( isset( $referenced[ "$test_type:$package_name" ] ) ) {
 					$env_info->test_packages[ $test_type ][ $package_name ] = $package;
 				}
 			}
 		}
 
-		file_put_contents( '/tmp/qit/qit_debug.log', "EnvInfoBuilder: Added filtered test_packages to env_info: " . print_r( $env_info->test_packages, true ) . "\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit/qit_debug.log', 'EnvInfoBuilder: Added filtered test_packages to env_info: ' . print_r( $env_info->test_packages, true ) . "\n", FILE_APPEND );
 	}
 }

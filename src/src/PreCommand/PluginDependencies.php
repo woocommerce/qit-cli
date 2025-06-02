@@ -137,9 +137,9 @@ class PluginDependencies {
 				$ext = new Extension( $dep_slug, 'plugin' );
 				$ext->populate_from();
 				try {
-					$info         = $this->wporg_extensions_list->get_plugin_download_info( $dep_slug );
-					$ext->source  = $info['url'];
-					$ext->version = $info['version'];
+					$info                     = $this->wporg_extensions_list->get_plugin_download_info( $dep_slug );
+					$ext->source              = $info['url'];
+					$ext->version             = $info['version'];
 					$ext->added_automatically = 'Added as a dependency';
 				} catch ( \Exception $e ) {
 					// Skip if unable to fetch info
@@ -171,7 +171,7 @@ class PluginDependencies {
 	 *
 	 * @param array<Extension> $plugins
 	 * @param array<Extension> $themes
-	 * @param string $dependencies_mode
+	 * @param string           $dependencies_mode
 	 *
 	 * @return array{
 	 *     plugin: array<Extension>,
@@ -191,9 +191,9 @@ class PluginDependencies {
 			];
 		}
 
-		$resolver = \QIT_CLI\App::make(\QIT_CLI\respondent\PreCommand\Extension\DependencyResolver::class);
+		$resolver = \QIT_CLI\App::make( \QIT_CLI\respondent\PreCommand\Extension\DependencyResolver::class );
 		file_put_contents( '/tmp/qit/qit_debug.log', "PluginDependencies: Calling DependencyResolver::get_all_dependencies\n", FILE_APPEND );
-		return $resolver->get_all_dependencies(array_merge($plugins, $themes));
+		return $resolver->get_all_dependencies( array_merge( $plugins, $themes ) );
 	}
 
 	/**
@@ -219,9 +219,9 @@ class PluginDependencies {
 
 			if ( $found_index === null ) {
 				$dep_ext->added_automatically = 'Added as a dependency';
-				$from = $dep_ext->from; // Save the 'from' property
+				$from                         = $dep_ext->from; // Save the 'from' property
 				$dep_ext->populate_from();
-				if ($from !== null) {
+				if ( $from !== null ) {
 					$dep_ext->from = $from; // Restore the 'from' property if it was set
 				}
 				$existing_plugins[] = $dep_ext;
@@ -247,9 +247,9 @@ class PluginDependencies {
 
 			if ( $found_index === null ) {
 				$dep_ext->added_automatically = 'Added as a dependency';
-				$from = $dep_ext->from; // Save the 'from' property
+				$from                         = $dep_ext->from; // Save the 'from' property
 				$dep_ext->populate_from();
-				if ($from !== null) {
+				if ( $from !== null ) {
 					$dep_ext->from = $from; // Restore the 'from' property if it was set
 				}
 				$existing_themes[] = $dep_ext;
@@ -266,7 +266,7 @@ class PluginDependencies {
 	public function maybe_add_php_extensions( array $new_extensions, array &$existing ): void {
 		foreach ( $new_extensions as $ext ) {
 			if ( ! is_string( $ext ) ) {
-				throw new \InvalidArgumentException( "PHP extension must be a string, got " . gettype( $ext ) );
+				throw new \InvalidArgumentException( 'PHP extension must be a string, got ' . gettype( $ext ) );
 			}
 			if ( ! in_array( $ext, $existing, true ) ) {
 				$existing[] = $ext;

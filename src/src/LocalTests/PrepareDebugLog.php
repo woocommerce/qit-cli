@@ -23,7 +23,7 @@ class PrepareDebugLog {
 	}
 
 	public function prepare_debug_log( string $debug_log_file, string $new_debug_log_file, E2EEnvInfo $env_info ): void {
-		$sut_slug = isset($env_info->sut) ? ($env_info->sut['slug'] ?? '') : '';
+		$sut_slug = isset( $env_info->sut ) ? ( $env_info->sut['slug'] ?? '' ) : '';
 
 		$output = App::make( Output::class );
 

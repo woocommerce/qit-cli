@@ -45,7 +45,7 @@ class ExtensionCacheManager {
 	 * Ensure extension is cached and set downloaded_source.
 	 *
 	 * @param Extension $extension
-	 * @param string $cache_dir
+	 * @param string    $cache_dir
 	 *
 	 * @throws \RuntimeException
 	 */
@@ -203,7 +203,7 @@ class ExtensionCacheManager {
 		}
 
 		if ( strpos( normalize_path( $cache_dir ), Config::get_qit_dir() ) !== 0 ) {
-			throw new \InvalidArgumentException( "Cache dir must be inside QIT directory" );
+			throw new \InvalidArgumentException( 'Cache dir must be inside QIT directory' );
 		}
 
 		// Create cache key components

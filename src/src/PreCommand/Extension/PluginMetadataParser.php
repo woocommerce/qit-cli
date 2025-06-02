@@ -42,7 +42,7 @@ class PluginMetadataParser {
 		}
 
 		$dependencies = [];
-		for ( $i = 0; $i < $zip->numFiles; $i ++ ) {
+		for ( $i = 0; $i < $zip->numFiles; $i++ ) {
 			$filename = $zip->getNameIndex( $i );
 			if ( preg_match( '#^[^/]+/[^/]+\.php$#', $filename ) ) {
 				$contents = $zip->getFromIndex( $i );

@@ -309,7 +309,7 @@ class RequestBuilder {
 
 			if ( $response_status_code === 429 ) {
 				if ( $this->retry_429 > 0 ) {
-					-- $this->retry_429;
+					--$this->retry_429;
 					$sleep_seconds = $this->wait_after_429( $headers );
 					App::make( Output::class )->writeln( sprintf( '<comment>Request failed... Waiting %d seconds and retrying (429 Too many Requests)</comment>', $sleep_seconds ) );
 
@@ -318,7 +318,7 @@ class RequestBuilder {
 				}
 			} else {
 				if ( $this->retry > 0 ) {
-					-- $this->retry;
+					--$this->retry;
 					App::make( Output::class )->writeln( sprintf( '<comment>Request failed... Retrying (HTTP Status Code %s) %s</comment>', $response_status_code, $error_message ) );
 
 					// Between 1 and 5s.
@@ -344,7 +344,7 @@ class RequestBuilder {
 				 * If the errors is a rest_invalid_group_param, it must be parsed and printed.
 				 */
 				if ( isset( $json_decoded['code'] ) &&
-				     $json_decoded['code'] === 'rest_invalid_group_param'
+					$json_decoded['code'] === 'rest_invalid_group_param'
 				) {
 					return $body;
 				}

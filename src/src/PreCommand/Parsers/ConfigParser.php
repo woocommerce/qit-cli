@@ -43,7 +43,7 @@ class ConfigParser {
 		if ( isset( $raw_config['sut'] ) ) {
 			$parsed_config['sut'] = $this->parse_sut( $raw_config['sut'], [
 				'root_path' => $root_path,
-				'context'   => 'sut.source'
+				'context'   => 'sut.source',
 			] );
 		}
 
@@ -68,7 +68,7 @@ class ConfigParser {
 				case 'environments':
 					$parsed_config[ $key ] = $this->parse_environments( $value, [
 						'test_packages' => $raw_config['test_packages'] ?? [],
-						'root_path'     => $root_path
+						'root_path'     => $root_path,
 					], $parsed_config['sut'] ?? null );
 					break;
 				case 'test_packages':
@@ -86,7 +86,7 @@ class ConfigParser {
 		}
 
 		if ( $is_top_level && ! isset( $parsed_config['sut'] ) ) {
-			throw new \RuntimeException( "SUT configuration is required." );
+			throw new \RuntimeException( 'SUT configuration is required.' );
 		}
 
 		return $parsed_config;
@@ -101,7 +101,7 @@ class ConfigParser {
 	}
 
 	protected function parse_sut( $value, array $context = [] ): array {
-		file_put_contents( '/tmp/qit/qit_debug.log', "SutParser: Parsing SUT config: " . print_r( $value, true ) . "\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit/qit_debug.log', 'SutParser: Parsing SUT config: ' . print_r( $value, true ) . "\n", FILE_APPEND );
 
 		if ( ! is_array( $value ) ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "SutParser: SUT must be an array\n", FILE_APPEND );
@@ -131,7 +131,7 @@ class ConfigParser {
 
 		$value['source'] = $this->parse_source( $value['source'], [
 			'slug'    => $value['slug'],
-			'context' => 'sut.source'
+			'context' => 'sut.source',
 		] );
 
 		file_put_contents( '/tmp/qit/qit_debug.log', "SutParser: SUT parsing completed\n", FILE_APPEND );
@@ -140,7 +140,7 @@ class ConfigParser {
 	}
 
 	protected function parse_source( $value, array $context = [] ): array {
-		file_put_contents( '/tmp/qit/qit_debug.log', "SourceParser: Parsing source config: " . print_r( $value, true ) . "\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit/qit_debug.log', 'SourceParser: Parsing source config: ' . print_r( $value, true ) . "\n", FILE_APPEND );
 
 		if ( ! is_array( $value ) ) {
 			throw new \RuntimeException( "Source config must be an array for {$context['context']}." );
@@ -160,7 +160,7 @@ class ConfigParser {
 		switch ( $value['type'] ) {
 			case 'build':
 				if ( ! isset( $value['command'] ) || ! is_string( $value['command'] ) || empty( $value['command'] ) ) {
-					throw new \RuntimeException( "Build source must contain a non-empty \"command\" string" );
+					throw new \RuntimeException( 'Build source must contain a non-empty "command" string' );
 				}
 				if ( ! isset( $value['output'] ) || ! is_string( $value['output'] ) || empty( $value['output'] ) ) {
 					throw new \RuntimeException( "Build source must contain a non-empty 'output' string for {$context_name}." );
@@ -261,9 +261,9 @@ class ConfigParser {
 							$parts = explode( '/', $test_package, 2 );
 							if ( count( $parts ) === 2 ) {
 								[ $package_source, $package_name ] = $parts;
-								$name_parts                   = explode( '@', $package_name, 2 );
-								$package_name_without_version = $name_parts[0];
-								$package_version              = $name_parts[1] ?? null;
+								$name_parts                        = explode( '@', $package_name, 2 );
+								$package_name_without_version      = $name_parts[0];
+								$package_version                   = $name_parts[1] ?? null;
 
 								if ( $package_source === 'local' ) {
 									if ( $package_version ) {
@@ -272,8 +272,8 @@ class ConfigParser {
 									$found = false;
 									foreach ( $custom_test_packages as $package ) {
 										if ( is_array( $package ) &&
-										     isset( $package['type'] ) && $package['type'] === $test_type &&
-										     isset( $package['name'] ) && $package['name'] === $package_name_without_version ) {
+											isset( $package['type'] ) && $package['type'] === $test_type &&
+											isset( $package['name'] ) && $package['name'] === $package_name_without_version ) {
 											$found = true;
 											break;
 										}
@@ -370,7 +370,7 @@ class ConfigParser {
 
 		foreach ( $value as $env_name => $config ) {
 			if ( ! is_string( $env_name ) ) {
-				throw new \RuntimeException( "Environment name must be a string in environments configuration." );
+				throw new \RuntimeException( 'Environment name must be a string in environments configuration.' );
 			}
 			if ( ! is_array( $config ) ) {
 				throw new \RuntimeException( "Configuration for environment '$env_name' must be an array." );
@@ -442,12 +442,12 @@ class ConfigParser {
 									throw new \RuntimeException( "Invalid test package format '$test_package' at index $index in setup for environment '$env_name'. Expected 'source:name@version'." );
 								}
 								[ $source, $name_version ] = $parts;
-								$name_parts = explode( '@', $name_version, 2 );
+								$name_parts                = explode( '@', $name_version, 2 );
 								if ( count( $name_parts ) !== 2 ) {
 									throw new \RuntimeException( "Invalid test package name/version '$name_version' at index $index in setup for environment '$env_name'. Expected 'name@version'." );
 								}
 								[ $name ] = $name_parts;
-								$found = false;
+								$found    = false;
 								foreach ( $test_packages as $pkg ) {
 									if ( $pkg['type'] === $source && $pkg['name'] === $name ) {
 										$found = true;
@@ -567,7 +567,7 @@ class ConfigParser {
 				// Reuse parse_source for build validation
 				$parsed_source = $this->parse_source( $source, [
 					'slug'    => $item['slug'],
-					'context' => "environment.$env_name.plugins.{$item['slug']}"
+					'context' => "environment.$env_name.plugins.{$item['slug']}",
 				] );
 				break;
 			default:
@@ -609,7 +609,7 @@ class ConfigParser {
 
 		foreach ( $value as $index => $package ) {
 			if ( ! isset( $package['type'], $package['name'], $package['file'] ) ||
-			     ! is_string( $package['type'] ) || ! is_string( $package['name'] ) || ! is_string( $package['file'] ) ) {
+				! is_string( $package['type'] ) || ! is_string( $package['name'] ) || ! is_string( $package['file'] ) ) {
 				throw new \RuntimeException( "Test package at index $index must have 'type', 'name', and 'file' as strings." );
 			}
 
@@ -620,7 +620,7 @@ class ConfigParser {
 			$test_type       = $package['type'];
 			$package_name    = $package['name'];
 			$package_version = $package['version'] ?? null;
-			$package_key     = "{$test_type}:{$package_name}" . ( $package_version ? "@{$package_version}" : "" );
+			$package_key     = "{$test_type}:{$package_name}" . ( $package_version ? "@{$package_version}" : '' );
 
 			if ( in_array( $package_key, $seen_packages, true ) ) {
 				throw new \RuntimeException( "Duplicate test package definition for '{$test_type}:{$package_name}' in test_packages. Each test package must have a unique type and name combination." );
@@ -843,7 +843,7 @@ class ConfigParser {
 		foreach ( $simple_fields as $field ) {
 			if ( isset( $child[ $field ] ) ) {
 				if ( $field === 'test_command' && ! is_string( $child[ $field ] ) ) {
-					throw new \RuntimeException( "Test command must be a string." );
+					throw new \RuntimeException( 'Test command must be a string.' );
 				}
 				$merged[ $field ] = $child[ $field ];
 			}
@@ -853,7 +853,7 @@ class ConfigParser {
 		foreach ( $complex_fields as $field ) {
 			if ( isset( $child[ $field ] ) ) {
 				if ( $field === 'env_vars' && ! is_array( $child[ $field ] ) ) {
-					throw new \RuntimeException( "Environment variables must be an array." );
+					throw new \RuntimeException( 'Environment variables must be an array.' );
 				}
 				if ( $field === 'env_vars' && is_array( $child[ $field ] ) ) {
 					foreach ( $child[ $field ] as $key => $value ) {
@@ -957,7 +957,7 @@ class ConfigParser {
 			unset( $env );
 		}
 
-		file_put_contents( '/tmp/qit/qit_debug.log', "ConfigParser: Resolved paths: " . json_encode( $resolved, JSON_PRETTY_PRINT ) . "\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit/qit_debug.log', 'ConfigParser: Resolved paths: ' . json_encode( $resolved, JSON_PRETTY_PRINT ) . "\n", FILE_APPEND );
 
 		return $resolved;
 	}
@@ -1047,7 +1047,7 @@ class ConfigParser {
 		} elseif ( isset( $child_raw['sut'] ) ) {
 			$merged['sut'] = $this->parse_sut( $child_raw['sut'], [
 				'root_path' => $this->root_path,
-				'context'   => 'sut.source'
+				'context'   => 'sut.source',
 			] );
 		}
 

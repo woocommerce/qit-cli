@@ -30,7 +30,7 @@ class WPORGExtensionsList {
 
 			// If no exception thrown => we found it.
 			$result = ! empty( $info['slug'] );
-			file_put_contents( '/tmp/qit/qit_debug.log', "is_wporg_plugin: $slug is " . ($result ? "a WordPress.org plugin" : "not a WordPress.org plugin") . "\n", FILE_APPEND );
+			file_put_contents( '/tmp/qit/qit_debug.log', "is_wporg_plugin: $slug is " . ( $result ? 'a WordPress.org plugin' : 'not a WordPress.org plugin' ) . "\n", FILE_APPEND );
 			return $result;
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "is_wporg_plugin: $slug is not a WordPress.org plugin: " . $e->getMessage() . "\n", FILE_APPEND );
@@ -75,7 +75,7 @@ class WPORGExtensionsList {
 				->with_method( 'GET' )
 				->with_expected_status_codes( [ 200 ] )
 				->request();
-			file_put_contents( '/tmp/qit/qit_debug.log', "get_plugin_download_info: Response for $slug: " . substr($response_body, 0, 1000) . "...\n", FILE_APPEND );
+			file_put_contents( '/tmp/qit/qit_debug.log', "get_plugin_download_info: Response for $slug: " . substr( $response_body, 0, 1000 ) . "...\n", FILE_APPEND );
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "get_plugin_download_info: HTTP error fetching plugin info for '$slug': " . $e->getMessage() . "\n", FILE_APPEND );
 			throw new \RuntimeException( "HTTP error fetching plugin info for '$slug': " . $e->getMessage() );

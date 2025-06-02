@@ -282,7 +282,7 @@ class RunE2ECommand extends DynamicCommand {
 		$test_tag = $input->getOption( 'pw_test_tag' ) ?? 'full';
 
 		if ( $env_info instanceof E2EEnvInfo && ! empty( $woo_extension_id ) ) {
-			$env_info->sut = [
+			$env_info->sut                  = [
 				'slug' => $woo_extension_slug,
 				'id'   => $woo_extension_id,
 				'type' => $sut_type,

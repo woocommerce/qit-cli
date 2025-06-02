@@ -26,8 +26,8 @@ class CustomTestsDownloader {
 	/**
 	 * Downloads custom tests specified in the bootstrap configuration.
 	 *
-	 * @param EnvInfo $env_info The environment configuration.
-	 * @param string $cache_dir The cache directory.
+	 * @param EnvInfo          $env_info The environment configuration.
+	 * @param string           $cache_dir The cache directory.
 	 * @param array<Extension> $plugins List of plugins (for validation).
 	 * @param array<Extension> $themes List of themes (for validation).
 	 *
@@ -38,7 +38,7 @@ class CustomTestsDownloader {
 
 		if ( empty( $env_info->bootstrap ) || ! is_array( $env_info->bootstrap ) ) {
 			if ( $output->isVerbose() ) {
-				$output->writeln( "No bootstrap tests specified." );
+				$output->writeln( 'No bootstrap tests specified.' );
 			}
 
 			return;
@@ -53,7 +53,7 @@ class CustomTestsDownloader {
 		// Parse bootstrap entries
 		foreach ( $env_info->bootstrap as $index => $bootstrap_item ) {
 			if ( ! is_array( $bootstrap_item ) || ! isset( $bootstrap_item['slug'], $bootstrap_item['test_package'] ) || ! is_string( $bootstrap_item['slug'] ) || ! is_string( $bootstrap_item['test_package'] ) ) {
-				$output->writeln( "<error>Invalid bootstrap item at index $index: " . json_encode( $bootstrap_item ) . "</error>" );
+				$output->writeln( "<error>Invalid bootstrap item at index $index: " . json_encode( $bootstrap_item ) . '</error>' );
 				continue;
 			}
 
@@ -76,7 +76,7 @@ class CustomTestsDownloader {
 
 		if ( empty( $tests_to_download ) ) {
 			if ( $output->isVerbose() ) {
-				$output->writeln( "No valid bootstrap tests to download." );
+				$output->writeln( 'No valid bootstrap tests to download.' );
 			}
 
 			return;
@@ -132,7 +132,7 @@ class CustomTestsDownloader {
 
 				if ( ! file_exists( dirname( $cache_file ) ) ) {
 					if ( ! mkdir( dirname( $cache_file ), 0755, true ) ) {
-						throw new \RuntimeException( "Could not create test cache directory: " . dirname( $cache_file ) );
+						throw new \RuntimeException( 'Could not create test cache directory: ' . dirname( $cache_file ) );
 					}
 				}
 
