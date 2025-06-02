@@ -101,14 +101,16 @@ abstract class QITCommand extends Command {
 		}
 
 		if ( $this->needs_test_profile() ) {
-			$test_profile_handler = App::make( TestProfileHandler::class );
-			$profile              = $input->getOption( 'profile' ) ?: 'default';
-			$profile_explicit     = is_option_explicitly_provided( $input, 'profile' );
-			$profile_config       = [];
+			$profile          = $input->getOption( 'profile' ) ?: 'default';
+			$profile_explicit = is_option_explicitly_provided( $input, 'profile' );
+			$profile_config   = [];
 
 			if ( $profile_explicit || ! empty( $config->get_test_config( $this->get_test_type(), $profile ) ) ) {
 				try {
-					$profile_config = $test_profile_handler->load_profile( $this->get_test_type(), $profile, $config );
+					$profile_config = $config->get_test_config( $this->get_test_type(), $profile );
+					if ( empty( $profile_config ) ) {
+						throw new \RuntimeException( "Test profile '$profile' for test type '{$this->get_test_type()}' not found." );
+					}
 				} catch ( \RuntimeException $e ) {
 					if ( $profile_explicit ) {
 						$output->writeln( "<error>{$e->getMessage()}</error>" );
@@ -128,9 +130,9 @@ abstract class QITCommand extends Command {
 			}
 		}
 
-		$input_priority_handler = App::make( CLIInputMerger::class );
+		$input_merger = App::make( CLIInputMerger::class );
 
-		return $input_priority_handler->get_config_from_input( $input, $config_section, $command_defaults, EnvInfoBuilder::get_pluralizable_keys() );
+		return $input_merger->get_config_from_input( $input, $config_section, $command_defaults, EnvInfoBuilder::get_pluralizable_keys() );
 	}
 
 	protected function get_test_type(): string {
