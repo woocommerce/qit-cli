@@ -1,13 +1,10 @@
 <?php
 
-namespace QIT_CLI_Tests\PreCommand;
+namespace QIT_CLI_Tests\PreCommand\Extensions;
 
 use QIT_CLI\App;
-use QIT_CLI\PreCommand\Extensions\ExtensionResolver;
-use QIT_CLI\PreCommand\Extensions\DependencyResolver;
-use QIT_CLI\Environment\Extension;
+use QIT_CLI_Tests\PreCommand\PreCommandTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
-use function QIT_CLI\get_manager_url;
 
 class ExtensionResolverTest extends PreCommandTestCase {
 	use MatchesSnapshots;
