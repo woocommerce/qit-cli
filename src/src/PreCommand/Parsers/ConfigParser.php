@@ -925,7 +925,7 @@ class ConfigParser {
 			if ( is_string( $path ) && ! str_starts_with( $path, '/' ) && ! filter_var( $path, FILTER_VALIDATE_URL ) ) {
 				$full_path = $root_path . DIRECTORY_SEPARATOR . ltrim( $path, './' . DIRECTORY_SEPARATOR );
 
-				return \QIT_CLI\normalize_path( $full_path );
+				return \QIT_CLI\normalize_path( $full_path, false );
 			}
 
 			return $path;

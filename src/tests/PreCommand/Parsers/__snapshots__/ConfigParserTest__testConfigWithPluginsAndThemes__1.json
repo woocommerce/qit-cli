@@ -4,7 +4,7 @@
         "slug": "test-plugin",
         "source": {
             "type": "directory",
-            "path": "\/tmp\/qit_test_fixed\/plugin\/"
+            "path": "\/tmp\/qit_test_fixed\/plugin"
         }
     },
     "environments": {
@@ -25,7 +25,7 @@
                     "type": "plugin",
                     "source": {
                         "type": "directory",
-                        "path": "\/tmp\/qit_test_fixed\/plugin\/"
+                        "path": "\/tmp\/qit_test_fixed\/plugin"
                     }
                 }
             ],
