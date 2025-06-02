@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\PreCommand\Extension;
+namespace QIT_CLI\PreCommand\Extensions;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
@@ -210,7 +210,7 @@ class DependencyResolver {
 			$this->cache->set( $cache_key, $response, HOUR_IN_SECONDS );
 		}
 
-		// Convert to Extension objects
+		// Convert to Extensions objects
 		$result = [
 			'plugins'        => [],
 			'themes'         => [],

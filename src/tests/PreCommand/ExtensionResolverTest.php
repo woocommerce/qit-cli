@@ -3,8 +3,8 @@
 namespace QIT_CLI_Tests\PreCommand;
 
 use QIT_CLI\App;
-use QIT_CLI\PreCommand\Extension\ExtensionResolver;
-use QIT_CLI\PreCommand\Extension\DependencyResolver;
+use QIT_CLI\PreCommand\Extensions\ExtensionResolver;
+use QIT_CLI\PreCommand\Extensions\DependencyResolver;
 use QIT_CLI\Environment\Extension;
 use Spatie\Snapshots\MatchesSnapshots;
 use function QIT_CLI\get_manager_url;

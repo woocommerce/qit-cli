@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\PreCommand\Extension;
+namespace QIT_CLI\PreCommand\Extensions;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
@@ -57,7 +57,7 @@ class ExtensionCacheManager {
 
 		// Validate extension has required properties
 		if ( empty( $extension->from ) ) {
-			throw new \RuntimeException( "Extension '{$extension->slug}' has no source type" );
+			throw new \RuntimeException( "Extensions '{$extension->slug}' has no source type" );
 		}
 
 		// Get handler method
@@ -81,7 +81,7 @@ class ExtensionCacheManager {
 	 */
 	protected function download_from_url( Extension $extension, string $cache_dir ): void {
 		if ( empty( $extension->source ) ) {
-			throw new \RuntimeException( "Extension '{$extension->slug}' has no download URL" );
+			throw new \RuntimeException( "Extensions '{$extension->slug}' has no download URL" );
 		}
 
 		$cache_file = $this->make_cache_path( $extension, $cache_dir );
@@ -127,7 +127,7 @@ class ExtensionCacheManager {
 		$source_path = $extension->source;
 		if ( empty( $source_path ) ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionCacheManager: No source path for '{$extension->slug}'\n", FILE_APPEND );
-			throw new \RuntimeException( "Extension '{$extension->slug}' has no source path" );
+			throw new \RuntimeException( "Extensions '{$extension->slug}' has no source path" );
 		}
 		file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionCacheManager: Checking source path: $source_path\n", FILE_APPEND );
 		if ( ! file_exists( $source_path ) ) {
@@ -160,7 +160,7 @@ class ExtensionCacheManager {
 	protected function use_directory( Extension $extension, string $cache_dir ): void {
 		$directory = $extension->directory ?? $extension->source;
 		if ( empty( $directory ) ) {
-			throw new \RuntimeException( "Extension '{$extension->slug}' has no directory path" );
+			throw new \RuntimeException( "Extensions '{$extension->slug}' has no directory path" );
 		}
 
 		if ( ! is_dir( $directory ) ) {

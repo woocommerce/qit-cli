@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\PreCommand\Extension;
+namespace QIT_CLI\PreCommand\Extensions;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;

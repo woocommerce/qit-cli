@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\PreCommand\Extension;
+namespace QIT_CLI\PreCommand\Extensions;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
@@ -53,7 +53,7 @@ class ExtensionMetadataFetcher {
 		$grouped = [];
 		foreach ( $extensions as $extension ) {
 			if ( empty( $extension->from ) ) {
-				throw new \RuntimeException( "Extension '{$extension->slug}' has no source type set" );
+				throw new \RuntimeException( "Extensions '{$extension->slug}' has no source type set" );
 			}
 			$grouped[ $extension->from ][] = $extension;
 		}

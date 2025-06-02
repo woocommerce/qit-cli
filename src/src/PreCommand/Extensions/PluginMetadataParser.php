@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\PreCommand\Extension;
+namespace QIT_CLI\PreCommand\Extensions;
 
 /**
  * Parses plugin metadata to extract dependencies.
