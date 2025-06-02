@@ -563,8 +563,15 @@ class ConfigParser {
 			case 'wccom':
 				$parsed_source['version'] = $source['version'] ?? 'stable';
 				break;
+			case 'build':
+				// Reuse parse_source for build validation
+				$parsed_source = $this->parse_source( $source, [
+					'slug'    => $item['slug'],
+					'context' => "environment.$env_name.plugins.{$item['slug']}"
+				] );
+				break;
 			default:
-				throw new \RuntimeException( "Invalid source type '$source_type' for extension '{$item['slug']}' in environment '$env_name'" );
+				throw new \RuntimeException( "Invalid source type '$source_type' for extension '{$item['slug']}' in environment '$env_name'. Valid types are: directory, zip, url, wporg, wccom, build." );
 		}
 
 		return $parsed_source;
@@ -581,6 +588,13 @@ class ConfigParser {
 
 		if ( $sut_config['source']['type'] === 'zip' && ( ! isset( $extension['source']['path'] ) || $extension['source']['path'] !== $sut_config['source']['path'] ) ) {
 			throw new \RuntimeException( "SUT path mismatch for $type '{$sut_config['slug']}' in environment '$env_name'" );
+		}
+
+		if ( $sut_config['source']['type'] === 'build' && (
+				! isset( $extension['source']['command'] ) || $extension['source']['command'] !== $sut_config['source']['command'] ||
+				! isset( $extension['source']['output'] ) || $extension['source']['output'] !== $sut_config['source']['output']
+			) ) {
+			throw new \RuntimeException( "SUT build configuration mismatch for $type '{$sut_config['slug']}' in environment '$env_name'" );
 		}
 	}
 
@@ -921,6 +935,10 @@ class ConfigParser {
 			$resolved['sut']['source']['path'] = $resolvePath( $resolved['sut']['source']['path'] );
 		}
 
+		if ( isset( $resolved['sut']['source']['output'] ) ) {
+			$resolved['sut']['source']['output'] = $resolvePath( $resolved['sut']['source']['output'] );
+		}
+
 		if ( isset( $resolved['environments'] ) ) {
 			foreach ( $resolved['environments'] as &$env ) {
 				foreach ( [ 'plugins', 'themes' ] as $type ) {
@@ -928,6 +946,9 @@ class ConfigParser {
 						foreach ( $env[ $type ] as &$item ) {
 							if ( is_array( $item ) && isset( $item['source']['path'] ) ) {
 								$item['source']['path'] = $resolvePath( $item['source']['path'] );
+							}
+							if ( is_array( $item ) && isset( $item['source']['output'] ) ) {
+								$item['source']['output'] = $resolvePath( $item['source']['output'] );
 							}
 						}
 					}
@@ -958,6 +979,12 @@ class ConfigParser {
 						if ( $sut_config['source']['type'] === 'zip' && ( ! isset( $plugin['source']['path'] ) || $plugin['source']['path'] !== $sut_config['source']['path'] ) ) {
 							throw new \RuntimeException( "SUT path mismatch between main config and environment '$env_name' for plugin '{$sut_config['slug']}'" );
 						}
+						if ( $sut_config['source']['type'] === 'build' && (
+								! isset( $plugin['source']['command'] ) || $plugin['source']['command'] !== $sut_config['source']['command'] ||
+								! isset( $plugin['source']['output'] ) || $plugin['source']['output'] !== $sut_config['source']['output']
+							) ) {
+							throw new \RuntimeException( "SUT build configuration mismatch between main config and environment '$env_name' for plugin '{$sut_config['slug']}'" );
+						}
 					}
 				}
 			}
@@ -975,6 +1002,12 @@ class ConfigParser {
 						}
 						if ( $sut_config['source']['type'] === 'zip' && ( ! isset( $theme['source']['path'] ) || $theme['source']['path'] !== $sut_config['source']['path'] ) ) {
 							throw new \RuntimeException( "SUT path mismatch between main config and environment '$env_name' for theme '{$sut_config['slug']}'" );
+						}
+						if ( $sut_config['source']['type'] === 'build' && (
+								! isset( $theme['source']['command'] ) || $theme['source']['command'] !== $sut_config['source']['command'] ||
+								! isset( $theme['source']['output'] ) || $theme['source']['output'] !== $sut_config['source']['output']
+							) ) {
+							throw new \RuntimeException( "SUT build configuration mismatch between main config and environment '$env_name' for theme '{$sut_config['slug']}'" );
 						}
 					}
 				}
@@ -1034,7 +1067,7 @@ class ConfigParser {
 		}
 
 		foreach ( $child as $key => $value ) {
-			if ( $key === 'sut' ) {
+			if ( $key === 'sut' || in_array( $key, [ 'environments', 'test_types', 'test_packages', 'test_groups' ], true ) ) {
 				continue;
 			}
 			$merged[ $key ] = $value;
