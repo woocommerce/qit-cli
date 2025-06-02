@@ -422,9 +422,9 @@ class ExtensionResolverTest extends PreCommandTestCase {
 		// Run the test, expecting failure
 		$error = $this->run_unit_test( $config, [], true );
 
-		// Assert the full error message
+		// Assert the updated error message
 		$this->assertStringContainsString(
-			"Could not resolve source for extension 'nonexisting-plugin-1' (plugin). Not found in WPORG or WCCOM.",
+			"Could not resolve source for extension 'nonexisting-plugin-1' (plugin). Not found in WPORG, WCCOM, or local sources.",
 			$error['output']
 		);
 	}

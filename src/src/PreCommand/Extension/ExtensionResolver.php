@@ -136,7 +136,17 @@ class ExtensionResolver {
 	protected function resolve_extension_source( Extension $extension ): void {
 		file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionResolver: Resolving source for '{$extension->slug}'\n", FILE_APPEND );
 
-		// Check WPORG first
+		// Handle explicit source types
+		if ( ! empty( $extension->from ) ) {
+			if ( in_array( $extension->from, [ 'directory', 'zip', 'url', 'build' ], true ) ) {
+				return; // Local sources are resolved
+			}
+			if ( in_array( $extension->from, [ 'wporg', 'wccom' ], true ) && ! empty( $extension->source ) && ! empty( $extension->version ) ) {
+				return; // Remote sources with metadata are resolved
+			}
+		}
+
+		// Infer source for unspecified or incomplete sources (e.g., SUT without source)
 		try {
 			if ( $extension->type === 'plugin' && $this->wporg_extensions_list->is_wporg_plugin( $extension->slug ) ) {
 				$extension->from = 'wporg';
@@ -152,10 +162,8 @@ class ExtensionResolver {
 			}
 		} catch ( \Exception $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionResolver: WPORG check failed for '{$extension->slug}': {$e->getMessage()}\n", FILE_APPEND );
-			// Continue to WCCOM check
 		}
 
-		// Check WCCOM
 		try {
 			$extension->wccom_id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $extension->slug );
 			$extension->from     = 'wccom';
@@ -164,10 +172,9 @@ class ExtensionResolver {
 			return;
 		} catch ( \UnexpectedValueException $e ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionResolver: WCCOM check failed for '{$extension->slug}': {$e->getMessage()}\n", FILE_APPEND );
-			// Continue to local checks
 		}
 
-		// Check if it's a local extension
+		// Local sources
 		if ( ! empty( $extension->directory ) && is_dir( $extension->directory ) ) {
 			$extension->from = 'directory';
 
@@ -187,7 +194,7 @@ class ExtensionResolver {
 			}
 		}
 
-		throw new \RuntimeException( "Could not resolve source for extension '{$extension->slug}' ({$extension->type}). Not found in WPORG or WCCOM." );
+		throw new \RuntimeException( "Could not resolve source for extension '{$extension->slug}' ({$extension->type}). Not found in WPORG, WCCOM, or local sources." );
 	}
 }
 
