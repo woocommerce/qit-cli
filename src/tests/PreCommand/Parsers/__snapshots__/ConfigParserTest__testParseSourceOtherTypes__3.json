@@ -1,0 +1,9 @@
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "wporg"
+        }
+    }
+}

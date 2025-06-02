@@ -377,6 +377,164 @@ JSON;
 		$this->assertMatchesJsonSnapshot( json_encode( $parsedConfig, JSON_PRETTY_PRINT ) );
 	}
 
+	public function testParseSourceOtherTypes(): void {
+		$configFile = $this->tempDir . '/qit.json';
+		$config     = <<<'JSON'
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "url",
+            "url": "https://example.com/plugin.zip"
+        }
+    }
+}
+JSON;
+		file_put_contents( $configFile, $config );
+
+		$parser       = new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		$parsedConfig = $parser->parsed_config;
+
+		$this->assertEquals( 'url', $parsedConfig['sut']['source']['type'] );
+		$this->assertEquals( 'https://example.com/plugin.zip', $parsedConfig['sut']['source']['url'] );
+		$this->assertMatchesJsonSnapshot( json_encode( $parsedConfig, JSON_PRETTY_PRINT ) );
+
+		// Test zip source
+		$config = <<<'JSON'
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "zip",
+            "path": "./plugin.zip"
+        }
+    }
+}
+JSON;
+		file_put_contents( $this->tempDir . '/plugin.zip', 'dummy' );
+		file_put_contents( $configFile, $config );
+
+		$parser       = new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		$parsedConfig = $parser->parsed_config;
+
+		$this->assertEquals( 'zip', $parsedConfig['sut']['source']['type'] );
+		$this->assertStringEndsWith( 'plugin.zip', $parsedConfig['sut']['source']['path'] );
+		$this->assertMatchesJsonSnapshot( json_encode( $parsedConfig, JSON_PRETTY_PRINT ) );
+
+		// Test wporg source
+		$config = <<<'JSON'
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "wporg"
+        }
+    }
+}
+JSON;
+		file_put_contents( $configFile, $config );
+
+		$parser       = new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		$parsedConfig = $parser->parsed_config;
+
+		$this->assertEquals( 'wporg', $parsedConfig['sut']['source']['type'] );
+		$this->assertMatchesJsonSnapshot( json_encode( $parsedConfig, JSON_PRETTY_PRINT ) );
+	}
+
+	public function testInvalidSutConsistency(): void {
+		$configFile = $this->tempDir . '/qit.json';
+		$config     = <<<'JSON'
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "directory",
+            "path": "./plugin"
+        }
+    },
+    "environments": {
+        "default": {
+            "plugins": [
+                {"slug": "test-plugin", "source": {"type": "zip", "path": "./wrong.zip"}}
+            ]
+        }
+    }
+}
+JSON;
+		mkdir( $this->tempDir . '/plugin', 0777, true );
+		file_put_contents( $this->tempDir . '/wrong.zip', 'dummy' );
+		file_put_contents( $configFile, $config );
+
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( "SUT configuration mismatch between main config and environment 'default' for plugin 'test-plugin'" );
+		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+	}
+
+	public function testInvalidTestPackage(): void {
+		$configFile = $this->tempDir . '/qit.json';
+		$testFile   = $this->tempDir . '/test.json';
+		file_put_contents( $testFile, json_encode( [
+			// Missing $schema
+			'version' => '1.0.0',
+			'author'  => 'Test Author'
+		] ) );
+
+		$config = <<<'JSON'
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "directory",
+            "path": "./plugin"
+        }
+    },
+    "test_packages": [
+        {
+            "type": "e2e",
+            "name": "test-package",
+            "file": "test.json"
+        }
+    ]
+}
+JSON;
+		mkdir( $this->tempDir . '/plugin', 0777, true );
+		file_put_contents( $configFile, $config );
+
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( "Test package 'e2e:test-package' must have \$schema set to 'https://qit.woo.com/json-schema/test-package'." );
+		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+	}
+
+	public function testExtendsMissingBase(): void {
+		$configFile = $this->tempDir . '/qit.json';
+		$config     = <<<'JSON'
+{
+    "extends": "nonexistent.json",
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "directory",
+            "path": "./plugin"
+        }
+    }
+}
+JSON;
+		mkdir( $this->tempDir . '/plugin', 0777, true );
+		file_put_contents( $configFile, $config );
+
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( "Base config file 'nonexistent.json' not found." );
+		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+	}
+
+
+
 	private function deleteDir( string $dir ): void {
 		if ( ! is_dir( $dir ) ) {
 			return;

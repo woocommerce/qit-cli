@@ -1,0 +1,10 @@
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "zip",
+            "path": "\/tmp\/qit_test_fixed\/plugin.zip"
+        }
+    }
+}
