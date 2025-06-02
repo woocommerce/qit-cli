@@ -7,7 +7,6 @@ use QIT_CLI\Config;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Extension;
-use QIT_CLI\PreCommand\Download\Extensions\ExtensionDownloader;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Zipper;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -22,17 +21,12 @@ class CustomTestsDownloader {
 	/** @var Zipper $zipper */
 	protected $zipper;
 
-	/** @var ExtensionDownloader $extension_downloader */
-	protected $extension_downloader;
-
 	public function __construct(
 		OutputInterface $output,
-		Zipper $zipper,
-		ExtensionDownloader $extension_downloader
+		Zipper $zipper
 	) {
 		$this->output               = $output;
 		$this->zipper               = $zipper;
-		$this->extension_downloader = $extension_downloader;
 	}
 
 	/**
@@ -45,7 +39,7 @@ class CustomTestsDownloader {
 	 * @return void
 	 */
 	public function download( EnvInfo $env_info, string $cache_dir, array $plugins = [], array $themes = [], string $test_type = 'e2e' ): void {
-		$extensions = $this->extension_downloader->categorize_extensions( $plugins, $themes );
+		//$extensions = $this->extension_downloader->categorize_extensions( $plugins, $themes );
 
 		$this->maybe_create_cache_dir( $cache_dir, $test_type );
 

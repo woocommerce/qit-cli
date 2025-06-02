@@ -41,7 +41,6 @@ class RunActivationTestCommand extends QITCommand {
 			->reuseOption( RunE2ECommand::getDefaultName(), 'notify' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'php_extension' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'tunnel' )
-			->reuseOption( RunE2ECommand::getDefaultName(), 'dependencies_mode' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'group' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'no_group' )
 			->reuseOption( RunE2ECommand::getDefaultName(), 'pw_test_tag' )

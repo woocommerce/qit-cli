@@ -10,7 +10,6 @@ namespace QIT_CLI\Commands\CustomTests;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\QITCommand;
-use QIT_CLI\PreCommand\PluginDependencies;
 use QIT_CLI\LocalTests\E2E\CustomE2ERunner;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\DynamicCommand;
@@ -44,7 +43,6 @@ class RunE2ECommand extends DynamicCommand {
 	protected CustomE2ERunner $spec_custom_test_orchestrator;
 	protected WooExtensionsList $woo_extensions_list;
 	protected LocalTestRunNotifier $test_run_notifier;
-	protected PluginDependencies $dependencies;
 	protected EnvironmentRunner $environment_runner;
 	protected TestGroup $test_group;
 
@@ -66,7 +64,6 @@ class RunE2ECommand extends DynamicCommand {
 		CustomE2ERunner $spec_custom_test_orchestrator,
 		WooExtensionsList $woo_extensions_list,
 		LocalTestRunNotifier $test_run_notifier,
-		PluginDependencies $dependencies,
 		EnvironmentRunner $environment_runner,
 		TestGroup $test_group
 	) {
@@ -74,7 +71,6 @@ class RunE2ECommand extends DynamicCommand {
 		$this->cache                         = $cache;
 		$this->woo_extensions_list           = $woo_extensions_list;
 		$this->test_run_notifier             = $test_run_notifier;
-		$this->dependencies                  = $dependencies;
 		$this->environment_runner            = $environment_runner;
 		$this->test_group                    = $test_group;
 		$this->spec_custom_test_orchestrator = $spec_custom_test_orchestrator;
@@ -125,7 +121,6 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots where applicable (eg: Playwright Snapshots).' )
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT.' )
 			->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional options and parameters to pass to Playwright, eg: "--retries=0", etc.' )
-			->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies for recognized WooCommerce plugins. Possible values: ' . implode( ', ', PluginDependencies::DEPENDENCY_MODES['env_test'] ), PluginDependencies::DEPENDENCY_MODES['env_test']['bootstrap'] )
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Runs tests in UI mode.' )
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen.' )
 			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' )

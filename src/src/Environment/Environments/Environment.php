@@ -9,7 +9,6 @@ use QIT_CLI\Environment\CustomTests\CustomTestsDownloader;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\EnvironmentDownloader;
 use QIT_CLI\Environment\EnvironmentMonitor;
-use QIT_CLI\PreCommand\Download\Extensions\ExtensionDownloader;
 use QIT_CLI\SafeRemove;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,7 +21,6 @@ use function QIT_CLI\use_tty;
 
 abstract class Environment {
 	protected EnvironmentDownloader $environment_downloader;
-	protected ExtensionDownloader $extension_downloader;
 	protected Cache $cache;
 	protected EnvironmentMonitor $environment_monitor;
 	protected Filesystem $filesystem;
@@ -42,7 +40,6 @@ abstract class Environment {
 		Filesystem $filesystem,
 		Docker $docker,
 		OutputInterface $output,
-		ExtensionDownloader $extension_downloader,
 		CustomTestsDownloader $custom_tests_downloader
 	) {
 		$this->environment_downloader  = $environment_downloader;
@@ -53,7 +50,6 @@ abstract class Environment {
 		$this->cache_dir               = normalize_path( Config::get_qit_dir() . 'cache' );
 		$this->source_environment_path = normalize_path( Config::get_qit_dir() . 'environments/' . $this->get_name() );
 		$this->output                  = $output;
-		$this->extension_downloader    = $extension_downloader;
 		$this->custom_tests_downloader = $custom_tests_downloader;
 	}
 
@@ -114,7 +110,7 @@ abstract class Environment {
 			$this->output->writeln( '<info>Downloading plugins and themes...</info>' );
 		}
 
-		$this->extension_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );
+		// $this->extension_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );
 
 		if ( $type === 'up_and_test' ) {
 			$this->custom_tests_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );

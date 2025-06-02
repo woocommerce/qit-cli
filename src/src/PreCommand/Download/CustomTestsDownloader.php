@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\PreCommand\Download\Tests;
+namespace QIT_CLI\PreCommand\Download;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\EnvInfo;
