@@ -336,21 +336,16 @@ class EnvInfoBuilder {
 		if ( empty( $woo_version ) ) {
 			return $plugins;
 		}
-
-		// Find and remove existing WooCommerce
-		$filtered_plugins = array_filter( $plugins, fn( $p ) => $p->slug !== 'woocommerce' );
-
+		$filtered_plugins = array_values( array_filter( $plugins, fn( $p ) => $p->slug !== 'woocommerce' ) );
 		if ( count( $filtered_plugins ) < count( $plugins ) ) {
 			$output->writeln( "<comment>Overriding WooCommerce version to: $woo_version</comment>" );
 		}
-
-		// Add WooCommerce with specified version
 		$woo_plugin                      = EnvironmentVersionResolver::resolve_woo( $woo_version, $filtered_plugins );
 		$woo_plugin->added_automatically = 'Added due to specified WooCommerce version';
 		$woo_plugin->from                = 'wporg';
 		$filtered_plugins[]              = $woo_plugin;
 
-		return $filtered_plugins;
+		return array_values( $filtered_plugins );
 	}
 
 	/**
@@ -419,7 +414,7 @@ class EnvInfoBuilder {
 	 */
 	protected function add_test_packages( E2EEnvInfo $env_info, QitJsonParser $config ): void {
 		if ( ! isset( $config->parsed_config['test_packages'] ) || ! is_array( $config->parsed_config['test_packages'] ) ||
-			! isset( $config->parsed_config['test_types'] ) || ! is_array( $config->parsed_config['test_types'] ) ) {
+		     ! isset( $config->parsed_config['test_types'] ) || ! is_array( $config->parsed_config['test_types'] ) ) {
 			return;
 		}
 
@@ -437,7 +432,7 @@ class EnvInfoBuilder {
 							if ( strpos( $package_name, '@' ) !== false ) {
 								$package_name = explode( '@', $package_name )[0];
 							}
-							$referenced[ "$test_type:$package_name" ] = true;
+							$referenced["$test_type:$package_name"] = true;
 						}
 					}
 				}
@@ -451,7 +446,7 @@ class EnvInfoBuilder {
 			}
 
 			foreach ( $packages as $package_name => $package ) {
-				if ( isset( $referenced[ "$test_type:$package_name" ] ) ) {
+				if ( isset( $referenced["$test_type:$package_name"] ) ) {
 					$env_info->test_packages[ $test_type ][ $package_name ] = $package;
 				}
 			}

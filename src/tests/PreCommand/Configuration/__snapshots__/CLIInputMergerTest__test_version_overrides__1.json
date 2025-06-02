@@ -1,0 +1,76 @@
+{
+    "extra": [],
+    "environment": "default",
+    "temporary_env": "\/tmp-normalized\/default-ENV_ID_NORMALIZED",
+    "created_at": 1700000000,
+    "status": "pending",
+    "env_id": "ENV_ID_NORMALIZED",
+    "volumes": [],
+    "docker_images": [],
+    "docker_network": "",
+    "php_extensions": [
+        "gd"
+    ],
+    "plugins": [
+        {
+            "slug": "awesome-plugin",
+            "entrypoint": null,
+            "source": "\/tmp\/qit\/qit_test_normalized\/my-awesome-plugin",
+            "directory": "\/tmp\/qit\/qit_test_normalized\/my-awesome-plugin",
+            "downloaded_source": "\/tmp-normalized\/cache\/plugin\/awesome-plugin.zip",
+            "type": "plugin",
+            "handler": null,
+            "version": "local",
+            "action": null,
+            "test_tags": null,
+            "priority": 50,
+            "wccom_id": null,
+            "added_automatically": null,
+            "from": "directory"
+        },
+        {
+            "slug": "woocommerce",
+            "entrypoint": null,
+            "source": "https:\/\/github.com\/woocommerce\/woocommerce\/releases\/download\/8.0.0\/woocommerce.zip",
+            "directory": null,
+            "downloaded_source": null,
+            "type": "plugin",
+            "handler": null,
+            "version": "undefined",
+            "action": null,
+            "test_tags": null,
+            "priority": 50,
+            "wccom_id": null,
+            "added_automatically": "Added due to specified WooCommerce version",
+            "from": "wporg"
+        }
+    ],
+    "themes": [],
+    "env": {
+        "WP_CLI_CONFIG_PATH": "\/qit\/wp-cli.yml"
+    },
+    "tunnel": false,
+    "tunnel_type": "no_tunnel",
+    "runner_args": [],
+    "wp_version": "6.1",
+    "object_cache": false,
+    "php_version": "8.0",
+    "sut": {
+        "type": "plugin",
+        "slug": "awesome-plugin",
+        "source": {
+            "type": "directory",
+            "path": "\/tmp\/qit\/qit_test_normalized\/my-awesome-plugin"
+        }
+    },
+    "domain": "normalized.localhost",
+    "skip_activating_plugins": false,
+    "skip_activating_themes": false,
+    "tests": [],
+    "playwright_config": [],
+    "pw_test_tag": "",
+    "woo_version": "8.0.0",
+    "is_development_build": false,
+    "notify": "",
+    "test_packages": []
+}
