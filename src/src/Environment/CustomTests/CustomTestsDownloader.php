@@ -25,8 +25,8 @@ class CustomTestsDownloader {
 		OutputInterface $output,
 		Zipper $zipper
 	) {
-		$this->output               = $output;
-		$this->zipper               = $zipper;
+		$this->output = $output;
+		$this->zipper = $zipper;
 	}
 
 	/**
@@ -39,7 +39,7 @@ class CustomTestsDownloader {
 	 * @return void
 	 */
 	public function download( EnvInfo $env_info, string $cache_dir, array $plugins = [], array $themes = [], string $test_type = 'e2e' ): void {
-		//$extensions = $this->extension_downloader->categorize_extensions( $plugins, $themes );
+		// $extensions = $this->extension_downloader->categorize_extensions( $plugins, $themes );
 
 		$this->maybe_create_cache_dir( $cache_dir, $test_type );
 

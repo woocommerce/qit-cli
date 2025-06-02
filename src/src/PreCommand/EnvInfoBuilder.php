@@ -414,7 +414,7 @@ class EnvInfoBuilder {
 	 */
 	protected function add_test_packages( E2EEnvInfo $env_info, QitJsonParser $config ): void {
 		if ( ! isset( $config->parsed_config['test_packages'] ) || ! is_array( $config->parsed_config['test_packages'] ) ||
-		     ! isset( $config->parsed_config['test_types'] ) || ! is_array( $config->parsed_config['test_types'] ) ) {
+			! isset( $config->parsed_config['test_types'] ) || ! is_array( $config->parsed_config['test_types'] ) ) {
 			return;
 		}
 
@@ -432,7 +432,7 @@ class EnvInfoBuilder {
 							if ( strpos( $package_name, '@' ) !== false ) {
 								$package_name = explode( '@', $package_name )[0];
 							}
-							$referenced["$test_type:$package_name"] = true;
+							$referenced[ "$test_type:$package_name" ] = true;
 						}
 					}
 				}
@@ -446,7 +446,7 @@ class EnvInfoBuilder {
 			}
 
 			foreach ( $packages as $package_name => $package ) {
-				if ( isset( $referenced["$test_type:$package_name"] ) ) {
+				if ( isset( $referenced[ "$test_type:$package_name" ] ) ) {
 					$env_info->test_packages[ $test_type ][ $package_name ] = $package;
 				}
 			}
