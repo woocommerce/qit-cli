@@ -1,10 +1,10 @@
 <?php
 
-namespace QIT_CLI\PreCommand;
+namespace QIT_CLI\PreCommand\Configuration;
 
 use Symfony\Component\Console\Input\InputInterface;
 
-class InputPriorityHandler {
+class CLIInputMerger {
 	public function merge_inputs( array $cli_params, array $config_values, array $command_defaults ): array {
 		// Merge with precedence: CLI params > config values > command defaults
 		$merged = array_merge( $command_defaults, $config_values, $cli_params );

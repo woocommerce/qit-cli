@@ -5,7 +5,7 @@ namespace QIT_CLI\Commands;
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\PreCommand\Configuration\QitJsonParser;
-use QIT_CLI\PreCommand\InputPriorityHandler;
+use QIT_CLI\PreCommand\Configuration\CLIInputMerger;
 use QIT_CLI\PreCommand\EnvInfoBuilder;
 use QIT_CLI\PreCommand\TestProfileHandler;
 use Symfony\Component\Console\Command\Command;
@@ -128,7 +128,7 @@ abstract class QITCommand extends Command {
 			}
 		}
 
-		$input_priority_handler = App::make( InputPriorityHandler::class );
+		$input_priority_handler = App::make( CLIInputMerger::class );
 
 		return $input_priority_handler->get_config_from_input( $input, $config_section, $command_defaults, EnvInfoBuilder::get_pluralizable_keys() );
 	}
