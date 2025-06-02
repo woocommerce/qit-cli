@@ -15,6 +15,7 @@ use QIT_CLI\PreCommand\Configuration\QitJsonParser;
 use QIT_CLI\PreCommand\Extensions\ExtensionResolver;
 use QIT_CLI\PreCommand\Extensions\DependencyResolver;
 use QIT_CLI\PreCommand\Download\CustomTestsDownloader;
+use QIT_CLI\PreCommand\Extensions\ExtensionSetResolver;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\normalize_path;
