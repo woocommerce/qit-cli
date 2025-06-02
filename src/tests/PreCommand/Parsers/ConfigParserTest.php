@@ -533,7 +533,127 @@ JSON;
 		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
+	public function testInvalidSourceType(): void {
+		$configFile = $this->tempDir . '/qit.json';
+		$config     = <<<'JSON'
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "invalid"
+        }
+    }
+}
+JSON;
+		file_put_contents( $configFile, $config );
 
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( "Invalid source type 'invalid' for sut.source. Must be one of: build, directory, url, zip, wccom, wporg" );
+		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+	}
+
+	public function testEnvironmentSetupTestPackages(): void {
+		$configFile = $this->tempDir . '/qit.json';
+		$testFile   = $this->tempDir . '/test.json';
+		file_put_contents( $testFile, json_encode( [
+			'$schema'      => 'https://qit.woo.com/json-schema/test-package',
+			'version'      => '1.0.0',
+			'author'       => 'Test Author',
+			'test_command' => 'npm run test'
+		] ) );
+
+		$config = <<<'JSON'
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "directory",
+            "path": "./plugin"
+        }
+    },
+    "environments": {
+        "default": {
+            "setup": {
+                "test_packages": ["e2e:test-package@1.0.0"]
+            }
+        }
+    },
+    "test_packages": [
+        {
+            "type": "e2e",
+            "name": "test-package",
+            "file": "test.json"
+        }
+    ]
+}
+JSON;
+		mkdir( $this->tempDir . '/plugin', 0777, true );
+		file_put_contents( $configFile, $config );
+
+		$parser       = new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+		$parsedConfig = $parser->parsed_config;
+
+		$this->assertArrayHasKey( 'setup', $parsedConfig['environments']['default'] );
+		$this->assertEquals( [ 'e2e:test-package@1.0.0' ], $parsedConfig['environments']['default']['setup']['test_packages'] );
+		$this->assertMatchesJsonSnapshot( json_encode( $parsedConfig, JSON_PRETTY_PRINT ) );
+
+		// Test invalid format
+		$config = <<<'JSON'
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "directory",
+            "path": "./plugin"
+        }
+    },
+    "environments": {
+        "default": {
+            "setup": {
+                "test_packages": ["invalid_package"]
+            }
+        }
+    }
+}
+JSON;
+		file_put_contents( $configFile, $config );
+
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( "Invalid test package format 'invalid_package'" );
+		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+	}
+
+	public function testInvalidTestTypeProfile(): void {
+		$configFile = $this->tempDir . '/qit.json';
+		$config     = <<<'JSON'
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "directory",
+            "path": "./plugin"
+        }
+    },
+    "test_types": {
+        "e2e": {
+            "default": {
+                "run": {}
+            }
+        }
+    }
+}
+JSON;
+		mkdir( $this->tempDir . '/plugin', 0777, true );
+		file_put_contents( $configFile, $config );
+
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( "run in 'e2e:default' must be an array with a 'test_packages' array." );
+		new ConfigParser( $configFile, $GLOBALS['qit_application'] );
+	}
 
 	private function deleteDir( string $dir ): void {
 		if ( ! is_dir( $dir ) ) {

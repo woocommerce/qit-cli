@@ -1,0 +1,32 @@
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "directory",
+            "path": "\/tmp\/qit_test_fixed\/plugin"
+        }
+    },
+    "environments": {
+        "default": {
+            "setup": {
+                "test_packages": [
+                    "e2e:test-package@1.0.0"
+                ]
+            }
+        }
+    },
+    "test_packages": {
+        "e2e": {
+            "test-package": {
+                "config": {
+                    "$schema": "https:\/\/qit.woo.com\/json-schema\/test-package",
+                    "version": "1.0.0",
+                    "author": "Test Author",
+                    "test_command": "npm run test"
+                },
+                "extends": null
+            }
+        }
+    }
+}
