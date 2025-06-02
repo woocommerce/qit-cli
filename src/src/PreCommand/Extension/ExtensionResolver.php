@@ -6,7 +6,6 @@ use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Environment\Extension;
 use QIT_CLI\Environment\Environments\EnvInfo;
-use QIT_CLI\PreCommand\Extension\Sources\SourceResolverInterface;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\WPORGExtensionsList;
 
@@ -14,9 +13,6 @@ use QIT_CLI\WPORGExtensionsList;
  * Main extension resolver that orchestrates the resolution process.
  */
 class ExtensionResolver {
-	/** @var SourceResolverInterface[] */
-	protected $source_resolvers = [];
-
 	/** @var ExtensionMetadataFetcher */
 	protected $metadata_fetcher;
 
@@ -44,13 +40,6 @@ class ExtensionResolver {
 		$this->cache_manager         = $cache_manager;
 		$this->woo_extensions_list   = $woo_extensions_list;
 		$this->wporg_extensions_list = $wporg_extensions_list;
-	}
-
-	/**
-	 * Register a source resolver.
-	 */
-	public function register_source_resolver( string $type, SourceResolverInterface $resolver ): void {
-		$this->source_resolvers[ $type ] = $resolver;
 	}
 
 	/**

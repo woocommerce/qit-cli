@@ -23,19 +23,19 @@ class DependencyResolver {
 	/** @var WPORGExtensionsList */
 	protected $wporg_extensions_list;
 
-	/** @var DependencyParser */
-	protected $dependency_parser;
+	/** @var PluginMetadataParser */
+	protected $plugin_metadata_parser;
 
 	public function __construct(
 		Cache $cache,
 		WooExtensionsList $woo_extensions_list,
 		WPORGExtensionsList $wporg_extensions_list,
-		DependencyParser $dependency_parser
+		PluginMetadataParser $plugin_metadata_parser
 	) {
 		$this->cache                 = $cache;
 		$this->woo_extensions_list   = $woo_extensions_list;
 		$this->wporg_extensions_list = $wporg_extensions_list;
-		$this->dependency_parser     = $dependency_parser;
+		$this->plugin_metadata_parser     = $plugin_metadata_parser;
 	}
 
 	/**
@@ -50,7 +50,7 @@ class DependencyResolver {
 
 		// Parse dependencies from the extension files
 		if ( ! empty( $extension->downloaded_source ) ) {
-			$parsed_deps = $this->dependency_parser->parse( $extension->downloaded_source, $extension->type );
+			$parsed_deps = $this->plugin_metadata_parser->parse( $extension->downloaded_source, $extension->type );
 
 			foreach ( $parsed_deps as $dep_slug ) {
 				$dep                      = new Extension( $dep_slug, 'plugin' );
@@ -127,7 +127,7 @@ class DependencyResolver {
 		// Parse local dependencies
 		foreach ( $extensions as $ext ) {
 			if ( ! empty( $ext->downloaded_source ) ) {
-				$parsed = $this->dependency_parser->parse( $ext->downloaded_source, $ext->type );
+				$parsed = $this->plugin_metadata_parser->parse( $ext->downloaded_source, $ext->type );
 				foreach ( $parsed as $dep_slug ) {
 					$dep                      = new Extension( $dep_slug, 'plugin' );
 					$dep->added_automatically = 'Added as a dependency';

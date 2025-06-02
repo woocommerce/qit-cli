@@ -5,7 +5,7 @@ namespace QIT_CLI\PreCommand\Extension;
 /**
  * Parses plugin metadata to extract dependencies.
  */
-class DependencyParser {
+class PluginMetadataParser {
 	/**
 	 * Parses plugin metadata to extract dependencies.
 	 *
