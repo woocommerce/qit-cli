@@ -389,8 +389,6 @@ class CreateRunCommands extends DynamicCommandCreator {
 			false
 		);
 
-		QITCommand::add_profile_option( $command );
-
 		$command->add_option_to_send( 'zip' );
 
 		if ( $test_type === 'api' ) {
