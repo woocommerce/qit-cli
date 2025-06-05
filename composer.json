@@ -6,7 +6,7 @@
     "platform-check": false
   },
   "require": {
-    "php": "^7.2.5 | ^8",
+    "php": "^7.4 | ^8",
     "ext-curl": "*"
   },
   "bin": "qit"
