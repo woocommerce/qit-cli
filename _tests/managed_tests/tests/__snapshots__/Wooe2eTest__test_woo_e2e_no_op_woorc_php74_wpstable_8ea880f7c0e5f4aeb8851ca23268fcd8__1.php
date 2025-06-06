@@ -33,7 +33,8 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "0 total, 0 passed, 0 failed.",
+            "test_summary": "Test failed before it was executed.",
+            "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -45,8 +46,7 @@
             "phpstan_level": null,
             "test_variation": "",
             "test_group_id": "",
-            "test_result_json_extracted": "{EXTRACTED}",
-            "debug_log_extracted": "{EXTRACTED}"
+            "test_result_json_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
@@ -59,12 +59,7 @@
                 "numPendingTests": 0,
                 "numTotalTests": 0,
                 "testResults": [],
-                "summary": "0 total, 0 passed, 0 failed."
-            }
-        },
-        {
-            "debug_log": {
-                "generic": []
+                "summary": "Test failed before it was executed."
             }
         }
     ]
