@@ -2,25 +2,26 @@
 
 namespace QIT_CLI\Commands\Group;
 
+use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\TestGroup;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GroupFetchCommand extends Command {
+class GroupFetchCommand extends QITCommand {
 
 	protected static $defaultName = 'group:fetch'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var TestGroup */
-	protected $test_group;
+	protected TestGroup $test_group;
 
 	public function __construct( TestGroup $test_group ) {
 		$this->test_group = $test_group;
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'Fetch a group of tests using a group identifier.' )
 			->addOption( 'group-identifier', 'i', InputOption::VALUE_REQUIRED, 'The group identifier.' )
@@ -30,9 +31,10 @@ class GroupFetchCommand extends Command {
 	/**
 	 * @param InputInterface  $input
 	 * @param OutputInterface $output
+	 *
 	 * @return int
 	 */
-	protected function execute( InputInterface $input, OutputInterface $output ) {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$group_identifier = $input->getOption( 'group-identifier' );
 
 		if ( empty( $group_identifier ) ) {
@@ -44,7 +46,7 @@ class GroupFetchCommand extends Command {
 
 		if ( empty( $group ) ) {
 			$output->writeln( '<error>No group found.</error>' );
-			return Command::FAILURE;
+			return self::FAILURE;
 		}
 
 		if ( $input->getOption( 'json' ) ) {
@@ -66,6 +68,6 @@ class GroupFetchCommand extends Command {
 			$output->writeln( '--------------------------------' );
 		}
 
-		return Command::SUCCESS;
+		return self::SUCCESS;
 	}
 }

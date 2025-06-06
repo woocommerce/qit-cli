@@ -3,21 +3,21 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\Config;
-use Symfony\Component\Console\Command\Command;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class ConfigDirCommand extends Command {
+class ConfigDirCommand extends QITCommand {
 	protected static $defaultName = 'qit:dir'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'Prints the QIT config directory path.' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$output->writeln( Config::get_qit_dir() );
-
-		return Command::SUCCESS;
+		return self::SUCCESS;
 	}
 }

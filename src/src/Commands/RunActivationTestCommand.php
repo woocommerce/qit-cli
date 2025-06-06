@@ -4,6 +4,7 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Extension;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
@@ -18,12 +19,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
 use function QIT_CLI\get_manager_url;
 
-class RunActivationTestCommand extends Command {
+class RunActivationTestCommand extends QITCommand {
 	use OptionReuseTrait;
 
 	protected static $defaultName = 'run:activation'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'Run Activation tests.' )
 			->setHelp( 'Run the Woo activation test against a given extension.' )
@@ -78,7 +80,7 @@ class RunActivationTestCommand extends Command {
 		);
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$run_e2e_command = App::make( RunE2ECommand::class );
 		$run_e2e_command->setApplication( $this->getApplication() );
 

@@ -2,33 +2,34 @@
 
 namespace QIT_CLI\Commands\Group;
 
+use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\TestGroup;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GroupShowCommand extends Command {
+class GroupShowCommand extends QITCommand {
 	protected static $defaultName = 'group:show'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var TestGroup */
-	protected $test_group;
+	protected TestGroup $test_group;
 
 	public function __construct( TestGroup $test_group ) {
 		$this->test_group = $test_group;
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this->setName( 'group:show' )
 			->setDescription( 'Show the currently cached group' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ) {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$group = $this->test_group->get();
 
 		if ( empty( $group ) ) {
 			$output->writeln( '<error>No group found.</error>' );
-			return Command::FAILURE;
+			return self::FAILURE;
 		}
 
 		$this->test_group->update_group_test_runs();
@@ -65,6 +66,6 @@ class GroupShowCommand extends Command {
 			$output->writeln( '--------------------------------' );
 		}
 
-		return Command::SUCCESS;
+		return self::SUCCESS;
 	}
 }

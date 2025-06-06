@@ -4,8 +4,10 @@ namespace QIT_CLI\Commands\Partner;
 
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\ManagerBackend;
 use QIT_CLI\WooExtensionsList;
+use QIT_CLI\Commands\QITCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -16,20 +18,13 @@ use function QIT_CLI\get_manager_url;
 use function QIT_CLI\get_wccom_url;
 use function QIT_CLI\validate_authentication;
 
-class AddPartner extends Command {
+class AddPartner extends QITCommand {
 	protected static $defaultName = 'partner:add'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Auth $auth */
-	protected $auth;
-
-	/** @var WooExtensionsList $woo_extensions_list */
-	protected $woo_extensions_list;
-
-	/** @var ManagerBackend $manager_backend */
-	protected $manager_backend;
-
-	/** @var Cache $cache */
-	protected $cache;
+	protected Auth $auth;
+	protected WooExtensionsList $woo_extensions_list;
+	protected ManagerBackend $manager_backend;
+	protected Cache $cache;
 
 	public function __construct( ManagerBackend $manager_backend, Cache $cache, Auth $auth, WooExtensionsList $woo_extensions_list ) {
 		$this->manager_backend     = $manager_backend;
@@ -39,7 +34,8 @@ class AddPartner extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'Configure a new WCCOM Marketplace Partner that the QIT CLI can connect to.' )
 			->setHelp( sprintf( "Configure the QIT CLI to be able to interact with %s on behalf of a given partner.\nAuthenticating documentation: https://qit.woo.com/docs/support/authenticating", get_wccom_url() ) )
@@ -48,7 +44,7 @@ class AddPartner extends Command {
 			->addOption( 'application_password', 'p', InputOption::VALUE_OPTIONAL, '(DEPRECATED) This has been renamed to "QIT Token" and will be removed. A regular application password will not work.' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		// User.
 		if ( ! empty( $input->getOption( 'user' ) ) ) {
 			$user = $input->getOption( 'user' );
@@ -183,12 +179,11 @@ SECTION
 		$io->writeln( "\n<info>Running a WooCommerce Core E2E test with configurable options using a development build:</info>" );
 		$io->writeln(<<<COMMAND
 ./qit run:woo-e2e my-extension-slug \
-	--woocommerce_version=rc \
-	--wordpress_version=rc \
+	--woo_version=rc \
+	--wp_version=rc \
 	--php_version=8.2 \
 	--optional_features=hpos \
-	--additional_woo_plugins=woocommerce-shipping \
-	--additional_wordpress_plugins=hello-dolly \
+	--additional_plugins=woocommerce-shipping,hello-dolly \
 	--zip
 
 COMMAND

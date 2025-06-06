@@ -2,6 +2,8 @@
 
 namespace QIT_CLI\Commands\Tags;
 
+use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
@@ -10,17 +12,18 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
-class ListTestTagsCommand extends Command {
+class ListTestTagsCommand extends QITCommand {
 	protected static $defaultName = 'tag:list'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			// Add an optional "extension" argument to fetch test tags just for this one.
 			->addArgument( 'extension', InputArgument::OPTIONAL, 'If set, will return the test tags of this extension only, in a comma-separated list.' )
 			->setDescription( 'List the Test Tags you have access to test.' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		try {
 			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get_extensions' ) )
 				->with_method( 'POST' )
