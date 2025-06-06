@@ -9,7 +9,7 @@ ARGS ?=
 VERSION ?= qit_dev_build
 
 # List all PHP versions you want to test/build images for:
-PHP_VERSIONS = 7.2 7.3 7.4 8.0 8.1 8.2 8.3 8.4
+PHP_VERSIONS = 7.4 8.0 8.1 8.2 8.3 8.4
 # Default PHP version used if none specified
 PHP_VERSION ?= 8.3
 
