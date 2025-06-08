@@ -2,6 +2,9 @@
 
 use QIT\SelfTests\CustomTests\Traits\SnapshotHelpers;
 
+/**
+ * @group group-tests
+ */
 class RunGroupTest extends \PHPUnit\Framework\TestCase {
 	use SnapshotHelpers;
 

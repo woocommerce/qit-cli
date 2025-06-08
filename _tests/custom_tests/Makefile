@@ -6,11 +6,11 @@ test:
 
 # Run custom tests (excluding group tests)
 test-custom:
-	./vendor/bin/phpunit --exclude-group group tests/ --exclude tests/RunGroupTest.php
+	./vendor/bin/phpunit --exclude-group group-tests
 
 # Run group tests only
 test-group:
-	./vendor/bin/phpunit tests/RunGroupTest.php
+	./vendor/bin/phpunit --group group-tests
 
 # Update snapshots
 update-snapshots:
