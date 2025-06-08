@@ -247,12 +247,12 @@ class RunGroupTest extends \PHPUnit\Framework\TestCase {
 
 		$tests = [
             [
-                'type'        => 'activaiton',
+                'type'        => 'activation',
 				'run_command' => 'run:activation',
-                'extension'   => 'woocommerce-bookings',
+                'extension'   => 'woocommerce-amazon-s3-storage',
 			],
 			[
-				'type'        => 'activaiton',
+				'type'        => 'activation',
 				'run_command' => 'run:activation',
 				'extension'   => 'automatewoo',
 			],
@@ -292,12 +292,12 @@ class RunGroupTest extends \PHPUnit\Framework\TestCase {
 
 		$tests = [
             [
-                'type'        => 'activaiton',
+                'type'        => 'activation',
 				'run_command' => 'run:activation',
-                'extension'   => 'woocommerce-bookings',
+                'extension'   => 'woocommerce-amazon-s3-storage',
 			],
 			[
-				'type'        => 'activaiton',
+				'type'        => 'activation',
 				'run_command' => 'run:activation',
 				'extension'   => 'automatewoo',
 			],
