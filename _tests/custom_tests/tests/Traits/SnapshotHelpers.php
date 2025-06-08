@@ -75,7 +75,7 @@ trait SnapshotHelpers {
 
         // Normalize Test Results Manager URL
         $test_output_string = preg_replace(
-            '/https:\/\/[^\/]+\?qit_results=\d+\.[a-zA-Z0-9]+/', 
+            '/https?:\/\/[^\/\s]+\?qit_results=\d+\.[a-zA-Z0-9]+/', 
             'https://example.com?qit_results=12345.normalized_hash',
             $test_output_string
         );
@@ -122,7 +122,7 @@ trait SnapshotHelpers {
 
         // Normalize Test Results Manager URL
         $test_output_string = preg_replace(
-            '/https:\/\/[^\/]+\?qit_results=\d+\.[a-zA-Z0-9]+/', 
+            '/https?:\/\/[^\/\s]+\?qit_results=\d+\.[a-zA-Z0-9]+/', 
             'https://example.com?qit_results=12345.normalized_hash',
             $test_output_string
         );
@@ -165,7 +165,7 @@ trait SnapshotHelpers {
 
         // Normalize Test Results Manager URL
         $test_output_string = preg_replace(
-            '/https:\/\/[^\/\s]+\?qit_results=\d+\.[a-zA-Z0-9]+/', 
+            '/https?:\/\/[^\/\s]+\?qit_results=\d+\.[a-zA-Z0-9]+/', 
             'https://example.com?qit_results=12345.normalized_hash',
             $test_output_string
         );
