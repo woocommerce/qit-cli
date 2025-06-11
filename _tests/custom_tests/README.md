@@ -1,11 +1,13 @@
 ### Running tests
 
 1. Copy `.env.example` to `.env` and update the values
-2. Run `./vendor/bin/paratest`
+2. Run `make test` to run all tests (including group tests)
+3. Run `make test-custom` to run custom tests (excluding group tests)
+4. Run `make test-group` to run only group tests
 
 ### Updating snapshots
 
-1. Append "UPDATE_SNAPSHOTS" env var, eg: `UPDATE_SNAPSHOTS=true ./vendor/bin/paratest`
+1. Run `make update-snapshots`
 
 ### Running a single file
 

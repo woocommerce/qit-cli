@@ -1,11 +1,12 @@
 <?php
 
-use QIT\SelfTests\GroupTests\Traits\SnapshotHelpers;
-use Spatie\Snapshots\MatchesSnapshots;
+use QIT\SelfTests\CustomTests\Traits\SnapshotHelpers;
 
+/**
+ * @group group-tests
+ */
 class RunGroupTest extends \PHPUnit\Framework\TestCase {
 	use SnapshotHelpers;
-	use MatchesSnapshots;
 
 	public function test_run_remote_group() {
 		// Clear any existing group.
@@ -61,7 +62,7 @@ class RunGroupTest extends \PHPUnit\Framework\TestCase {
 
 
 		$this->assertStringContainsString( 'The test group is already registered. Please execute the group with `group:run` and delete it with `group:clear` after it has completed.', $output );
-		
+
 		// Run Group.
 		$output = qit( [
 			'group:run'
@@ -116,7 +117,7 @@ class RunGroupTest extends \PHPUnit\Framework\TestCase {
 		$output = qit( [
 			'group:clear',
 		] );
-		
+
 		$tests = [
             [
                 'type'        => 'security',
@@ -249,12 +250,12 @@ class RunGroupTest extends \PHPUnit\Framework\TestCase {
 
 		$tests = [
             [
-                'type'        => 'activaiton',
+                'type'        => 'activation',
 				'run_command' => 'run:activation',
-                'extension'   => 'woocommerce-bookings',
+                'extension'   => 'woocommerce-amazon-s3-storage',
 			],
 			[
-				'type'        => 'activaiton',
+				'type'        => 'activation',
 				'run_command' => 'run:activation',
 				'extension'   => 'automatewoo',
 			],
@@ -274,16 +275,16 @@ class RunGroupTest extends \PHPUnit\Framework\TestCase {
 			'group:run',
 		] );
 
-		
+
 		// At this point, both local tests would be done and we can retrieve their results from remote.
 		$output = qit( [
 			'group:show',
 		] );
 
-		
+
 		$normalized_output = $this->normalize_complete_group_run_output( $output, true );
 		$this->assertMatchesSnapshot( $normalized_output );	
-		
+
 	}
 
 	public function test_local_group_run_with_remote_and_local_tests() {
@@ -291,15 +292,15 @@ class RunGroupTest extends \PHPUnit\Framework\TestCase {
 		$output = qit( [
 			'group:clear',
 		] );
-		
+
 		$tests = [
             [
-                'type'        => 'activaiton',
+                'type'        => 'activation',
 				'run_command' => 'run:activation',
-                'extension'   => 'woocommerce-bookings',
+                'extension'   => 'woocommerce-amazon-s3-storage',
 			],
 			[
-				'type'        => 'activaiton',
+				'type'        => 'activation',
 				'run_command' => 'run:activation',
 				'extension'   => 'automatewoo',
 			],
@@ -329,13 +330,13 @@ class RunGroupTest extends \PHPUnit\Framework\TestCase {
 			'group:run',
 		] );
 
-		
+
 		// At this point, both local tests would be done and we can retrieve their results from remote.
 		$output = qit( [
 			'group:show',
 		] );
 
-		
+
 		$normalized_output = $this->normalize_complete_group_run_output( $output, true );
 		$this->assertMatchesSnapshot( $normalized_output );	
 	}
