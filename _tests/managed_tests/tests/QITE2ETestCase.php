@@ -231,13 +231,13 @@ class QITE2ETestCase extends TestCase {
 					$value = str_replace( 'compatibility-dashboard', 'qit-runner', $value );
 
 					// Replace qitenvnginx + random hex with a single placeholder
-					$value = preg_replace('/qitenvnginx[0-9a-f]+/i', 'qitenvnginxNORMALIZED', $value);
+					$value = preg_replace( '/qitenvnginx[0-9a-f]+/i', 'qitenvnginxNORMALIZED', $value );
 
 					// Pattern: dash, 10+ hex chars, then dot, then jpg/jpeg/png
-					$value = preg_replace('/-[0-9a-f]{10,}\.(jpe?g|png|webm)/i', '-HASHNORMALIZED.$1', $value);
+					$value = preg_replace( '/-[0-9a-f]{10,}\.(jpe?g|png|webm)/i', '-HASHNORMALIZED.$1', $value );
 
 					// Patern ""e2e-api-access-1743613383248 consumer token successfully created\\n""
-					$value = preg_replace('/e2e-api-access-[0-9]{1,} consumer token successfully created\\\\n/i', 'e2e-api-access-HASHNORMALIZED consumer token successfully created\\n', $value);
+					$value = preg_replace( '/e2e-api-access-[0-9]{1,} consumer token successfully created\\\\n/i', 'e2e-api-access-HASHNORMALIZED consumer token successfully created\\n', $value );
 
 					// 3) Decode back to array so we can walk the structure
 					if ( $array_mode ) {
@@ -267,6 +267,13 @@ class QITE2ETestCase extends TestCase {
 								'Assert response status is OK',
 								'Verify that sections were reset',
 								'Initialize locators',
+								'Create variable product for individual edit test',
+								'Create variable product for bulk edit test',
+								'Create variable product for "delete all" test',
+								'Create variable product for "manage stock" test',
+								'Create variable product for "variation defaults" test',
+								'Create variable product with 1 variation for "remove variation" test',
+								'Hide variable product tour',
 							);
 
 							if ( isset( $test['steps'] ) && is_array( $test['steps'] ) ) {
@@ -282,7 +289,7 @@ class QITE2ETestCase extends TestCase {
 							}
 
 							if ( $is_woo_e2e && isset( $test['stdout'] ) ) {
-								$test['stdout'] = ['[IGNORED FOR WOO-E2E]'];
+								$test['stdout'] = [ '[IGNORED FOR WOO-E2E]' ];
 								continue;
 							}
 
@@ -321,7 +328,7 @@ class QITE2ETestCase extends TestCase {
 									) {
 										$line = 'apiRequestContext.post: Invalid URL [NORMALIZED SET OPTION]';
 									}
-									
+
 									// 3) Keep other lines.
 									$filtered[] = $line;
 								}
@@ -460,6 +467,8 @@ class QITE2ETestCase extends TestCase {
 						if ( empty( $value ) ) {
 							return [];
 						}
+
+						$normalized_debug_log = [];
 
 						/*
 						 * $debug_log is an array with the following structure:

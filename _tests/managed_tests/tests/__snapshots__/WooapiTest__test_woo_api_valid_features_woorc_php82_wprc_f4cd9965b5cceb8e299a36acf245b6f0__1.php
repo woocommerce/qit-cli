@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "267 total, 262 passed, 0 failed, 5 skipped.",
+            "test_summary": "266 total, 261 passed, 0 failed, 5 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -55,9 +55,9 @@
                 "numPendingTestSuites": 4,
                 "numTotalTestSuites": 23,
                 "numFailedTests": 0,
-                "numPassedTests": 262,
+                "numPassedTests": 261,
                 "numPendingTests": 5,
-                "numTotalTests": 267,
+                "numTotalTests": 266,
                 "testResults": [
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.js",
@@ -111,12 +111,6 @@
                             "disable onboarding wizard": [
                                 {
                                     "title": "disable onboarding wizard",
-                                    "status": "passed"
-                                }
-                            ],
-                            "disable new payments settings page": [
-                                {
-                                    "title": "disable new payments settings page",
                                     "status": "passed"
                                 }
                             ],
@@ -1464,7 +1458,7 @@
                         }
                     }
                 ],
-                "summary": "267 total, 262 passed, 0 failed, 5 skipped."
+                "summary": "266 total, 261 passed, 0 failed, 5 skipped."
             }
         },
         {
@@ -1474,8 +1468,8 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 267,
-                        "passed": 262,
+                        "tests": 266,
+                        "passed": 261,
                         "failed": 0,
                         "pending": 0,
                         "skipped": 5,
@@ -1600,27 +1594,6 @@
                         },
                         {
                             "name": "disable onboarding wizard",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/site.setup.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
-                            "attachments": [],
-                            "stdout": [],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "disable new payments settings page",
                             "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
@@ -3654,9 +3627,7 @@
                             "steps": [],
                             "suite": "api > api-tests\\/payment-gateways\\/payment-gateways-crud.test.js > Payment Gateways API tests",
                             "attachments": [],
-                            "stdout": [
-                                "apiRequestContext.post: Invalid URL [NORMALIZED SET OPTION]"
-                            ],
+                            "stdout": [],
                             "stderr": [],
                             "extra": {
                                 "annotations": []

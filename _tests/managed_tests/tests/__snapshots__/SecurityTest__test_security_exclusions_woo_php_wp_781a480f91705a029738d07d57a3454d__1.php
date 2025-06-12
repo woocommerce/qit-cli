@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 10 Warnings: 7",
+            "test_summary": "Errors: 15 Warnings: 8",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -53,8 +53,8 @@
                 "tool": {
                     "phpcs": {
                         "totals": {
-                            "errors": 4,
-                            "warnings": 7,
+                            "errors": 8,
+                            "warnings": 8,
                             "fixable": 0
                         },
                         "files": {
@@ -110,6 +110,62 @@
                                         "type": "WARNING",
                                         "codeFragment": "add_filter( \'determine_user\', \'callable\' ); \\/\\/ Risky filter warning.",
                                         "line": 20,
+                                        "column": 1
+                                    }
+                                ]
+                            },
+                            "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/semgrep-exclusions\\/woocommerce-product-feeds.php": {
+                                "errors": 4,
+                                "warnings": 1,
+                                "messages": [
+                                    {
+                                        "message": "Detected usage of a non-sanitized input variable: $_POST[\'foo\']",
+                                        "source": "WordPress.Security.ValidatedSanitizedInput.InputNotSanitized",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "codeFragment": "\\t\\t$foo = $_POST[\'foo\'];\\n",
+                                        "line": 9,
+                                        "column": 10
+                                    },
+                                    {
+                                        "message": "Detected usage of a non-sanitized input variable: $_POST[\'bar\']",
+                                        "source": "WordPress.Security.ValidatedSanitizedInput.InputNotSanitized",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "codeFragment": "\\t\\t$bar = $_POST[\'bar\']; \\n",
+                                        "line": 10,
+                                        "column": 10
+                                    },
+                                    {
+                                        "message": "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'\\"Unescaped output! $foo\\"\'.",
+                                        "source": "WordPress.Security.EscapeOutput.OutputNotEscaped",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "codeFragment": "\\t\\techo \\"Unescaped output! $foo\\";\\n",
+                                        "line": 12,
+                                        "column": 8
+                                    },
+                                    {
+                                        "message": "All output should be run through an escaping function (see the Security sections in the WordPress Developer Handbooks), found \'\\"Unescaped output! $bar\\"\'.",
+                                        "source": "WordPress.Security.EscapeOutput.OutputNotEscaped",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "codeFragment": "\\t\\techo \\"Unescaped output! $bar\\"; \\/\\/ nosemgrep\\n",
+                                        "line": 13,
+                                        "column": 8
+                                    },
+                                    {
+                                        "message": "Detected usage of the \\"determine_user\\" filter. Please double-check if this filter is safe and ignore this warning to confirm.",
+                                        "source": "QITStandard.PHP.DangerousFilters.RiskyFilterDetected",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "WARNING",
+                                        "codeFragment": "add_filter( \'determine_user\', \'callable\' ); \\/\\/ Risky filter warning.",
+                                        "line": 17,
                                         "column": 1
                                     }
                                 ]
@@ -184,7 +240,7 @@
                     },
                     "semgrep": {
                         "totals": {
-                            "errors": 6,
+                            "errors": 7,
                             "warnings": 0,
                             "fixable": 0
                         },
@@ -238,6 +294,22 @@
                                         "severity": 10,
                                         "fixable": false,
                                         "codeFragment": "\\t\\techo \\"Unescaped output! $bar\\"; \\/\\/ phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped"
+                                    }
+                                ]
+                            },
+                            "\\/woocommerce-product-feeds\\/semgrep-exclusions\\/woocommerce-product-feeds.php": {
+                                "errors": 1,
+                                "warnings": 0,
+                                "messages": [
+                                    {
+                                        "line": 12,
+                                        "column": 3,
+                                        "type": "ERROR",
+                                        "message": "User Input directly used in echo\\/printf statement, leading to Reflected XSS",
+                                        "source": "scanner.php.lang.security.xss.direct-reflected",
+                                        "severity": 10,
+                                        "fixable": false,
+                                        "codeFragment": "\\t\\techo \\"Unescaped output! $foo\\";"
                                     }
                                 ]
                             },
