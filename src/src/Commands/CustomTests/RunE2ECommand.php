@@ -146,9 +146,6 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'no_group', 'ng', InputOption::VALUE_NEGATABLE, 'If set, the CLI will not attempt to match the local test run with a group.', false );
 	}
 
-	public function execute( InputInterface $input, OutputInterface $output ): int {
-		return parent::execute( $input, $output );
-	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$this->prepare_output( $output );
