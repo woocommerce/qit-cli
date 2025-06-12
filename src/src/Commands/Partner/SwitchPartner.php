@@ -2,15 +2,15 @@
 
 namespace QIT_CLI\Commands\Partner;
 
+use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Config;
 use QIT_CLI\ManagerBackend;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
-class SwitchPartner extends Command {
+class SwitchPartner extends QITCommand {
 	protected static $defaultName = 'partner:switch'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	protected ManagerBackend $manager_backend;

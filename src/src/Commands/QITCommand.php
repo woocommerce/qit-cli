@@ -35,7 +35,7 @@ abstract class QITCommand extends Command {
 	}
 
 	protected function needs_test_profile(): bool {
-		return str_starts_with( static::getDefaultName(), 'run:' );
+		return str_starts_with( static::getDefaultName() ?? '', 'run:' );
 	}
 
 	abstract protected function doExecute( InputInterface $input, OutputInterface $output ): int;
