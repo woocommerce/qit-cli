@@ -99,7 +99,7 @@ class RunE2ECommand extends DynamicCommand {
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$schemas = $this->cache->get_manager_sync_data( 'schemas' );
 
 		if ( ! is_array( $schemas['e2e']['properties'] ) ) {
@@ -146,7 +146,11 @@ class RunE2ECommand extends DynamicCommand {
 			->addOption( 'no_group', 'ng', InputOption::VALUE_NEGATABLE, 'If set, the CLI will not attempt to match the local test run with a group.', false );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	public function execute( InputInterface $input, OutputInterface $output ): int {
+		return parent::execute( $input, $output );
+	}
+
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$this->prepare_output( $output );
 
 		if ( is_windows() ) {

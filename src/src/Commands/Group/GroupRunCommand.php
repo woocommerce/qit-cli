@@ -5,6 +5,7 @@ namespace QIT_CLI\Commands\Group;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\TestGroup;
 use QIT_CLI\Commands\QITCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;

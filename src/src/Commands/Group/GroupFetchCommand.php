@@ -5,6 +5,7 @@ namespace QIT_CLI\Commands\Group;
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\TestGroup;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -46,7 +47,7 @@ class GroupFetchCommand extends QITCommand {
 
 		if ( empty( $group ) ) {
 			$output->writeln( '<error>No group found.</error>' );
-			return self::FAILURE;
+			return Command::FAILURE;
 		}
 
 		if ( $input->getOption( 'json' ) ) {
@@ -68,6 +69,6 @@ class GroupFetchCommand extends QITCommand {
 			$output->writeln( '--------------------------------' );
 		}
 
-		return self::SUCCESS;
+		return Command::SUCCESS;
 	}
 }
