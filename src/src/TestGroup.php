@@ -194,7 +194,7 @@ class TestGroup {
 			// @phan-suppress-next-line PhanTypeMismatchForeach
 			foreach ( $group['tests'] as $test ) {
 				// Only run remote tests.
-				if ( ! in_array( $test['type'], self::LOCAL_TEST_TYPES ) ) {
+				if ( ! in_array( $test['type'], self::LOCAL_TEST_TYPES, true ) ) {
 					$test_run_ids[] = $test['test_run']['test_run_id'];
 				}
 			}
@@ -361,7 +361,7 @@ class TestGroup {
 		 * If any test run is not completed, the group is still pending.
 		 */
 		foreach ( $response_data['test_runs'] as $test ) {
-			if ( ! in_array( $test['status'], [ 'hanged', 'failed', 'success', 'cancelled', 'warning', 'skipped' ] ) ) {
+			if ( ! in_array( $test['status'], [ 'hanged', 'failed', 'success', 'cancelled', 'warning', 'skipped' ], true ) ) {
 				$status = self::STATUS_PENDING;
 			}
 
@@ -418,7 +418,7 @@ class TestGroup {
 			throw new \Exception( 'No group found.' );
 		}
 
-		if ( ! in_array( $group['status'], [ self::STATUS_RUNNING, self::STATUS_REGISTERED ] )
+		if ( ! in_array( $group['status'], [ self::STATUS_RUNNING, self::STATUS_REGISTERED ], true )
 		) {
 			throw new \Exception( sprintf( 'Expected test group to be in "%s" or "%s" status, but got "%s".', self::STATUS_RUNNING, self::STATUS_NOT_STARTED, $group['status'] ) );
 		}
@@ -429,7 +429,7 @@ class TestGroup {
 		$local_tests = [];
 
 		foreach ( $group['tests'] as $test ) {
-			if ( in_array( $test['type'], self::LOCAL_TEST_TYPES ) ) {
+			if ( in_array( $test['type'], self::LOCAL_TEST_TYPES, true ) ) {
 				$local_tests[] = $test;
 			}
 		}

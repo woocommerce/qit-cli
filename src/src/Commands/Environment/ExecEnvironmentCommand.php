@@ -2,7 +2,6 @@
 
 namespace QIT_CLI\Commands\Environment;
 
-use QIT_CLI\App;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\Environments\EnvInfo;

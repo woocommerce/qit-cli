@@ -7,7 +7,7 @@
     <arg name="extensions" value="php"/>
     <arg name="parallel" value="16"/>
 
-    <config name="testVersion" value="7.2-"/>
+    <config name="testVersion" value="7.4-"/>
     <rule ref="PHPCompatibility"/>
 
     <!-- Do not fail PHPCS CI over warnings -->
@@ -68,6 +68,9 @@
         <exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
 
         <exclude name="WordPress.PHP.DisallowShortTernary.Found"/>
+        <exclude name="WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv"/>
+        <!-- Exclude deprecated sniff that will be removed in PHPCS 4.0.0 -->
+        <exclude name="Generic.Functions.CallTimePassByReference"/>
     </rule>
 
     <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>

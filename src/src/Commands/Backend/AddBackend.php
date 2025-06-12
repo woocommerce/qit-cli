@@ -5,7 +5,6 @@ namespace QIT_CLI\Commands\Backend;
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\QITCommand;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\ManagerBackend;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;

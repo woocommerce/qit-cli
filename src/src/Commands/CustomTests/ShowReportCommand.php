@@ -4,7 +4,7 @@ namespace QIT_CLI\Commands\CustomTests;
 
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\QITCommand;
-use QIT_CLI\Environment\Environments\EnvInfo;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

@@ -4,7 +4,6 @@ namespace QIT_CLI\Commands\Tunnel;
 
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Cache;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

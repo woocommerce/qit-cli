@@ -3,7 +3,6 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\Commands\Partner\AddPartner;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

@@ -4,7 +4,6 @@ namespace QIT_CLI\Commands\Partner;
 
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\ManagerBackend;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\Commands\QITCommand;

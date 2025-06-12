@@ -3,10 +3,11 @@
 namespace QIT_CLI\Commands\Tags;
 
 use QIT_CLI\Commands\QITCommand;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Upload;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\Zipper;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
