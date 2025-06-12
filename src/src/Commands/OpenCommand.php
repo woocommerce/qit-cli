@@ -2,7 +2,6 @@
 
 namespace QIT_CLI\Commands;
 
-use QIT_CLI\Environment\Environments\EnvInfo;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

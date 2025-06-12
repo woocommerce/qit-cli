@@ -2,7 +2,6 @@
 
 namespace QIT_CLI\Commands;
 
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\ManagerSync;
 use QIT_CLI\Commands\QITCommand;
 use Symfony\Component\Console\Input\InputInterface;

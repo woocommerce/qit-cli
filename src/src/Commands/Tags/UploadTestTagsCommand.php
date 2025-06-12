@@ -3,7 +3,6 @@
 namespace QIT_CLI\Commands\Tags;
 
 use QIT_CLI\Commands\QITCommand;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Upload;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\Zipper;

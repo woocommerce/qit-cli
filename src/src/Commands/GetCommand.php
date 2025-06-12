@@ -2,7 +2,6 @@
 
 namespace QIT_CLI\Commands;
 
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;

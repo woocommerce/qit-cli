@@ -4,7 +4,6 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Extension;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;

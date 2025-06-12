@@ -2,7 +2,6 @@
 
 namespace QIT_CLI\Commands\Group;
 
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\TestGroup;
 use QIT_CLI\Commands\QITCommand;
 use Symfony\Component\Console\Command\Command;
