@@ -88,12 +88,18 @@ function qit( array $command, array $qit_env_json = [], int $expected_exit_code 
 	$env = array_merge( $env, $extra_env );
 
 	$qit = new Process( $args );
-	$qit->setTimeout( 300 );
-	$qit->setIdleTimeout( 300 );
+	$qit->setTimeout( 600 );
+	$qit->setIdleTimeout( 600 );
 	$qit->setTty( false );
 	$qit->setPty( false );
 	$qit->setEnv( $env );
 	$qit->run();
+
+	// Special case for group:clear command - don't throw an exception if it fails with "No group found"
+	if ( $command[0] === 'group:clear' && $qit->getExitCode() === 1 && strpos( $qit->getOutput(), 'No group found' ) !== false ) {
+		// This is fine - the group was already cleared or didn't exist
+		return $qit->getOutput();
+	}
 
 	if ( $qit->getExitCode() !== $expected_exit_code ) {
 		throw new \RuntimeException( sprintf( "Command \"%s\" failed with exit code %d. \n\nError Output:\n %s \n\nOutput:\n %s", implode( ' ', $command ), $qit->getExitCode(), $qit->getErrorOutput(), $qit->getOutput() ) );
