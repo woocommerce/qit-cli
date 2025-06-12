@@ -75,7 +75,6 @@
                         "remote_logging",
                         "email_improvements",
                         "blueprint",
-                        "reactify-classic-payments-settings",
                         "block_email_editor",
                         "custom_order_tables",
                         "cost_of_goods_sold"
