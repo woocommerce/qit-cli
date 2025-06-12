@@ -50,11 +50,11 @@ jobs:
           echo 'QIT_CUSTOM_TESTS_URL="https://stagingcompatibilitydashboard.wpcomstaging.com/"' >> .env
           echo 'QIT_CUSTOM_TESTS_ENV="staging"' >> .env
 
-      - name: Run tests in parallel
+      - name: Run custom tests (excluding group tests)
         working-directory: _tests/custom_tests
         env:
           QIT_NO_PULL: 1
-        run: ./vendor/bin/phpunit
+        run: make test-custom
 
       - name: Upload results
         uses: actions/upload-artifact@v4

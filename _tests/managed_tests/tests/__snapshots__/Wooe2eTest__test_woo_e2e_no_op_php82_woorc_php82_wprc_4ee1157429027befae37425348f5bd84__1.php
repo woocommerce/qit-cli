@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "398 total, 388 passed, 0 failed, 10 skipped.",
+            "test_summary": "395 total, 385 passed, 0 failed, 10 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -51,13 +51,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 94,
+                "numPassedTestSuites": 93,
                 "numPendingTestSuites": 8,
-                "numTotalTestSuites": 102,
+                "numTotalTestSuites": 101,
                 "numFailedTests": 0,
-                "numPassedTests": 388,
+                "numPassedTests": 385,
                 "numPendingTests": 10,
-                "numTotalTests": 398,
+                "numTotalTests": 395,
                 "testResults": [
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.js",
@@ -111,12 +111,6 @@
                             "disable onboarding wizard": [
                                 {
                                     "title": "disable onboarding wizard",
-                                    "status": "passed"
-                                }
-                            ],
-                            "disable new payments settings page": [
-                                {
-                                    "title": "disable new payments settings page",
                                     "status": "passed"
                                 }
                             ],
@@ -1485,23 +1479,6 @@
                         }
                     },
                     {
-                        "file": "onboarding\\/payment-setup-task.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Payment setup task": [
-                                {
-                                    "title": "Saving valid bank account transfer details enables the payment method",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Enabling cash on delivery enables the payment method",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "onboarding\\/setup-checklist.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1512,9 +1489,9 @@
                                     "status": "passed"
                                 }
                             ],
-                            "Can visit the payment setup task from from the task list": [
+                            "Payments task list item links to Payments settings page": [
                                 {
-                                    "title": "Can visit the payment setup task from from the task list",
+                                    "title": "Payments task list item links to Payments settings page",
                                     "status": "passed"
                                 }
                             ],
@@ -2772,7 +2749,7 @@
                         }
                     }
                 ],
-                "summary": "398 total, 388 passed, 0 failed, 10 skipped."
+                "summary": "395 total, 385 passed, 0 failed, 10 skipped."
             }
         },
         {
@@ -2782,8 +2759,8 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 398,
-                        "passed": 388,
+                        "tests": 395,
+                        "passed": 385,
                         "failed": 0,
                         "pending": 0,
                         "skipped": 10,
@@ -2915,29 +2892,6 @@
                         },
                         {
                             "name": "disable onboarding wizard",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/site.setup.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "disable new payments settings page",
                             "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
@@ -8637,52 +8591,6 @@
                             }
                         },
                         {
-                            "name": "Saving valid bank account transfer details enables the payment method",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/payment-setup-task.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/payment-setup-task.spec.js > Payment setup task",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "Enabling cash on delivery enables the payment method",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/payment-setup-task.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/payment-setup-task.spec.js > Payment setup task",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
                             "name": "Can hide the task list",
                             "status": "passed",
                             "duration": 999,
@@ -8715,7 +8623,7 @@
                             }
                         },
                         {
-                            "name": "Can visit the payment setup task from from the task list",
+                            "name": "Payments task list item links to Payments settings page",
                             "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
@@ -13033,34 +12941,6 @@
                             "retries": 0,
                             "flaky": false,
                             "steps": [
-                                {
-                                    "name": "Create variable product for individual edit test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create variable product for bulk edit test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create variable product for \\"delete all\\" test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create variable product for \\"manage stock\\" test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create variable product for \\"variation defaults\\" test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create variable product with 1 variation for \\"remove variation\\" test",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Hide variable product tour",
-                                    "status": "passed"
-                                },
                                 {
                                     "name": "Go to the \\"Edit product\\" page.",
                                     "status": "passed"
