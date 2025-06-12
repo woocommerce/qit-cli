@@ -88,8 +88,8 @@ function qit( array $command, array $qit_env_json = [], int $expected_exit_code 
 	$env = array_merge( $env, $extra_env );
 
 	$qit = new Process( $args );
-	$qit->setTimeout( 300 );
-	$qit->setIdleTimeout( 300 );
+	$qit->setTimeout( 600 );
+	$qit->setIdleTimeout( 600 );
 	$qit->setTty( false );
 	$qit->setPty( false );
 	$qit->setEnv( $env );

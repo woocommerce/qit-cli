@@ -468,6 +468,8 @@ class QITE2ETestCase extends TestCase {
 							return [];
 						}
 
+						$normalized_debug_log = [];
+
 						/*
 						 * $debug_log is an array with the following structure:
 						 *
