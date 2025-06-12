@@ -34,7 +34,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "",
+            "test_summary": "Test Suites: 0 skipped, 0 failed, 2 passed, 2 total | Tests: 0 skipped, 0 failed, 12 passed, 12 total.",
             "version": "",
             "update_complete": true,
             "ai_suggestion_status": "none",
