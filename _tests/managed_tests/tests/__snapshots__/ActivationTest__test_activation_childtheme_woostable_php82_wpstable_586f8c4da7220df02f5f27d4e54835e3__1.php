@@ -303,9 +303,7 @@
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
-                            "stdout": [
-                                "Using older version of WooCommerce, using legacy method to set up COD.\\n"
-                            ],
+                            "stdout": [],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
