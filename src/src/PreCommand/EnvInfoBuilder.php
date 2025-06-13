@@ -115,6 +115,9 @@ class EnvInfoBuilder {
 	/**
 	 * Convert normalized extension configs to Extension objects.
 	 */
+	/**
+	 * Convert normalized extension configs to Extension objects.
+	 */
 	protected function convert_to_extension_objects( array $extension_configs ): array {
 		$extensions = [];
 
@@ -125,13 +128,19 @@ class EnvInfoBuilder {
 			$extension->from = $source['type'];
 
 			switch ( $source['type'] ) {
-				case 'directory':
-					$extension->directory = $source['path'];
-					$extension->source    = $source['path'];
+				case 'local':
+					// For local, path could be either directory or zip file
+					$path = $source['path'];
+					if ( is_dir( $path ) ) {
+						$extension->directory = $path;
+						$extension->source    = $path;
+					} else {
+						// Assume it's a zip file
+						$extension->source = $path;
+					}
 					break;
-				case 'zip':
 				case 'url':
-					$extension->source = $source['path'] ?? $source['url'];
+					$extension->source = $source['url'];
 					break;
 				case 'wporg':
 				case 'wccom':
@@ -159,12 +168,11 @@ class EnvInfoBuilder {
 			];
 
 			switch ( $extension->from ) {
-				case 'directory':
-					$config['source']['path'] = $extension->directory;
+				case 'local':
+					$config['source']['path'] = $extension->directory ?? $extension->source;
 					break;
-				case 'zip':
 				case 'url':
-					$config['source'][ $extension->from === 'zip' ? 'path' : 'url' ] = $extension->source;
+					$config['source']['url'] = $extension->source;
 					break;
 				case 'wporg':
 				case 'wccom':
@@ -414,7 +422,7 @@ class EnvInfoBuilder {
 	 */
 	protected function add_test_packages( E2EEnvInfo $env_info, QitJsonParser $config ): void {
 		if ( ! isset( $config->parsed_config['test_packages'] ) || ! is_array( $config->parsed_config['test_packages'] ) ||
-			! isset( $config->parsed_config['test_types'] ) || ! is_array( $config->parsed_config['test_types'] ) ) {
+		     ! isset( $config->parsed_config['test_types'] ) || ! is_array( $config->parsed_config['test_types'] ) ) {
 			return;
 		}
 
@@ -432,7 +440,7 @@ class EnvInfoBuilder {
 							if ( strpos( $package_name, '@' ) !== false ) {
 								$package_name = explode( '@', $package_name )[0];
 							}
-							$referenced[ "$test_type:$package_name" ] = true;
+							$referenced["$test_type:$package_name"] = true;
 						}
 					}
 				}
@@ -446,7 +454,7 @@ class EnvInfoBuilder {
 			}
 
 			foreach ( $packages as $package_name => $package ) {
-				if ( isset( $referenced[ "$test_type:$package_name" ] ) ) {
+				if ( isset( $referenced["$test_type:$package_name"] ) ) {
 					$env_info->test_packages[ $test_type ][ $package_name ] = $package;
 				}
 			}

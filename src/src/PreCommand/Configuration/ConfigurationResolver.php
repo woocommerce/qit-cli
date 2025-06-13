@@ -176,17 +176,10 @@ class ConfigurationResolver {
 		// Map source configuration
 		switch ( $sut['source']['type'] ) {
 			case 'local':
-			case 'directory':
-				$extension->from      = 'directory';
+				$extension->from      = 'local';
 				$extension->directory = $sut['source']['resolved_path'] ?? $sut['source']['path'];
 				$extension->source    = $extension->directory;
-				debug_log( "SUT source: directory at {$extension->directory}" );
-				break;
-
-			case 'zip':
-				$extension->from   = 'zip';
-				$extension->source = $sut['source']['resolved_path'] ?? $sut['source']['path'];
-				debug_log( "SUT source: zip at {$extension->source}" );
+				debug_log( "SUT source: local at {$extension->directory}" );
 				break;
 
 			case 'build':
@@ -329,6 +322,7 @@ class ConfigurationResolver {
 					break;
 
 				case 'local':
+					$extension->from      = 'local';
 					$extension->directory = $config['path'];
 					$extension->source    = $config['path'];
 					debug_log( "Extension source: local, path: {$config['path']}" );
@@ -375,23 +369,16 @@ class ConfigurationResolver {
 					break;
 
 				case 'local':
-				case 'directory':
-					$extension->from      = 'directory';
+					$extension->from      = 'local';
 					$extension->directory = $source['path'];
 					$extension->source    = $source['path'];
-					debug_log( "Extension source: directory (legacy), path: {$source['path']}" );
+					debug_log( "Extension source: local (legacy), path: {$source['path']}" );
 					break;
 
 				case 'url':
 					$extension->from   = 'url';
 					$extension->source = $source['url'];
 					debug_log( "Extension source: url (legacy), {$source['url']}" );
-					break;
-
-				case 'zip':
-					$extension->from   = 'zip';
-					$extension->source = $source['path'];
-					debug_log( "Extension source: zip (legacy), path: {$source['path']}" );
 					break;
 
 				default:

@@ -499,7 +499,6 @@ class QitJsonParser extends BaseJsonParser {
 	private function validate_sut_source( array $source ): void {
 		switch ( $source['type'] ) {
 			case 'local':
-			case 'directory':
 				if ( isset( $source['path'] ) ) {
 					$path = $this->resolve_path( $source['path'] );
 					if ( ! is_dir( $path ) ) {

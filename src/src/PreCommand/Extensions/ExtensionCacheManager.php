@@ -11,6 +11,7 @@ use QIT_CLI\RequestBuilder;
 use QIT_CLI\Zipper;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\normalize_path;
+use function QIT_CLI\debug_log;
 
 /**
  * Manages extension caching and downloads.
@@ -27,12 +28,11 @@ class ExtensionCacheManager {
 
 	/** @var string[] */
 	protected $download_handlers = [
-		'wporg'     => 'download_from_url',
-		'wccom'     => 'download_from_url',
-		'url'       => 'download_from_url',
-		'zip'       => 'copy_local_file',
-		'build'     => 'copy_local_file',
-		'directory' => 'use_directory',
+		'wporg' => 'download_from_url',
+		'wccom' => 'download_from_url',
+		'url'   => 'download_from_url',
+		'local' => 'handle_local_source',
+		'build' => 'copy_local_file',
 	];
 
 	public function __construct( Cache $cache, Zipper $zipper, OutputInterface $output ) {
@@ -45,19 +45,23 @@ class ExtensionCacheManager {
 	 * Ensure extension is cached and set downloaded_source.
 	 *
 	 * @param Extension $extension
-	 * @param string    $cache_dir
+	 * @param string $cache_dir
 	 *
 	 * @throws \RuntimeException
 	 */
 	public function ensure_cached( Extension $extension, string $cache_dir ): void {
+		debug_log( "ExtensionCacheManager: Ensuring cached for '{$extension->slug}' from '{$extension->from}'" );
+
 		// Skip if already downloaded
 		if ( ! empty( $extension->downloaded_source ) && file_exists( $extension->downloaded_source ) ) {
+			debug_log( "  Already downloaded at: {$extension->downloaded_source}" );
+
 			return;
 		}
 
 		// Validate extension has required properties
 		if ( empty( $extension->from ) ) {
-			throw new \RuntimeException( "Extensions '{$extension->slug}' has no source type" );
+			throw new \RuntimeException( "Extension '{$extension->slug}' has no source type" );
 		}
 
 		// Get handler method
@@ -66,6 +70,7 @@ class ExtensionCacheManager {
 		}
 
 		$handler = $this->download_handlers[ $extension->from ];
+		debug_log( "  Using handler: $handler" );
 		$this->$handler( $extension, $cache_dir );
 
 		// Verify download
@@ -73,7 +78,41 @@ class ExtensionCacheManager {
 			throw new \RuntimeException( "Failed to download extension '{$extension->slug}'" );
 		}
 
-		file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionCacheManager: Cached '{$extension->slug}' at {$extension->downloaded_source}\n", FILE_APPEND );
+		debug_log( "  Cached '{$extension->slug}' at {$extension->downloaded_source}" );
+	}
+
+	/**
+	 * Handle local source (can be either directory or zip file).
+	 */
+	protected function handle_local_source( Extension $extension, string $cache_dir ): void {
+		debug_log( "ExtensionCacheManager: Handling local source for '{$extension->slug}'" );
+
+		// Determine the source path
+		$source_path = $extension->directory ?? $extension->source;
+		if ( empty( $source_path ) ) {
+			throw new \RuntimeException( "Extension '{$extension->slug}' has no source path" );
+		}
+
+		debug_log( "  Source path: $source_path" );
+
+		// Check if it's a directory
+		if ( is_dir( $source_path ) ) {
+			debug_log( "  Source is a directory" );
+			$extension->downloaded_source = $source_path;
+
+			return;
+		}
+
+		// Check if it's a zip file
+		if ( is_file( $source_path ) && pathinfo( $source_path, PATHINFO_EXTENSION ) === 'zip' ) {
+			debug_log( "  Source is a zip file" );
+			$this->copy_local_file( $extension, $cache_dir );
+
+			return;
+		}
+
+		// Neither directory nor zip file
+		throw new \RuntimeException( "Local source for '{$extension->slug}' is neither a directory nor a zip file: $source_path" );
 	}
 
 	/**
@@ -81,7 +120,7 @@ class ExtensionCacheManager {
 	 */
 	protected function download_from_url( Extension $extension, string $cache_dir ): void {
 		if ( empty( $extension->source ) ) {
-			throw new \RuntimeException( "Extensions '{$extension->slug}' has no download URL" );
+			throw new \RuntimeException( "Extension '{$extension->slug}' has no download URL" );
 		}
 
 		$cache_file = $this->make_cache_path( $extension, $cache_dir );
@@ -121,17 +160,19 @@ class ExtensionCacheManager {
 	}
 
 	/**
-	 * Copy local file (ZIP, BUILD sources).
+	 * Copy local file (BUILD sources and local zip files).
 	 */
 	protected function copy_local_file( Extension $extension, string $cache_dir ): void {
-		$source_path = $extension->source;
+		$source_path = $extension->source ?? $extension->directory;
 		if ( empty( $source_path ) ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionCacheManager: No source path for '{$extension->slug}'\n", FILE_APPEND );
-			throw new \RuntimeException( "Extensions '{$extension->slug}' has no source path" );
+			debug_log( "ExtensionCacheManager: No source path for '{$extension->slug}'" );
+			throw new \RuntimeException( "Extension '{$extension->slug}' has no source path" );
 		}
-		file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionCacheManager: Checking source path: $source_path\n", FILE_APPEND );
+
+		debug_log( "ExtensionCacheManager: Copying local file from: $source_path" );
+
 		if ( ! file_exists( $source_path ) ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionCacheManager: Source file not found: $source_path\n", FILE_APPEND );
+			debug_log( "  Source file not found: $source_path", 'error' );
 			throw new \RuntimeException( "Source file not found for '{$extension->slug}': $source_path" );
 		}
 
@@ -152,22 +193,6 @@ class ExtensionCacheManager {
 		}
 
 		$extension->downloaded_source = $cache_file;
-	}
-
-	/**
-	 * Use directory as-is (DIRECTORY sources).
-	 */
-	protected function use_directory( Extension $extension, string $cache_dir ): void {
-		$directory = $extension->directory ?? $extension->source;
-		if ( empty( $directory ) ) {
-			throw new \RuntimeException( "Extensions '{$extension->slug}' has no directory path" );
-		}
-
-		if ( ! is_dir( $directory ) ) {
-			throw new \RuntimeException( "Directory not found for '{$extension->slug}': $directory" );
-		}
-
-		$extension->downloaded_source = $directory;
 	}
 
 	/**

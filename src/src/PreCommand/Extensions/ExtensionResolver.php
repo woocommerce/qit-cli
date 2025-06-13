@@ -8,6 +8,8 @@ use QIT_CLI\Environment\Extension;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\WPORGExtensionsList;
+use function QIT_CLI\debug_log;
+use function QIT_CLI\debug_dump;
 
 /**
  * Main extension resolver that orchestrates the resolution process.
@@ -46,14 +48,14 @@ class ExtensionResolver {
 	 * Main entry point for resolving extensions.
 	 *
 	 * @param Extension[] $extensions Initial list of extensions to resolve
-	 * @param EnvInfo     $env_info Environment information
-	 * @param string      $cache_dir Cache directory path
+	 * @param EnvInfo $env_info Environment information
+	 * @param string $cache_dir Cache directory path
 	 *
 	 * @return ResolvedExtensions
 	 * @throws \RuntimeException If resolution fails
 	 */
 	public function resolve( array $extensions, EnvInfo $env_info, string $cache_dir ): ResolvedExtensions {
-		file_put_contents( '/tmp/qit/qit_debug.log', 'ExtensionResolver: Starting resolution for ' . count( $extensions ) . " extensions\n", FILE_APPEND );
+		debug_log( 'ExtensionResolver: Starting resolution for ' . count( $extensions ) . ' extensions' );
 
 		$resolved = new ResolvedExtensions();
 		$pending  = $extensions;
@@ -65,23 +67,30 @@ class ExtensionResolver {
 			$pending       = [];
 
 			foreach ( $current_batch as $extension ) {
+				debug_log( "ExtensionResolver: Processing extension: {$extension->slug} ({$extension->type}) from {$extension->from}" );
+
 				if ( in_array( $extension->slug, $seen, true ) ) {
+					debug_log( "  Skipping already seen extension: {$extension->slug}" );
 					continue;
 				}
 				$seen[] = $extension->slug;
 
 				// Step 1: Resolve source if not fully resolved
 				if ( ! $this->is_source_resolved( $extension ) ) {
+					debug_log( "  Extension source not fully resolved, resolving..." );
 					$this->resolve_extension_source( $extension );
 				}
 
 				// Step 2: Fetch metadata (version, download URL, etc.)
 				try {
-					$this->metadata_fetcher->fetch_metadata( [ $extension ] );
+					if ( in_array( $extension->from, [ 'wporg', 'wccom' ], true ) ) {
+						debug_log( "  Fetching metadata for remote extension" );
+						$this->metadata_fetcher->fetch_metadata( [ $extension ] );
+					}
 				} catch ( \RuntimeException $e ) {
 					// If WPORG metadata fetch fails, retry with source resolution
 					if ( $extension->from === 'wporg' ) {
-						file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionResolver: WPORG metadata fetch failed for '{$extension->slug}': {$e->getMessage()}. Retrying source resolution.\n", FILE_APPEND );
+						debug_log( "  WPORG metadata fetch failed: {$e->getMessage()}. Retrying source resolution.", 'error' );
 						$extension->from = null; // Reset source to force re-resolution
 						$this->resolve_extension_source( $extension );
 						$this->metadata_fetcher->fetch_metadata( [ $extension ] );
@@ -91,16 +100,20 @@ class ExtensionResolver {
 				}
 
 				// Step 3: Check cache and download if needed
+				debug_log( "  Ensuring extension is cached" );
 				$this->cache_manager->ensure_cached( $extension, $cache_dir );
 
 				// Step 4: Add to resolved collection
 				$resolved->add_extension( $extension );
+				debug_log( "  Added extension to resolved collection" );
 
 				// Step 5: Parse dependencies
 				if ( ! empty( $extension->downloaded_source ) ) {
+					debug_log( "  Checking for dependencies" );
 					$dependencies = $this->dependency_resolver->resolve_dependencies( $extension );
 					foreach ( $dependencies as $dep ) {
 						if ( ! in_array( $dep->slug, $seen, true ) ) {
+							debug_log( "    Found dependency: {$dep->slug}" );
 							$pending[] = $dep;
 						}
 					}
@@ -108,7 +121,7 @@ class ExtensionResolver {
 			}
 		}
 
-		file_put_contents( '/tmp/qit/qit_debug.log', 'ExtensionResolver: Resolved ' . $resolved->count() . " total extensions\n", FILE_APPEND );
+		debug_log( 'ExtensionResolver: Resolved ' . $resolved->count() . ' total extensions' );
 
 		return $resolved;
 	}
@@ -121,8 +134,8 @@ class ExtensionResolver {
 			return false;
 		}
 
-		// Non-remote sources are resolved if 'from' is set
-		if ( in_array( $extension->from, [ 'directory', 'zip', 'url', 'build' ], true ) ) {
+		// Local and non-remote sources are resolved if 'from' is set
+		if ( in_array( $extension->from, [ 'local', 'url', 'build' ], true ) ) {
 			return true;
 		}
 
@@ -134,61 +147,85 @@ class ExtensionResolver {
 	 * Resolve extension source by querying marketplaces.
 	 */
 	protected function resolve_extension_source( Extension $extension ): void {
-		file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionResolver: Resolving source for '{$extension->slug}'\n", FILE_APPEND );
+		debug_log( "ExtensionResolver: Resolving source for '{$extension->slug}'" );
 
 		// Handle explicit source types
 		if ( ! empty( $extension->from ) ) {
-			if ( in_array( $extension->from, [ 'directory', 'zip', 'url', 'build' ], true ) ) {
+			if ( in_array( $extension->from, [ 'local', 'url', 'build' ], true ) ) {
+				debug_log( "  Extension has explicit local/non-remote source: {$extension->from}" );
+
 				return; // Local sources are resolved
 			}
 			if ( in_array( $extension->from, [ 'wporg', 'wccom' ], true ) && ! empty( $extension->source ) && ! empty( $extension->version ) ) {
+				debug_log( "  Extension has complete remote source information" );
+
 				return; // Remote sources with metadata are resolved
 			}
 		}
 
 		// Infer source for unspecified or incomplete sources (e.g., SUT without source)
+		debug_log( "  Attempting to infer source from marketplaces" );
+
 		try {
 			if ( $extension->type === 'plugin' && $this->wporg_extensions_list->is_wporg_plugin( $extension->slug ) ) {
 				$extension->from = 'wporg';
-				file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionResolver: Found '{$extension->slug}' on WPORG\n", FILE_APPEND );
+				debug_log( "  Found '{$extension->slug}' on WordPress.org (plugin)" );
 
 				return;
 			}
 			if ( $extension->type === 'theme' && $this->wporg_extensions_list->is_wporg_theme( $extension->slug ) ) {
 				$extension->from = 'wporg';
-				file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionResolver: Found '{$extension->slug}' on WPORG\n", FILE_APPEND );
+				debug_log( "  Found '{$extension->slug}' on WordPress.org (theme)" );
 
 				return;
 			}
 		} catch ( \Exception $e ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionResolver: WPORG check failed for '{$extension->slug}': {$e->getMessage()}\n", FILE_APPEND );
+			debug_log( "  WordPress.org check failed: {$e->getMessage()}", 'error' );
 		}
 
 		try {
 			$extension->wccom_id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $extension->slug );
 			$extension->from     = 'wccom';
-			file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionResolver: Found '{$extension->slug}' on WCCOM\n", FILE_APPEND );
+			debug_log( "  Found '{$extension->slug}' on WooCommerce.com" );
 
 			return;
 		} catch ( \UnexpectedValueException $e ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionResolver: WCCOM check failed for '{$extension->slug}': {$e->getMessage()}\n", FILE_APPEND );
+			debug_log( "  WooCommerce.com check failed: {$e->getMessage()}", 'error' );
 		}
 
-		// Local sources
-		if ( ! empty( $extension->directory ) && is_dir( $extension->directory ) ) {
-			$extension->from = 'directory';
+		// Check local sources
+		if ( ! empty( $extension->directory ) || ! empty( $extension->source ) ) {
+			debug_log( "  Checking local sources" );
 
-			return;
-		}
-
-		if ( ! empty( $extension->source ) ) {
-			if ( is_file( $extension->source ) && pathinfo( $extension->source, PATHINFO_EXTENSION ) === 'zip' ) {
-				$extension->from = 'zip';
+			// Check if it's a directory
+			if ( ! empty( $extension->directory ) && is_dir( $extension->directory ) ) {
+				$extension->from = 'local';
+				debug_log( "  Found local directory: {$extension->directory}" );
 
 				return;
 			}
-			if ( filter_var( $extension->source, FILTER_VALIDATE_URL ) ) {
+
+			// Check if source is a directory
+			if ( ! empty( $extension->source ) && is_string( $extension->source ) && is_dir( $extension->source ) ) {
+				$extension->from      = 'local';
+				$extension->directory = $extension->source;
+				debug_log( "  Found local directory (from source): {$extension->source}" );
+
+				return;
+			}
+
+			// Check if it's a local zip file
+			if ( ! empty( $extension->source ) && is_string( $extension->source ) && is_file( $extension->source ) && pathinfo( $extension->source, PATHINFO_EXTENSION ) === 'zip' ) {
+				$extension->from = 'local';
+				debug_log( "  Found local zip file: {$extension->source}" );
+
+				return;
+			}
+
+			// Check if it's a URL
+			if ( ! empty( $extension->source ) && filter_var( $extension->source, FILTER_VALIDATE_URL ) ) {
 				$extension->from = 'url';
+				debug_log( "  Found URL source: {$extension->source}" );
 
 				return;
 			}
