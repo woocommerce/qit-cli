@@ -3,8 +3,8 @@
         "type": "plugin",
         "slug": "test-plugin",
         "source": {
-            "type": "directory",
-            "path": "\/tmp\/qit_test_fixed\/plugin"
+            "type": "local",
+            "path": "\/tmp\/qit_test_fixed\/"
         }
     },
     "environments": {
@@ -14,30 +14,16 @@
             "plugins": [
                 {
                     "slug": "woocommerce",
-                    "type": "plugin",
-                    "source": {
-                        "type": "wccom",
-                        "version": "stable"
-                    }
+                    "from": "wccom"
                 },
                 {
                     "slug": "test-plugin",
-                    "type": "plugin",
-                    "source": {
-                        "type": "directory",
-                        "path": "\/tmp\/qit_test_fixed\/plugin"
-                    }
+                    "from": "local",
+                    "path": ".\/"
                 }
             ],
             "themes": [
-                {
-                    "slug": "storefront",
-                    "type": "theme",
-                    "source": {
-                        "type": "wporg",
-                        "version": "stable"
-                    }
-                }
+                "storefront"
             ]
         }
     }

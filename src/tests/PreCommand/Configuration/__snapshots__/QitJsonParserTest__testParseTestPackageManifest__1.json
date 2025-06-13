@@ -11,7 +11,7 @@
         "e2e": {
             "default": {
                 "test_packages": [
-                    "woocommerce\/e2e:stable"
+                    ".\/test-package.json"
                 ]
             }
         }

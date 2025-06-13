@@ -7,12 +7,12 @@
             "path": "\/tmp\/qit_test_fixed\/"
         }
     },
-    "test_types": {
-        "e2e": {
-            "default": {
-                "test_packages": [
-                    "woocommerce\/e2e:stable"
-                ]
+    "environments": {
+        "default": {
+            "php_version": "8.0",
+            "env_vars": {
+                "QIT_DEBUG": "true",
+                "WP_DEBUG": "false"
             }
         }
     }

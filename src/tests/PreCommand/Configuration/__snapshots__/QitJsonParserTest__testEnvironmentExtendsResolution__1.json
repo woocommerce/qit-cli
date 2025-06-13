@@ -1,0 +1,24 @@
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "local",
+            "path": "\/tmp\/qit_test_fixed\/"
+        }
+    },
+    "environments": {
+        "base": {
+            "php_version": "8.2",
+            "wp_version": "stable",
+            "woo_version": "stable",
+            "object_cache": true
+        },
+        "legacy": {
+            "php_version": "7.4",
+            "wp_version": "stable",
+            "woo_version": "6.1",
+            "object_cache": true
+        }
+    }
+}

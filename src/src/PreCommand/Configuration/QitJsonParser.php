@@ -2,6 +2,11 @@
 
 namespace QIT_CLI\PreCommand\Configuration;
 
+use Opis\JsonSchema\{
+	Validator,
+	ValidationResult,
+	Errors\ErrorFormatter,
+};
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Application;
 
@@ -10,1009 +15,669 @@ class QitJsonParser {
 	protected string $config_file;
 	protected string $root_path;
 	protected Application $console_application;
+	protected Validator $validator;
+	protected ErrorFormatter $error_formatter;
+	protected array $schema_cache = [];
 
 	public function __construct( string $config_file, Application $console_application ) {
 		$this->config_file         = $config_file;
 		$this->console_application = $console_application;
 		$this->root_path           = dirname( $config_file );
-		$this->parsed_config       = $this->parse_config( $config_file, [], true );
+
+		// Initialize validator and error formatter
+		$this->init_validator();
+
+		// Parse configuration (always as qit.json)
+		$this->parsed_config = $this->parse_qit_config( $config_file );
 	}
 
-	protected function parse_config( string $config_file, array $parsed_files, bool $is_top_level = false ): array {
-		if ( in_array( $config_file, $parsed_files, true ) ) {
-			throw new \RuntimeException( "Circular dependency detected in qit.json configuration: $config_file" );
-		}
+	/**
+	 * Initialize the JSON Schema validator
+	 */
+	protected function init_validator(): void {
+		$this->validator = new Validator();
+		$this->validator->setMaxErrors( 10 );
+		$this->validator->setStopAtFirstError( false );
+		$this->error_formatter = new ErrorFormatter();
 
-		$parsed_files[] = $config_file;
+		// Get the schema directory from App src_dir
+		$schema_dir = \QIT_CLI\App::getVar( 'src_dir' ) . '/PreCommand/Schemas';
 
-		if ( ! file_exists( $config_file ) ) {
-			throw new \RuntimeException( "Config file '$config_file' not found." );
-		}
-
-		$contents   = file_get_contents( $config_file );
-		$raw_config = json_decode( $contents, true );
-
-		if ( json_last_error() !== JSON_ERROR_NONE || ! is_array( $raw_config ) ) {
-			throw new \RuntimeException( 'Invalid qit.json format. Must be a JSON object.' );
-		}
-
-		$root_path     = dirname( $config_file );
-		$raw_config    = $this->resolve_paths( $raw_config, $root_path );
-		$parsed_config = [];
-
-		if ( isset( $raw_config['sut'] ) ) {
-			$parsed_config['sut'] = $this->parse_sut( $raw_config['sut'], [
-				'root_path' => $root_path,
-				'context'   => 'sut.source',
-			] );
-		}
-
-		if ( isset( $parsed_config['sut'] ) && isset( $raw_config['environments'] ) ) {
-			$this->validate_sut_consistency( $parsed_config['sut'], $raw_config['environments'] );
-		}
-
-		foreach ( $raw_config as $key => $value ) {
-			if ( $key === 'extends' || $key === 'sut' ) {
-				continue;
-			}
-			switch ( $key ) {
-				case '$schema':
-					$parsed_config[ $key ] = $this->parse_simple_value( $value, $key );
-					break;
-				case 'test_types':
-					$parsed_config[ $key ] = $this->parse_test_types( $value, $raw_config['test_packages'] ?? [] );
-					break;
-				case 'test_groups':
-					$parsed_config[ $key ] = $this->parse_test_groups( $value, [ 'test_types' => $parsed_config['test_types'] ?? [] ] );
-					break;
-				case 'environments':
-					$parsed_config[ $key ] = $this->parse_environments( $value, [
-						'test_packages' => $raw_config['test_packages'] ?? [],
-						'root_path'     => $root_path,
-					], $parsed_config['sut'] ?? null );
-					break;
-				case 'test_packages':
-					$parsed_config[ $key ] = $this->parse_test_packages( $value, [ 'root_path' => $root_path ] );
-					break;
-				default:
-					throw new \RuntimeException( "Unknown configuration $key in qit.json." );
-			}
-		}
-
-		if ( isset( $raw_config['extends'] ) ) {
-			$base_file     = $this->resolve_extends_path( $raw_config['extends'], $config_file );
-			$base_config   = $this->parse_config( $base_file, $parsed_files, false );
-			$parsed_config = $this->merge_configs( $base_config, $parsed_config, $raw_config );
-		}
-
-		if ( $is_top_level && ! isset( $parsed_config['sut'] ) ) {
-			throw new \RuntimeException( 'SUT configuration is required.' );
-		}
-
-		return $parsed_config;
+		// Load and cache schemas
+		$this->schema_cache['qit']          = $this->load_schema_file( $schema_dir . '/qit-schema.json' );
+		$this->schema_cache['test-package'] = $this->load_schema_file( $schema_dir . '/test-package-manifest-schema.json' );
 	}
 
-	protected function parse_simple_value( $value, string $key ) {
-		if ( ! is_scalar( $value ) ) {
-			throw new \RuntimeException( "'$key' in qit.json must be a scalar." );
+	/**
+	 * Load schema file and return as string
+	 */
+	protected function load_schema_file( string $schema_file ): string {
+		if ( ! file_exists( $schema_file ) ) {
+			throw new \RuntimeException( "Schema file not found: $schema_file" );
 		}
 
-		return $value;
+		$schema_content = file_get_contents( $schema_file );
+
+		// Validate it's valid JSON
+		json_decode( $schema_content );
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			throw new \RuntimeException( "Invalid schema JSON in $schema_file: " . json_last_error_msg() );
+		}
+
+		return $schema_content;
 	}
 
-	protected function parse_sut( $value, array $context = [] ): array {
-		file_put_contents( '/tmp/qit/qit_debug.log', 'SutParser: Parsing SUT config: ' . print_r( $value, true ) . "\n", FILE_APPEND );
+	/**
+	 * Parse a QIT configuration file
+	 */
+	protected function parse_qit_config( string $config_file ): array {
+		// Step 1: Load and validate as QIT config
+		$raw_config = $this->load_and_validate_json( $config_file, 'qit' );
 
-		if ( ! is_array( $value ) ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "SutParser: SUT must be an array\n", FILE_APPEND );
-			throw new \RuntimeException( 'SUT configuration must be an array.' );
+		// Step 2: Resolve all extends to build complete configuration
+		$resolved_config = $this->resolve_qit_configuration( $raw_config, $config_file );
+
+		// Step 3: Validate the final resolved configuration
+		$this->validate_json_against_schema( $resolved_config, 'qit', 'resolved QIT configuration' );
+
+		// Step 4: Ensure required properties exist in resolved configuration
+		if ( ! isset( $resolved_config['sut'] ) ) {
+			throw new \RuntimeException( "The 'sut' property is required in the final configuration" );
 		}
 
-		if ( ! isset( $value['type'] ) || ! is_string( $value['type'] ) ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "SutParser: SUT missing type\n", FILE_APPEND );
-			throw new \RuntimeException( 'SUT must contain a "type" key with a string value.' );
-		}
+		// Step 5: Apply business logic transformations
+		$final_config = $this->apply_qit_business_logic( $resolved_config, dirname( $config_file ) );
 
-		$valid_types = [ 'plugin', 'theme' ];
-		if ( ! in_array( $value['type'], $valid_types, true ) ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "SutParser: Invalid SUT type: {$value['type']}\n", FILE_APPEND );
-			throw new \RuntimeException( "Invalid SUT type '{$value['type']}'. Must be one of: " . implode( ', ', $valid_types ) );
-		}
-
-		if ( ! isset( $value['slug'] ) || ! is_string( $value['slug'] ) || empty( $value['slug'] ) ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "SutParser: SUT missing or empty slug\n", FILE_APPEND );
-			throw new \RuntimeException( 'SUT must contain a non-empty "slug" string.' );
-		}
-
-		if ( ! isset( $value['source'] ) || ! is_array( $value['source'] ) ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "SutParser: SUT '{$value['slug']}' missing source\n", FILE_APPEND );
-			throw new \RuntimeException( "SUT '{$value['slug']}' must specify a 'source' object." );
-		}
-
-		$value['source'] = $this->parse_source( $value['source'], [
-			'slug'    => $value['slug'],
-			'context' => 'sut.source',
-		] );
-
-		file_put_contents( '/tmp/qit/qit_debug.log', "SutParser: SUT parsing completed\n", FILE_APPEND );
-
-		return $value;
+		return $final_config;
 	}
 
-	protected function parse_source( $value, array $context = [] ): array {
-		file_put_contents( '/tmp/qit/qit_debug.log', 'SourceParser: Parsing source config: ' . print_r( $value, true ) . "\n", FILE_APPEND );
-
-		if ( ! is_array( $value ) ) {
-			throw new \RuntimeException( "Source config must be an array for {$context['context']}." );
+	/**
+	 * Load JSON and validate against specific schema
+	 */
+	protected function load_and_validate_json( string $file_path, string $schema_type ): array {
+		if ( ! file_exists( $file_path ) ) {
+			throw new \RuntimeException( "File not found: $file_path" );
 		}
 
-		if ( ! isset( $value['type'] ) || ! is_string( $value['type'] ) ) {
-			throw new \RuntimeException( "Source must contain a 'type' key with a string value for {$context['context']}." );
+		$contents = file_get_contents( $file_path );
+		$data     = json_decode( $contents );
+
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			throw new \RuntimeException( "Invalid JSON in $file_path: " . json_last_error_msg() );
 		}
 
-		$valid_types = [ 'build', 'directory', 'url', 'zip', 'wccom', 'wporg' ];
-		if ( ! in_array( $value['type'], $valid_types, true ) ) {
-			throw new \RuntimeException( "Invalid source type '{$value['type']}' for {$context['context']}. Must be one of: " . implode( ', ', $valid_types ) );
+		// Debug: log the data being validated
+		file_put_contents( '/tmp/qit/qit_debug.log', "=== Loading and validating file: $file_path ===\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit/qit_debug.log', "Data to validate: " . json_encode( $data, JSON_PRETTY_PRINT ) . "\n", FILE_APPEND );
+
+		// Validate against the schema
+		file_put_contents( '/tmp/qit/qit_debug.log', "Validating $file_path against schema: $schema_type\n", FILE_APPEND );
+
+		if ( ! isset( $this->schema_cache[ $schema_type ] ) ) {
+			throw new \RuntimeException( "Unknown schema type: $schema_type" );
 		}
 
-		$context_name = $context['context'] ?? 'unknown';
+		// Parse the schema string to an object
+		$schema_object = json_decode( $this->schema_cache[ $schema_type ] );
 
-		switch ( $value['type'] ) {
-			case 'build':
-				if ( ! isset( $value['command'] ) || ! is_string( $value['command'] ) || empty( $value['command'] ) ) {
-					throw new \RuntimeException( 'Build source must contain a non-empty "command" string' );
-				}
-				if ( ! isset( $value['output'] ) || ! is_string( $value['output'] ) || empty( $value['output'] ) ) {
-					throw new \RuntimeException( "Build source must contain a non-empty 'output' string for {$context_name}." );
-				}
-				if ( ! preg_match( '/\.zip$/', $value['output'] ) ) {
-					throw new \RuntimeException( "Build source output must be a .zip file for {$context_name}." );
-				}
-				break;
-			case 'directory':
-				if ( ! isset( $value['path'] ) || ! is_string( $value['path'] ) || empty( $value['path'] ) ) {
-					throw new \RuntimeException( "Directory source must contain a non-empty 'path' string for {$context_name}." );
-				}
-				if ( ! is_dir( $value['path'] ) ) {
-					throw new \RuntimeException( "Directory does not exist: {$value['path']}" );
-				}
-				break;
-			case 'url':
-				if ( ! isset( $value['url'] ) || ! is_string( $value['url'] ) || empty( $value['url'] ) ) {
-					throw new \RuntimeException( "URL source must contain a non-empty 'url' string for {$context_name}." );
-				}
-				if ( ! preg_match( '/^https?:\/\/.+\/.+\.zip$/', $value['url'] ) ) {
-					throw new \RuntimeException( "URL source must be a valid HTTPS URL ending in .zip for {$context_name}." );
-				}
-				break;
-			case 'zip':
-				if ( ! isset( $value['path'] ) || ! is_string( $value['path'] ) || empty( $value['path'] ) ) {
-					throw new \RuntimeException( "Zip source must contain a non-empty 'path' string for {$context_name}." );
-				}
-				if ( ! file_exists( $value['path'] ) ) {
-					throw new \RuntimeException( "Zip file does not exist: {$value['path']}" );
-				}
-				if ( ! preg_match( '/\.zip$/', $value['path'] ) ) {
-					throw new \RuntimeException( "Zip source path must be a .zip file for {$context_name}." );
-				}
-				break;
-			case 'wccom':
-			case 'wporg':
-				if ( ! isset( $context['slug'] ) || ! is_string( $context['slug'] ) || empty( $context['slug'] ) ) {
-					throw new \RuntimeException( "{$value['type']} source must have a non-empty 'slug' from context for {$context_name}." );
-				}
-				if ( isset( $value['version'] ) && ( ! is_string( $value['version'] ) || empty( $value['version'] ) ) ) {
-					throw new \RuntimeException( "If version is provided for {$value['type']} source, it must be a non-empty string for {$context_name}." );
-				}
-				break;
+		// Debug: verify schema was parsed correctly
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			file_put_contents( '/tmp/qit/qit_debug.log', "ERROR: Failed to parse schema JSON: " . json_last_error_msg() . "\n", FILE_APPEND );
+			throw new \RuntimeException( "Failed to parse schema JSON: " . json_last_error_msg() );
 		}
 
-		return $value;
+		file_put_contents( '/tmp/qit/qit_debug.log', "Schema object type: " . gettype( $schema_object ) . "\n", FILE_APPEND );
+		file_put_contents( '/tmp/qit/qit_debug.log', "Schema properties: " . json_encode( array_keys( get_object_vars( $schema_object ) ), JSON_PRETTY_PRINT ) . "\n", FILE_APPEND );
+
+		/** @var ValidationResult $result */
+		$result = $this->validator->validate( $data, $schema_object );
+
+		file_put_contents( '/tmp/qit/qit_debug.log', "Validation result: " . ( $result->isValid() ? 'VALID' : 'INVALID' ) . "\n", FILE_APPEND );
+
+		if ( ! $result->isValid() ) {
+			$errors = $this->error_formatter->format( $result->error() );
+
+			// Debug: log raw errors
+			file_put_contents( '/tmp/qit/qit_debug.log', "Raw validation errors: " . json_encode( $errors, JSON_PRETTY_PRINT ) . "\n", FILE_APPEND );
+
+			$error_msg = $this->format_validation_errors( $errors, $file_path );
+			throw new \RuntimeException( "Schema validation failed for $file_path:\n$error_msg" );
+		}
+
+		// Return as array for processing, but preserve object structure
+		// Use a custom JSON decoder that preserves empty objects
+		return $this->json_decode_preserve_objects( $contents );
 	}
 
-	protected function parse_test_types( $value, array $custom_test_packages = [] ): array {
-		if ( ! is_array( $value ) ) {
-			throw new \RuntimeException( 'Test types must be an array.' );
+	/**
+	 * Validate array data against schema
+	 */
+	protected function validate_json_against_schema( array $data, string $schema_type, string $context ): void {
+		// Convert to object for validation
+		$data_object = json_decode( json_encode( $data ) );
+
+		if ( ! isset( $this->schema_cache[ $schema_type ] ) ) {
+			throw new \RuntimeException( "Unknown schema type: $schema_type" );
 		}
 
-		foreach ( $value as $test_type => $profiles ) {
-			if ( ! is_string( $test_type ) ) {
-				throw new \RuntimeException( 'Test type must be a string.' );
-			}
-			if ( ! is_array( $profiles ) ) {
-				throw new \RuntimeException( "Profiles for test type '$test_type' must be an array." );
-			}
-			$valid_options = $this->get_valid_options_for_test_type( $test_type );
-			$valid_options = array_merge( $valid_options, [ 'pre_test_build', 'run', 'environment', 'extends', 'tweaks', 'php_version' ] );
-			foreach ( $profiles as $profile => $config ) {
-				if ( ! is_string( $profile ) ) {
-					throw new \RuntimeException( "Profile for test type '$test_type' must be a string." );
-				}
-				if ( ! is_array( $config ) ) {
-					throw new \RuntimeException( "Configuration for '$test_type:$profile' must be an array." );
-				}
+		// Parse the schema string to an object
+		$schema_object = json_decode( $this->schema_cache[ $schema_type ] );
 
-				foreach ( $config as $config_key => $config_value ) {
-					if ( ! in_array( $config_key, $valid_options ) ) {
-						throw new \RuntimeException( "Invalid key '$config_key' in profile '$test_type:$profile'. Must be one of: " . implode( ', ', $valid_options ) );
-					}
-					if ( $config_key === 'environment' && ! is_string( $config_value ) ) {
-						throw new \RuntimeException( "Environment in '$test_type:$profile' must be a string." );
-					}
-					if ( $config_key === 'extends' && ! is_string( $config_value ) ) {
-						throw new \RuntimeException( "Extends in '$test_type:$profile' must be a string." );
-					}
-					if ( $config_key === 'php_version' && ( ! is_string( $config_value ) || ! preg_match( '/^[0-9]+\.[0-9]+(\.[0-9]+)?$/', $config_value ) ) ) {
-						throw new \RuntimeException( "Invalid php_version in '$test_type:$profile'. Must be a valid PHP version string (e.g., '8.4')." );
-					}
-					if ( $config_key === 'pre_test_build' ) {
-						if ( ! is_array( $config_value ) || ! isset( $config_value['command'] ) || ! is_string( $config_value['command'] ) || ! isset( $config_value['output'] ) || ! is_string( $config_value['output'] ) ) {
-							throw new \RuntimeException( "Invalid pre_test_build in '$test_type:$profile'. Must be an array with 'command' and 'output' keys, both containing strings." );
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			throw new \RuntimeException( "Failed to parse schema JSON: " . json_last_error_msg() );
+		}
+
+		/** @var ValidationResult $result */
+		$result = $this->validator->validate( $data_object, $schema_object );
+
+		if ( ! $result->isValid() ) {
+			$errors    = $this->error_formatter->format( $result->error() );
+			$error_msg = $this->format_validation_errors( $errors, $context );
+			throw new \RuntimeException( "Validation failed for $context:\n$error_msg" );
+		}
+	}
+
+	/**
+	 * Prepare data for validation by converting empty arrays to objects where appropriate
+	 */
+	protected function prepare_data_for_validation( array $data ) {
+		// Convert to JSON and back to object to get proper structure
+		$json   = json_encode( $data );
+		$object = json_decode( $json );
+
+		// Fix known empty arrays that should be objects
+		if ( isset( $object->test_types ) ) {
+			foreach ( $object->test_types as $type => $profiles ) {
+				if ( is_object( $profiles ) ) {
+					foreach ( $profiles as $profile_name => $profile_config ) {
+						// If it's an empty array, cast to object
+						if ( is_array( $profile_config ) && empty( $profile_config ) ) {
+							$object->test_types->$type->$profile_name = new \stdClass();
 						}
-					}
-					if ( $config_key === 'run' ) {
-						if ( ! is_array( $config_value ) || ! isset( $config_value['test_packages'] ) || ! is_array( $config_value['test_packages'] ) ) {
-							throw new \RuntimeException( "run in '$test_type:$profile' must be an array with a 'test_packages' array." );
-						}
-						foreach ( $config_value['test_packages'] as $index => $test_package ) {
-							if ( ! is_string( $test_package ) ) {
-								throw new \RuntimeException( "Test package at index $index in '$test_type:$profile' must be a string." );
-							}
-							$parts = explode( '/', $test_package, 2 );
-							if ( count( $parts ) === 2 ) {
-								[ $package_source, $package_name ] = $parts;
-								$name_parts                        = explode( '@', $package_name, 2 );
-								$package_name_without_version      = $name_parts[0];
-								$package_version                   = $name_parts[1] ?? null;
-
-								if ( $package_source === 'local' ) {
-									if ( $package_version ) {
-										throw new \RuntimeException( "Versioned reference '$test_package' in '$test_type:$profile' is not supported for local test packages. Use 'local/{$package_name_without_version}'." );
-									}
-									$found = false;
-									foreach ( $custom_test_packages as $package ) {
-										if ( is_array( $package ) &&
-											isset( $package['type'] ) && $package['type'] === $test_type &&
-											isset( $package['name'] ) && $package['name'] === $package_name_without_version ) {
-											$found = true;
-											break;
-										}
-									}
-									if ( ! $found ) {
-										throw new \RuntimeException( "Test package '$test_package' in '$test_type:$profile' not found in test_packages configuration. Ensure it is defined with matching type and name." );
-									}
-								} elseif ( ! isset( $custom_test_packages[ $package_source ][ $package_name_without_version ] ) ) {
-									throw new \RuntimeException( "Test package '$test_package' in '$test_type:$profile' not found in test_packages." );
-								}
-							}
-						}
-					}
-					if ( $config_key === 'tweaks' ) {
-						if ( ! is_array( $config_value ) ) {
-							throw new \RuntimeException( "tweaks in '$test_type:$profile' must be an array." );
-						}
-						if ( isset( $config_value['skip'] ) ) {
-							if ( ! is_array( $config_value['skip'] ) ) {
-								throw new \RuntimeException( "tweaks.skip in '$test_type:$profile' must be an array." );
-							}
-							foreach ( $config_value['skip'] as $index => $skip_item ) {
-								if ( ! is_string( $skip_item ) ) {
-									throw new \RuntimeException( "Skip item at index $index in tweaks for '$test_type:$profile' must be a string." );
-								}
-							}
-						}
-					}
-				}
-
-				if ( $test_type === 'e2e' && ! isset( $config['run']['test_packages'] ) ) {
-					throw new \RuntimeException( "run.test_packages must be set for '$test_type:$profile'." );
-				}
-			}
-		}
-
-		return $this->resolve_extends( $value, 'test profile' );
-	}
-
-	protected function parse_test_groups( $value, array $context = [] ): array {
-		if ( ! is_array( $value ) ) {
-			throw new \RuntimeException( 'Groups must be an array.' );
-		}
-
-		$test_types = $context['test_types'] ?? [];
-
-		foreach ( $value as $group_name => $test_refs ) {
-			if ( ! is_string( $group_name ) ) {
-				throw new \RuntimeException( 'Group name must be a string.' );
-			}
-			if ( ! is_array( $test_refs ) ) {
-				throw new \RuntimeException( "Test references for group '$group_name' must be an array." );
-			}
-			if ( empty( $test_refs ) ) {
-				throw new \RuntimeException( "Test references for group '$group_name' cannot be empty." );
-			}
-			$seen_refs = [];
-			foreach ( $test_refs as $test_type => $profiles ) {
-				if ( ! is_string( $test_type ) ) {
-					throw new \RuntimeException( "Test type in group '$group_name' must be a string." );
-				}
-				if ( ! is_array( $profiles ) ) {
-					throw new \RuntimeException( "Profiles for test type '$test_type' in group '$group_name' must be an array." );
-				}
-				if ( ! isset( $test_types[ $test_type ] ) ) {
-					throw new \RuntimeException( "Test type '$test_type' in group '$group_name' not found in test_types configuration." );
-				}
-				foreach ( $profiles as $profile ) {
-					if ( ! is_string( $profile ) ) {
-						throw new \RuntimeException( "Profile in group '$group_name' for test type '$test_type' must be a string." );
-					}
-					$ref_key = "$test_type.$profile";
-					if ( in_array( $ref_key, $seen_refs ) ) {
-						throw new \RuntimeException( "Duplicate test reference '$ref_key' in group '$group_name'." );
-					}
-					$seen_refs[] = $ref_key;
-					if ( ! isset( $test_types[ $test_type ][ $profile ] ) ) {
-						throw new \RuntimeException( "Test profile '$profile' for type '$test_type' in group '$group_name' not found in test_types configuration." );
 					}
 				}
 			}
 		}
 
-		return $value;
+		return $object;
 	}
 
-	protected function parse_environments( $value, array $context = [], ?array $sut_config = null ): array {
-		if ( ! is_array( $value ) ) {
-			throw new \RuntimeException( 'Environments must be an array.' );
-		}
-
-		$environments  = [];
-		$test_packages = $context['test_packages'] ?? [];
-
-		foreach ( $value as $env_name => $config ) {
-			if ( ! is_string( $env_name ) ) {
-				throw new \RuntimeException( 'Environment name must be a string in environments configuration.' );
-			}
-			if ( ! is_array( $config ) ) {
-				throw new \RuntimeException( "Configuration for environment '$env_name' must be an array." );
-			}
-
-			$parsed_env = [];
-
-			foreach ( $config as $env_key => $env_value ) {
-				switch ( $env_key ) {
-					case 'extends':
-						if ( ! is_string( $env_value ) ) {
-							throw new \RuntimeException( "'extends' in environment '$env_name' must be a string." );
-						}
-						break;
-					case 'php_version':
-						if ( ! is_string( $env_value ) || ! preg_match( '/^[0-9]+\.[0-9]+(\.[0-9]+)?$/', $env_value ) ) {
-							throw new \RuntimeException( "Invalid php_version in environment '$env_name'. Must be a valid PHP version string (e.g., '8.2')." );
-						}
-						$parsed_env[ $env_key ] = $env_value;
-						break;
-					case 'wp_version':
-					case 'woo_version':
-						if ( ! is_string( $env_value ) ) {
-							throw new \RuntimeException( "'$env_key' in environment '$env_name' must be a string." );
-						}
-						$parsed_env[ $env_key ] = $env_value;
-						break;
-					case 'object_cache':
-						if ( ! is_bool( $env_value ) ) {
-							throw new \RuntimeException( "object_cache in environment '$env_name' must be a boolean." );
-						}
-						$parsed_env[ $env_key ] = $env_value;
-						break;
-					case 'env_vars':
-						if ( ! is_array( $env_value ) ) {
-							throw new \RuntimeException( "env_vars in environment '$env_name' must be an array." );
-						}
-						foreach ( $env_value as $var_name => $var_value ) {
-							if ( ! is_string( $var_name ) ) {
-								throw new \RuntimeException( "Environment variable name in '$env_name' must be a string." );
-							}
-							if ( ! is_string( $var_value ) ) {
-								throw new \RuntimeException( "Environment variable value for '$var_name' in '$env_name' must be a string." );
-							}
-						}
-						$parsed_env[ $env_key ] = $env_value;
-						break;
-					case 'plugins':
-					case 'themes':
-						if ( ! is_array( $env_value ) ) {
-							throw new \RuntimeException( "'$env_key' in environment '$env_name' must be an array." );
-						}
-						$parsed_env[ $env_key ] = $this->parse_extensions( $env_value, $env_key, $context, $sut_config, $env_name );
-						break;
-					case 'setup':
-						if ( ! is_array( $env_value ) ) {
-							throw new \RuntimeException( "setup in environment '$env_name' must be an array." );
-						}
-						if ( isset( $env_value['test_packages'] ) ) {
-							if ( ! is_array( $env_value['test_packages'] ) ) {
-								throw new \RuntimeException( "test_packages in setup for environment '$env_name' must be an array." );
-							}
-							foreach ( $env_value['test_packages'] as $index => $test_package ) {
-								if ( ! is_string( $test_package ) ) {
-									throw new \RuntimeException( "Test package at index $index in setup for environment '$env_name' must be a string." );
-								}
-								$parts = explode( ':', $test_package, 2 );
-								if ( count( $parts ) !== 2 ) {
-									throw new \RuntimeException( "Invalid test package format '$test_package' at index $index in setup for environment '$env_name'. Expected 'source:name@version'." );
-								}
-								[ $source, $name_version ] = $parts;
-								$name_parts                = explode( '@', $name_version, 2 );
-								if ( count( $name_parts ) !== 2 ) {
-									throw new \RuntimeException( "Invalid test package name/version '$name_version' at index $index in setup for environment '$env_name'. Expected 'name@version'." );
-								}
-								[ $name ] = $name_parts;
-								$found    = false;
-								foreach ( $test_packages as $pkg ) {
-									if ( $pkg['type'] === $source && $pkg['name'] === $name ) {
-										$found = true;
-										break;
-									}
-								}
-								if ( ! $found ) {
-									throw new \RuntimeException( "Test package '$test_package' at index $index in setup for environment '$env_name' not found in test_packages configuration." );
-								}
-							}
-						}
-						$parsed_env[ $env_key ] = $env_value;
-						break;
-					case 'volumes':
-						if ( ! is_array( $env_value ) ) {
-							throw new \RuntimeException( "volumes in environment '$env_name' must be an array." );
-						}
-						foreach ( $env_value as $volume ) {
-							if ( ! is_string( $volume ) ) {
-								throw new \RuntimeException( "Volume in environment '$env_name' must be a string." );
-							}
-						}
-						$parsed_env[ $env_key ] = $env_value;
-						break;
-					case 'extension_set':
-						if ( ! is_string( $env_value ) ) {
-							throw new \RuntimeException( "extension_set in environment '$env_name' must be a string." );
-						}
-						$parsed_env[ $env_key ] = $env_value;
-						break;
-					default:
-						throw new \RuntimeException( "Unknown key '$env_key' in environment '$env_name' configuration." );
-				}
-			}
-
-			$environments[ $env_name ] = $parsed_env;
-		}
-
-		return $this->resolve_extends( $environments, 'environment' );
-	}
-
-	protected function parse_extensions( array $items, string $type, array $context, ?array $sut_config = null, string $env_name = 'unknown' ): array {
-		$extensions    = [];
-		$type_singular = $type === 'plugins' ? 'plugin' : 'theme';
-
-		foreach ( $items as $index => $item ) {
-			$extension = [];
-
-			if ( is_string( $item ) ) {
-				$extension = [
-					'slug'   => $item,
-					'type'   => $type_singular,
-					'source' => [ 'type' => 'wporg' ],
-				];
-			} elseif ( is_array( $item ) && isset( $item['slug'] ) ) {
-				$extension = [
-					'slug'   => $item['slug'],
-					'type'   => $type_singular,
-					'source' => $this->parse_extension_source( $item, $context, $env_name ),
-				];
-			} else {
-				throw new \RuntimeException( "Invalid $type_singular at index $index in environment '$env_name'" );
-			}
-
-			if ( $sut_config && $extension['slug'] === $sut_config['slug'] ) {
-				$this->validate_extension_sut_consistency( $extension, $sut_config, $type_singular, $env_name );
-			}
-
-			$extensions[] = $extension;
-		}
-
-		return $extensions;
-	}
-
-	protected function parse_extension_source( array $item, array $context, string $env_name ): array {
-		if ( ! isset( $item['source'] ) ) {
-			return [ 'type' => 'wporg' ];
-		}
-
-		$source        = $item['source'];
-		$source_type   = $source['type'] ?? 'wporg';
-		$parsed_source = [ 'type' => $source_type ];
-
-		switch ( $source_type ) {
-			case 'directory':
-				if ( ! isset( $source['path'] ) ) {
-					throw new \RuntimeException( "Extension '{$item['slug']}' has no directory path in environment '$env_name'" );
-				}
-				if ( ! is_dir( $source['path'] ) ) {
-					throw new \RuntimeException( "Directory does not exist: {$source['path']} in environment '$env_name'" );
-				}
-				$parsed_source['path'] = $source['path'];
-				break;
-			case 'zip':
-				if ( ! isset( $source['path'] ) ) {
-					throw new \RuntimeException( "Extension '{$item['slug']}' has no zip path in environment '$env_name'" );
-				}
-				if ( ! file_exists( $source['path'] ) ) {
-					throw new \RuntimeException( "Zip file does not exist: {$source['path']} in environment '$env_name'" );
-				}
-				if ( ! preg_match( '/\.zip$/', $source['path'] ) ) {
-					throw new \RuntimeException( "Zip source path must be a .zip file for '{$item['slug']}' in environment '$env_name'" );
-				}
-				$parsed_source['path'] = $source['path'];
-				break;
-			case 'url':
-				if ( ! isset( $source['url'] ) ) {
-					throw new \RuntimeException( "Extension '{$item['slug']}' has no URL in environment '$env_name'" );
-				}
-				$parsed_source['url'] = $source['url'];
-				break;
-			case 'wporg':
-			case 'wccom':
-				$parsed_source['version'] = $source['version'] ?? 'stable';
-				break;
-			case 'build':
-				// Reuse parse_source for build validation
-				$parsed_source = $this->parse_source( $source, [
-					'slug'    => $item['slug'],
-					'context' => "environment.$env_name.plugins.{$item['slug']}",
-				] );
-				break;
-			default:
-				throw new \RuntimeException( "Invalid source type '$source_type' for extension '{$item['slug']}' in environment '$env_name'. Valid types are: directory, zip, url, wporg, wccom, build." );
-		}
-
-		return $parsed_source;
-	}
-
-	protected function validate_extension_sut_consistency( array $extension, array $sut_config, string $type, string $env_name ): void {
-		if ( $extension['source']['type'] !== $sut_config['source']['type'] ) {
-			throw new \RuntimeException( "SUT configuration mismatch for $type '{$sut_config['slug']}' in environment '$env_name'" );
-		}
-
-		if ( $sut_config['source']['type'] === 'directory' && ( ! isset( $extension['source']['path'] ) || $extension['source']['path'] !== $sut_config['source']['path'] ) ) {
-			throw new \RuntimeException( "SUT path mismatch for $type '{$sut_config['slug']}' in environment '$env_name'" );
-		}
-
-		if ( $sut_config['source']['type'] === 'zip' && ( ! isset( $extension['source']['path'] ) || $extension['source']['path'] !== $sut_config['source']['path'] ) ) {
-			throw new \RuntimeException( "SUT path mismatch for $type '{$sut_config['slug']}' in environment '$env_name'" );
-		}
-
-		if ( $sut_config['source']['type'] === 'build' && (
-				! isset( $extension['source']['command'] ) || $extension['source']['command'] !== $sut_config['source']['command'] ||
-				! isset( $extension['source']['output'] ) || $extension['source']['output'] !== $sut_config['source']['output']
-			) ) {
-			throw new \RuntimeException( "SUT build configuration mismatch for $type '{$sut_config['slug']}' in environment '$env_name'" );
-		}
-	}
-
-	protected function parse_test_packages( $value, array $context = [] ): array {
-		if ( ! is_array( $value ) || empty( $value ) ) {
-			throw new \RuntimeException( 'Test packages must be an array of package definitions.' );
-		}
-
-		$root_path     = $context['root_path'] ?? getcwd();
-		$packages      = [];
-		$seen_packages = [];
-
-		foreach ( $value as $index => $package ) {
-			if ( ! isset( $package['type'], $package['name'], $package['file'] ) ||
-				! is_string( $package['type'] ) || ! is_string( $package['name'] ) || ! is_string( $package['file'] ) ) {
-				throw new \RuntimeException( "Test package at index $index must have 'type', 'name', and 'file' as strings." );
-			}
-
-			if ( isset( $package['extends'] ) && ! is_string( $package['extends'] ) ) {
-				throw new \RuntimeException( "Extends for test package '{$package['type']}:{$package['name']}' must be a string." );
-			}
-
-			$test_type       = $package['type'];
-			$package_name    = $package['name'];
-			$package_version = $package['version'] ?? null;
-			$package_key     = "{$test_type}:{$package_name}" . ( $package_version ? "@{$package_version}" : '' );
-
-			if ( in_array( $package_key, $seen_packages, true ) ) {
-				throw new \RuntimeException( "Duplicate test package definition for '{$test_type}:{$package_name}' in test_packages. Each test package must have a unique type and name combination." );
-			}
-			$seen_packages[] = $package_key;
-
-			$file_path         = $root_path . DIRECTORY_SEPARATOR . $package['file'];
-			$file_dir          = dirname( $file_path );
-			$file_dir_relative = str_replace( $root_path . DIRECTORY_SEPARATOR, '', $file_dir ) . DIRECTORY_SEPARATOR;
-
-			if ( ! file_exists( $file_path ) ) {
-				throw new \RuntimeException( "Test package file '$file_path' for '{$test_type}:{$package_name}' not found. Verify the file path in test_packages configuration." );
-			}
-
-			$contents = file_get_contents( $file_path );
-			$config   = json_decode( $contents, true );
-
-			if ( json_last_error() !== JSON_ERROR_NONE || ! is_array( $config ) ) {
-				throw new \RuntimeException( "Invalid JSON in test package file '$file_path' for '{$test_type}:{$package_name}': " . json_last_error_msg() );
-			}
-
-			if ( ! isset( $config['$schema'] ) || $config['$schema'] !== 'https://qit.woo.com/json-schema/test-package' ) {
-				throw new \RuntimeException( "Test package '{$test_type}:{$package_name}' must have \$schema set to 'https://qit.woo.com/json-schema/test-package'." );
-			}
-
-			if ( ! isset( $config['version'], $config['author'] ) ) {
-				throw new \RuntimeException( "Test package '{$test_type}:{$package_name}' must include 'version' and 'author'." );
-			}
-
-			if ( ! is_string( $config['version'] ) ) {
-				throw new \RuntimeException( "Version for test package '{$test_type}:{$package_name}' must be a string." );
-			}
-			if ( ! is_string( $config['author'] ) && ! is_array( $config['author'] ) ) {
-				throw new \RuntimeException( "Author for test package '{$test_type}:{$package_name}' must be a string or array." );
-			}
-			if ( isset( $config['test_command'] ) && ! is_string( $config['test_command'] ) ) {
-				throw new \RuntimeException( "Test command for test package '{$test_type}:{$package_name}' must be a string." );
-			}
-			if ( isset( $config['env_vars'] ) && ! is_array( $config['env_vars'] ) ) {
-				throw new \RuntimeException( "Environment variables for test package '{$test_type}:{$package_name}' must be an array." );
-			}
-
-			if ( isset( $config['env_vars'] ) ) {
-				foreach ( $config['env_vars'] as $key => &$val ) {
-					if ( is_bool( $val ) ) {
-						$config['env_vars'][ $key ] = $val ? 'true' : 'false';
+	/**
+	 * Clean up empty object markers from the configuration
+	 */
+	protected function clean_empty_object_markers( &$data ): void {
+		if ( is_array( $data ) ) {
+			foreach ( $data as $key => &$value ) {
+				if ( is_array( $value ) ) {
+					// If this array only contains the __empty_object__ marker, replace with empty array
+					if ( count( $value ) === 1 && isset( $value['__empty_object__'] ) && $value['__empty_object__'] === true ) {
+						$data[ $key ] = [];
 					} else {
-						$config['env_vars'][ $key ] = (string) $val;
+						// Recurse into nested arrays
+						$this->clean_empty_object_markers( $value );
 					}
 				}
 			}
+		}
+	}
 
-			if ( isset( $config['extends'] ) ) {
-				throw new \RuntimeException( "Test package '{$test_type}:{$package_name}' must not include 'extends' in standalone file." );
+	/**
+	 * Format validation errors from ErrorFormatter output
+	 */
+	protected function format_validation_errors( $errors, string $context ): string {
+		$output = "In $context:\n";
+
+		// ErrorFormatter returns an object/array where keys are paths and values are arrays of messages
+		foreach ( $errors as $path => $messages ) {
+			// Handle both string and array messages
+			if ( is_string( $messages ) ) {
+				$messages = [ $messages ];
 			}
 
-			if ( isset( $config['lifecycle'] ) ) {
-				foreach ( $config['lifecycle'] as $phase => &$scripts ) {
-					foreach ( $scripts as &$script ) {
-						if ( isset( $script['command'] ) ) {
-							$original_prefix = '';
-							if ( strpos( $script['command'], './' ) === 0 ) {
-								$original_prefix = './';
-							}
+			foreach ( $messages as $message ) {
+				$output .= "  - $path: $message\n";
+			}
+		}
 
-							$path = ltrim( $script['command'], './' );
-							if ( strpos( $path, $file_dir_relative ) === 0 ) {
-								$path = substr( $path, strlen( $file_dir_relative ) );
-							}
-							$script['command'] = $original_prefix . $path;
+		return $output;
+	}
 
-							if ( $original_prefix === './' && ! file_exists( $file_dir . DIRECTORY_SEPARATOR . $path ) ) {
-								throw new \RuntimeException( "Lifecycle script file '{$file_dir}/{$path}' for '{$test_type}:{$package_name}' not found. Verify the file path in lifecycle configuration." );
-							}
-						}
-					}
-					usort( $scripts, function ( $a, $b ) {
-						$priority_a = $a['priority'] ?? 0;
-						$priority_b = $b['priority'] ?? 0;
+	/**
+	 * Resolve QIT configuration with extends
+	 */
+	protected function resolve_qit_configuration( array $config, string $config_file, array $visited = [] ): array {
+		$config_file = realpath( $config_file );
 
-						return $priority_a <=> $priority_b;
-					} );
-				}
+		// Check for circular dependencies
+		if ( in_array( $config_file, $visited, true ) ) {
+			throw new \RuntimeException( "Circular dependency detected: $config_file" );
+		}
+		$visited[] = $config_file;
+
+		// If no extends, return as-is
+		if ( ! isset( $config['extends'] ) ) {
+			return $config;
+		}
+
+		// Load and resolve base configuration
+		$base_path   = $this->resolve_extends_path( $config['extends'], $config_file );
+		$base_config = $this->load_and_validate_json( $base_path, 'qit' );
+		$base_config = $this->resolve_qit_configuration( $base_config, $base_path, $visited );
+
+		// Merge configurations
+		unset( $config['extends'] );
+
+		return $this->deep_merge_qit_configs( $base_config, $config );
+	}
+
+	/**
+	 * Apply QIT-specific business logic
+	 */
+	protected function apply_qit_business_logic( array $config, string $root_path ): array {
+		$processed = $config;
+
+		// Resolve paths
+		$processed = $this->resolve_paths( $processed, $root_path );
+
+		// Process SUT
+		if ( isset( $processed['sut'] ) ) {
+			$processed['sut'] = $this->process_sut( $processed['sut'], $root_path );
+		}
+
+		// Process environments with extends resolution
+		if ( isset( $processed['environments'] ) ) {
+			$processed['environments'] = $this->resolve_environment_extends( $processed['environments'] );
+		}
+
+		// Process test types with extends resolution
+		if ( isset( $processed['test_types'] ) ) {
+			$processed['test_types'] = $this->resolve_test_type_extends( $processed['test_types'] );
+		}
+
+		// Process test packages (load and validate them)
+		if ( isset( $processed['test_packages'] ) ) {
+			$processed['test_packages'] = $this->process_test_packages( $processed['test_packages'], $root_path );
+		}
+
+		// Validate cross-references
+		$this->validate_cross_references( $processed );
+
+		return $processed;
+	}
+
+	/**
+	 * Process test packages - load and validate each one
+	 */
+	protected function process_test_packages( array $package_definitions, string $root_path ): array {
+		$processed = [];
+
+		foreach ( $package_definitions as $package_def ) {
+			if ( ! isset( $package_def['type'], $package_def['name'], $package_def['file'] ) ) {
+				throw new \RuntimeException( "Test package definition must have 'type', 'name', and 'file'" );
 			}
 
-			if ( isset( $config['mu_plugins'] ) ) {
-				foreach ( $config['mu_plugins'] as &$plugin ) {
-					$original_prefix = '';
-					if ( strpos( $plugin, './' ) === 0 ) {
-						$original_prefix = './';
-					}
+			$file_path = $this->normalize_path( $root_path . '/' . $package_def['file'] );
 
-					$path = ltrim( $plugin, './' );
-					if ( strpos( $path, $file_dir_relative ) === 0 ) {
-						$path = substr( $path, strlen( $file_dir_relative ) );
-					}
-					$plugin = $original_prefix . $path;
-				}
+			// Load and validate test package manifest
+			$package_config = $this->load_and_validate_json( $file_path, 'test-package' );
+
+			// Apply test package specific processing
+			$package_config = $this->process_test_package_manifest( $package_config, dirname( $file_path ) );
+
+			// Store processed package
+			if ( ! isset( $processed[ $package_def['type'] ] ) ) {
+				$processed[ $package_def['type'] ] = [];
 			}
 
-			if ( isset( $config['test_results'] ) ) {
-				foreach ( $config['test_results'] as &$result ) {
-					$original_prefix = '';
-					if ( strpos( $result, './' ) === 0 ) {
-						$original_prefix = './';
-					}
-
-					$path = ltrim( $result, './' );
-					if ( strpos( $path, $file_dir_relative ) === 0 ) {
-						$path = substr( $path, strlen( $file_dir_relative ) );
-					}
-					$result = $original_prefix . $path;
-				}
-			}
-
-			if ( ! isset( $packages[ $test_type ] ) ) {
-				$packages[ $test_type ] = [];
-			}
-			$packages[ $test_type ][ $package_name ] = [
-				'config'  => $config,
-				'extends' => $package['extends'] ?? null,
+			$processed[ $package_def['type'] ][ $package_def['name'] ] = [
+				'config'     => $package_config,
+				'definition' => $package_def,
+				'file_path'  => $file_path,
 			];
 		}
 
-		return $this->resolve_extends( $packages, 'test package' );
+		return $processed;
 	}
 
-	protected function resolve_extends( array $section, string $section_name ): array {
+	/**
+	 * Process test package manifest
+	 */
+	protected function process_test_package_manifest( array $manifest, string $package_dir ): array {
+		$processed = $manifest;
+
+		// Normalize lifecycle commands
+		if ( isset( $processed['lifecycle'] ) ) {
+			foreach ( $processed['lifecycle'] as $phase => &$phase_config ) {
+				foreach ( [ 'setup', 'teardown', 'run' ] as $hook ) {
+					if ( isset( $phase_config[ $hook ] ) ) {
+						$phase_config[ $hook ] = $this->normalize_lifecycle_commands(
+							$phase_config[ $hook ],
+							$package_dir
+						);
+					}
+				}
+			}
+		}
+
+		// Normalize paths in mu_plugins
+		if ( isset( $processed['mu_plugins'] ) ) {
+			foreach ( $processed['mu_plugins'] as &$plugin ) {
+				$plugin = $this->normalize_relative_path( $plugin, $package_dir );
+			}
+		}
+
+		// Normalize paths in test_results
+		if ( isset( $processed['test_results'] ) ) {
+			foreach ( $processed['test_results'] as $format => &$path ) {
+				$path = $this->normalize_relative_path( $path, $package_dir );
+			}
+		}
+
+		// Convert env_vars to strings
+		if ( isset( $processed['env_vars'] ) ) {
+			foreach ( $processed['env_vars'] as $key => &$value ) {
+				if ( is_bool( $value ) ) {
+					$value = $value ? 'true' : 'false';
+				} else {
+					$value = (string) $value;
+				}
+			}
+		}
+
+		return $processed;
+	}
+
+	/**
+	 * Normalize lifecycle commands
+	 */
+	protected function normalize_lifecycle_commands( $commands, string $base_dir ): array {
+		if ( ! is_array( $commands ) ) {
+			return [];
+		}
+
+		$normalized = [];
+
+		foreach ( $commands as $command ) {
+			if ( is_string( $command ) ) {
+				$normalized[] = $command;
+			} elseif ( is_array( $command ) && isset( $command['command'] ) ) {
+				// Check if command references a file
+				if ( strpos( $command['command'], './' ) === 0 ) {
+					$file_path = $base_dir . '/' . substr( $command['command'], 2 );
+					if ( ! file_exists( $file_path ) ) {
+						throw new \RuntimeException( "Lifecycle script not found: $file_path" );
+					}
+				}
+				$normalized[] = $command;
+			}
+		}
+
+		return $normalized;
+	}
+
+	/**
+	 * Deep merge for QIT configs
+	 */
+	protected function deep_merge_qit_configs( array $base, array $override ): array {
+		$merged = $base;
+
+		foreach ( $override as $key => $value ) {
+			if ( is_array( $value ) && isset( $merged[ $key ] ) && is_array( $merged[ $key ] ) ) {
+				// Keys that should replace rather than merge
+				$replace_keys = [ 'plugins', 'themes', 'volumes', 'env_vars', 'secrets', 'test_packages' ];
+
+				if ( in_array( $key, $replace_keys ) ) {
+					$merged[ $key ] = $value;
+				} else {
+					// Check if this should remain an object (associative array)
+					$is_assoc = function ( $arr ) {
+						if ( empty( $arr ) ) {
+							return true;
+						} // Empty arrays should be treated as objects
+
+						return array_keys( $arr ) !== range( 0, count( $arr ) - 1 );
+					};
+
+					if ( $is_assoc( $value ) && $is_assoc( $merged[ $key ] ) ) {
+						// Recursive merge for associative arrays
+						$merged[ $key ] = $this->deep_merge_qit_configs( $merged[ $key ], $value );
+					} else {
+						// Replace for numeric arrays
+						$merged[ $key ] = $value;
+					}
+				}
+			} else {
+				$merged[ $key ] = $value;
+			}
+		}
+
+		return $merged;
+	}
+
+	/**
+	 * Resolve environment extends
+	 */
+	protected function resolve_environment_extends( array $environments ): array {
 		$resolved = [];
-		$pending  = $section;
+		$pending  = $environments;
 
 		while ( ! empty( $pending ) ) {
-			$resolved_something = false;
+			$progress = false;
 
 			foreach ( $pending as $name => $config ) {
 				if ( ! isset( $config['extends'] ) ) {
 					$resolved[ $name ] = $config;
 					unset( $pending[ $name ] );
-					$resolved_something = true;
-					continue;
-				}
-
-				$base_name = $config['extends'];
-				if ( ! isset( $section[ $base_name ] ) ) {
-					throw new \RuntimeException( "Extended configuration '$base_name' not found in $section_name '$name'." );
-				}
-
-				if ( isset( $resolved[ $base_name ] ) ) {
-					$base_config  = $resolved[ $base_name ];
-					$child_config = $config;
-					unset( $child_config['extends'] );
-					$merged_config     = array_merge( $base_config, $child_config );
-					$resolved[ $name ] = $merged_config;
+					$progress = true;
+				} elseif ( isset( $resolved[ $config['extends'] ] ) ) {
+					$base = $resolved[ $config['extends'] ];
+					unset( $config['extends'] );
+					$resolved[ $name ] = $this->deep_merge_qit_configs( $base, $config );
 					unset( $pending[ $name ] );
-					$resolved_something = true;
+					$progress = true;
 				}
 			}
 
-			if ( ! $resolved_something && ! empty( $pending ) ) {
-				throw new \RuntimeException( "Circular dependency detected in $section_name configurations." );
+			if ( ! $progress && ! empty( $pending ) ) {
+				$names = implode( ', ', array_keys( $pending ) );
+				throw new \RuntimeException( "Circular or missing extends in environments: $names" );
 			}
 		}
 
 		return $resolved;
 	}
 
-	protected function resolve_package_extends( array $config, ?string $extends, string $test_type, string $package_name, array $packages, array $visited ): array {
-		if ( ! $extends ) {
-			unset( $config['$schema'] );
-
-			return $config;
-		}
-
-		if ( strpos( $extends, ':' ) !== false ) {
-			throw new \RuntimeException( "Unsupported external extends reference '$extends' for '{$test_type}:{$package_name}'." );
-		}
-
-		if ( ! is_string( $extends ) ) {
-			throw new \RuntimeException( "Extends for '{$test_type}:{$package_name}' must be a string." );
-		}
-
-		$current_key = "$test_type:$package_name";
-		if ( in_array( $current_key, $visited, true ) ) {
-			throw new \RuntimeException( "Circular dependency detected in test package '{$test_type}:{$package_name}'." );
-		}
-		$visited[] = $current_key;
-
-		if ( ! isset( $packages[ $test_type ][ $extends ] ) ) {
-			throw new \RuntimeException( "Extended package '$extends' not found for '{$test_type}:{$package_name}' in test_packages." );
-		}
-
-		$base_config = $this->resolve_package_extends(
-			$packages[ $test_type ][ $extends ]['config'],
-			$packages[ $test_type ][ $extends ]['extends'],
-			$test_type,
-			$extends,
-			$packages,
-			$visited
-		);
-
-		$merged = $this->merge_package_configs( $base_config, $config );
-
-		if ( ! is_string( $config['version'] ) ) {
-			throw new \RuntimeException( "Version for test package '{$test_type}:{$package_name}' must be a string." );
-		}
-		if ( ! is_string( $config['author'] ) && ! is_array( $config['author'] ) ) {
-			throw new \RuntimeException( "Author for test package '{$test_type}:{$package_name}' must be a string or array." );
-		}
-		$merged['version'] = $config['version'];
-		$merged['author']  = $config['author'];
-		unset( $merged['$schema'] );
-
-		return $merged;
-	}
-
-	protected function merge_package_configs( array $base, array $child ): array {
-		$simple_fields = [ 'test_command', 'description' ];
-		$merged        = $base;
-
-		foreach ( $simple_fields as $field ) {
-			if ( isset( $child[ $field ] ) ) {
-				if ( $field === 'test_command' && ! is_string( $child[ $field ] ) ) {
-					throw new \RuntimeException( 'Test command must be a string.' );
+	/**
+	 * Validate cross-references in the configuration
+	 */
+	protected function validate_cross_references( array $config ): void {
+		// Validate test_types reference existing environments
+		if ( isset( $config['test_types'] ) && isset( $config['environments'] ) ) {
+			foreach ( $config['test_types'] as $type => $profiles ) {
+				foreach ( $profiles as $profile => $settings ) {
+					if ( isset( $settings['environment'] ) && ! isset( $config['environments'][ $settings['environment'] ] ) ) {
+						throw new \RuntimeException(
+							"Environment '{$settings['environment']}' referenced in test type '$type:$profile' not found"
+						);
+					}
 				}
-				$merged[ $field ] = $child[ $field ];
 			}
 		}
 
-		$complex_fields = [ 'lifecycle', 'env_vars', 'test_results', 'mu_plugins', 'required_secrets' ];
-		foreach ( $complex_fields as $field ) {
-			if ( isset( $child[ $field ] ) ) {
-				if ( $field === 'env_vars' && ! is_array( $child[ $field ] ) ) {
-					throw new \RuntimeException( 'Environment variables must be an array.' );
-				}
-				if ( $field === 'env_vars' && is_array( $child[ $field ] ) ) {
-					foreach ( $child[ $field ] as $key => $value ) {
-						if ( is_bool( $value ) ) {
-							$child[ $field ][ $key ] = $value ? 'true' : 'false';
-						} else {
-							$child[ $field ][ $key ] = (string) $value;
+		// Validate groups reference existing test_types and profiles
+		if ( isset( $config['groups'] ) && isset( $config['test_types'] ) ) {
+			foreach ( $config['groups'] as $group => $tests ) {
+				foreach ( $tests as $test_type => $profiles ) {
+					if ( ! isset( $config['test_types'][ $test_type ] ) ) {
+						throw new \RuntimeException( "Test type '$test_type' in group '$group' not found" );
+					}
+					foreach ( $profiles as $profile ) {
+						if ( ! isset( $config['test_types'][ $test_type ][ $profile ] ) ) {
+							throw new \RuntimeException(
+								"Profile '$profile' for test type '$test_type' in group '$group' not found"
+							);
 						}
 					}
 				}
-				if ( ! isset( $base[ $field ] ) ) {
-					$merged[ $field ] = $child[ $field ];
-				} elseif ( is_array( $base[ $field ] ) && is_array( $child[ $field ] ) ) {
-					if ( $field === 'lifecycle' ) {
-						$merged[ $field ] = $this->merge_lifecycle( $base[ $field ], $child[ $field ] );
-					} elseif ( $field === 'required_secrets' ) {
-						$merged[ $field ] = array_unique( array_merge( $base[ $field ], $child[ $field ] ) );
-					} else {
-						$merged[ $field ] = array_replace_recursive( $base[ $field ], $child[ $field ] );
+			}
+		}
+
+		// Validate test package references in test_types
+		if ( isset( $config['test_types'] ) ) {
+			foreach ( $config['test_types'] as $type => $profiles ) {
+				foreach ( $profiles as $profile => $settings ) {
+					if ( isset( $settings['test_packages'] ) ) {
+						foreach ( $settings['test_packages'] as $package_ref ) {
+							$this->validate_test_package_reference( $package_ref, $config['test_packages'] ?? [] );
+						}
 					}
-				} else {
-					$merged[ $field ] = $child[ $field ];
 				}
 			}
 		}
-
-		return $merged;
 	}
 
-	protected function merge_lifecycle( array $base, array $child ): array {
-		$merged = $base;
-		foreach ( $child as $phase => $scripts ) {
-			if ( ! isset( $base[ $phase ] ) ) {
-				$merged[ $phase ] = $scripts;
-			} else {
-				$combined = array_merge( $base[ $phase ], $scripts );
-				usort( $combined, function ( $a, $b ) {
-					$priority_a = $a['priority'] ?? 0;
-					$priority_b = $b['priority'] ?? 0;
-
-					return $priority_a <=> $priority_b;
-				} );
-				$merged[ $phase ] = $combined;
-			}
+	/**
+	 * Validate a test package reference
+	 */
+	protected function validate_test_package_reference( string $reference, array $available_packages ): void {
+		// Handle local file references (e.g., "tests/e2e/checkout.json")
+		if ( strpos( $reference, '/' ) !== false && ! strpos( $reference, ':' ) ) {
+			// This is a file path, will be validated when loaded
+			return;
 		}
 
-		return $merged;
-	}
+		// Handle remote references (e.g., "woocommerce/checkout:stable")
+		if ( preg_match( '/^([^\/]+)\/([^:]+):(.+)$/', $reference ) ) {
+			// Remote package reference, assume valid
+			return;
+		}
 
-	protected function get_valid_options_for_test_type( string $test_type ): array {
-		try {
-			$command    = $this->console_application->find( "run:$test_type" );
-			$definition = $command->getDefinition();
-			$options    = [];
-			foreach ( $definition->getOptions() as $option ) {
-				$options[] = $option->getName();
+		// Handle local package references
+		if ( preg_match( '/^local\/([^:]+)$/', $reference, $matches ) ) {
+			$package_name = $matches[1];
+
+			// Check if package exists in any test type
+			$found = false;
+			foreach ( $available_packages as $type => $packages ) {
+				if ( isset( $packages[ $package_name ] ) ) {
+					$found = true;
+					break;
+				}
 			}
 
-			return $options;
-		} catch ( \InvalidArgumentException $e ) {
-			throw new \RuntimeException( "No command found for test type '$test_type'. Expected a 'run:$test_type' command." );
+			if ( ! $found ) {
+				throw new \RuntimeException( "Local test package '$package_name' not found in test_packages" );
+			}
 		}
 	}
 
+	// Helper methods
 	protected function resolve_paths( array $config, string $root_path ): array {
 		$resolved = $config;
 
-		$resolvePath = function ( $path ) use ( $root_path ) {
-			if ( is_string( $path ) && ! str_starts_with( $path, '/' ) && ! filter_var( $path, FILTER_VALIDATE_URL ) ) {
-				$full_path = $root_path . DIRECTORY_SEPARATOR . ltrim( $path, './' . DIRECTORY_SEPARATOR );
-
-				return \QIT_CLI\normalize_path( $full_path, false );
-			}
-
-			return $path;
-		};
-
-		if ( isset( $resolved['sut']['source']['path'] ) ) {
-			$resolved['sut']['source']['path'] = $resolvePath( $resolved['sut']['source']['path'] );
+		// Resolve SUT paths
+		if ( isset( $resolved['sut']['source'] ) ) {
+			$resolved['sut']['source'] = $this->resolve_source_paths( $resolved['sut']['source'], $root_path );
 		}
 
-		if ( isset( $resolved['sut']['source']['output'] ) ) {
-			$resolved['sut']['source']['output'] = $resolvePath( $resolved['sut']['source']['output'] );
-		}
-
+		// Resolve environment paths
 		if ( isset( $resolved['environments'] ) ) {
 			foreach ( $resolved['environments'] as &$env ) {
-				foreach ( [ 'plugins', 'themes' ] as $type ) {
-					if ( isset( $env[ $type ] ) ) {
-						foreach ( $env[ $type ] as &$item ) {
-							if ( is_array( $item ) && isset( $item['source']['path'] ) ) {
-								$item['source']['path'] = $resolvePath( $item['source']['path'] );
-							}
-							if ( is_array( $item ) && isset( $item['source']['output'] ) ) {
-								$item['source']['output'] = $resolvePath( $item['source']['output'] );
-							}
+				if ( isset( $env['volumes'] ) ) {
+					foreach ( $env['volumes'] as &$volume ) {
+						$parts = explode( ':', $volume );
+						if ( count( $parts ) === 2 && strpos( $parts[0], './' ) === 0 ) {
+							$parts[0] = $this->normalize_path( $root_path . '/' . substr( $parts[0], 2 ) );
+							$volume   = implode( ':', $parts );
 						}
 					}
 				}
 			}
-			unset( $env );
 		}
-
-		file_put_contents( '/tmp/qit/qit_debug.log', 'QitJsonParser: Resolved paths: ' . json_encode( $resolved, JSON_PRETTY_PRINT ) . "\n", FILE_APPEND );
 
 		return $resolved;
 	}
 
-	protected function validate_sut_consistency( array $sut_config, array $raw_environments ): void {
-		foreach ( $raw_environments as $env_name => $env_config ) {
-			if ( isset( $env_config['plugins'] ) ) {
-				foreach ( $env_config['plugins'] as $plugin ) {
-					if ( ! is_array( $plugin ) || ! isset( $plugin['slug'] ) ) {
-						continue;
+	protected function resolve_source_paths( array $source, string $root_path ): array {
+		if ( isset( $source['path'] ) && strpos( $source['path'], './' ) === 0 ) {
+			$source['path'] = $this->normalize_path( $root_path . '/' . substr( $source['path'], 2 ) );
+		}
+		if ( isset( $source['output'] ) && strpos( $source['output'], './' ) === 0 ) {
+			$source['output'] = $this->normalize_path( $root_path . '/' . substr( $source['output'], 2 ) );
+		}
+
+		return $source;
+	}
+
+	protected function normalize_path( string $path ): string {
+		return str_replace( [ '/', '\\' ], DIRECTORY_SEPARATOR, $path );
+	}
+
+	protected function normalize_relative_path( string $path, string $base_dir ): string {
+		if ( strpos( $path, './' ) === 0 ) {
+			return './' . str_replace( $base_dir . '/', '', $this->normalize_path( $base_dir . '/' . substr( $path, 2 ) ) );
+		}
+
+		return $path;
+	}
+
+	protected function process_sut( array $sut, string $root_path ): array {
+		// Validate source type specific requirements
+		if ( isset( $sut['source'] ) ) {
+			switch ( $sut['source']['type'] ) {
+				case 'directory':
+				case 'local':
+					if ( isset( $sut['source']['path'] ) && ! is_dir( $sut['source']['path'] ) ) {
+						throw new \RuntimeException( "SUT directory not found: {$sut['source']['path']}" );
 					}
-					if ( $plugin['slug'] === $sut_config['slug'] ) {
-						if ( ! isset( $plugin['source']['type'] ) || $plugin['source']['type'] !== $sut_config['source']['type'] ) {
-							throw new \RuntimeException( "SUT configuration mismatch between main config and environment '$env_name' for plugin '{$sut_config['slug']}'" );
-						}
-						if ( $sut_config['source']['type'] === 'directory' && ( ! isset( $plugin['source']['path'] ) || $plugin['source']['path'] !== $sut_config['source']['path'] ) ) {
-							throw new \RuntimeException( "SUT path mismatch between main config and environment '$env_name' for plugin '{$sut_config['slug']}'" );
-						}
-						if ( $sut_config['source']['type'] === 'zip' && ( ! isset( $plugin['source']['path'] ) || $plugin['source']['path'] !== $sut_config['source']['path'] ) ) {
-							throw new \RuntimeException( "SUT path mismatch between main config and environment '$env_name' for plugin '{$sut_config['slug']}'" );
-						}
-						if ( $sut_config['source']['type'] === 'build' && (
-								! isset( $plugin['source']['command'] ) || $plugin['source']['command'] !== $sut_config['source']['command'] ||
-								! isset( $plugin['source']['output'] ) || $plugin['source']['output'] !== $sut_config['source']['output']
-							) ) {
-							throw new \RuntimeException( "SUT build configuration mismatch between main config and environment '$env_name' for plugin '{$sut_config['slug']}'" );
-						}
+					break;
+				case 'zip':
+					if ( isset( $sut['source']['path'] ) && ! file_exists( $sut['source']['path'] ) ) {
+						throw new \RuntimeException( "SUT zip file not found: {$sut['source']['path']}" );
 					}
-				}
-			}
-			if ( isset( $env_config['themes'] ) ) {
-				foreach ( $env_config['themes'] as $theme ) {
-					if ( ! is_array( $theme ) || ! isset( $theme['slug'] ) ) {
-						continue;
-					}
-					if ( $theme['slug'] === $sut_config['slug'] ) {
-						if ( ! isset( $theme['source']['type'] ) || $theme['source']['type'] !== $sut_config['source']['type'] ) {
-							throw new \RuntimeException( "SUT configuration mismatch between main config and environment '$env_name' for theme '{$sut_config['slug']}'" );
-						}
-						if ( $sut_config['source']['type'] === 'directory' && ( ! isset( $theme['source']['path'] ) || $theme['source']['path'] !== $sut_config['source']['path'] ) ) {
-							throw new \RuntimeException( "SUT path mismatch between main config and environment '$env_name' for theme '{$sut_config['slug']}'" );
-						}
-						if ( $sut_config['source']['type'] === 'zip' && ( ! isset( $theme['source']['path'] ) || $theme['source']['path'] !== $sut_config['source']['path'] ) ) {
-							throw new \RuntimeException( "SUT path mismatch between main config and environment '$env_name' for theme '{$sut_config['slug']}'" );
-						}
-						if ( $sut_config['source']['type'] === 'build' && (
-								! isset( $theme['source']['command'] ) || $theme['source']['command'] !== $sut_config['source']['command'] ||
-								! isset( $theme['source']['output'] ) || $theme['source']['output'] !== $sut_config['source']['output']
-							) ) {
-							throw new \RuntimeException( "SUT build configuration mismatch between main config and environment '$env_name' for theme '{$sut_config['slug']}'" );
-						}
-					}
-				}
+					break;
 			}
 		}
+
+		return $sut;
+	}
+
+	protected function resolve_test_type_extends( array $test_types ): array {
+		foreach ( $test_types as $type => &$profiles ) {
+			$profiles = $this->resolve_profile_extends( $profiles );
+		}
+
+		return $test_types;
+	}
+
+	protected function resolve_profile_extends( array $profiles ): array {
+		$resolved = [];
+		$pending  = $profiles;
+
+		while ( ! empty( $pending ) ) {
+			$progress = false;
+
+			foreach ( $pending as $name => $config ) {
+				if ( ! isset( $config['extends'] ) ) {
+					$resolved[ $name ] = $config;
+					unset( $pending[ $name ] );
+					$progress = true;
+				} elseif ( isset( $resolved[ $config['extends'] ] ) ) {
+					$base = $resolved[ $config['extends'] ];
+					unset( $config['extends'] );
+					// Use deep merge to preserve structure
+					$resolved[ $name ] = $this->deep_merge_qit_configs( $base, $config );
+					unset( $pending[ $name ] );
+					$progress = true;
+				}
+			}
+
+			if ( ! $progress && ! empty( $pending ) ) {
+				throw new \RuntimeException( "Circular or missing extends in test profiles" );
+			}
+		}
+
+		return $resolved;
 	}
 
 	protected function resolve_extends_path( string $extends, string $current_file ): string {
@@ -1020,65 +685,82 @@ class QitJsonParser {
 			$base_dir      = dirname( $current_file );
 			$resolved_path = realpath( $base_dir . DIRECTORY_SEPARATOR . $extends );
 			if ( $resolved_path === false ) {
-				throw new \RuntimeException( "Base config file '$extends' not found." );
+				throw new \RuntimeException( "Extended config file not found: $extends" );
 			}
 
 			return $resolved_path;
 		}
 
+		// Handle URL extends
 		try {
 			$request  = new RequestBuilder( $extends );
 			$contents = $request->request();
 		} catch ( \Exception $e ) {
-			throw new \RuntimeException( "Failed to fetch base config from URL '$extends'." );
+			throw new \RuntimeException( "Failed to fetch config from URL: $extends" );
 		}
 
-		$temp_file = tempnam( sys_get_temp_dir(), 'qit_base_' );
+		$temp_file = tempnam( sys_get_temp_dir(), 'qit_extends_' );
 		file_put_contents( $temp_file, $contents );
 
 		return $temp_file;
 	}
 
-	protected function merge_configs( array $base, array $child, array $child_raw ): array {
-		$merged = $base;
+	/**
+	 * Decode JSON preserving empty objects
+	 *
+	 * @param string $json
+	 *
+	 * @return array
+	 */
+	protected function json_decode_preserve_objects( string $json ): array {
+		// First decode as objects to identify structure
+		$object_structure = json_decode( $json );
 
-		if ( isset( $child['sut'] ) ) {
-			$merged['sut'] = $child['sut'];
-		} elseif ( isset( $child_raw['sut'] ) ) {
-			$merged['sut'] = $this->parse_sut( $child_raw['sut'], [
-				'root_path' => $this->root_path,
-				'context'   => 'sut.source',
-			] );
-		}
+		// Then decode as array
+		$array_data = json_decode( $json, true );
 
-		foreach ( $child_raw as $key => $value ) {
-			if ( $key === 'extends' || $key === 'sut' ) {
-				continue;
-			}
-			if ( isset( $base[ $key ] ) && is_array( $base[ $key ] ) && is_array( $value ) ) {
-				if ( in_array( $key, [ 'environments', 'test_types', 'test_packages', 'test_groups' ], true ) ) {
-					$merged[ $key ] = array_replace_recursive( $base[ $key ], $value );
-				} else {
-					$merged[ $key ] = $value;
-				}
-			} else {
-				$merged[ $key ] = $value;
-			}
-		}
+		// Preserve empty objects by marking them
+		$this->preserve_empty_objects( $object_structure, $array_data );
 
-		foreach ( $child as $key => $value ) {
-			if ( $key === 'sut' || in_array( $key, [ 'environments', 'test_types', 'test_packages', 'test_groups' ], true ) ) {
-				continue;
-			}
-			$merged[ $key ] = $value;
-		}
-
-		return $merged;
+		return $array_data;
 	}
 
+	/**
+	 * Recursively preserve empty objects in array data
+	 */
+	protected function preserve_empty_objects( $object_structure, &$array_data, $path = '' ): void {
+		if ( is_object( $object_structure ) ) {
+			foreach ( $object_structure as $key => $value ) {
+				$current_path = $path ? "$path.$key" : $key;
+
+				// If it's an empty object in the original but empty array in the converted
+				if ( is_object( $value ) &&
+				     count( get_object_vars( $value ) ) === 0 &&
+				     isset( $array_data[ $key ] ) &&
+				     $array_data[ $key ] === [] ) {
+					// Mark it as an empty object using a special marker
+					$array_data[ $key ] = [ '__empty_object__' => true ];
+				} elseif ( is_object( $value ) || is_array( $value ) ) {
+					// Recurse into nested structures
+					if ( isset( $array_data[ $key ] ) ) {
+						$this->preserve_empty_objects( $value, $array_data[ $key ], $current_path );
+					}
+				}
+			}
+		} elseif ( is_array( $object_structure ) ) {
+			foreach ( $object_structure as $index => $value ) {
+				$current_path = $path ? "$path[$index]" : "[$index]";
+				if ( ( is_object( $value ) || is_array( $value ) ) && isset( $array_data[ $index ] ) ) {
+					$this->preserve_empty_objects( $value, $array_data[ $index ], $current_path );
+				}
+			}
+		}
+	}
+
+	// Public accessors
 	public function get_environment( string $name ): array {
 		if ( ! isset( $this->parsed_config['environments'][ $name ] ) ) {
-			throw new \RuntimeException( "Environment '$name' not found." );
+			throw new \RuntimeException( "Environment '$name' not found" );
 		}
 
 		return $this->parsed_config['environments'][ $name ];
@@ -1088,21 +770,10 @@ class QitJsonParser {
 		return $this->parsed_config['test_types'][ $test_type ][ $profile ] ?? [];
 	}
 
-	public function get_resolved_package( string $test_type, string $package_name, array $packages ): array {
-		if ( ! $test_type || ! $package_name ) {
-			throw new \RuntimeException( "Invalid package format '$test_type:$package_name'. Expected 'test_type:package_name'." );
+	public function get_resolved_package( string $test_type, string $package_name ): array {
+		if ( isset( $this->parsed_config['test_packages'][ $test_type ][ $package_name ] ) ) {
+			return $this->parsed_config['test_packages'][ $test_type ][ $package_name ]['config'];
 		}
-		if ( ! isset( $packages[ $test_type ][ $package_name ] ) ) {
-			throw new \RuntimeException( "Package '$test_type:$package_name' not found in test_packages." );
-		}
-
-		return $this->resolve_package_extends(
-			$packages[ $test_type ][ $package_name ]['config'],
-			$packages[ $test_type ][ $package_name ]['extends'],
-			$test_type,
-			$package_name,
-			$packages,
-			[]
-		);
+		throw new \RuntimeException( "Test package '$test_type:$package_name' not found" );
 	}
 }

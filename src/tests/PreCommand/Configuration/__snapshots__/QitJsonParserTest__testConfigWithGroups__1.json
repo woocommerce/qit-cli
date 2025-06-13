@@ -14,6 +14,21 @@
                     "woocommerce\/e2e:stable"
                 ]
             }
+        },
+        "security": {
+            "default": {
+                "__empty_object__": true
+            }
+        }
+    },
+    "groups": {
+        "pre_release": {
+            "e2e": [
+                "default"
+            ],
+            "security": [
+                "default"
+            ]
         }
     }
 }

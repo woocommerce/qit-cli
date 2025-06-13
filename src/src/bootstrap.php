@@ -116,6 +116,7 @@ $container->singleton( Config::class );
 $container->singleton( ManagerBackend::class );
 $container->singleton( Cache::class );
 $container->singleton( TunnelRunner::class );
+$container->bind( 'src_dir', __DIR__ );
 
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 

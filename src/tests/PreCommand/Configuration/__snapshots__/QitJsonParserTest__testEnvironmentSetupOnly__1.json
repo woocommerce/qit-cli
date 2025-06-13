@@ -6,5 +6,12 @@
             "type": "local",
             "path": "\/tmp\/qit_test_fixed\/"
         }
+    },
+    "environments": {
+        "default": {
+            "setup_only": [
+                "woocommerce\/minimal:stable"
+            ]
+        }
     }
 }

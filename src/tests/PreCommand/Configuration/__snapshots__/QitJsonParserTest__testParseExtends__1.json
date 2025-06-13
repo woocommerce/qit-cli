@@ -9,8 +9,8 @@
         "type": "plugin",
         "slug": "test-plugin",
         "source": {
-            "type": "directory",
-            "path": "\/tmp\/qit_test_fixed\/plugin"
+            "type": "local",
+            "path": "\/tmp\/qit_test_fixed\/"
         }
     }
 }

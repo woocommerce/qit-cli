@@ -32,8 +32,8 @@ class QitJsonParserTest extends TestCase {
         "type": "plugin",
         "slug": "test-plugin",
         "source": {
-            "type": "directory",
-            "path": "./plugin"
+            "type": "local",
+            "path": "./"
         }
     }
 }
@@ -58,8 +58,8 @@ JSON;
         "type": "plugin",
         "slug": "test-plugin",
         "source": {
-            "type": "directory",
-            "path": "./plugin"
+            "type": "local",
+            "path": "./"
         }
     },
     "environments": {
@@ -67,17 +67,16 @@ JSON;
             "php_version": "7.4",
             "wp_version": "6.0",
             "plugins": [
-                {"slug": "woocommerce", "source": {"type": "wccom"}},
-                {"slug": "test-plugin", "source": {"type": "directory", "path": "./plugin"}}
+                {"slug": "woocommerce", "from": "wccom"},
+                {"slug": "test-plugin", "from": "local", "path": "./"}
             ],
             "themes": [
-                {"slug": "storefront", "source": {"type": "wporg"}}
+                "storefront"
             ]
         }
     }
 }
 JSON;
-		mkdir( $this->tempDir . '/plugin', 0777, true );
 		file_put_contents( $configFile, $config );
 
 		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
@@ -98,35 +97,19 @@ JSON;
         "type": "plugin",
         "slug": "test-plugin",
         "source": {
-            "type": "directory",
-            "path": "./plugin"
+            "type": "local",
+            "path": "./"
         }
     },
     "test_types": {
         "e2e": {
             "default": {
-                "run": {
-                    "test_packages": ["local/test-package"]
-                }
+                "test_packages": ["woocommerce/e2e:stable"]
             }
         }
-    },
-    "test_packages": [
-        {
-            "type": "e2e",
-            "name": "test-package",
-            "file": "test.json"
-        }
-    ]
+    }
 }
 JSON;
-		mkdir( $this->tempDir . '/plugin', 0777, true );
-		file_put_contents( $this->tempDir . '/test.json', json_encode( [
-			'$schema'      => 'https://qit.woo.com/json-schema/test-package',
-			'version'      => '1.0.0',
-			'author'       => 'Test Author',
-			'test_command' => 'npm run test',
-		] ) );
 		file_put_contents( $configFile, $config );
 
 		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
@@ -134,11 +117,11 @@ JSON;
 
 		$this->assertArrayHasKey( 'test_types', $parsedConfig );
 		$this->assertArrayHasKey( 'e2e', $parsedConfig['test_types'] );
-		$this->assertArrayHasKey( 'test_packages', $parsedConfig );
+		$this->assertArrayHasKey( 'default', $parsedConfig['test_types']['e2e'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $parsedConfig, JSON_PRETTY_PRINT ) );
 	}
 
-	public function testInvalidEnvironmentKey(): void {
+	public function testConfigWithGroups(): void {
 		$configFile = $this->tempDir . '/qit.json';
 		$config     = <<<'JSON'
 {
@@ -146,23 +129,36 @@ JSON;
         "type": "plugin",
         "slug": "test-plugin",
         "source": {
-            "type": "directory",
-            "path": "./plugin"
+            "type": "local",
+            "path": "./"
         }
     },
-    "environments": {
-        "default": {
-            "invalid_key": "value"
+    "test_types": {
+        "e2e": {
+            "default": {
+                "test_packages": ["woocommerce/e2e:stable"]
+            }
+        },
+        "security": {
+            "default": {}
+        }
+    },
+    "groups": {
+        "pre_release": {
+            "e2e": ["default"],
+            "security": ["default"]
         }
     }
 }
 JSON;
-		mkdir( $this->tempDir . '/plugin', 0777, true );
 		file_put_contents( $configFile, $config );
 
-		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( "Unknown key 'invalid_key' in environment 'default' configuration." );
-		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
+		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
+		$parsedConfig = $parser->parsed_config;
+
+		$this->assertArrayHasKey( 'groups', $parsedConfig );
+		$this->assertArrayHasKey( 'pre_release', $parsedConfig['groups'] );
+		$this->assertMatchesJsonSnapshot( json_encode( $parsedConfig, JSON_PRETTY_PRINT ) );
 	}
 
 	public function testMissingSourceInSut(): void {
@@ -178,14 +174,14 @@ JSON;
 		file_put_contents( $configFile, $config );
 
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( "SUT 'test-plugin' must specify a 'source' object." );
+		$this->expectExceptionMessage( "Schema validation failed" );
 		new \QIT_CLI\PreCommand\Configuration\QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
 	public function testParseConfigMissingFile(): void {
 		$configFile = $this->tempDir . '/nonexistent.json';
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( "Config file '$configFile' not found." );
+		$this->expectExceptionMessage( "File not found: $configFile" );
 		new \QIT_CLI\PreCommand\Configuration\QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
@@ -194,7 +190,7 @@ JSON;
 		file_put_contents( $configFile, '{invalid json' );
 
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( 'Invalid qit.json format. Must be a JSON object.' );
+		$this->expectExceptionMessage( 'Invalid JSON' );
 		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
@@ -212,7 +208,7 @@ JSON;
 		file_put_contents( $configFile, $config );
 
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( 'SUT configuration is required.' );
+		$this->expectExceptionMessage( "The 'sut' property is required in the final configuration" );
 		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
@@ -224,17 +220,16 @@ JSON;
         "type": "invalid",
         "slug": "test-plugin",
         "source": {
-            "type": "directory",
-            "path": "./plugin"
+            "type": "local",
+            "path": "./"
         }
     }
 }
 JSON;
-		mkdir( $this->tempDir . '/plugin', 0777, true );
 		file_put_contents( $configFile, $config );
 
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( "Invalid SUT type 'invalid'. Must be one of: plugin, theme" );
+		$this->expectExceptionMessage( "Schema validation failed" );
 		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
@@ -286,8 +281,8 @@ JSON;
         "type": "plugin",
         "slug": "test-plugin",
         "source": {
-            "type": "directory",
-            "path": "./plugin"
+            "type": "local",
+            "path": "./"
         }
     },
     "environments": {
@@ -297,7 +292,6 @@ JSON;
     }
 }
 JSON;
-		mkdir( $this->tempDir . '/plugin', 0777, true );
 		file_put_contents( $configFile, $config );
 
 		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
@@ -318,62 +312,64 @@ JSON;
         "type": "plugin",
         "slug": "test-plugin",
         "source": {
-            "type": "directory",
-            "path": "./plugin"
+            "type": "local",
+            "path": "./"
         }
     }
 }
 JSON;
-		mkdir( $this->tempDir . '/plugin', 0777, true );
 		file_put_contents( $configFile, $config );
 
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( 'Circular dependency detected in qit.json configuration' );
+		$this->expectExceptionMessage( 'Circular dependency detected' );
 		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
-	public function testParseTestPackages(): void {
-		$configFile = $this->tempDir . '/qit.json';
-		$testFile   = $this->tempDir . '/test.json';
-		$testConfig = <<<'JSON'
+	public function testParseTestPackageManifest(): void {
+		$configFile = $this->tempDir . '/test-package.json';
+		$config     = <<<'JSON'
 {
-    "$schema": "https://qit.woo.com/json-schema/test-package",
-    "version": "1.0.0",
-    "author": "Test Author",
-    "test_command": "npm run test"
+    "test_type": "e2e",
+    "test_dir": "./tests/e2e",
+    "description": "E2E tests for checkout",
+    "lifecycle": {
+        "test": {
+            "run": ["npm run playwright"]
+        }
+    }
 }
 JSON;
-		file_put_contents( $testFile, $testConfig );
+		file_put_contents( $configFile, $config );
 
-		$config = <<<'JSON'
+		// Since we're testing a test package manifest directly, we need to test it through
+		// a qit.json that references it
+		$qitConfigFile = $this->tempDir . '/qit.json';
+		$qitConfig     = <<<JSON
 {
     "sut": {
         "type": "plugin",
         "slug": "test-plugin",
         "source": {
-            "type": "directory",
-            "path": "./plugin"
+            "type": "local",
+            "path": "./"
         }
     },
-    "test_packages": [
-        {
-            "type": "e2e",
-            "name": "test-package",
-            "file": "test.json"
+    "test_types": {
+        "e2e": {
+            "default": {
+                "test_packages": ["./test-package.json"]
+            }
         }
-    ]
+    }
 }
 JSON;
-		mkdir( $this->tempDir . '/plugin', 0777, true );
-		file_put_contents( $configFile, $config );
+		file_put_contents( $qitConfigFile, $qitConfig );
 
-		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
+		$parser       = new QitJsonParser( $qitConfigFile, $GLOBALS['qit_application'] );
 		$parsedConfig = $parser->parsed_config;
 
-		$this->assertArrayHasKey( 'test_packages', $parsedConfig );
-		$this->assertArrayHasKey( 'e2e', $parsedConfig['test_packages'] );
-		$this->assertArrayHasKey( 'test-package', $parsedConfig['test_packages']['e2e'] );
-		$this->assertEquals( '1.0.0', $parsedConfig['test_packages']['e2e']['test-package']['config']['version'] );
+		// Test packages are processed during test execution, not during config parsing
+		$this->assertArrayHasKey( 'test_types', $parsedConfig );
 		$this->assertMatchesJsonSnapshot( json_encode( $parsedConfig, JSON_PRETTY_PRINT ) );
 	}
 
@@ -444,7 +440,7 @@ JSON;
 		$this->assertMatchesJsonSnapshot( json_encode( $parsedConfig, JSON_PRETTY_PRINT ) );
 	}
 
-	public function testInvalidSutConsistency(): void {
+	public function testEnvironmentWithEnvVars(): void {
 		$configFile = $this->tempDir . '/qit.json';
 		$config     = <<<'JSON'
 {
@@ -452,181 +448,32 @@ JSON;
         "type": "plugin",
         "slug": "test-plugin",
         "source": {
-            "type": "directory",
-            "path": "./plugin"
+            "type": "local",
+            "path": "./"
         }
     },
     "environments": {
         "default": {
-            "plugins": [
-                {"slug": "test-plugin", "source": {"type": "zip", "path": "./wrong.zip"}}
-            ]
-        }
-    }
-}
-JSON;
-		mkdir( $this->tempDir . '/plugin', 0777, true );
-		file_put_contents( $this->tempDir . '/wrong.zip', 'dummy' );
-		file_put_contents( $configFile, $config );
-
-		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( "SUT configuration mismatch between main config and environment 'default' for plugin 'test-plugin'" );
-		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
-	}
-
-	public function testInvalidTestPackage(): void {
-		$configFile = $this->tempDir . '/qit.json';
-		$testFile   = $this->tempDir . '/test.json';
-		file_put_contents( $testFile, json_encode( [
-			// Missing $schema
-			'version' => '1.0.0',
-			'author'  => 'Test Author'
-		] ) );
-
-		$config = <<<'JSON'
-{
-    "sut": {
-        "type": "plugin",
-        "slug": "test-plugin",
-        "source": {
-            "type": "directory",
-            "path": "./plugin"
-        }
-    },
-    "test_packages": [
-        {
-            "type": "e2e",
-            "name": "test-package",
-            "file": "test.json"
-        }
-    ]
-}
-JSON;
-		mkdir( $this->tempDir . '/plugin', 0777, true );
-		file_put_contents( $configFile, $config );
-
-		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( "Test package 'e2e:test-package' must have \$schema set to 'https://qit.woo.com/json-schema/test-package'." );
-		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
-	}
-
-	public function testExtendsMissingBase(): void {
-		$configFile = $this->tempDir . '/qit.json';
-		$config     = <<<'JSON'
-{
-    "extends": "nonexistent.json",
-    "sut": {
-        "type": "plugin",
-        "slug": "test-plugin",
-        "source": {
-            "type": "directory",
-            "path": "./plugin"
-        }
-    }
-}
-JSON;
-		mkdir( $this->tempDir . '/plugin', 0777, true );
-		file_put_contents( $configFile, $config );
-
-		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( "Base config file 'nonexistent.json' not found." );
-		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
-	}
-
-	public function testInvalidSourceType(): void {
-		$configFile = $this->tempDir . '/qit.json';
-		$config     = <<<'JSON'
-{
-    "sut": {
-        "type": "plugin",
-        "slug": "test-plugin",
-        "source": {
-            "type": "invalid"
-        }
-    }
-}
-JSON;
-		file_put_contents( $configFile, $config );
-
-		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( "Invalid source type 'invalid' for sut.source. Must be one of: build, directory, url, zip, wccom, wporg" );
-		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
-	}
-
-	public function testEnvironmentSetupTestPackages(): void {
-		$configFile = $this->tempDir . '/qit.json';
-		$testFile   = $this->tempDir . '/test.json';
-		file_put_contents( $testFile, json_encode( [
-			'$schema'      => 'https://qit.woo.com/json-schema/test-package',
-			'version'      => '1.0.0',
-			'author'       => 'Test Author',
-			'test_command' => 'npm run test'
-		] ) );
-
-		$config = <<<'JSON'
-{
-    "sut": {
-        "type": "plugin",
-        "slug": "test-plugin",
-        "source": {
-            "type": "directory",
-            "path": "./plugin"
-        }
-    },
-    "environments": {
-        "default": {
-            "setup": {
-                "test_packages": ["e2e:test-package@1.0.0"]
+            "php_version": "8.0",
+            "env_vars": {
+                "QIT_DEBUG": "true",
+                "WP_DEBUG": "false"
             }
         }
-    },
-    "test_packages": [
-        {
-            "type": "e2e",
-            "name": "test-package",
-            "file": "test.json"
-        }
-    ]
+    }
 }
 JSON;
-		mkdir( $this->tempDir . '/plugin', 0777, true );
 		file_put_contents( $configFile, $config );
 
 		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 		$parsedConfig = $parser->parsed_config;
 
-		$this->assertArrayHasKey( 'setup', $parsedConfig['environments']['default'] );
-		$this->assertEquals( [ 'e2e:test-package@1.0.0' ], $parsedConfig['environments']['default']['setup']['test_packages'] );
+		$this->assertArrayHasKey( 'env_vars', $parsedConfig['environments']['default'] );
+		$this->assertEquals( 'true', $parsedConfig['environments']['default']['env_vars']['QIT_DEBUG'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $parsedConfig, JSON_PRETTY_PRINT ) );
-
-		// Test invalid format
-		$config = <<<'JSON'
-{
-    "sut": {
-        "type": "plugin",
-        "slug": "test-plugin",
-        "source": {
-            "type": "directory",
-            "path": "./plugin"
-        }
-    },
-    "environments": {
-        "default": {
-            "setup": {
-                "test_packages": ["invalid_package"]
-            }
-        }
-    }
-}
-JSON;
-		file_put_contents( $configFile, $config );
-
-		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( "Invalid test package format 'invalid_package'" );
-		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
 	}
 
-	public function testInvalidTestTypeProfile(): void {
+	public function testEnvironmentSetupOnly(): void {
 		$configFile = $this->tempDir . '/qit.json';
 		$config     = <<<'JSON'
 {
@@ -634,25 +481,122 @@ JSON;
         "type": "plugin",
         "slug": "test-plugin",
         "source": {
-            "type": "directory",
-            "path": "./plugin"
+            "type": "local",
+            "path": "./"
         }
     },
-    "test_types": {
-        "e2e": {
-            "default": {
-                "run": {}
-            }
+    "environments": {
+        "default": {
+            "setup_only": ["woocommerce/minimal:stable"]
         }
     }
 }
 JSON;
-		mkdir( $this->tempDir . '/plugin', 0777, true );
+		file_put_contents( $configFile, $config );
+
+		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
+		$parsedConfig = $parser->parsed_config;
+
+		$this->assertArrayHasKey( 'setup_only', $parsedConfig['environments']['default'] );
+		$this->assertEquals( [ 'woocommerce/minimal:stable' ], $parsedConfig['environments']['default']['setup_only'] );
+		$this->assertMatchesJsonSnapshot( json_encode( $parsedConfig, JSON_PRETTY_PRINT ) );
+	}
+
+	public function testInvalidEnvironmentKey(): void {
+		$configFile = $this->tempDir . '/qit.json';
+		$config     = <<<'JSON'
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "local",
+            "path": "./"
+        }
+    },
+    "environments": {
+        "default": {
+            "invalid_key": "value"
+        }
+    }
+}
+JSON;
 		file_put_contents( $configFile, $config );
 
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( "run in 'e2e:default' must be an array with a 'test_packages' array." );
+		$this->expectExceptionMessage( "Schema validation failed" );
 		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
+	}
+
+	public function testInvalidGroupReference(): void {
+		$configFile = $this->tempDir . '/qit.json';
+		$config     = <<<'JSON'
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "local",
+            "path": "./"
+        }
+    },
+    "test_types": {
+        "e2e": {
+            "default": {}
+        }
+    },
+    "groups": {
+        "pre_release": {
+            "e2e": ["nonexistent"]
+        }
+    }
+}
+JSON;
+		file_put_contents( $configFile, $config );
+
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( "Profile 'nonexistent' for test type 'e2e' in group 'pre_release' not found" );
+		new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
+	}
+
+	public function testEnvironmentExtendsResolution(): void {
+		$configFile = $this->tempDir . '/qit.json';
+		$config     = <<<'JSON'
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "local",
+            "path": "./"
+        }
+    },
+    "environments": {
+        "base": {
+            "php_version": "8.2",
+            "wp_version": "stable",
+            "woo_version": "stable",
+            "object_cache": true
+        },
+        "legacy": {
+            "extends": "base",
+            "php_version": "7.4",
+            "woo_version": "6.1"
+        }
+    }
+}
+JSON;
+		file_put_contents( $configFile, $config );
+
+		$parser       = new QitJsonParser( $configFile, $GLOBALS['qit_application'] );
+		$parsedConfig = $parser->parsed_config;
+
+		// Check that legacy inherits from base but overrides specific values
+		$this->assertEquals( '7.4', $parsedConfig['environments']['legacy']['php_version'] );
+		$this->assertEquals( '6.1', $parsedConfig['environments']['legacy']['woo_version'] );
+		$this->assertEquals( 'stable', $parsedConfig['environments']['legacy']['wp_version'] );
+		$this->assertTrue( $parsedConfig['environments']['legacy']['object_cache'] );
+		$this->assertMatchesJsonSnapshot( json_encode( $parsedConfig, JSON_PRETTY_PRINT ) );
 	}
 
 	private function deleteDir( string $dir ): void {
