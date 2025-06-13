@@ -40,7 +40,7 @@ class TestPackageManifestParser extends BaseJsonParser {
 		if ( isset( $config['test_dir'] ) ) {
 			$testDir = $this->resolvePath( $config['test_dir'] );
 			if ( ! is_dir( $testDir ) ) {
-				throw new \RuntimeException( "Test directory not found: " . $config['test_dir'] );
+				throw new \RuntimeException( 'Test directory not found: ' . $config['test_dir'] );
 			}
 		}
 

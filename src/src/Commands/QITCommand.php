@@ -22,7 +22,7 @@ abstract class QITCommand extends Command {
 	];
 
 	protected InputInterface $input;
-	protected ?EnvInfo $env_info = null;
+	protected ?EnvInfo $env_info    = null;
 	protected array $merged_options = [];
 
 	protected function configure(): void {

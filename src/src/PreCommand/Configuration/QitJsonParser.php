@@ -10,7 +10,7 @@ class QitJsonParser extends BaseJsonParser {
 	private TestPackageManifestParser $packageParser;
 	private array $loadedPackages = []; // Cache for loaded test packages
 	private string $currentFilePath; // Track the current file being parsed
-	private array $pathContexts = []; // Track which directory each path came from
+	private array $pathContexts       = []; // Track which directory each path came from
 	private ?string $urlExtendContext = null; // Track context for URL extends
 
 	public function __construct() {
@@ -36,7 +36,7 @@ class QitJsonParser extends BaseJsonParser {
 	}
 
 	protected function applyBusinessLogic( array $config ): array {
-		$this->debugLog( "=== applyBusinessLogic called ===" );
+		$this->debugLog( '=== applyBusinessLogic called ===' );
 
 		// Resolve extends first, passing the actual file path
 		$config = $this->resolveExtends( $config, $this->currentFilePath );
@@ -47,27 +47,27 @@ class QitJsonParser extends BaseJsonParser {
 		}
 
 		// Process SUT
-		$this->debugLog( "Processing SUT" );
+		$this->debugLog( 'Processing SUT' );
 		$config['sut'] = $this->processSut( $config['sut'] );
 
 		// Resolve environment extends
 		if ( isset( $config['environments'] ) ) {
-			$this->debugLog( "Resolving environment extends" );
+			$this->debugLog( 'Resolving environment extends' );
 			$config['environments'] = $this->resolveEnvironmentExtends( $config['environments'] );
 		}
 
 		// Resolve test type extends
 		if ( isset( $config['test_types'] ) ) {
-			$this->debugLog( "Resolving test type extends" );
+			$this->debugLog( 'Resolving test type extends' );
 			$config['test_types'] = $this->resolveTestTypeExtends( $config['test_types'] );
 		}
 
 		// Validate cross-references
-		$this->debugLog( "Starting cross-reference validation" );
+		$this->debugLog( 'Starting cross-reference validation' );
 		$this->validateCrossReferences( $config );
 
 		$this->parsedConfig = $config;
-		$this->debugLog( "=== applyBusinessLogic completed ===" );
+		$this->debugLog( '=== applyBusinessLogic completed ===' );
 
 		return $config;
 	}
@@ -150,7 +150,7 @@ class QitJsonParser extends BaseJsonParser {
 				'package'   => $matches[2],
 				'version'   => $matches[3],
 				'remote'    => true,
-				'reference' => $reference
+				'reference' => $reference,
 			];
 		}
 
@@ -162,10 +162,10 @@ class QitJsonParser extends BaseJsonParser {
 	 */
 	private function resolveExtends( array $config, string $currentFile = null, array $visited = [] ): array {
 		// Debug logging
-		$this->debugLog( "=== resolveExtends called ===" );
-		$this->debugLog( "Current file: " . ( $currentFile ?? 'null' ) );
-		$this->debugLog( "Config has extends: " . ( isset( $config['extends'] ) ? $config['extends'] : 'no' ) );
-		$this->debugLog( "Visited files: " . json_encode( $visited ) );
+		$this->debugLog( '=== resolveExtends called ===' );
+		$this->debugLog( 'Current file: ' . ( $currentFile ?? 'null' ) );
+		$this->debugLog( 'Config has extends: ' . ( isset( $config['extends'] ) ? $config['extends'] : 'no' ) );
+		$this->debugLog( 'Visited files: ' . json_encode( $visited ) );
 
 		if ( ! isset( $config['extends'] ) ) {
 			// Mark paths in this config with their context
@@ -179,7 +179,7 @@ class QitJsonParser extends BaseJsonParser {
 			$normalizedCurrent = $this->normalizePath( $currentFile );
 			if ( in_array( $normalizedCurrent, $visited ) ) {
 				$this->debugLog( "ERROR: Circular dependency detected for file: $normalizedCurrent" );
-				throw new \RuntimeException( "Circular dependency detected in extends" );
+				throw new \RuntimeException( 'Circular dependency detected in extends' );
 			}
 			$visited[] = $normalizedCurrent;
 		}
@@ -192,7 +192,7 @@ class QitJsonParser extends BaseJsonParser {
 		$normalizedBase = $this->normalizePath( $basePath );
 		if ( in_array( $normalizedBase, $visited ) ) {
 			$this->debugLog( "ERROR: About to load already visited file: $normalizedBase" );
-			throw new \RuntimeException( "Circular dependency detected in extends" );
+			throw new \RuntimeException( 'Circular dependency detected in extends' );
 		}
 
 		// Load base configuration
@@ -291,7 +291,7 @@ class QitJsonParser extends BaseJsonParser {
 
 			// Mark that this is a URL-based extend (simulated)
 			$this->urlExtendContext = $this->rootPath;
-			$this->debugLog( "Simulated URL extend detected, marking context as: " . $this->rootPath );
+			$this->debugLog( 'Simulated URL extend detected, marking context as: ' . $this->rootPath );
 
 			return $tempFile;
 		}
@@ -303,7 +303,7 @@ class QitJsonParser extends BaseJsonParser {
 
 			// Mark that this is a URL-based extend
 			$this->urlExtendContext = $this->rootPath;
-			$this->debugLog( "URL extend detected, marking context as: " . $this->rootPath );
+			$this->debugLog( 'URL extend detected, marking context as: ' . $this->rootPath );
 
 			return $tempFile;
 		}
@@ -441,12 +441,12 @@ class QitJsonParser extends BaseJsonParser {
 	}
 
 	private function validateCrossReferences( array $config ): void {
-		$this->debugLog( "=== validateCrossReferences called ===" );
-		$this->debugLog( "Config keys: " . json_encode( array_keys( $config ) ) );
+		$this->debugLog( '=== validateCrossReferences called ===' );
+		$this->debugLog( 'Config keys: ' . json_encode( array_keys( $config ) ) );
 
 		// Validate test_types reference existing environments and test packages
 		if ( isset( $config['test_types'] ) ) {
-			$this->debugLog( "Validating test_types" );
+			$this->debugLog( 'Validating test_types' );
 			foreach ( $config['test_types'] as $type => $profiles ) {
 				foreach ( $profiles as $profile => $settings ) {
 					// Validate environment references only if environments exist
@@ -468,9 +468,9 @@ class QitJsonParser extends BaseJsonParser {
 								$context = $this->getPathContext( $packageRef );
 								$path    = $this->resolvePathWithContext( $packageRef, $context );
 								$this->debugLog( "Resolved path with context: $path (context: $context)" );
-								$this->debugLog( "File exists: " . ( file_exists( $path ) ? 'yes' : 'no' ) );
+								$this->debugLog( 'File exists: ' . ( file_exists( $path ) ? 'yes' : 'no' ) );
 								if ( ! file_exists( $path ) ) {
-									$this->debugLog( "ERROR: Local package file not found!" );
+									$this->debugLog( 'ERROR: Local package file not found!' );
 									throw new \RuntimeException(
 										"Test package file not found: $packageRef in '$type:$profile'"
 									);
@@ -486,7 +486,7 @@ class QitJsonParser extends BaseJsonParser {
 
 		// Validate groups reference existing test_types
 		if ( isset( $config['groups'] ) && isset( $config['test_types'] ) ) {
-			$this->debugLog( "Validating groups" );
+			$this->debugLog( 'Validating groups' );
 			foreach ( $config['groups'] as $group => $tests ) {
 				foreach ( $tests as $testType => $profiles ) {
 					if ( ! isset( $config['test_types'][ $testType ] ) ) {
@@ -505,7 +505,7 @@ class QitJsonParser extends BaseJsonParser {
 
 		// Validate setup_only package references in environments
 		if ( isset( $config['environments'] ) ) {
-			$this->debugLog( "Validating environment setup_only packages" );
+			$this->debugLog( 'Validating environment setup_only packages' );
 			foreach ( $config['environments'] as $envName => $env ) {
 				if ( isset( $env['setup_only'] ) ) {
 					foreach ( $env['setup_only'] as $packageRef ) {
@@ -525,7 +525,7 @@ class QitJsonParser extends BaseJsonParser {
 			}
 		}
 
-		$this->debugLog( "=== validateCrossReferences completed ===" );
+		$this->debugLog( '=== validateCrossReferences completed ===' );
 	}
 
 	/**

@@ -39,7 +39,7 @@ abstract class BaseJsonParser {
 		// Load all available schemas
 		$schemas = [
 			'qit'          => 'qit-schema.json',
-			'test-package' => 'test-package-manifest-schema.json'
+			'test-package' => 'test-package-manifest-schema.json',
 		];
 
 		foreach ( $schemas as $type => $filename ) {
@@ -100,7 +100,7 @@ abstract class BaseJsonParser {
 	 * Format validation errors for output
 	 */
 	protected function formatValidationErrors( $errors, string $context ): string {
-		$output = "";
+		$output = '';
 
 		foreach ( $errors as $path => $messages ) {
 			if ( is_string( $messages ) ) {
