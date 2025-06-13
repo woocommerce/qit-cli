@@ -2,8 +2,6 @@
 
 namespace QIT_CLI\PreCommand\Configuration;
 
-use Opis\JsonSchema\{Validator, ValidationResult, Errors\ErrorFormatter};
-
 /**
  * Parser for test package manifest files
  */
@@ -24,19 +22,8 @@ class TestPackageManifestParser extends BaseJsonParser {
 			}
 		}
 
-		// Normalize paths in mu_plugins
-		if ( isset( $config['mu_plugins'] ) ) {
-			foreach ( $config['mu_plugins'] as &$plugin ) {
-				$plugin = $this->normalizePath( $plugin );
-			}
-		}
-
-		// Normalize paths in test_results
-		if ( isset( $config['test_results'] ) ) {
-			foreach ( $config['test_results'] as $format => &$path ) {
-				$path = $this->normalizePath( $path );
-			}
-		}
+		// Keep paths relative - they should be relative to the manifest file
+		// No normalization needed for mu_plugins, test_results, or test_dir
 
 		// Convert env_vars to strings
 		if ( isset( $config['env_vars'] ) ) {
@@ -49,17 +36,20 @@ class TestPackageManifestParser extends BaseJsonParser {
 			}
 		}
 
-		// Validate test_dir exists if specified
+		// Validate test_dir exists if specified (relative to manifest location)
 		if ( isset( $config['test_dir'] ) ) {
-			$testDir = $this->normalizePath( $config['test_dir'] );
+			$testDir = $this->resolvePath( $config['test_dir'] );
 			if ( ! is_dir( $testDir ) ) {
-				throw new \RuntimeException( "Test directory not found: $testDir" );
+				throw new \RuntimeException( "Test directory not found: " . $config['test_dir'] );
 			}
 		}
 
 		return $config;
 	}
 
+	/**
+	 * Normalize lifecycle commands
+	 */
 	private function normalizeLifecycleCommands( $commands ): array {
 		if ( ! is_array( $commands ) ) {
 			return [];
@@ -71,8 +61,9 @@ class TestPackageManifestParser extends BaseJsonParser {
 			if ( is_string( $command ) ) {
 				$normalized[] = $command;
 			} elseif ( is_array( $command ) && isset( $command['command'] ) ) {
+				// Check if command references a file
 				if ( strpos( $command['command'], './' ) === 0 ) {
-					$filePath = $this->normalizePath( $command['command'] );
+					$filePath = $this->resolvePath( $command['command'] );
 					if ( ! file_exists( $filePath ) ) {
 						throw new \RuntimeException( "Lifecycle script not found: {$command['command']}" );
 					}
@@ -82,5 +73,17 @@ class TestPackageManifestParser extends BaseJsonParser {
 		}
 
 		return $normalized;
+	}
+
+	/**
+	 * Resolve a path relative to the manifest file location
+	 * This is only used for validation, not for modifying the config
+	 */
+	private function resolvePath( string $path ): string {
+		if ( strpos( $path, './' ) === 0 ) {
+			return $this->rootPath . '/' . substr( $path, 2 );
+		}
+
+		return $path;
 	}
 }

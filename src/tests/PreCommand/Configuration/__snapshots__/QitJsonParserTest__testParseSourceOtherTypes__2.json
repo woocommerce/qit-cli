@@ -4,7 +4,7 @@
         "slug": "test-plugin",
         "source": {
             "type": "zip",
-            "path": "\/tmp\/qit_test_fixed\/plugin.zip"
+            "path": ".\/plugin.zip"
         }
     }
 }

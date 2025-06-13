@@ -26,8 +26,8 @@ class QitJsonParser extends BaseJsonParser {
 		// Load and validate JSON
 		$config = $this->loadAndValidateJson( $filePath );
 
-		// Store the actual file path for extends resolution
-		$this->currentFilePath = realpath( $filePath );
+		// Store the actual file path for extends resolution (without realpath)
+		$this->currentFilePath = $filePath;
 
 		// Apply business logic
 		return $this->applyBusinessLogic( $config );
@@ -83,7 +83,7 @@ class QitJsonParser extends BaseJsonParser {
 		// Parse the reference to determine type
 		if ( $this->isLocalPackageReference( $reference ) ) {
 			// Local file reference (e.g., "tests/e2e/checkout.json")
-			$filePath                           = $this->normalizePath( $reference );
+			$filePath                           = $this->resolvePath( $reference );
 			$this->loadedPackages[ $reference ] = $this->packageParser->parse( $filePath );
 		} else {
 			// Remote reference (e.g., "woocommerce/minimal:stable")
@@ -168,14 +168,14 @@ class QitJsonParser extends BaseJsonParser {
 			return $config;
 		}
 
-		// Check for circular dependencies
+		// Check for circular dependencies - normalize paths for comparison
 		if ( $currentFile !== null ) {
-			$currentFile = realpath( $currentFile ) ?: $currentFile;
-			if ( in_array( $currentFile, $visited ) ) {
-				$this->debugLog( "ERROR: Circular dependency detected for file: $currentFile" );
+			$normalizedCurrent = $this->normalizePath( $currentFile );
+			if ( in_array( $normalizedCurrent, $visited ) ) {
+				$this->debugLog( "ERROR: Circular dependency detected for file: $normalizedCurrent" );
 				throw new \RuntimeException( "Circular dependency detected in extends" );
 			}
-			$visited[] = $currentFile;
+			$visited[] = $normalizedCurrent;
 		}
 
 		// Resolve the path to the extended config
@@ -183,9 +183,9 @@ class QitJsonParser extends BaseJsonParser {
 		$this->debugLog( "Resolved extends path: $basePath" );
 
 		// Check if we're about to load a file we've already visited
-		$baseRealPath = realpath( $basePath ) ?: $basePath;
-		if ( in_array( $baseRealPath, $visited ) ) {
-			$this->debugLog( "ERROR: About to load already visited file: $baseRealPath" );
+		$normalizedBase = $this->normalizePath( $basePath );
+		if ( in_array( $normalizedBase, $visited ) ) {
+			$this->debugLog( "ERROR: About to load already visited file: $normalizedBase" );
 			throw new \RuntimeException( "Circular dependency detected in extends" );
 		}
 
@@ -221,7 +221,7 @@ class QitJsonParser extends BaseJsonParser {
 			$path = $this->rootPath . '/' . $extends;
 		} else {
 			// For relative paths, resolve from current root
-			$path = $this->normalizePath( $extends );
+			$path = $this->resolvePath( $extends );
 		}
 
 		$this->debugLog( "Resolved path: $path" );
@@ -230,7 +230,29 @@ class QitJsonParser extends BaseJsonParser {
 			throw new \RuntimeException( "Extended config file not found: $extends" );
 		}
 
-		return realpath( $path );
+		return $path;
+	}
+
+	/**
+	 * Normalize a path for comparison (remove . and .. components)
+	 * This is only used for circular dependency detection
+	 */
+	private function normalizePath( string $path ): string {
+		$parts      = explode( '/', str_replace( '\\', '/', $path ) );
+		$normalized = [];
+
+		foreach ( $parts as $part ) {
+			if ( $part === '.' ) {
+				continue;
+			}
+			if ( $part === '..' && count( $normalized ) > 0 && end( $normalized ) !== '..' ) {
+				array_pop( $normalized );
+			} else {
+				$normalized[] = $part;
+			}
+		}
+
+		return implode( '/', $normalized );
 	}
 
 	/**
@@ -248,16 +270,8 @@ class QitJsonParser extends BaseJsonParser {
 	}
 
 	private function processSut( array $sut ): array {
-		// Resolve paths in source
+		// Validate source paths exist without modifying them
 		if ( isset( $sut['source'] ) ) {
-			if ( isset( $sut['source']['path'] ) ) {
-				$sut['source']['path'] = $this->normalizePath( $sut['source']['path'] );
-			}
-			if ( isset( $sut['source']['output'] ) ) {
-				$sut['source']['output'] = $this->normalizePath( $sut['source']['output'] );
-			}
-
-			// Validate source paths exist
 			$this->validateSutSource( $sut['source'] );
 		}
 
@@ -268,14 +282,20 @@ class QitJsonParser extends BaseJsonParser {
 		switch ( $source['type'] ) {
 			case 'local':
 			case 'directory':
-				if ( isset( $source['path'] ) && ! is_dir( $source['path'] ) ) {
-					throw new \RuntimeException( "SUT directory not found: {$source['path']}" );
+				if ( isset( $source['path'] ) ) {
+					$path = $this->resolvePath( $source['path'] );
+					if ( ! is_dir( $path ) ) {
+						throw new \RuntimeException( "SUT directory not found: {$source['path']}" );
+					}
 				}
 				break;
 
 			case 'zip':
-				if ( isset( $source['path'] ) && ! file_exists( $source['path'] ) ) {
-					throw new \RuntimeException( "SUT zip file not found: {$source['path']}" );
+				if ( isset( $source['path'] ) ) {
+					$path = $this->resolvePath( $source['path'] );
+					if ( ! file_exists( $path ) ) {
+						throw new \RuntimeException( "SUT zip file not found: {$source['path']}" );
+					}
 				}
 				break;
 		}
@@ -349,8 +369,8 @@ class QitJsonParser extends BaseJsonParser {
 							$this->debugLog( "Checking package reference: $packageRef" );
 							if ( $this->isLocalPackageReference( $packageRef ) ) {
 								$this->debugLog( "Package is local reference: $packageRef" );
-								$path = $this->normalizePath( $packageRef );
-								$this->debugLog( "Normalized path: $path" );
+								$path = $this->resolvePath( $packageRef );
+								$this->debugLog( "Resolved path: $path" );
 								$this->debugLog( "File exists: " . ( file_exists( $path ) ? 'yes' : 'no' ) );
 								if ( ! file_exists( $path ) ) {
 									$this->debugLog( "ERROR: Local package file not found!" );
@@ -394,8 +414,8 @@ class QitJsonParser extends BaseJsonParser {
 					foreach ( $env['setup_only'] as $packageRef ) {
 						$this->debugLog( "Checking setup_only package: $packageRef" );
 						if ( $this->isLocalPackageReference( $packageRef ) ) {
-							$path = $this->normalizePath( $packageRef );
-							$this->debugLog( "Setup package normalized path: $path" );
+							$path = $this->resolvePath( $packageRef );
+							$this->debugLog( "Setup package resolved path: $path" );
 							if ( ! file_exists( $path ) ) {
 								throw new \RuntimeException(
 									"Setup package file not found: $packageRef in environment '$envName'"
@@ -408,6 +428,20 @@ class QitJsonParser extends BaseJsonParser {
 		}
 
 		$this->debugLog( "=== validateCrossReferences completed ===" );
+	}
+
+	/**
+	 * Resolve a path relative to the root directory
+	 * This is used for validation only, not for modifying the config
+	 */
+	protected function resolvePath( string $path ): string {
+		if ( strpos( $path, './' ) === 0 || strpos( $path, '../' ) === 0 ) {
+			// Relative path - prepend the root path
+			return $this->rootPath . '/' . $path;
+		}
+
+		// Absolute path - return as is
+		return $path;
 	}
 
 	// Public accessors

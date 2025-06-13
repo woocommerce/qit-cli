@@ -5,7 +5,7 @@
         "source": {
             "type": "build",
             "command": "npm run build",
-            "output": "\/tmp\/qit_test_fixed\/plugin.zip"
+            "output": ".\/plugin.zip"
         }
     }
 }

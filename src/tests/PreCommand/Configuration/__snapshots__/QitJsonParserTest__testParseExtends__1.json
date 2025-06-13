@@ -10,7 +10,7 @@
         "slug": "test-plugin",
         "source": {
             "type": "local",
-            "path": "\/tmp\/qit_test_fixed\/"
+            "path": ".\/"
         }
     }
 }

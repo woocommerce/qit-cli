@@ -1,0 +1,13 @@
+{
+    "$schema": "https:\/\/qit.woo.com\/json-schema\/test-package",
+    "test_type": "security",
+    "env_vars": {
+        "DEBUG": "true",
+        "VERBOSE": "false",
+        "MAX_RETRIES": "5",
+        "TIMEOUT": "30.5",
+        "API_KEY": "abc123",
+        "EMPTY_STRING": "",
+        "ZERO": "0"
+    }
+}
