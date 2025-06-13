@@ -3,7 +3,7 @@
 namespace QIT_CLI_Tests\PreCommand\Configuration;
 
 use PHPUnit\Framework\TestCase;
-use QIT_CLI\PreCommand\Configuration\QitJsonParser;
+use QIT_CLI\PreCommand\Configuration\Parser\QitJsonParser;
 use Spatie\Snapshots\MatchesSnapshots;
 
 class QitJsonParserTest extends TestCase {

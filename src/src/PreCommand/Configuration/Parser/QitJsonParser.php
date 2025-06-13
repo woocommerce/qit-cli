@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\PreCommand\Configuration;
+namespace QIT_CLI\PreCommand\Configuration\Parser;
 
 /**
  * Parser for qit.json configuration files

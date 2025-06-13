@@ -4,8 +4,8 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\EnvInfo;
-use QIT_CLI\PreCommand\Configuration\QitJsonParser;
-use QIT_CLI\PreCommand\Configuration\CLIInputMerger;
+use QIT_CLI\PreCommand\Configuration\Merger\CLIInputMerger;
+use QIT_CLI\PreCommand\Configuration\Parser\QitJsonParser;
 use QIT_CLI\PreCommand\EnvInfoBuilder;
 use QIT_CLI\PreCommand\TestProfileHandler;
 use Symfony\Component\Console\Command\Command;

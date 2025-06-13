@@ -3,7 +3,7 @@
 namespace QIT_CLI_Tests\PreCommand\Configuration;
 
 use PHPUnit\Framework\TestCase;
-use QIT_CLI\PreCommand\Configuration\TestPackageManifestParser;
+use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
 use Spatie\Snapshots\MatchesSnapshots;
 
 class TestPackageManifestParserTest extends TestCase {

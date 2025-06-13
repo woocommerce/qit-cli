@@ -3,11 +3,8 @@
 namespace QIT_CLI_Tests\PreCommand;
 
 use QIT_CLI\App;
-use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
-use QIT_CLI\PreCommand\Configuration\QitJsonParser;
+use QIT_CLI\PreCommand\Configuration\Parser\QitJsonParser;
 use Spatie\Snapshots\MatchesSnapshots;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\BufferedOutput;
 
 class TestPackagesConfigurationTest extends PreCommandTestCase {
 	use MatchesSnapshots;

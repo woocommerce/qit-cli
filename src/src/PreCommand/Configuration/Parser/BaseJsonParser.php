@@ -1,8 +1,8 @@
 <?php
 
-namespace QIT_CLI\PreCommand\Configuration;
+namespace QIT_CLI\PreCommand\Configuration\Parser;
 
-use Opis\JsonSchema\{Validator, ValidationResult, Errors\ErrorFormatter};
+use Opis\JsonSchema\{Errors\ErrorFormatter, Validator};
 
 /**
  * Base JSON parser with common functionality for schema validation and JSON processing
