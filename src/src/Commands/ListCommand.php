@@ -13,17 +13,12 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
-class ListCommand extends Command {
+class ListCommand extends QITCommand {
 	protected static $defaultName = 'list-tests'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Cache $cache */
-	protected $cache;
-
-	/** @var Auth $auth */
-	protected $auth;
-
-	/** @var WooExtensionsList $woo_extensions_list */
-	protected $woo_extensions_list;
+	protected Cache $cache;
+	protected Auth $auth;
+	protected WooExtensionsList $woo_extensions_list;
 
 	public function __construct( Cache $cache, Auth $auth, WooExtensionsList $woo_extensions_list ) {
 		$this->cache               = $cache;
@@ -32,7 +27,8 @@ class ListCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$test_types_list = implode( ', ', $this->cache->get_manager_sync_data( 'test_types' ) );
 		$this
 			->setDescription( 'List test runs.' )
@@ -49,7 +45,7 @@ HELP
 			);
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		if ( $input->getOption( 'extensions' ) ) {
 			foreach ( explode( ',', $input->getOption( 'extensions' ) ) as $e ) {
 				if ( is_numeric( $e ) ) {
@@ -239,6 +235,6 @@ HELP
 			->setRows( $test_runs );
 		$table->render();
 
-		return Command::SUCCESS;
+		return self::SUCCESS;
 	}
 }

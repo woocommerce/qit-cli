@@ -3,13 +3,12 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\WooExtensionsList;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class WooExtensionsCommand extends Command {
+class WooExtensionsCommand extends QITCommand {
 	protected static $defaultName = 'extensions'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/** @var WooExtensionsList $woo_extensions_list */
@@ -20,20 +19,21 @@ class WooExtensionsCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'List the WooExtensions you have access to test.' )
 			->addOption( 'refresh', 'r', InputOption::VALUE_NONE, '(Optional) Manually refresh the list of available Woo Extensions to test (This happens automatically once a day).' )
 			->addOption( 'deps', 'd', InputOption::VALUE_NONE, '(Optional) Include dependencies in the list.' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		if ( $input->getOption( 'refresh' ) === true ) {
 			$this->woo_extensions_list->fetch_woo_extensions_available();
 
 			$output->writeln( 'Woo Extensions list updated.' );
 
-			return Command::SUCCESS;
+			return self::SUCCESS;
 		}
 
 		$woo_extensions = $this->woo_extensions_list->get_woo_extension_list();
@@ -62,6 +62,6 @@ class WooExtensionsCommand extends Command {
 			->setRows( $woo_extensions );
 		$table->render();
 
-		return Command::SUCCESS;
+		return self::SUCCESS;
 	}
 }

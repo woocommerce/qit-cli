@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands\CustomTests;
 
+use QIT_CLI\Commands\QITCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,10 +13,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use function QIT_CLI\normalize_path;
 
-class ScaffoldE2ECommand extends Command {
+class ScaffoldE2ECommand extends QITCommand {
 	protected static $defaultName = 'scaffold:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->addArgument( 'path', InputArgument::REQUIRED, 'The path to scaffold an example E2E test.' )
 			->addOption( 'with-shared', 's', InputOption::VALUE_NONE, 'Include shared setup examples.' )
@@ -23,7 +25,7 @@ class ScaffoldE2ECommand extends Command {
 			->setDescription( 'Scaffold an example E2E test.' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$path = $input->getArgument( 'path' );
 
 		$path_to_generate = normalize_path( $path );

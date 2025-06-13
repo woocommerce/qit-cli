@@ -2,31 +2,31 @@
 
 namespace QIT_CLI\Commands\Tunnel;
 
-use Symfony\Component\Console\Command\Command;
+use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Cache;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
-class TunnelSetDefaultCommand extends Command {
+class TunnelSetDefaultCommand extends QITCommand {
 	protected static $defaultName = 'tunnel:set-default'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Cache */
-	protected $cache;
+	protected Cache $cache;
 
 	public function __construct( Cache $cache ) {
 		parent::__construct();
 		$this->cache = $cache;
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'Set the default tunneling method for QIT CLI.' )
 			->setHelp( 'Allows you to set your preferred default tunneling method.' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$available_methods = array_keys( TunnelRunner::$tunnel_map );
 
 		$usable_methods = [];
@@ -50,7 +50,7 @@ class TunnelSetDefaultCommand extends Command {
 
 		if ( empty( $usable_methods ) ) {
 			$output->writeln( '<error>No usable and configured tunneling methods are available on this system.</error>' );
-			return Command::FAILURE;
+			return self::FAILURE;
 		}
 
 		$helper   = $this->getHelper( 'question' );
@@ -61,12 +61,12 @@ class TunnelSetDefaultCommand extends Command {
 		);
 		$question->setErrorMessage( 'Method %s is invalid.' );
 
-		$method = $helper->ask( $input, $output, $question );
+		$default_method = $helper->ask( $input, $output, $question );
 
-		// Save the default method.
-		$this->cache->set( 'tunnel_default', $method, -1 );
-		$output->writeln( '<info>Default tunneling method set to: ' . $method . '</info>' );
+		$this->cache->set( 'tunnel_default', $default_method, -1 );
 
-		return Command::SUCCESS;
+		$output->writeln( '<info>Default tunneling method set to: ' . $default_method . '</info>' );
+
+		return self::SUCCESS;
 	}
 }

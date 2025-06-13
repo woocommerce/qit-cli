@@ -5,17 +5,16 @@ namespace QIT_CLI\Commands\Group;
 use QIT_CLI\Cache;
 use QIT_CLI\TestGroup;
 use Symfony\Component\Console\Command\Command;
+use QIT_CLI\Commands\QITCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GroupClearCommand extends Command {
+class GroupClearCommand extends QITCommand {
 	protected static $defaultName = 'group:clear'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Cache */
-	protected $cache;
+	protected Cache $cache;
 
-	/** @var TestGroup */
-	protected $test_group;
+	protected TestGroup $test_group;
 
 	public function __construct( Cache $cache, TestGroup $test_group ) {
 		$this->cache      = $cache;
@@ -23,12 +22,13 @@ class GroupClearCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'Clear the group cache.' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ) {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$group = $this->test_group->get();
 
 		if ( empty( $group ) ) {
@@ -41,6 +41,6 @@ class GroupClearCommand extends Command {
 		$this->cache->delete( 'group' );
 		$output->writeln( '<info>Group cleared.</info>' );
 
-		return Command::SUCCESS;
+		return self::SUCCESS;
 	}
 }

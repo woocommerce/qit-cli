@@ -92,7 +92,8 @@ class CreateRunCommands extends DynamicCommandCreator {
 				parent::__construct();
 			}
 
-			public function execute( InputInterface $input, OutputInterface $output ) {
+
+			protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 				try {
 					$options = $this->parse_options( $input );
 				} catch ( \Exception $e ) {

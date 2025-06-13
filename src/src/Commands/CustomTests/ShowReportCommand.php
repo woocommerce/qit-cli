@@ -3,6 +3,7 @@
 namespace QIT_CLI\Commands\CustomTests;
 
 use QIT_CLI\Cache;
+use QIT_CLI\Commands\QITCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
@@ -12,18 +13,18 @@ use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Process\Process;
 use function QIT_CLI\open_in_browser;
 
-class ShowReportCommand extends Command {
+class ShowReportCommand extends QITCommand {
 	protected static $defaultName = 'e2e-report'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Cache */
-	protected $cache;
+	protected Cache $cache;
 
 	public function __construct( Cache $cache ) {
 		parent::__construct();
 		$this->cache = $cache;
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->addArgument( 'report_dir', InputArgument::OPTIONAL, '(Optional) The report directory. If not set, will show the last report.' )
 			->addOption( 'local', null, null, 'Force showing the local report instead of the remote one.' )
@@ -31,7 +32,7 @@ class ShowReportCommand extends Command {
 			->setDescription( 'Shows a test report.' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		// Determine the report directories.
 		if ( ! is_null( $input->getArgument( 'report_dir' ) ) ) {
 			$local_report  = $input->getArgument( 'report_dir' );

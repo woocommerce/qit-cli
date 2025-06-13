@@ -3,6 +3,7 @@
 namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\App;
+use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableSeparator;
@@ -13,7 +14,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Terminal;
 use function QIT_CLI\format_elapsed_time;
 
-class ListEnvironmentCommand extends Command {
+class ListEnvironmentCommand extends QITCommand {
 	/** @var EnvironmentMonitor */
 	protected $environment_monitor;
 
@@ -24,13 +25,14 @@ class ListEnvironmentCommand extends Command {
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'List running environments.' )
 			->addOption( 'field', 'f', InputOption::VALUE_OPTIONAL, 'Show just a specific field.' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$running = $this->environment_monitor->get();
 
 		if ( empty( $running ) ) {

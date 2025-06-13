@@ -6,7 +6,7 @@ use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
-use Symfony\Component\Console\Command\Command;
+use QIT_CLI\Commands\QITCommand;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\NullOutput;
@@ -14,12 +14,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use function QIT_CLI\format_elapsed_time;
 
-class DownEnvironmentCommand extends Command {
-	/** @var E2EEnvironment */
-	protected $e2e_environment;
+class DownEnvironmentCommand extends QITCommand {
+	protected E2EEnvironment $e2e_environment;
 
-	/** @var EnvironmentMonitor */
-	protected $environment_monitor;
+	protected EnvironmentMonitor $environment_monitor;
 
 	protected static $defaultName = 'env:down'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
@@ -29,19 +27,20 @@ class DownEnvironmentCommand extends Command {
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'Stops a local test environment.' )
 			->setAliases( [ 'env:stop' ] );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$running_environments = $this->environment_monitor->get();
 
 		if ( empty( $running_environments ) ) {
 			$output->writeln( '<info>No environments running.</info>' );
 
-			return Command::SUCCESS;
+			return self::SUCCESS;
 		}
 
 		$selected_environment = null;
@@ -91,7 +90,7 @@ class DownEnvironmentCommand extends Command {
 
 		$output->write( "\r<info>Stopped all environments [{$total_environments}/{$total_environments}].</info>" );
 
-		return Command::SUCCESS;
+		return self::SUCCESS;
 	}
 
 	private function stop_environment( EnvInfo $environment, OutputInterface $output ): void {
