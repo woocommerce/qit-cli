@@ -9,41 +9,41 @@ use Spatie\Snapshots\MatchesSnapshots;
 class TestPackageManifestParserTest extends TestCase {
 	use MatchesSnapshots;
 
-	private $tempDir = '/tmp/test_package_test';
+	private $temp_dir = '/tmp/test_package_test';
 	private $parser;
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->deleteDir( $this->tempDir );
-		mkdir( $this->tempDir, 0777, true );
+		$this->delete_dir( $this->temp_dir );
+		mkdir( $this->temp_dir, 0777, true );
 		$this->parser = new TestPackageManifestParser();
 	}
 
 	protected function tearDown(): void {
-		$this->deleteDir( $this->tempDir );
+		$this->delete_dir( $this->temp_dir );
 		parent::tearDown();
 	}
 
-	public function testMinimalValidManifest(): void {
-		$manifestFile = $this->tempDir . '/manifest.json';
-		$manifest     = <<<'JSON'
+	public function test_minimal_valid_manifest(): void {
+		$manifest_file = $this->temp_dir . '/manifest.json';
+		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
     "test_type": "e2e"
 }
 JSON;
-		file_put_contents( $manifestFile, $manifest );
+		file_put_contents( $manifest_file, $manifest );
 
-		$parsed = $this->parser->parse( $manifestFile );
+		$parsed = $this->parser->parse( $manifest_file );
 
 		$this->assertEquals( 'e2e', $parsed['test_type'] );
 		$this->assertArrayHasKey( '$schema', $parsed );
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed, JSON_PRETTY_PRINT ) );
 	}
 
-	public function testCompleteManifest(): void {
-		$manifestFile = $this->tempDir . '/manifest.json';
-		$manifest     = <<<'JSON'
+	public function test_complete_manifest(): void {
+		$manifest_file = $this->temp_dir . '/manifest.json';
+		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
     "test_type": "e2e",
@@ -101,14 +101,14 @@ JSON;
 }
 JSON;
 		// Create required directories
-		mkdir( $this->tempDir . '/tests', 0777, true );
-		mkdir( $this->tempDir . '/mu-plugins', 0777, true );
-		file_put_contents( $this->tempDir . '/cleanup.sh', '#!/bin/bash' );
-		chmod( $this->tempDir . '/cleanup.sh', 0755 );
+		mkdir( $this->temp_dir . '/tests', 0777, true );
+		mkdir( $this->temp_dir . '/mu-plugins', 0777, true );
+		file_put_contents( $this->temp_dir . '/cleanup.sh', '#!/bin/bash' );
+		chmod( $this->temp_dir . '/cleanup.sh', 0755 );
 
-		file_put_contents( $manifestFile, $manifest );
+		file_put_contents( $manifest_file, $manifest );
 
-		$parsed = $this->parser->parse( $manifestFile );
+		$parsed = $this->parser->parse( $manifest_file );
 
 		// Basic properties
 		$this->assertEquals( 'e2e', $parsed['test_type'] );
@@ -150,9 +150,9 @@ JSON;
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed, JSON_PRETTY_PRINT ) );
 	}
 
-	public function testLifecycleNormalization(): void {
-		$manifestFile = $this->tempDir . '/manifest.json';
-		$manifest     = <<<'JSON'
+	public function test_lifecycle_normalization(): void {
+		$manifest_file = $this->temp_dir . '/manifest.json';
+		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
     "test_type": "unit",
@@ -169,13 +169,13 @@ JSON;
 }
 JSON;
 		// Create script file
-		mkdir( $this->tempDir . '/scripts', 0777, true );
-		file_put_contents( $this->tempDir . '/scripts/setup.sh', '#!/bin/bash' );
-		chmod( $this->tempDir . '/scripts/setup.sh', 0755 );
+		mkdir( $this->temp_dir . '/scripts', 0777, true );
+		file_put_contents( $this->temp_dir . '/scripts/setup.sh', '#!/bin/bash' );
+		chmod( $this->temp_dir . '/scripts/setup.sh', 0755 );
 
-		file_put_contents( $manifestFile, $manifest );
+		file_put_contents( $manifest_file, $manifest );
 
-		$parsed = $this->parser->parse( $manifestFile );
+		$parsed = $this->parser->parse( $manifest_file );
 
 		$this->assertCount( 3, $parsed['lifecycle']['test']['setup'] );
 
@@ -194,9 +194,9 @@ JSON;
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed, JSON_PRETTY_PRINT ) );
 	}
 
-	public function testEnvVarTypeConversion(): void {
-		$manifestFile = $this->tempDir . '/manifest.json';
-		$manifest     = <<<'JSON'
+	public function test_env_var_type_conversion(): void {
+		$manifest_file = $this->temp_dir . '/manifest.json';
+		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
     "test_type": "security",
@@ -211,9 +211,9 @@ JSON;
     }
 }
 JSON;
-		file_put_contents( $manifestFile, $manifest );
+		file_put_contents( $manifest_file, $manifest );
 
-		$parsed = $this->parser->parse( $manifestFile );
+		$parsed = $this->parser->parse( $manifest_file );
 
 		// All values should be strings
 		foreach ( $parsed['env_vars'] as $key => $value ) {
@@ -231,9 +231,9 @@ JSON;
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed, JSON_PRETTY_PRINT ) );
 	}
 
-	public function testPathsRemainRelative(): void {
-		$manifestFile = $this->tempDir . '/manifest.json';
-		$manifest     = <<<'JSON'
+	public function test_paths_remain_relative(): void {
+		$manifest_file = $this->temp_dir . '/manifest.json';
+		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
     "test_type": "integration",
@@ -249,13 +249,13 @@ JSON;
 }
 JSON;
 		// Create directories
-		mkdir( $this->tempDir . '/src/tests', 0777, true );
-		mkdir( $this->tempDir . '/output/coverage', 0777, true );
-		mkdir( $this->tempDir . '/plugins', 0777, true );
+		mkdir( $this->temp_dir . '/src/tests', 0777, true );
+		mkdir( $this->temp_dir . '/output/coverage', 0777, true );
+		mkdir( $this->temp_dir . '/plugins', 0777, true );
 
-		file_put_contents( $manifestFile, $manifest );
+		file_put_contents( $manifest_file, $manifest );
 
-		$parsed = $this->parser->parse( $manifestFile );
+		$parsed = $this->parser->parse( $manifest_file );
 
 		// All paths should remain relative as specified in the manifest
 		$this->assertEquals( './src/tests', $parsed['test_dir'] );
@@ -269,59 +269,59 @@ JSON;
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed, JSON_PRETTY_PRINT ) );
 	}
 
-	public function testMissingRequiredField(): void {
-		$manifestFile = $this->tempDir . '/manifest.json';
-		$manifest     = <<<'JSON'
+	public function test_missing_required_field(): void {
+		$manifest_file = $this->temp_dir . '/manifest.json';
+		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
     "description": "Missing test_type field"
 }
 JSON;
-		file_put_contents( $manifestFile, $manifest );
+		file_put_contents( $manifest_file, $manifest );
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( 'Schema validation failed' );
 
-		$this->parser->parse( $manifestFile );
+		$this->parser->parse( $manifest_file );
 	}
 
-	public function testInvalidSchema(): void {
-		$manifestFile = $this->tempDir . '/manifest.json';
-		$manifest     = <<<'JSON'
+	public function test_invalid_schema(): void {
+		$manifest_file = $this->temp_dir . '/manifest.json';
+		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
     "test_type": "e2e",
     "invalid_field": "This field is not in the schema"
 }
 JSON;
-		file_put_contents( $manifestFile, $manifest );
+		file_put_contents( $manifest_file, $manifest );
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( 'Schema validation failed' );
 
-		$this->parser->parse( $manifestFile );
+		$this->parser->parse( $manifest_file );
 	}
 
-	public function testMissingTestDir(): void {
-		$manifestFile = $this->tempDir . '/manifest.json';
-		$manifest     = <<<'JSON'
+	public function test_missing_test_dir(): void {
+		$manifest_file = $this->temp_dir . '/manifest.json';
+		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
     "test_type": "e2e",
     "test_dir": "./nonexistent"
 }
 JSON;
-		file_put_contents( $manifestFile, $manifest );
+		file_put_contents( $manifest_file, $manifest );
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( 'Test directory not found' );
 
-		$this->parser->parse( $manifestFile );
+		$this->parser->parse( $manifest_file );
 	}
 
-	public function testMissingLifecycleScript(): void {
-		$manifestFile = $this->tempDir . '/manifest.json';
-		$manifest     = <<<'JSON'
+	public function test_missing_lifecycle_script(): void {
+		$manifest_file = $this->temp_dir . '/manifest.json';
+		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
     "test_type": "e2e",
@@ -334,17 +334,17 @@ JSON;
     }
 }
 JSON;
-		file_put_contents( $manifestFile, $manifest );
+		file_put_contents( $manifest_file, $manifest );
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( 'Lifecycle script not found: ./scripts/missing.sh' );
 
-		$this->parser->parse( $manifestFile );
+		$this->parser->parse( $manifest_file );
 	}
 
-	public function testEmptyLifecycleCommands(): void {
-		$manifestFile = $this->tempDir . '/manifest.json';
-		$manifest     = <<<'JSON'
+	public function test_empty_lifecycle_commands(): void {
+		$manifest_file = $this->temp_dir . '/manifest.json';
+		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
     "test_type": "phpstan",
@@ -357,9 +357,9 @@ JSON;
     }
 }
 JSON;
-		file_put_contents( $manifestFile, $manifest );
+		file_put_contents( $manifest_file, $manifest );
 
-		$parsed = $this->parser->parse( $manifestFile );
+		$parsed = $this->parser->parse( $manifest_file );
 
 		$this->assertCount( 0, $parsed['lifecycle']['test']['setup'] );
 		$this->assertCount( 1, $parsed['lifecycle']['test']['run'] );
@@ -368,47 +368,47 @@ JSON;
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed, JSON_PRETTY_PRINT ) );
 	}
 
-	public function testInvalidJson(): void {
-		$manifestFile = $this->tempDir . '/manifest.json';
-		file_put_contents( $manifestFile, '{ invalid json' );
+	public function test_invalid_json(): void {
+		$manifest_file = $this->temp_dir . '/manifest.json';
+		file_put_contents( $manifest_file, '{ invalid json' );
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( 'Invalid JSON' );
 
-		$this->parser->parse( $manifestFile );
+		$this->parser->parse( $manifest_file );
 	}
 
-	public function testMissingFile(): void {
+	public function test_missing_file(): void {
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( 'File not found' );
 
-		$this->parser->parse( $this->tempDir . '/nonexistent.json' );
+		$this->parser->parse( $this->temp_dir . '/nonexistent.json' );
 	}
 
-	public function testWrongSchema(): void {
-		$manifestFile = $this->tempDir . '/manifest.json';
-		$manifest     = <<<'JSON'
+	public function test_wrong_schema(): void {
+		$manifest_file = $this->temp_dir . '/manifest.json';
+		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/qit",
     "test_type": "e2e"
 }
 JSON;
-		file_put_contents( $manifestFile, $manifest );
+		file_put_contents( $manifest_file, $manifest );
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( 'Schema validation failed' );
 
-		$this->parser->parse( $manifestFile );
+		$this->parser->parse( $manifest_file );
 	}
 
-	private function deleteDir( string $dir ): void {
+	private function delete_dir( string $dir ): void {
 		if ( ! is_dir( $dir ) ) {
 			return;
 		}
 		$files = array_diff( scandir( $dir ), [ '.', '..' ] );
 		foreach ( $files as $file ) {
 			$path = "$dir/$file";
-			is_dir( $path ) ? $this->deleteDir( $path ) : unlink( $path );
+			is_dir( $path ) ? $this->delete_dir( $path ) : unlink( $path );
 		}
 		rmdir( $dir );
 	}

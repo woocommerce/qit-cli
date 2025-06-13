@@ -9,32 +9,32 @@ use Opis\JsonSchema\{Validator, ValidationResult, Errors\ErrorFormatter};
  */
 abstract class BaseJsonParser {
 	protected Validator $validator;
-	protected ErrorFormatter $errorFormatter;
-	protected array $schemaCache = [];
-	protected string $rootPath;
+	protected ErrorFormatter $error_formatter;
+	protected array $schema_cache = [];
+	protected string $root_path;
 
 	public function __construct() {
 		$this->validator = new Validator();
 		$this->validator->setMaxErrors( 10 );
-		$this->errorFormatter = new ErrorFormatter();
-		$this->loadSchemas();
+		$this->error_formatter = new ErrorFormatter();
+		$this->load_schemas();
 	}
 
 	/**
 	 * Get the schema type this parser handles
 	 */
-	abstract protected function getSchemaType(): string;
+	abstract protected function get_schema_type(): string;
 
 	/**
 	 * Apply business logic after validation
 	 */
-	abstract protected function applyBusinessLogic( array $config ): array;
+	abstract protected function apply_business_logic( array $config ): array;
 
 	/**
 	 * Load schemas into cache
 	 */
-	protected function loadSchemas(): void {
-		$schemaDir = \QIT_CLI\App::getVar( 'src_dir' ) . '/PreCommand/Schemas';
+	protected function load_schemas(): void {
+		$schema_dir = \QIT_CLI\App::getVar( 'src_dir' ) . '/PreCommand/Schemas';
 
 		// Load all available schemas
 		$schemas = [
@@ -43,9 +43,9 @@ abstract class BaseJsonParser {
 		];
 
 		foreach ( $schemas as $type => $filename ) {
-			$schemaFile = $schemaDir . '/' . $filename;
-			if ( file_exists( $schemaFile ) ) {
-				$this->schemaCache[ $type ] = json_decode( file_get_contents( $schemaFile ) );
+			$schema_file = $schema_dir . '/' . $filename;
+			if ( file_exists( $schema_file ) ) {
+				$this->schema_cache[ $type ] = json_decode( file_get_contents( $schema_file ) );
 			}
 		}
 	}
@@ -53,43 +53,43 @@ abstract class BaseJsonParser {
 	/**
 	 * Parse a JSON file with schema validation
 	 */
-	public function parse( string $filePath ): array {
-		$this->rootPath = dirname( $filePath );
+	public function parse( string $file_path ): array {
+		$this->root_path = dirname( $file_path );
 
 		// Load and validate JSON
-		$config = $this->loadAndValidateJson( $filePath );
+		$config = $this->load_and_validate_json( $file_path );
 
 		// Apply business logic
-		return $this->applyBusinessLogic( $config );
+		return $this->apply_business_logic( $config );
 	}
 
 	/**
 	 * Load JSON file and validate against schema
 	 */
-	protected function loadAndValidateJson( string $filePath ): array {
-		if ( ! file_exists( $filePath ) ) {
-			throw new \RuntimeException( "File not found: $filePath" );
+	protected function load_and_validate_json( string $file_path ): array {
+		if ( ! file_exists( $file_path ) ) {
+			throw new \RuntimeException( "File not found: $file_path" );
 		}
 
-		$contents = file_get_contents( $filePath );
+		$contents = file_get_contents( $file_path );
 		$data     = json_decode( $contents );
 
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
-			throw new \RuntimeException( "Invalid JSON in $filePath: " . json_last_error_msg() );
+			throw new \RuntimeException( "Invalid JSON in $file_path: " . json_last_error_msg() );
 		}
 
 		// Validate against schema
-		$schemaType = $this->getSchemaType();
-		if ( ! isset( $this->schemaCache[ $schemaType ] ) ) {
-			throw new \RuntimeException( "Unknown schema type: $schemaType" );
+		$schema_type = $this->get_schema_type();
+		if ( ! isset( $this->schema_cache[ $schema_type ] ) ) {
+			throw new \RuntimeException( "Unknown schema type: $schema_type" );
 		}
 
-		$result = $this->validator->validate( $data, $this->schemaCache[ $schemaType ] );
+		$result = $this->validator->validate( $data, $this->schema_cache[ $schema_type ] );
 
 		if ( ! $result->isValid() ) {
-			$errors   = $this->errorFormatter->format( $result->error() );
-			$errorMsg = $this->formatValidationErrors( $errors, $filePath );
-			throw new \RuntimeException( "Schema validation failed for $filePath:\n$errorMsg" );
+			$errors    = $this->error_formatter->format( $result->error() );
+			$error_msg = $this->format_validation_errors( $errors, $file_path );
+			throw new \RuntimeException( "Schema validation failed for $file_path:\n$error_msg" );
 		}
 
 		// Return as array
@@ -99,7 +99,7 @@ abstract class BaseJsonParser {
 	/**
 	 * Format validation errors for output
 	 */
-	protected function formatValidationErrors( $errors, string $context ): string {
+	protected function format_validation_errors( $errors, string $context ): string {
 		$output = '';
 
 		foreach ( $errors as $path => $messages ) {
@@ -118,18 +118,18 @@ abstract class BaseJsonParser {
 	/**
 	 * Deep merge two arrays
 	 */
-	protected function deepMerge( array $base, array $override ): array {
+	protected function deep_merge( array $base, array $override ): array {
 		$merged = $base;
 
 		foreach ( $override as $key => $value ) {
 			if ( is_array( $value ) && isset( $merged[ $key ] ) && is_array( $merged[ $key ] ) ) {
 				// Keys that should replace rather than merge
-				$replaceKeys = [ 'plugins', 'themes', 'volumes', 'env_vars', 'envs', 'secrets', 'test_packages' ];
+				$replace_keys = [ 'plugins', 'themes', 'volumes', 'env_vars', 'envs', 'secrets', 'test_packages' ];
 
-				if ( in_array( $key, $replaceKeys ) ) {
+				if ( in_array( $key, $replace_keys ) ) {
 					$merged[ $key ] = $value;
 				} else {
-					$merged[ $key ] = $this->deepMerge( $merged[ $key ], $value );
+					$merged[ $key ] = $this->deep_merge( $merged[ $key ], $value );
 				}
 			} else {
 				$merged[ $key ] = $value;
