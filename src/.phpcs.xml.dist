@@ -7,7 +7,7 @@
     <arg name="extensions" value="php"/>
     <arg name="parallel" value="16"/>
 
-    <config name="testVersion" value="7.2-"/>
+    <config name="testVersion" value="7.4-"/>
     <rule ref="PHPCompatibility"/>
 
     <!-- Do not fail PHPCS CI over warnings -->
@@ -43,6 +43,7 @@
         <exclude name="Squiz.Commenting.FunctionComment.MissingParamTag"/>
         <exclude name="Squiz.Commenting.FunctionCommentThrowTag.Missing"/>
         <exclude name="Squiz.PHP.CommentedOutCode.Found"/>
+        <exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
 
         <exclude name="PSR2.Classes.PropertyDeclaration.Underscore"/>
 
