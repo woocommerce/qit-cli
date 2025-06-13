@@ -102,7 +102,7 @@ class DependencyResolver {
 				try {
 					$id          = $this->woo_extensions_list->get_woo_extension_id_by_slug( $ext->slug );
 					$wccom_ids[] = $id;
-				} catch ( \UnexpectedValueException $e ) {
+				} catch ( \UnexpectedValueException $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 					// Not a WCCOM extension
 				}
 			}

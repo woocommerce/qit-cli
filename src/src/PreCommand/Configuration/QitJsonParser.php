@@ -10,7 +10,7 @@ class QitJsonParser extends BaseJsonParser {
 	private TestPackageManifestParser $package_parser;
 	private array $loaded_packages = []; // Cache for loaded test packages
 	private string $current_file_path; // Track the current file being parsed
-	private array $path_contexts = []; // Track which directory each path came from
+	private array $path_contexts        = []; // Track which directory each path came from
 	private ?string $url_extend_context = null; // Track context for URL extends
 
 	public function __construct() {
