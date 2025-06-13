@@ -19,10 +19,10 @@ class OpenCommand extends QITCommand {
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$command = $this->getApplication()->find( GetCommand::getDefaultName() );
-		$command->run( new ArrayInput( [
+
+		return $command->run( new ArrayInput( [
 			'test_run_id' => $input->getArgument( 'test_run_id' ),
 			'--open'      => true,
 		] ), $output );
-		return self::SUCCESS;
 	}
 }

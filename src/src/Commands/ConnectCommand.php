@@ -4,6 +4,7 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\Commands\Partner\AddPartner;
 use QIT_CLI\RequestBuilder;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -44,7 +45,7 @@ class ConnectCommand extends QITCommand {
 
 		$command = $this->getApplication()->find( AddPartner::getDefaultName() );
 
-		return self::SUCCESS;
+		return $command->run( new ArrayInput( [] ), $output );
 	}
 
 	/**
