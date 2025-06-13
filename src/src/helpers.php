@@ -2,10 +2,12 @@
 
 namespace QIT_CLI;
 
+use QIT_CLI\IO\Output;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Output\OutputInterface;
 
 function is_windows(): bool {
 	if ( defined( 'UNIT_TESTS' ) && UNIT_TESTS ) {
@@ -233,4 +235,76 @@ function is_option_explicitly_provided( InputInterface $input, string $option_na
 
 	// Default to false for other input types
 	return false;
+}
+
+/**
+ * Write debug output only when verbose mode is enabled
+ *
+ * @param string|array $messages The message(s) to output
+ * @param string $type The type of message (info, comment, error, etc.)
+ * @return void
+ */
+function debug_log( $messages, string $type = 'comment' ): void {
+	$output = App::make( Output::class );
+
+	if ( ! $output->isVerbose() ) {
+		return;
+	}
+
+	if ( ! is_array( $messages ) ) {
+		$messages = [ $messages ];
+	}
+
+	foreach ( $messages as $message ) {
+		switch ( $type ) {
+			case 'info':
+				$output->writeln( "<info>[DEBUG] $message</info>" );
+				break;
+			case 'error':
+				$output->writeln( "<e>[DEBUG] $message</e>" );
+				break;
+			case 'comment':
+			default:
+				$output->writeln( "<comment>[DEBUG] $message</comment>" );
+				break;
+		}
+	}
+}
+
+/**
+ * Write very verbose debug output (requires -vv or -vvv)
+ *
+ * @param string|array $messages The message(s) to output
+ * @param string $type The type of message
+ * @return void
+ */
+function debug_log_verbose( $messages, string $type = 'comment' ): void {
+	$output = App::make( Output::class );
+
+	if ( ! $output->isVeryVerbose() ) {
+		return;
+	}
+
+	debug_log( $messages, $type );
+}
+
+/**
+ * Dump a variable for debugging (only in verbose mode)
+ *
+ * @param mixed $var The variable to dump
+ * @param string $label Optional label for the dump
+ * @return void
+ */
+function debug_dump( $var, string $label = '' ): void {
+	$output = App::make( Output::class );
+
+	if ( ! $output->isVerbose() ) {
+		return;
+	}
+
+	$dump = var_export( $var, true );
+	if ( $label ) {
+		$output->writeln( "<comment>[DEBUG] $label:</comment>" );
+	}
+	$output->writeln( "<comment>$dump</comment>" );
 }

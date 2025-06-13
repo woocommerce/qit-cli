@@ -3,7 +3,7 @@
 namespace QIT_CLI\PreCommand\Configuration\Parser;
 
 /**
- * Parser for qit.json configuration files
+ * Enhanced Parser for qit.json configuration files with full feature support
  */
 class QitJsonParser extends BaseJsonParser {
 	private array $parsed_config = [];
@@ -38,7 +38,7 @@ class QitJsonParser extends BaseJsonParser {
 	protected function apply_business_logic( array $config ): array {
 		$this->debug_log( '=== apply_business_logic called ===' );
 
-		// Resolve extends first, passing the actual file path
+		// Resolve extends first
 		$config = $this->resolve_extends( $config, $this->current_file_path );
 
 		// Ensure SUT exists
@@ -62,36 +62,80 @@ class QitJsonParser extends BaseJsonParser {
 			$config['test_types'] = $this->resolve_test_type_extends( $config['test_types'] );
 		}
 
+		// Process test packages to load manifests
+		if ( isset( $config['test_types'] ) ) {
+			$this->load_all_test_packages( $config['test_types'] );
+		}
+
+		// Process setup_only packages in environments
+		if ( isset( $config['environments'] ) ) {
+			$this->load_setup_packages( $config['environments'] );
+		}
+
 		// Validate cross-references
 		$this->debug_log( 'Starting cross-reference validation' );
 		$this->validate_cross_references( $config );
 
 		$this->parsed_config = $config;
+
+		// Add loaded test packages to the config
+		$this->parsed_config['test_packages'] = $this->loaded_packages;
+
 		$this->debug_log( '=== apply_business_logic completed ===' );
 
-		return $config;
+		return $this->parsed_config;
+	}
+
+	/**
+	 * Load all test packages referenced in test types
+	 */
+	private function load_all_test_packages( array $test_types ): void {
+		foreach ( $test_types as $type => $profiles ) {
+			foreach ( $profiles as $profile => $settings ) {
+				if ( isset( $settings['test_packages'] ) ) {
+					foreach ( $settings['test_packages'] as $package_ref ) {
+						$this->get_test_package( $package_ref );
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Load setup-only packages from environments
+	 */
+	private function load_setup_packages( array $environments ): void {
+		foreach ( $environments as $env_name => $env ) {
+			if ( isset( $env['setup_only'] ) ) {
+				foreach ( $env['setup_only'] as $package_ref ) {
+					$this->get_test_package( $package_ref );
+				}
+			}
+		}
 	}
 
 	/**
 	 * Get a loaded test package by reference
-	 * This method loads packages on-demand when needed
 	 */
 	public function get_test_package( string $reference ): array {
-		// Check cache first
 		if ( isset( $this->loaded_packages[ $reference ] ) ) {
 			return $this->loaded_packages[ $reference ];
 		}
 
-		// Parse the reference to determine type
 		if ( $this->is_local_package_reference( $reference ) ) {
-			// Local file reference (e.g., "tests/e2e/checkout.json")
-			$context                             = $this->get_path_context( $reference );
-			$file_path                           = $this->resolve_path_with_context( $reference, $context );
-			$this->loaded_packages[ $reference ] = $this->package_parser->parse( $file_path );
+			$context = $this->get_path_context( $reference );
+			$file_path = $this->resolve_path_with_context( $reference, $context );
+
+			try {
+				$this->loaded_packages[ $reference ] = $this->package_parser->parse( $file_path );
+				$this->loaded_packages[ $reference ]['reference'] = $reference;
+				$this->loaded_packages[ $reference ]['local'] = true;
+				$this->loaded_packages[ $reference ]['path'] = $file_path;
+			} catch ( \Exception $e ) {
+				throw new \RuntimeException( "Failed to parse test package '$reference': " . $e->getMessage() );
+			}
 		} else {
-			// Remote reference (e.g., "woocommerce/minimal:stable")
-			// For remote packages, we don't have the actual manifest
-			// Just return a placeholder structure
+			// Remote reference
 			$this->loaded_packages[ $reference ] = $this->create_remote_package_stub( $reference );
 		}
 
@@ -135,26 +179,50 @@ class QitJsonParser extends BaseJsonParser {
 	}
 
 	private function is_local_package_reference( string $reference ): bool {
-		// Local references contain paths (/) but no colons for versions
-		$is_local = strpos( $reference, '/' ) !== false && strpos( $reference, ':' ) === false;
-		$this->debug_log( "is_local_package_reference('$reference'): " . ( $is_local ? 'true' : 'false' ) );
+		// Check for local/ prefix (new format)
+		if ( strpos( $reference, 'local/' ) === 0 ) {
+			return true;
+		}
 
-		return $is_local;
+		// Check for file paths
+		if ( strpos( $reference, '/' ) !== false && strpos( $reference, ':' ) === false ) {
+			return true;
+		}
+
+		// Check for .json extension
+		if ( substr( $reference, -5 ) === '.json' ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	private function create_remote_package_stub( string $reference ): array {
-		// Parse remote reference format: vendor/package:version
-		if ( preg_match( '/^([^\/]+)\/([^:]+):(.+)$/', $reference, $matches ) ) {
+		// Handle local/ prefix for new format
+		if ( strpos( $reference, 'local/' ) === 0 ) {
+			$parts = explode( '/', substr( $reference, 6 ), 2 );
 			return [
-				'vendor'    => $matches[1],
-				'package'   => $matches[2],
-				'version'   => $matches[3],
-				'remote'    => true,
-				'reference' => $reference,
+				'vendor' => 'local',
+				'package' => $parts[0],
+				'version' => $parts[1] ?? 'latest',
+				'remote' => false,
+				'local' => true,
+				'reference' => $reference
 			];
 		}
 
-		throw new \RuntimeException( "Invalid remote package reference: $reference" );
+		// Parse remote reference format: vendor/package:version
+		if ( preg_match( '/^([^\/]+)\/([^:]+):(.+)$/', $reference, $matches ) ) {
+			return [
+				'vendor' => $matches[1],
+				'package' => $matches[2],
+				'version' => $matches[3],
+				'remote' => true,
+				'reference' => $reference
+			];
+		}
+
+		throw new \RuntimeException( "Invalid package reference format: $reference" );
 	}
 
 	/**
@@ -355,25 +423,79 @@ class QitJsonParser extends BaseJsonParser {
 	 * Debug logging helper
 	 */
 	private function debug_log( string $message ): void {
-		$log_dir = '/tmp/qit';
-		if ( ! is_dir( $log_dir ) ) {
-			mkdir( $log_dir, 0777, true );
-		}
+		if ( getenv( 'QIT_DEBUG' ) ) {
+			$log_dir = '/tmp/qit';
+			if ( ! is_dir( $log_dir ) ) {
+				mkdir( $log_dir, 0777, true );
+			}
 
-		$log_file  = $log_dir . '/qit_debug.log';
-		$timestamp = date( 'Y-m-d H:i:s' );
-		file_put_contents( $log_file, "[$timestamp] $message\n", FILE_APPEND );
+			$log_file = $log_dir . '/qit_debug.log';
+			$timestamp = date( 'Y-m-d H:i:s' );
+			file_put_contents( $log_file, "[$timestamp] $message\n", FILE_APPEND );
+		}
 	}
 
+	/**
+	 * Process SUT with enhanced source type support
+	 */
 	private function process_sut( array $sut ): array {
-		// Validate source paths exist without modifying them
-		if ( isset( $sut['source'] ) ) {
-			$this->validate_sut_source( $sut['source'] );
+		// Validate required fields
+		if ( ! isset( $sut['type'] ) || ! in_array( $sut['type'], ['plugin', 'theme'] ) ) {
+			throw new \RuntimeException( "SUT type must be 'plugin' or 'theme'" );
+		}
+
+		if ( ! isset( $sut['slug'] ) ) {
+			throw new \RuntimeException( "SUT slug is required" );
+		}
+
+		if ( ! isset( $sut['source'] ) || ! isset( $sut['source']['type'] ) ) {
+			throw new \RuntimeException( "SUT source configuration is required" );
+		}
+
+		// Validate source based on type
+		$this->validate_sut_source( $sut['source'] );
+
+		// Normalize source configuration
+		switch ( $sut['source']['type'] ) {
+			case 'local':
+				if ( isset( $sut['source']['path'] ) ) {
+					$sut['source']['resolved_path'] = $this->resolve_path( $sut['source']['path'] );
+				}
+				break;
+
+			case 'zip':
+				if ( isset( $sut['source']['path'] ) ) {
+					$sut['source']['resolved_path'] = $this->resolve_path( $sut['source']['path'] );
+				}
+				break;
+
+			case 'build':
+				if ( ! isset( $sut['source']['command'] ) || ! isset( $sut['source']['output'] ) ) {
+					throw new \RuntimeException( "Build source requires 'command' and 'output'" );
+				}
+				$sut['source']['resolved_output'] = $this->resolve_path( $sut['source']['output'] );
+				break;
+
+			case 'wporg':
+			case 'wccom':
+				if ( ! isset( $sut['source']['version'] ) ) {
+					$sut['source']['version'] = 'stable';
+				}
+				break;
+
+			case 'url':
+				if ( ! isset( $sut['source']['url'] ) ) {
+					throw new \RuntimeException( "URL source requires 'url'" );
+				}
+				break;
 		}
 
 		return $sut;
 	}
 
+	/**
+	 * Validate source paths exist without modifying them
+	 */
 	private function validate_sut_source( array $source ): void {
 		switch ( $source['type'] ) {
 			case 'local':
@@ -394,6 +516,24 @@ class QitJsonParser extends BaseJsonParser {
 					}
 				}
 				break;
+
+			case 'build':
+				// Can't validate build output before build runs
+				break;
+
+			case 'url':
+				if ( ! isset( $source['url'] ) || ! filter_var( $source['url'], FILTER_VALIDATE_URL ) ) {
+					throw new \RuntimeException( "Invalid URL in SUT source" );
+				}
+				break;
+
+			case 'wporg':
+			case 'wccom':
+				// These will be validated during download
+				break;
+
+			default:
+				throw new \RuntimeException( "Unknown SUT source type: {$source['type']}" );
 		}
 	}
 
@@ -547,15 +687,114 @@ class QitJsonParser extends BaseJsonParser {
 		return $this->parsed_config;
 	}
 
+	/**
+	 * Get environment configuration with full resolution
+	 */
 	public function get_environment( string $name ): array {
 		if ( ! isset( $this->parsed_config['environments'][ $name ] ) ) {
 			throw new \RuntimeException( "Environment '$name' not found" );
 		}
 
-		return $this->parsed_config['environments'][ $name ];
+		$env = $this->parsed_config['environments'][ $name ];
+
+		// Process plugins array to ensure consistent format
+		if ( isset( $env['plugins'] ) ) {
+			$env['plugins'] = $this->normalize_extension_list( $env['plugins'], 'plugin' );
+		}
+
+		// Process themes array to ensure consistent format
+		if ( isset( $env['themes'] ) ) {
+			$env['themes'] = $this->normalize_extension_list( $env['themes'], 'theme' );
+		}
+
+		return $env;
 	}
 
+	/**
+	 * Normalize extension list to consistent format
+	 */
+	private function normalize_extension_list( array $extensions, string $type ): array {
+		$normalized = [];
+
+		foreach ( $extensions as $extension ) {
+			if ( is_string( $extension ) ) {
+				// Simple string format - assume WordPress.org
+				$normalized[] = [
+					'slug' => $extension,
+					'type' => $type,
+					'source' => [
+						'type' => 'wporg',
+						'version' => 'stable'
+					]
+				];
+			} elseif ( is_array( $extension ) ) {
+				// Already in array format
+				$extension['type'] = $type;
+
+				// Ensure source is properly formatted
+				if ( ! isset( $extension['source'] ) ) {
+					// Legacy format support
+					if ( isset( $extension['from'] ) ) {
+						$extension['source'] = [
+							'type' => $extension['from'],
+							'version' => $extension['version'] ?? 'stable'
+						];
+
+						if ( isset( $extension['path'] ) ) {
+							$extension['source']['path'] = $extension['path'];
+						}
+					} else {
+						// Default to wporg
+						$extension['source'] = [
+							'type' => 'wporg',
+							'version' => 'stable'
+						];
+					}
+				}
+
+				$normalized[] = $extension;
+			}
+		}
+
+		return $normalized;
+	}
+
+	/**
+	 * Get test configuration with full resolution
+	 */
 	public function get_test_config( string $test_type, string $profile ): array {
-		return $this->parsed_config['test_types'][ $test_type ][ $profile ] ?? [];
+		if ( ! isset( $this->parsed_config['test_types'][ $test_type ][ $profile ] ) ) {
+			return [];
+		}
+
+		$config = $this->parsed_config['test_types'][ $test_type ][ $profile ];
+
+		// Add resolved test packages
+		if ( isset( $config['test_packages'] ) ) {
+			$config['resolved_packages'] = [];
+			foreach ( $config['test_packages'] as $package_ref ) {
+				$config['resolved_packages'][ $package_ref ] = $this->get_test_package( $package_ref );
+			}
+		}
+
+		return $config;
+	}
+
+	/**
+	 * Get all groups
+	 */
+	public function get_groups(): array {
+		return $this->parsed_config['groups'] ?? [];
+	}
+
+	/**
+	 * Get specific group configuration
+	 */
+	public function get_group( string $name ): array {
+		if ( ! isset( $this->parsed_config['groups'][ $name ] ) ) {
+			throw new \RuntimeException( "Group '$name' not found" );
+		}
+
+		return $this->parsed_config['groups'][ $name ];
 	}
 }

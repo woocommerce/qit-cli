@@ -15,10 +15,10 @@ class ExtensionSetResolver {
 	protected $cache;
 	protected $extension_resolver;
 
-	public function __construct( Cache $cache, ManagerSync $manager_sync, ExtensionResolver $extension_resolver ) {
+	public function __construct( Cache $cache, ManagerSync $manager_sync) {
 		$this->cache              = $cache;
 		$this->manager_sync       = $manager_sync;
-		$this->extension_resolver = $extension_resolver;
+		$this->extension_resolver = null;
 	}
 
 	public function fetch_extension_sets_available(): void {

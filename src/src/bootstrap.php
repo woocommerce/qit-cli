@@ -39,6 +39,7 @@ use QIT_CLI\Commands\SyncCommand;
 use QIT_CLI\Commands\Tags\DeleteTestTagsCommand;
 use QIT_CLI\Commands\Tags\ListTestTagsCommand;
 use QIT_CLI\Commands\Tags\UploadTestTagsCommand;
+use QIT_CLI\Commands\TestE2ECommand;
 use QIT_CLI\Commands\Tunnel\TunnelSetDefaultCommand;
 use QIT_CLI\Commands\Tunnel\TunnelSetupCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
@@ -221,6 +222,7 @@ if ( $is_connected_to_backend ) {
 	$container->make( CreateRunCommands::class )->register_commands( $application );
 
 	$application->add( $container->make( RunActivationTestCommand::class ) );
+	$application->add( $container->make( TestE2ECommand::class ) );
 
 	// List tests runs.
 	$application->add( $container->make( ListCommand::class ) );

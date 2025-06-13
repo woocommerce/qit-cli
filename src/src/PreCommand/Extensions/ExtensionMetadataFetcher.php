@@ -67,8 +67,7 @@ class ExtensionMetadataFetcher {
 				case 'wccom':
 					$this->fetch_wccom_metadata( $group );
 					break;
-				case 'directory':
-				case 'zip':
+				case 'local':
 				case 'build':
 					// Local sources don't need metadata fetching
 					$this->process_local_metadata( $group );

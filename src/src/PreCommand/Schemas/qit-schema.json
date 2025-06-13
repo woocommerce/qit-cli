@@ -315,7 +315,8 @@
                 "oneOf": [
                   {
                     "type": "string",
-                    "description": "Simple plugin slug (will use wporg source)"
+                    "pattern": "^[a-zA-Z0-9_-]+$",
+                    "description": "Plugin slug from WordPress.org (latest stable version)"
                   },
                   {
                     "$ref": "#/definitions/pluginConfig"
@@ -330,7 +331,8 @@
                 "oneOf": [
                   {
                     "type": "string",
-                    "description": "Simple theme slug (will use wporg source)"
+                    "pattern": "^[a-zA-Z0-9_-]+$",
+                    "description": "Theme slug from WordPress.org (latest stable version)"
                   },
                   {
                     "$ref": "#/definitions/themeConfig"
@@ -364,65 +366,191 @@
     },
     "pluginConfig": {
       "type": "object",
-      "required": ["slug"],
-      "additionalProperties": false,
-      "properties": {
-        "slug": {
-          "type": "string",
-          "pattern": "^[a-zA-Z0-9_-]+$",
-          "description": "Plugin slug"
+      "required": ["slug", "from"],
+      "oneOf": [
+        {
+          "properties": {
+            "slug": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            },
+            "from": {
+              "const": "wporg"
+            },
+            "version": {
+              "type": "string",
+              "default": "stable"
+            }
+          },
+          "required": ["slug", "from"],
+          "additionalProperties": false
         },
-        "from": {
-          "type": "string",
-          "enum": ["local", "wccom", "wporg"],
-          "description": "Source for the plugin"
+        {
+          "properties": {
+            "slug": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            },
+            "from": {
+              "const": "wccom"
+            },
+            "version": {
+              "type": "string",
+              "default": "stable"
+            }
+          },
+          "required": ["slug", "from"],
+          "additionalProperties": false
         },
-        "path": {
-          "type": "string",
-          "description": "Path for local plugins"
+        {
+          "properties": {
+            "slug": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            },
+            "from": {
+              "const": "local"
+            },
+            "path": {
+              "type": "string"
+            }
+          },
+          "required": ["slug", "from", "path"],
+          "additionalProperties": false
         },
-        "version": {
-          "type": "string",
-          "description": "Version to install"
+        {
+          "properties": {
+            "slug": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            },
+            "from": {
+              "const": "url"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https?://.*\\.zip$"
+            }
+          },
+          "required": ["slug", "from", "url"],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "slug": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            },
+            "from": {
+              "const": "build"
+            },
+            "command": {
+              "type": "string"
+            },
+            "output": {
+              "type": "string",
+              "pattern": "\\.zip$"
+            }
+          },
+          "required": ["slug", "from", "command", "output"],
+          "additionalProperties": false
         }
-      },
-      "if": {
-        "properties": {"from": {"const": "local"}}
-      },
-      "then": {
-        "required": ["path"]
-      }
+      ]
     },
     "themeConfig": {
       "type": "object",
-      "required": ["slug"],
-      "additionalProperties": false,
-      "properties": {
-        "slug": {
-          "type": "string",
-          "pattern": "^[a-zA-Z0-9_-]+$",
-          "description": "Theme slug"
+      "required": ["slug", "from"],
+      "oneOf": [
+        {
+          "properties": {
+            "slug": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            },
+            "from": {
+              "const": "wporg"
+            },
+            "version": {
+              "type": "string",
+              "default": "stable"
+            }
+          },
+          "required": ["slug", "from"],
+          "additionalProperties": false
         },
-        "from": {
-          "type": "string",
-          "enum": ["local", "wccom", "wporg"],
-          "description": "Source for the theme"
+        {
+          "properties": {
+            "slug": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            },
+            "from": {
+              "const": "wccom"
+            },
+            "version": {
+              "type": "string",
+              "default": "stable"
+            }
+          },
+          "required": ["slug", "from"],
+          "additionalProperties": false
         },
-        "path": {
-          "type": "string",
-          "description": "Path for local themes"
+        {
+          "properties": {
+            "slug": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            },
+            "from": {
+              "const": "local"
+            },
+            "path": {
+              "type": "string"
+            }
+          },
+          "required": ["slug", "from", "path"],
+          "additionalProperties": false
         },
-        "version": {
-          "type": "string",
-          "description": "Version to install"
+        {
+          "properties": {
+            "slug": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            },
+            "from": {
+              "const": "url"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https?://.*\\.zip$"
+            }
+          },
+          "required": ["slug", "from", "url"],
+          "additionalProperties": false
+        },
+        {
+          "properties": {
+            "slug": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            },
+            "from": {
+              "const": "build"
+            },
+            "command": {
+              "type": "string"
+            },
+            "output": {
+              "type": "string",
+              "pattern": "\\.zip$"
+            }
+          },
+          "required": ["slug", "from", "command", "output"],
+          "additionalProperties": false
         }
-      },
-      "if": {
-        "properties": {"from": {"const": "local"}}
-      },
-      "then": {
-        "required": ["path"]
-      }
+      ]
     }
   }
 }
