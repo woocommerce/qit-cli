@@ -318,12 +318,120 @@ class QitJsonParserPathResolutionTest extends TestCase {
 	 * Test URL extends doesn't affect local path resolution
 	 */
 	public function testUrlExtendsWithLocalPaths(): void {
-		// This would be a mock test since we can't actually fetch URLs in unit tests
-		// But it demonstrates the test case structure
-		$this->markTestSkipped( 'URL extends require network access' );
+		// Create directory structure
+		mkdir( $this->tempDir . '/remote-configs', 0777, true );
+		mkdir( $this->tempDir . '/project', 0777, true );
+
+		// Create a "remote" config that would be downloaded via URL
+		$remoteConfig = [
+			'environments' => [
+				'default' => [
+					'php_version' => '8.0',
+					'setup_only'  => [ './setup/remote-setup.json' ] // Path in "remote" config
+				]
+			],
+			'test_types'   => [
+				'integration' => [
+					'default' => [
+						'test_packages' => [ './tests/integration.json' ] // Another path in "remote" config
+					]
+				]
+			]
+		];
+		file_put_contents( $this->tempDir . '/remote-configs/base.json', json_encode( $remoteConfig ) );
+
+		// Create the main project config that extends from "URL" using test flag
+		$projectConfig = [
+			'extends'      => './mimick-url-for-tests/../remote-configs/base.json',
+			'sut'          => [
+				'type'   => 'plugin',
+				'slug'   => 'my-plugin',
+				'source' => [
+					'type' => 'local',
+					'path' => './'
+				]
+			],
+			'test_types'   => [
+				'e2e' => [
+					'default' => [
+						'test_packages' => [ './e2e/tests.json' ] // Local path
+					]
+				]
+			],
+			'environments' => [
+				'staging' => [
+					'extends'    => 'default',
+					'setup_only' => [ './local-setup.json' ]
+				]
+			]
+		];  // Another local path
+		file_put_contents( $this->tempDir . '/project/qit.json', json_encode( $projectConfig ) );
+
+		// Create all referenced files relative to PROJECT directory
+		// (not relative to remote-configs directory)
+		mkdir( $this->tempDir . '/project/setup', 0777, true );
+		$remoteSetupPackage = [
+			'$schema'     => 'https://qit.woo.com/json-schema/test-package',
+			'test_type'   => 'setup',
+			'description' => 'Setup from remote config'
+		];
+		file_put_contents( $this->tempDir . '/project/setup/remote-setup.json', json_encode( $remoteSetupPackage ) );
+
+		mkdir( $this->tempDir . '/project/tests', 0777, true );
+		$integrationPackage = [
+			'$schema'     => 'https://qit.woo.com/json-schema/test-package',
+			'test_type'   => 'integration',
+			'description' => 'Integration tests from remote config'
+		];
+		file_put_contents( $this->tempDir . '/project/tests/integration.json', json_encode( $integrationPackage ) );
+
+		mkdir( $this->tempDir . '/project/e2e', 0777, true );
+		$e2ePackage = [
+			'$schema'     => 'https://qit.woo.com/json-schema/test-package',
+			'test_type'   => 'e2e',
+			'description' => 'Local E2E tests'
+		];
+		file_put_contents( $this->tempDir . '/project/e2e/tests.json', json_encode( $e2ePackage ) );
+
+		$localSetupPackage = [
+			'$schema'     => 'https://qit.woo.com/json-schema/test-package',
+			'test_type'   => 'setup',
+			'description' => 'Local setup package'
+		];
+		file_put_contents( $this->tempDir . '/project/local-setup.json', json_encode( $localSetupPackage ) );
+
+		// Parse the config
+		$parser = new QitJsonParser();
+		$config = $parser->parse( $this->tempDir . '/project/qit.json' );
+
+		// Verify paths remain relative
+		$this->assertEquals( [ './setup/remote-setup.json' ], $config['environments']['default']['setup_only'] );
+		$this->assertEquals( [ './tests/integration.json' ], $config['test_types']['integration']['default']['test_packages'] );
+		$this->assertEquals( [ './e2e/tests.json' ], $config['test_types']['e2e']['default']['test_packages'] );
+		$this->assertEquals( [ './local-setup.json' ], $config['environments']['staging']['setup_only'] );
+
+		// Verify all packages can be loaded (paths resolved correctly relative to project)
+		$defaultSetupPackages = $parser->getSetupPackagesForEnvironment( 'default' );
+		$this->assertArrayHasKey( './setup/remote-setup.json', $defaultSetupPackages );
+		$this->assertEquals( 'Setup from remote config', $defaultSetupPackages['./setup/remote-setup.json']['description'] );
+
+		$integrationPackages = $parser->getTestPackagesForProfile( 'integration', 'default' );
+		$this->assertArrayHasKey( './tests/integration.json', $integrationPackages );
+		$this->assertEquals( 'Integration tests from remote config', $integrationPackages['./tests/integration.json']['description'] );
+
+		$e2ePackages = $parser->getTestPackagesForProfile( 'e2e', 'default' );
+		$this->assertArrayHasKey( './e2e/tests.json', $e2ePackages );
+		$this->assertEquals( 'Local E2E tests', $e2ePackages['./e2e/tests.json']['description'] );
+
+		$stagingSetupPackages = $parser->getSetupPackagesForEnvironment( 'staging' );
+		$this->assertArrayHasKey( './local-setup.json', $stagingSetupPackages );
+		$this->assertEquals( 'Local setup package', $stagingSetupPackages['./local-setup.json']['description'] );
 	}
 
-	private function deleteDir( string $dir ): void {
+	private
+	function deleteDir(
+		string $dir
+	): void {
 		if ( ! is_dir( $dir ) ) {
 			return;
 		}

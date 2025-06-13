@@ -10,6 +10,8 @@ class QitJsonParser extends BaseJsonParser {
 	private TestPackageManifestParser $packageParser;
 	private array $loadedPackages = []; // Cache for loaded test packages
 	private string $currentFilePath; // Track the current file being parsed
+	private array $pathContexts = []; // Track which directory each path came from
+	private ?string $urlExtendContext = null; // Track context for URL extends
 
 	public function __construct() {
 		parent::__construct();
@@ -83,7 +85,8 @@ class QitJsonParser extends BaseJsonParser {
 		// Parse the reference to determine type
 		if ( $this->isLocalPackageReference( $reference ) ) {
 			// Local file reference (e.g., "tests/e2e/checkout.json")
-			$filePath                           = $this->resolvePath( $reference );
+			$context                            = $this->getPathContext( $reference );
+			$filePath                           = $this->resolvePathWithContext( $reference, $context );
 			$this->loadedPackages[ $reference ] = $this->packageParser->parse( $filePath );
 		} else {
 			// Remote reference (e.g., "woocommerce/minimal:stable")
@@ -165,6 +168,9 @@ class QitJsonParser extends BaseJsonParser {
 		$this->debugLog( "Visited files: " . json_encode( $visited ) );
 
 		if ( ! isset( $config['extends'] ) ) {
+			// Mark paths in this config with their context
+			$this->markPathContexts( $config, dirname( $currentFile ?: $this->currentFilePath ) );
+
 			return $config;
 		}
 
@@ -198,22 +204,112 @@ class QitJsonParser extends BaseJsonParser {
 		$baseConfig     = $this->resolveExtends( $baseConfig, $basePath, $visited );
 		$this->rootPath = $originalRoot;
 
+		// Mark paths in the current config before merging
+		$this->markPathContexts( $config, dirname( $currentFile ?: $this->currentFilePath ) );
+
 		// Merge configurations
 		unset( $config['extends'] );
 
 		return $this->deepMerge( $baseConfig, $config );
 	}
 
+	/**
+	 * Mark paths in configuration with their source directory context
+	 */
+	private function markPathContexts( array &$config, string $sourceDir ): void {
+		// If we're processing content from a URL extend, use the URL extend context
+		$effectiveContext = $this->urlExtendContext ?? $sourceDir;
+
+		// Mark test package paths
+		if ( isset( $config['test_types'] ) ) {
+			foreach ( $config['test_types'] as $type => $profiles ) {
+				foreach ( $profiles as $profile => $settings ) {
+					if ( isset( $settings['test_packages'] ) ) {
+						foreach ( $settings['test_packages'] as $package ) {
+							if ( $this->isLocalPackageReference( $package ) ) {
+								$this->pathContexts[ $package ] = $effectiveContext;
+								$this->debugLog( "Marked path context: '$package' => '$effectiveContext'" );
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// Mark setup_only paths
+		if ( isset( $config['environments'] ) ) {
+			foreach ( $config['environments'] as $envName => $env ) {
+				if ( isset( $env['setup_only'] ) ) {
+					foreach ( $env['setup_only'] as $package ) {
+						if ( $this->isLocalPackageReference( $package ) ) {
+							$this->pathContexts[ $package ] = $effectiveContext;
+							$this->debugLog( "Marked path context: '$package' => '$effectiveContext'" );
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Get the source directory context for a path
+	 */
+	private function getPathContext( string $path ): string {
+		return $this->pathContexts[ $path ] ?? $this->rootPath;
+	}
+
+	/**
+	 * Resolve a path with its proper context directory
+	 */
+	private function resolvePathWithContext( string $path, string $context ): string {
+		if ( strpos( $path, './' ) === 0 || strpos( $path, '../' ) === 0 ) {
+			// Relative path - prepend the context directory
+			return $context . '/' . $path;
+		}
+
+		// Absolute path - return as is
+		return $path;
+	}
+
 	private function resolveExtendsPath( string $extends ): string {
 		$this->debugLog( "Resolving extends path: $extends" );
+
+		// Special test flag to simulate URL extends
+		if ( strpos( $extends, './mimick-url-for-tests/' ) === 0 ) {
+			// Extract the actual file path after the test prefix
+			$actualPath   = str_replace( './mimick-url-for-tests/', './', $extends );
+			$resolvedPath = $this->resolvePath( $actualPath );
+
+			if ( ! file_exists( $resolvedPath ) ) {
+				throw new \RuntimeException( "Extended config file not found: $actualPath" );
+			}
+
+			// Read the file content and create a temp file to simulate URL behavior
+			$contents = file_get_contents( $resolvedPath );
+			$tempFile = tempnam( sys_get_temp_dir(), 'qit_extends_test_' );
+			file_put_contents( $tempFile, $contents );
+
+			// Mark that this is a URL-based extend (simulated)
+			$this->urlExtendContext = $this->rootPath;
+			$this->debugLog( "Simulated URL extend detected, marking context as: " . $this->rootPath );
+
+			return $tempFile;
+		}
 
 		if ( filter_var( $extends, FILTER_VALIDATE_URL ) ) {
 			$tempFile = tempnam( sys_get_temp_dir(), 'qit_extends_' );
 			$contents = file_get_contents( $extends );
 			file_put_contents( $tempFile, $contents );
 
+			// Mark that this is a URL-based extend
+			$this->urlExtendContext = $this->rootPath;
+			$this->debugLog( "URL extend detected, marking context as: " . $this->rootPath );
+
 			return $tempFile;
 		}
+
+		// Reset URL extend context for non-URL extends
+		$this->urlExtendContext = null;
 
 		// Check if extends is just the filename without path
 		if ( basename( $extends ) === $extends ) {
@@ -369,8 +465,9 @@ class QitJsonParser extends BaseJsonParser {
 							$this->debugLog( "Checking package reference: $packageRef" );
 							if ( $this->isLocalPackageReference( $packageRef ) ) {
 								$this->debugLog( "Package is local reference: $packageRef" );
-								$path = $this->resolvePath( $packageRef );
-								$this->debugLog( "Resolved path: $path" );
+								$context = $this->getPathContext( $packageRef );
+								$path    = $this->resolvePathWithContext( $packageRef, $context );
+								$this->debugLog( "Resolved path with context: $path (context: $context)" );
 								$this->debugLog( "File exists: " . ( file_exists( $path ) ? 'yes' : 'no' ) );
 								if ( ! file_exists( $path ) ) {
 									$this->debugLog( "ERROR: Local package file not found!" );
@@ -414,8 +511,9 @@ class QitJsonParser extends BaseJsonParser {
 					foreach ( $env['setup_only'] as $packageRef ) {
 						$this->debugLog( "Checking setup_only package: $packageRef" );
 						if ( $this->isLocalPackageReference( $packageRef ) ) {
-							$path = $this->resolvePath( $packageRef );
-							$this->debugLog( "Setup package resolved path: $path" );
+							$context = $this->getPathContext( $packageRef );
+							$path    = $this->resolvePathWithContext( $packageRef, $context );
+							$this->debugLog( "Setup package resolved path: $path (context: $context)" );
 							if ( ! file_exists( $path ) ) {
 								throw new \RuntimeException(
 									"Setup package file not found: $packageRef in environment '$envName'"
