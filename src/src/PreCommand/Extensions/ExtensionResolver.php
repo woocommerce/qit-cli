@@ -134,7 +134,7 @@ class ExtensionResolver {
 			return false;
 		}
 
-		// Local and non-remote sources are resolved if 'from' is set
+		// Local, url, and build sources are resolved if 'from' is set
 		if ( in_array( $extension->from, [ 'local', 'url', 'build' ], true ) ) {
 			return true;
 		}

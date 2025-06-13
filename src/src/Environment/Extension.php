@@ -61,7 +61,7 @@ class Extension {
 	/** @var string|null Reason for automatic addition, if applicable. */
 	public $added_automatically = null;
 
-	/** @var string|null The source type of the extension ('wporg', 'wccom', 'local', 'zip'). */
+	/** @var string|null The source type of the extension (see qit json schema). */
 	public $from = null;
 
 	public function populate_from(): void {
@@ -76,8 +76,6 @@ class Extension {
 			$this->wccom_id = App::make( WooExtensionsList::class )->get_woo_extension_id_by_slug( $this->slug );
 		} elseif ( is_dir( $this->source ) || is_file( $this->source ) ) {
 			$this->from = 'local';
-		} elseif ( strpos( $this->source, '.zip' ) !== false ) {
-			$this->from = 'zip';
 		}
 	}
 

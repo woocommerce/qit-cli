@@ -182,7 +182,7 @@ class ExtensionMetadataFetcher {
 			$extension->version = 'local';
 
 			// Source is already set for local files
-			if ( $extension->from === 'directory' && empty( $extension->source ) ) {
+			if ( $extension->from === 'local' && empty( $extension->source ) && ! empty( $extension->directory ) ) {
 				$extension->source = $extension->directory;
 			}
 

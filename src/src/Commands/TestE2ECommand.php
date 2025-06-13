@@ -293,9 +293,6 @@ class TestE2ECommand extends QITCommand {
 			case 'local':
 				return sprintf( 'Local directory (%s)', $source['path'] ?? '.' );
 
-			case 'zip':
-				return sprintf( 'ZIP file (%s)', basename( $source['path'] ?? 'unknown.zip' ) );
-
 			case 'build':
 				return sprintf( 'Build command (%s)', $source['command'] ?? 'unknown' );
 

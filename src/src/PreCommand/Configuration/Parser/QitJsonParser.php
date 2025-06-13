@@ -463,12 +463,6 @@ class QitJsonParser extends BaseJsonParser {
 				}
 				break;
 
-			case 'zip':
-				if ( isset( $sut['source']['path'] ) ) {
-					$sut['source']['resolved_path'] = $this->resolve_path( $sut['source']['path'] );
-				}
-				break;
-
 			case 'build':
 				if ( ! isset( $sut['source']['command'] ) || ! isset( $sut['source']['output'] ) ) {
 					throw new \RuntimeException( "Build source requires 'command' and 'output'" );
@@ -503,15 +497,6 @@ class QitJsonParser extends BaseJsonParser {
 					$path = $this->resolve_path( $source['path'] );
 					if ( ! is_dir( $path ) ) {
 						throw new \RuntimeException( "SUT directory not found: {$source['path']}" );
-					}
-				}
-				break;
-
-			case 'zip':
-				if ( isset( $source['path'] ) ) {
-					$path = $this->resolve_path( $source['path'] );
-					if ( ! file_exists( $path ) ) {
-						throw new \RuntimeException( "SUT zip file not found: {$source['path']}" );
 					}
 				}
 				break;
