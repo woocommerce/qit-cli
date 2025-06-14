@@ -650,68 +650,53 @@ class QITE2ETestCase extends TestCase {
 	 * Normalize PHP debug logs captured during test runs.
 	 *
 	 * The normalization process is focused on the 'count' key within the debug logs.
-	 * This allows for some flexibility in test runs where slight variations in log counts
+	 * This allows for flexibility in test runs where significant variations in log counts
 	 * might occur due to uncontrollable conditions like AJAX requests firing or not firing.
 	 *
-	 * Normalization rules for 'count':
-	 * - Exact values are retained for counts below 50.
-	 * - Counts between 50 and 100 are rounded to the nearest 5.
-	 * - Counts between 100 and 200 are rounded to the nearest 10.
-	 * - Counts above 200 are rounded to the nearest 25.
-	 * - Counts above 1000 are rounded to the nearest 100.
-	 * - Counts above 10000 are rounded to the nearest 1000.
+	 * Normalization uses "buckets" to group similar counts together:
+	 * - 0-9: Exact values (these are likely significant)
+	 * - 10-149: All normalize to 75 (treats 32, 50, 74, 100 as equivalent)
+	 * - 150-299: All normalize to 225 (treats 150, 200, 299 as equivalent)
+	 * - 300-499: All normalize to 400 (treats 300, 400, 499 as equivalent)
+	 * - 500-999: All normalize to 750 (treats 500, 750, 999 as equivalent)
+	 * - 1000-4999: All normalize to 2500
+	 * - 5000-9999: All normalize to 7500
+	 * - 10000+: All normalize to 10000
 	 *
 	 * Additionally, certain known failure messages (e.g., WordPress.org connectivity issues)
 	 * are conditionally removed from the logs.
 	 */
-	protected function normalize_count( int $count ): int {
-		if ( $count < 25 ) {
-			// No-op. Exact match for counts below 50.
-		} elseif ( $count < 100 ) {
-			$normalize_to_closest = 50;
-			if ( $count % $normalize_to_closest === 0 ) {
-				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
-			} else {
-				echo "Normalizing debug_log.count from {$count} to ";
-				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 50.
-				echo "{$count}\n";
-			}
-		} elseif ( $count < 200 ) {
-			$normalize_to_closest = 75;
-			if ( $count % $normalize_to_closest === 0 ) {
-				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
-			} else {
-				echo "Normalizing debug_log.count from {$count} to ";
-				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 75.
-				echo "{$count}\n";
-			}
+	protected function normalize_count( int $count ): string {
+		$original = $count;
+
+		if ( $count < 10 ) {
+			// Keep exact values for very small counts
+			return $count;
+		} elseif ( $count < 150 ) {
+			// 10-149 all become 75 (this includes 32, 50, 74, 100, etc.)
+			$count = 'Between 10 and 149, normalized to 75';
+		} elseif ( $count < 300 ) {
+			// 150-299 all become 225
+			$count = 'Between 150 and 299, normalized to 225';
+		} elseif ( $count < 500 ) {
+			// 200-499 all become 350
+			$count = 'Between 300 and 499, normalized to 400';
 		} elseif ( $count < 1000 ) {
-			$normalize_to_closest = 250;
-			if ( $count % $normalize_to_closest === 0 ) {
-				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
-			} else {
-				echo "Normalizing debug_log.count from {$count} to ";
-				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 250.
-				echo "{$count}\n";
-			}
+			// 500-999 all become 750
+			$count = 'Between 500 and 999, normalized to 750';
+		} elseif ( $count < 5000 ) {
+			// 1000-4999 all become 2500
+			$count = 'Between 1000 and 4999, normalized to 2500';
 		} elseif ( $count < 10000 ) {
-			$normalize_to_closest = 500;
-			if ( $count % $normalize_to_closest === 0 ) {
-				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
-			} else {
-				echo "Normalizing debug_log.count from {$count} to ";
-				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 500.
-				echo "{$count}\n";
-			}
+			// 5000-9999 all become 7500
+			$count = 'Between 5000 and 9999, normalized to 7500';
 		} else {
-			$normalize_to_closest = 10000;
-			if ( $count % $normalize_to_closest === 0 ) {
-				echo "Skipping normalization as it's already divisible by $normalize_to_closest\n";
-			} else {
-				echo "Normalizing debug_log.count from {$count} to ";
-				$count = round( $count / $normalize_to_closest ) * $normalize_to_closest;  // Round to the closest 10000.
-				echo "{$count}\n";
-			}
+			// 10000+ all become 10000
+			$count = '10000 or more, normalized to 10000';
+		}
+
+		if ( $original !== $count ) {
+			echo "Normalizing debug_log.count from {$original} to {$count}\n";
 		}
 
 		return $count;

@@ -448,22 +448,22 @@
                         "message": "Creation of dynamic property SUT\\\\BarUser::$bar is deprecated",
                         "type": "deprecated",
                         "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:28",
-                        "count": 100
+                        "count": "Between 10 and 149, normalized to 75"
                     },
                     {
                         "message": "Function utf8_encode() is deprecated",
                         "type": "deprecated",
                         "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:37",
-                        "count": 14
+                        "count": "Between 10 and 149, normalized to 75"
                     }
                 ],
                 "debug_log": [
                     {
-                        "count": "100",
+                        "count": "Between 10 and 149, normalized to 75",
                         "message": "PHP Deprecated: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 28"
                     },
                     {
-                        "count": "14",
+                        "count": "Between 10 and 149, normalized to 75",
                         "message": "PHP Deprecated: Function utf8_encode() is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 37"
                     }
                 ]
