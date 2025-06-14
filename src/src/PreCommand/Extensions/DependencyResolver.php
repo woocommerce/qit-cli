@@ -242,7 +242,21 @@ class DependencyResolver {
 		if ( $cached ) {
 			file_put_contents( '/tmp/qit/qit_debug.log', "DependencyResolver: Cached WPORG deps for $slug: " . print_r( $cached, true ) . "\n", FILE_APPEND );
 
-			return $cached;
+			// Need to recreate Extension objects from cached arrays
+			$dependencies = [];
+			foreach ( $cached as $dep_data ) {
+				if ( is_array( $dep_data ) ) {
+					$ext                      = new Extension( $dep_data['slug'], $dep_data['type'] );
+					$ext->added_automatically = $dep_data['added_automatically'];
+					$ext->from                = $dep_data['from'];
+					$dependencies[]           = $ext;
+				} else {
+					// Already an Extension object
+					$dependencies[] = $dep_data;
+				}
+			}
+
+			return $dependencies;
 		}
 
 		try {
@@ -252,7 +266,8 @@ class DependencyResolver {
 				->request();
 
 			$raw_info = json_decode( $response, true );
-			file_put_contents( '/tmp/qit/qit_debug.log', "DependencyResolver: Raw info for $slug: " . print_r( $raw_info, true ) . "\n", FILE_APPEND );
+			// file_put_contents( '/tmp/qit/qit_debug.log', "DependencyResolver: Raw info for $slug: " . print_r( $raw_info, true ) . "\n", FILE_APPEND );
+
 			if ( ! is_array( $raw_info ) || ! isset( $raw_info['requires_plugins'] ) ) {
 				file_put_contents( '/tmp/qit/qit_debug.log', "DependencyResolver: No requires_plugins for $slug\n", FILE_APPEND );
 				$this->cache->set( $cache_key, [], HOUR_IN_SECONDS );
@@ -269,6 +284,8 @@ class DependencyResolver {
 			}
 
 			file_put_contents( '/tmp/qit/qit_debug.log', "DependencyResolver: Resolved WPORG deps for $slug: " . print_r( array_map( fn( $e ) => $e->slug, $dependencies ), true ) . "\n", FILE_APPEND );
+
+			// Cache the Extension objects, not arrays
 			$this->cache->set( $cache_key, $dependencies, HOUR_IN_SECONDS );
 
 			return $dependencies;

@@ -29,7 +29,7 @@ abstract class Environment {
 	protected string $source_environment_path;
 	protected EnvInfo $env_info;
 	protected OutputInterface $output;
-	protected CustomTestsDownloader $custom_tests_downloader;
+	protected $custom_tests_downloader;
 	protected array $volumes;
 	protected string $type; // "up" or "up_and_test"
 
@@ -39,8 +39,7 @@ abstract class Environment {
 		EnvironmentMonitor $environment_monitor,
 		Filesystem $filesystem,
 		Docker $docker,
-		OutputInterface $output,
-		CustomTestsDownloader $custom_tests_downloader
+		OutputInterface $output
 	) {
 		$this->environment_downloader  = $environment_downloader;
 		$this->cache                   = $cache;
@@ -50,7 +49,7 @@ abstract class Environment {
 		$this->cache_dir               = normalize_path( Config::get_qit_dir() . 'cache' );
 		$this->source_environment_path = normalize_path( Config::get_qit_dir() . 'environments/' . $this->get_name() );
 		$this->output                  = $output;
-		$this->custom_tests_downloader = $custom_tests_downloader;
+		$this->custom_tests_downloader = null;
 	}
 
 	abstract public function get_name(): string;

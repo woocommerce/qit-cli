@@ -144,8 +144,18 @@ class ExtensionResolver {
 			return true;
 		}
 
-		// Remote sources (wporg, wccom) require metadata
-		return in_array( $extension->from, [ 'wporg', 'wccom' ], true ) && ! empty( $extension->source ) && ! empty( $extension->version );
+		// For remote sources, check if we have the necessary info
+		if ( $extension->from === 'wporg' ) {
+			// For WPORG, we just need the version - we'll get the URL during metadata fetch
+			return ! empty( $extension->version );
+		}
+
+		if ( $extension->from === 'wccom' ) {
+			// For WCCOM, we need the version or ID
+			return ! empty( $extension->version ) || ! empty( $extension->wccom_id );
+		}
+
+		return false;
 	}
 
 	/**

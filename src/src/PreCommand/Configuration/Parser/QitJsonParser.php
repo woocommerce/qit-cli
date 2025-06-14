@@ -10,7 +10,7 @@ class QitJsonParser extends BaseJsonParser {
 	private TestPackageManifestParser $package_parser;
 	private array $loaded_packages = []; // Cache for loaded test packages
 	private string $current_file_path; // Track the current file being parsed
-	private array $path_contexts        = []; // Track which directory each path came from
+	private array $path_contexts = []; // Track which directory each path came from
 	private ?string $url_extend_context = null; // Track context for URL extends
 
 	public function __construct() {
@@ -124,13 +124,23 @@ class QitJsonParser extends BaseJsonParser {
 
 		if ( $this->is_local_package_reference( $reference ) ) {
 			$context = $this->get_path_context( $reference );
+
+			// If no context is set, use the root path
+			if ( empty( $context ) ) {
+				$context = $this->root_path;
+			}
+
 			$file_path = $this->resolve_path_with_context( $reference, $context );
 
+			$this->debug_log( "Context for '$reference': $context" );
+			$this->debug_log( "Resolved path: $file_path" );
+
 			try {
-				$this->loaded_packages[ $reference ] = $this->package_parser->parse( $file_path );
+				$this->debug_log( "Attempting to parse test package at: $file_path" );
+				$this->loaded_packages[ $reference ]              = $this->package_parser->parse( $file_path );
 				$this->loaded_packages[ $reference ]['reference'] = $reference;
-				$this->loaded_packages[ $reference ]['local'] = true;
-				$this->loaded_packages[ $reference ]['path'] = $file_path;
+				$this->loaded_packages[ $reference ]['local']     = true;
+				$this->loaded_packages[ $reference ]['path']      = $file_path;
 			} catch ( \Exception $e ) {
 				throw new \RuntimeException( "Failed to parse test package '$reference': " . $e->getMessage() );
 			}
@@ -190,7 +200,7 @@ class QitJsonParser extends BaseJsonParser {
 		}
 
 		// Check for .json extension
-		if ( substr( $reference, -5 ) === '.json' ) {
+		if ( substr( $reference, - 5 ) === '.json' ) {
 			return true;
 		}
 
@@ -201,12 +211,13 @@ class QitJsonParser extends BaseJsonParser {
 		// Handle local/ prefix for new format
 		if ( strpos( $reference, 'local/' ) === 0 ) {
 			$parts = explode( '/', substr( $reference, 6 ), 2 );
+
 			return [
-				'vendor' => 'local',
-				'package' => $parts[0],
-				'version' => $parts[1] ?? 'latest',
-				'remote' => false,
-				'local' => true,
+				'vendor'    => 'local',
+				'package'   => $parts[0],
+				'version'   => $parts[1] ?? 'latest',
+				'remote'    => false,
+				'local'     => true,
 				'reference' => $reference
 			];
 		}
@@ -214,10 +225,10 @@ class QitJsonParser extends BaseJsonParser {
 		// Parse remote reference format: vendor/package:version
 		if ( preg_match( '/^([^\/]+)\/([^:]+):(.+)$/', $reference, $matches ) ) {
 			return [
-				'vendor' => $matches[1],
-				'package' => $matches[2],
-				'version' => $matches[3],
-				'remote' => true,
+				'vendor'    => $matches[1],
+				'package'   => $matches[2],
+				'version'   => $matches[3],
+				'remote'    => true,
 				'reference' => $reference
 			];
 		}
@@ -330,13 +341,20 @@ class QitJsonParser extends BaseJsonParser {
 	 * Resolve a path with its proper context directory
 	 */
 	private function resolve_path_with_context( string $path, string $context ): string {
-		if ( strpos( $path, './' ) === 0 || strpos( $path, '../' ) === 0 ) {
-			// Relative path - prepend the context directory
-			return $context . '/' . $path;
+		$this->debug_log( "resolve_path_with_context: path='$path', context='$context'" );
+
+		// Check if it's an absolute path (starts with / on Unix or C:\ on Windows)
+		if ( strpos( $path, '/' ) === 0 || preg_match( '/^[A-Za-z]:/', $path ) ) {
+			$this->debug_log( "Path is absolute, returning as-is: $path" );
+
+			return $path;
 		}
 
-		// Absolute path - return as is
-		return $path;
+		// It's a relative path - prepend the context directory
+		$resolved = $context . '/' . $path;
+		$this->debug_log( "Resolved relative path to: $resolved" );
+
+		return $resolved;
 	}
 
 	private function resolve_extends_path( string $extends ): string {
@@ -429,7 +447,7 @@ class QitJsonParser extends BaseJsonParser {
 				mkdir( $log_dir, 0777, true );
 			}
 
-			$log_file = $log_dir . '/qit_debug.log';
+			$log_file  = $log_dir . '/qit_debug.log';
 			$timestamp = date( 'Y-m-d H:i:s' );
 			file_put_contents( $log_file, "[$timestamp] $message\n", FILE_APPEND );
 		}
@@ -440,7 +458,7 @@ class QitJsonParser extends BaseJsonParser {
 	 */
 	private function process_sut( array $sut ): array {
 		// Validate required fields
-		if ( ! isset( $sut['type'] ) || ! in_array( $sut['type'], ['plugin', 'theme'] ) ) {
+		if ( ! isset( $sut['type'] ) || ! in_array( $sut['type'], [ 'plugin', 'theme' ] ) ) {
 			throw new \RuntimeException( "SUT type must be 'plugin' or 'theme'" );
 		}
 
@@ -704,10 +722,10 @@ class QitJsonParser extends BaseJsonParser {
 			if ( is_string( $extension ) ) {
 				// Simple string format - assume WordPress.org
 				$normalized[] = [
-					'slug' => $extension,
-					'type' => $type,
+					'slug'   => $extension,
+					'type'   => $type,
 					'source' => [
-						'type' => 'wporg',
+						'type'    => 'wporg',
 						'version' => 'stable'
 					]
 				];
@@ -720,7 +738,7 @@ class QitJsonParser extends BaseJsonParser {
 					// Legacy format support
 					if ( isset( $extension['from'] ) ) {
 						$extension['source'] = [
-							'type' => $extension['from'],
+							'type'    => $extension['from'],
 							'version' => $extension['version'] ?? 'stable'
 						];
 
@@ -730,7 +748,7 @@ class QitJsonParser extends BaseJsonParser {
 					} else {
 						// Default to wporg
 						$extension['source'] = [
-							'type' => 'wporg',
+							'type'    => 'wporg',
 							'version' => 'stable'
 						];
 					}

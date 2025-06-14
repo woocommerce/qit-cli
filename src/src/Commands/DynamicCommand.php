@@ -2,11 +2,29 @@
 
 namespace QIT_CLI\Commands;
 
+use QIT_CLI\PreCommand\Interfaces\ConfigurableTestCommand;
 use Symfony\Component\Console\Input\InputInterface;
 
-abstract class DynamicCommand extends QITCommand {
+abstract class DynamicCommand extends QITCommand implements ConfigurableTestCommand {
 	/** @var array<mixed> $options_to_send */
 	protected $options_to_send = [];
+
+	/** @var string $test_type The test type for this dynamic command */
+	protected $test_type;
+
+	public function __construct( string $test_type = null ) {
+		$this->test_type = $test_type;
+		parent::__construct();
+	}
+
+	// ConfigurableTestCommand interface implementation
+	public function getTestType(): string {
+		return $this->test_type;
+	}
+
+	public function getTestProfile(): string {
+		return $this->input->getOption( 'profile' ) ?? 'default';
+	}
 
 	public function add_option_to_send( string $option_name ): void {
 		$this->options_to_send[ $option_name ] = '';
