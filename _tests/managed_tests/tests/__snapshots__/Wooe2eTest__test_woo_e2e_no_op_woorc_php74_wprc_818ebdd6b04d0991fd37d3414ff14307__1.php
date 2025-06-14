@@ -6285,7 +6285,32 @@
                             "filePath": "\\/normalized\\/path\\/full-composability.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "Expect \\"toPass\\"",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect \\"toPass\\"",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect \\"toPass\\"",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect \\"toPass\\"",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect \\"toPass\\"",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect \\"toPass\\"",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
                             "attachments": [],
                             "stdout": [
@@ -10563,6 +10588,10 @@
                             "steps": [
                                 {
                                     "name": "go to product editor, Organization tab",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect \\"wait for the attribute\'s terms to load\\"",
                                     "status": "passed"
                                 },
                                 {
