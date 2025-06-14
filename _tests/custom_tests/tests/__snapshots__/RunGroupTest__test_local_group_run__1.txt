@@ -6,7 +6,7 @@ Status: completed
 Test Type: Activation
 Params: {"client":"qit_cli","hash":"12345","woo_id":18663,"local":true}
 Test Results Manager URL: https://example.com?qit_results=12345.normalized_hash
-Status: warning
+Status: success
 --------------------------------
 Test Type: Activation
 Params: {"client":"qit_cli","hash":"12345","woo_id":4652610,"local":true}
