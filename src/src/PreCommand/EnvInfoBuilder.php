@@ -7,7 +7,6 @@ use QIT_CLI\Config as QITConfig;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
-use QIT_CLI\Environment\EnvironmentVersionResolver;
 use QIT_CLI\Environment\EnvParser;
 use QIT_CLI\Environment\EnvVolumeParser;
 use QIT_CLI\Environment\Extension;
@@ -16,6 +15,7 @@ use QIT_CLI\PreCommand\Download\CustomTestsDownloader;
 use QIT_CLI\PreCommand\Extensions\DependencyResolver;
 use QIT_CLI\PreCommand\Extensions\ExtensionResolver;
 use QIT_CLI\PreCommand\Extensions\ExtensionSetResolver;
+use QIT_CLI\PreCommand\Extensions\VersionResolver;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\normalize_path;
@@ -344,14 +344,32 @@ class EnvInfoBuilder {
 		if ( empty( $woo_version ) ) {
 			return $plugins;
 		}
+
 		$filtered_plugins = array_values( array_filter( $plugins, fn( $p ) => $p->slug !== 'woocommerce' ) );
 		if ( count( $filtered_plugins ) < count( $plugins ) ) {
 			$output->writeln( "<comment>Overriding WooCommerce version to: $woo_version</comment>" );
 		}
-		$woo_plugin                      = EnvironmentVersionResolver::resolve_woo( $woo_version, $filtered_plugins );
+
+		// Create WooCommerce extension
+		$woo_plugin                      = new Extension( 'woocommerce', 'plugin' );
 		$woo_plugin->added_automatically = 'Added due to specified WooCommerce version';
-		$woo_plugin->from                = 'wporg';
-		$filtered_plugins[]              = $woo_plugin;
+
+		// Use version resolver for special versions
+		$version_resolver = App::make( VersionResolver::class );
+
+		if ( $version_resolver->can_resolve( 'woocommerce', $woo_version ) ) {
+			$woo_plugin->source = $version_resolver->resolve( 'woocommerce', $woo_version );
+			$woo_plugin->from   = 'url';
+		} elseif ( filter_var( $woo_version, FILTER_VALIDATE_URL ) ) {
+			$woo_plugin->source = $woo_version;
+			$woo_plugin->from   = 'url';
+		} else {
+			// Default to wporg with specific version
+			$woo_plugin->version = $woo_version;
+			$woo_plugin->from    = 'wporg';
+		}
+
+		$filtered_plugins[] = $woo_plugin;
 
 		return array_values( $filtered_plugins );
 	}
@@ -377,7 +395,13 @@ class EnvInfoBuilder {
 					}
 					break;
 				case 'wp_version':
-					$value = EnvironmentVersionResolver::resolve_wp( $value );
+					// Inline WordPress version resolution
+					if ( $value === 'stable' ) {
+						$value = 'latest';  // WP CLI uses 'latest' for stable
+					} elseif ( $value === 'rc' ) {
+						throw new \InvalidArgumentException( 'WordPress RC versions not supported. Please specify a version like "6.5-RC1".' );
+					}
+					// Otherwise pass through as-is (nightly, specific versions, etc.)
 					break;
 			}
 		}

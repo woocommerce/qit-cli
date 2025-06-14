@@ -30,18 +30,23 @@ class ExtensionResolver {
 	/** @var WPORGExtensionsList */
 	protected $wporg_extensions_list;
 
+	/** @var VersionResolver */
+	protected $version_resolver;
+
 	public function __construct(
 		ExtensionMetadataFetcher $metadata_fetcher,
 		DependencyResolver $dependency_resolver,
 		ExtensionCacheManager $cache_manager,
 		WooExtensionsList $woo_extensions_list,
-		WPORGExtensionsList $wporg_extensions_list
+		WPORGExtensionsList $wporg_extensions_list,
+		VersionResolver $version_resolver
 	) {
 		$this->metadata_fetcher      = $metadata_fetcher;
 		$this->dependency_resolver   = $dependency_resolver;
 		$this->cache_manager         = $cache_manager;
 		$this->woo_extensions_list   = $woo_extensions_list;
 		$this->wporg_extensions_list = $wporg_extensions_list;
+		$this->version_resolver      = $version_resolver;
 	}
 
 	/**
@@ -161,6 +166,15 @@ class ExtensionResolver {
 
 				return; // Remote sources with metadata are resolved
 			}
+		}
+
+		// NEW: Check version resolver first
+		if ( ! empty( $extension->version ) && $this->version_resolver->can_resolve( $extension->slug, $extension->version ) ) {
+			$extension->from   = 'url';  // These resolve to URLs
+			$extension->source = $this->version_resolver->resolve( $extension->slug, $extension->version );
+			debug_log( "  Resolved '{$extension->slug}:{$extension->version}' using version resolver" );
+
+			return;
 		}
 
 		// Infer source for unspecified or incomplete sources (e.g., SUT without source)

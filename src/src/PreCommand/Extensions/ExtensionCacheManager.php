@@ -202,8 +202,15 @@ class ExtensionCacheManager {
 		// For versioned extensions, check if cache is recent
 		if ( ! empty( $extension->version ) && $extension->version !== 'local' && $extension->version !== 'url' ) {
 			$cache_age = time() - filemtime( $cache_file );
-			// Cache is valid for 24 hours for versioned extensions
-			if ( $cache_age > DAY_IN_SECONDS ) {
+
+			// NEW: Check if this is a special version that changes frequently
+			if ( App::make( VersionResolver::class )->can_resolve( $extension->slug, $extension->version ) ) {
+				// RC and nightly versions change frequently, so short cache
+				if ( $cache_age > 5 * MINUTE_IN_SECONDS ) {
+					return false;
+				}
+			} elseif ( $cache_age > DAY_IN_SECONDS ) {
+				// Regular versioned extensions can be cached longer
 				return false;
 			}
 		}

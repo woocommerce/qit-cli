@@ -333,7 +333,6 @@
     "pluginConfig": {
       "type": "object",
       "required": ["slug", "from"],
-      "additionalProperties": false,
       "properties": {
         "slug": {
           "type": "string",
@@ -352,6 +351,7 @@
             "properties": {"from": {"const": "wporg"}}
           },
           "then": {
+            "additionalProperties": false,
             "properties": {
               "slug": {"type": "string"},
               "from": {"const": "wporg"},
@@ -368,6 +368,7 @@
             "properties": {"from": {"const": "wccom"}}
           },
           "then": {
+            "additionalProperties": false,
             "properties": {
               "slug": {"type": "string"},
               "from": {"const": "wccom"},
@@ -384,7 +385,8 @@
             "properties": {"from": {"const": "local"}}
           },
           "then": {
-            "required": ["slug", "from", "path"],
+            "required": ["path"],
+            "additionalProperties": false,
             "properties": {
               "slug": {"type": "string"},
               "from": {"const": "local"},
@@ -400,7 +402,8 @@
             "properties": {"from": {"const": "url"}}
           },
           "then": {
-            "required": ["slug", "from", "url"],
+            "required": ["url"],
+            "additionalProperties": false,
             "properties": {
               "slug": {"type": "string"},
               "from": {"const": "url"},
@@ -418,7 +421,8 @@
             "properties": {"from": {"const": "build"}}
           },
           "then": {
-            "required": ["slug", "from", "command", "output"],
+            "required": ["command", "output"],
+            "additionalProperties": false,
             "properties": {
               "slug": {"type": "string"},
               "from": {"const": "build"},
@@ -439,7 +443,6 @@
     "themeConfig": {
       "type": "object",
       "required": ["slug", "from"],
-      "additionalProperties": false,
       "properties": {
         "slug": {
           "type": "string",
@@ -458,6 +461,7 @@
             "properties": {"from": {"const": "wporg"}}
           },
           "then": {
+            "additionalProperties": false,
             "properties": {
               "slug": {"type": "string"},
               "from": {"const": "wporg"},
@@ -474,6 +478,7 @@
             "properties": {"from": {"const": "wccom"}}
           },
           "then": {
+            "additionalProperties": false,
             "properties": {
               "slug": {"type": "string"},
               "from": {"const": "wccom"},
@@ -490,7 +495,8 @@
             "properties": {"from": {"const": "local"}}
           },
           "then": {
-            "required": ["slug", "from", "path"],
+            "required": ["path"],
+            "additionalProperties": false,
             "properties": {
               "slug": {"type": "string"},
               "from": {"const": "local"},
@@ -506,7 +512,8 @@
             "properties": {"from": {"const": "url"}}
           },
           "then": {
-            "required": ["slug", "from", "url"],
+            "required": ["url"],
+            "additionalProperties": false,
             "properties": {
               "slug": {"type": "string"},
               "from": {"const": "url"},
@@ -524,7 +531,8 @@
             "properties": {"from": {"const": "build"}}
           },
           "then": {
-            "required": ["slug", "from", "command", "output"],
+            "required": ["command", "output"],
+            "additionalProperties": false,
             "properties": {
               "slug": {"type": "string"},
               "from": {"const": "build"},
