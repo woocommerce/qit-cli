@@ -119,42 +119,25 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		/** @var LocalTestResult $result */
 		$result = $this->getPreCommandResult();
 
-		// The PreCommand has already:
-		// - Parsed qit.json
-		// - Resolved test configuration for the profile
-		// - Downloaded all extensions (SUT + dependencies)
-		// - Downloaded all test packages
-		// - Created the environment configuration
-		// - Everything is ready to run!
+		// PreCommand has already:
+		// - Resolved SUT from CLI argument (if provided)
+		// - Resolved test packages based on profile/test argument
+		// - Applied all CLI overrides
+		// - Downloaded everything
 
 		$env_info      = $result->env_info;
 		$test_packages = $result->test_packages;
 
-		// Validate input
-		$shard = $input->getOption( 'shard' );
-		if ( $shard && ! $this->validateShard( $shard, $output ) ) {
-			return self::INVALID;
+		// Validate shard format
+		if ( $shard = $input->getOption( 'shard' ) ) {
+			if ( ! $this->validateShard( $shard, $output ) ) {
+				return self::INVALID;
+			}
 		}
 
-		// Handle SUT from CLI if provided
-		$this->handleSUT( $input, $env_info );
-
-		// Apply additional CLI overrides
-		$this->applyCliOverrides( $input, $env_info );
-
-		// Handle termination gracefully
+		// Set up globals and environment
+		$this->setupGlobals( $env_info, $input );
 		$this->handle_termination();
-		$GLOBALS['env_to_shutdown'] = $env_info;
-
-		// Configure Playwright options
-		$this->configure_pw_options( $input );
-
-		// Set global variables
-		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
-		if ( $env_info->sut ?? null ) {
-			App::setVar( 'QIT_SUT', $env_info->sut['id'] );
-			App::setVar( 'QIT_SUT_SLUG', $env_info->sut['slug'] );
-		}
 
 		// For testing
 		if ( getenv( 'QIT_SELF_TEST' ) === 'env_info' ) {
@@ -163,34 +146,18 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			return self::SUCCESS;
 		}
 
-		// Set up environment
-		if ( $env_info->skip_activating_plugins ) {
-			$this->e2e_environment->set_skip_activating_plugins( true );
-		}
-		if ( $env_info->skip_activating_themes ) {
-			$this->e2e_environment->set_skip_activating_themes( true );
-		}
-
 		// Initialize environment
 		$this->e2e_environment->init( $env_info );
 		$this->e2e_environment->up( 'up' );
 
-		// If up_only, just keep running
+		// Handle up_only mode
 		if ( $input->getOption( 'up_only' ) ) {
-			$output->writeln( $env_info->site_url );
-			$output->writeln( '<info>Environment is up. Press Ctrl+C to shut down.</info>' );
-			while ( true ) {
-				sleep( 1 );
-			}
+			return $this->handleUpOnly( $env_info, $output );
 		}
 
-		// Run tests
+		// Run tests with test packages
 		$io          = new SymfonyStyle( $input, $output );
-		$exit_status = $this->spec_custom_test_orchestrator->run_custom_e2e_tests(
-			$env_info,
-			$io,
-			false
-		);
+		$exit_status = $this->runTestPackages( $env_info, $test_packages, $io );
 
 		// Output results
 		if ( $exit_status === Command::SUCCESS ) {
@@ -216,64 +183,6 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		}
 
 		return true;
-	}
-
-	protected function handleSUT( InputInterface $input, $env_info ): void {
-		$woo_extension = $input->getArgument( 'woo_extension' );
-		if ( ! $woo_extension ) {
-			return;
-		}
-
-		try {
-			if ( is_numeric( $woo_extension ) ) {
-				$woo_id   = (int) $woo_extension;
-				$woo_slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( $woo_id );
-			} else {
-				$woo_slug = $woo_extension;
-				$woo_id   = $this->woo_extensions_list->get_woo_extension_id_by_slug( $woo_slug );
-			}
-
-			$sut_type = $this->woo_extensions_list->get_woo_extension_type( $woo_id );
-
-			$env_info->sut = [
-				'slug' => $woo_slug,
-				'id'   => $woo_id,
-				'type' => $sut_type,
-			];
-
-			// Handle source override
-			if ( $source = $input->getOption( 'source' ) ) {
-				$env_info->is_development_build = file_exists( $source );
-			}
-		} catch ( \Exception $e ) {
-			// If we can't resolve it, that's ok - might be using qit.json SUT
-		}
-	}
-
-	protected function applyCliOverrides( InputInterface $input, $env_info ): void {
-		// Test configuration
-		$env_info->pw_test_tag = $input->getOption( 'pw_test_tag' ) ?: 'full';
-		$env_info->notify      = $input->getOption( 'notify' );
-		$env_info->runner_args = $input->getArgument( 'runner_args' );
-
-		// Test mode
-		if ( $input->getOption( 'ui' ) ) {
-			App::setVar( 'TEST_MODE', 'ui' );
-		} elseif ( $input->getOption( 'codegen' ) ) {
-			App::setVar( 'TEST_MODE', 'codegen' );
-		} else {
-			App::setVar( 'TEST_MODE', 'headless' );
-		}
-	}
-
-	private function configure_pw_options( InputInterface $input ): void {
-		$pw_options = $input->getOption( 'pw_options' ) ?? '';
-
-		if ( $input->getOption( 'update_snapshots' ) ) {
-			$pw_options .= ' --update-snapshots';
-		}
-
-		App::setVar( 'pw_options', $pw_options );
 	}
 
 	private function handle_termination(): void {
