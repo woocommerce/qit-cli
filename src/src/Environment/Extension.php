@@ -12,12 +12,6 @@ class Extension {
 		'theme'  => 'theme',
 	];
 
-	const ACTIONS = [
-		'activate'  => 'activate',
-		'bootstrap' => 'bootstrap',
-		'test'      => 'test',
-	];
-
 	const PRIORITY_LOW    = 10;
 	const PRIORITY_MEDIUM = 50;
 	const PRIORITY_HIGH   = 100;
@@ -45,12 +39,6 @@ class Extension {
 
 	/** @var string Version of the extension, defaults to 'undefined'. */
 	public $version = 'undefined';
-
-	/** @var string|null Action for the extension, set by commands (e.g., 'activate', 'test'). */
-	public $action;
-
-	/** @var array<string>|null Test tags for testing, set by testing commands. */
-	public $test_tags;
 
 	/** @var int Priority for processing, defaults to PRIORITY_MEDIUM. */
 	public $priority = self::PRIORITY_MEDIUM;

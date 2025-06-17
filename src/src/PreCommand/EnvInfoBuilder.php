@@ -432,7 +432,6 @@ class EnvInfoBuilder {
 		$env_info->domain                  = ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) ? "qitenvnginx{$env_info->env_id}" : ( getenv( 'QIT_DOMAIN' ) ?: 'localhost' );
 		$env_info->skip_activating_plugins = $env_config['skip_activating_plugins'];
 		$env_info->skip_activating_themes  = $env_config['skip_activating_themes'];
-		$env_info->tests                   = $env_config['tests'];
 		$env_info->playwright_config       = $env_config['playwright_config'] ?? [];
 		$env_info->pw_test_tag             = $env_config['pw_test_tag'];
 		$env_info->woo_version             = $env_config['woo_version'] ?? '';

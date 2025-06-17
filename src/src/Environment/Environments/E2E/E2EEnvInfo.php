@@ -47,6 +47,9 @@ class E2EEnvInfo extends EnvInfo {
 	 */
 	public array $tests = [];
 
+	/** @var array<string,array> The test packages configuration. */
+	public array $test_packages = [];
+
 	/** @var array<mixed>> */
 	public array $playwright_config = [];
 
