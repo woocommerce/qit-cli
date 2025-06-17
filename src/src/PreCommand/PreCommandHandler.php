@@ -29,49 +29,46 @@ class PreCommandHandler {
 		$this->test_package_resolver = $test_package_resolver;
 	}
 
-	/**
-	 * Handle PreCommand resolution based on command interfaces
-	 */
-	public function handle( QITCommand $command, InputInterface $input, OutputInterface $output ): object {
+	public function handle( QITCommand $command, InputInterface $input, OutputInterface $output, ?string $config_file = null ): object {
 		$output->writeln( '<comment>DEBUG: PreCommandHandler called for ' . get_class( $command ) . '</comment>' );
 
-		if ( $command instanceof LocalTestCommand ) {
-			$output->writeln( '<comment>DEBUG: Handling as LocalTestCommand</comment>' );
+		// Extract SUT from CLI input (already defined in DynamicCommand)
+		$sut_slug = $input->getArgument( 'sut' ) ?? null;
+		$sut_type = $input->getOption( 'type' ) ?? null;
 
-			return $this->handleLocalTest( $command, $input, $output );
+		// Resolve configuration
+		$resolved_config = $this->config_resolver->resolve( $config_file, $sut_slug, $sut_type );
+
+		// Validate SUT for test commands
+		if ( $command instanceof ConfigurableTestCommand || $command instanceof LocalTestCommand ) {
+			if ( ! $resolved_config->sut ) {
+				throw new \RuntimeException( 'System Under Test (SUT) is required for test commands. Specify via CLI argument or qit.json.' );
+			}
+			$output->writeln( '<comment>DEBUG: Handling as Test Command</comment>' );
+
+			if ( $command instanceof LocalTestCommand ) {
+				return $this->handleLocalTest( $command, $input, $output, $resolved_config );
+			}
+
+			return $this->handleRemoteTest( $command, $input, $output, $resolved_config );
 		}
 
 		if ( $command instanceof EnvironmentCommand ) {
 			$output->writeln( '<comment>DEBUG: Handling as EnvironmentCommand</comment>' );
 
-			return $this->handleEnvironment( $command, $input, $output );
-		}
-
-		if ( $command instanceof ConfigurableTestCommand ) {
-			$output->writeln( '<comment>DEBUG: Handling as ConfigurableTestCommand</comment>' );
-
-			return $this->handleRemoteTest( $command, $input, $output );
+			return $this->handleEnvironment( $command, $input, $resolved_config );
 		}
 
 		throw new \RuntimeException( 'Command does not implement any PreCommand interface' );
 	}
 
-	/**
-	 * Handle local test commands - full resolution including test packages
-	 */
-	protected function handleLocalTest( LocalTestCommand $command, InputInterface $input, OutputInterface $output ): LocalTestResult {
+	protected function handleLocalTest( LocalTestCommand $command, InputInterface $input, OutputInterface $output, ResolvedConfiguration $resolved_config ): LocalTestResult {
 		$output->writeln( '<info>Resolving test configuration...</info>', OutputInterface::VERBOSITY_VERBOSE );
 
-		// 1. Parse and resolve configuration
-		$config_file     = $input->getOption( 'config' );
-		$resolved_config = $this->config_resolver->resolve( $config_file );
-
-		// 2. Get test configuration
 		$test_type   = $command->getTestType();
 		$profile     = $command->getTestProfile();
 		$test_config = $resolved_config->get_test_config( $test_type, $profile );
 
-		// 3. Resolve environment with all extensions
 		$env_name   = $command->getEnvironmentName();
 		$env_result = $this->env_resolver->resolve(
 			$resolved_config,
@@ -79,12 +76,7 @@ class PreCommandHandler {
 			$command->shouldPrepareEnvironment()
 		);
 
-		// 4. Resolve and download test packages
-		$test_packages = $this->test_package_resolver->resolve(
-			$resolved_config,
-			$test_type,
-			$profile
-		);
+		$test_packages = $this->test_package_resolver->get_test_packages( $test_config );
 
 		return new LocalTestResult(
 			$resolved_config,
@@ -94,17 +86,9 @@ class PreCommandHandler {
 		);
 	}
 
-	/**
-	 * Handle environment commands - just environment setup
-	 */
-	protected function handleEnvironment( EnvironmentCommand $command, InputInterface $input, OutputInterface $output ): EnvironmentResult {
+	protected function handleEnvironment( EnvironmentCommand $command, InputInterface $input, OutputInterface $output, ResolvedConfiguration $resolved_config ): EnvironmentResult {
 		$output->writeln( '<info>Resolving environment configuration...</info>', OutputInterface::VERBOSITY_VERBOSE );
 
-		// 1. Parse and resolve configuration
-		$config_file     = $input->getOption( 'config' );
-		$resolved_config = $this->config_resolver->resolve( $config_file );
-
-		// 2. Resolve environment
 		$env_name   = $command->getEnvironmentName();
 		$env_result = $this->env_resolver->resolve(
 			$resolved_config,
@@ -115,22 +99,29 @@ class PreCommandHandler {
 		return $env_result;
 	}
 
-	/**
-	 * Handle remote test commands - just configuration for API
-	 */
-	protected function handleRemoteTest( ConfigurableTestCommand $command, InputInterface $input, OutputInterface $output ): ConfigurationResult {
+	protected function handleRemoteTest( ConfigurableTestCommand $command, InputInterface $input, OutputInterface $output, ResolvedConfiguration $resolved_config ): ConfigurationResult {
 		$output->writeln( '<info>Preparing test configuration...</info>', OutputInterface::VERBOSITY_VERBOSE );
 
-		// 1. Parse configuration (minimal resolution)
-		$config_file     = $input->getOption( 'config' );
-		$resolved_config = $this->config_resolver->resolve( $config_file );
-
-		// 2. Get test configuration
 		$test_type   = $command->getTestType();
 		$profile     = $command->getTestProfile();
 		$test_config = $resolved_config->get_test_config( $test_type, $profile );
 
-		// 3. Prepare configuration result
-		return new ConfigurationResult( $resolved_config, $test_config );
+		$api_payload = $this->build_api_payload( $test_config, $resolved_config->sut );
+
+		return new ConfigurationResult( $resolved_config, $test_config, $api_payload );
+	}
+
+	protected function build_api_payload( array $test_config, ?array $sut ): array {
+		// Simplified example
+		$payload = [
+			'test_type' => $test_config['type'] ?? 'unknown',
+			'sut'       => $sut ? [
+				'slug'   => $sut['slug'],
+				'type'   => $sut['type'],
+				'source' => $sut['source']
+			] : null
+		];
+
+		return array_filter( $payload );
 	}
 }

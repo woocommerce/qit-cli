@@ -18,18 +18,16 @@ abstract class QITCommand extends Command {
 	protected ?object $precommand_result = null;
 
 	protected function configure(): void {
-		// Add config option if command uses configuration
 		if ( $this instanceof ConfigurableTestCommand || $this instanceof EnvironmentCommand ) {
 			$this->addOption(
 				'config',
 				'',
 				InputOption::VALUE_OPTIONAL,
 				'Path to the qit.json configuration file',
-				'./qit.json'
+				null
 			);
 		}
 
-		// Add profile option for test commands
 		if ( $this instanceof ConfigurableTestCommand || $this instanceof LocalTestCommand ) {
 			$this->addOption(
 				'profile',
@@ -40,7 +38,6 @@ abstract class QITCommand extends Command {
 			);
 		}
 
-		// Add environment option for environment commands
 		if ( $this instanceof EnvironmentCommand ) {
 			$this->addOption(
 				'environment',
@@ -57,14 +54,18 @@ abstract class QITCommand extends Command {
 		$this->output = $output;
 
 		try {
-			// Only run PreCommand if the command implements one of our interfaces
 			if ( $this instanceof ConfigurableTestCommand || $this instanceof EnvironmentCommand ) {
+				// Use ./qit.json if it exists and --config is not set
+				$config_file = $input->getOption( 'config' );
+				if ( $config_file === null && file_exists( getcwd() . '/qit.json' ) ) {
+					$config_file = getcwd() . '/qit.json';
+				}
+
 				$handler                 = App::make( PreCommandHandler::class );
-				$this->precommand_result = $handler->handle( $this, $input, $output );
+				$this->precommand_result = $handler->handle( $this, $input, $output, $config_file );
 			}
 
 			return $this->doExecute( $input, $output );
-
 		} catch ( \RuntimeException $e ) {
 			$output->writeln( "<error>{$e->getMessage()}</error>" );
 
@@ -72,15 +73,9 @@ abstract class QITCommand extends Command {
 		}
 	}
 
-	/**
-	 * Get the PreCommand result
-	 */
 	protected function getPreCommandResult(): ?object {
 		return $this->precommand_result;
 	}
 
-	/**
-	 * The actual command execution - to be implemented by child classes
-	 */
 	abstract protected function doExecute( InputInterface $input, OutputInterface $output ): int;
 }

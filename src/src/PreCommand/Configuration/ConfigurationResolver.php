@@ -62,28 +62,55 @@ class ConfigurationResolver {
 	/**
 	 * Resolve a configuration file into a complete ResolvedConfiguration object
 	 */
-	public function resolve( string $config_file ): ResolvedConfiguration {
+	public function resolve( ?string $config_file, ?string $sut_slug = null, ?string $sut_type = null ): ResolvedConfiguration {
 		$this->output->writeln( '<info>Resolving configuration...</info>' );
-		debug_log( "Starting resolution of config file: $config_file", 'info' );
+		debug_log( "Starting resolution of config file: " . ( $config_file ?? 'none' ), 'info' );
 
-		// Step 1: Parse the configuration file
-		debug_log( 'Step 1: Parsing qit.json...' );
-		$parsed_config = $this->parser->parse( $config_file );
-		debug_dump( $parsed_config, 'Parsed configuration' );
+		// Validate explicit config file
+		if ( $config_file !== null && ! file_exists( $config_file ) ) {
+			throw new \RuntimeException( "Specified configuration file does not exist: $config_file" );
+		}
 
-		// Create the resolved configuration object
+		// Initialize parsed configuration
+		$parsed_config = [
+			'sut'           => null,
+			'environments'  => [],
+			'test_types'    => [],
+			'groups'        => [],
+			'test_packages' => []
+		];
+
+		// Parse qit.json if provided
+		if ( $config_file ) {
+			debug_log( 'Step 1: Parsing qit.json...' );
+			$parsed_config = $this->parser->parse( $config_file );
+			debug_dump( $parsed_config, 'Parsed configuration' );
+		} else {
+			debug_log( 'No qit.json provided, using defaults and CLI inputs' );
+		}
+
+		// Create resolved configuration
 		$resolved                          = new ResolvedConfiguration( $parsed_config );
 		$resolved->metadata['config_file'] = $config_file;
 		$resolved->cache_dir               = $this->cache_dir;
-		debug_log( "Cache directory: {$this->cache_dir}" );
 
-		// Step 2: Process SUT
+		// Process SUT
 		debug_log( 'Step 2: Processing System Under Test...' );
-		$resolved->sut           = $parsed_config['sut'];
-		$resolved->sut_extension = $this->create_sut_extension( $parsed_config['sut'] );
-		debug_dump( $resolved->sut_extension, 'SUT Extension' );
+		if ( $sut_slug ) {
+			// CLI-provided SUT takes precedence
+			$resolved->sut           = [
+				'slug'   => $sut_slug,
+				'type'   => $sut_type ?? 'plugin',
+				'source' => [ 'type' => 'wporg' ]
+			];
+			$resolved->sut_extension = $this->create_sut_extension( $resolved->sut );
+		} elseif ( isset( $parsed_config['sut'] ) ) {
+			// Fall back to qit.json SUT
+			$resolved->sut           = $parsed_config['sut'];
+			$resolved->sut_extension = $this->create_sut_extension( $resolved->sut );
+		}
 
-		// Step 3: Copy basic configuration
+		// Copy basic configuration
 		debug_log( 'Step 3: Copying basic configuration...' );
 		$resolved->environments = $parsed_config['environments'] ?? [];
 		$resolved->test_types   = $parsed_config['test_types'] ?? [];
@@ -94,32 +121,20 @@ class ConfigurationResolver {
 			count( $resolved->groups )
 		) );
 
-		// Step 4: Process test packages
+		// Process test packages
 		debug_log( 'Step 4: Loading test packages...' );
-		$resolved->test_packages = $this->parser->get_config()['test_packages'] ?? [];
-		debug_log( sprintf( 'Found %d test packages', count( $resolved->test_packages ) ) );
-		debug_dump( array_keys( $resolved->test_packages ), 'Test package references' );
+		$resolved->test_packages = $parsed_config['test_packages'] ?? [];
 
-		// Step 5: Download remote test packages
+		// Download remote test packages if any
 		debug_log( 'Step 5: Downloading remote test packages...' );
 		$this->download_remote_test_packages( $resolved );
 
-		// Step 6: Collect all extensions from configuration
+		// Collect all extensions
 		debug_log( 'Step 6: Collecting all extensions from configuration...' );
 		$all_extensions = $this->collect_all_extensions( $resolved );
-		debug_log( sprintf( 'Collected %d extensions total', count( $all_extensions ) ) );
-		foreach ( $all_extensions as $ext ) {
-			debug_log_verbose( sprintf( '  - %s (%s) from %s', $ext->slug, $ext->type, $ext->from ) );
-		}
 
-		// Step 7: Resolve extension sets if any
-		if ( isset( $parsed_config['extension_set'] ) ) {
-			debug_log( 'Step 7: Resolving extension sets...' );
-			// This would be handled by ExtensionSetResolver
-		}
-
-		// Step 8: Resolve all extensions (including dependencies)
-		debug_log( 'Step 8: Resolving extensions and dependencies...' );
+		// Resolve extensions
+		debug_log( 'Step 7: Resolving extensions and dependencies...' );
 		$resolved_extensions = $this->extension_resolver->resolve(
 			$all_extensions,
 			$this->create_temp_env_info( $resolved ),
@@ -130,36 +145,18 @@ class ConfigurationResolver {
 		$resolved->resolved_themes  = $resolved_extensions->get_themes();
 		$resolved->php_extensions   = $resolved_extensions->get_php_extensions();
 
-		debug_log( sprintf( 'Resolved: %d plugins, %d themes, %d PHP extensions',
-			count( $resolved->resolved_plugins ),
-			count( $resolved->resolved_themes ),
-			count( $resolved->php_extensions )
-		) );
-
-		// Step 9: Collect requirements from test packages
-		debug_log( 'Step 9: Collecting requirements from test packages...' );
+		// Collect requirements
+		debug_log( 'Step 8: Collecting requirements from test packages...' );
 		$this->collect_test_package_requirements( $resolved );
-		debug_log( sprintf( 'Requirements: %d secrets, %d services, %d PHP extensions',
-			count( $resolved->required_secrets ),
-			count( $resolved->required_services ),
-			count( $resolved->php_extensions )
-		) );
 
-		// Step 10: Validate the configuration
-		debug_log( 'Step 10: Validating configuration...' );
+		// Validate configuration
+		debug_log( 'Step 9: Validating configuration...' );
 		$errors = $resolved->validate();
 		if ( ! empty( $errors ) ) {
-			debug_log( 'Validation errors found:', 'error' );
-			foreach ( $errors as $error ) {
-				debug_log( "  - $error", 'error' );
-			}
-			throw new \RuntimeException(
-				"Configuration validation failed:\n" . implode( "\n", array_map( fn( $e ) => "  - $e", $errors ) )
-			);
+			throw new \RuntimeException( "Configuration validation failed:\n" . implode( "\n", array_map( fn( $e ) => "  - $e", $errors ) ) );
 		}
 
 		$this->output->writeln( '<info>Configuration resolved successfully!</info>' );
-		debug_log( 'Resolution completed successfully', 'info' );
 
 		return $resolved;
 	}
@@ -210,7 +207,6 @@ class ConfigurationResolver {
 				debug_log( "Unknown SUT source type: {$sut['source']['type']}", 'error' );
 		}
 
-		$extension->action   = Extension::ACTIONS['test'];
 		$extension->priority = Extension::PRIORITY_HIGH;
 
 		return $extension;
