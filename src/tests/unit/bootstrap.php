@@ -43,8 +43,8 @@ function qit_tests_reset_config_dir() {
 	}
 }
 
-require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../src/helpers.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../../src/helpers.php';
 
 $verbose = false;
 
@@ -68,7 +68,7 @@ App::bind( Output::class, NullOutput::class );
 App::setVar( sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/cli/sync' ), file_get_contents( __DIR__ . '/data/sync.json' ) );
 
 /** @var Application $qit_application */
-$GLOBALS['qit_application'] = require_once __DIR__ . '/../src/bootstrap.php';
+$GLOBALS['qit_application'] = require_once __DIR__ . '/../../src/bootstrap.php';
 $GLOBALS['qit_application']->setAutoExit( false );
 
 /**
@@ -84,7 +84,7 @@ $GLOBALS['qit_application']->setAutoExit( false );
  * @var RecursiveDirectoryIterator $it
  */
 $failed_to_build = [];
-$it              = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( __DIR__ . '/../src/Commands', FilesystemIterator::SKIP_DOTS ) );
+$it              = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( __DIR__ . '/../../src/Commands', FilesystemIterator::SKIP_DOTS ) );
 foreach ( $it as $file ) {
 	if ( $file->isFile() && $file->getExtension() === 'php' && ! $file->isLink() ) {
 		$content = file_get_contents( $file->getPathname() );

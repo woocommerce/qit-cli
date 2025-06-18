@@ -17,7 +17,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "QIT_CLI_Tests\\": "tests/"
+      "QIT_CLI_Tests\\": "tests/unit"
     }
   },
   "require": {
