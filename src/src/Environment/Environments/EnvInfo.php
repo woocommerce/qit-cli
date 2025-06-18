@@ -89,36 +89,7 @@ abstract class EnvInfo implements \JsonSerializable {
 
 	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
-		$data = get_object_vars( $this );
-
-		// Ensure plugins and themes are serialized correctly
-		$data['plugins'] = array_map( function ( Extension $plugin ) {
-			return [
-				'slug'                => $plugin->slug,
-				'type'                => $plugin->type,
-				'from'                => $plugin->from,
-				'version'             => $plugin->version,
-				'source'              => $plugin->source,
-				'directory'           => $plugin->directory,
-				'priority'            => $plugin->priority,
-				'added_automatically' => $plugin->added_automatically,
-			];
-		}, $this->plugins );
-
-		$data['themes'] = array_map( function ( Extension $theme ) {
-			return [
-				'slug'                => $theme->slug,
-				'type'                => $theme->type,
-				'from'                => $theme->from,
-				'version'             => $theme->version,
-				'source'              => $theme->source,
-				'directory'           => $theme->directory,
-				'priority'            => $theme->priority,
-				'added_automatically' => $theme->added_automatically,
-			];
-		}, $this->themes );
-
-		return $data;
+		return get_object_vars( $this );
 	}
 
 	public function get_docker_container( string $docker_container ): string {
@@ -174,29 +145,13 @@ abstract class EnvInfo implements \JsonSerializable {
 		// Handle plugins and themes
 		if ( isset( $env_info_array['plugins'] ) && is_array( $env_info_array['plugins'] ) ) {
 			$env_info->plugins = array_map( function ( $plugin_data ) {
-				$plugin                      = new Extension( $plugin_data['slug'] ?? '', $plugin_data['type'] ?? 'plugin' );
-				$plugin->from                = $plugin_data['from'] ?? 'wporg';
-				$plugin->version             = $plugin_data['version'] ?? 'stable';
-				$plugin->source              = $plugin_data['source'] ?? null;
-				$plugin->directory           = $plugin_data['directory'] ?? null;
-				$plugin->priority            = $plugin_data['priority'] ?? Extension::PRIORITY_NORMAL;
-				$plugin->added_automatically = $plugin_data['added_automatically'] ?? null;
-
-				return $plugin;
+				return Extension::fromArray( is_array( $plugin_data ) ? $plugin_data : [] );
 			}, $env_info_array['plugins'] );
 		}
 
 		if ( isset( $env_info_array['themes'] ) && is_array( $env_info_array['themes'] ) ) {
 			$env_info->themes = array_map( function ( $theme_data ) {
-				$theme                      = new Extension( $theme_data['slug'] ?? '', $theme_data['type'] ?? 'theme' );
-				$theme->from                = $theme_data['from'] ?? 'wporg';
-				$theme->version             = $theme_data['version'] ?? 'stable';
-				$theme->source              = $theme_data['source'] ?? null;
-				$theme->directory           = $theme_data['directory'] ?? null;
-				$theme->priority            = $theme_data['priority'] ?? Extension::PRIORITY_NORMAL;
-				$theme->added_automatically = $theme_data['added_automatically'] ?? null;
-
-				return $theme;
+				return Extension::fromArray( is_array( $theme_data ) ? $theme_data : [] );
 			}, $env_info_array['themes'] );
 		}
 

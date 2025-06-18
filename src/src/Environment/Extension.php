@@ -5,16 +5,16 @@ namespace QIT_CLI\Environment;
 use lucatume\DI52\App;
 use QIT_CLI\WooExtensionsList;
 
-class Extension {
+class Extension implements \JsonSerializable {
 	/** @var array<string> Supported extension types. */
 	const TYPES = [
 		'plugin' => 'plugin',
 		'theme'  => 'theme',
 	];
 
-	const PRIORITY_LOW    = 10;
+	const PRIORITY_LOW = 10;
 	const PRIORITY_MEDIUM = 50;
-	const PRIORITY_HIGH   = 100;
+	const PRIORITY_HIGH = 100;
 
 	/** @var string The unique identifier (slug) of the extension. */
 	public $slug;
@@ -68,8 +68,8 @@ class Extension {
 	}
 
 	/**
-	 * @param string          $slug The extension slug.
-	 * @param string          $type The extension type ('plugin' or 'theme').
+	 * @param string $slug The extension slug.
+	 * @param string $type The extension type ('plugin' or 'theme').
 	 * @param string|int|null $source Optional source (slug, URL, directory, or zip file).
 	 */
 	public function __construct( string $slug, string $type, $source = null ) {
@@ -79,5 +79,51 @@ class Extension {
 		$this->slug   = $slug;
 		$this->type   = $type;
 		$this->source = $source;
+	}
+
+	#[\ReturnTypeWillChange]
+	public function jsonSerialize() {
+		return array_filter( [
+			'slug'                => $this->slug,
+			'type'                => $this->type,
+			'from'                => $this->from,
+			'version'             => $this->version,
+			'source'              => $this->source,
+			'directory'           => $this->directory,
+			'downloaded_source'   => $this->downloaded_source,
+			'entrypoint'          => $this->entrypoint,
+			'handler'             => $this->handler,
+			'priority'            => $this->priority,
+			'wccom_id'            => $this->wccom_id,
+			'added_automatically' => $this->added_automatically,
+		], function ( $value ) {
+			return $value !== null;
+		} );
+	}
+
+	/**
+	 * Create an Extension object from an array.
+	 *
+	 * @param array<string,mixed> $data The array data.
+	 *
+	 * @return Extension The deserialized Extension object.
+	 */
+	public static function fromArray( array $data ): Extension {
+		$extension                      = new Extension(
+			$data['slug'] ?? '',
+			$data['type'] ?? 'plugin',
+			$data['source'] ?? null
+		);
+		$extension->from                = $data['from'] ?? null;
+		$extension->version             = $data['version'] ?? 'undefined';
+		$extension->directory           = $data['directory'] ?? null;
+		$extension->downloaded_source   = $data['downloaded_source'] ?? null;
+		$extension->entrypoint          = $data['entrypoint'] ?? null;
+		$extension->handler             = $data['handler'] ?? null;
+		$extension->priority            = $data['priority'] ?? self::PRIORITY_MEDIUM;
+		$extension->wccom_id            = $data['wccom_id'] ?? null;
+		$extension->added_automatically = $data['added_automatically'] ?? null;
+
+		return $extension;
 	}
 }

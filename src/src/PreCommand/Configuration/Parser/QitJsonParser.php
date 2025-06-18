@@ -41,14 +41,13 @@ class QitJsonParser extends BaseJsonParser {
 		// Resolve extends first
 		$config = $this->resolve_extends( $config, $this->current_file_path );
 
-		// Ensure SUT exists
-		if ( ! isset( $config['sut'] ) ) {
-			throw new \RuntimeException( "The 'sut' property is required in the configuration" );
+		// Process SUT if it exists
+		if ( isset( $config['sut'] ) ) {
+			$this->debug_log( 'Processing SUT' );
+			$config['sut'] = $this->process_sut( $config['sut'] );
+		} else {
+			$this->debug_log( 'No SUT provided, skipping SUT processing' );
 		}
-
-		// Process SUT
-		$this->debug_log( 'Processing SUT' );
-		$config['sut'] = $this->process_sut( $config['sut'] );
 
 		// Resolve environment extends
 		if ( isset( $config['environments'] ) ) {

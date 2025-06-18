@@ -26,6 +26,8 @@ class ExtensionCacheManager {
 	/** @var OutputInterface */
 	protected $output;
 
+	protected EntrypointDetector $entrypointDetector;
+
 	/** @var string[] */
 	protected $download_handlers = [
 		'wporg' => 'download_from_url',
@@ -35,10 +37,11 @@ class ExtensionCacheManager {
 		'build' => 'copy_local_file',
 	];
 
-	public function __construct( Cache $cache, Zipper $zipper, OutputInterface $output ) {
-		$this->cache  = $cache;
-		$this->zipper = $zipper;
-		$this->output = $output;
+	public function __construct( Cache $cache, Zipper $zipper, OutputInterface $output, EntrypointDetector $entrypoint_detector ) {
+		$this->cache              = $cache;
+		$this->zipper             = $zipper;
+		$this->output             = $output;
+		$this->entrypointDetector = $entrypoint_detector;
 	}
 
 	/**
@@ -100,6 +103,9 @@ class ExtensionCacheManager {
 			debug_log( "  Source is a directory" );
 			$extension->downloaded_source = $source_path;
 
+			// Detect entrypoint
+			$this->entrypointDetector->detect( $extension );
+
 			return;
 		}
 
@@ -134,6 +140,9 @@ class ExtensionCacheManager {
 				}
 				$extension->downloaded_source = $cache_file;
 
+				// Detect entrypoint
+				$this->entrypointDetector->detect( $extension );
+
 				return;
 			} else {
 				// Invalid cache, remove it
@@ -157,6 +166,9 @@ class ExtensionCacheManager {
 		}
 
 		$extension->downloaded_source = $cache_file;
+
+		// Detect entrypoint
+		$this->entrypointDetector->detect( $extension );
 	}
 
 	/**
@@ -193,6 +205,9 @@ class ExtensionCacheManager {
 		}
 
 		$extension->downloaded_source = $cache_file;
+
+		// Detect entrypoint
+		$this->entrypointDetector->detect( $extension );
 	}
 
 	/**

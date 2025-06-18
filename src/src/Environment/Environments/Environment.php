@@ -14,6 +14,7 @@ use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
+use QIT_CLI\Zipper;
 use function QIT_CLI\is_ci;
 use function QIT_CLI\is_windows;
 use function QIT_CLI\normalize_path;
@@ -109,6 +110,8 @@ abstract class Environment {
 			$this->output->writeln( '<info>Downloading plugins and themes...</info>' );
 		}
 
+		$this->install_extensions();
+
 		// $this->extension_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );
 
 		if ( $type === 'up_and_test' ) {
@@ -126,6 +129,47 @@ abstract class Environment {
 		}
 
 		$this->additional_output();
+	}
+
+	private function install_extensions(): void {
+		$extensions = array_merge( $this->env_info->plugins, $this->env_info->themes );
+
+		foreach ( $extensions as $extension ) {
+			if ( empty( $extension->downloaded_source ) ) {
+				continue;
+			}
+
+			$target_dir = "/var/www/html/wp-content/{$extension->type}s/{$extension->slug}";
+
+			if ( is_file( $extension->downloaded_source ) && pathinfo( $extension->downloaded_source, PATHINFO_EXTENSION ) === 'zip' ) {
+				// Extract ZIP file
+				$extract_to = "{$this->env_info->temporary_env}/html/wp-content/{$extension->type}s";
+				if ( ! file_exists( $extract_to ) ) {
+					mkdir( $extract_to, 0755, true );
+				}
+
+				App::make( Zipper::class )->extract_zip( $extension->downloaded_source, $extract_to );
+
+				// Verify extraction worked
+				$local_path = "{$this->env_info->temporary_env}/html/wp-content/{$extension->type}s/{$extension->slug}";
+				if ( ! file_exists( $local_path ) ) {
+					throw new \RuntimeException( "Failed to extract {$extension->type} '{$extension->slug}'. The ZIP file might not have the expected directory structure." );
+				}
+
+				// Add volume mapping
+				$this->env_info->volumes[ $target_dir ] = $local_path;
+			} elseif ( is_dir( $extension->downloaded_source ) ) {
+				// Local directory - create volume mapping
+				$mapping = $target_dir;
+				if ( ! getenv( 'QIT_ALLOW_WRITE' ) ) {
+					$mapping .= ":ro,cached";
+					if ( $this->output->isVerbose() ) {
+						$this->output->writeln( "Info: Mapping '{$extension->type}s/{$extension->slug}' as read-only to protect your local copy." );
+					}
+				}
+				$this->env_info->volumes[ $mapping ] = $extension->downloaded_source;
+			}
+		}
 	}
 
 	/**
