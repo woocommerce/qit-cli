@@ -29,6 +29,18 @@ class VersionResolver {
 					return 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
 				},
 			],
+			'wordpress'   => [
+				'rc' => static function () {
+					$versions = App::make( Cache::class )->get_manager_sync_data( 'versions' );
+
+					if ( empty( $versions['wordpress']['rc'] ) ) {
+						// No RC available, fall back to stable
+						return 'stable';
+					}
+
+					return $versions['wordpress']['rc'];
+				},
+			],
 			// PRs can add more plugins here.
 		];
 	}
@@ -41,7 +53,7 @@ class VersionResolver {
 	}
 
 	/**
-	 * Resolve a version to a download URL.
+	 * Resolve a version to a download URL or version string.
 	 */
 	public function resolve( string $plugin, string $version ): string {
 		if ( ! $this->can_resolve( $plugin, $version ) ) {
@@ -49,5 +61,18 @@ class VersionResolver {
 		}
 
 		return $this->resolvers[ $plugin ][$version]();
+	}
+
+	/**
+	 * Resolve WordPress core version (only handles RC)
+	 */
+	public function resolveWordPressVersion( string $version ): string {
+		// Use the resolver if available
+		if ( $this->can_resolve( 'wordpress', $version ) ) {
+			return $this->resolve( 'wordpress', $version );
+		}
+
+		// Pass through other versions unchanged
+		return $version;
 	}
 }

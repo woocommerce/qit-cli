@@ -11,6 +11,7 @@ use QIT_CLI\Environment\EnvVolumeParser;
 use QIT_CLI\Environment\Extension;
 use QIT_CLI\PreCommand\Configuration\ResolvedConfiguration;
 use QIT_CLI\PreCommand\Extensions\ExtensionResolver;
+use QIT_CLI\PreCommand\Extensions\VersionResolver;
 use QIT_CLI\PreCommand\Results\EnvironmentResult;
 use Symfony\Component\Console\Input\InputInterface;
 use function QIT_CLI\normalize_path;
@@ -19,15 +20,18 @@ class EnvironmentResolver {
 	protected ExtensionResolver $extension_resolver;
 	protected EnvParser $env_parser;
 	protected EnvVolumeParser $volume_parser;
+	protected VersionResolver $version_resolver;
 
 	public function __construct(
 		ExtensionResolver $extension_resolver,
 		EnvParser $env_parser,
-		EnvVolumeParser $volume_parser
+		EnvVolumeParser $volume_parser,
+		VersionResolver $version_resolver = null
 	) {
 		$this->extension_resolver = $extension_resolver;
 		$this->env_parser         = $env_parser;
 		$this->volume_parser      = $volume_parser;
+		$this->version_resolver   = $version_resolver ?: App::make( VersionResolver::class );
 	}
 
 	public function resolve(
@@ -108,6 +112,13 @@ class EnvironmentResolver {
 				$env_config[ $key ] = $overrides[ $key ];
 			}
 		}
+
+		// Use VersionResolver for WordPress RC versions only
+		if ( isset( $env_config['wp_version'] ) && strtolower( $env_config['wp_version'] ) === 'rc' ) {
+			$env_config['wp_version'] = $this->version_resolver->resolveWordPressVersion( $env_config['wp_version'] );
+		}
+
+		// No conversion for WooCommerce - keep everything as is
 
 		// Merge arrays (append CLI values to JSON/defaults)
 		foreach ( [ 'plugins', 'themes', 'volumes', 'php_extensions', 'env_vars', 'env_files' ] as $key ) {
@@ -222,7 +233,7 @@ class EnvironmentResolver {
 	}
 
 	protected function setEnvironmentProperties( E2EEnvInfo $env_info, array $env_config ): void {
-		// Use env_config values, ensuring non-null for required properties
+		// Keep versions as-is - no conversion
 		$env_info->wp_version   = $env_config['wp_version'] ?? 'stable';
 		$env_info->php_version  = $env_config['php_version'] ?? '8.2';
 		$env_info->woo_version  = $env_config['woo_version'] ?? '';
