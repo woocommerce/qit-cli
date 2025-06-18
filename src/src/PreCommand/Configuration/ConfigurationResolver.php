@@ -8,60 +8,35 @@ use QIT_CLI\Config;
 use QIT_CLI\Environment\Extension;
 use QIT_CLI\PreCommand\Configuration\Parser\QitJsonParser;
 use QIT_CLI\PreCommand\Extensions\ExtensionResolver;
-use QIT_CLI\PreCommand\Extensions\ExtensionSetResolver;
-use QIT_CLI\PreCommand\Download\CustomTestsDownloader;
 use QIT_CLI\PreCommand\Download\TestPackageDownloader;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\normalize_path;
 use function QIT_CLI\debug_log;
-use function QIT_CLI\debug_log_verbose;
 use function QIT_CLI\debug_dump;
 
-/**
- * Main configuration resolver that orchestrates the entire resolution process
- */
 class ConfigurationResolver {
-	/** @var QitJsonParser */
 	protected $parser;
-
-	/** @var ExtensionResolver */
 	protected $extension_resolver;
-
-	/** @var ExtensionSetResolver */
-	protected $extension_set_resolver;
-
-	/** @var TestPackageDownloader */
 	protected $package_downloader;
-
-	/** @var Cache */
 	protected $cache;
-
-	/** @var OutputInterface */
 	protected $output;
-
-	/** @var string */
 	protected $cache_dir;
 
 	public function __construct(
 		QitJsonParser $parser,
 		ExtensionResolver $extension_resolver,
-		ExtensionSetResolver $extension_set_resolver,
 		TestPackageDownloader $package_downloader,
 		Cache $cache,
 		OutputInterface $output
 	) {
 		$this->parser                 = $parser;
 		$this->extension_resolver     = $extension_resolver;
-		$this->extension_set_resolver = $extension_set_resolver;
 		$this->package_downloader     = $package_downloader;
 		$this->cache                  = $cache;
 		$this->output                 = $output;
 		$this->cache_dir              = normalize_path( Config::get_qit_dir() . 'cache' );
 	}
 
-	/**
-	 * Resolve a configuration file into a complete ResolvedConfiguration object
-	 */
 	public function resolve( ?string $config_file, ?string $sut_slug = null, ?string $sut_type = null ): ResolvedConfiguration {
 		$this->output->writeln( '<info>Resolving configuration...</info>' );
 		debug_log( "Starting resolution of config file: " . ( $config_file ?? 'none' ), 'info' );
@@ -86,7 +61,7 @@ class ConfigurationResolver {
 			$parsed_config = $this->parser->parse( $config_file );
 			debug_dump( $parsed_config, 'Parsed configuration' );
 		} else {
-			debug_log( 'No qit.json provided, using defaults and CLI inputs' );
+			debug_log( 'No qit.json provided, relying on CLI inputs and defaults' );
 		}
 
 		// Create resolved configuration
@@ -107,7 +82,7 @@ class ConfigurationResolver {
 		} elseif ( isset( $parsed_config['sut'] ) ) {
 			// Fall back to qit.json SUT
 			$resolved->sut           = $parsed_config['sut'];
-			$resolved->sut_extension = $this->create_sut_extension( $resolved->sut );
+			$resolved->sut_extension = $this->create_sut_extension( $parsed_config['sut'] );
 		}
 
 		// Copy basic configuration
@@ -121,13 +96,12 @@ class ConfigurationResolver {
 			count( $resolved->groups )
 		) );
 
-		// Process test packages
-		debug_log( 'Step 4: Loading test packages...' );
+		// Skip test packages
+		debug_log( 'Step 4: Loading test packages (skipped)...' );
 		$resolved->test_packages = $parsed_config['test_packages'] ?? [];
 
-		// Download remote test packages if any
-		debug_log( 'Step 5: Downloading remote test packages...' );
-		$this->download_remote_test_packages( $resolved );
+		// Skip downloading remote test packages
+		debug_log( 'Step 5: Downloading remote test packages (skipped)...' );
 
 		// Collect all extensions
 		debug_log( 'Step 6: Collecting all extensions from configuration...' );
@@ -145,9 +119,8 @@ class ConfigurationResolver {
 		$resolved->resolved_themes  = $resolved_extensions->get_themes();
 		$resolved->php_extensions   = $resolved_extensions->get_php_extensions();
 
-		// Collect requirements
-		debug_log( 'Step 8: Collecting requirements from test packages...' );
-		$this->collect_test_package_requirements( $resolved );
+		// Skip collecting test package requirements
+		debug_log( 'Step 8: Collecting requirements from test packages (skipped)...' );
 
 		// Validate configuration
 		debug_log( 'Step 9: Validating configuration...' );
@@ -161,16 +134,12 @@ class ConfigurationResolver {
 		return $resolved;
 	}
 
-	/**
-	 * Create SUT extension object
-	 */
 	protected function create_sut_extension( array $sut ): Extension {
 		debug_log( "Creating SUT extension for: {$sut['slug']} ({$sut['type']})" );
 		debug_dump( $sut, 'SUT configuration' );
 
 		$extension = new Extension( $sut['slug'], $sut['type'] );
 
-		// Map source configuration
 		switch ( $sut['source']['type'] ) {
 			case 'local':
 				$extension->from      = 'local';
@@ -212,38 +181,33 @@ class ConfigurationResolver {
 		return $extension;
 	}
 
-	/**
-	 * Collect all extensions from the configuration
-	 */
 	protected function collect_all_extensions( ResolvedConfiguration $config ): array {
 		debug_log( 'Collecting all extensions from configuration' );
 		$extensions = [];
 
-		// Add SUT
-		$extensions[] = $config->sut_extension;
-		debug_log( "Added SUT extension: {$config->sut_extension->slug}" );
+		if ( $config->sut && $config->sut_extension ) {
+			$extensions[] = $config->sut_extension;
+			debug_log( "Added SUT extension: {$config->sut_extension->slug}" );
+		} else {
+			debug_log( "No SUT extension to add" );
+		}
 
-		// Collect from all environments
 		foreach ( $config->environments as $env_name => $env ) {
 			debug_log( "Processing environment: $env_name" );
 
 			if ( isset( $env['plugins'] ) ) {
 				debug_log( sprintf( '  Found %d plugins in environment', count( $env['plugins'] ) ) );
 				foreach ( $env['plugins'] as $plugin_config ) {
-					// Handle both string and array formats
 					if ( is_string( $plugin_config ) ) {
 						debug_log( "    Processing string plugin: $plugin_config" );
-						// Simple string format - defaults to wporg
 						$extension                      = new Extension( $plugin_config, 'plugin' );
 						$extension->from                = 'wporg';
 						$extension->version             = 'stable';
-						$extension->action              = Extension::ACTIONS['activate'];
 						$extension->added_automatically = 'Added from environment configuration';
 						$extensions[]                   = $extension;
 					} else {
 						debug_log( "    Processing object plugin: {$plugin_config['slug']}" );
 						debug_dump( $plugin_config, '    Plugin config' );
-						// Object format
 						$extension    = $this->create_extension_from_config( $plugin_config, 'plugin' );
 						$extensions[] = $extension;
 					}
@@ -253,20 +217,16 @@ class ConfigurationResolver {
 			if ( isset( $env['themes'] ) ) {
 				debug_log( sprintf( '  Found %d themes in environment', count( $env['themes'] ) ) );
 				foreach ( $env['themes'] as $theme_config ) {
-					// Handle both string and array formats
 					if ( is_string( $theme_config ) ) {
 						debug_log( "    Processing string theme: $theme_config" );
-						// Simple string format - defaults to wporg
 						$extension                      = new Extension( $theme_config, 'theme' );
 						$extension->from                = 'wporg';
 						$extension->version             = 'stable';
-						$extension->action              = Extension::ACTIONS['activate'];
 						$extension->added_automatically = 'Added from environment configuration';
 						$extensions[]                   = $extension;
 					} else {
 						debug_log( "    Processing object theme: {$theme_config['slug']}" );
 						debug_dump( $theme_config, '    Theme config' );
-						// Object format
 						$extension    = $this->create_extension_from_config( $theme_config, 'theme' );
 						$extensions[] = $extension;
 					}
@@ -292,16 +252,12 @@ class ConfigurationResolver {
 		return $result;
 	}
 
-	/**
-	 * Create extension from configuration array
-	 */
 	protected function create_extension_from_config( array $config, string $type ): Extension {
 		debug_log( "Creating extension from config: {$config['slug']} ($type)" );
 		debug_dump( $config, 'Extension config' );
 
 		$extension = new Extension( $config['slug'], $type );
 
-		// Handle the new 'from' property structure
 		if ( isset( $config['from'] ) ) {
 			debug_log( "Using 'from' property: {$config['from']}" );
 			$extension->from = $config['from'];
@@ -322,7 +278,6 @@ class ConfigurationResolver {
 					$extension->directory = $config['path'];
 					$extension->source    = $config['path'];
 					debug_log( "Extension source: local, path: {$config['path']}" );
-					// Check if path exists
 					$full_path = realpath( $config['path'] );
 					if ( ! $full_path || ! is_dir( $full_path ) ) {
 						debug_log( "WARNING: Local path does not exist or is not a directory: {$config['path']}", 'error' );
@@ -348,7 +303,6 @@ class ConfigurationResolver {
 			}
 		} elseif ( isset( $config['source'] ) ) {
 			debug_log( "Using legacy 'source' property" );
-			// Handle old source format for backward compatibility
 			$source = $config['source'];
 
 			switch ( $source['type'] ) {
@@ -384,7 +338,6 @@ class ConfigurationResolver {
 			debug_log( "Extension config missing both 'from' and 'source' properties!", 'error' );
 		}
 
-		$extension->action              = Extension::ACTIONS['activate'];
 		$extension->added_automatically = 'Added from environment configuration';
 
 		debug_log( "Created extension: {$extension->slug} from {$extension->from}" );
@@ -392,120 +345,7 @@ class ConfigurationResolver {
 		return $extension;
 	}
 
-	/**
-	 * Download remote test packages
-	 */
-	protected function download_remote_test_packages( ResolvedConfiguration $config ): void {
-		debug_log( 'Checking for remote test packages' );
-
-		$remote_packages = [];
-
-		foreach ( $config->test_packages as $ref => $package ) {
-			if ( $package['remote'] ?? false ) {
-				$remote_packages[ $ref ] = $package;
-				debug_log( "Found remote package: $ref" );
-			}
-		}
-
-		if ( empty( $remote_packages ) ) {
-			debug_log( 'No remote test packages to download' );
-
-			return;
-		}
-
-		$this->output->writeln( sprintf( 'Downloading %d remote test packages...', count( $remote_packages ) ) );
-		debug_log( 'Remote packages to download: ' . implode( ', ', array_keys( $remote_packages ) ) );
-
-		// Use TestPackageDownloader to fetch remote packages
-		$downloaded = $this->package_downloader->download( $remote_packages, $this->cache_dir );
-
-		// Update the test packages with downloaded content
-		foreach ( $downloaded as $ref => $manifest ) {
-			debug_log( "Downloaded package $ref successfully" );
-			debug_dump( $manifest, "Downloaded manifest for $ref" );
-			$config->test_packages[ $ref ] = array_merge( $config->test_packages[ $ref ], $manifest );
-		}
-	}
-
-	/**
-	 * Collect requirements from all test packages
-	 */
-	protected function collect_test_package_requirements( ResolvedConfiguration $config ): void {
-		debug_log( 'Collecting requirements from test packages' );
-
-		foreach ( $config->test_packages as $ref => $package ) {
-			if ( isset( $package['requires'] ) ) {
-				debug_log( "Processing requirements for package: $ref" );
-				debug_dump( $package['requires'], "Requirements for $ref" );
-
-				// Collect secrets
-				if ( isset( $package['requires']['secrets'] ) ) {
-					$before                   = count( $config->required_secrets );
-					$config->required_secrets = array_merge(
-						$config->required_secrets,
-						$package['requires']['secrets']
-					);
-					$added                    = count( $config->required_secrets ) - $before;
-					debug_log( "  Added $added secrets from $ref" );
-				}
-
-				// Collect external services
-				if ( isset( $package['requires']['external_services'] ) ) {
-					$before                    = count( $config->required_services );
-					$config->required_services = array_merge(
-						$config->required_services,
-						$package['requires']['external_services']
-					);
-					$added                     = count( $config->required_services ) - $before;
-					debug_log( "  Added $added external services from $ref" );
-				}
-
-				// Collect PHP extensions
-				if ( isset( $package['requires']['php_extensions'] ) ) {
-					$before                 = count( $config->php_extensions );
-					$config->php_extensions = array_merge(
-						$config->php_extensions,
-						$package['requires']['php_extensions']
-					);
-					$added                  = count( $config->php_extensions ) - $before;
-					debug_log( "  Added $added PHP extensions from $ref" );
-				}
-			}
-		}
-
-		// Remove duplicates
-		$before_secrets  = count( $config->required_secrets );
-		$before_services = count( $config->required_services );
-		$before_php      = count( $config->php_extensions );
-
-		$config->required_secrets  = array_unique( $config->required_secrets );
-		$config->required_services = array_unique( $config->required_services );
-		$config->php_extensions    = array_unique( $config->php_extensions );
-
-		debug_log( sprintf(
-			'Deduplication removed: %d secrets, %d services, %d PHP extensions',
-			$before_secrets - count( $config->required_secrets ),
-			$before_services - count( $config->required_services ),
-			$before_php - count( $config->php_extensions )
-		) );
-
-		debug_log( 'Final requirements:' );
-		if ( ! empty( $config->required_secrets ) ) {
-			debug_log( '  Secrets: ' . implode( ', ', $config->required_secrets ) );
-		}
-		if ( ! empty( $config->required_services ) ) {
-			debug_log( '  Services: ' . implode( ', ', $config->required_services ) );
-		}
-		if ( ! empty( $config->php_extensions ) ) {
-			debug_log( '  PHP Extensions: ' . implode( ', ', $config->php_extensions ) );
-		}
-	}
-
-	/**
-	 * Create temporary EnvInfo for extension resolver
-	 */
 	protected function create_temp_env_info( ResolvedConfiguration $config ): \QIT_CLI\Environment\Environments\EnvInfo {
-		// This is a minimal EnvInfo just for the extension resolver
 		$env_info                = new \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo();
 		$env_info->env_id        = uniqid();
 		$env_info->temporary_env = normalize_path( sys_get_temp_dir() . '/qit-resolve-' . $env_info->env_id );
@@ -515,9 +355,6 @@ class ConfigurationResolver {
 		return $env_info;
 	}
 
-	/**
-	 * Resolve configuration with caching
-	 */
 	public function resolve_with_cache( string $config_file ): ResolvedConfiguration {
 		$cache_key = 'resolved_config_' . md5_file( $config_file );
 		debug_log( "Checking cache for key: $cache_key" );
@@ -533,7 +370,6 @@ class ConfigurationResolver {
 		debug_log( 'No cache found, resolving fresh' );
 		$resolved = $this->resolve( $config_file );
 
-		// Cache for 1 hour
 		debug_log( 'Caching resolved configuration for 1 hour' );
 		$this->cache->set( $cache_key, $resolved->export(), HOUR_IN_SECONDS );
 

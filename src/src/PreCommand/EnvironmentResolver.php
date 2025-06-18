@@ -5,7 +5,6 @@ namespace QIT_CLI\PreCommand;
 use QIT_CLI\App;
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
-use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\EnvParser;
 use QIT_CLI\Environment\EnvVolumeParser;
@@ -31,18 +30,24 @@ class EnvironmentResolver {
 		$this->volume_parser      = $volume_parser;
 	}
 
-	/**
-	 * Resolve environment configuration and optionally prepare it
-	 */
 	public function resolve(
 		ResolvedConfiguration $config,
 		string $environment_name,
-		bool $should_prepare = true
+		bool $should_prepare = true,
+		array $cli_overrides = [],
+		InputInterface $input
 	): EnvironmentResult {
-		// Get environment configuration
-		$env_config = $config->get_environment( $environment_name );
+		// Get environment configuration from qit.json, if it exists
+		try {
+			$env_config = $config->get_environment( $environment_name );
+		} catch ( \RuntimeException $e ) {
+			$env_config = [];
+		}
 
-		// Create EnvInfo
+		// Apply CLI overrides (CLI > JSON)
+		$env_config = $this->applyOverrides( $env_config, $cli_overrides, $input );
+
+		// Create EnvInfo with merged configuration
 		$env_info = $this->createEnvInfo( $env_config );
 
 		// Collect all extensions from environment
@@ -79,9 +84,57 @@ class EnvironmentResolver {
 		return new EnvironmentResult( $config, $env_info );
 	}
 
-	/**
-	 * Create the appropriate EnvInfo object
-	 */
+	protected function applyOverrides( array $env_config, array $overrides, InputInterface $input ): array {
+		// Start with defaults from InputInterface
+		$defaults = [
+			'php_version'    => $input->getOption( 'php_version' ),
+			'wp_version'     => $input->getOption( 'wp_version' ),
+			'woo_version'    => $input->getOption( 'woo_version' ),
+			'object_cache'   => $input->getOption( 'object_cache' ),
+			'plugins'        => $input->getOption( 'plugin' ),
+			'themes'         => $input->getOption( 'theme' ),
+			'volumes'        => $input->getOption( 'volume' ),
+			'php_extensions' => $input->getOption( 'php_extension' ),
+			'env_vars'       => $input->getOption( 'env' ),
+			'env_files'      => $input->getOption( 'env_file' ),
+		];
+
+		// Merge JSON config over defaults
+		$env_config = array_merge( $defaults, $env_config );
+
+		// Merge explicit CLI overrides last
+		foreach ( [ 'php_version', 'wp_version', 'woo_version', 'object_cache' ] as $key ) {
+			if ( isset( $overrides[ $key ] ) ) {
+				$env_config[ $key ] = $overrides[ $key ];
+			}
+		}
+
+		// Merge arrays (append CLI values to JSON/defaults)
+		foreach ( [ 'plugins', 'themes', 'volumes', 'php_extensions', 'env_vars', 'env_files' ] as $key ) {
+			if ( isset( $overrides[ $key ] ) ) {
+				$env_config[ $key ] = array_merge(
+					$env_config[ $key ] ?? [],
+					is_array( $overrides[ $key ] ) ? $overrides[ $key ] : [ $overrides[ $key ] ]
+				);
+			}
+		}
+
+		// Handle environment variables
+		if ( isset( $env_config['env_vars'] ) || isset( $env_config['env_files'] ) ) {
+			$env_parser             = App::make( EnvParser::class );
+			$env_vars               = $env_parser->parse(
+				$env_config['env_vars'] ?? [],
+				$env_config['env_files'] ?? []
+			);
+			$env_config['env_vars'] = array_merge(
+				$env_config['env_vars'] ?? [],
+				$env_vars
+			);
+		}
+
+		return $env_config;
+	}
+
 	protected function createEnvInfo( array $env_config ): E2EEnvInfo {
 		$env_info                = new E2EEnvInfo();
 		$env_info->env_id        = uniqid();
@@ -92,12 +145,12 @@ class EnvironmentResolver {
 		$env_info->created_at    = time();
 		$env_info->status        = 'pending';
 
+		// Set properties based on merged configuration
+		$this->setEnvironmentProperties( $env_info, $env_config );
+
 		return $env_info;
 	}
 
-	/**
-	 * Collect all extensions from environment configuration
-	 */
 	protected function collectExtensions( array $env_config, ResolvedConfiguration $config ): array {
 		$extensions = [];
 
@@ -119,9 +172,6 @@ class EnvironmentResolver {
 		return $extensions;
 	}
 
-	/**
-	 * Create Extension object from configuration
-	 */
 	protected function createExtensionFromConfig( $config, string $type ): Extension {
 		if ( is_string( $config ) ) {
 			// Simple string format - defaults to wporg
@@ -138,7 +188,6 @@ class EnvironmentResolver {
 		if ( isset( $config['source'] ) ) {
 			$source          = $config['source'];
 			$extension->from = $source['type'];
-
 			switch ( $source['type'] ) {
 				case 'local':
 					$extension->directory = $source['path'];
@@ -152,17 +201,30 @@ class EnvironmentResolver {
 					$extension->version = $source['version'] ?? 'stable';
 					break;
 			}
+		} elseif ( isset( $config['from'] ) ) {
+			$extension->from = $config['from'];
+			switch ( $config['from'] ) {
+				case 'local':
+					$extension->directory = $config['path'];
+					$extension->source    = $config['path'];
+					break;
+				case 'url':
+					$extension->source = $config['url'];
+					break;
+				case 'wporg':
+				case 'wccom':
+					$extension->version = $config['version'] ?? 'stable';
+					break;
+			}
 		}
 
 		return $extension;
 	}
 
-	/**
-	 * Set additional environment properties
-	 */
 	protected function setEnvironmentProperties( E2EEnvInfo $env_info, array $env_config ): void {
-		$env_info->wp_version   = $env_config['wp_version'] ?? 'latest';
-		$env_info->php_version  = $env_config['php_version'] ?? '8.0';
+		// Use env_config values, ensuring non-null for required properties
+		$env_info->wp_version   = $env_config['wp_version'] ?? 'stable';
+		$env_info->php_version  = $env_config['php_version'] ?? '8.2';
 		$env_info->woo_version  = $env_config['woo_version'] ?? '';
 		$env_info->object_cache = $env_config['object_cache'] ?? false;
 		$env_info->env          = $env_config['env_vars'] ?? [];

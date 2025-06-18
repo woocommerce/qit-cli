@@ -8,8 +8,8 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var string */
 	public string $environment = 'e2e';
 
-	/** @var string The site URL, if any. */
-	public string $site_url;
+	/** @var string */
+	public string $site_url = '';
 
 	/** @var array<string,string> */
 	public array $runner_args = [];
@@ -21,16 +21,16 @@ class E2EEnvInfo extends EnvInfo {
 	public bool $object_cache = false;
 
 	/** @var string */
-	public string $php_version;
+	public string $php_version = '';
 
 	/** @var string */
-	public string $nginx_port;
+	public string $nginx_port = '';
 
-	/** @var array<string,mixed> The system under test information. */
-	public array $sut;
+	/** @var array<string,mixed> */
+	public array $sut = [];
 
-	/** @var string The domain being used. */
-	public string $domain;
+	/** @var string */
+	public string $domain = '';
 
 	public bool $skip_activating_plugins = false;
 
@@ -43,28 +43,25 @@ class E2EEnvInfo extends EnvInfo {
 	 *     action:string,
 	 *     path_in_php_container:string,
 	 *     path_in_host:string
-	 * }> $tests
+	 * }>
 	 */
 	public array $tests = [];
 
-	/** @var array<string,array> The test packages configuration. */
-	public array $test_packages = [];
-
-	/** @var array<mixed>> */
+	/** @var array<mixed> */
 	public array $playwright_config = [];
 
-	/** @var string The playwright test tag to be executed */
+	/** @var string */
 	public string $pw_test_tag = '';
 
-	/** @var string The WooCommerce version, if any. */
+	/** @var string */
 	public string $woo_version = 'none';
 
-	/** @var bool Whether this test run is for a development build. */
-	public bool $is_development_build;
+	/** @var bool */
+	public bool $is_development_build = false;
 
-	/** @var string Whether to notify the developer about the result of this test run. */
-	public string $notify;
+	/** @var string */
+	public string $notify = '';
 
-	/** @var array<string,array<string,array>> The test packages configuration. */
+	/** @var array<string,array<string,array>> */
 	public array $test_packages = [];
 }
