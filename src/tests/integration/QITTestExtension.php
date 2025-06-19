@@ -36,12 +36,15 @@ class QITTestStart implements ExecutionStartedSubscriber {
 			'QIT_CUSTOM_TESTS_ENV',
 		] );
 
-		if ( ! file_exists( __DIR__ . '/../../qit' ) ) {
-			throw new \RuntimeException( sprintf( 'The qit binary was not found at %s.', realpath( __DIR__ . '/../../qit' ) ) );
+		if ( ! file_exists( __DIR__ . '/../../../qit' ) ) {
+			throw new \RuntimeException( sprintf( 'The qit binary was not found at %s.', realpath( __DIR__ . '/../../../qit' ) ) );
 		}
 
-		$GLOBALS['qit']     = __DIR__ . '/../../qit';
-		$GLOBALS['qit-php'] = __DIR__ . '/../../src/qit-cli.php';
+		$GLOBALS['qit-php'] = __DIR__ . '/../../../src/qit-cli.php';
+
+		if ( ! file_exists( $GLOBALS['qit-php'] ) ) {
+			throw new \RuntimeException( sprintf( 'The qit-php file was not found at %s (realpath: %s).', $GLOBALS['qit-php'], realpath( $GLOBALS['qit-php'] ) ) );
+		}
 
 		// Generate an ID for this run.
 		$run_id      = uniqid( 'qit_custom_tests_' );
@@ -125,7 +128,7 @@ class QITTestStart implements ExecutionStartedSubscriber {
 
 				// Enable dev mode.
 				try {
-					$dev = new Process( [ $GLOBALS['qit'], 'dev' ] );
+					$dev = new Process( [ 'php', $GLOBALS['qit-php'], 'dev' ] );
 					$dev->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
 					$dev->setTimeout( 30 );
 					$dev->setIdleTimeout( 30 );
@@ -140,7 +143,8 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				// Add the environment.
 				try {
 					$add_environment = new Process( [
-						$GLOBALS['qit'],
+						'php',
+						$GLOBALS['qit-php'],
 						'backend:add',
 						'--manager_url',
 						$_ENV['QIT_CUSTOM_TESTS_URL'],
@@ -162,7 +166,8 @@ class QITTestStart implements ExecutionStartedSubscriber {
 					// Add the partner account that will be used.
 					try {
 						$add_partner = new Process( [
-							$GLOBALS['qit'],
+							'php',
+							$GLOBALS['qit-php'],
 							'partner:add',
 							'--user',
 							$_ENV['QIT_CUSTOM_TESTS_USER'],
@@ -186,7 +191,7 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				$sync_data    = null;
 				for ( $attempt = 1; $attempt <= $max_attempts; $attempt ++ ) {
 					try {
-						$extensions = new Process( [ $GLOBALS['qit'], 'extensions' ] );
+						$extensions = new Process( [ 'php', $GLOBALS['qit-php'], 'extensions' ] );
 						$extensions->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
 						$extensions->mustRun();
 						$sync_data = $extensions->getOutput();
@@ -343,8 +348,8 @@ class QITTestFinish implements ExecutionFinishedSubscriber {
 	}
 
 	public static function delete_temp_environment(): void {
-		if ( empty( $GLOBALS['QIT_HOME'] ) || empty( $GLOBALS['qit'] ) ) {
-			throw new \LogicException( 'The "QIT_HOME" and "qit" GLOBALS must be set.' );
+		if ( empty( $GLOBALS['QIT_HOME'] ) ) {
+			throw new \LogicException( 'The "QIT_HOME" GLOBALS must be set.' );
 		}
 
 		$fs = new Filesystem();

@@ -11,7 +11,19 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function test_env_up() {
-		$output = qit( [ 'env:up' ] );
+		$output = qit( [ 'env:up' ], [
+			'sut' => [
+				'slug' => 'test-plugin',
+				'type' => 'plugin',
+				'source' => ['type' => 'directory', 'path' => './']
+			],
+			'environments' => [
+				'default' => [
+					'php_version' => '8.2',
+					'wp_version' => 'stable'
+				]
+			]
+		] );
 
 		// Extract the dynamic environment ID
 		preg_match( '/Temporary test environment created. \((\w+)\)/', $output, $matches );
