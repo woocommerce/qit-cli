@@ -1,0 +1,32 @@
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "local",
+            "path": ".\/"
+        }
+    },
+    "test_types": {
+        "e2e": {
+            "default": {
+                "test_packages": [
+                    "woocommerce\/e2e:stable"
+                ]
+            }
+        },
+        "security": {
+            "default": []
+        }
+    },
+    "groups": {
+        "pre_release": {
+            "e2e": [
+                "default"
+            ],
+            "security": [
+                "default"
+            ]
+        }
+    }
+}

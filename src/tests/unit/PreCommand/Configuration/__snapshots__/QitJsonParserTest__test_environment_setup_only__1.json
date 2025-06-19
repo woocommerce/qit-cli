@@ -1,0 +1,17 @@
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "local",
+            "path": ".\/"
+        }
+    },
+    "environments": {
+        "default": {
+            "setup_only": [
+                "woocommerce\/minimal:stable"
+            ]
+        }
+    }
+}

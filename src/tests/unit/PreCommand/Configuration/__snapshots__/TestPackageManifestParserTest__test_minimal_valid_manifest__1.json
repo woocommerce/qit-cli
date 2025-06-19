@@ -1,0 +1,4 @@
+{
+    "$schema": "https:\/\/qit.woo.com\/json-schema\/test-package",
+    "test_type": "e2e"
+}

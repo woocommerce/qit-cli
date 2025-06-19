@@ -1,0 +1,19 @@
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "local",
+            "path": ".\/"
+        }
+    },
+    "environments": {
+        "default": {
+            "php_version": "8.0",
+            "env_vars": {
+                "QIT_DEBUG": "true",
+                "WP_DEBUG": "false"
+            }
+        }
+    }
+}
