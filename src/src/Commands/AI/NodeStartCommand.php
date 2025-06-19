@@ -58,6 +58,24 @@ class NodeStartCommand extends QITCommand {
 			return self::FAILURE;
 		}
 
+		// Ensure Ollama API is running
+		$output->write( 'Checking Ollama API... ' );
+		try {
+			if ( $this->ollama->ensure_api_running() ) {
+				$output->writeln( '<info>✓</info>' );
+			} else {
+				$output->writeln( '<error>✗</error>' );
+				$output->writeln( '<error>Failed to start Ollama API server. Is Ollama installed correctly?</error>' );
+
+				return self::FAILURE;
+			}
+		} catch ( \Exception $e ) {
+			$output->writeln( '<error>✗</error>' );
+			$output->writeln( '<error>' . $e->getMessage() . '</error>' );
+
+			return self::FAILURE;
+		}
+
 		// Check authentication
 		if ( ! $this->auth->get_manager_secret() && ! $this->auth->get_partner_auth() ) {
 			$output->writeln( '<error>You must be authenticated to start a node. Run "qit connect" first.</error>' );
@@ -117,8 +135,27 @@ class NodeStartCommand extends QITCommand {
 			$output->writeln( '<info>✓ Registered with node ID: ' . $this->node_id . '</info>' );
 
 			$output->writeln( '' );
-			$output->writeln( '<info>Node started successfully!</info>' );
+			$output->writeln( 'Ensuring required models are available...' );
+
+			// Model preloading.
+			$required_models = [ 'llama3.2', 'qwen3:8b' ]; // qwen2.5:3b is ~2GB, qwen3:8b is 5gb~.
+
+			foreach ( $required_models as $model ) {
+				$output->write( "Checking $model... " );
+
+				try {
+					if ( $this->ollama->ensure_model( $model, $output ) ) {
+						$output->writeln( '<info>✓</info>' );
+					} else {
+						$output->writeln( '<error>✗ Failed to pull model</error>' );
+					}
+				} catch ( \Exception $e ) {
+					$output->writeln( '<error>✗ ' . $e->getMessage() . '</error>' );
+				}
+			}
+
 			$output->writeln( '' );
+			$output->writeln( '<info>Node started successfully!</info>' );
 
 			// Start heartbeat in background
 			$this->startHeartbeat( $output );

@@ -10,6 +10,12 @@ class WebServer {
 	private string $webroot;
 	private string $node_token;
 
+	protected Ollama $ollama;
+
+	public function __construct( Ollama $ollama ) {
+		$this->ollama = $ollama;
+	}
+
 	public function start(): string {
 		// Find an available port
 		$this->port       = $this->findAvailablePort();
@@ -61,7 +67,8 @@ class WebServer {
 	}
 
 	private function createRouterScript(): void {
-		$node_token = $this->node_token;
+		$node_token     = $this->node_token;
+		$ollama_api_url = $this->ollama->get_api_base_url();
 
 		$router = <<<PHP
 <?php
@@ -99,13 +106,16 @@ if (!isset(\$input['prompt']) || !isset(\$input['model'])) {
 
 try {
     // Use Ollama API
-    \$ollama_request = [
-        'model' => \$input['model'] ?? 'llama3.2',
-        'prompt' => \$input['prompt'],
-        'stream' => false
-    ];
+    \$ollama_api_url = '$ollama_api_url'; // Injected from parent
     
-    \$ch = curl_init('http://localhost:11434/api/generate');
+	\$ollama_request = [
+	    'model' => \$input['model'] ?? 'llama3.2',
+	    'prompt' => \$input['prompt'],
+	    'stream' => false,
+	    'system' => '/no_think', // Disable thinking for models that support it
+	];
+    
+    \$ch = curl_init(\$ollama_api_url . '/api/generate');
     curl_setopt(\$ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt(\$ch, CURLOPT_POST, true);
     curl_setopt(\$ch, CURLOPT_POSTFIELDS, json_encode(\$ollama_request));
