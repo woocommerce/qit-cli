@@ -114,6 +114,11 @@ try {
 	    'stream' => false,
 	    'system' => '/no_think', // Disable thinking for models that support it
 	];
+	
+    // Add format if schema is provided
+    if (isset(\$input['schema']) && is_array(\$input['schema'])) {
+        \$ollama_request['format'] = \$input['schema'];
+    }
     
     \$ch = curl_init(\$ollama_api_url . '/api/generate');
     curl_setopt(\$ch, CURLOPT_RETURNTRANSFER, true);
