@@ -4,9 +4,84 @@ use PHPUnit\Framework\TestCase;
 
 class QITEnvUpTest extends TestCase {
 
+	private $testPluginDir;
+
+	protected function setUp(): void {
+		parent::setUp();
+		// Create test plugin directory
+		$this->testPluginDir = sys_get_temp_dir() . '/test-plugin-' . uniqid();
+		mkdir( $this->testPluginDir, 0777, true );
+
+		// Create a basic plugin file
+		file_put_contents( $this->testPluginDir . '/test-plugin.php', '<?php
+/**
+ * Plugin Name: Test Plugin
+ * Description: A test plugin for QIT
+ * Version: 1.0.0
+ */' );
+	}
+
 	protected function tearDown(): void {
 		qit( [ 'env:down' ] );
+
+		// Clean up test plugin directory with safety checks
+		if ( $this->testPluginDir && is_dir( $this->testPluginDir ) ) {
+			$this->safeRemoveDirectory( $this->testPluginDir );
+		}
+
 		parent::tearDown();
+	}
+
+	private function safeRemoveDirectory( $dir ) {
+		// Safety checks
+		if ( ! is_dir( $dir ) ) {
+			return;
+		}
+
+		// Ensure we're only deleting from temp directory
+		$tempDir   = realpath( sys_get_temp_dir() );
+		$targetDir = realpath( $dir );
+
+		if ( $tempDir === false || $targetDir === false ) {
+			return;
+		}
+
+		// Check that target directory is within temp directory
+		if ( strpos( $targetDir, $tempDir ) !== 0 ) {
+			trigger_error( "Attempted to delete directory outside of temp: $targetDir", E_USER_WARNING );
+
+			return;
+		}
+
+		// Additional safety: ensure the directory name contains our test prefix
+		if ( strpos( basename( $targetDir ), 'test-plugin-' ) !== 0 ) {
+			trigger_error( "Directory doesn't match expected pattern: $targetDir", E_USER_WARNING );
+
+			return;
+		}
+
+		// Don't delete if it's too short (like "/" or "/tmp")
+		if ( strlen( $targetDir ) < strlen( $tempDir ) + 10 ) {
+			trigger_error( "Path too short, might be dangerous: $targetDir", E_USER_WARNING );
+
+			return;
+		}
+
+		// Safe to proceed with deletion
+		$this->recursiveDelete( $targetDir );
+	}
+
+	private function recursiveDelete( $dir ) {
+		$files = array_diff( scandir( $dir ), array( '.', '..' ) );
+		foreach ( $files as $file ) {
+			$path = $dir . '/' . $file;
+			if ( is_dir( $path ) ) {
+				$this->recursiveDelete( $path );
+			} else {
+				unlink( $path );
+			}
+		}
+		rmdir( $dir );
 	}
 
 	/**
@@ -96,7 +171,10 @@ class QITEnvUpTest extends TestCase {
 			'sut'          => [
 				'slug'   => 'test-plugin',
 				'type'   => 'plugin',
-				'source' => [ 'type' => 'wporg' ]
+				'source' => [
+					'type' => 'local',
+					'path' => $this->testPluginDir
+				]
 			],
 			'environments' => [
 				'default' => [
@@ -287,7 +365,7 @@ class QITEnvUpTest extends TestCase {
 			'sut'          => [
 				'slug'   => 'test-plugin',
 				'type'   => 'plugin',
-				'source' => [ 'type' => 'directory', 'path' => './' ]
+				'source' => [ 'type' => 'local', 'path' => $this->testPluginDir ]
 			],
 			'environments' => [
 				'default' => [
@@ -325,7 +403,7 @@ class QITEnvUpTest extends TestCase {
 			'sut'          => [
 				'slug'   => 'test-plugin',
 				'type'   => 'plugin',
-				'source' => [ 'type' => 'directory', 'path' => './' ]
+				'source' => [ 'type' => 'local', 'path' => $this->testPluginDir ]
 			],
 			'environments' => [
 				'default' => [
@@ -384,7 +462,7 @@ class QITEnvUpTest extends TestCase {
 			'sut'          => [
 				'slug'   => 'test-plugin',
 				'type'   => 'plugin',
-				'source' => [ 'type' => 'directory', 'path' => './' ]
+				'source' => [ 'type' => 'local', 'path' => $this->testPluginDir ]
 			],
 			'environments' => [
 				'default' => [
