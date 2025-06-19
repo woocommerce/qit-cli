@@ -78,7 +78,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["local", "build", "url", "wccom", "wporg"],
+          "enum": ["local", "url", "wccom", "wporg"],
           "description": "Source type for the plugin/theme"
         }
       },
@@ -95,28 +95,10 @@
               "path": {
                 "type": "string",
                 "description": "Path to local directory or zip file"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {"type": {"const": "build"}}
-          },
-          "then": {
-            "required": ["command", "output"],
-            "additionalProperties": false,
-            "properties": {
-              "type": {"const": "build"},
-              "command": {
-                "type": "string",
-                "minLength": 1,
-                "description": "Build command to execute"
               },
-              "output": {
+              "build": {
                 "type": "string",
-                "pattern": "\\.zip$",
-                "description": "Output zip file path"
+                "description": "Optional build command to run before using the path"
               }
             }
           }
@@ -341,7 +323,7 @@
         },
         "from": {
           "type": "string",
-          "enum": ["wporg", "wccom", "local", "url", "build"],
+          "enum": ["wporg", "wccom", "local", "url"],
           "description": "Source for the plugin"
         }
       },
@@ -393,6 +375,10 @@
               "path": {
                 "type": "string",
                 "description": "Path to local plugin directory"
+              },
+              "build": {
+                "type": "string",
+                "description": "Optional build command to run before using the path"
               }
             }
           }
@@ -415,28 +401,6 @@
               }
             }
           }
-        },
-        {
-          "if": {
-            "properties": {"from": {"const": "build"}}
-          },
-          "then": {
-            "required": ["command", "output"],
-            "additionalProperties": false,
-            "properties": {
-              "slug": {"type": "string"},
-              "from": {"const": "build"},
-              "command": {
-                "type": "string",
-                "description": "Build command to execute"
-              },
-              "output": {
-                "type": "string",
-                "pattern": "\\.zip$",
-                "description": "Path to output zip file"
-              }
-            }
-          }
         }
       ]
     },
@@ -451,7 +415,7 @@
         },
         "from": {
           "type": "string",
-          "enum": ["wporg", "wccom", "local", "url", "build"],
+          "enum": ["wporg", "wccom", "local", "url"],
           "description": "Source for the theme"
         }
       },
@@ -503,6 +467,10 @@
               "path": {
                 "type": "string",
                 "description": "Path to local theme directory"
+              },
+              "build": {
+                "type": "string",
+                "description": "Optional build command to run before using the path"
               }
             }
           }
@@ -522,28 +490,6 @@
                 "format": "uri",
                 "pattern": "^https?://.*\\.zip$",
                 "description": "URL to theme zip file"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {"from": {"const": "build"}}
-          },
-          "then": {
-            "required": ["command", "output"],
-            "additionalProperties": false,
-            "properties": {
-              "slug": {"type": "string"},
-              "from": {"const": "build"},
-              "command": {
-                "type": "string",
-                "description": "Build command to execute"
-              },
-              "output": {
-                "type": "string",
-                "pattern": "\\.zip$",
-                "description": "Path to output zip file"
               }
             }
           }
