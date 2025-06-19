@@ -1,0 +1,10 @@
+{
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "url",
+            "url": "https:\/\/example.com\/plugin.zip"
+        }
+    }
+}

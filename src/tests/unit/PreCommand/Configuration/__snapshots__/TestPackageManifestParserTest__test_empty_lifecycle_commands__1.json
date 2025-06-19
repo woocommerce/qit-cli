@@ -1,0 +1,13 @@
+{
+    "$schema": "https:\/\/qit.woo.com\/json-schema\/test-package",
+    "test_type": "phpstan",
+    "lifecycle": {
+        "test": {
+            "setup": [],
+            "run": [
+                "phpstan analyze"
+            ],
+            "teardown": []
+        }
+    }
+}

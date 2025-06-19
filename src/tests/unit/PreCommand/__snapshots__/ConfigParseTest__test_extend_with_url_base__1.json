@@ -1,0 +1,79 @@
+{
+    "extra": {
+        "sut": {
+            "type": "plugin",
+            "slug": "local-plugin-1",
+            "source": {
+                "type": "build",
+                "command": "npm run build",
+                "output": "\/normalized\/path\/plugin.zip"
+            }
+        }
+    },
+    "environment": "default",
+    "dependencies_mode": "activate",
+    "temporary_env": "\/tmp-normalized\/default-ENV_ID_NORMALIZED",
+    "created_at": 1700000000,
+    "status": "pending",
+    "env_id": "ENV_ID_NORMALIZED",
+    "volumes": [],
+    "docker_images": [],
+    "docker_network": "",
+    "php_extensions": [],
+    "plugins": [
+        {
+            "slug": "woocommerce",
+            "entrypoint": null,
+            "source": "https:\/\/qit.woo.com\/downloads\/woocommerce.zip",
+            "directory": null,
+            "downloaded_source": "\/tmp-normalized\/cache\/plugin\/woocommerce-8.0.0.zip",
+            "type": "plugin",
+            "handler": null,
+            "version": "8.0.0",
+            "action": null,
+            "test_tags": null,
+            "priority": 50,
+            "wccom_id": 123456,
+            "added_automatically": null,
+            "from": "wccom"
+        },
+        {
+            "slug": "local-plugin-1",
+            "entrypoint": null,
+            "source": "\/tmp-normalized\/plugin.zip",
+            "directory": null,
+            "downloaded_source": "\/tmp-normalized\/cache\/plugin\/local-plugin-1.zip",
+            "type": "plugin",
+            "handler": null,
+            "version": "undefined",
+            "action": null,
+            "test_tags": null,
+            "priority": 50,
+            "wccom_id": null,
+            "added_automatically": null,
+            "from": "build"
+        }
+    ],
+    "themes": [],
+    "env": {
+        "WP_CLI_CONFIG_PATH": "\/qit\/wp-cli.yml"
+    },
+    "tunnel": false,
+    "tunnel_type": "no_tunnel",
+    "runner_args": [],
+    "wp_version": "latest",
+    "object_cache": false,
+    "php_version": "8.2",
+    "sut_slug": "local-plugin-1",
+    "sut_type": "plugin",
+    "domain": "normalized.localhost",
+    "skip_activating_plugins": false,
+    "skip_activating_themes": false,
+    "tests": [],
+    "playwright_config": [],
+    "pw_test_tag": "",
+    "woo_version": "",
+    "is_development_build": false,
+    "notify": "",
+    "test_packages": []
+}

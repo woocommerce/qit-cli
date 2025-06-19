@@ -1,0 +1,16 @@
+{
+    "environments": {
+        "default": {
+            "php_version": "8.0",
+            "wp_version": "6.0"
+        }
+    },
+    "sut": {
+        "type": "plugin",
+        "slug": "test-plugin",
+        "source": {
+            "type": "local",
+            "path": ".\/"
+        }
+    }
+}
