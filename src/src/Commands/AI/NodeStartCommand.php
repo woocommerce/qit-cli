@@ -26,6 +26,8 @@ class NodeStartCommand extends QITCommand {
 	private ?string $node_id = null;
 	private ?string $node_token = null;
 	private ?string $env_id = null;
+	private ?string $client_id = null;  // Add this
+	private ?string $tunnel_url = null; // Add this
 	private bool $heartbeat_running = true;
 
 	public function __construct(
@@ -98,12 +100,12 @@ class NodeStartCommand extends QITCommand {
 
 			// Create tunnel
 			$this->tunnel_runner->check_tunnel_support( $input->getOption( 'tunnel' ) );
-			$tunnel_url = $this->tunnel_runner->start_tunnel( $webserver_url, $this->env_id );
-			$output->writeln( '<info>✓ Created secure tunnel: ' . $tunnel_url . '</info>' );
+			$this->tunnel_url = $this->tunnel_runner->start_tunnel( $webserver_url, $this->env_id ); // Store as class property
+			$output->writeln( '<info>✓ Created secure tunnel: ' . $this->tunnel_url . '</info>' );
 
 			// Get client ID
-			$client_id = $this->cache->get( 'client_id' );
-			if ( ! $client_id ) {
+			$this->client_id = $this->cache->get( 'client_id' ); // Store as class property
+			if ( ! $this->client_id ) {
 				throw new \Exception( 'Client ID not found. This should have been generated during bootstrap.' );
 			}
 
@@ -113,8 +115,8 @@ class NodeStartCommand extends QITCommand {
 			$response_json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/ai-nodes/register' ) )
 				->with_method( 'POST' )
 				->with_post_body( [
-					'tunnel_url'   => $tunnel_url,
-					'client_id'    => $client_id,
+					'tunnel_url'   => $this->tunnel_url,
+					'client_id'    => $this->client_id,
 					'endpoint'     => '/process',
 					'node_token'   => $node_token,
 					'capabilities' => [], // Empty for now
@@ -265,16 +267,42 @@ class NodeStartCommand extends QITCommand {
 		}
 
 		try {
+			// Collect health metrics
+			$error_file = sys_get_temp_dir() . '/qit-node-last-error.json';
+			$last_error = null;
+
+			if ( file_exists( $error_file ) ) {
+				$last_error = json_decode( file_get_contents( $error_file ), true );
+
+				// Debug: show error in verbose mode
+				if ( $output->isVerbose() && $last_error ) {
+					$output->writeln( '<error>Last error: ' . $last_error['error_message'] . '</error>' );
+				}
+
+				// Clear the error after reading
+				unlink( $error_file );
+			}
+
+			$heartbeat_data = [
+				'node_token'  => $this->node_token,
+				'last_error'  => $last_error,
+				'system_info' => [
+					'memory_usage' => memory_get_usage( true ),
+					'cpu_load'     => sys_getloadavg()[0] ?? null,
+				],
+			];
+
 			$response_json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/ai-nodes/' . $this->node_id . '/heartbeat' ) )
 				->with_method( 'POST' )
-				->with_post_body( [
-					'node_token' => $this->node_token, // Changed from node_secret
-				] )
+				->with_post_body( $heartbeat_data )
 				->with_expected_status_codes( [ 200, 201 ] )
 				->request();
 
 			if ( $output->isVeryVerbose() ) {
 				$output->writeln( '[' . date( 'H:i:s' ) . '] Heartbeat sent successfully' );
+				if ( $last_error ) {
+					$output->writeln( '  - Reported error: ' . $last_error['error_message'] );
+				}
 			}
 		} catch ( \Exception $e ) {
 			if ( $output->isVerbose() ) {

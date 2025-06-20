@@ -74,9 +74,16 @@ class WebServer {
 <?php
 header('Content-Type: application/json');
 
+// Error logging function
+function log_error(\$message) {
+    error_log('[QIT Node Router] ' . \$message);
+}
+
 // Route handling
 \$uri = \$_SERVER['REQUEST_URI'];
 \$method = \$_SERVER['REQUEST_METHOD'];
+
+log_error("Received \$method request to \$uri");
 
 // Only accept POST requests
 if (\$method !== 'POST') {
@@ -94,6 +101,7 @@ foreach (\$_SERVER as \$name => \$value) {
 }
 
 if (!isset(\$headers['X-Node-Token']) || \$headers['X-Node-Token'] !== '$node_token') {
+    log_error("Invalid token provided");
     http_response_code(403);
     echo json_encode(['error' => 'Unauthorized']);
     exit;
@@ -115,6 +123,7 @@ touch(\$rate_limit_file);
 
 // Get JSON input
 \$input = json_decode(file_get_contents('php://input'), true);
+log_error("Received input: " . json_encode(\$input));
 
 // Route to appropriate handler
 switch (\$uri) {
@@ -213,17 +222,52 @@ function handle_ai_process(\$input, \$ollama_api_url) {
         ]);
 
     } catch (\Exception \$e) {
+        log_error('Processing error: ' . \$e->getMessage());
+
+        // Report error back to manager
+        \$error_report = [
+            'error_type' => get_class(\$e),
+            'error_message' => \$e->getMessage(),
+            'error_time' => date('Y-m-d H:i:s'),
+            'job_type' => \$input['type'] ?? 'unknown'
+        ];
+
+        // Store error for next heartbeat
+        file_put_contents(
+            sys_get_temp_dir() . '/qit-node-last-error.json', 
+            json_encode(\$error_report)
+        );
+
         http_response_code(500);
         echo json_encode([
             'error' => 'Failed to process request',
-            'message' => \$e->getMessage()
+            'message' => \$e->getMessage(),
+            'error_details' => \$error_report
         ]);
     }
 }
 
 // Code Analysis Handler
 function handle_code_analysis(\$input) {
+    log_error('Starting code analysis handler');
+
     if (!isset(\$input['zip_url']) || !isset(\$input['file']) || !isset(\$input['line'])) {
+        log_error('Missing required parameters');
+
+        // Store this error for heartbeat
+        \$error_report = [
+            'error_type' => 'ValidationError',
+            'error_message' => 'Missing required parameters: zip_url, file, line',
+            'error_time' => date('Y-m-d H:i:s'),
+            'job_type' => 'code_analysis',
+            'request_data' => \$input
+        ];
+
+        file_put_contents(
+            sys_get_temp_dir() . '/qit-node-last-error.json', 
+            json_encode(\$error_report)
+        );
+
         http_response_code(400);
         echo json_encode(['error' => 'Missing required parameters: zip_url, file, line']);
         exit;
@@ -234,6 +278,9 @@ function handle_code_analysis(\$input) {
         \$cache_dir = sys_get_temp_dir() . '/qit-code-analysis';
         \$work_dir = \$cache_dir . '/' . \$session_id;
 
+        log_error("Session ID: \$session_id");
+        log_error("Work dir: \$work_dir");
+
         // Create cache directory
         if (!is_dir(\$cache_dir)) {
             mkdir(\$cache_dir, 0777, true);
@@ -241,26 +288,34 @@ function handle_code_analysis(\$input) {
 
         // Download and extract if not already cached
         if (!is_dir(\$work_dir) || !file_exists(\$work_dir . '/.analyzed')) {
+            log_error("Preparing codebase from: " . \$input['zip_url']);
             prepare_codebase(\$input['zip_url'], \$work_dir);
+        } else {
+            log_error("Using cached codebase");
         }
 
         // Find symbol at location
+        log_error("Finding symbol at " . \$input['file'] . ":" . \$input['line']);
         \$symbol = find_symbol_at_location(\$work_dir, \$input['file'], \$input['line']);
 
         if (!\$symbol) {
             throw new \Exception("Could not find symbol at {\$input['file']}:{\$input['line']}");
         }
 
+        log_error("Found symbol: \$symbol");
+
         // Run psalm to find references
+        log_error("Finding references for symbol: \$symbol");
         \$references = find_references(\$work_dir, \$symbol);
+        log_error("Found " . count(\$references) . " references");
 
         // Extract relevant file contents
         \$file_contents = extract_file_contents(\$work_dir, \$references);
 
         // Build execution context
-        \$execution_context = build_execution_context(\$references);
+        \$execution_context = build_execution_context(\$work_dir, \$references);
 
-        echo json_encode([
+        \$response = [
             'success' => true,
             'context' => [
                 'symbol' => \$symbol,
@@ -268,20 +323,66 @@ function handle_code_analysis(\$input) {
                 'file_contents' => \$file_contents,
                 'execution_context' => \$execution_context
             ]
-        ]);
+        ];
+
+        log_error("Sending response with " . count(\$references) . " references");
+        echo json_encode(\$response);
 
     } catch (\Exception \$e) {
+        log_error('Processing error: ' . \$e->getMessage());
+        log_error('Stack trace: ' . \$e->getTraceAsString());
+
+        // Report error back to manager with more details
+        \$error_report = [
+            'error_type' => get_class(\$e),
+            'error_message' => \$e->getMessage(),
+            'error_time' => date('Y-m-d H:i:s'),
+            'job_type' => 'code_analysis',
+            'request_data' => [
+                'zip_url' => \$input['zip_url'] ?? 'not provided',
+                'file' => \$input['file'] ?? 'not provided',
+                'line' => \$input['line'] ?? 'not provided'
+            ],
+            'work_dir_exists' => isset(\$work_dir) ? is_dir(\$work_dir) : false,
+            'symbol_found' => isset(\$symbol) ? \$symbol : 'not found'
+        ];
+
+        // Store error for next heartbeat
+        file_put_contents(
+            sys_get_temp_dir() . '/qit-node-last-error.json', 
+            json_encode(\$error_report)
+        );
+
         http_response_code(500);
         echo json_encode([
             'error' => 'Analysis failed',
-            'message' => \$e->getMessage()
+            'message' => \$e->getMessage(),
+            'error_details' => \$error_report
         ]);
     }
 }
 
 function prepare_codebase(\$zip_url, \$work_dir) {
+    log_error("prepare_codebase: Starting download from \$zip_url");
+
     if (!is_dir(\$work_dir)) {
         mkdir(\$work_dir, 0777, true);
+    }
+
+    // Add validation for the zip URL
+    if (!filter_var(\$zip_url, FILTER_VALIDATE_URL)) {
+        throw new \Exception('Invalid ZIP URL provided: ' . \$zip_url);
+    }
+
+    // Test if URL is accessible
+    \$headers = @get_headers(\$zip_url);
+    if (\$headers === false) {
+        throw new \Exception('Cannot access ZIP URL: ' . \$zip_url);
+    }
+
+    \$status_line = \$headers[0];
+    if (strpos(\$status_line, '200') === false && strpos(\$status_line, '302') === false) {
+        throw new \Exception('ZIP URL returned non-200 status: ' . \$status_line);
     }
 
     // Check file size before downloading
@@ -292,7 +393,10 @@ function prepare_codebase(\$zip_url, \$work_dir) {
     curl_setopt(\$ch, CURLOPT_FOLLOWLOCATION, true);
     curl_exec(\$ch);
     \$size = curl_getinfo(\$ch, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+    \$http_code = curl_getinfo(\$ch, CURLINFO_HTTP_CODE);
     curl_close(\$ch);
+
+    log_error("File size check: \$size bytes, HTTP code: \$http_code");
 
     // Limit to 500MB
     if (\$size > 500 * 1024 * 1024) {
@@ -310,13 +414,17 @@ function prepare_codebase(\$zip_url, \$work_dir) {
 
     curl_exec(\$ch);
     \$http_code = curl_getinfo(\$ch, CURLINFO_HTTP_CODE);
+    \$error = curl_error(\$ch);
 
     curl_close(\$ch);
     fclose(\$fp);
 
     if (\$http_code !== 200) {
+        log_error("Download failed: HTTP \$http_code, error: \$error");
         throw new \Exception("Failed to download file: HTTP \$http_code");
     }
+
+    log_error("Download complete, extracting...");
 
     // Extract using Docker for safety
     \$descriptorspec = [
@@ -343,9 +451,12 @@ function prepare_codebase(\$zip_url, \$work_dir) {
         \$return_code = proc_close(\$process);
 
         if (\$return_code !== 0) {
+            log_error("Extraction failed: \$stderr");
             throw new \Exception('Failed to extract zip: ' . \$stderr);
         }
     }
+
+    log_error("Extraction complete");
 
     // Create psalm config if needed
     create_psalm_config(\$work_dir);
@@ -356,17 +467,22 @@ function prepare_codebase(\$zip_url, \$work_dir) {
 
 function find_symbol_at_location(\$work_dir, \$file, \$line) {
     // Sanitize the file path
-    \$file = str_replace(['../', '..\\', "\0"], '', \$file);
-    \$file = ltrim(\$file, '/\\');
+    \$file = str_replace(['../', '..\\\\', "\\0"], '', \$file);
+    \$file = ltrim(\$file, '/\\\\');
 
     \$filepath = realpath(\$work_dir . '/' . \$file);
 
+    log_error("find_symbol_at_location: Looking for \$file at line \$line");
+    log_error("Resolved path: \$filepath");
+
     // Ensure the resolved path is within work_dir
     if (\$filepath === false || strpos(\$filepath, realpath(\$work_dir)) !== 0) {
+        log_error("Path validation failed");
         return null;
     }
 
     if (!file_exists(\$filepath)) {
+        log_error("File does not exist: \$filepath");
         return null;
     }
 
@@ -432,10 +548,12 @@ function find_symbol_at_location(\$work_dir, \$file, \$line) {
                             // Check if target line is within this function
                             if (\$line >= \$func_start && \$line <= \$func_end) {
                                 if (\$class) {
-                                    return ltrim(\$namespace . '\\\\' . \$class . '::' . \$function, '\\\\');
+                                    \$symbol = ltrim(\$namespace . '\\\\' . \$class . '::' . \$function, '\\\\');
                                 } else {
-                                    return ltrim(\$namespace . '\\\\' . \$function, '\\\\');
+                                    \$symbol = ltrim(\$namespace . '\\\\' . \$function, '\\\\');
                                 }
+                                log_error("Found symbol: \$symbol");
+                                return \$symbol;
                             }
                             break;
                         }
@@ -445,6 +563,7 @@ function find_symbol_at_location(\$work_dir, \$file, \$line) {
         }
     }
 
+    log_error("No symbol found at line \$line");
     return null;
 }
 
@@ -464,6 +583,8 @@ function find_references(\$work_dir, \$symbol) {
         '--no-cache'
     ];
 
+    log_error("Running psalm command: " . implode(' ', \$cmd));
+
     \$process = proc_open(\$cmd, \$descriptorspec, \$pipes);
     \$output = [];
     \$return_code = 1;
@@ -476,8 +597,11 @@ function find_references(\$work_dir, \$symbol) {
         fclose(\$pipes[2]);
         \$return_code = proc_close(\$process);
 
+        log_error("Psalm stdout: " . \$stdout);
+        log_error("Psalm stderr: " . \$stderr);
+
         if (\$stdout) {
-            \$output = explode("\n", \$stdout);
+            \$output = explode("\\n", \$stdout);
         }
     }
 
@@ -494,6 +618,7 @@ function find_references(\$work_dir, \$symbol) {
         }
     }
 
+    log_error("Found " . count(\$references) . " references");
     return \$references;
 }
 
@@ -523,7 +648,7 @@ function extract_file_contents(\$work_dir, \$references) {
     return \$contents;
 }
 
-function build_execution_context(\$references) {
+function build_execution_context(\$work_dir, \$references) {
     \$context = [
         'has_public_access' => false,
         'wordpress_hooks' => [],
@@ -531,13 +656,43 @@ function build_execution_context(\$references) {
     ];
 
     foreach (\$references as \$ref) {
-        // Check for public access patterns
-        if (preg_match('/wp_ajax_nopriv_|rest_api_init|init|wp_loaded|template_redirect/', \$ref['type'])) {
-            \$context['has_public_access'] = true;
+        // Build call chain first
+        \$call_info = \$ref['file'] . ':' . \$ref['line'];
+        if (!empty(\$ref['type'])) {
+            \$call_info .= ' (' . \$ref['type'] . ')';
         }
+        \$context['call_chain'][] = \$call_info;
 
-        // Build call chain
-        \$context['call_chain'][] = \$ref['file'] . ':' . \$ref['line'];
+        // Now analyze the file for WordPress patterns
+        \$file_path = \$work_dir . '/' . \$ref['file'];
+        if (file_exists(\$file_path)) {
+            \$file_content = file_get_contents(\$file_path);
+
+            // Check for WordPress hooks in the file
+            if (preg_match_all('/add_action\s*\\(\s*[\'"]([^\'"]+)[\'"]/', \$file_content, \$matches)) {
+                foreach (\$matches[1] as \$hook) {
+                    if (strpos(\$hook, 'wp_ajax_nopriv_') === 0 || 
+                        in_array(\$hook, ['init', 'rest_api_init', 'wp_loaded', 'template_redirect'])) {
+                        \$context['has_public_access'] = true;
+                    }
+                    \$context['wordpress_hooks'][] = [
+                        'type' => 'action',
+                        'hook' => \$hook,
+                        'location' => \$ref['file'] . ':' . \$ref['line']
+                    ];
+                }
+            }
+
+            if (preg_match_all('/add_filter\s*\\(\s*[\'"]([^\'"]+)[\'"]/', \$file_content, \$matches)) {
+                foreach (\$matches[1] as \$hook) {
+                    \$context['wordpress_hooks'][] = [
+                        'type' => 'filter',
+                        'hook' => \$hook,
+                        'location' => \$ref['file'] . ':' . \$ref['line']
+                    ];
+                }
+            }
+        }
     }
 
     return \$context;
