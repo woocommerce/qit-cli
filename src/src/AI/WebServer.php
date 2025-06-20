@@ -105,6 +105,9 @@ if (!isset(\$input['prompt']) || !isset(\$input['model'])) {
 }
 
 try {
+    // Track processing time
+    \$start_time = microtime(true);
+    
     // Use Ollama API
     \$ollama_api_url = '$ollama_api_url'; // Injected from parent
     
@@ -146,10 +149,36 @@ try {
         throw new \Exception('Invalid response from Ollama');
     }
     
+    // Calculate processing time
+    \$end_time = microtime(true);
+    \$processing_time_ms = round((\$end_time - \$start_time) * 1000);
+    
+    // Calculate tokens per second
+    // Ollama returns eval_count (tokens generated) and eval_duration (nanoseconds)
+    \$tokens_per_second = 0;
+    if (isset(\$ollama_response['eval_count']) && isset(\$ollama_response['eval_duration']) && \$ollama_response['eval_duration'] > 0) {
+        // eval_duration is in nanoseconds, convert to seconds
+        \$eval_seconds = \$ollama_response['eval_duration'] / 1000000000;
+        \$tokens_per_second = round(\$ollama_response['eval_count'] / \$eval_seconds, 2);
+    }
+    
+    // Also include prompt evaluation metrics if available
+    \$prompt_eval_tokens = \$ollama_response['prompt_eval_count'] ?? null;
+    \$prompt_eval_duration = null;
+    if (isset(\$ollama_response['prompt_eval_duration']) && \$ollama_response['prompt_eval_duration'] > 0) {
+        \$prompt_eval_duration = round(\$ollama_response['prompt_eval_duration'] / 1000000); // Convert to milliseconds
+    }
+    
     echo json_encode([
         'response' => trim(\$ollama_response['response']),
         'model' => \$ollama_response['model'] ?? (\$input['model'] ?? 'llama3.2'),
-        'timestamp' => time()
+        'timestamp' => time(),
+        'processing_time_ms' => \$processing_time_ms,
+        'tokens_generated' => \$ollama_response['eval_count'] ?? null,
+        'tokens_per_second' => \$tokens_per_second,
+        'prompt_eval_tokens' => \$prompt_eval_tokens,
+        'prompt_eval_duration_ms' => \$prompt_eval_duration,
+        'total_duration_ms' => isset(\$ollama_response['total_duration']) ? round(\$ollama_response['total_duration'] / 1000000) : \$processing_time_ms
     ]);
     
 } catch (\Exception \$e) {

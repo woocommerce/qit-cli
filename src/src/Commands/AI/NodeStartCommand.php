@@ -48,7 +48,8 @@ class NodeStartCommand extends QITCommand {
 
 		$this->setDescription( 'Start an AI processing node' )
 		     ->setHelp( 'This command starts a local AI processing node that contributes to the QIT network.' )
-		     ->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use. Valid options: ' . implode( ', ', array_keys( TunnelRunner::$tunnel_map ) ), 'cloudflared-docker' );
+		     ->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use. Valid options: ' . implode( ', ', array_keys( TunnelRunner::$tunnel_map ) ), 'cloudflared-docker' )
+		     ->addOption( 'name', null, InputOption::VALUE_OPTIONAL, 'A friendly name for this node (e.g., "Office PC", "Gaming Rig")' );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
@@ -86,6 +87,9 @@ class NodeStartCommand extends QITCommand {
 		// Generate environment ID
 		$this->env_id = bin2hex( random_bytes( 8 ) );
 
+		// Get node name
+		$node_name = $this->getNodeName( $input );
+
 		try {
 			// Start webserver
 			$webserver_url = $this->webserver->start();
@@ -114,6 +118,7 @@ class NodeStartCommand extends QITCommand {
 					'endpoint'     => '/process',
 					'node_token'   => $node_token,
 					'capabilities' => [], // Empty for now
+					'node_name'    => $node_name,
 				] )
 				->with_expected_status_codes( [ 200, 201 ] )
 				->with_retry( 3 )
@@ -133,6 +138,10 @@ class NodeStartCommand extends QITCommand {
 			$this->cache->set( 'active_node_token', $this->node_token, 86400 ); // 24h
 
 			$output->writeln( '<info>✓ Registered with node ID: ' . $this->node_id . '</info>' );
+
+			if ( $node_name ) {
+				$output->writeln( '<info>✓ Node name: ' . $node_name . '</info>' );
+			}
 
 			$output->writeln( '' );
 			$output->writeln( 'Ensuring required models are available...' );
@@ -219,6 +228,28 @@ class NodeStartCommand extends QITCommand {
 		}
 
 		return self::SUCCESS;
+	}
+
+	private function getNodeName( InputInterface $input ): ?string {
+		// Check if user provided a name
+		$name = $input->getOption( 'name' );
+		if ( $name ) {
+			// Sanitize and limit length
+			$name = substr( trim( $name ), 0, 50 );
+			// Cache it for future runs
+			$this->cache->set( 'node_display_name', $name, 86400 * 30 ); // 30 days
+
+			return $name;
+		}
+
+		// Try to get a cached name
+		$cached_name = $this->cache->get( 'node_display_name' );
+		if ( $cached_name ) {
+			return $cached_name;
+		}
+
+		// No name provided or cached
+		return null;
 	}
 
 	private function startHeartbeat( OutputInterface $output ): void {
