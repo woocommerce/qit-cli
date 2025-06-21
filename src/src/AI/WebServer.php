@@ -186,6 +186,56 @@ function log_error(\$message, \$context = []) {
     log_message('error', \$message, \$context);
 }
 
+// Function to ensure model is available
+function ensure_model_available(\$model, \$ollama_api_url) {
+    log_info("Checking if model is available", ['model' => \$model]);
+
+    // Check if model exists by trying to show it
+    \$ch = curl_init(\$ollama_api_url . '/api/show');
+    curl_setopt(\$ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt(\$ch, CURLOPT_POST, true);
+    curl_setopt(\$ch, CURLOPT_POSTFIELDS, json_encode(['model' => \$model]));
+    curl_setopt(\$ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt(\$ch, CURLOPT_TIMEOUT, 10);
+
+    \$response = curl_exec(\$ch);
+    \$http_code = curl_getinfo(\$ch, CURLINFO_HTTP_CODE);
+    curl_close(\$ch);
+
+    if (\$http_code === 200) {
+        log_info("Model already exists", ['model' => \$model]);
+        return true;
+    }
+
+    // Model doesn't exist, try to pull it
+    log_info("Model not found, attempting to pull", ['model' => \$model]);
+
+    \$ch = curl_init(\$ollama_api_url . '/api/pull');
+    curl_setopt(\$ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt(\$ch, CURLOPT_POST, true);
+    curl_setopt(\$ch, CURLOPT_POSTFIELDS, json_encode(['model' => \$model]));
+    curl_setopt(\$ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt(\$ch, CURLOPT_TIMEOUT, 1800); // 30 minutes timeout for pulling
+
+    \$response = curl_exec(\$ch);
+    \$http_code = curl_getinfo(\$ch, CURLINFO_HTTP_CODE);
+    \$error = curl_error(\$ch);
+    curl_close(\$ch);
+
+    if (\$http_code !== 200) {
+        log_error("Failed to pull model", [
+            'model' => \$model,
+            'http_code' => \$http_code,
+            'error' => \$error,
+            'response' => substr(\$response, 0, 500)
+        ]);
+        return false;
+    }
+
+    log_info("Model pulled successfully", ['model' => \$model]);
+    return true;
+}
+
 // Route handling
 \$uri = \$_SERVER['REQUEST_URI'];
 \$method = \$_SERVER['REQUEST_METHOD'];
@@ -320,17 +370,23 @@ function handle_ai_process(\$input, \$ollama_api_url) {
     }
 
     try {
+        // Ensure the model is available before processing
+        \$model = \$input['model'] ?? 'llama3.2';
+        if (!ensure_model_available(\$model, \$ollama_api_url)) {
+            throw new \Exception('Failed to ensure model availability: ' . \$model);
+        }
+
         // Track processing time
         \$start_time = microtime(true);
         log_info("Starting AI processing", [
-            'model' => \$input['model'] ?? 'llama3.2',
+            'model' => \$model,
             'job_id' => \$input['job_id'] ?? 'unknown',
             'prompt_length' => strlen(\$input['prompt']),
             'has_schema' => isset(\$input['schema']) ? 'yes' : 'no'
         ]);
 
         \$ollama_request = [
-            'model' => \$input['model'] ?? 'llama3.2',
+            'model' => \$model,
             'prompt' => \$input['prompt'],
             'stream' => false,
             'system' => '/no_think', // Disable thinking for models that support it
@@ -517,10 +573,10 @@ function handle_code_analysis(\$input) {
     }
 
     // Validate and sanitize inputs
+    \$zip_url = \$input['zip_url'];
     \$file = \$input['file'];
     \$line = \$input['line'];
-    \$zip_url = \$input['zip_url'];
-    
+
     // Validate file path - only allow PHP files with safe characters
     if (!preg_match('/^[a-zA-Z0-9\/_\-\.]+\.php\$/', \$file)) {
         log_error('Invalid file path format', ['file' => \$file]);
@@ -528,11 +584,11 @@ function handle_code_analysis(\$input) {
         echo json_encode(['error' => 'Invalid file path format']);
         exit;
     }
-    
+
     // Remove any directory traversal attempts
     \$file = str_replace('..', '', \$file);
     \$file = ltrim(\$file, '/');
-    
+
     // Validate line number
     \$line = filter_var(\$line, FILTER_VALIDATE_INT, [
         'options' => [
@@ -540,14 +596,14 @@ function handle_code_analysis(\$input) {
             'max_range' => 999999
         ]
     ]);
-    
+
     if (\$line === false) {
         log_error('Invalid line number', ['line' => \$input['line']]);
         http_response_code(400);
         echo json_encode(['error' => 'Invalid line number']);
         exit;
     }
-    
+
     // Validate ZIP URL
     if (!filter_var(\$zip_url, FILTER_VALIDATE_URL)) {
         log_error('Invalid ZIP URL format', ['url' => substr(\$zip_url, 0, 50) . '...']);
@@ -555,7 +611,7 @@ function handle_code_analysis(\$input) {
         echo json_encode(['error' => 'Invalid ZIP URL format']);
         exit;
     }
-    
+
     // Validate URL scheme (only allow HTTPS)
     \$url_parts = parse_url(\$zip_url);
     if (\$url_parts['scheme'] !== 'https') {
@@ -578,20 +634,20 @@ function handle_code_analysis(\$input) {
             log_warning('Invalid session ID provided, generating new one');
             \$session_id = null;
         }
-        
+
         if (!\$session_id) {
             \$session_id = 'qit_' . bin2hex(random_bytes(16));
         }
-        
+
         \$cache_dir = sys_get_temp_dir() . '/qit-code-analysis';
         \$work_dir = \$cache_dir . '/' . \$session_id;
-        
+
         // Validate work directory path
         \$real_cache_dir = realpath(\$cache_dir);
         if (\$real_cache_dir === false) {
             \$real_cache_dir = \$cache_dir; // Directory doesn't exist yet
         }
-        
+
         // Ensure work_dir is within cache_dir
         if (file_exists(\$work_dir)) {
             \$real_work_dir = realpath(\$work_dir);
@@ -623,12 +679,12 @@ function handle_code_analysis(\$input) {
                 'zip_url' => substr(\$zip_url, 0, 50) . '...',
                 'work_dir' => \$work_dir
             ]);
-            
+
             // Create work directory with restricted permissions
             if (!is_dir(\$work_dir)) {
                 mkdir(\$work_dir, 0700, true);
             }
-            
+
             prepare_codebase(\$zip_url, \$work_dir);
         } else {
             log_info("Using cached codebase", [
@@ -636,12 +692,12 @@ function handle_code_analysis(\$input) {
                 'last_modified' => date('Y-m-d H:i:s', filemtime(\$work_dir))
             ]);
         }
-        
+
         // Validate that the requested file exists within work_dir
         \$full_file_path = \$work_dir . '/' . \$file;
         \$real_file_path = realpath(\$full_file_path);
         \$real_work_dir = realpath(\$work_dir);
-        
+
         if (\$real_file_path === false || strpos(\$real_file_path, \$real_work_dir) !== 0) {
             log_error('File not found or outside work directory', [
                 'file' => \$file,
@@ -653,7 +709,7 @@ function handle_code_analysis(\$input) {
         // Step 1: Find symbol using Docker-based approach
         log_info("Finding symbol at location");
         \$symbol_info = find_symbol_with_docker_v2(\$work_dir, \$file, \$line);
-        
+
         if (!isset(\$symbol_info['symbol']) || empty(\$symbol_info['symbol'])) {
             log_warning("No symbol found", [
                 'file' => \$file,
@@ -790,17 +846,17 @@ if (!file_exists(\$file)) {
 
 for (\$i = \$start; \$i < \$line; \$i++) {
     \$line_content = \$lines[\$i] ?? '';
-    
+
     // Check for namespace
     if (preg_match('/^\\s*namespace\\s+([^;]+);/', \$line_content, \$m)) {
         \$current_namespace = trim(\$m[1]);
     }
-    
+
     // Check for class
     if (preg_match('/^\\s*(?:abstract\\s+)?(?:final\\s+)?class\\s+(\\w+)/', \$line_content, \$m)) {
         \$current_class = \$m[1];
     }
-    
+
     // Check for function/method
     if (preg_match('/^\\s*(?:public|protected|private|static|\\s)+function\\s+(\\w+)/', \$line_content, \$m)) {
         if (\$i + 1 <= \$line) {
@@ -816,7 +872,7 @@ if (\$closest_function) {
     } else {
         \$symbol = (\$current_namespace ? \$current_namespace . '\\\\' : '') . \$closest_function;
     }
-    
+
     echo json_encode([
         'symbol' => \$symbol,
         'type' => \$current_class ? 'method' : 'function',
@@ -846,7 +902,7 @@ SCRIPT;
     ];
 
     \$result = run_docker_command(\$cmd);
-    
+
     if (\$result['success'] && \$result['output']) {
         \$parsed = json_decode(\$result['output'], true);
         if (json_last_error() === JSON_ERROR_NONE) {
@@ -875,7 +931,7 @@ function run_comprehensive_psalm_analysis(\$work_dir) {
             <directory name="node_modules" />
         </ignoreFiles>
     </projectFiles>
-    
+
     <issueHandlers>
         <UnusedVariable errorLevel="info" />
         <UnusedParam errorLevel="info" />
@@ -903,12 +959,12 @@ function run_comprehensive_psalm_analysis(\$work_dir) {
     ];
 
     \$result = run_docker_command(\$cmd);
-    
+
     if (\$result['success'] && \$result['output']) {
         // Parse JSON lines format
         \$lines = explode("\\n", trim(\$result['output']));
         \$analysis = [];
-        
+
         foreach (\$lines as \$line) {
             if (empty(\$line)) continue;
             \$item = json_decode(\$line, true);
@@ -916,7 +972,7 @@ function run_comprehensive_psalm_analysis(\$work_dir) {
                 \$analysis[] = \$item;
             }
         }
-        
+
         return \$analysis;
     }
 
@@ -931,14 +987,14 @@ function extract_execution_context_from_analysis(\$analysis, \$target_file, \$ta
 
     foreach (\$analysis as \$item) {
         if (!isset(\$item['file_name'])) continue;
-        
+
         \$file = str_replace('/app/', '', \$item['file_name']);
-        
+
         // Look for items related to our file/line
         if (\$file === \$target_file && 
             isset(\$item['line_from']) && 
             abs(\$item['line_from'] - \$target_line) < 10) {
-            
+
             \$context['references'][] = [
                 'file' => \$file,
                 'line' => \$item['line_from'],
@@ -946,7 +1002,7 @@ function extract_execution_context_from_analysis(\$analysis, \$target_file, \$ta
                 'message' => \$item['message'] ?? ''
             ];
         }
-        
+
         // Look for references to our symbol
         if (\$symbol && isset(\$item['message']) && strpos(\$item['message'], \$symbol) !== false) {
             \$context['paths'][] = [
@@ -990,12 +1046,12 @@ function analyze_wordpress_integration(\$work_dir, \$execution_context) {
                 \$hook_name = \$match[0];
                 \$hook_type = \$matches[1][\$idx][0];
                 \$offset = \$match[1];
-                
+
                 // Calculate line number
                 \$line = substr_count(substr(\$content, 0, \$offset), "\\n") + 1;
-                
+
                 \$is_public = is_public_wordpress_hook(\$hook_name);
-                
+
                 \$wp_context['hooks'][] = [
                     'type' => \$hook_type,
                     'name' => \$hook_name,
@@ -1020,7 +1076,7 @@ function analyze_wordpress_integration(\$work_dir, \$execution_context) {
             foreach (\$matches[0] as \$idx => \$match) {
                 \$offset = \$match[1];
                 \$line = substr_count(substr(\$content, 0, \$offset), "\\n") + 1;
-                
+
                 \$wp_context['has_public_access'] = true;
                 \$wp_context['entry_points'][] = [
                     'type' => 'superglobal',
@@ -1041,13 +1097,13 @@ function is_public_wordpress_hook(\$hook_name) {
         'pre_get_posts', 'posts_selection', 'wp_enqueue_scripts',
         'wp_head', 'wp_footer', 'rest_api_init', 'wp_ajax_nopriv_'
     ];
-    
+
     foreach (\$public_hooks as \$public_hook) {
         if (\$hook_name === \$public_hook || strpos(\$hook_name, \$public_hook) === 0) {
             return true;
         }
     }
-    
+
     return false;
 }
 
@@ -1061,7 +1117,7 @@ function run_docker_command(\$cmd) {
     log_debug("Running Docker command", ['cmd' => implode(' ', \$cmd)]);
 
     \$process = proc_open(\$cmd, \$descriptorspec, \$pipes);
-    
+
     if (!is_resource(\$process)) {
         return ['success' => false, 'output' => '', 'error' => 'Failed to start process'];
     }
