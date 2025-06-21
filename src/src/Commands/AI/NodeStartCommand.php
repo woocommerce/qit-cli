@@ -7,6 +7,7 @@ use QIT_CLI\AI\WebServer;
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Logging\Logger;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Input\InputInterface;
@@ -26,9 +27,10 @@ class NodeStartCommand extends QITCommand {
 	private ?string $node_id = null;
 	private ?string $node_token = null;
 	private ?string $env_id = null;
-	private ?string $client_id = null;  // Add this
-	private ?string $tunnel_url = null; // Add this
+	private ?string $client_id = null;
+	private ?string $tunnel_url = null;
 	private bool $heartbeat_running = true;
+	private Logger $logger;
 
 	public function __construct(
 		Ollama $ollama,
@@ -55,7 +57,27 @@ class NodeStartCommand extends QITCommand {
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+		// Initialize logger with a file in the system's temporary directory
+		$log_file     = sys_get_temp_dir() . '/qit-node.log';
+		$this->logger = new Logger( $log_file, Logger::DEBUG );
+		ini_set( 'log_errors', 1 );
+		ini_set( 'error_log', sys_get_temp_dir() . '/qit-node.log' );
+		ini_set( 'display_errors', 0 );
+
+		// Print the log file path
+		$output->writeln( '<info>Log file: ' . $log_file . '</info>' );
+
+		// Log startup
+		$this->logger->info( 'Starting QIT Node', [
+			'php_version' => PHP_VERSION,
+			'os'          => PHP_OS,
+		] );
+
+		// Pass logger to WebServer
+		$this->webserver->setLogger( $this->logger );
+
 		if ( ! $this->ollama->is_available() ) {
+			$this->logger->error( 'Ollama CLI is not available' );
 			$output->writeln( '<error>Ollama CLI is not available. Please install it first: https://ollama.ai</error>' );
 
 			return self::FAILURE;
@@ -263,82 +285,189 @@ class NodeStartCommand extends QITCommand {
 
 	private function sendHeartbeat( OutputInterface $output ): void {
 		if ( ! $this->node_id || ! $this->node_token ) {
+			$this->logger->warning( 'Skipping heartbeat - node_id or node_token not set' );
+
 			return;
 		}
 
 		try {
+			$this->logger->info( 'Preparing to send heartbeat', [
+				'node_id' => $this->node_id,
+				'time'    => date( 'Y-m-d H:i:s' )
+			] );
+
 			// Collect health metrics
 			$error_file = sys_get_temp_dir() . '/qit-node-last-error.json';
 			$last_error = null;
 
+			// Get system metrics for logging
+			$memory_usage = memory_get_usage( true );
+			$cpu_load     = sys_getloadavg()[0] ?? null;
+
+			$this->logger->debug( 'Collected system metrics', [
+				'memory_usage'    => $memory_usage,
+				'memory_usage_mb' => round( $memory_usage / 1024 / 1024, 2 ) . ' MB',
+				'cpu_load'        => $cpu_load
+			] );
+
 			if ( file_exists( $error_file ) ) {
-				$last_error = json_decode( file_get_contents( $error_file ), true );
+				$error_content = file_get_contents( $error_file );
+				$last_error    = json_decode( $error_content, true );
+
+				if ( json_last_error() !== JSON_ERROR_NONE ) {
+					$this->logger->warning( 'Failed to parse error file JSON', [
+						'error'   => json_last_error_msg(),
+						'file'    => $error_file,
+						'content' => substr( $error_content, 0, 200 ) . '...'
+					] );
+				} else {
+					$this->logger->info( 'Found error to report in heartbeat', [
+						'error_type'    => $last_error['error_type'] ?? 'unknown',
+						'error_message' => $last_error['error_message'] ?? 'unknown',
+						'job_id'        => $last_error['job_id'] ?? 'not provided',
+						'job_type'      => $last_error['job_type'] ?? 'unknown'
+					] );
+				}
 
 				// Debug: show error in verbose mode
 				if ( $output->isVerbose() && $last_error ) {
-					$output->writeln( '<error>Last error: ' . $last_error['error_message'] . '</error>' );
+					$output->writeln( '<error>Last error: ' . ( $last_error['error_message'] ?? 'Unknown error' ) . '</error>' );
+					if ( ! empty( $last_error['job_id'] ) ) {
+						$output->writeln( '  - Job ID: ' . $last_error['job_id'] );
+					}
 				}
 
 				// Clear the error after reading
 				unlink( $error_file );
+				$this->logger->debug( 'Cleared error file after reading' );
+			} else {
+				$this->logger->debug( 'No error file found for heartbeat' );
 			}
 
 			$heartbeat_data = [
 				'node_token'  => $this->node_token,
 				'last_error'  => $last_error,
 				'system_info' => [
-					'memory_usage' => memory_get_usage( true ),
-					'cpu_load'     => sys_getloadavg()[0] ?? null,
+					'memory_usage' => $memory_usage,
+					'cpu_load'     => $cpu_load,
 				],
 			];
 
-			$response_json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/ai-nodes/' . $this->node_id . '/heartbeat' ) )
-				->with_method( 'POST' )
-				->with_post_body( $heartbeat_data )
-				->with_expected_status_codes( [ 200, 201 ] )
-				->request();
+			$this->logger->debug( 'Sending heartbeat request', [
+				'endpoint'   => get_manager_url() . '/wp-json/cd/v1/ai-nodes/' . $this->node_id . '/heartbeat',
+				'has_error'  => $last_error !== null ? 'yes' : 'no',
+				'has_job_id' => ! empty( $last_error['job_id'] ) ? 'yes' : 'no'
+			] );
 
-			if ( $output->isVeryVerbose() ) {
-				$output->writeln( '[' . date( 'H:i:s' ) . '] Heartbeat sent successfully' );
-				if ( $last_error ) {
-					$output->writeln( '  - Reported error: ' . $last_error['error_message'] );
+			$start_time = microtime( true );
+
+			try {
+				$response_json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/ai-nodes/' . $this->node_id . '/heartbeat' ) )
+					->with_method( 'POST' )
+					->with_post_body( $heartbeat_data )
+					->with_expected_status_codes( [ 200, 201 ] )
+					->request();
+
+				$request_time = microtime( true ) - $start_time;
+				$response     = json_decode( $response_json, true );
+
+				$this->logger->info( 'Heartbeat sent successfully', [
+					'response_time_ms' => round( $request_time * 1000, 2 ),
+					'next_heartbeat'   => $response['next_heartbeat'] ?? 60,
+					'status'           => $response['status'] ?? 'unknown'
+				] );
+
+				if ( $output->isVeryVerbose() ) {
+					$output->writeln( '[' . date( 'H:i:s' ) . '] Heartbeat sent successfully' );
+					if ( $last_error ) {
+						$output->writeln( '  - Reported error: ' . ( $last_error['error_message'] ?? 'Unknown' ) );
+						if ( ! empty( $last_error['job_id'] ) ) {
+							$output->writeln( '  - Job error updated for: ' . $last_error['job_id'] );
+						}
+					}
+				}
+			} catch ( NetworkErrorException $e ) {
+				// This is what RequestBuilder throws
+				$this->logger->error( 'Heartbeat request failed', [
+					'error'    => $e->getMessage(),
+					'code'     => $e->getCode(),
+					'endpoint' => get_manager_url() . '/wp-json/cd/v1/ai-nodes/' . $this->node_id . '/heartbeat'
+				] );
+
+				if ( $output->isVerbose() ) {
+					$output->writeln( '<warning>Heartbeat failed: ' . $e->getMessage() . '</warning>' );
 				}
 			}
+
 		} catch ( \Exception $e ) {
+			$this->logger->error( 'Unexpected heartbeat error', [
+				'error' => $e->getMessage(),
+				'class' => get_class( $e ),
+				'trace' => $e->getTraceAsString()
+			] );
+
 			if ( $output->isVerbose() ) {
-				$output->writeln( '<warning>Heartbeat failed: ' . $e->getMessage() . '</warning>' );
+				$output->writeln( '<warning>Heartbeat failed unexpectedly: ' . $e->getMessage() . '</warning>' );
 			}
 		}
 	}
 
 	private function cleanup( OutputInterface $output ): void {
+		$this->logger->info( 'Starting node cleanup process' );
+
 		// Unregister from Manager
 		if ( $this->node_id && $this->node_token ) {
+			$this->logger->info( 'Unregistering node from QIT network', [
+				'node_id' => $this->node_id
+			] );
+
 			try {
+				$start_time = microtime( true );
 				( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/ai-nodes/' . $this->node_id . '/unregister' ) )
 					->with_method( 'POST' )
 					->with_post_body( [
-						'node_token' => $this->node_token, // Changed from node_secret
+						'node_token' => $this->node_token,
 					] )
 					->with_expected_status_codes( [ 200, 201 ] )
 					->request();
+				$request_time = microtime( true ) - $start_time;
+
+				$this->logger->info( 'Node unregistered successfully', [
+					'response_time_ms' => round( $request_time * 1000, 2 )
+				] );
 
 				$output->writeln( '<info>✓ Unregistered from QIT network</info>' );
 			} catch ( \Exception $e ) {
+				$this->logger->error( 'Failed to unregister node', [
+					'error' => $e->getMessage(),
+					'trace' => $e->getTraceAsString()
+				] );
+
 				$output->writeln( '<warning>Failed to unregister: ' . $e->getMessage() . '</warning>' );
 			}
+		} else {
+			$this->logger->warning( 'Skipping unregister - node_id or node_token not set' );
 		}
 
 		// Stop webserver
+		$this->logger->info( 'Stopping webserver' );
 		$this->webserver->stop();
+		$this->logger->debug( 'Webserver stopped' );
 
 		// Stop tunnel
 		if ( $this->env_id ) {
+			$this->logger->info( 'Stopping tunnel', [ 'env_id' => $this->env_id ] );
 			$this->tunnel_runner->stop_tunnel( $this->env_id );
+			$this->logger->debug( 'Tunnel stopped' );
+		} else {
+			$this->logger->debug( 'No tunnel to stop (env_id not set)' );
 		}
 
 		// Clear cached node info
+		$this->logger->debug( 'Clearing cached node info' );
 		$this->cache->delete( 'active_node_id' );
 		$this->cache->delete( 'active_node_token' );
+
+		$this->logger->info( 'Node cleanup completed' );
 	}
 }
