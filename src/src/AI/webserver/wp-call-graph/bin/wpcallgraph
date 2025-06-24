@@ -1,0 +1,183 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../src/CallGraphBuilder.php';
+require_once __DIR__ . '/../src/SelectiveFileScanner.php';
+
+use CallGraph\CallGraphBuilder;
+
+$options = getopt( 'f:l:m:c:b:i:s:hvq', [ 'function:', 'line:', 'method:', 'class:', 'baseline:', 'ignore:', 'selective:', 'help', 'verbose', 'quiet' ] );
+
+// Determine verbosity level
+$verbose = isset( $options['v'] ) || isset( $options['verbose'] );
+$quiet   = isset( $options['q'] ) || isset( $options['quiet'] );
+
+// Helper function for debug output
+function debug_output( $message, $verbose = false, $quiet = false ) {
+	if ( ! $quiet && $verbose ) {
+		fwrite( STDERR, $message . "\n" );
+	}
+}
+
+if ( isset( $options['h'] ) || isset( $options['help'] ) || empty( $options ) ) {
+	echo "WP Call Graph - Generate call graphs for PHP/WordPress code\n\n";
+	echo "Usage:\n";
+	echo "  wp-call-graph -f <function_name>\n";
+	echo "  wp-call-graph -c <class_name> -m <method_name>\n";
+	echo "  wp-call-graph -f <file_path> -l <line_number>\n";
+	echo "\nOptions:\n";
+	echo "  -f, --function   Function name or file path (when used with -l)\n";
+	echo "  -l, --line       Line number in file\n";
+	echo "  -c, --class      Class name\n";
+	echo "  -m, --method     Method name\n";
+	echo "  -b, --baseline   Baseline directory to scan (default: current directory)\n";
+	echo "  -i, --ignore     Comma-separated list of directories to ignore (default: vendor,node_modules,tests)\n";
+	echo "  -s, --selective  Enable/disable selective scanning (default: 1/true)\n";
+	echo "  -v, --verbose    Enable verbose output (debug messages to STDERR)\n";
+	echo "  -q, --quiet      Suppress all non-JSON output\n";
+	echo "  -h, --help       Show this help message\n";
+	echo "\nExamples:\n";
+	echo "  wp-call-graph -f my_plugin_init\n";
+	echo "  wp-call-graph -c MyPlugin -m activate\n";
+	echo "  wp-call-graph -f src/main.php -l 45\n";
+	echo "  wp-call-graph -f src/main.php -l 45 -b /path/to/project\n";
+	echo "  wp-call-graph -f my_function -i vendor,node_modules,build\n";
+	echo "  wp-call-graph -f src/main.php -l 45 -s 0  # Disable selective scanning\n";
+	echo "  wp-call-graph -f my_function -v  # Show debug output\n";
+	echo "  wp-call-graph -f my_function -q  # Quiet mode for scripts\n";
+	exit( 0 );
+}
+
+// Get baseline directory
+$directory = isset( $options['b'] ) ? $options['b'] : ( isset( $options['baseline'] ) ? $options['baseline'] : getcwd() );
+if ( ! is_dir( $directory ) ) {
+	if ( ! $quiet ) {
+		echo json_encode( [ 'error' => "Baseline directory does not exist: $directory" ] ) . "\n";
+	}
+	exit( 1 );
+}
+
+debug_output( "Baseline directory: $directory", $verbose, $quiet );
+
+// Get ignore directories
+$ignoreInput = isset( $options['i'] ) ? $options['i'] : ( isset( $options['ignore'] ) ? $options['ignore'] : 'vendor,node_modules,tests' );
+$ignoreDirs  = array_map( 'trim', explode( ',', $ignoreInput ) );
+
+debug_output( "Ignoring directories: " . implode( ', ', $ignoreDirs ), $verbose, $quiet );
+
+// Get selective scanning option
+$selectiveScanning = true;
+if ( isset( $options['s'] ) || isset( $options['selective'] ) ) {
+	$selectiveValue    = isset( $options['s'] ) ? $options['s'] : $options['selective'];
+	$selectiveScanning = ! in_array( $selectiveValue, [ '0', 'false', 'no' ] );
+}
+
+// Find all PHP files in baseline directory
+debug_output( "Scanning for PHP files...", $verbose, $quiet );
+$files    = [];
+$iterator = new RecursiveIteratorIterator(
+	new RecursiveDirectoryIterator( $directory, RecursiveDirectoryIterator::SKIP_DOTS ),
+	RecursiveIteratorIterator::SELF_FIRST
+);
+
+foreach ( $iterator as $file ) {
+	if ( $file->isFile() && $file->getExtension() === 'php' ) {
+		// Skip ignored directories
+		$shouldSkip = false;
+		foreach ( $ignoreDirs as $ignoreDir ) {
+			if ( strpos( $file->getPathname(), DIRECTORY_SEPARATOR . $ignoreDir . DIRECTORY_SEPARATOR ) !== false ) {
+				$shouldSkip = true;
+				break;
+			}
+		}
+		if ( $shouldSkip ) {
+			continue;
+		}
+		$files[] = $file->getRealPath();
+	}
+}
+
+debug_output( "Found " . count( $files ) . " PHP files", $verbose, $quiet );
+
+if ( empty( $files ) ) {
+	if ( ! $quiet ) {
+		echo json_encode( [ 'error' => 'No PHP files found in directory' ] ) . "\n";
+	}
+	exit( 1 );
+}
+
+// Prepare options for CallGraphBuilder
+$builderOptions = [
+	'base_directory'     => $directory,
+	'ignore_dirs'        => $ignoreDirs,
+	'selective_scanning' => $selectiveScanning,
+	'max_files'          => 1000,  // Can be made configurable
+	'verbose'            => $verbose,
+	'quiet'              => $quiet
+];
+
+// Determine if we're in file:line mode
+$isFileLineMode = ( isset( $options['l'] ) || isset( $options['line'] ) );
+$targetFile     = null;
+
+if ( $isFileLineMode ) {
+	$file = isset( $options['f'] ) ? $options['f'] : ( isset( $options['function'] ) ? $options['function'] : '' );
+
+	// Convert relative path to absolute
+	if ( ! file_exists( $file ) ) {
+		$file = $directory . DIRECTORY_SEPARATOR . $file;
+	}
+
+	if ( ! file_exists( $file ) ) {
+		if ( ! $quiet ) {
+			echo json_encode( [ 'error' => "File not found: $file" ] ) . "\n";
+		}
+		exit( 1 );
+	}
+
+	$targetFile = realpath( $file );
+
+	// Ensure target file is in files array
+	if ( ! in_array( $targetFile, $files ) ) {
+		$files[] = $targetFile;
+	}
+}
+
+// Create builder with appropriate options
+if ( $selectiveScanning && $isFileLineMode ) {
+	debug_output( "Using selective file scanning...", $verbose, $quiet );
+}
+
+$builder = new CallGraphBuilder( $files, $targetFile, $builderOptions );
+
+// Determine what to analyze
+if ( $isFileLineMode ) {
+	$line = intval( isset( $options['l'] ) ? $options['l'] : ( isset( $options['line'] ) ? $options['line'] : 0 ) );
+	debug_output( "Analyzing file $targetFile at line $line", $verbose, $quiet );
+	$result = $builder->buildFromFileLine( $targetFile, $line );
+} elseif ( ( isset( $options['c'] ) || isset( $options['class'] ) ) &&
+           ( isset( $options['m'] ) || isset( $options['method'] ) ) ) {
+	// Method mode
+	$class  = isset( $options['c'] ) ? $options['c'] : ( isset( $options['class'] ) ? $options['class'] : '' );
+	$method = isset( $options['m'] ) ? $options['m'] : ( isset( $options['method'] ) ? $options['method'] : '' );
+	debug_output( "Analyzing method $class::$method", $verbose, $quiet );
+	$result = $builder->buildForMethod( $class, $method );
+} elseif ( isset( $options['f'] ) || isset( $options['function'] ) ) {
+	// Function mode
+	$function = isset( $options['f'] ) ? $options['f'] : ( isset( $options['function'] ) ? $options['function'] : '' );
+	debug_output( "Analyzing function $function", $verbose, $quiet );
+	$result = $builder->buildForFunction( $function );
+} else {
+	if ( ! $quiet ) {
+		echo json_encode( [ 'error' => 'Invalid options provided' ] ) . "\n";
+	}
+	exit( 1 );
+}
+
+// Output JSON
+if ( $quiet ) {
+	echo json_encode( $result ) . "\n";
+} else {
+	echo json_encode( $result, JSON_PRETTY_PRINT ) . "\n";
+}

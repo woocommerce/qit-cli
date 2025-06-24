@@ -2,11 +2,11 @@
 
 namespace QIT_CLI\Commands\AI;
 
-use QIT_CLI\AI\Ollama;
 use QIT_CLI\AI\WebServer;
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\Logging\Logger;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Tunnel\TunnelRunner;
@@ -18,7 +18,6 @@ use function QIT_CLI\get_manager_url;
 class NodeStartCommand extends QITCommand {
 	protected static $defaultName = 'node:start';
 
-	protected Ollama $ollama;
 	protected TunnelRunner $tunnel_runner;
 	protected WebServer $webserver;
 	protected Cache $cache;
@@ -33,14 +32,12 @@ class NodeStartCommand extends QITCommand {
 	private Logger $logger;
 
 	public function __construct(
-		Ollama $ollama,
 		TunnelRunner $tunnel_runner,
 		WebServer $webserver,
 		Cache $cache,
 		Auth $auth
 	) {
 		parent::__construct( self::getDefaultName() );
-		$this->ollama        = $ollama;
 		$this->tunnel_runner = $tunnel_runner;
 		$this->webserver     = $webserver;
 		$this->cache         = $cache;
@@ -76,17 +73,18 @@ class NodeStartCommand extends QITCommand {
 		// Pass logger to WebServer
 		$this->webserver->setLogger( $this->logger );
 
-		if ( ! $this->ollama->is_available() ) {
+		// Check if Ollama is available through WebServer
+		if ( ! $this->webserver->isOllamaAvailable() ) {
 			$this->logger->error( 'Ollama CLI is not available' );
 			$output->writeln( '<error>Ollama CLI is not available. Please install it first: https://ollama.ai</error>' );
 
 			return self::FAILURE;
 		}
 
-		// Ensure Ollama API is running
+		// Ensure Ollama API is running through WebServer
 		$output->write( 'Checking Ollama API... ' );
 		try {
-			if ( $this->ollama->ensure_api_running() ) {
+			if ( $this->webserver->ensureOllamaApiRunning() ) {
 				$output->writeln( '<info>✓</info>' );
 			} else {
 				$output->writeln( '<error>✗</error>' );
@@ -170,14 +168,14 @@ class NodeStartCommand extends QITCommand {
 			$output->writeln( '' );
 			$output->writeln( 'Ensuring required models are available...' );
 
-			// Model preloading.
+			// Model preloading through WebServer
 			$required_models = [ 'llama3.2', 'qwen3:8b' ]; // qwen2.5:3b is ~2GB, qwen3:8b is 5gb~.
 
 			foreach ( $required_models as $model ) {
 				$output->write( "Checking $model... " );
 
 				try {
-					if ( $this->ollama->ensure_model( $model, $output ) ) {
+					if ( $this->webserver->ensureModel( $model, $output ) ) {
 						$output->writeln( '<info>✓</info>' );
 					} else {
 						$output->writeln( '<error>✗ Failed to pull model</error>' );
