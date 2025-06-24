@@ -204,6 +204,7 @@ if ( $input ) {
 			'context_keys'        => array_keys( $input['execution_context'] ),
 			'has_symbol'          => isset( $input['execution_context']['symbol'] ),
 			'has_public_access'   => isset( $input['execution_context']['has_public_access'] ),
+			'has_privilege_escalation_risk' => isset( $input['execution_context']['susceptible_to_privilege_escalation'] ),
 			'has_wordpress_hooks' => isset( $input['execution_context']['wordpress_hooks'] ),
 			'has_entry_points'    => isset( $input['execution_context']['entry_points'] )
 		] );

@@ -6,13 +6,16 @@
 use QIT_CLI\AI\WebServer\ToolRegistry;
 
 function handle_ai_with_tools( $input, $ollama_api_url ) {
-	$model           = $input['model'] ?? 'qwen3:8b';
+	// Model configuration
+	$coder_model = $input['coder_model'] ?? 'qwen2.5-coder:32b';
+	$tools_model = $input['tools_model'] ?? 'devstral:24b';
+
 	$messages        = $input['messages'];
 	$available_tools = $input['tools'] ?? [];
 	$max_iterations  = $input['max_iterations'] ?? 10;
 	$session_id      = $input['session_id'] ?? null;
 	$zip_url         = $input['zip_url'] ?? null;
-	$static_context  = $input['static_context'] ?? null; // wp-call-graph results
+	$static_context  = $input['static_context'] ?? null;
 
 	// Extract wp-call-graph results from context and dependencies
 	$wp_call_graph_data = null;
@@ -30,82 +33,24 @@ function handle_ai_with_tools( $input, $ollama_api_url ) {
 	// Log wp-call-graph extraction results
 	if ( $wp_call_graph_data ) {
 		log_info( "wp-call-graph data successfully extracted", [
-			'data_type' => gettype( $wp_call_graph_data ),
-			'has_result' => isset( $wp_call_graph_data['result'] ),
+			'data_type'    => gettype( $wp_call_graph_data ),
+			'has_result'   => isset( $wp_call_graph_data['result'] ),
 			'traces_count' => isset( $wp_call_graph_data['result']['trace'] ) ? count( $wp_call_graph_data['result']['trace'] ) : 0
 		] );
 	} else {
 		log_info( "No wp-call-graph data found in input" );
 	}
 
-	log_info( "Starting tool-enabled AI processing", [
-		'model'              => $model,
+	log_info( "Starting orchestrated AI analysis", [
+		'coder_model'        => $coder_model,
+		'tools_model'        => $tools_model,
 		'tools_count'        => count( $available_tools ),
 		'max_iterations'     => $max_iterations,
 		'session_id'         => $session_id,
 		'has_static_context' => ! empty( $static_context ),
+		'has_wp_call_graph'  => ! empty( $wp_call_graph_data ),
 		'input_keys'         => array_keys( $input )
 	] );
-
-	// Log wp-call-graph context if available
-	if ( $static_context ) {
-		log_info( "wp-call-graph static context provided", [
-			'has_symbol_info'    => isset( $static_context['symbol_info'] ),
-			'has_wp_call_graph'  => isset( $static_context['wp_call_graph'] ),
-			'has_call_graph'     => isset( $static_context['call_graph'] ),
-			'has_execution_ctx'  => isset( $static_context['execution_context'] ),
-			'callers_count'      => count( $static_context['execution_context']['callers'] ?? [] ),
-			'context_keys'       => array_keys( $static_context ),
-			'context_size'       => strlen( json_encode( $static_context ) )
-		] );
-
-		// Log detailed wp-call-graph context analysis
-		if ( isset( $static_context['symbol_info'] ) ) {
-			log_debug( "wp-call-graph symbol info details", [
-				'symbol' => $static_context['symbol_info']['symbol'] ?? 'unknown',
-				'type' => $static_context['symbol_info']['type'] ?? 'unknown',
-				'file' => $static_context['symbol_info']['file'] ?? 'unknown',
-				'line_start' => $static_context['symbol_info']['line_start'] ?? 'unknown',
-				'line_end' => $static_context['symbol_info']['line_end'] ?? 'unknown'
-			] );
-		}
-
-		if ( isset( $static_context['execution_context'] ) ) {
-			$exec_ctx = $static_context['execution_context'];
-			log_debug( "wp-call-graph execution context details", [
-				'symbol' => $exec_ctx['symbol'] ?? 'unknown',
-				'callers_count' => count( $exec_ctx['callers'] ?? [] ),
-				'wordpress_hooks_count' => count( $exec_ctx['wordpress_hooks'] ?? [] ),
-				'ajax_handlers_count' => count( $exec_ctx['ajax_handlers'] ?? [] ),
-				'has_public_access' => $exec_ctx['has_public_access'] ?? false,
-				'execution_context_keys' => array_keys( $exec_ctx )
-			] );
-
-			// Log individual callers
-			if ( !empty( $exec_ctx['callers'] ) ) {
-				foreach ( $exec_ctx['callers'] as $index => $caller ) {
-					log_debug( "wp-call-graph caller details", [
-						'caller_index' => $index,
-						'function' => $caller['function'] ?? 'unknown',
-						'location' => $caller['location'] ?? 'unknown',
-						'snippet_length' => strlen( $caller['snippet'] ?? '' ),
-						'caller_keys' => array_keys( $caller )
-					] );
-				}
-			}
-		}
-
-		if ( isset( $static_context['wp_call_graph'] ) ) {
-			$wp_result = $static_context['wp_call_graph'];
-			log_debug( "wp-call-graph result details", [
-				'success' => $wp_result['success'] ?? false,
-				'execution_time' => $wp_result['execution_time'] ?? 'unknown',
-				'has_result' => isset( $wp_result['result'] ),
-				'result_keys' => isset( $wp_result['result'] ) ? array_keys( $wp_result['result'] ) : [],
-				'traces_count' => isset( $wp_result['result']['trace'] ) ? count( $wp_result['result']['trace'] ) : 0
-			] );
-		}
-	}
 
 	// Initialize tool registry with work directory
 	$work_dir = '';
@@ -146,6 +91,34 @@ function handle_ai_with_tools( $input, $ollama_api_url ) {
 		}
 	}
 
+	// Validate work directory exists
+	if ( ! is_dir( $work_dir ) ) {
+		log_error( "Work directory does not exist", [
+			'work_dir'   => $work_dir,
+			'session_id' => $session_id
+		] );
+
+		echo json_encode( [
+			'response'   => json_encode( [
+				'error'      => 'Work directory not found',
+				'work_dir'   => $work_dir,
+				'session_id' => $session_id
+			] ),
+			'model'      => $coder_model,
+			'iterations' => 0,
+			'tool_calls' => [],
+			'error'      => 'Work directory setup failed'
+		] );
+
+		return;
+	}
+
+	log_info( "Initializing tool registry", [
+		'work_dir' => $work_dir,
+		'exists'   => is_dir( $work_dir ),
+		'readable' => is_readable( $work_dir )
+	] );
+
 	$tool_registry = new ToolRegistry( $work_dir );
 
 	// Convert tools to Ollama format
@@ -156,220 +129,257 @@ function handle_ai_with_tools( $input, $ollama_api_url ) {
 		];
 	}, $available_tools );
 
-	// Build initial conversation with enhanced guidance including wp-call-graph results
-	$system_message = [
-		'role'    => 'system',
-		'content' => build_enhanced_system_prompt_with_wp_call_graph( $work_dir, $static_context )
-	];
+	// Build initial context for qwen coder
+	$coder_system_prompt = build_coder_investigation_prompt( $work_dir, $static_context, $wp_call_graph_data );
 
-	$conversation   = array_merge( [ $system_message ], $messages );
-	$all_tool_calls = [];
-
-	for ( $iteration = 0; $iteration < $max_iterations; $iteration ++ ) {
-		log_info( "Tool iteration $iteration", [
-			'model'               => $model,
-			'conversation_length' => count( $conversation ),
-			'total_tool_calls'    => count( $all_tool_calls )
-		] );
-
-		// Call Ollama with tools
-		$ollama_request = [
-			'model'    => $model,
-			'messages' => $conversation,
-			'tools'    => $ollama_tools,
-			'stream'   => false
-		];
-
-		log_info( "Tool-enabled AI request details", [
-			'model'          => $model,
-			'messages_count' => count( $conversation ),
-			'tools_count'    => count( $ollama_tools )
-		] );
-
-		try {
-			$response = call_ollama( $ollama_api_url . '/api/chat', $ollama_request );
-		} catch ( Exception $e ) {
-			log_error( "Ollama call failed", [ 'error' => $e->getMessage() ] );
-			$final_response = [
-				'response'   => 'Analysis partially completed. Error: ' . $e->getMessage(),
-				'model'      => $model,
-				'iterations' => $iteration,
-				'tool_calls' => $all_tool_calls,
-				'error'      => $e->getMessage(),
-				'timestamp'  => time()
-			];
-			echo json_encode( $final_response );
-
-			return;
+	// Extract security issue details from messages
+	$security_context = '';
+	foreach ( $messages as $msg ) {
+		if ( isset( $msg['content'] ) && strpos( $msg['content'], 'SECURITY ISSUE' ) !== false ) {
+			$security_context = $msg['content'];
+			break;
 		}
-
-		// Check if AI wants to make tool calls
-		if ( ! isset( $response['message']['tool_calls'] ) || empty( $response['message']['tool_calls'] ) ) {
-			// AI didn't use tools - check if it's ready to conclude
-			$ai_response = $response['message']['content'] ?? '';
-
-			// If we have a substantial response and enough exploration
-			if ( strlen( $ai_response ) > 200 && ( $iteration >= 3 || count( $all_tool_calls ) >= 5 ) ) {
-				log_info( "AI completed exploration", [
-					'iteration'        => $iteration,
-					'total_tool_calls' => count( $all_tool_calls ),
-					'response_length'  => strlen( $ai_response )
-				] );
-
-				// Ask for structured output
-				$conversation[] = [
-					'role'    => 'assistant',
-					'content' => $ai_response
-				];
-
-				$conversation[] = [
-					'role'    => 'user',
-					'content' => 'Based on your analysis and the wp-call-graph analysis results, provide a JSON response with these exact fields: ' .
-					             '{ "vulnerable_code": "description", "entry_points": [{"type": "ajax|hook|rest", "name": "hook_name", "location": "file:line", "is_public": boolean}], ' .
-					             '"call_graph": [{"from": "function", "to": "function", "via": "method"}], ' .
-					             '"exploitable": boolean, "has_public_access": boolean, "summary": "brief conclusion", ' .
-					             '"wp_call_graph_findings": "summary of relevant wp-call-graph findings" }'
-				];
-
-				// One more call to get structured response
-				$final_request = [
-					'model'    => $model,
-					'messages' => $conversation,
-					'stream'   => false,
-					'format'   => 'json'
-				];
-
-				try {
-					$final_response = call_ollama( $ollama_api_url . '/api/chat', $final_request );
-					echo json_encode( [
-						'response'       => $final_response['message']['content'] ?? '{}',
-						'model'          => $model,
-						'iterations'     => $iteration + 1,
-						'tool_calls'     => $all_tool_calls,
-						'wp_call_graph_context'  => $static_context,
-						'timestamp'      => time()
-					] );
-
-					return;
-				} catch ( Exception $e ) {
-					log_error( "Failed to get structured response", [ 'error' => $e->getMessage() ] );
-				}
-			}
-		}
-
-		// Add assistant response to conversation
-		$assistant_message = [
-			'role'    => 'assistant',
-			'content' => $response['message']['content'] ?? ''
-		];
-		if ( isset( $response['message']['tool_calls'] ) ) {
-			$assistant_message['tool_calls'] = $response['message']['tool_calls'];
-		}
-		$conversation[] = $assistant_message;
-
-		// Execute tool calls
-		$tool_results = [];
-		if ( ! isset( $response['message']['tool_calls'] ) || empty( $response['message']['tool_calls'] ) ) {
-			// Don't end iteration immediately - allow AI to continue for a few iterations
-			// This prevents premature termination when AI responds with content but no tool calls
-			$min_iterations = 2; // Allow at least 2 iterations before considering ending
-			$min_tool_calls = 3; // Or require at least 3 tool calls before allowing early exit
-
-			if ( $iteration >= $min_iterations && count( $all_tool_calls ) >= $min_tool_calls ) {
-				log_info( "No tool calls in response, ending iteration after sufficient exploration", [
-					'iteration' => $iteration,
-					'total_tool_calls' => count( $all_tool_calls ),
-					'has_content' => ! empty( $response['message']['content'] ?? '' ),
-					'min_iterations' => $min_iterations,
-					'min_tool_calls' => $min_tool_calls
-				] );
-				break;
-			} else {
-				log_info( "No tool calls in response, but continuing iteration for more exploration", [
-					'iteration' => $iteration,
-					'total_tool_calls' => count( $all_tool_calls ),
-					'has_content' => ! empty( $response['message']['content'] ?? '' ),
-					'min_iterations' => $min_iterations,
-					'min_tool_calls' => $min_tool_calls,
-					'will_continue' => true
-				] );
-
-				// Add the assistant response to conversation and continue
-				$assistant_message = [
-					'role'    => 'assistant',
-					'content' => $response['message']['content'] ?? ''
-				];
-				$conversation[] = $assistant_message;
-
-				// Continue to next iteration
-				continue;
-			}
-		}
-
-		foreach ( $response['message']['tool_calls'] as $tool_call ) {
-			$function_name = $tool_call['function']['name'];
-			$arguments     = is_string( $tool_call['function']['arguments'] )
-				? json_decode( $tool_call['function']['arguments'], true ) ?? []
-				: $tool_call['function']['arguments'] ?? [];
-
-			log_info( "Executing tool: $function_name", [
-				'args'      => $arguments,
-				'iteration' => $iteration
-			] );
-
-			$result = $tool_registry->execute_tool( $function_name, $arguments );
-
-			log_debug( "Tool execution completed", [
-				'tool'    => $function_name,
-				'success' => ! isset( $result['error'] ),
-				'error'   => $result['error'] ?? null
-			] );
-
-			$conversation[] = [
-				'role'         => 'tool',
-				'content'      => json_encode( $result ),
-				'tool_call_id' => $tool_call['id'] ?? uniqid()
-			];
-
-			$tool_call_info   = [
-				'tool'      => $function_name,
-				'args'      => $arguments,
-				'result'    => $result,
-				'iteration' => $iteration
-			];
-			$tool_results[]   = $tool_call_info;
-			$all_tool_calls[] = $tool_call_info;
-		}
-
-		log_info( "Executed " . count( $tool_results ) . " tools in iteration $iteration" );
 	}
 
-	// Max iterations reached
-	log_warning( "Max iterations reached", [
-		'max_iterations'   => $max_iterations,
-		'total_tool_calls' => count( $all_tool_calls )
-	] );
-
-	$final_response = [
-		'response'      => json_encode( [
-			'error'           => 'Max iterations reached',
-			'partial_results' => $all_tool_calls
-		] ),
-		'model'         => $model,
-		'iterations'    => $max_iterations,
-		'tool_calls'    => $all_tool_calls,
-		'wp_call_graph_context' => $static_context,
-		'timestamp'     => time()
+	$coder_conversation = [
+		[
+			'role'    => 'system',
+			'content' => $coder_system_prompt
+		],
+		[
+			'role'    => 'user',
+			'content' => $security_context . "\n\nAnalyze this security issue and tell me what specific information you need to investigate. " .
+			             "Respond with a JSON object containing an 'investigations' array of specific tool calls you want me to make."
+		]
 	];
 
-	echo json_encode( $final_response );
+	$all_tool_results         = [];
+	$investigation_complete   = false;
+	$orchestration_iterations = 0;
+	$max_orchestration_loops  = 5; // Prevent infinite loops
+
+	while ( ! $investigation_complete && $orchestration_iterations < $max_orchestration_loops ) {
+		$orchestration_iterations ++;
+
+		log_info( "Orchestration iteration $orchestration_iterations" );
+
+		// Step 1: Ask qwen coder what to investigate
+		$coder_request = [
+			'model'    => $coder_model,
+			'messages' => $coder_conversation,
+			'stream'   => false,
+			'format'   => 'json' // We want structured investigation requests
+		];
+
+		try {
+			$coder_response = call_ollama( $ollama_api_url . '/api/chat', $coder_request );
+		} catch ( Exception $e ) {
+			log_error( "Coder model failed", [ 'error' => $e->getMessage() ] );
+			break;
+		}
+
+		// Parse what qwen wants to investigate
+		$investigation_plan = json_decode( $coder_response['message']['content'] ?? '{}', true );
+
+		log_info( "Coder investigation plan", [
+			'has_investigations'  => isset( $investigation_plan['investigations'] ),
+			'investigation_count' => count( $investigation_plan['investigations'] ?? [] ),
+			'is_complete'         => $investigation_plan['complete'] ?? false
+		] );
+
+		// Check if qwen thinks it has enough information
+		if ( empty( $investigation_plan['investigations'] ) || ( $investigation_plan['complete'] ?? false ) ) {
+			$investigation_complete = true;
+			break;
+		}
+
+		// Step 2: Execute investigations using devstral
+		$tool_results = [];
+
+		foreach ( $investigation_plan['investigations'] as $investigation ) {
+			log_info( "Executing investigation", [
+				'tool' => $investigation['tool'] ?? 'unknown',
+				'args' => $investigation['args'] ?? []
+			] );
+
+			// Build a focused prompt for devstral
+			$devstral_messages = [
+				[
+					'role'    => 'system',
+					'content' => "You are a code analysis assistant. Execute the requested tool and return the results."
+				],
+				[
+					'role'    => 'user',
+					'content' => sprintf(
+						"Use the %s tool with these arguments: %s",
+						$investigation['tool'],
+						json_encode( $investigation['args'] )
+					)
+				]
+			];
+
+			// Call devstral with tools
+			$devstral_request = [
+				'model'    => $tools_model,
+				'messages' => $devstral_messages,
+				'tools'    => $ollama_tools,
+				'stream'   => false
+			];
+
+			try {
+				$devstral_response = call_ollama( $ollama_api_url . '/api/chat', $devstral_request );
+
+				// Execute the tool calls devstral wants to make
+				if ( isset( $devstral_response['message']['tool_calls'] ) ) {
+					foreach ( $devstral_response['message']['tool_calls'] as $tool_call ) {
+						$function_name = $tool_call['function']['name'];
+						$arguments     = is_string( $tool_call['function']['arguments'] )
+							? json_decode( $tool_call['function']['arguments'], true ) ?? []
+							: $tool_call['function']['arguments'] ?? [];
+
+						$result = $tool_registry->execute_tool( $function_name, $arguments );
+
+						$tool_results[] = [
+							'tool'         => $function_name,
+							'args'         => $arguments,
+							'result'       => $result,
+							'requested_by' => 'coder_investigation'
+						];
+
+						$all_tool_results[] = $tool_results[ count( $tool_results ) - 1 ];
+					}
+				}
+			} catch ( Exception $e ) {
+				log_error( "Devstral execution failed", [ 'error' => $e->getMessage() ] );
+				$tool_results[] = [
+					'tool'  => $investigation['tool'],
+					'error' => $e->getMessage()
+				];
+			}
+		}
+
+		// Step 3: Feed results back to qwen coder
+		$results_summary = "Here are the investigation results:\n\n";
+		foreach ( $tool_results as $result ) {
+			$results_summary .= sprintf(
+				"Tool: %s\nArgs: %s\nResult: %s\n\n",
+				$result['tool'],
+				json_encode( $result['args'] ?? [] ),
+				json_encode( $result['result'] ?? $result['error'] ?? 'No result' )
+			);
+		}
+
+		$coder_conversation[] = [
+			'role'    => 'assistant',
+			'content' => $coder_response['message']['content']
+		];
+
+		$coder_conversation[] = [
+			'role'    => 'user',
+			'content' => $results_summary . "\n\nBased on these results, what else do you need to investigate? " .
+			             "Or are you ready to provide your final analysis? " .
+			             "Respond with JSON: {\"investigations\": [...], \"complete\": true/false, \"analysis\": \"...\" }"
+		];
+	}
+
+	// Step 4: Get final analysis from qwen
+	log_info( "Getting final analysis from coder model" );
+
+	$final_prompt = "Based on all the investigations, provide your final security analysis in JSON format with these fields:\n" .
+	                "- vulnerable_code: description of the vulnerability\n" .
+	                "- entry_points: array of entry points found\n" .
+	                "- exploitable: boolean\n" .
+	                "- has_public_access: boolean\n" .
+	                "- susceptible_to_privilege_escalation: boolean\n" .
+	                "- summary: your conclusion\n" .
+	                "- confidence: your confidence level (0-100)";
+
+	$coder_conversation[] = [
+		'role'    => 'user',
+		'content' => $final_prompt
+	];
+
+	$final_request = [
+		'model'    => $coder_model,
+		'messages' => $coder_conversation,
+		'stream'   => false,
+		'format'   => 'json'
+	];
+
+	try {
+		$final_response = call_ollama( $ollama_api_url . '/api/chat', $final_request );
+		$final_analysis = $final_response['message']['content'] ?? '{}';
+	} catch ( Exception $e ) {
+		log_error( "Final analysis failed", [ 'error' => $e->getMessage() ] );
+		$final_analysis = json_encode( [
+			'error'           => 'Analysis failed: ' . $e->getMessage(),
+			'partial_results' => $all_tool_results
+		] );
+	}
+
+	// Return the complete analysis
+	echo json_encode( [
+		'response'              => $final_analysis,
+		'model'                 => $coder_model,
+		'iterations'            => $orchestration_iterations,
+		'tool_calls'            => $all_tool_results,
+		'wp_call_graph_context' => $static_context,
+		'orchestration'         => [
+			'coder_model' => $coder_model,
+			'tools_model' => $tools_model,
+			'loops'       => $orchestration_iterations
+		],
+		'timestamp'             => time()
+	] );
+}
+
+function build_coder_investigation_prompt( $work_dir, $static_context, $wp_call_graph_data ) {
+	$prompt = "You are a WordPress security expert analyzing code at: $work_dir\n\n";
+
+	$prompt .= "SECURITY ISSUE CONTEXT:\n";
+	// Add the security issue details from the original messages
+
+	if ( $wp_call_graph_data ) {
+		$prompt .= "\n=== WP-CALL-GRAPH FINDINGS ===\n";
+		$prompt .= sprintf( "Target Function: %s\n", $wp_call_graph_data['symbol'] ?? 'unknown' );
+
+		if ( ! empty( $wp_call_graph_data['trace'] ) ) {
+			$prompt .= "\nDiscovered Hooks:\n";
+			foreach ( $wp_call_graph_data['trace'] as $trace ) {
+				$prompt .= sprintf(
+					"- %s at %s:%d\n",
+					$trace['hook_name'] ?? 'unknown',
+					basename( $trace['file'] ?? 'unknown' ),
+					$trace['line'] ?? 0
+				);
+			}
+		}
+	}
+
+	$prompt .= "\nYOUR TASK:\n";
+	$prompt .= "1. Analyze the security issue and wp-call-graph findings\n";
+	$prompt .= "2. Determine what specific information you need to investigate\n";
+	$prompt .= "3. Request specific tool calls to gather that information\n\n";
+
+	$prompt .= "Available tools:\n";
+	$prompt .= "- read_file: Read specific lines from a file\n";
+	$prompt .= "- search_pattern: Search for patterns in the codebase\n";
+	$prompt .= "- list_files: List files in a directory\n\n";
+
+	$prompt .= "When requesting investigations, be specific. For example:\n";
+	$prompt .= '{"investigations": [';
+	$prompt .= '  {"tool": "read_file", "args": {"path": "admin.php", "start_line": 45, "end_line": 55}},';
+	$prompt .= '  {"tool": "search_pattern", "args": {"pattern": "wp_ajax_nopriv_"}}';
+	$prompt .= ']}\n';
+
+	return $prompt;
 }
 
 function build_enhanced_system_prompt_with_wp_call_graph( $work_dir, $static_context ) {
 	log_info( "Building enhanced system prompt with wp-call-graph data", [
-		'work_dir' => $work_dir,
-		'has_static_context' => !empty( $static_context ),
-		'context_size' => $static_context ? strlen( json_encode( $static_context ) ) : 0
+		'work_dir'           => $work_dir,
+		'has_static_context' => ! empty( $static_context ),
+		'context_size'       => $static_context ? strlen( json_encode( $static_context ) ) : 0
 	] );
 
 	$prompt = "You are analyzing a WordPress security vulnerability at: $work_dir\n\n";
@@ -385,10 +395,10 @@ function build_enhanced_system_prompt_with_wp_call_graph( $work_dir, $static_con
 		if ( isset( $static_context['symbol_info'] ) ) {
 			$symbol = $static_context['symbol_info'];
 			log_debug( "wp-call-graph prompt building: adding symbol info", [
-				'symbol' => $symbol['symbol'] ?? 'unknown',
-				'type' => $symbol['type'] ?? 'unknown',
-				'file' => $symbol['file'] ?? 'unknown',
-				'line_range' => ($symbol['line_start'] ?? 'unknown') . '-' . ($symbol['line_end'] ?? 'unknown')
+				'symbol'     => $symbol['symbol'] ?? 'unknown',
+				'type'       => $symbol['type'] ?? 'unknown',
+				'file'       => $symbol['file'] ?? 'unknown',
+				'line_range' => ( $symbol['line_start'] ?? 'unknown' ) . '-' . ( $symbol['line_end'] ?? 'unknown' )
 			] );
 
 			$prompt .= "Target Symbol: {$symbol['symbol']} ({$symbol['type']})\n";
@@ -400,11 +410,12 @@ function build_enhanced_system_prompt_with_wp_call_graph( $work_dir, $static_con
 			$exec_ctx = $static_context['execution_context'];
 
 			log_debug( "wp-call-graph prompt building: adding execution context", [
-				'symbol' => $exec_ctx['symbol'] ?? 'unknown',
-				'callers_count' => count( $exec_ctx['callers'] ?? [] ),
-				'wordpress_hooks_count' => count( $exec_ctx['wordpress_hooks'] ?? [] ),
-				'ajax_handlers_count' => count( $exec_ctx['ajax_handlers'] ?? [] ),
-				'has_public_access' => $exec_ctx['has_public_access'] ?? false
+				'symbol'                              => $exec_ctx['symbol'] ?? 'unknown',
+				'callers_count'                       => count( $exec_ctx['callers'] ?? [] ),
+				'wordpress_hooks_count'               => count( $exec_ctx['wordpress_hooks'] ?? [] ),
+				'ajax_handlers_count'                 => count( $exec_ctx['ajax_handlers'] ?? [] ),
+				'has_public_access'                   => $exec_ctx['has_public_access'] ?? false,
+				'susceptible_to_privilege_escalation' => $exec_ctx['susceptible_to_privilege_escalation'] ?? false
 			] );
 
 			$prompt .= "Symbol: " . ( $exec_ctx['symbol'] ?? 'Unknown' ) . "\n";
@@ -418,9 +429,9 @@ function build_enhanced_system_prompt_with_wp_call_graph( $work_dir, $static_con
 				$prompt .= "\nDirect Callers Found by wp-call-graph:\n";
 				foreach ( $exec_ctx['callers'] as $index => $caller ) {
 					log_debug( "wp-call-graph prompt building: processing caller", [
-						'caller_index' => $index,
-						'function' => $caller['function'] ?? 'unknown',
-						'location' => $caller['location'] ?? 'unknown',
+						'caller_index'   => $index,
+						'function'       => $caller['function'] ?? 'unknown',
+						'location'       => $caller['location'] ?? 'unknown',
 						'snippet_length' => strlen( $caller['snippet'] ?? '' )
 					] );
 
@@ -443,10 +454,10 @@ function build_enhanced_system_prompt_with_wp_call_graph( $work_dir, $static_con
 				foreach ( $exec_ctx['wordpress_hooks'] as $index => $hook ) {
 					log_debug( "wp-call-graph prompt building: processing WordPress hook", [
 						'hook_index' => $index,
-						'hook_name' => $hook['hook'] ?? 'unknown',
-						'hook_type' => $hook['type'] ?? 'unknown',
-						'location' => $hook['location'] ?? 'unknown',
-						'is_public' => $hook['public'] ?? false
+						'hook_name'  => $hook['hook'] ?? 'unknown',
+						'hook_type'  => $hook['type'] ?? 'unknown',
+						'location'   => $hook['location'] ?? 'unknown',
+						'is_public'  => $hook['public'] ?? false
 					] );
 
 					$prompt .= sprintf(
@@ -468,9 +479,9 @@ function build_enhanced_system_prompt_with_wp_call_graph( $work_dir, $static_con
 				foreach ( $exec_ctx['ajax_handlers'] as $index => $handler ) {
 					log_debug( "wp-call-graph prompt building: processing AJAX handler", [
 						'handler_index' => $index,
-						'action' => $handler['action'] ?? 'unknown',
-						'location' => $handler['location'] ?? 'unknown',
-						'is_public' => $handler['public'] ?? false
+						'action'        => $handler['action'] ?? 'unknown',
+						'location'      => $handler['location'] ?? 'unknown',
+						'is_public'     => $handler['public'] ?? false
 					] );
 
 					$prompt .= sprintf(
@@ -487,6 +498,12 @@ function build_enhanced_system_prompt_with_wp_call_graph( $work_dir, $static_con
 				log_debug( "wp-call-graph prompt building: adding public access warning" );
 				$prompt .= "\n⚠️ PUBLIC ACCESS DETECTED - This code can be reached without authentication!\n";
 			}
+
+			// Add privilege escalation warning
+			if ( $exec_ctx['susceptible_to_privilege_escalation'] ) {
+				log_debug( "wp-call-graph prompt building: adding privilege escalation warning" );
+				$prompt .= "\n🚨 PRIVILEGE ESCALATION RISK - This vulnerability could lead to privilege escalation!\n";
+			}
 		}
 
 		// Add wp-call-graph results
@@ -494,8 +511,8 @@ function build_enhanced_system_prompt_with_wp_call_graph( $work_dir, $static_con
 			$wp_result = $static_context['wp_call_graph']['result'];
 
 			log_debug( "wp-call-graph prompt building: adding wp-call-graph analysis results", [
-				'symbol' => $wp_result['symbol'] ?? 'unknown',
-				'has_trace' => !empty( $wp_result['trace'] ),
+				'symbol'      => $wp_result['symbol'] ?? 'unknown',
+				'has_trace'   => ! empty( $wp_result['trace'] ),
 				'trace_count' => count( $wp_result['trace'] ?? [] ),
 				'result_keys' => array_keys( $wp_result )
 			] );
@@ -512,10 +529,10 @@ function build_enhanced_system_prompt_with_wp_call_graph( $work_dir, $static_con
 				foreach ( $wp_result['trace'] as $index => $trace ) {
 					log_debug( "wp-call-graph prompt building: processing trace entry", [
 						'trace_index' => $index,
-						'type' => $trace['type'] ?? 'unknown',
-						'hook_name' => $trace['hook_name'] ?? 'unknown',
-						'file' => basename( $trace['file'] ?? 'unknown' ),
-						'line' => $trace['line'] ?? 'unknown'
+						'type'        => $trace['type'] ?? 'unknown',
+						'hook_name'   => $trace['hook_name'] ?? 'unknown',
+						'file'        => basename( $trace['file'] ?? 'unknown' ),
+						'line'        => $trace['line'] ?? 'unknown'
 					] );
 
 					$prompt .= sprintf(
@@ -572,10 +589,10 @@ GOAL: Determine if unauthenticated users can reach the vulnerable code.
 PROMPT;
 
 	log_info( "wp-call-graph enhanced system prompt building completed", [
-		'prompt_length' => strlen( $prompt ),
-		'prompt_lines' => substr_count( $prompt, "\n" ),
+		'prompt_length'                  => strlen( $prompt ),
+		'prompt_lines'                   => substr_count( $prompt, "\n" ),
 		'contains_wp_call_graph_results' => strpos( $prompt, 'WP-CALL-GRAPH ANALYSIS RESULTS' ) !== false,
-		'contains_trace_info' => strpos( $prompt, 'Trace Information:' ) !== false,
+		'contains_trace_info'            => strpos( $prompt, 'Trace Information:' ) !== false,
 		'contains_public_access_warning' => strpos( $prompt, 'PUBLIC ACCESS DETECTED' ) !== false
 	] );
 
@@ -585,68 +602,68 @@ PROMPT;
 /**
  * Validate that AI actually used wp-call-graph data
  */
-function validate_ai_used_wp_call_graph($tool_calls, $wp_call_graph_data) {
-	if (!$wp_call_graph_data || empty($wp_call_graph_data['result']['trace'])) {
-		return ['valid' => true]; // No wp-call-graph data to use
+function validate_ai_used_wp_call_graph( $tool_calls, $wp_call_graph_data ) {
+	if ( ! $wp_call_graph_data || empty( $wp_call_graph_data['result']['trace'] ) ) {
+		return [ 'valid' => true ]; // No wp-call-graph data to use
 	}
 
 	// Check if AI searched for critical patterns
 	$expected_searches = [];
-	foreach ($wp_call_graph_data['result']['trace'] as $trace) {
-		if (strpos($trace['hook_name'], 'wp_ajax_') !== false) {
-			$action = str_replace('wp_ajax_', '', $trace['hook_name']);
+	foreach ( $wp_call_graph_data['result']['trace'] as $trace ) {
+		if ( strpos( $trace['hook_name'], 'wp_ajax_' ) !== false ) {
+			$action              = str_replace( 'wp_ajax_', '', $trace['hook_name'] );
 			$expected_searches[] = "wp_ajax_nopriv_$action";
 		}
 	}
 
 	$searched_patterns = [];
-	foreach ($tool_calls as $call) {
-		if ($call['tool'] === 'search_pattern') {
+	foreach ( $tool_calls as $call ) {
+		if ( $call['tool'] === 'search_pattern' ) {
 			$searched_patterns[] = $call['args']['pattern'];
 		}
 	}
 
 	// Verify critical searches were performed
-	$missing_searches = array_diff($expected_searches, $searched_patterns);
-	if (!empty($missing_searches)) {
+	$missing_searches = array_diff( $expected_searches, $searched_patterns );
+	if ( ! empty( $missing_searches ) ) {
 		return [
-			'valid' => false,
-			'reason' => 'Failed to search for critical patterns: ' . implode(', ', $missing_searches)
+			'valid'  => false,
+			'reason' => 'Failed to search for critical patterns: ' . implode( ', ', $missing_searches )
 		];
 	}
 
-	return ['valid' => true];
+	return [ 'valid' => true ];
 }
 
 /**
  * Enhance AI results with wp-call-graph data if AI missed findings
  */
-function enhance_ai_results_with_wp_call_graph($ai_results, $wp_call_graph_data) {
-	$enhanced = json_decode($ai_results, true);
+function enhance_ai_results_with_wp_call_graph( $ai_results, $wp_call_graph_data ) {
+	$enhanced = json_decode( $ai_results, true );
 
 	// If AI missed wp-call-graph findings, add them
-	if (empty($enhanced['entry_points']) && !empty($wp_call_graph_data['result']['trace'])) {
+	if ( empty( $enhanced['entry_points'] ) && ! empty( $wp_call_graph_data['result']['trace'] ) ) {
 		$enhanced['entry_points'] = [];
-		foreach ($wp_call_graph_data['result']['trace'] as $trace) {
+		foreach ( $wp_call_graph_data['result']['trace'] as $trace ) {
 			$enhanced['entry_points'][] = [
-				'type' => determine_entry_type($trace['hook_name']),
-				'name' => $trace['hook_name'],
-				'location' => sprintf('%s:%d', basename($trace['file']), $trace['line']),
+				'type'               => determine_entry_type( $trace['hook_name'] ),
+				'name'               => $trace['hook_name'],
+				'location'           => sprintf( '%s:%d', basename( $trace['file'] ), $trace['line'] ),
 				'from_wp_call_graph' => true
 			];
 		}
 	}
 
-	return json_encode($enhanced);
+	return json_encode( $enhanced );
 }
 
 /**
  * Determine entry point type from hook name
  */
-function determine_entry_type($hook_name) {
-	if (strpos($hook_name, 'wp_ajax_') === 0) {
+function determine_entry_type( $hook_name ) {
+	if ( strpos( $hook_name, 'wp_ajax_' ) === 0 ) {
 		return 'ajax';
-	} elseif (strpos($hook_name, 'rest_') === 0) {
+	} elseif ( strpos( $hook_name, 'rest_' ) === 0 ) {
 		return 'rest';
 	} else {
 		return 'hook';
