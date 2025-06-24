@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "399 total, 384 passed, 3 failed, 12 skipped.",
+            "test_summary": "399 total, 380 passed, 0 failed, 19 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -50,13 +50,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 2,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 94,
-                "numPendingTestSuites": 10,
+                "numPendingTestSuites": 11,
                 "numTotalTestSuites": 105,
-                "numFailedTests": 3,
-                "numPassedTests": 384,
-                "numPendingTests": 12,
+                "numFailedTests": 0,
+                "numPassedTests": 380,
+                "numPendingTests": 19,
                 "numTotalTests": 399,
                 "testResults": [
                     {
@@ -1361,29 +1361,29 @@
                     },
                     {
                         "file": "email-editor\\/email-editor-loads.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Email Editor Core": [
                                 {
                                     "title": "Can enable the email editor",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can access the email editor",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can preview in new tab",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can send test email",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can edit and save content",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2300,17 +2300,17 @@
                     },
                     {
                         "file": "product\\/product-import-csv.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Import Products from a CSV file": [
                                 {
                                     "title": "should show error message if you go without providing CSV file",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can upload the CSV file and import products",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can override the existing products via CSV import",
@@ -2800,7 +2800,7 @@
                         }
                     }
                 ],
-                "summary": "399 total, 384 passed, 3 failed, 12 skipped."
+                "summary": "399 total, 380 passed, 0 failed, 19 skipped."
             }
         },
         {
@@ -2811,10 +2811,10 @@
                     },
                     "summary": {
                         "tests": 399,
-                        "passed": 384,
-                        "failed": 3,
+                        "passed": 380,
+                        "failed": 0,
                         "pending": 0,
-                        "skipped": 12,
+                        "skipped": 19,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -8336,11 +8336,11 @@
                         },
                         {
                             "name": "Can enable the email editor",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.js",
@@ -8354,16 +8354,20 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "Can access the email editor",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.js",
@@ -8377,16 +8381,20 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "Can preview in new tab",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.js",
@@ -8400,19 +8408,20 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "Can send test email",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'row\', { name: \'New order\' }).getByLabel(\'Edit\')\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'row\', { name: \'New order\' }).getByLabel(\'Edit\')\\u001b[22m\\n\\n    at accessTheEmailEditor (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/email.js:92:4)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js:74:3",
-                            "snippet": "   at ..\\/utils\\/email.js:92\\n\\n\\u001b[0m \\u001b[90m 90 |\\u001b[39m \\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'row\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m emailTitle } )\\n \\u001b[90m 91 |\\u001b[39m \\t\\t\\u001b[33m.\\u001b[39mgetByLabel( \\u001b[32m\'Edit\'\\u001b[39m )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 92 |\\u001b[39m \\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 93 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#woocommerce-email-editor\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 94 |\\u001b[39m }\\n \\u001b[90m 95 |\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.js",
@@ -8420,46 +8429,26 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email-editor\\/email-editor-loads.spec.js > WooCommerce Email Editor Core",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-editor-email-editor--1c204-or-Core-Can-send-test-email-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-editor-email-editor--1c204-or-Core-Can-send-test-email-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-editor-email-editor--1c204-or-Core-Can-send-test-email-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-editor-email-editor--1c204-or-Core-Can-send-test-email-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "Can edit and save content",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'row\', { name: \'New order\' }).getByLabel(\'Edit\')\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'row\', { name: \'New order\' }).getByLabel(\'Edit\')\\u001b[22m\\n\\n    at accessTheEmailEditor (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/email.js:92:4)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js:96:3",
-                            "snippet": "   at ..\\/utils\\/email.js:92\\n\\n\\u001b[0m \\u001b[90m 90 |\\u001b[39m \\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'row\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m emailTitle } )\\n \\u001b[90m 91 |\\u001b[39m \\t\\t\\u001b[33m.\\u001b[39mgetByLabel( \\u001b[32m\'Edit\'\\u001b[39m )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 92 |\\u001b[39m \\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 93 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#woocommerce-email-editor\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 94 |\\u001b[39m }\\n \\u001b[90m 95 |\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.js",
@@ -8467,34 +8456,17 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email-editor\\/email-editor-loads.spec.js > WooCommerce Email Editor Core",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-editor-email-editor--3c905-e-Can-edit-and-save-content-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-editor-email-editor--3c905-e-Can-edit-and-save-content-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-editor-email-editor--3c905-e-Can-edit-and-save-content-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-editor-email-editor--3c905-e-Can-edit-and-save-content-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -12469,11 +12441,11 @@
                         },
                         {
                             "name": "should show error message if you go without providing CSV file",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
@@ -12487,19 +12459,20 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can upload the CSV file and import products",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'a.row-title\')\\nExpected: \\u001b[32m18\\u001b[39m\\nReceived: \\u001b[31m0\\u001b[39m\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'a.row-title\')\\u001b[22m\\n\\u001b[2m    23 \\u00d7 locator resolved to 0 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"0\\"\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'a.row-title\')\\nExpected: \\u001b[32m18\\u001b[39m\\nReceived: \\u001b[31m0\\u001b[39m\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'a.row-title\')\\u001b[22m\\n\\u001b[2m    23 \\u00d7 locator resolved to 0 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"0\\"\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js:226:50",
-                            "snippet": "\\u001b[0m \\u001b[90m 224 |\\u001b[39m\\n \\u001b[90m 225 |\\u001b[39m \\t\\t\\t\\u001b[90m\\/\\/ Compare imported products to what\'s expected\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 226 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'a.row-title\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoHaveCount(\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t                                              \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 227 |\\u001b[39m \\t\\t\\t\\tproductNames\\u001b[33m.\\u001b[39mlength\\n \\u001b[90m 228 |\\u001b[39m \\t\\t\\t)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 229 |\\u001b[39m \\t\\t\\t\\u001b[36mconst\\u001b[39m productTitles \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m page\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
@@ -12507,34 +12480,17 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/product-import-csv.spec.js > Import Products from a CSV file",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-a78cb-SV-file-and-import-products-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-a78cb-SV-file-and-import-products-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-a78cb-SV-file-and-import-products-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-a78cb-SV-file-and-import-products-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -12557,7 +12513,11 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {

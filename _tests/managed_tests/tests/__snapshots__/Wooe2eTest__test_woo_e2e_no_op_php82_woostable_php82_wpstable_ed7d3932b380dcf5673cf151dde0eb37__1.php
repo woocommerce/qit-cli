@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "395 total, 384 passed, 0 failed, 11 skipped.",
+            "test_summary": "395 total, 381 passed, 0 failed, 14 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -51,12 +51,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 92,
-                "numPendingTestSuites": 9,
+                "numPassedTestSuites": 91,
+                "numPendingTestSuites": 10,
                 "numTotalTestSuites": 101,
                 "numFailedTests": 0,
-                "numPassedTests": 384,
-                "numPendingTests": 11,
+                "numPassedTests": 381,
+                "numPendingTests": 14,
                 "numTotalTests": 395,
                 "testResults": [
                     {
@@ -2238,20 +2238,20 @@
                     {
                         "file": "product\\/product-import-csv.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Import Products from a CSV file": [
                                 {
                                     "title": "should show error message if you go without providing CSV file",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can upload the CSV file and import products",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can override the existing products via CSV import",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2749,7 +2749,7 @@
                         }
                     }
                 ],
-                "summary": "395 total, 384 passed, 0 failed, 11 skipped."
+                "summary": "395 total, 381 passed, 0 failed, 14 skipped."
             }
         },
         {
@@ -2760,10 +2760,10 @@
                     },
                     "summary": {
                         "tests": 395,
-                        "passed": 384,
+                        "passed": 381,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 11,
+                        "skipped": 14,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -12160,11 +12160,11 @@
                         },
                         {
                             "name": "should show error message if you go without providing CSV file",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
@@ -12178,16 +12178,20 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can upload the CSV file and import products",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
@@ -12201,16 +12205,20 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can override the existing products via CSV import",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
@@ -12224,7 +12232,11 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
