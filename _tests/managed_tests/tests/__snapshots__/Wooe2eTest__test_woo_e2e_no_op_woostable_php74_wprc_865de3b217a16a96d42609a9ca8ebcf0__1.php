@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "395 total, 384 passed, 1 failed, 10 skipped.",
+            "test_summary": "395 total, 384 passed, 0 failed, 11 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -50,13 +50,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 92,
-                "numPendingTestSuites": 8,
+                "numPendingTestSuites": 9,
                 "numTotalTestSuites": 101,
-                "numFailedTests": 1,
+                "numFailedTests": 0,
                 "numPassedTests": 384,
-                "numPendingTests": 10,
+                "numPendingTests": 11,
                 "numTotalTests": 395,
                 "testResults": [
                     {
@@ -1480,8 +1480,8 @@
                     },
                     {
                         "file": "onboarding\\/setup-checklist.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Can hide the task list": [
                                 {
@@ -1498,7 +1498,7 @@
                             "Can connect to WooCommerce.com": [
                                 {
                                     "title": "Can connect to WooCommerce.com",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2749,7 +2749,7 @@
                         }
                     }
                 ],
-                "summary": "395 total, 384 passed, 1 failed, 10 skipped."
+                "summary": "395 total, 384 passed, 0 failed, 11 skipped."
             }
         },
         {
@@ -2761,9 +2761,9 @@
                     "summary": {
                         "tests": 395,
                         "passed": 384,
-                        "failed": 1,
+                        "failed": 0,
                         "pending": 0,
-                        "skipped": 10,
+                        "skipped": 11,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -8672,61 +8672,29 @@
                         },
                         {
                             "name": "Can connect to WooCommerce.com",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Log in to your account\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Log in to your account\' })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 30000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'heading\', { name: \'Log in to your account\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 30000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'heading\', { name: \'Log in to your account\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/setup-checklist.spec.js:155:5",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/setup-checklist.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to WC Home and make sure the total sales is visible",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Go to the extensions tab and connect store",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Check that we are sent to wp.com",
-                                    "status": "failed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > onboarding\\/setup-checklist.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/onboarding-setup-checklist-Can-connect-to-WooCommerce-com-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/onboarding-setup-checklist-Can-connect-to-WooCommerce-com-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/onboarding-setup-checklist-Can-connect-to-WooCommerce-com-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/onboarding-setup-checklist-Can-connect-to-WooCommerce-com-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
