@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "395 total, 385 passed, 0 failed, 10 skipped.",
+            "test_summary": "395 total, 381 passed, 0 failed, 14 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -51,12 +51,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 93,
-                "numPendingTestSuites": 8,
+                "numPassedTestSuites": 91,
+                "numPendingTestSuites": 10,
                 "numTotalTestSuites": 101,
                 "numFailedTests": 0,
-                "numPassedTests": 385,
-                "numPendingTests": 10,
+                "numPassedTests": 381,
+                "numPendingTests": 14,
                 "numTotalTests": 395,
                 "testResults": [
                     {
@@ -1481,7 +1481,7 @@
                     {
                         "file": "onboarding\\/setup-checklist.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Can hide the task list": [
                                 {
@@ -1498,7 +1498,7 @@
                             "Can connect to WooCommerce.com": [
                                 {
                                     "title": "Can connect to WooCommerce.com",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2238,20 +2238,20 @@
                     {
                         "file": "product\\/product-import-csv.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Import Products from a CSV file": [
                                 {
                                     "title": "should show error message if you go without providing CSV file",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can upload the CSV file and import products",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can override the existing products via CSV import",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2749,7 +2749,7 @@
                         }
                     }
                 ],
-                "summary": "395 total, 385 passed, 0 failed, 10 skipped."
+                "summary": "395 total, 381 passed, 0 failed, 14 skipped."
             }
         },
         {
@@ -2760,10 +2760,10 @@
                     },
                     "summary": {
                         "tests": 395,
-                        "passed": 385,
+                        "passed": 381,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 10,
+                        "skipped": 14,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -8672,30 +8672,17 @@
                         },
                         {
                             "name": "Can connect to WooCommerce.com",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/setup-checklist.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to WC Home and make sure the total sales is visible",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Go to the extensions tab and connect store",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Check that we are sent to wp.com",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > onboarding\\/setup-checklist.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -8703,7 +8690,11 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
@@ -12169,11 +12160,11 @@
                         },
                         {
                             "name": "should show error message if you go without providing CSV file",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
@@ -12187,16 +12178,20 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can upload the CSV file and import products",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
@@ -12210,16 +12205,20 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can override the existing products via CSV import",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
@@ -12233,7 +12232,11 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
