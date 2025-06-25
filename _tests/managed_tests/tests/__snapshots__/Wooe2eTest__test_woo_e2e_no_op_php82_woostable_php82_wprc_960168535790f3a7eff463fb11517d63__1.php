@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "395 total, 381 passed, 0 failed, 14 skipped.",
+            "test_summary": "395 total, 376 passed, 0 failed, 19 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -51,12 +51,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 91,
-                "numPendingTestSuites": 10,
+                "numPassedTestSuites": 90,
+                "numPendingTestSuites": 11,
                 "numTotalTestSuites": 101,
                 "numFailedTests": 0,
-                "numPassedTests": 381,
-                "numPendingTests": 14,
+                "numPassedTests": 376,
+                "numPendingTests": 19,
                 "numTotalTests": 395,
                 "testResults": [
                     {
@@ -1845,29 +1845,29 @@
                     {
                         "file": "product\\/block-editor\\/create-variable-product-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Variations tab": [],
                             "Variations tab > Create variable products": [
                                 {
                                     "title": "can create a variation option and publish the product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can edit a variation",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete a variation",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can see variations warning and click the CTA",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can see single variation warning and click the CTA",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2749,7 +2749,7 @@
                         }
                     }
                 ],
-                "summary": "395 total, 381 passed, 0 failed, 14 skipped."
+                "summary": "395 total, 376 passed, 0 failed, 19 skipped."
             }
         },
         {
@@ -2760,10 +2760,10 @@
                     },
                     "summary": {
                         "tests": 395,
-                        "passed": 381,
+                        "passed": 376,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 14,
+                        "skipped": 19,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -10169,46 +10169,17 @@
                         },
                         {
                             "name": "can create a variation option and publish the product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load new product editor, disable tour",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click on General tab, enter product name and summary",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click on Variations tab, add a new attribute",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create global attribute",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Add new terms to the attribute",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Add prices to variations",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Publish the product",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.js > Variations tab > Create variable products",
                             "attachments": [],
                             "stdout": [
@@ -10216,16 +10187,20 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can edit a variation",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.js",
@@ -10239,16 +10214,20 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can delete a variation",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.js",
@@ -10262,16 +10241,20 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can see variations warning and click the CTA",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.js",
@@ -10285,16 +10268,20 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can see single variation warning and click the CTA",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.js",
@@ -10308,7 +10295,11 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
