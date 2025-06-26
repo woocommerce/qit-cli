@@ -6,9 +6,11 @@
 require_once __DIR__ . '/../NodeResponse.php';
 require_once __DIR__ . '/../lib/ToolRegistry.php';
 require_once __DIR__ . '/../lib/FilePathResolver.php';
+require_once __DIR__ . '/../lib/ExtractPathResolver.php';
 
 use QIT_CLI\AI\WebServer\FilePathResolver;
 use QIT_CLI\AI\WebServer\ToolRegistry;
+use QIT_CLI\AI\WebServer\ExtractPathResolver;
 
 function handle_file_reading( $input ) {
     log_info( 'Starting file reading handler', [
@@ -26,21 +28,20 @@ function handle_file_reading( $input ) {
         return;
     }
 
-    if ( ! isset( $params['extract_path'] ) || empty( $params['extract_path'] ) ) {
-        log_error( 'No extract path provided for reading' );
-        http_response_code( 400 );
-        NodeResponse::error( 'Missing extract_path parameter' );
-        return;
-    }
-
     $file_path = $params['file_path'];
-    $extract_path = $params['extract_path'];
 
-    // SECURITY: Validate extract_path exists
-    if ( ! is_dir( $extract_path ) ) {
-        log_error( 'Extract path does not exist', [ 'extract_path' => $extract_path ] );
-        http_response_code( 400 );
-        NodeResponse::error( 'Extract path not found: ' . $extract_path );
+    // Use centralized path resolution
+    try {
+        $extract_path = ExtractPathResolver::resolve($params);
+        log_info("Extract path resolved for file reading", ['extract_path' => $extract_path]);
+    } catch (Exception $e) {
+        log_error("Path resolution failed for file reading", [
+            'error' => $e->getMessage(),
+            'file_path' => $file_path,
+            'diagnostics' => ExtractPathResolver::getDiagnosticMessage($params)
+        ]);
+        http_response_code(400);
+        NodeResponse::error($e->getMessage());
         return;
     }
 
@@ -72,7 +73,7 @@ function handle_file_reading( $input ) {
 
         // Initialize ToolRegistry with the extract path as work directory
         $registry = new ToolRegistry( $extract_path );
-        
+
         // Use the read_file tool to read the file content
         $result = $registry->execute_tool( 'read_file', [
             'path' => $file_path
@@ -83,7 +84,7 @@ function handle_file_reading( $input ) {
                 'file_path' => $file_path,
                 'error'     => $result['error']
             ] );
-            
+
             http_response_code( 404 );
             NodeResponse::error( 'File reading failed: ' . $result['error'] );
             return;

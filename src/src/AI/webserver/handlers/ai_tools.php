@@ -4,8 +4,10 @@
  */
 
 require_once __DIR__ . '/../NodeResponse.php';
+require_once __DIR__ . '/../lib/ExtractPathResolver.php';
 
 use QIT_CLI\AI\WebServer\ToolRegistry;
+use QIT_CLI\AI\WebServer\ExtractPathResolver;
 
 function handle_ai_with_tools( $input, $ollama_api_url ) {
 	// Check if this is a logical security discovery task
@@ -94,147 +96,21 @@ function handle_ai_with_tools( $input, $ollama_api_url ) {
 		'input_keys'         => array_keys( $input )
 	] );
 
-	// Initialize tool registry with work directory
-	$work_dir = '';
-
-	log_info( "Determining work directory", [
-		'has_extract_path_in_input' => isset( $input['extract_path'] ),
-		'extract_path_value'        => $input['extract_path'] ?? 'not_set',
-		'has_dependencies'          => isset( $input['dependencies'] ),
-		'session_id'                => $session_id
-	] );
-
-	// First priority: extract_path directly from input
-	if ( isset( $input['extract_path'] ) && ! empty( $input['extract_path'] ) ) {
-		$work_dir = $input['extract_path'];
-		log_info( "Using extraction path from input", [ 'work_dir' => $work_dir ] );
-	}
-
-	// Second priority: try to get the extraction path from dependencies
-	if ( empty( $work_dir ) && isset( $input['dependencies']['extract_codebase'] ) ) {
-		$extraction_data = $input['dependencies']['extract_codebase'];
-
-		// Handle both string and array formats
-		if ( is_string( $extraction_data ) ) {
-			$decoded = json_decode( $extraction_data, true );
-			if ( json_last_error() === JSON_ERROR_NONE && isset( $decoded['extract_path'] ) ) {
-				$work_dir = $decoded['extract_path'];
-				log_info( "Using extraction path from dependencies (decoded)", [ 'work_dir' => $work_dir ] );
-			}
-		} elseif ( is_array( $extraction_data ) && isset( $extraction_data['extract_path'] ) ) {
-			$work_dir = $extraction_data['extract_path'];
-			log_info( "Using extraction path from dependencies (array)", [ 'work_dir' => $work_dir ] );
-		}
-	}
-
-	// Third priority: Check if task_phase indicates we should extract it ourselves
-	if ( empty( $work_dir ) && isset( $input['task_phase'] ) && $input['task_phase'] === 'vulnerability_investigation' ) {
-		// For vulnerability investigation, the extract_path should be in the input
-		log_error( "No extract_path provided for vulnerability investigation phase", [
-			'input_keys'   => array_keys( $input ),
-			'dependencies' => isset( $input['dependencies'] ) ? array_keys( $input['dependencies'] ) : []
-		] );
-
-		http_response_code( 400 );
-		echo json_encode( [ 'error' => 'Missing extract_path for vulnerability investigation' ] );
-
-		return;
-	}
-
-	// If still no work directory and we have a zip_url, we need to extract it first
-	if ( empty( $work_dir ) && ! empty( $zip_url ) && ! empty( $session_id ) ) {
-		log_info( "No work directory found, attempting to extract from zip_url", [
-			'zip_url'    => $zip_url,
-			'session_id' => $session_id
-		] );
-
-		// Extract the zip file first
-		$extract_path = sys_get_temp_dir() . '/qit-code-analysis/' . $session_id;
-
-		// Use curl to download and extract
-		$temp_zip = sys_get_temp_dir() . '/' . uniqid( 'qit_download_' ) . '.zip';
-
-		$ch = curl_init( $zip_url );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, 300 );
-		curl_setopt( $ch, CURLOPT_FILE, fopen( $temp_zip, 'w' ) );
-
-		$success   = curl_exec( $ch );
-		$http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-		curl_close( $ch );
-
-		if ( $success && $http_code === 200 && file_exists( $temp_zip ) ) {
-			// Extract the zip
-			$zip = new ZipArchive();
-			if ( $zip->open( $temp_zip ) === true ) {
-				// Create extraction directory
-				if ( ! is_dir( $extract_path ) ) {
-					mkdir( $extract_path, 0755, true );
-				}
-
-				$zip->extractTo( $extract_path );
-				$zip->close();
-
-				// Find the actual plugin directory (might be in a subdirectory)
-				$dirs = scandir( $extract_path );
-				foreach ( $dirs as $dir ) {
-					if ( $dir === '.' || $dir === '..' ) {
-						continue;
-					}
-
-					$full_path = $extract_path . '/' . $dir;
-					if ( is_dir( $full_path ) ) {
-						$php_files = glob( $full_path . '/*.php' );
-						if ( ! empty( $php_files ) ) {
-							$work_dir = $full_path;
-							log_info( "Successfully extracted and found work directory", [
-								'work_dir'        => $work_dir,
-								'php_files_count' => count( $php_files )
-							] );
-							break;
-						}
-					}
-				}
-
-				// If no subdirectory with PHP files, check the root
-				if ( empty( $work_dir ) ) {
-					$php_files = glob( $extract_path . '/*.php' );
-					if ( ! empty( $php_files ) ) {
-						$work_dir = $extract_path;
-						log_info( "Using root extraction path as work directory", [
-							'work_dir'        => $work_dir,
-							'php_files_count' => count( $php_files )
-						] );
-					}
-				}
-			}
-
-			// Clean up temp file
-			@unlink( $temp_zip );
-		}
-	}
-
-	// Final validation - if still no work directory, this is an error
-	if ( empty( $work_dir ) || ! is_dir( $work_dir ) ) {
-		log_error( "Failed to determine work directory", [
-			'work_dir'   => $work_dir,
-			'session_id' => $session_id,
-			'zip_url'    => $zip_url,
-			'input_keys' => array_keys( $input )
-		] );
-
-		http_response_code( 400 );
-		echo json_encode( [
-			'error'   => 'Unable to determine work directory. Please ensure extract_path is provided or zip_url is accessible.',
-			'details' => [
-				'session_id'         => $session_id,
-				'attempted_work_dir' => $work_dir,
-				'has_zip_url'        => ! empty( $zip_url ),
-				'has_extract_path'   => ! empty( $input['extract_path'] )
-			]
-		] );
-
+	// Single-line path resolution using centralized resolver
+	try {
+		$work_dir = ExtractPathResolver::resolve($input);
+		log_info("Work directory resolved", ['work_dir' => $work_dir]);
+	} catch (Exception $e) {
+		log_error("Path resolution failed", [
+			'error' => $e->getMessage(),
+			'diagnostics' => ExtractPathResolver::getDiagnosticMessage($input)
+		]);
+		http_response_code(400);
+		echo json_encode([
+			'error' => $e->getMessage(),
+			'help' => 'Ensure extract_path is provided from zip extraction step',
+			'diagnostics' => ExtractPathResolver::getDiagnosticMessage($input)
+		]);
 		return;
 	}
 
@@ -949,92 +825,25 @@ function handle_logical_security_discovery( $input, $ollama_api_url, $job_id ) {
 	$tools_model    = 'devstral:24b';
 	$max_iterations = $input['config']['max_iterations'] ?? 30;
 
-	// Get work directory using improved logic
-	$work_dir   = '';
+	// Use centralized path resolution for discovery
 	$session_id = $input['session_id'] ?? null;
 
-	log_info( "Determining work directory for logical security discovery", [
-		'has_extract_path_in_input' => isset( $input['extract_path'] ),
-		'extract_path_value'        => $input['extract_path'] ?? 'not_set',
-		'has_dependencies'          => isset( $input['dependencies'] ),
-		'session_id'                => $session_id
-	] );
-
-	// First priority: extract_path directly from input
-	if ( isset( $input['extract_path'] ) && ! empty( $input['extract_path'] ) ) {
-		$work_dir = $input['extract_path'];
-		log_info( "Using extraction path from input for discovery", [ 'work_dir' => $work_dir ] );
-	}
-
-	// Second priority: try dependencies
-	if ( empty( $work_dir ) && isset( $input['dependencies']['extract_codebase']['extract_path'] ) ) {
-		$work_dir = $input['dependencies']['extract_codebase']['extract_path'];
-		log_info( "Using extraction path from dependencies for discovery", [ 'work_dir' => $work_dir ] );
-	}
-
-	// Validate and search if needed
-	if ( ! is_dir( $work_dir ) ) {
-		log_error( "Work directory does not exist for discovery", [
-			'work_dir'   => $work_dir,
-			'session_id' => $session_id
-		] );
-
-		// Try to find the actual directory using comprehensive search
-		if ( $session_id ) {
-			$base_paths = [
-				sys_get_temp_dir() . '/qit-code-analysis',
-				'/tmp/qit-code-analysis',
-				sys_get_temp_dir()
-			];
-
-			foreach ( $base_paths as $base_path ) {
-				if ( is_dir( $base_path ) ) {
-					$dirs = scandir( $base_path );
-					foreach ( $dirs as $dir ) {
-						if ( $dir === '.' || $dir === '..' ) {
-							continue;
-						}
-
-						$full_path = $base_path . '/' . $dir;
-						if ( is_dir( $full_path ) && strpos( $dir, $session_id ) === 0 ) {
-							// Look for subdirectories (plugin directories)
-							$subdirs = scandir( $full_path );
-							foreach ( $subdirs as $subdir ) {
-								if ( $subdir === '.' || $subdir === '..' ) {
-									continue;
-								}
-
-								$plugin_path = $full_path . '/' . $subdir;
-								if ( is_dir( $plugin_path ) ) {
-									$php_files = glob( $plugin_path . '/*.php' );
-									if ( ! empty( $php_files ) ) {
-										$work_dir = $plugin_path;
-										log_info( "Found work directory for discovery", [
-											'work_dir'        => $work_dir,
-											'php_files_count' => count( $php_files )
-										] );
-										break 3;
-									}
-								}
-							}
-
-							// Fallback to main directory if it has PHP files
-							if ( empty( $work_dir ) || ! is_dir( $work_dir ) ) {
-								$php_files = glob( $full_path . '/*.php' );
-								if ( ! empty( $php_files ) ) {
-									$work_dir = $full_path;
-									log_info( "Found work directory at session path for discovery", [
-										'work_dir'        => $work_dir,
-										'php_files_count' => count( $php_files )
-									] );
-									break 2;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+	try {
+		$work_dir = ExtractPathResolver::resolve($input);
+		log_info("Work directory resolved for discovery", ['work_dir' => $work_dir]);
+	} catch (Exception $e) {
+		log_error("Path resolution failed for discovery", [
+			'error' => $e->getMessage(),
+			'session_id' => $session_id,
+			'diagnostics' => ExtractPathResolver::getDiagnosticMessage($input)
+		]);
+		http_response_code(400);
+		echo json_encode([
+			'error' => $e->getMessage(),
+			'help' => 'Ensure extract_path is provided from zip extraction step',
+			'diagnostics' => ExtractPathResolver::getDiagnosticMessage($input)
+		]);
+		return;
 	}
 
 	// Initialize tool registry
