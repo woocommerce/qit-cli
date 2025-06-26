@@ -12,7 +12,8 @@ echo json_encode( [
 	"endpoints" => [
 		"/process"      => "AI processing endpoint",
 		"/analyze-code" => "Code analysis endpoint",
-		"/extract-zip"  => "ZIP extraction endpoint"
+		"/extract-zip"  => "ZIP extraction endpoint",
+		"/read-file"    => "File content reading endpoint"
 	],
 	"version"   => "1.0.0"
 ] );

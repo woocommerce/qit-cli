@@ -3,21 +3,25 @@
 namespace QIT_CLI\AI\WebServer;
 
 use Exception;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+
+require_once __DIR__ . '/FilePathResolver.php';
 
 /**
  * Tool Registry for AI function calling - embedded to avoid file dependencies
  */
 class ToolRegistry {
 	private array $tools = [];
-	private string $work_directory;
+	private FilePathResolver $resolver;
 
 	public function __construct( string $work_directory = '' ) {
-		$this->work_directory = $work_directory;
+		$this->resolver = new FilePathResolver($work_directory);
 		$this->register_default_tools();
 	}
 
 	public function set_work_directory( string $work_directory ): void {
-		$this->work_directory = $work_directory;
+		$this->resolver = new FilePathResolver($work_directory);
 	}
 
 	public function register_tool( string $name, callable $handler ): void {
@@ -36,6 +40,7 @@ class ToolRegistry {
 		}
 	}
 
+
 	public function get_available_tools(): array {
 		return array_keys( $this->tools );
 	}
@@ -51,41 +56,27 @@ class ToolRegistry {
 				return [ 'error' => 'Path is required' ];
 			}
 
-			// Security: Ensure path is within work directory
-			if ( ! $this->work_directory ) {
-				return [ 'error' => 'Work directory not set' ];
+			try {
+				$content = $this->resolver->readFile($path);
+				$lines = explode( "\n", $content );
+
+				// Apply line filtering if specified
+				if ( $start_line !== null || $end_line !== null ) {
+					$start          = max( 0, ( $start_line ?? 1 ) - 1 );
+					$end            = min( count( $lines ), $end_line ?? count( $lines ) );
+					$selected_lines = array_slice( $lines, $start, $end - $start );
+					$content        = implode( "\n", $selected_lines );
+				}
+
+				return [
+					'content'    => $content,
+					'path'       => $path,
+					'lines_read' => [ $start_line ?? 1, $end_line ?? substr_count( $content, "\n" ) + 1 ],
+					'total_lines' => count( $lines )
+				];
+			} catch ( Exception $e ) {
+				return [ 'error' => 'File not found: ' . $path ];
 			}
-
-			$full_path     = realpath( $this->work_directory . '/' . ltrim( $path, '/' ) );
-			$real_work_dir = realpath( $this->work_directory );
-
-			if ( ! $full_path || strpos( $full_path, $real_work_dir ) !== 0 ) {
-				return [ 'error' => 'Invalid path or file outside work directory' ];
-			}
-
-			if ( ! file_exists( $full_path ) ) {
-				return [ 'error' => 'File not found' ];
-			}
-
-			$content = file_get_contents( $full_path );
-			if ( $content === false ) {
-				return [ 'error' => 'Failed to read file' ];
-			}
-
-			// Apply line filtering if specified
-			if ( $start_line !== null || $end_line !== null ) {
-				$lines          = explode( "\n", $content );
-				$start          = max( 0, ( $start_line ?? 1 ) - 1 );
-				$end            = min( count( $lines ), $end_line ?? count( $lines ) );
-				$selected_lines = array_slice( $lines, $start, $end - $start );
-				$content        = implode( "\n", $selected_lines );
-			}
-
-			return [
-				'content'    => $content,
-				'path'       => $path,
-				'lines_read' => [ $start_line ?? 1, $end_line ?? substr_count( $content, "\n" ) + 1 ]
-			];
 		} );
 
 		// Tool 2: Search for pattern in PHP files
@@ -97,73 +88,108 @@ class ToolRegistry {
 				return [ 'error' => 'Pattern is required' ];
 			}
 
-			if ( ! $this->work_directory ) {
-				return [ 'error' => 'Work directory not set' ];
-			}
+			$results = [];
+			$baseDir = $this->resolver->toAbsolute('');
 
-			// Use grep to search for pattern
-			$cmd = sprintf(
-				'grep -rin %s %s --include="*.php" 2>/dev/null | head -n %d',
-				escapeshellarg( $pattern ),
-				escapeshellarg( $this->work_directory ),
-				$max_results
+			$iterator = new RecursiveIteratorIterator(
+				new RecursiveDirectoryIterator( $baseDir, RecursiveDirectoryIterator::SKIP_DOTS )
 			);
 
-			exec( $cmd, $output, $return_code );
+			foreach ( $iterator as $file ) {
+				if ( ! $file->isFile() || $file->getExtension() !== 'php' ) continue;
 
-			$results = [];
-			foreach ( $output as $line ) {
-				// Parse grep output: filename:line_number:matched_line
-				if ( preg_match( '/^(.+?):(\d+):(.*)$/', $line, $matches ) ) {
-					$results[] = [
-						'file'    => str_replace( $this->work_directory . '/', '', $matches[1] ),
-						'line'    => (int) $matches[2],
-						'content' => trim( $matches[3] )
+				$relativePath = $this->resolver->toRelative( $file->getPathname() );
+				$content = file_get_contents( $file->getPathname() );
+				$lines = explode( "\n", $content );
+
+				foreach ( $lines as $lineNum => $line ) {
+					if ( preg_match( '/' . preg_quote( $pattern, '/' ) . '/i', $line ) ) {
+						$results[] = [
+							'file'    => $relativePath,
+							'line'    => $lineNum + 1,
+							'content' => trim( $line ),
+							'context' => $this->getContext( $lines, $lineNum )
+						];
+
+						if ( count( $results ) >= $max_results ) {
+							return [
+								'pattern'   => $pattern,
+								'results'   => $results,
+								'count'     => count( $results ),
+								'truncated' => true
+							];
+						}
+					}
+				}
+			}
+
+			return [
+				'pattern'   => $pattern,
+				'results'   => $results,
+				'count'     => count( $results ),
+				'truncated' => false
+			];
+		} );
+
+		// Tool 3: List files
+		$this->register_tool( 'list_files', function ( $params ) {
+			$directory = $params['directory'] ?? '.';
+
+			// Normalize directory path
+			$relativeDir = trim( $directory, '/' );
+			if ( $relativeDir === '.' || $relativeDir === '' ) {
+				$absoluteDir = $this->resolver->toAbsolute( '' );
+			} else {
+				$absoluteDir = $this->resolver->toAbsolute( $relativeDir );
+			}
+
+			if ( ! is_dir( $absoluteDir ) ) {
+				return [ 'error' => 'Directory not found: ' . $directory ];
+			}
+
+			$files = [];
+			$dirs = [];
+
+			foreach ( scandir( $absoluteDir ) as $item ) {
+				if ( $item === '.' || $item === '..' ) continue;
+
+				$itemPath = $absoluteDir . '/' . $item;
+				$relativePath = $this->resolver->toRelative( $itemPath );
+
+				if ( is_dir( $itemPath ) ) {
+					$dirs[] = $relativePath;
+				} else {
+					$files[] = [
+						'path'      => $relativePath,
+						'size'      => filesize( $itemPath ),
+						'extension' => pathinfo( $item, PATHINFO_EXTENSION )
 					];
 				}
 			}
 
 			return [
-				'results'   => $results,
-				'count'     => count( $results ),
-				'pattern'   => $pattern,
-				'truncated' => count( $results ) >= $max_results
+				'directory'        => $relativeDir === '' ? '.' : $relativeDir,
+				'files'            => $files,
+				'directories'      => $dirs,
+				'total_files'      => count( $files ),
+				'total_directories' => count( $dirs )
 			];
 		} );
+	}
 
-		// Tool 3: List PHP files
-		$this->register_tool( 'list_files', function ( $params ) {
-			$directory = $params['directory'] ?? '.';
+	private function getContext( array $lines, int $lineNum, int $contextLines = 2 ): array {
+		$start = max( 0, $lineNum - $contextLines );
+		$end = min( count( $lines ) - 1, $lineNum + $contextLines );
 
-			if ( ! $this->work_directory ) {
-				return [ 'error' => 'Work directory not set' ];
-			}
-
-			$search_dir    = realpath( $this->work_directory . '/' . ltrim( $directory, '/' ) );
-			$real_work_dir = realpath( $this->work_directory );
-
-			if ( ! $search_dir || strpos( $search_dir, $real_work_dir ) !== 0 ) {
-				return [ 'error' => 'Invalid directory' ];
-			}
-
-			// Use find to list PHP files
-			$cmd = sprintf(
-				'find %s -name "*.php" -type f 2>/dev/null | head -n 500',
-				escapeshellarg( $search_dir )
-			);
-
-			exec( $cmd, $output, $return_code );
-
-			$files = [];
-			foreach ( $output as $file ) {
-				$files[] = str_replace( $this->work_directory . '/', '', $file );
-			}
-
-			return [
-				'files'     => $files,
-				'count'     => count( $files ),
-				'directory' => $directory
+		$context = [];
+		for ( $i = $start; $i <= $end; $i++ ) {
+			$context[] = [
+				'line'    => $i + 1,
+				'content' => $lines[$i],
+				'current' => $i === $lineNum
 			];
-		} );
+		}
+
+		return $context;
 	}
 }

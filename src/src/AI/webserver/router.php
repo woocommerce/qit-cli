@@ -230,6 +230,7 @@ require_once __DIR__ . '/handlers/ai_process.php';
 require_once __DIR__ . '/handlers/ai_tools.php';
 require_once __DIR__ . '/handlers/code_analysis.php';
 require_once __DIR__ . '/handlers/zip_extraction.php';
+require_once __DIR__ . '/handlers/file_reader.php';
 require_once __DIR__ . '/handlers/helpers.php';
 
 switch ( $uri ) {
@@ -246,6 +247,11 @@ switch ( $uri ) {
 	case '/extract-zip':
 		log_info( "Handling ZIP extraction request" );
 		handle_zip_extraction( $input );
+		break;
+
+	case '/read-file':
+		log_info( "Handling file reading request" );
+		handle_file_reading( $input );
 		break;
 
 	default:
