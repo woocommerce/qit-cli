@@ -1,124 +1,14 @@
 <?php
+
+/**
+ * Basic Prompt Handler
+ * 
+ * Simplified handler for basic prompting: receive a string and model, process it, return response.
+ * Tool-based requests are handled by dedicated endpoints (/security-analysis and /logical-security-analysis).
+ */
+
 function handle_ai_process( $input, $ollama_api_url ) {
-	// CRITICAL: Check if this is a tool-enabled request FIRST
-
-	// Method 1: Check for direct tools/messages in input
-	if ( isset( $input['tools'] ) && isset( $input['messages'] ) ) {
-		log_info( "Detected tool-based request (direct), routing to tool handler" );
-
-		// Extract file/line information from messages if not already in static_context
-		if ( empty( $input['static_context'] ) && isset( $input['session_id'] ) ) {
-			$file = null;
-			$line = null;
-
-			// Search through messages for file/line information
-			foreach ( $input['messages'] as $message ) {
-				if ( isset( $message['content'] ) ) {
-					if ( preg_match( '/File:\s*([^\n]+)/', $message['content'], $file_matches ) ) {
-						$file = trim( $file_matches[1] );
-					}
-					if ( preg_match( '/Line:\s*(\d+)/', $message['content'], $line_matches ) ) {
-						$line = intval( $line_matches[1] );
-					}
-				}
-			}
-
-			// If we found file/line info, run taint analysis
-			if ( $file && $line ) {
-				log_info( "Running taint analysis before AI tools", [
-					'file'       => $file,
-					'line'       => $line,
-					'session_id' => $input['session_id']
-				] );
-
-			} else {
-				log_info( "No file/line information found in messages, skipping analysis" );
-			}
-		}
-
-		return handle_ai_with_tools( $input, $ollama_api_url );
-	}
-
-	// Method 2: Check if prompt contains tool-based structure
-	if ( isset( $input['prompt'] ) ) {
-		$decoded_prompt = json_decode( $input['prompt'], true );
-		if ( json_last_error() === JSON_ERROR_NONE ) {
-			// Check for ai_analysis_with_tools task type
-			if ( isset( $decoded_prompt['task_type'] ) && $decoded_prompt['task_type'] === 'ai_analysis_with_tools' ) {
-				log_info( "Detected ai_analysis_with_tools task, extracting tool request", [
-					'task_type'    => $decoded_prompt['task_type'],
-					'has_messages' => isset( $decoded_prompt['messages'] ),
-					'has_tools'    => isset( $decoded_prompt['tools'] )
-				] );
-
-				// Extract the messages and tools from the decoded prompt
-				if ( isset( $decoded_prompt['messages'] ) && isset( $decoded_prompt['tools'] ) ) {
-					// Re-structure the input for tool handler
-					$tool_input = [
-						'messages'       => $decoded_prompt['messages'],
-						'tools'          => $decoded_prompt['tools'],
-						'model'          => $input['model'] ?? 'mistral:24b',
-						'session_id'     => $decoded_prompt['session_id'] ?? null,
-						'zip_url'        => $decoded_prompt['zip_url'] ?? null,
-						'max_iterations' => $decoded_prompt['max_iterations'] ?? 10,
-						'job_id'         => $input['job_id'] ?? null,
-						'static_context' => $input['static_context'] ?? null
-					];
-
-					// Check if we need to run taint analysis for this request too
-					if ( empty( $tool_input['static_context'] ) && ! empty( $tool_input['session_id'] ) ) {
-						$file = null;
-						$line = null;
-
-						// Extract from messages
-						foreach ( $tool_input['messages'] as $message ) {
-							if ( isset( $message['content'] ) ) {
-								if ( preg_match( '/File:\s*([^\n]+)/', $message['content'], $file_matches ) ) {
-									$file = trim( $file_matches[1] );
-								}
-								if ( preg_match( '/Line:\s*(\d+)/', $message['content'], $line_matches ) ) {
-									$line = intval( $line_matches[1] );
-								}
-							}
-						}
-
-					}
-
-					return handle_ai_with_tools( $tool_input, $ollama_api_url );
-				}
-			}
-
-			// Check if the decoded prompt itself has tools/messages
-			if ( isset( $decoded_prompt['messages'] ) && isset( $decoded_prompt['tools'] ) ) {
-				log_info( "Detected tool-based request in prompt, routing to tool handler" );
-				$decoded_prompt['model']  = $input['model'] ?? 'mistral:24b';
-				$decoded_prompt['job_id'] = $input['job_id'] ?? null;
-
-				// Check for taint analysis here too
-				if ( empty( $decoded_prompt['static_context'] ) && ! empty( $decoded_prompt['session_id'] ) ) {
-					$file = null;
-					$line = null;
-
-					foreach ( $decoded_prompt['messages'] as $message ) {
-						if ( isset( $message['content'] ) ) {
-							if ( preg_match( '/File:\s*([^\n]+)/', $message['content'], $file_matches ) ) {
-								$file = trim( $file_matches[1] );
-							}
-							if ( preg_match( '/Line:\s*(\d+)/', $message['content'], $line_matches ) ) {
-								$line = intval( $line_matches[1] );
-							}
-						}
-					}
-
-				}
-
-				return handle_ai_with_tools( $decoded_prompt, $ollama_api_url );
-			}
-		}
-	}
-
-	// If we get here, it's not a tool request - continue with regular processing
-	log_info( "Processing as regular AI request (no tools detected)" );
+	log_info( "Processing basic AI request" );
 
 	// Original simple prompt flow
 	if ( ! isset( $input['prompt'] ) || ! isset( $input['model'] ) ) {

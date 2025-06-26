@@ -226,16 +226,17 @@ if ( $input ) {
 log_info( "Routing request", [ 'uri' => $uri, 'method' => $method ] );
 
 // Include handler files
-require_once __DIR__ . '/handlers/ai_process.php';
-require_once __DIR__ . '/handlers/ai_tools.php';
+require_once __DIR__ . '/handlers/basic_prompt.php';
 require_once __DIR__ . '/handlers/code_analysis.php';
 require_once __DIR__ . '/handlers/zip_extraction.php';
 require_once __DIR__ . '/handlers/file_reader.php';
 require_once __DIR__ . '/handlers/helpers.php';
+require_once __DIR__ . '/handlers/security_analysis.php';
+require_once __DIR__ . '/handlers/logical_security_analysis.php';
 
 switch ( $uri ) {
-	case '/process':
-		log_info( "Handling AI process request" );
+	case '/basic-prompt':
+		log_info( "Handling basic prompt request" );
 		handle_ai_process( $input, '{{OLLAMA_API_URL}}' );
 		break;
 
@@ -252,6 +253,16 @@ switch ( $uri ) {
 	case '/read-file':
 		log_info( "Handling file reading request" );
 		handle_file_reading( $input );
+		break;
+
+	case '/security-analysis':
+		log_info( "Handling security analysis request" );
+		handle_general_security_analysis( $input, '{{OLLAMA_API_URL}}' );
+		break;
+
+	case '/logical-security-analysis':
+		log_info( "Handling logical security analysis request" );
+		handle_logical_security_discovery( $input, '{{OLLAMA_API_URL}}', $input['job_id'] ?? null );
 		break;
 
 	default:
