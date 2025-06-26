@@ -99,13 +99,13 @@ function handle_ai_with_tools( $input, $ollama_api_url ) {
 
 	log_info( "Determining work directory", [
 		'has_extract_path_in_input' => isset( $input['extract_path'] ),
-		'extract_path_value' => $input['extract_path'] ?? 'not_set',
-		'has_dependencies' => isset( $input['dependencies'] ),
-		'session_id' => $session_id
+		'extract_path_value'        => $input['extract_path'] ?? 'not_set',
+		'has_dependencies'          => isset( $input['dependencies'] ),
+		'session_id'                => $session_id
 	] );
 
 	// First priority: extract_path directly from input
-	if ( isset( $input['extract_path'] ) && !empty( $input['extract_path'] ) ) {
+	if ( isset( $input['extract_path'] ) && ! empty( $input['extract_path'] ) ) {
 		$work_dir = $input['extract_path'];
 		log_info( "Using extraction path from input", [ 'work_dir' => $work_dir ] );
 	}
@@ -127,70 +127,115 @@ function handle_ai_with_tools( $input, $ollama_api_url ) {
 		}
 	}
 
-	// Validate work directory exists
-	if ( ! is_dir( $work_dir ) ) {
-		log_error( "Work directory does not exist", [
-			'work_dir'   => $work_dir,
-			'session_id' => $session_id,
-			'exists' => file_exists( $work_dir ),
-			'is_dir' => is_dir( $work_dir )
+	// Third priority: Check if task_phase indicates we should extract it ourselves
+	if ( empty( $work_dir ) && isset( $input['task_phase'] ) && $input['task_phase'] === 'vulnerability_investigation' ) {
+		// For vulnerability investigation, the extract_path should be in the input
+		log_error( "No extract_path provided for vulnerability investigation phase", [
+			'input_keys'   => array_keys( $input ),
+			'dependencies' => isset( $input['dependencies'] ) ? array_keys( $input['dependencies'] ) : []
 		] );
 
-		// Try to find the actual directory using more comprehensive search
-		if ( $session_id ) {
-			$base_paths = [
-				sys_get_temp_dir() . '/qit-code-analysis',
-				'/tmp/qit-code-analysis',
-				sys_get_temp_dir()
-			];
+		http_response_code( 400 );
+		echo json_encode( [ 'error' => 'Missing extract_path for vulnerability investigation' ] );
 
-			foreach ( $base_paths as $base_path ) {
-				if ( is_dir( $base_path ) ) {
-					// Look for directories that start with the session_id
-					$dirs = scandir( $base_path );
-					foreach ( $dirs as $dir ) {
-						if ( $dir === '.' || $dir === '..' ) continue;
+		return;
+	}
 
-						$full_path = $base_path . '/' . $dir;
-						if ( is_dir( $full_path ) && strpos( $dir, $session_id ) === 0 ) {
-							// Found a directory that starts with session_id
-							// Now look for subdirectories (plugin directories)
-							$subdirs = scandir( $full_path );
-							foreach ( $subdirs as $subdir ) {
-								if ( $subdir === '.' || $subdir === '..' ) continue;
+	// If still no work directory and we have a zip_url, we need to extract it first
+	if ( empty( $work_dir ) && ! empty( $zip_url ) && ! empty( $session_id ) ) {
+		log_info( "No work directory found, attempting to extract from zip_url", [
+			'zip_url'    => $zip_url,
+			'session_id' => $session_id
+		] );
 
-								$plugin_path = $full_path . '/' . $subdir;
-								if ( is_dir( $plugin_path ) ) {
-									// Check if this directory has PHP files
-									$php_files = glob( $plugin_path . '/*.php' );
-									if ( !empty( $php_files ) ) {
-										$work_dir = $plugin_path;
-										log_info( "Found work directory with PHP files", [ 
-											'work_dir' => $work_dir,
-											'php_files_count' => count( $php_files )
-										] );
-										break 3; // Break out of all loops
-									}
-								}
-							}
+		// Extract the zip file first
+		$extract_path = sys_get_temp_dir() . '/qit-code-analysis/' . $session_id;
 
-							// If no subdirectory with PHP files, use the main directory
-							if ( empty( $work_dir ) || ! is_dir( $work_dir ) ) {
-								$php_files = glob( $full_path . '/*.php' );
-								if ( !empty( $php_files ) ) {
-									$work_dir = $full_path;
-									log_info( "Found work directory at session path", [ 
-										'work_dir' => $work_dir,
-										'php_files_count' => count( $php_files )
-									] );
-									break 2;
-								}
-							}
+		// Use curl to download and extract
+		$temp_zip = sys_get_temp_dir() . '/' . uniqid( 'qit_download_' ) . '.zip';
+
+		$ch = curl_init( $zip_url );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+		curl_setopt( $ch, CURLOPT_TIMEOUT, 300 );
+		curl_setopt( $ch, CURLOPT_FILE, fopen( $temp_zip, 'w' ) );
+
+		$success   = curl_exec( $ch );
+		$http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+		curl_close( $ch );
+
+		if ( $success && $http_code === 200 && file_exists( $temp_zip ) ) {
+			// Extract the zip
+			$zip = new ZipArchive();
+			if ( $zip->open( $temp_zip ) === true ) {
+				// Create extraction directory
+				if ( ! is_dir( $extract_path ) ) {
+					mkdir( $extract_path, 0755, true );
+				}
+
+				$zip->extractTo( $extract_path );
+				$zip->close();
+
+				// Find the actual plugin directory (might be in a subdirectory)
+				$dirs = scandir( $extract_path );
+				foreach ( $dirs as $dir ) {
+					if ( $dir === '.' || $dir === '..' ) {
+						continue;
+					}
+
+					$full_path = $extract_path . '/' . $dir;
+					if ( is_dir( $full_path ) ) {
+						$php_files = glob( $full_path . '/*.php' );
+						if ( ! empty( $php_files ) ) {
+							$work_dir = $full_path;
+							log_info( "Successfully extracted and found work directory", [
+								'work_dir'        => $work_dir,
+								'php_files_count' => count( $php_files )
+							] );
+							break;
 						}
 					}
 				}
+
+				// If no subdirectory with PHP files, check the root
+				if ( empty( $work_dir ) ) {
+					$php_files = glob( $extract_path . '/*.php' );
+					if ( ! empty( $php_files ) ) {
+						$work_dir = $extract_path;
+						log_info( "Using root extraction path as work directory", [
+							'work_dir'        => $work_dir,
+							'php_files_count' => count( $php_files )
+						] );
+					}
+				}
 			}
+
+			// Clean up temp file
+			@unlink( $temp_zip );
 		}
+	}
+
+	// Final validation - if still no work directory, this is an error
+	if ( empty( $work_dir ) || ! is_dir( $work_dir ) ) {
+		log_error( "Failed to determine work directory", [
+			'work_dir'   => $work_dir,
+			'session_id' => $session_id,
+			'zip_url'    => $zip_url,
+			'input_keys' => array_keys( $input )
+		] );
+
+		http_response_code( 400 );
+		echo json_encode( [
+			'error'   => 'Unable to determine work directory. Please ensure extract_path is provided or zip_url is accessible.',
+			'details' => [
+				'session_id'         => $session_id,
+				'attempted_work_dir' => $work_dir,
+				'has_zip_url'        => ! empty( $zip_url ),
+				'has_extract_path'   => ! empty( $input['extract_path'] )
+			]
+		] );
+
+		return;
 	}
 
 	// Double-check the directory exists and has files
@@ -206,6 +251,15 @@ function handle_ai_with_tools( $input, $ollama_api_url ) {
 			'php_files'    => count( $php_files ),
 			'sample_files' => array_slice( $files, 2, 5 ) // Show first few files
 		] );
+	} else {
+		log_error( "Work directory does not exist", [ 'work_dir' => $work_dir ] );
+		http_response_code( 400 );
+		echo json_encode( [
+			'error'    => 'Work directory does not exist',
+			'work_dir' => $work_dir
+		] );
+
+		return;
 	}
 
 	log_info( "Initializing tool registry", [
@@ -214,7 +268,22 @@ function handle_ai_with_tools( $input, $ollama_api_url ) {
 		'readable' => is_readable( $work_dir )
 	] );
 
-	$tool_registry = new ToolRegistry( $work_dir );
+	// Now we can safely create the ToolRegistry with a valid work directory
+	try {
+		$tool_registry = new ToolRegistry( $work_dir );
+	} catch ( Exception $e ) {
+		log_error( "Failed to initialize ToolRegistry", [
+			'error'    => $e->getMessage(),
+			'work_dir' => $work_dir
+		] );
+
+		http_response_code( 500 );
+		echo json_encode( [
+			'error' => 'Failed to initialize tool registry: ' . $e->getMessage()
+		] );
+
+		return;
+	}
 
 	// Convert tools to Ollama format
 	$ollama_tools = array_map( function ( $tool ) {
@@ -435,9 +504,9 @@ function get_directory_structure( $work_dir, $max_depth = 2 ) {
 		return "Directory not accessible: $work_dir\n";
 	}
 
-	$cmd = sprintf( 'find %s -maxdepth %d -type f -name "*.php" | head -20', 
-		escapeshellarg( $work_dir ), 
-		$max_depth 
+	$cmd = sprintf( 'find %s -maxdepth %d -type f -name "*.php" | head -20',
+		escapeshellarg( $work_dir ),
+		$max_depth
 	);
 
 	exec( $cmd, $output );
@@ -445,7 +514,7 @@ function get_directory_structure( $work_dir, $max_depth = 2 ) {
 	$structure = "Files found:\n";
 	foreach ( $output as $file ) {
 		$relative_path = str_replace( $work_dir . '/', '', $file );
-		$structure .= "- $relative_path\n";
+		$structure     .= "- $relative_path\n";
 	}
 
 	return $structure;
@@ -463,9 +532,9 @@ function build_coder_investigation_prompt( $work_dir, $static_context, $wp_call_
 
 	// Add actual directory structure
 	$structure = get_directory_structure( $work_dir );
-	$prompt .= "ACTUAL DIRECTORY STRUCTURE:\n";
-	$prompt .= $structure . "\n";
-	$prompt .= "IMPORTANT: This is the complete directory structure. Work within these files only.\n\n";
+	$prompt    .= "ACTUAL DIRECTORY STRUCTURE:\n";
+	$prompt    .= $structure . "\n";
+	$prompt    .= "IMPORTANT: This is the complete directory structure. Work within these files only.\n\n";
 
 	$prompt .= "SECURITY ISSUE CONTEXT:\n";
 	// Add the security issue details from the original messages
@@ -526,9 +595,9 @@ function build_enhanced_system_prompt_with_wp_call_graph( $work_dir, $static_con
 
 	// Add actual directory structure
 	$structure = get_directory_structure( $work_dir );
-	$prompt .= "ACTUAL DIRECTORY STRUCTURE:\n";
-	$prompt .= $structure . "\n";
-	$prompt .= "IMPORTANT: This is the complete directory structure. Work within these files only.\n\n";
+	$prompt    .= "ACTUAL DIRECTORY STRUCTURE:\n";
+	$prompt    .= $structure . "\n";
+	$prompt    .= "IMPORTANT: This is the complete directory structure. Work within these files only.\n\n";
 
 	if ( $static_context ) {
 		log_debug( "wp-call-graph prompt building: adding analysis results section", [
@@ -881,18 +950,18 @@ function handle_logical_security_discovery( $input, $ollama_api_url, $job_id ) {
 	$max_iterations = $input['config']['max_iterations'] ?? 30;
 
 	// Get work directory using improved logic
-	$work_dir = '';
+	$work_dir   = '';
 	$session_id = $input['session_id'] ?? null;
 
 	log_info( "Determining work directory for logical security discovery", [
 		'has_extract_path_in_input' => isset( $input['extract_path'] ),
-		'extract_path_value' => $input['extract_path'] ?? 'not_set',
-		'has_dependencies' => isset( $input['dependencies'] ),
-		'session_id' => $session_id
+		'extract_path_value'        => $input['extract_path'] ?? 'not_set',
+		'has_dependencies'          => isset( $input['dependencies'] ),
+		'session_id'                => $session_id
 	] );
 
 	// First priority: extract_path directly from input
-	if ( isset( $input['extract_path'] ) && !empty( $input['extract_path'] ) ) {
+	if ( isset( $input['extract_path'] ) && ! empty( $input['extract_path'] ) ) {
 		$work_dir = $input['extract_path'];
 		log_info( "Using extraction path from input for discovery", [ 'work_dir' => $work_dir ] );
 	}
@@ -922,22 +991,26 @@ function handle_logical_security_discovery( $input, $ollama_api_url, $job_id ) {
 				if ( is_dir( $base_path ) ) {
 					$dirs = scandir( $base_path );
 					foreach ( $dirs as $dir ) {
-						if ( $dir === '.' || $dir === '..' ) continue;
+						if ( $dir === '.' || $dir === '..' ) {
+							continue;
+						}
 
 						$full_path = $base_path . '/' . $dir;
 						if ( is_dir( $full_path ) && strpos( $dir, $session_id ) === 0 ) {
 							// Look for subdirectories (plugin directories)
 							$subdirs = scandir( $full_path );
 							foreach ( $subdirs as $subdir ) {
-								if ( $subdir === '.' || $subdir === '..' ) continue;
+								if ( $subdir === '.' || $subdir === '..' ) {
+									continue;
+								}
 
 								$plugin_path = $full_path . '/' . $subdir;
 								if ( is_dir( $plugin_path ) ) {
 									$php_files = glob( $plugin_path . '/*.php' );
-									if ( !empty( $php_files ) ) {
+									if ( ! empty( $php_files ) ) {
 										$work_dir = $plugin_path;
-										log_info( "Found work directory for discovery", [ 
-											'work_dir' => $work_dir,
+										log_info( "Found work directory for discovery", [
+											'work_dir'        => $work_dir,
 											'php_files_count' => count( $php_files )
 										] );
 										break 3;
@@ -948,10 +1021,10 @@ function handle_logical_security_discovery( $input, $ollama_api_url, $job_id ) {
 							// Fallback to main directory if it has PHP files
 							if ( empty( $work_dir ) || ! is_dir( $work_dir ) ) {
 								$php_files = glob( $full_path . '/*.php' );
-								if ( !empty( $php_files ) ) {
+								if ( ! empty( $php_files ) ) {
 									$work_dir = $full_path;
-									log_info( "Found work directory at session path for discovery", [ 
-										'work_dir' => $work_dir,
+									log_info( "Found work directory at session path for discovery", [
+										'work_dir'        => $work_dir,
 										'php_files_count' => count( $php_files )
 									] );
 									break 2;
@@ -1009,7 +1082,7 @@ function handle_logical_security_discovery( $input, $ollama_api_url, $job_id ) {
 		],
 		[
 			'role'    => 'system',
-			'content' => "DIRECTORY CONTEXT:\n" . json_encode( $initial_listing, JSON_PRETTY_PRINT ) . 
+			'content' => "DIRECTORY CONTEXT:\n" . json_encode( $initial_listing, JSON_PRETTY_PRINT ) .
 			             "\nThis is the complete file structure you have access to. Work within these files only."
 		],
 		[
@@ -1110,23 +1183,23 @@ function handle_logical_security_discovery( $input, $ollama_api_url, $job_id ) {
 	// Log discovery completion - Manager will create tasks from the returned data
 	log_info( "Discovery completed, returning vulnerability data to Manager", [
 		'vulnerabilities_found' => count( $final_analysis['vulnerabilities'] ?? [] ),
-		'job_id' => $job_id
+		'job_id'                => $job_id
 	] );
 
 	// Return discovery summary with vulnerability data for Manager to process
 	$response_data = [
 		'response'   => json_encode( [
-			'vulnerabilities' => $final_analysis['vulnerabilities'] ?? [],
+			'vulnerabilities'       => $final_analysis['vulnerabilities'] ?? [],
 			'vulnerabilities_found' => count( $final_analysis['vulnerabilities'] ?? [] ),
 			'summary'               => $final_analysis['summary'] ?? 'Discovery completed',
 			'high_risk_count'       => count( array_filter(
 				$final_analysis['vulnerabilities'] ?? [],
 				fn( $v ) => in_array( $v['severity'] ?? '', [ 'critical', 'high' ] )
 			) ),
-			'analysis_metadata' => [
+			'analysis_metadata'     => [
 				'total_files_analyzed' => count( $all_tool_results ),
 				'discovery_iterations' => $orchestration_iterations,
-				'patterns_searched' => array_keys( $search_patterns )
+				'patterns_searched'    => array_keys( $search_patterns )
 			]
 		] ),
 		'model'      => $coder_model,
@@ -1153,9 +1226,9 @@ function build_discovery_system_prompt( $work_dir, $patterns ) {
 
 	// Add actual directory structure
 	$structure = get_directory_structure( $work_dir );
-	$prompt .= "ACTUAL DIRECTORY STRUCTURE:\n";
-	$prompt .= $structure . "\n";
-	$prompt .= "IMPORTANT: This is the complete directory structure. Work within these files only.\n\n";
+	$prompt    .= "ACTUAL DIRECTORY STRUCTURE:\n";
+	$prompt    .= $structure . "\n";
+	$prompt    .= "IMPORTANT: This is the complete directory structure. Work within these files only.\n\n";
 
 	$prompt .= "Your goal is to discover security vulnerabilities by searching for dangerous patterns.\n\n";
 
@@ -1187,70 +1260,72 @@ function build_discovery_system_prompt( $work_dir, $patterns ) {
  * Updated handle_file_analysis function
  */
 function handle_file_analysis( $input, $ollama_api_url, $job_id ) {
-    log_info( "Starting file analysis for logical security", [
-        'job_id' => $job_id,
-        'file_path' => $input['file_path'] ?? 'unknown',
-        'has_file_content' => isset( $input['file_content'] )
-    ] );
+	log_info( "Starting file analysis for logical security", [
+		'job_id'           => $job_id,
+		'file_path'        => $input['file_path'] ?? 'unknown',
+		'has_file_content' => isset( $input['file_content'] )
+	] );
 
-    // Check if we have file content
-    if ( ! isset( $input['file_content'] ) ) {
-        log_error( "No file content provided for analysis" );
-        NodeResponse::error( 'No file content provided', 400 );
-        return;
-    }
+	// Check if we have file content
+	if ( ! isset( $input['file_content'] ) ) {
+		log_error( "No file content provided for analysis" );
+		NodeResponse::error( 'No file content provided', 400 );
 
-    $coder_model = 'qwen2.5-coder:7b';
+		return;
+	}
 
-    // If this is initial vulnerability scan
-    if ( $input['config']['analysis_mode'] === 'vulnerability_discovery' ) {
-        // Simple analysis - no tools needed
-        $request = [
-            'model'  => $coder_model,
-            'prompt' => $input['prompt'], // Prompt is built by AIStepProcessor
-            'stream' => false,
-            'format' => 'json'
-        ];
+	$coder_model = 'qwen2.5-coder:7b';
 
-        try {
-            $response = call_ollama( $ollama_api_url . '/api/generate', $request );
+	// If this is initial vulnerability scan
+	if ( $input['config']['analysis_mode'] === 'vulnerability_discovery' ) {
+		// Simple analysis - no tools needed
+		$request = [
+			'model'  => $coder_model,
+			'prompt' => $input['prompt'], // Prompt is built by AIStepProcessor
+			'stream' => false,
+			'format' => 'json'
+		];
 
-            $analysis = json_decode( $response['response'] ?? '{}', true );
+		try {
+			$response = call_ollama( $ollama_api_url . '/api/generate', $request );
 
-            NodeResponse::success( [
-                'potential_vulnerabilities' => $analysis['potential_vulnerabilities'] ?? [],
-                'summary' => $analysis['summary'] ?? '',
-                'file_analyzed' => $input['file_path'] ?? null
-            ], [
-                'model' => $coder_model
-            ] );
+			$analysis = json_decode( $response['response'] ?? '{}', true );
 
-        } catch ( Exception $e ) {
-            log_error( "Initial vulnerability scan failed", [ 'error' => $e->getMessage() ] );
-            NodeResponse::error( 'Analysis failed: ' . $e->getMessage(), 500 );
-        }
+			NodeResponse::success( [
+				'potential_vulnerabilities' => $analysis['potential_vulnerabilities'] ?? [],
+				'summary'                   => $analysis['summary'] ?? '',
+				'file_analyzed'             => $input['file_path'] ?? null
+			], [
+				'model' => $coder_model
+			] );
 
-        return;
-    }
+		} catch ( Exception $e ) {
+			log_error( "Initial vulnerability scan failed", [ 'error' => $e->getMessage() ] );
+			NodeResponse::error( 'Analysis failed: ' . $e->getMessage(), 500 );
+		}
 
-    // If this is deep investigation with tools
-    if ( $input['config']['analysis_mode'] === 'vulnerability_investigation' ) {
-        // Get potential vulnerabilities from dependencies
-        $potential_vulns = $input['dependencies']['initial_vulnerability_scan']['potential_vulnerabilities'] ?? [];
+		return;
+	}
 
-        if ( empty( $potential_vulns ) ) {
-            NodeResponse::success( [
-                'vulnerabilities' => [],
-                'summary' => 'No vulnerabilities to investigate'
-            ], [
-                'model' => $coder_model
-            ] );
-            return;
-        }
+	// If this is deep investigation with tools
+	if ( $input['config']['analysis_mode'] === 'vulnerability_investigation' ) {
+		// Get potential vulnerabilities from dependencies
+		$potential_vulns = $input['dependencies']['initial_vulnerability_scan']['potential_vulnerabilities'] ?? [];
 
-        // Now use tools to investigate each potential vulnerability
-        // ... (existing tool-based investigation logic) ...
-    }
+		if ( empty( $potential_vulns ) ) {
+			NodeResponse::success( [
+				'vulnerabilities' => [],
+				'summary'         => 'No vulnerabilities to investigate'
+			], [
+				'model' => $coder_model
+			] );
+
+			return;
+		}
+
+		// Now use tools to investigate each potential vulnerability
+		// ... (existing tool-based investigation logic) ...
+	}
 }
 
 /**
@@ -1295,26 +1370,27 @@ function build_file_analysis_system_prompt( $work_dir, $file_path ) {
 
 /**
  * Search for pattern within a specific file
- * 
+ *
  * @param string $file_path Relative path to the file (will be resolved using FilePathResolver)
  * @param string $pattern Pattern to search for
  * @param string $work_dir Base directory for path resolution
+ *
  * @return array Array of matches with line numbers and context
  */
 function search_in_file( $file_path, $pattern, $work_dir = '' ) {
 	// Use FilePathResolver for consistent path handling
 	require_once __DIR__ . '/../lib/FilePathResolver.php';
-	$resolver = new QIT_CLI\AI\WebServer\FilePathResolver($work_dir);
+	$resolver = new QIT_CLI\AI\WebServer\FilePathResolver( $work_dir );
 
 	try {
 		$content = $resolver->readFile( $file_path );
-		$lines = explode( "\n", $content );
+		$lines   = explode( "\n", $content );
 		$matches = [];
 
 		foreach ( $lines as $line_num => $line ) {
 			if ( preg_match( '/' . preg_quote( $pattern, '/' ) . '/i', $line ) ) {
 				$matches[] = [
-					'line' => $line_num + 1,
+					'line'    => $line_num + 1,
 					'content' => trim( $line ),
 					'context' => array_slice( $lines, max( 0, $line_num - 1 ), 3 )
 				];
@@ -1324,7 +1400,7 @@ function search_in_file( $file_path, $pattern, $work_dir = '' ) {
 		return $matches;
 	} catch ( Exception $e ) {
 		return [
-			'error' => 'File not found: ' . $file_path,
+			'error'   => 'File not found: ' . $file_path,
 			'message' => $e->getMessage()
 		];
 	}

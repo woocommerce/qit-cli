@@ -9,19 +9,36 @@ use RecursiveIteratorIterator;
 require_once __DIR__ . '/FilePathResolver.php';
 
 /**
- * Tool Registry for AI function calling - embedded to avoid file dependencies
+ * Tool Registry for AI function calling - with proper directory constraints
  */
 class ToolRegistry {
 	private array $tools = [];
 	private FilePathResolver $resolver;
+	private string $workDirectory;
 
 	public function __construct( string $work_directory = '' ) {
-		$this->resolver = new FilePathResolver($work_directory);
+		// Ensure work directory is set and valid
+		if ( empty( $work_directory ) ) {
+			throw new Exception( 'Work directory must be specified' );
+		}
+
+		// Normalize and validate the work directory
+		$this->workDirectory = rtrim( $work_directory, '/\\' );
+
+		if ( ! is_dir( $this->workDirectory ) ) {
+			throw new Exception( "Work directory does not exist: {$this->workDirectory}" );
+		}
+
+		$this->resolver = new FilePathResolver( $this->workDirectory );
 		$this->register_default_tools();
 	}
 
 	public function set_work_directory( string $work_directory ): void {
-		$this->resolver = new FilePathResolver($work_directory);
+		if ( ! is_dir( $work_directory ) ) {
+			throw new Exception( "Work directory does not exist: $work_directory" );
+		}
+		$this->workDirectory = rtrim( $work_directory, '/\\' );
+		$this->resolver      = new FilePathResolver( $this->workDirectory );
 	}
 
 	public function register_tool( string $name, callable $handler ): void {
@@ -40,7 +57,6 @@ class ToolRegistry {
 		}
 	}
 
-
 	public function get_available_tools(): array {
 		return array_keys( $this->tools );
 	}
@@ -57,8 +73,8 @@ class ToolRegistry {
 			}
 
 			try {
-				$content = $this->resolver->readFile($path);
-				$lines = explode( "\n", $content );
+				$content = $this->resolver->readFile( $path );
+				$lines   = explode( "\n", $content );
 
 				// Apply line filtering if specified
 				if ( $start_line !== null || $end_line !== null ) {
@@ -69,9 +85,9 @@ class ToolRegistry {
 				}
 
 				return [
-					'content'    => $content,
-					'path'       => $path,
-					'lines_read' => [ $start_line ?? 1, $end_line ?? substr_count( $content, "\n" ) + 1 ],
+					'content'     => $content,
+					'path'        => $path,
+					'lines_read'  => [ $start_line ?? 1, $end_line ?? substr_count( $content, "\n" ) + 1 ],
 					'total_lines' => count( $lines )
 				];
 			} catch ( Exception $e ) {
@@ -83,44 +99,101 @@ class ToolRegistry {
 		$this->register_tool( 'search_pattern', function ( $params ) {
 			$pattern     = $params['pattern'] ?? null;
 			$max_results = $params['max_results'] ?? 50;
+			$directory   = $params['directory'] ?? '';
 
 			if ( ! $pattern ) {
 				return [ 'error' => 'Pattern is required' ];
 			}
 
 			$results = [];
-			$baseDir = $this->resolver->toAbsolute('');
 
-			$iterator = new RecursiveIteratorIterator(
-				new RecursiveDirectoryIterator( $baseDir, RecursiveDirectoryIterator::SKIP_DOTS )
-			);
+			// CRITICAL: Always use the work directory as base
+			// Never allow searching outside the plugin directory
+			$searchDir = $this->workDirectory;
 
-			foreach ( $iterator as $file ) {
-				if ( ! $file->isFile() || $file->getExtension() !== 'php' ) continue;
+			// If a subdirectory is specified, ensure it's within bounds
+			if ( ! empty( $directory ) && $directory !== '.' ) {
+				$subDir = $this->resolver->toAbsolute( $directory );
 
-				$relativePath = $this->resolver->toRelative( $file->getPathname() );
-				$content = file_get_contents( $file->getPathname() );
-				$lines = explode( "\n", $content );
+				// Verify the subdirectory is within our work directory
+				$realSearchDir = realpath( $searchDir );
+				$realSubDir    = realpath( $subDir );
 
-				foreach ( $lines as $lineNum => $line ) {
-					if ( preg_match( '/' . preg_quote( $pattern, '/' ) . '/i', $line ) ) {
-						$results[] = [
-							'file'    => $relativePath,
-							'line'    => $lineNum + 1,
-							'content' => trim( $line ),
-							'context' => $this->getContext( $lines, $lineNum )
-						];
+				if ( $realSubDir === false || strpos( $realSubDir, $realSearchDir ) !== 0 ) {
+					return [ 'error' => 'Invalid directory: ' . $directory ];
+				}
 
-						if ( count( $results ) >= $max_results ) {
-							return [
-								'pattern'   => $pattern,
-								'results'   => $results,
-								'count'     => count( $results ),
-								'truncated' => true
+				$searchDir = $subDir;
+			}
+
+			// Verify once more that we're searching within bounds
+			if ( ! is_dir( $searchDir ) ) {
+				return [ 'error' => 'Search directory not found' ];
+			}
+
+			try {
+				$iterator = new RecursiveIteratorIterator(
+					new RecursiveDirectoryIterator(
+						$searchDir,
+						RecursiveDirectoryIterator::SKIP_DOTS | RecursiveDirectoryIterator::FOLLOW_SYMLINKS
+					),
+					RecursiveIteratorIterator::SELF_FIRST,
+					RecursiveIteratorIterator::CATCH_GET_CHILD
+				);
+
+				// Set max depth to prevent going too deep
+				$iterator->setMaxDepth( 10 );
+
+				foreach ( $iterator as $file ) {
+					// Skip if not a file or not PHP
+					if ( ! $file->isFile() || $file->getExtension() !== 'php' ) {
+						continue;
+					}
+
+					// Double-check the file is within our work directory
+					$filePath     = $file->getPathname();
+					$realFilePath = realpath( $filePath );
+					$realWorkDir  = realpath( $this->workDirectory );
+
+					if ( $realFilePath === false || strpos( $realFilePath, $realWorkDir ) !== 0 ) {
+						continue; // Skip files outside our work directory
+					}
+
+					$relativePath = $this->resolver->toRelative( $filePath );
+
+					// Read file content
+					$content = @file_get_contents( $filePath );
+					if ( $content === false ) {
+						continue; // Skip unreadable files
+					}
+
+					$lines = explode( "\n", $content );
+
+					foreach ( $lines as $lineNum => $line ) {
+						if ( preg_match( '/' . preg_quote( $pattern, '/' ) . '/i', $line ) ) {
+							$results[] = [
+								'file'    => $relativePath,
+								'line'    => $lineNum + 1,
+								'content' => trim( $line ),
+								'context' => $this->getContext( $lines, $lineNum )
 							];
+
+							if ( count( $results ) >= $max_results ) {
+								return [
+									'pattern'   => $pattern,
+									'results'   => $results,
+									'count'     => count( $results ),
+									'truncated' => true
+								];
+							}
 						}
 					}
 				}
+			} catch ( Exception $e ) {
+				return [
+					'error'   => 'Search failed: ' . $e->getMessage(),
+					'pattern' => $pattern
+				];
 			}
 
 			return [
@@ -138,9 +211,17 @@ class ToolRegistry {
 			// Normalize directory path
 			$relativeDir = trim( $directory, '/' );
 			if ( $relativeDir === '.' || $relativeDir === '' ) {
-				$absoluteDir = $this->resolver->toAbsolute( '' );
+				$absoluteDir = $this->workDirectory;
 			} else {
 				$absoluteDir = $this->resolver->toAbsolute( $relativeDir );
+			}
+
+			// Verify directory is within bounds
+			$realWorkDir = realpath( $this->workDirectory );
+			$realDir     = realpath( $absoluteDir );
+
+			if ( $realDir === false || strpos( $realDir, $realWorkDir ) !== 0 ) {
+				return [ 'error' => 'Directory not found or outside bounds: ' . $directory ];
 			}
 
 			if ( ! is_dir( $absoluteDir ) ) {
@@ -148,12 +229,19 @@ class ToolRegistry {
 			}
 
 			$files = [];
-			$dirs = [];
+			$dirs  = [];
 
-			foreach ( scandir( $absoluteDir ) as $item ) {
-				if ( $item === '.' || $item === '..' ) continue;
+			$items = @scandir( $absoluteDir );
+			if ( $items === false ) {
+				return [ 'error' => 'Cannot read directory: ' . $directory ];
+			}
 
-				$itemPath = $absoluteDir . '/' . $item;
+			foreach ( $items as $item ) {
+				if ( $item === '.' || $item === '..' ) {
+					continue;
+				}
+
+				$itemPath     = $absoluteDir . '/' . $item;
 				$relativePath = $this->resolver->toRelative( $itemPath );
 
 				if ( is_dir( $itemPath ) ) {
@@ -168,10 +256,10 @@ class ToolRegistry {
 			}
 
 			return [
-				'directory'        => $relativeDir === '' ? '.' : $relativeDir,
-				'files'            => $files,
-				'directories'      => $dirs,
-				'total_files'      => count( $files ),
+				'directory'         => $relativeDir === '' ? '.' : $relativeDir,
+				'files'             => $files,
+				'directories'       => $dirs,
+				'total_files'       => count( $files ),
 				'total_directories' => count( $dirs )
 			];
 		} );
@@ -179,13 +267,13 @@ class ToolRegistry {
 
 	private function getContext( array $lines, int $lineNum, int $contextLines = 2 ): array {
 		$start = max( 0, $lineNum - $contextLines );
-		$end = min( count( $lines ) - 1, $lineNum + $contextLines );
+		$end   = min( count( $lines ) - 1, $lineNum + $contextLines );
 
 		$context = [];
-		for ( $i = $start; $i <= $end; $i++ ) {
+		for ( $i = $start; $i <= $end; $i ++ ) {
 			$context[] = [
 				'line'    => $i + 1,
-				'content' => $lines[$i],
+				'content' => $lines[ $i ],
 				'current' => $i === $lineNum
 			];
 		}
