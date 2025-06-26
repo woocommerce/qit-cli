@@ -19,8 +19,6 @@ ini_set( 'display_errors', 0 );
 // Include the ToolRegistry class
 require_once __DIR__ . '/lib/ToolRegistry.php';
 
-use QIT_CLI\AI\WebServer\ToolRegistry;
-
 // Configure logging
 $router_log_file = '{{LOG_FILE}}';
 
@@ -201,12 +199,12 @@ if ( $input ) {
 	// Debug execution context availability
 	if ( isset( $input['execution_context'] ) ) {
 		log_debug( "Execution context provided", [
-			'context_keys'        => array_keys( $input['execution_context'] ),
-			'has_symbol'          => isset( $input['execution_context']['symbol'] ),
-			'has_public_access'   => isset( $input['execution_context']['has_public_access'] ),
+			'context_keys'                  => array_keys( $input['execution_context'] ),
+			'has_symbol'                    => isset( $input['execution_context']['symbol'] ),
+			'has_public_access'             => isset( $input['execution_context']['has_public_access'] ),
 			'has_privilege_escalation_risk' => isset( $input['execution_context']['susceptible_to_privilege_escalation'] ),
-			'has_wordpress_hooks' => isset( $input['execution_context']['wordpress_hooks'] ),
-			'has_entry_points'    => isset( $input['execution_context']['entry_points'] )
+			'has_wordpress_hooks'           => isset( $input['execution_context']['wordpress_hooks'] ),
+			'has_entry_points'              => isset( $input['execution_context']['entry_points'] )
 		] );
 	} else {
 		log_warning( "No execution context in request", [
@@ -226,43 +224,44 @@ if ( $input ) {
 log_info( "Routing request", [ 'uri' => $uri, 'method' => $method ] );
 
 // Include handler files
-require_once __DIR__ . '/handlers/basic_prompt.php';
-require_once __DIR__ . '/handlers/code_analysis.php';
+// Include handler classes instead of files
+require_once __DIR__ . '/handlers/BasicPromptHandler.php';
+require_once __DIR__ . '/handlers/LogicalSecurityAnalysisHandler.php';
+require_once __DIR__ . '/handlers/SecurityAnalysisHandler.php';
+// Keep these as they are (until converted to classes)
 require_once __DIR__ . '/handlers/zip_extraction.php';
-require_once __DIR__ . '/handlers/file_reader.php';
 require_once __DIR__ . '/handlers/helpers.php';
-require_once __DIR__ . '/handlers/security_analysis.php';
-require_once __DIR__ . '/handlers/logical_security_analysis.php';
+
+use QIT_CLI\AI\WebServer\Handlers\BasicPromptHandler;
+use QIT_CLI\AI\WebServer\Handlers\LogicalSecurityAnalysisHandler;
+use QIT_CLI\AI\WebServer\Handlers\SecurityAnalysisHandler;
+use QIT_CLI\AI\WebServer\Handlers\ZipExtractionHandler;
+
+// Create handler instances
+$basicPromptHandler      = new BasicPromptHandler( '{{OLLAMA_API_URL}}' );
+$logicalSecurityHandler  = new LogicalSecurityAnalysisHandler( '{{OLLAMA_API_URL}}' );
+$securityAnalysisHandler = new SecurityAnalysisHandler( '{{OLLAMA_API_URL}}' );
+$zipExtractionHandler    = new ZipExtractionHandler( '{{OLLAMA_API_URL}}' );
 
 switch ( $uri ) {
 	case '/basic-prompt':
 		log_info( "Handling basic prompt request" );
-		handle_ai_process( $input, '{{OLLAMA_API_URL}}' );
-		break;
-
-	case '/analyze-code':
-		log_info( "Handling code analysis request" );
-		handle_code_analysis( $input );
+		$basicPromptHandler->handle( $input );
 		break;
 
 	case '/extract-zip':
 		log_info( "Handling ZIP extraction request" );
-		handle_zip_extraction( $input );
-		break;
-
-	case '/read-file':
-		log_info( "Handling file reading request" );
-		handle_file_reading( $input );
+		$zipExtractionHandler->handle( $input );
 		break;
 
 	case '/security-analysis':
 		log_info( "Handling security analysis request" );
-		handle_general_security_analysis( $input, '{{OLLAMA_API_URL}}' );
+		$securityAnalysisHandler->handle( $input );
 		break;
 
 	case '/logical-security-analysis':
 		log_info( "Handling logical security analysis request" );
-		handle_logical_security_discovery( $input, '{{OLLAMA_API_URL}}', $input['job_id'] ?? null );
+		$logicalSecurityHandler->handleDiscovery( $input, $input['job_id'] );
 		break;
 
 	default:

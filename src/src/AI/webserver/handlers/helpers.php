@@ -4,36 +4,6 @@
  */
 
 /**
- * Check if Ollama CLI is available
- */
-function is_ollama_available() {
-	$process = proc_open( 'which ollama', [
-		0 => [ 'pipe', 'r' ],
-		1 => [ 'pipe', 'w' ],
-		2 => [ 'pipe', 'w' ]
-	], $pipes );
-
-	if ( is_resource( $process ) ) {
-		fclose( $pipes[0] );
-		$output = stream_get_contents( $pipes[1] );
-		fclose( $pipes[1] );
-		fclose( $pipes[2] );
-		$return_code = proc_close( $process );
-
-		return $return_code === 0 && ! empty( trim( $output ) );
-	}
-
-	return false;
-}
-
-/**
- * Get Ollama API base URL
- */
-function get_ollama_api_url() {
-	return getenv( 'OLLAMA_API_URL' ) ?: 'http://localhost:11434';
-}
-
-/**
  * Helper function to call Ollama API
  */
 function call_ollama( $url, $data ) {
@@ -148,27 +118,6 @@ function remove_directory_safely( $dir ) {
 }
 
 /**
- * Generate a secure random token
- */
-function generate_token( $length = 32 ) {
-	return bin2hex( random_bytes( $length ) );
-}
-
-/**
- * Validate file path to prevent directory traversal
- */
-function validate_file_path( $path, $base_dir ) {
-	$real_base = realpath( $base_dir );
-	$real_path = realpath( $base_dir . '/' . ltrim( $path, '/' ) );
-
-	if ( $real_path === false || strpos( $real_path, $real_base ) !== 0 ) {
-		return false;
-	}
-
-	return $real_path;
-}
-
-/**
  * Format bytes to human readable format
  */
 function format_bytes( $bytes, $precision = 2 ) {
@@ -248,72 +197,4 @@ function cleanup_old_sessions() {
 		'dirs_skipped' => $dirs_skipped,
 		'dirs_invalid' => $dirs_invalid
 	] );
-}
-
-/**
- * Get memory usage information
- */
-function get_memory_info() {
-	return [
-		'current'           => memory_get_usage( true ),
-		'current_formatted' => format_bytes( memory_get_usage( true ) ),
-		'peak'              => memory_get_peak_usage( true ),
-		'peak_formatted'    => format_bytes( memory_get_peak_usage( true ) ),
-		'limit'             => ini_get( 'memory_limit' )
-	];
-}
-
-/**
- * Simple rate limiter
- */
-function check_rate_limit( $key, $max_requests = 10, $window_seconds = 60 ) {
-	$rate_limit_file = sys_get_temp_dir() . '/qit_rate_' . md5( $key ) . '.json';
-
-	$now  = time();
-	$data = [];
-
-	if ( file_exists( $rate_limit_file ) ) {
-		$data = json_decode( file_get_contents( $rate_limit_file ), true ) ?: [];
-	}
-
-	// Clean old entries
-	$data = array_filter( $data, function ( $timestamp ) use ( $now, $window_seconds ) {
-		return ( $now - $timestamp ) < $window_seconds;
-	} );
-
-	if ( count( $data ) >= $max_requests ) {
-		return false; // Rate limit exceeded
-	}
-
-	// Add current request
-	$data[] = $now;
-
-	// Save updated data
-	file_put_contents( $rate_limit_file, json_encode( array_values( $data ) ) );
-
-	return true;
-}
-
-/**
- * Sanitize user input for logging
- */
-function sanitize_for_log( $data, $max_length = 1000 ) {
-	if ( is_string( $data ) ) {
-		return substr( $data, 0, $max_length ) . ( strlen( $data ) > $max_length ? '...' : '' );
-	}
-
-	if ( is_array( $data ) ) {
-		$sanitized = [];
-		foreach ( $data as $key => $value ) {
-			if ( in_array( $key, [ 'password', 'token', 'secret', 'api_key' ] ) ) {
-				$sanitized[ $key ] = '***REDACTED***';
-			} else {
-				$sanitized[ $key ] = sanitize_for_log( $value, $max_length );
-			}
-		}
-
-		return $sanitized;
-	}
-
-	return $data;
 }
