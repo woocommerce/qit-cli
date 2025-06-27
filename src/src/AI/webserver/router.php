@@ -260,7 +260,9 @@ if ( $input ) {
 }
 
 // Initialize NodeResponse for performance tracking
+use QIT_AI_Webserver\Handlers\FileReadingHandler;
 use QIT_AI_Webserver\NodeResponse;
+
 NodeResponse::init();
 
 // Route to appropriate handler
@@ -282,6 +284,7 @@ $logicalSecurityHandler  = new LogicalSecurityAnalysisHandler( '{{OLLAMA_API_URL
 $securityAnalysisHandler = new SecurityAnalysisHandler( '{{OLLAMA_API_URL}}' );
 $zipExtractionHandler    = new ZipExtractionHandler( '{{OLLAMA_API_URL}}' );
 $promptWithToolsHandler  = new PromptWithToolsHandler( '{{OLLAMA_API_URL}}' );
+$fileReadingHandler      = new FileReadingHandler( '{{OLLAMA_API_URL}}' );
 
 switch ( $uri ) {
 	case '/basic-prompt':
@@ -304,6 +307,11 @@ switch ( $uri ) {
 		$securityAnalysisHandler->handle( $input );
 		break;
 
+	case '/read-file':
+		log_info( "Handling file reading request" );
+		$fileReadingHandler->handle( $input );
+		break;
+
 	case '/logical-security-analysis':
 		log_info( "Handling logical security analysis request" );
 		$logicalSecurityHandler->handleDiscovery( $input, $input['job_id'] );
@@ -312,7 +320,7 @@ switch ( $uri ) {
 	default:
 		log_warning( "Route not found", [ 'uri' => $uri ] );
 		http_response_code( 404 );
-		echo json_encode( [ 'error' => 'Not found' ] );
+		echo json_encode( [ 'error' => "Route $uri not found on Node." ] );
 		exit;
 }
 
