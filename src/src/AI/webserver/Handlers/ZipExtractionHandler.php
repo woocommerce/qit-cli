@@ -32,9 +32,11 @@ class ZipExtractionHandler extends AbstractHandler {
 		] );
 
 		// Parse the input
+		NodeResponse::mark( 'input_parsing' );
 		$params = json_decode( $input['prompt'], true );
 
 		// Validate required parameters
+		NodeResponse::mark( 'parameter_validation' );
 		if ( ! $this->validateParameters( $params ) ) {
 			return;
 		}
@@ -43,6 +45,7 @@ class ZipExtractionHandler extends AbstractHandler {
 		$extractSubdir = $params['extract_subdir'];
 
 		// Validate and sanitize the extraction subdirectory
+		NodeResponse::mark( 'path_sanitization' );
 		$sanitizedSubdir = $this->sanitizeExtractionPath( $extractSubdir );
 		if ( $sanitizedSubdir === null ) {
 			return;
@@ -53,12 +56,14 @@ class ZipExtractionHandler extends AbstractHandler {
 		$extractTo = $tempBase . '/' . $sanitizedSubdir;
 
 		// Validate extraction path security
+		NodeResponse::mark( 'security_validation' );
 		if ( ! $this->validateExtractionSecurity( $tempBase, $extractTo, $params['extract_subdir'], $sanitizedSubdir ) ) {
 			return;
 		}
 
 		// Perform extraction
 		try {
+			NodeResponse::mark( 'extraction_start' );
 			$this->performExtraction( $zipUrl, $extractTo, $params );
 		} catch ( Exception $e ) {
 			$this->handleExtractionError( $e );
@@ -495,13 +500,16 @@ class ZipExtractionHandler extends AbstractHandler {
 			] );
 		}
 
-		NodeResponse::success( [
-			'extract_path'    => $actualExtractPath,
-			'files_extracted' => $fileCount,
-			'php_files_found' => count( $phpFiles ),
-			'total_files'     => $totalFiles,
-			'session_id'      => $params['session_id'] ?? md5( $actualExtractPath )
-		] );
+		// Use NodeResponse::extraction for standardized extraction response
+		NodeResponse::extraction(
+			$actualExtractPath,
+			[
+				'files_extracted' => $fileCount,
+				'php_files_found' => count( $phpFiles ),
+				'total_files'     => $totalFiles
+			],
+			$params['session_id'] ?? md5( $actualExtractPath )
+		);
 	}
 
 	/**

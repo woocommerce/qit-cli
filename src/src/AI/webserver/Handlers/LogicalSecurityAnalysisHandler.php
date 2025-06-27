@@ -31,10 +31,9 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 
 		if ( ! $jobId ) {
 			$this->log_error( "Missing job_id" );
-			http_response_code( 400 );
-			echo json_encode( [ 'error' => 'Missing required job_id parameter' ] );
-
-			return;
+			NodeResponse::error( 'Missing required job_id parameter', 400, [
+				'job_id' => $jobId
+			] );
 		}
 
 		// Check if this is a discovery or file analysis mode
@@ -44,8 +43,10 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 			} elseif ( in_array( $input['config']['analysis_mode'], [ 'vulnerability_discovery', 'vulnerability_investigation' ] ) ) {
 				$this->handleFileAnalysis( $input, $jobId );
 			} else {
-				http_response_code( 400 );
-				echo json_encode( [ 'error' => 'Invalid analysis_mode' ] );
+				NodeResponse::error( 'Invalid analysis_mode', 400, [
+					'job_id'        => $jobId,
+					'analysis_mode' => $input['config']['analysis_mode']
+				] );
 			}
 		} else {
 			// Default to discovery if no mode specified
@@ -78,14 +79,12 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 				'diagnostics' => ExtractPathResolver::getDiagnosticMessage( $input )
 			] );
 
-			http_response_code( 400 );
-			echo json_encode( [
-				'error'       => $e->getMessage(),
+			NodeResponse::error( $e->getMessage(), 400, [
+				'job_id'      => $jobId,
+				'session_id'  => $sessionId,
 				'help'        => 'Ensure extract_path is provided from zip extraction step',
 				'diagnostics' => ExtractPathResolver::getDiagnosticMessage( $input )
 			] );
-
-			return;
 		}
 
 		// Initialize tool registry
@@ -120,6 +119,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		];
 
 		// Discovery loop
+		NodeResponse::mark( 'discovery_loop_start' );
 		$allToolResults          = [];
 		$orchestrationIterations = 0;
 
@@ -142,6 +142,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 			}
 
 			// Execute searches
+			NodeResponse::mark( "search_iteration_$orchestrationIterations" );
 			$searchResults  = $this->executeSearches( $searchPlan['search_plan'], $toolRegistry );
 			$allToolResults = array_merge( $allToolResults, $searchResults );
 
@@ -161,6 +162,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		}
 
 		// Get final analysis
+		NodeResponse::mark( 'final_analysis' );
 		$finalAnalysis = $this->getFinalAnalysis( $coderConversation );
 
 		$this->log_info( "Discovery completed, returning vulnerability data to Manager", [
@@ -168,29 +170,33 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 			'job_id'                => $jobId
 		] );
 
-		// Return discovery summary
-		$responseData = [
-			'response'   => json_encode( [
-				'vulnerabilities'       => $finalAnalysis['vulnerabilities'] ?? [],
-				'vulnerabilities_found' => count( $finalAnalysis['vulnerabilities'] ?? [] ),
-				'summary'               => $finalAnalysis['summary'] ?? 'Discovery completed',
-				'high_risk_count'       => count( array_filter(
-					$finalAnalysis['vulnerabilities'] ?? [],
-					fn( $v ) => in_array( $v['severity'] ?? '', [ 'critical', 'high' ] )
-				) ),
-				'analysis_metadata'     => [
-					'total_files_analyzed' => count( $allToolResults ),
-					'discovery_iterations' => $orchestrationIterations,
-					'patterns_searched'    => array_keys( $searchPatterns )
-				]
-			] ),
-			'model'      => $this->coderModel,
-			'iterations' => $orchestrationIterations,
-			'tool_calls' => $allToolResults,
-			'timestamp'  => time()
-		];
+		// Prepare response data for NodeResponse::toolPrompt
+		$responseContent = json_encode( [
+			'vulnerabilities'       => $finalAnalysis['vulnerabilities'] ?? [],
+			'vulnerabilities_found' => count( $finalAnalysis['vulnerabilities'] ?? [] ),
+			'summary'               => $finalAnalysis['summary'] ?? 'Discovery completed',
+			'high_risk_count'       => count( array_filter(
+				$finalAnalysis['vulnerabilities'] ?? [],
+				fn( $v ) => in_array( $v['severity'] ?? '', [ 'critical', 'high' ] )
+			) ),
+			'analysis_metadata'     => [
+				'total_files_analyzed' => count( $allToolResults ),
+				'discovery_iterations' => $orchestrationIterations,
+				'patterns_searched'    => array_keys( $searchPatterns )
+			]
+		] );
 
-		echo json_encode( $responseData );
+		// Use NodeResponse::toolPrompt for standardized response
+		NodeResponse::toolPrompt(
+			$responseContent,
+			$allToolResults,
+			$this->coderModel,
+			[
+				'job_id'     => $jobId,
+				'session_id' => $sessionId,
+				'iterations' => $orchestrationIterations
+			]
+		);
 	}
 
 	/**

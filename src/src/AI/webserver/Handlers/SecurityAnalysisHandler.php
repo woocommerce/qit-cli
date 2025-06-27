@@ -39,10 +39,9 @@ class SecurityAnalysisHandler extends AbstractHandler {
 			$jobId = $input['job_id'] ?? null;
 			if ( ! $jobId ) {
 				$this->log_error( "Missing job_id for discovery mode" );
-				http_response_code( 400 );
-				echo json_encode( [ 'error' => 'Missing required job_id parameter for discovery mode' ] );
-
-				return;
+				NodeResponse::error( 'Missing required job_id parameter for discovery mode', 400, [
+					'job_id' => $jobId
+				] );
 			}
 
 			$this->logicalHandler->handleDiscovery( $input, $jobId );
@@ -57,10 +56,9 @@ class SecurityAnalysisHandler extends AbstractHandler {
 			$jobId = $input['job_id'] ?? null;
 			if ( ! $jobId ) {
 				$this->log_error( "Missing job_id for file analysis mode" );
-				http_response_code( 400 );
-				echo json_encode( [ 'error' => 'Missing required job_id parameter for file analysis mode' ] );
-
-				return;
+				NodeResponse::error( 'Missing required job_id parameter for file analysis mode', 400, [
+					'job_id' => $jobId
+				] );
 			}
 
 			$this->logicalHandler->handleFileAnalysis( $input, $jobId );
@@ -90,6 +88,7 @@ class SecurityAnalysisHandler extends AbstractHandler {
 		$staticContext  = $input['static_context'] ?? null;
 
 		// Extract wp-call-graph results
+		NodeResponse::mark( 'wp_call_graph_extraction' );
 		$wpCallGraphData = $this->extractWpCallGraphData( $input );
 
 		$this->log_info( "Starting orchestrated AI analysis", [
@@ -104,6 +103,7 @@ class SecurityAnalysisHandler extends AbstractHandler {
 		] );
 
 		// Resolve work directory
+		NodeResponse::mark( 'path_resolution' );
 		try {
 			$workDir = ExtractPathResolver::resolve( $input );
 			$this->log_info( "Work directory resolved", [ 'work_dir' => $workDir ] );
@@ -113,14 +113,11 @@ class SecurityAnalysisHandler extends AbstractHandler {
 				'diagnostics' => ExtractPathResolver::getDiagnosticMessage( $input )
 			] );
 
-			http_response_code( 400 );
-			echo json_encode( [
-				'error'       => $e->getMessage(),
+			NodeResponse::error( $e->getMessage(), 400, [
+				'job_id'      => $input['job_id'] ?? null,
 				'help'        => 'Ensure extract_path is provided from zip extraction step',
 				'diagnostics' => ExtractPathResolver::getDiagnosticMessage( $input )
 			] );
-
-			return;
 		}
 
 		// Validate work directory
@@ -129,6 +126,7 @@ class SecurityAnalysisHandler extends AbstractHandler {
 		}
 
 		// Initialize tool registry
+		NodeResponse::mark( 'tool_registry_init' );
 		try {
 			$toolRegistry = new ToolRegistry( $workDir );
 		} catch ( Exception $e ) {
@@ -137,12 +135,10 @@ class SecurityAnalysisHandler extends AbstractHandler {
 				'work_dir' => $workDir
 			] );
 
-			http_response_code( 500 );
-			echo json_encode( [
-				'error' => 'Failed to initialize tool registry: ' . $e->getMessage()
+			NodeResponse::error( 'Failed to initialize tool registry: ' . $e->getMessage(), 500, [
+				'job_id'   => $input['job_id'] ?? null,
+				'work_dir' => $workDir
 			] );
-
-			return;
 		}
 
 		// Convert tools to Ollama format
@@ -172,6 +168,7 @@ class SecurityAnalysisHandler extends AbstractHandler {
 		];
 
 		// Run orchestration loop
+		NodeResponse::mark( 'orchestration_loop' );
 		$results = $this->runOrchestrationLoop(
 			$coderModel,
 			$coderConversation,
@@ -179,22 +176,23 @@ class SecurityAnalysisHandler extends AbstractHandler {
 			$wpCallGraphData
 		);
 
-		// Return the complete analysis
-		$responseData = [
-			'response'              => $results['final_analysis'],
-			'model'                 => $coderModel,
-			'iterations'            => $results['iterations'],
-			'tool_calls'            => $results['tool_calls'],
-			'wp_call_graph_context' => $staticContext,
-			'orchestration'         => [
-				'coder_model' => $coderModel,
-				'tools_model' => $toolsModel,
-				'loops'       => $results['iterations']
-			],
-			'timestamp'             => time()
-		];
-
-		echo json_encode( $responseData );
+		// Use NodeResponse::toolPrompt for standardized response
+		NodeResponse::toolPrompt(
+			$results['final_analysis'],
+			$results['tool_calls'],
+			$coderModel,
+			[
+				'job_id'                => $input['job_id'] ?? null,
+				'iterations'            => $results['iterations'],
+				'wp_call_graph_context' => $staticContext,
+				'orchestration'         => [
+					'coder_model' => $coderModel,
+					'tools_model' => $toolsModel,
+					'loops'       => $results['iterations']
+				],
+				'session_id'            => $sessionId
+			]
+		);
 	}
 
 	/**
@@ -238,13 +236,9 @@ class SecurityAnalysisHandler extends AbstractHandler {
 	private function validateWorkDirectory( string $workDir ): bool {
 		if ( ! is_dir( $workDir ) ) {
 			$this->log_error( "Work directory does not exist", [ 'work_dir' => $workDir ] );
-			http_response_code( 400 );
-			echo json_encode( [
-				'error'    => 'Work directory does not exist',
+			NodeResponse::error( 'Work directory does not exist', 400, [
 				'work_dir' => $workDir
 			] );
-
-			return false;
 		}
 
 		$files    = scandir( $workDir );

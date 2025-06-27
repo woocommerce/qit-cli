@@ -259,6 +259,10 @@ if ( $input ) {
 	] );
 }
 
+// Initialize NodeResponse for performance tracking
+use QIT_AI_Webserver\NodeResponse;
+NodeResponse::init();
+
 // Route to appropriate handler
 log_info( "Routing request", [ 'uri' => $uri, 'method' => $method ] );
 
@@ -268,6 +272,7 @@ require_once __DIR__ . '/Handlers/helpers.php';
 
 use QIT_AI_Webserver\Handlers\BasicPromptHandler;
 use QIT_AI_Webserver\Handlers\LogicalSecurityAnalysisHandler;
+use QIT_AI_Webserver\Handlers\PromptWithToolsHandler;
 use QIT_AI_Webserver\Handlers\SecurityAnalysisHandler;
 use QIT_AI_Webserver\Handlers\ZipExtractionHandler;
 
@@ -276,11 +281,17 @@ $basicPromptHandler      = new BasicPromptHandler( '{{OLLAMA_API_URL}}' );
 $logicalSecurityHandler  = new LogicalSecurityAnalysisHandler( '{{OLLAMA_API_URL}}' );
 $securityAnalysisHandler = new SecurityAnalysisHandler( '{{OLLAMA_API_URL}}' );
 $zipExtractionHandler    = new ZipExtractionHandler( '{{OLLAMA_API_URL}}' );
+$promptWithToolsHandler  = new PromptWithToolsHandler( '{{OLLAMA_API_URL}}' );
 
 switch ( $uri ) {
 	case '/basic-prompt':
 		log_info( "Handling basic prompt request" );
 		$basicPromptHandler->handle( $input );
+		break;
+
+	case '/prompt-with-tools':
+		log_info( "Handling prompt with tools request" );
+		$promptWithToolsHandler->handle( $input );
 		break;
 
 	case '/extract-zip':

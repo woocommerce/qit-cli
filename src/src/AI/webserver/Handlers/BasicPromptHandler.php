@@ -3,6 +3,7 @@
 namespace QIT_AI_Webserver\Handlers;
 
 use Exception;
+use QIT_AI_Webserver\NodeResponse;
 
 /**
  * Basic Prompt Handler
@@ -28,21 +29,19 @@ class BasicPromptHandler extends AbstractHandler {
 				'uri'     => $_SERVER['REQUEST_URI'] ?? 'unknown'
 			] );
 
-			http_response_code( 400 );
-			echo json_encode( [ 'error' => 'Missing prompt or model' ] );
-
-			return;
+			NodeResponse::error( 'Missing prompt or model', 400, [
+				'job_id' => $input['job_id'] ?? null
+			] );
 		}
 
 		try {
 			// Ensure the model is available before processing
 			$model = $input['model'] ?? 'llama3.2';
+			NodeResponse::mark( 'model_check' );
 			if ( ! $this->ensureModelAvailable( $model ) ) {
 				throw new Exception( 'Failed to ensure model availability: ' . $model );
 			}
 
-			// Track processing time
-			$startTime = microtime( true );
 			$this->log_info( "Starting AI processing", [
 				'model'         => $model,
 				'job_id'        => $input['job_id'] ?? 'unknown',
@@ -70,56 +69,28 @@ class BasicPromptHandler extends AbstractHandler {
 			] );
 
 			// Make the API call using the parent class method
+			NodeResponse::mark( 'ollama_call' );
 			$response = $this->callOllamaGenerate( $ollamaRequest );
-
-			// Calculate processing metrics
-			$endTime          = microtime( true );
-			$processingTimeMs = round( ( $endTime - $startTime ) * 1000 );
-
-			// Calculate tokens per second
-			$tokensPerSecond = 0;
-			if ( isset( $response['eval_count'] ) && isset( $response['eval_duration'] ) && $response['eval_duration'] > 0 ) {
-				$evalSeconds     = $response['eval_duration'] / 1000000000;
-				$tokensPerSecond = round( $response['eval_count'] / $evalSeconds, 2 );
-			}
 
 			// Log performance metrics
 			$this->log_info( "AI processing completed successfully", [
 				'job_id'             => $input['job_id'] ?? 'unknown',
 				'model'              => $response['model'] ?? $model,
-				'processing_time_ms' => $processingTimeMs,
 				'tokens_generated'   => $response['eval_count'] ?? 0,
-				'tokens_per_second'  => $tokensPerSecond,
 				'response_length'    => strlen( $response['response'] ),
 			] );
 
-			// Prepare response
-			$responseData = [
-				'response'                => trim( $response['response'] ),
-				'model'                   => $response['model'] ?? $model,
-				'timestamp'               => time(),
-				'processing_time_ms'      => $processingTimeMs,
-				'tokens_generated'        => $response['eval_count'] ?? null,
-				'tokens_per_second'       => $tokensPerSecond,
-				'prompt_eval_tokens'      => $response['prompt_eval_count'] ?? null,
-				'prompt_eval_duration_ms' => isset( $response['prompt_eval_duration'] )
-					? round( $response['prompt_eval_duration'] / 1000000 )
-					: null,
-				'total_duration_ms'       => isset( $response['total_duration'] )
-					? round( $response['total_duration'] / 1000000 )
-					: $processingTimeMs
-			];
-
-			$this->log_debug( "Sending response", [
-				'response_size' => strlen( json_encode( $responseData ) ),
-				'job_id'        => $input['job_id'] ?? 'unknown'
-			] );
-
-			echo json_encode( $responseData );
+			// Use NodeResponse::prompt for standardized response
+			NodeResponse::prompt(
+				trim( $response['response'] ),
+				$response['model'] ?? $model,
+				$response, // Pass full response for token stats
+				[ 'job_id' => $input['job_id'] ?? null ]
+			);
 
 		} catch ( Exception $e ) {
-			$this->handleError( $e, [
-				'job_id'   => $input['job_id'] ?? 'unknown',
+			NodeResponse::error( $e->getMessage(), 500, [
+				'job_id'   => $input['job_id'] ?? null,
 				'model'    => $input['model'] ?? 'unknown',
 				'job_type' => $input['type'] ?? 'unknown'
 			] );

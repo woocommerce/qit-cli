@@ -3,6 +3,7 @@
 namespace QIT_AI_Webserver\Handlers;
 
 use Exception;
+use QIT_AI_Webserver\NodeResponse;
 
 /**
  * Abstract Base Handler
@@ -202,20 +203,8 @@ abstract class AbstractHandler {
 			json_encode( $errorReport )
 		);
 
-		// Prepare error response
-		$errorResponse = [
-			'error'         => 'Failed to process request',
-			'message'       => $e->getMessage(),
-			'error_details' => $errorReport
-		];
-
-		$this->log_debug( "Sending error response", [
-			'status_code'   => 500,
-			'response_size' => strlen( json_encode( $errorResponse ) )
-		] );
-
-		http_response_code( 500 );
-		echo json_encode( $errorResponse );
+		// Use NodeResponse::error for standardized error response
+		NodeResponse::error( $e->getMessage(), 500, $errorReport );
 	}
 
 	/**
