@@ -1,13 +1,13 @@
 <?php
 
-namespace QIT_CLI\AI\WebServer\Handlers;
+namespace QIT_AI_Webserver\Handlers;
 
 use Exception;
 use ZipArchive;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use QIT_CLI\AI\WebServer\NodeResponse;
-use QIT_CLI\AI\WebServer\FilePathResolver;
+use QIT_AI_Webserver\NodeResponse;
+use QIT_AI_Webserver\Lib\FilePathResolver;
 
 /**
  * ZIP Extraction Handler

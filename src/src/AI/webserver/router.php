@@ -16,8 +16,47 @@ ini_set( 'log_errors', 1 );
 ini_set( 'error_log', '{{LOG_FILE}}' );
 ini_set( 'display_errors', 0 );
 
-// Include the ToolRegistry class
-require_once __DIR__ . '/lib/ToolRegistry.php';
+// Simple SPL Autoloader for our classes
+spl_autoload_register( function ( $class ) {
+	// Only handle our namespace
+	$prefix     = 'QIT_AI_Webserver\\';
+	$prefix_len = strlen( $prefix );
+
+	// Check if the class uses our namespace
+	if ( strncmp( $prefix, $class, $prefix_len ) !== 0 ) {
+		// Not our namespace, let other autoloaders handle it
+		return;
+	}
+
+	// Get the relative class name
+	$relative_class = substr( $class, $prefix_len );
+
+	// Convert namespace separators to directory separators
+	$relative_path = str_replace( '\\', '/', $relative_class );
+
+	// Build the file path
+	$file = __DIR__ . '/' . $relative_path . '.php';
+
+	// If the file exists, require it
+	if ( file_exists( $file ) ) {
+		require_once $file;
+
+		return;
+	}
+
+	// Also check if it's directly in the root (for backward compatibility)
+	$filename  = basename( $relative_path );
+	$root_file = __DIR__ . '/' . $filename . '.php';
+
+	if ( file_exists( $root_file ) ) {
+		require_once $root_file;
+
+		return;
+	}
+
+	// Log if class file not found (for debugging)
+	error_log( "[QIT Autoloader] Failed to load class: $class (tried: $file and $root_file)" );
+} );
 
 // Configure logging
 $router_log_file = '{{LOG_FILE}}';
@@ -223,19 +262,14 @@ if ( $input ) {
 // Route to appropriate handler
 log_info( "Routing request", [ 'uri' => $uri, 'method' => $method ] );
 
-// Include handler files
-// Include handler classes instead of files
-require_once __DIR__ . '/handlers/BasicPromptHandler.php';
-require_once __DIR__ . '/handlers/LogicalSecurityAnalysisHandler.php';
-require_once __DIR__ . '/handlers/SecurityAnalysisHandler.php';
-// Keep these as they are (until converted to classes)
-require_once __DIR__ . '/handlers/zip_extraction.php';
-require_once __DIR__ . '/handlers/helpers.php';
+// The autoloader will handle loading these classes automatically
+// Just need to require helpers.php as it contains functions, not classes
+require_once __DIR__ . '/Handlers/helpers.php';
 
-use QIT_CLI\AI\WebServer\Handlers\BasicPromptHandler;
-use QIT_CLI\AI\WebServer\Handlers\LogicalSecurityAnalysisHandler;
-use QIT_CLI\AI\WebServer\Handlers\SecurityAnalysisHandler;
-use QIT_CLI\AI\WebServer\Handlers\ZipExtractionHandler;
+use QIT_AI_Webserver\Handlers\BasicPromptHandler;
+use QIT_AI_Webserver\Handlers\LogicalSecurityAnalysisHandler;
+use QIT_AI_Webserver\Handlers\SecurityAnalysisHandler;
+use QIT_AI_Webserver\Handlers\ZipExtractionHandler;
 
 // Create handler instances
 $basicPromptHandler      = new BasicPromptHandler( '{{OLLAMA_API_URL}}' );

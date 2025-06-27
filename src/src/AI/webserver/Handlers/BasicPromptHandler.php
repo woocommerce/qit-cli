@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\AI\WebServer\Handlers;
+namespace QIT_AI_Webserver\Handlers;
 
 use Exception;
 
@@ -11,7 +11,6 @@ use Exception;
  * Tool-based requests are handled by dedicated endpoints.
  */
 class BasicPromptHandler extends AbstractHandler {
-
 	/**
 	 * Handle AI process request
 	 *

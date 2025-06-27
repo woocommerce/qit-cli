@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\AI\WebServer\Handlers;
+namespace QIT_AI_Webserver\Handlers;
 
 use Exception;
 

@@ -6,6 +6,8 @@
  * and eliminates double-encoding issues.
  */
 
+namespace QIT_AI_Webserver;
+
 class NodeResponse {
     /**
      * Return a successful response with data

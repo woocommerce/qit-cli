@@ -1,11 +1,11 @@
 <?php
 
-namespace QIT_CLI\AI\WebServer\Handlers;
+namespace QIT_AI_Webserver\Handlers;
 
 use Exception;
-use QIT_CLI\AI\WebServer\ToolRegistry;
-use QIT_CLI\AI\WebServer\ExtractPathResolver;
-use QIT_CLI\AI\WebServer\NodeResponse;
+use QIT_AI_Webserver\Lib\ToolRegistry;
+use QIT_AI_Webserver\Lib\ExtractPathResolver;
+use QIT_AI_Webserver\NodeResponse;
 
 /**
  * General Security Analysis Handler

@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\AI\WebServer;
+namespace QIT_AI_Webserver\Lib;
 
 /**
  * File Path Contract

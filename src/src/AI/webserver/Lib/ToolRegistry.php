@@ -1,12 +1,10 @@
 <?php
 
-namespace QIT_CLI\AI\WebServer;
+namespace QIT_AI_Webserver\Lib;
 
 use Exception;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-
-require_once __DIR__ . '/FilePathResolver.php';
 
 /**
  * Tool Registry for AI function calling - with proper directory constraints
