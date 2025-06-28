@@ -424,8 +424,413 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 			return;
 		}
 
-		// TODO: Implement tool-based investigation
-		// This would use tools to investigate each potential vulnerability
+		$this->log_info( "Starting vulnerability investigation", [
+			'potential_vulnerabilities' => count( $potentialVulns ),
+			'job_id'                    => $input['job_id'] ?? 'unknown'
+		] );
+
+		try {
+			$workDir = ExtractPathResolver::resolve( $input );
+		} catch ( Exception $e ) {
+			$this->log_error( "Path resolution failed for investigation", [
+				'error' => $e->getMessage()
+			] );
+
+			NodeResponse::error( $e->getMessage(), 400, [
+				'job_id' => $input['job_id'] ?? null,
+				'help'   => 'Ensure extract_path is provided from zip extraction step'
+			] );
+		}
+
+		// Initialize tool registry
+		$toolRegistry = new ToolRegistry( $workDir );
+
+		// Configuration for development - limit investigations per job
+		$maxInvestigationsPerJob       = $input['config']['max_investigations_per_job'] ?? 1;
+		$maxIterationsPerInvestigation = $input['config']['max_iterations_per_investigation'] ?? 5;
+
+		$this->log_info( "Investigation limits", [
+			'max_investigations_per_job'       => $maxInvestigationsPerJob,
+			'max_iterations_per_investigation' => $maxIterationsPerInvestigation
+		] );
+
+		// Limit vulnerabilities to investigate based on configuration
+		$vulnsToInvestigate = array_slice( $potentialVulns, 0, $maxInvestigationsPerJob );
+
+		$investigationResults = [];
+		$allToolCalls         = [];
+
+		foreach ( $vulnsToInvestigate as $index => $vulnerability ) {
+			$this->log_info( "Investigating vulnerability", [
+				'index'         => $index + 1,
+				'total'         => count( $vulnsToInvestigate ),
+				'vulnerability' => $vulnerability['type'] ?? 'unknown',
+				'file'          => $vulnerability['file'] ?? 'unknown'
+			] );
+
+			$investigationResult = $this->investigateVulnerability(
+				$vulnerability,
+				$workDir,
+				$toolRegistry,
+				$maxIterationsPerInvestigation
+			);
+
+			$investigationResults[] = $investigationResult;
+			$allToolCalls           = array_merge( $allToolCalls, $investigationResult['tool_calls'] ?? [] );
+		}
+
+		// Compile final results
+		$confirmedVulnerabilities = [];
+		$investigationSummary     = [];
+
+		foreach ( $investigationResults as $result ) {
+			if ( $result['confirmed'] ?? false ) {
+				$confirmedVulnerabilities[] = $result['vulnerability'];
+			}
+			$investigationSummary[] = $result['summary'] ?? 'Investigation completed';
+		}
+
+		$this->log_info( "Investigation completed", [
+			'potential_vulnerabilities' => count( $potentialVulns ),
+			'investigated'              => count( $vulnsToInvestigate ),
+			'confirmed_vulnerabilities' => count( $confirmedVulnerabilities ),
+			'total_tool_calls'          => count( $allToolCalls )
+		] );
+
+		// Use NodeResponse::toolPrompt for standardized response
+		$responseContent = json_encode( [
+			'vulnerabilities'           => $confirmedVulnerabilities,
+			'vulnerabilities_confirmed' => count( $confirmedVulnerabilities ),
+			'summary'                   => implode( "\n", $investigationSummary ),
+			'investigation_metadata'    => [
+				'potential_vulnerabilities'        => count( $potentialVulns ),
+				'investigated'                     => count( $vulnsToInvestigate ),
+				'confirmed'                        => count( $confirmedVulnerabilities ),
+				'total_tool_calls'                 => count( $allToolCalls ),
+				'max_investigations_per_job'       => $maxInvestigationsPerJob,
+				'max_iterations_per_investigation' => $maxIterationsPerInvestigation
+			]
+		] );
+
+		NodeResponse::toolPrompt(
+			$responseContent,
+			$allToolCalls,
+			$this->coderModel,
+			[
+				'job_id'      => $input['job_id'] ?? null,
+				'session_id'  => $input['session_id'] ?? null,
+				'coder_model' => $this->coderModel,
+				'tools_model' => $this->toolsModel
+			]
+		);
+	}
+
+	/**
+	 * Investigate a single vulnerability using coder-tools loop
+	 *
+	 * @param array $vulnerability Vulnerability to investigate
+	 * @param string $workDir Work directory
+	 * @param ToolRegistry $toolRegistry Tool registry
+	 * @param int $maxIterations Maximum iterations for investigation
+	 *
+	 * @return array Investigation result
+	 */
+	private function investigateVulnerability(
+		array $vulnerability,
+		string $workDir,
+		ToolRegistry $toolRegistry,
+		int $maxIterations
+	): array {
+		$this->log_info( "Starting vulnerability investigation loop", [
+			'vulnerability'  => $vulnerability['type'] ?? 'unknown',
+			'file'           => $vulnerability['file'] ?? 'unknown',
+			'max_iterations' => $maxIterations
+		] );
+
+		// Build initial conversation for the coder model
+		$coderConversation = [
+			[
+				'role'    => 'system',
+				'content' => $this->buildVulnerabilityInvestigationPrompt( $vulnerability, $workDir )
+			],
+			[
+				'role'    => 'user',
+				'content' => $this->buildInitialInvestigationPrompt( $vulnerability )
+			]
+		];
+
+		// Run the coder-tools orchestration loop
+		$loopResult = $this->runVulnerabilityInvestigationLoop(
+			$this->coderModel,
+			$this->toolsModel,
+			$coderConversation,
+			$toolRegistry,
+			$maxIterations
+		);
+
+		// Parse the final response to determine if vulnerability is confirmed
+		$finalResponse = $loopResult['final_response'] ?? '';
+		$confirmed     = $this->parseVulnerabilityConfirmation( $finalResponse );
+
+		// Build enhanced vulnerability data if confirmed
+		$enhancedVulnerability = $vulnerability;
+		if ( $confirmed ) {
+			$enhancedVulnerability = $this->enhanceVulnerabilityData( $vulnerability, $finalResponse, $loopResult['tool_calls'] );
+		}
+
+		return [
+			'vulnerability'  => $enhancedVulnerability,
+			'confirmed'      => $confirmed,
+			'summary'        => $this->extractInvestigationSummary( $finalResponse ),
+			'tool_calls'     => $loopResult['tool_calls'] ?? [],
+			'iterations'     => $loopResult['iterations'] ?? 0,
+			'execution_time' => $loopResult['execution_time'] ?? 0,
+			'final_response' => $finalResponse
+		];
+	}
+
+	/**
+	 * Run vulnerability investigation loop between coder and tools models
+	 *
+	 * @param string $coderModel Coder model for reasoning
+	 * @param string $toolsModel Tools model for execution
+	 * @param array $coderConversation Coder conversation history
+	 * @param ToolRegistry $toolRegistry Tool registry
+	 * @param int $maxIterations Maximum iterations
+	 *
+	 * @return array Results
+	 */
+	private function runVulnerabilityInvestigationLoop(
+		string $coderModel,
+		string $toolsModel,
+		array &$coderConversation,
+		ToolRegistry $toolRegistry,
+		int $maxIterations
+	): array {
+		$startTime    = microtime( true );
+		$allToolCalls = [];
+		$iterations   = 0;
+
+		while ( $iterations < $maxIterations ) {
+			$iterations ++;
+
+			$this->log_info( "Investigation iteration $iterations" );
+
+			// Step 1: Ask coder model what information it needs
+			$coderRequest = [
+				'model'    => $coderModel,
+				'messages' => $coderConversation,
+				'stream'   => false,
+				'format'   => 'json' // Request structured response
+			];
+
+			try {
+				$coderResponse = $this->callOllamaChat( $coderRequest );
+			} catch ( Exception $e ) {
+				$this->log_error( "Coder model failed during investigation", [ 'error' => $e->getMessage() ] );
+				break;
+			}
+
+			// Parse coder's request for tool usage
+			$coderMessage = $coderResponse['message'] ?? [];
+			$coderContent = $coderMessage['content'] ?? '';
+
+			// Try to parse as JSON first
+			$toolRequests = json_decode( $coderContent, true );
+
+			$this->log_info( "Coder model response parsing", [
+				'content_length' => strlen( $coderContent ),
+				'json_error' => json_last_error(),
+				'json_error_msg' => json_last_error_msg(),
+				'parsed_successfully' => json_last_error() === JSON_ERROR_NONE,
+				'content_preview' => substr( $coderContent, 0, 200 )
+			] );
+
+			if ( json_last_error() !== JSON_ERROR_NONE ) {
+				// If not JSON, check if it's a final response
+				if ( $this->isInvestigationComplete( $coderContent ) ) {
+					$this->log_info( "Investigation complete - coder provided final analysis" );
+					$coderConversation[] = $coderMessage;
+					break;
+				}
+
+				// Otherwise, prompt for structured response
+				$coderConversation[] = $coderMessage;
+				$coderConversation[] = [
+					'role'    => 'user',
+					'content' => 'Please provide your investigation requests in JSON format: {"tool_requests": [{"tool": "tool_name", "args": {...}}]} or {"investigation_complete": true, "confirmed": true/false, "analysis": "your detailed analysis"}'
+				];
+				continue;
+			}
+
+			// Add coder's response to conversation
+			$coderConversation[] = $coderMessage;
+
+			// Check if coder is done with investigation
+			if ( isset( $toolRequests['investigation_complete'] ) ) {
+				$this->log_info( "Investigation complete - coder finished analysis" );
+				break;
+			}
+
+			if ( ! isset( $toolRequests['tool_requests'] ) || empty( $toolRequests['tool_requests'] ) ) {
+				$this->log_info( "No tool requests from coder - investigation may be complete" );
+				break;
+			}
+
+			$this->log_info( "Processing tool requests from coder", [
+				'tool_requests_count' => count( $toolRequests['tool_requests'] ),
+				'tool_requests' => $toolRequests['tool_requests']
+			] );
+
+			// Step 2: Execute tools using the tools model
+			$toolResults = $this->executeToolsWithModel(
+				$toolsModel,
+				$toolRequests['tool_requests'],
+				$toolRegistry
+			);
+
+			// Track all tool calls
+			foreach ( $toolResults as $result ) {
+				$allToolCalls[] = [
+					'iteration' => $iterations,
+					'tool'      => $result['tool'],
+					'args'      => $result['args'],
+					'result'    => $result['result']
+				];
+			}
+
+			// Step 3: Feed results back to coder
+			$toolResultsSummary  = $this->formatToolResults( $toolResults );
+			$coderConversation[] = [
+				'role'    => 'user',
+				'content' => "Tool execution results:\n" . $toolResultsSummary . "\n\nBased on these results, what would you like to investigate next? Request more tools or provide your final vulnerability analysis?"
+			];
+		}
+
+		// Extract final response
+		$finalResponse = $this->extractFinalInvestigationResponse( $coderConversation );
+
+		$executionTime = round( ( microtime( true ) - $startTime ) * 1000 );
+
+		return [
+			'final_response' => $finalResponse,
+			'tool_calls'     => $allToolCalls,
+			'iterations'     => $iterations,
+			'execution_time' => $executionTime
+		];
+	}
+
+	/**
+	 * Execute tools using the tools model (adapted from PromptWithToolsHandler)
+	 *
+	 * @param string $toolsModel Model to use for tool execution
+	 * @param array $toolRequests Tool requests from coder
+	 * @param ToolRegistry $toolRegistry Tool registry
+	 *
+	 * @return array Tool results
+	 */
+	private function executeToolsWithModel(
+		string $toolsModel,
+		array $toolRequests,
+		ToolRegistry $toolRegistry
+	): array {
+		$results = [];
+
+		// Convert tool requests to Ollama tool format
+		$tools = $this->getToolDefinitionsForRequests( $toolRequests );
+
+		// Build messages for tool model
+		$toolMessages = [
+			[
+				'role'    => 'system',
+				'content' => 'You are a security analysis tool execution assistant. Execute the requested tools to help investigate potential vulnerabilities.'
+			],
+			[
+				'role'    => 'user',
+				'content' => 'Please execute these security investigation tools: ' . json_encode( $toolRequests )
+			]
+		];
+
+		// Call tools model
+		$toolRequest = [
+			'model'    => $toolsModel,
+			'messages' => $toolMessages,
+			'tools'    => $tools,
+			'stream'   => false
+		];
+
+		try {
+			$toolResponse = $this->callOllamaChat( $toolRequest );
+
+			// Extract tool calls from response
+			$toolCalls = $toolResponse['message']['tool_calls'] ?? [];
+
+			$this->log_info( "Tools model response received", [
+				'tool_calls_count' => count( $toolCalls ),
+				'has_tool_calls' => !empty( $toolCalls ),
+				'response_keys' => array_keys( $toolResponse['message'] ?? [] )
+			] );
+
+			// Execute each tool call
+			foreach ( $toolCalls as $toolCall ) {
+				$toolName = $toolCall['function']['name'] ?? '';
+				$toolArgs = $toolCall['function']['arguments'] ?? '{}';
+
+				// Parse arguments if string
+				if ( is_string( $toolArgs ) ) {
+					$toolArgs = json_decode( $toolArgs, true ) ?? [];
+				}
+
+				$this->log_info( "Executing security investigation tool", [
+					'tool' => $toolName,
+					'args' => $toolArgs
+				] );
+
+				try {
+					$result    = $toolRegistry->execute_tool( $toolName, $toolArgs );
+					$results[] = [
+						'tool'    => $toolName,
+						'args'    => $toolArgs,
+						'result'  => $result,
+						'success' => ! isset( $result['error'] )
+					];
+				} catch ( Exception $e ) {
+					$results[] = [
+						'tool'    => $toolName,
+						'args'    => $toolArgs,
+						'result'  => [ 'error' => $e->getMessage() ],
+						'success' => false
+					];
+				}
+			}
+		} catch ( Exception $e ) {
+			$this->log_error( "Tools model failed during investigation", [ 'error' => $e->getMessage() ] );
+
+			// Fallback: execute tools directly without model
+			foreach ( $toolRequests as $request ) {
+				$toolName = $request['tool'] ?? '';
+				$toolArgs = $request['args'] ?? [];
+
+				try {
+					$result    = $toolRegistry->execute_tool( $toolName, $toolArgs );
+					$results[] = [
+						'tool'    => $toolName,
+						'args'    => $toolArgs,
+						'result'  => $result,
+						'success' => ! isset( $result['error'] )
+					];
+				} catch ( Exception $e ) {
+					$results[] = [
+						'tool'    => $toolName,
+						'args'    => $toolArgs,
+						'result'  => [ 'error' => $e->getMessage() ],
+						'success' => false
+					];
+				}
+			}
+		}
+
+		return $results;
 	}
 
 	/**
@@ -451,5 +856,426 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		}
 
 		return $structure;
+	}
+
+	/**
+	 * Build vulnerability investigation system prompt
+	 *
+	 * @param array $vulnerability Vulnerability to investigate
+	 * @param string $workDir Work directory
+	 *
+	 * @return string System prompt
+	 */
+	private function buildVulnerabilityInvestigationPrompt( array $vulnerability, string $workDir ): string {
+		$prompt = "You are a security researcher investigating a potential vulnerability in a WordPress plugin.\n\n";
+
+		$prompt .= "WORK DIRECTORY: $workDir\n";
+		$prompt .= "All file operations are relative to this directory.\n\n";
+
+		$prompt .= "VULNERABILITY TO INVESTIGATE:\n";
+		$prompt .= "- Type: " . ( $vulnerability['type'] ?? 'Unknown' ) . "\n";
+		$prompt .= "- File: " . ( $vulnerability['file'] ?? 'Unknown' ) . "\n";
+		$prompt .= "- Line: " . ( $vulnerability['line'] ?? 'Unknown' ) . "\n";
+		$prompt .= "- Description: " . ( $vulnerability['description'] ?? 'No description' ) . "\n";
+		$prompt .= "- Severity: " . ( $vulnerability['severity'] ?? 'Unknown' ) . "\n\n";
+
+		$prompt .= "AVAILABLE TOOLS:\n";
+		$prompt .= "- read_file: Read file contents\n";
+		$prompt .= "- search_pattern: Search for patterns in files\n";
+		$prompt .= "- list_files: List files in directories\n\n";
+
+		$prompt .= "YOUR INVESTIGATION GOALS:\n";
+		$prompt .= "1. Confirm if this is a real vulnerability\n";
+		$prompt .= "2. Understand the attack vector and exploitability\n";
+		$prompt .= "3. Identify the root cause and affected code\n";
+		$prompt .= "4. Assess the actual impact and severity\n";
+		$prompt .= "5. Look for similar patterns in the codebase\n\n";
+
+		$prompt .= "INVESTIGATION APPROACH:\n";
+		$prompt .= "- Use tools to gather information about the vulnerability\n";
+		$prompt .= "- Look for call stacks, data flow, and entry points\n";
+		$prompt .= "- Check for proper input validation and sanitization\n";
+		$prompt .= "- Verify if the vulnerability is actually exploitable\n";
+		$prompt .= "- Search for similar patterns that might indicate more vulnerabilities\n\n";
+
+		$prompt .= "RESPONSE FORMAT:\n";
+		$prompt .= "Request tools using JSON: {\"tool_requests\": [{\"tool\": \"tool_name\", \"args\": {...}}]}\n";
+		$prompt .= "When investigation is complete: {\"investigation_complete\": true, \"confirmed\": true/false, \"analysis\": \"detailed analysis\"}\n\n";
+
+		$prompt .= "Start by examining the reported vulnerability location and understanding the context.";
+
+		return $prompt;
+	}
+
+	/**
+	 * Build initial investigation prompt
+	 *
+	 * @param array $vulnerability Vulnerability to investigate
+	 *
+	 * @return string Initial prompt
+	 */
+	private function buildInitialInvestigationPrompt( array $vulnerability ): string {
+		$prompt = "Please investigate this potential vulnerability:\n\n";
+		$prompt .= "Type: " . ( $vulnerability['type'] ?? 'Unknown' ) . "\n";
+		$prompt .= "File: " . ( $vulnerability['file'] ?? 'Unknown' ) . "\n";
+		$prompt .= "Line: " . ( $vulnerability['line'] ?? 'Unknown' ) . "\n";
+		$prompt .= "Description: " . ( $vulnerability['description'] ?? 'No description' ) . "\n\n";
+
+		$prompt .= "Start by reading the file to understand the context and then investigate further. ";
+		$prompt .= "What tools do you need to begin your investigation?";
+
+		return $prompt;
+	}
+
+	/**
+	 * Check if investigation is complete
+	 *
+	 * @param string $content Response content
+	 *
+	 * @return bool True if investigation is complete
+	 */
+	private function isInvestigationComplete( string $content ): bool {
+		$indicators = [
+			'investigation complete',
+			'investigation_complete',
+			'final analysis',
+			'confirmed vulnerability',
+			'not a vulnerability',
+			'false positive',
+			'investigation finished'
+		];
+
+		$lowerContent = strtolower( $content );
+		foreach ( $indicators as $indicator ) {
+			if ( strpos( $lowerContent, $indicator ) !== false ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Parse vulnerability confirmation from response
+	 *
+	 * @param string $response Final response
+	 *
+	 * @return bool True if vulnerability is confirmed
+	 */
+	private function parseVulnerabilityConfirmation( string $response ): bool {
+		$lowerResponse = strtolower( $response );
+
+		// Look for explicit confirmation
+		if ( strpos( $lowerResponse, '"confirmed": true' ) !== false ) {
+			return true;
+		}
+
+		// Look for confirmation indicators
+		$confirmationIndicators = [
+			'confirmed vulnerability',
+			'vulnerability confirmed',
+			'this is a vulnerability',
+			'exploitable',
+			'security risk',
+			'critical vulnerability',
+			'high severity'
+		];
+
+		foreach ( $confirmationIndicators as $indicator ) {
+			if ( strpos( $lowerResponse, $indicator ) !== false ) {
+				return true;
+			}
+		}
+
+		// Look for negation indicators
+		$negationIndicators = [
+			'"confirmed": false',
+			'not a vulnerability',
+			'false positive',
+			'not exploitable',
+			'properly sanitized',
+			'no security risk'
+		];
+
+		foreach ( $negationIndicators as $indicator ) {
+			if ( strpos( $lowerResponse, $indicator ) !== false ) {
+				return false;
+			}
+		}
+
+		// Default to false if unclear
+		return false;
+	}
+
+	/**
+	 * Enhance vulnerability data with investigation results
+	 *
+	 * @param array $vulnerability Original vulnerability
+	 * @param string $finalResponse Final investigation response
+	 * @param array $toolCalls Tool calls made during investigation
+	 *
+	 * @return array Enhanced vulnerability data
+	 */
+	private function enhanceVulnerabilityData( array $vulnerability, string $finalResponse, array $toolCalls ): array {
+		$enhanced = $vulnerability;
+
+		// Try to extract enhanced data from the final response
+		$responseData = json_decode( $finalResponse, true );
+		if ( is_array( $responseData ) ) {
+			// Update severity if provided
+			if ( isset( $responseData['severity'] ) ) {
+				$enhanced['severity'] = $responseData['severity'];
+			}
+
+			// Update description with investigation findings
+			if ( isset( $responseData['analysis'] ) ) {
+				$enhanced['investigation_analysis'] = $responseData['analysis'];
+			}
+
+			// Add attack vector if identified
+			if ( isset( $responseData['attack_vector'] ) ) {
+				$enhanced['attack_vector'] = $responseData['attack_vector'];
+			}
+
+			// Add impact assessment
+			if ( isset( $responseData['impact'] ) ) {
+				$enhanced['impact'] = $responseData['impact'];
+			}
+		}
+
+		// Add investigation metadata
+		$enhanced['investigation_metadata'] = [
+			'tool_calls_count'   => count( $toolCalls ),
+			'tools_used'         => array_unique( array_column( $toolCalls, 'tool' ) ),
+			'investigation_date' => date( 'Y-m-d H:i:s' )
+		];
+
+		return $enhanced;
+	}
+
+	/**
+	 * Extract investigation summary from response
+	 *
+	 * @param string $response Final response
+	 *
+	 * @return string Investigation summary
+	 */
+	private function extractInvestigationSummary( string $response ): string {
+		// Try to parse as JSON first
+		$responseData = json_decode( $response, true );
+		if ( is_array( $responseData ) && isset( $responseData['analysis'] ) ) {
+			return $responseData['analysis'];
+		}
+
+		// If not JSON, return truncated response
+		return strlen( $response ) > 500 ? substr( $response, 0, 500 ) . '...' : $response;
+	}
+
+	/**
+	 * Extract final investigation response from conversation
+	 *
+	 * @param array $conversation Conversation history
+	 *
+	 * @return string Final response
+	 */
+	private function extractFinalInvestigationResponse( array $conversation ): string {
+		// Get the last assistant message
+		for ( $i = count( $conversation ) - 1; $i >= 0; $i -- ) {
+			if ( $conversation[ $i ]['role'] === 'assistant' ) {
+				return $conversation[ $i ]['content'] ?? '';
+			}
+		}
+
+		return 'Investigation completed without final response';
+	}
+
+	/**
+	 * Get tool definitions for requests (adapted from PromptWithToolsHandler)
+	 *
+	 * @param array $toolRequests Tool requests
+	 *
+	 * @return array Tool definitions
+	 */
+	private function getToolDefinitionsForRequests( array $toolRequests ): array {
+		$allTools       = $this->getAllToolDefinitions();
+		$requestedTools = [];
+
+		foreach ( $toolRequests as $request ) {
+			$toolName = $request['tool'] ?? '';
+			if ( isset( $allTools[ $toolName ] ) ) {
+				$requestedTools[] = $allTools[ $toolName ];
+			}
+		}
+
+		return $requestedTools;
+	}
+
+	/**
+	 * Get all tool definitions (adapted from PromptWithToolsHandler)
+	 *
+	 * @return array All tool definitions
+	 */
+	private function getAllToolDefinitions(): array {
+		return [
+			'read_file'      => [
+				'type'     => 'function',
+				'function' => [
+					'name'        => 'read_file',
+					'description' => 'Read the contents of a file',
+					'parameters'  => [
+						'type'       => 'object',
+						'properties' => [
+							'file_path' => [
+								'type'        => 'string',
+								'description' => 'Path to the file to read (relative to work directory)'
+							]
+						],
+						'required'   => [ 'file_path' ]
+					]
+				]
+			],
+			'search_pattern' => [
+				'type'     => 'function',
+				'function' => [
+					'name'        => 'search_pattern',
+					'description' => 'Search for a pattern in files',
+					'parameters'  => [
+						'type'       => 'object',
+						'properties' => [
+							'pattern'     => [
+								'type'        => 'string',
+								'description' => 'Pattern to search for (regex supported)'
+							],
+							'max_results' => [
+								'type'        => 'integer',
+								'description' => 'Maximum number of results to return',
+								'default'     => 20
+							]
+						],
+						'required'   => [ 'pattern' ]
+					]
+				]
+			],
+			'list_files'     => [
+				'type'     => 'function',
+				'function' => [
+					'name'        => 'list_files',
+					'description' => 'List files in a directory',
+					'parameters'  => [
+						'type'       => 'object',
+						'properties' => [
+							'directory' => [
+								'type'        => 'string',
+								'description' => 'Directory to list (relative to work directory)',
+								'default'     => '.'
+							],
+							'recursive' => [
+								'type'        => 'boolean',
+								'description' => 'Whether to list files recursively',
+								'default'     => false
+							]
+						]
+					]
+				]
+			]
+		];
+	}
+
+	/**
+	 * Format tool results for display (adapted from PromptWithToolsHandler)
+	 *
+	 * @param array $toolResults Tool results
+	 *
+	 * @return string Formatted results
+	 */
+	private function formatToolResults( array $toolResults ): string {
+		$formatted = '';
+
+		foreach ( $toolResults as $result ) {
+			$toolName   = $result['tool'] ?? 'unknown';
+			$success    = $result['success'] ?? false;
+			$toolResult = $result['result'] ?? [];
+
+			$formatted .= "=== $toolName ===\n";
+			$formatted .= "Status: " . ( $success ? 'Success' : 'Failed' ) . "\n";
+
+			if ( isset( $toolResult['error'] ) ) {
+				$formatted .= "Error: " . $toolResult['error'] . "\n";
+			} else {
+				$formatted .= $this->formatToolResult( $toolResult );
+			}
+
+			$formatted .= "\n";
+		}
+
+		return $formatted;
+	}
+
+	/**
+	 * Format individual tool result (adapted from PromptWithToolsHandler)
+	 *
+	 * @param array $result Tool result
+	 *
+	 * @return string Formatted result
+	 */
+	private function formatToolResult( array $result ): string {
+		if ( isset( $result['content'] ) ) {
+			// File content
+			$content = $result['content'];
+
+			return "Content:\n" . $this->truncateContent( $content, 2000 ) . "\n";
+		}
+
+		if ( isset( $result['matches'] ) ) {
+			// Search results
+			return $this->formatSearchResults( $result['matches'] );
+		}
+
+		if ( isset( $result['files'] ) ) {
+			// File listing
+			$files = $result['files'];
+
+			return "Files (" . count( $files ) . "):\n" . implode( "\n", array_slice( $files, 0, 50 ) ) . "\n";
+		}
+
+		// Generic result
+		return json_encode( $result, JSON_PRETTY_PRINT ) . "\n";
+	}
+
+	/**
+	 * Format search results (adapted from PromptWithToolsHandler)
+	 *
+	 * @param array $results Search results
+	 *
+	 * @return string Formatted results
+	 */
+	private function formatSearchResults( array $results ): string {
+		$formatted = "Matches (" . count( $results ) . "):\n";
+
+		foreach ( array_slice( $results, 0, 20 ) as $match ) {
+			$file    = $match['file'] ?? 'unknown';
+			$line    = $match['line'] ?? 'unknown';
+			$content = $match['content'] ?? '';
+
+			$formatted .= "$file:$line: " . trim( $content ) . "\n";
+		}
+
+		return $formatted;
+	}
+
+	/**
+	 * Truncate content to maximum length (adapted from PromptWithToolsHandler)
+	 *
+	 * @param string $content Content to truncate
+	 * @param int $maxLength Maximum length
+	 *
+	 * @return string Truncated content
+	 */
+	private function truncateContent( string $content, int $maxLength = 1000 ): string {
+		if ( strlen( $content ) <= $maxLength ) {
+			return $content;
+		}
+
+		return substr( $content, 0, $maxLength ) . "\n... [truncated] ...";
 	}
 }

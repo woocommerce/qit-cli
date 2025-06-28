@@ -314,7 +314,7 @@ switch ( $uri ) {
 
 	case '/logical-security-analysis':
 		log_info( "Handling logical security analysis request" );
-		$logicalSecurityHandler->handleDiscovery( $input, $input['job_id'] );
+		$logicalSecurityHandler->handle( $input );
 		break;
 
 	default:
