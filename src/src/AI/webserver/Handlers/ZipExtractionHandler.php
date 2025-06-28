@@ -16,7 +16,6 @@ use QIT_AI_Webserver\Lib\FilePathResolver;
  * Provides secure extraction with path validation and WordPress structure detection.
  */
 class ZipExtractionHandler extends AbstractHandler {
-
 	/**
 	 * Handle ZIP extraction request
 	 *

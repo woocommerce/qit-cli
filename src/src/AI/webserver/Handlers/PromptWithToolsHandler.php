@@ -14,9 +14,6 @@ use QIT_AI_Webserver\NodeResponse;
  * The model handles both reasoning and tool execution.
  */
 class PromptWithToolsHandler extends AbstractHandler {
-
-	private string $defaultModel = 'llama3.2';
-
 	/**
 	 * Handle AI request with tools using single model approach
 	 *

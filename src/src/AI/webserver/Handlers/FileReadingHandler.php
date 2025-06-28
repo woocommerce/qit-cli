@@ -13,7 +13,6 @@ use QIT_AI_Webserver\Lib\ExtractPathResolver;
  * Handles secure file reading operations within extracted WordPress plugin/theme directories.
  */
 class FileReadingHandler extends AbstractHandler {
-
 	/**
 	 * Handle file reading request
 	 *

@@ -12,7 +12,6 @@ use QIT_AI_Webserver\NodeResponse;
  * including Ollama API communication and logging.
  */
 abstract class AbstractHandler {
-
 	protected string $ollamaApiUrl;
 
 	public function __construct( string $ollamaApiUrl ) {
