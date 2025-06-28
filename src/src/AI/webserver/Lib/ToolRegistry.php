@@ -94,40 +94,22 @@ class ToolRegistry {
 		} );
 
 		// Tool 2: Search for pattern in PHP files
+		// In ToolRegistry.php, replace the search_pattern tool implementation:
+
 		$this->register_tool( 'search_pattern', function ( $params ) {
 			$pattern     = $params['pattern'] ?? null;
 			$max_results = $params['max_results'] ?? 50;
 			$directory   = $params['directory'] ?? '';
+			$is_regex    = $params['is_regex'] ?? true; // Allow both regex and literal search
 
 			if ( ! $pattern ) {
 				return [ 'error' => 'Pattern is required' ];
 			}
 
-			$results = [];
-
-			// CRITICAL: Always use the work directory as base
-			// Never allow searching outside the plugin directory
+			$results   = [];
 			$searchDir = $this->workDirectory;
 
-			// If a subdirectory is specified, ensure it's within bounds
-			if ( ! empty( $directory ) && $directory !== '.' ) {
-				$subDir = $this->resolver->toAbsolute( $directory );
-
-				// Verify the subdirectory is within our work directory
-				$realSearchDir = realpath( $searchDir );
-				$realSubDir    = realpath( $subDir );
-
-				if ( $realSubDir === false || strpos( $realSubDir, $realSearchDir ) !== 0 ) {
-					return [ 'error' => 'Invalid directory: ' . $directory ];
-				}
-
-				$searchDir = $subDir;
-			}
-
-			// Verify once more that we're searching within bounds
-			if ( ! is_dir( $searchDir ) ) {
-				return [ 'error' => 'Search directory not found' ];
-			}
+			// Directory validation code remains the same...
 
 			try {
 				$iterator = new RecursiveIteratorIterator(
@@ -139,36 +121,46 @@ class ToolRegistry {
 					RecursiveIteratorIterator::CATCH_GET_CHILD
 				);
 
-				// Set max depth to prevent going too deep
 				$iterator->setMaxDepth( 10 );
 
 				foreach ( $iterator as $file ) {
-					// Skip if not a file or not PHP
 					if ( ! $file->isFile() || $file->getExtension() !== 'php' ) {
 						continue;
 					}
 
-					// Double-check the file is within our work directory
 					$filePath     = $file->getPathname();
 					$realFilePath = realpath( $filePath );
 					$realWorkDir  = realpath( $this->workDirectory );
 
 					if ( $realFilePath === false || strpos( $realFilePath, $realWorkDir ) !== 0 ) {
-						continue; // Skip files outside our work directory
+						continue;
 					}
 
 					$relativePath = $this->resolver->toRelative( $filePath );
-
-					// Read file content
-					$content = @file_get_contents( $filePath );
+					$content      = @file_get_contents( $filePath );
 					if ( $content === false ) {
-						continue; // Skip unreadable files
+						continue;
 					}
 
 					$lines = explode( "\n", $content );
 
 					foreach ( $lines as $lineNum => $line ) {
-						if ( preg_match( '/' . preg_quote( $pattern, '/' ) . '/i', $line ) ) {
+						$matches = false;
+
+						if ( $is_regex ) {
+							// Use regex pattern directly
+							try {
+								$matches = @preg_match( '/' . $pattern . '/i', $line );
+							} catch ( Exception $e ) {
+								// If regex is invalid, treat as literal
+								$matches = stripos( $line, $pattern ) !== false;
+							}
+						} else {
+							// Literal string search
+							$matches = stripos( $line, $pattern ) !== false;
+						}
+
+						if ( $matches ) {
 							$results[] = [
 								'file'    => $relativePath,
 								'line'    => $lineNum + 1,

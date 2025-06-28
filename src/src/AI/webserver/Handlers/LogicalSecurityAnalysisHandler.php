@@ -17,13 +17,11 @@ use QIT_AI_Webserver\NodeResponse;
  * using Llama 3.2's native tool calling capabilities with improved investigation flow.
  */
 class LogicalSecurityAnalysisHandler extends AbstractHandler {
-
-	// Use Llama 3.2 3B for better tool calling reliability
-	private string $model = 'llama3.2:3b';
+	private string $model = 'llama3.1:8b';
 
 	// Increase context window for better tool calling performance
 	private array $modelOptions = [
-		'num_ctx' => 32768,
+		'num_ctx'     => 32768,
 		'temperature' => 0.3  // Lower temperature for more consistent tool usage
 	];
 
@@ -39,7 +37,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		if ( isset( $input['config']['analysis_mode'] ) ) {
 			if ( $input['config']['analysis_mode'] === 'logical_security_discovery' ) {
 				$this->handleDiscovery( $input, $jobId );
-			} elseif ( in_array( $input['config']['analysis_mode'], [ 'vulnerability_discovery', 'vulnerability_investigation' ] ) ) {
+			} elseif ( $input['config']['analysis_mode'] === 'vulnerability_investigation' ) {
 				$this->handleFileAnalysis( $input, $jobId );
 			} else {
 				// Handle other analysis modes as general security analysis
@@ -52,6 +50,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 				NodeResponse::error( 'Missing required job_id parameter for file analysis mode', 400, [
 					'job_id' => $jobId
 				] );
+
 				return;
 			}
 			$this->handleFileAnalysis( $input, $jobId );
@@ -65,6 +64,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 				NodeResponse::error( 'Missing required job_id parameter', 400, [
 					'job_id' => $jobId
 				] );
+
 				return;
 			}
 			$this->handleDiscovery( $input, $jobId );
@@ -88,66 +88,31 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		// Check if this is a tool-based investigation that doesn't require pre-loaded content
 		if ( ! isset( $input['file_content'] ) ) {
 			// Allow tool-based vulnerability investigation to proceed without file_content
-			if ( $input['config']['analysis_mode'] === 'vulnerability_investigation' && 
+			if ( $input['config']['analysis_mode'] === 'vulnerability_investigation' &&
 			     isset( $input['config']['available_tools'] ) ) {
 				$this->log_info( "Proceeding with tool-based vulnerability investigation", [
 					'available_tools' => $input['config']['available_tools']
 				] );
 				$this->handleVulnerabilityInvestigation( $input );
+
 				return;
 			}
 
 			// Only error for paradigms that require pre-loaded content
 			$this->log_error( "No file content provided for analysis" );
 			NodeResponse::error( 'No file content provided', 400 );
-			return;
-		}
 
-		// Initial vulnerability scan (requires pre-loaded content)
-		if ( $input['config']['analysis_mode'] === 'vulnerability_discovery' ) {
-			$this->handleVulnerabilityDiscovery( $input );
 			return;
 		}
 
 		// Deep investigation with tools (can work with or without pre-loaded content)
 		if ( $input['config']['analysis_mode'] === 'vulnerability_investigation' ) {
 			$this->handleVulnerabilityInvestigation( $input );
+
 			return;
 		}
 	}
 
-	/**
-	 * Handle vulnerability discovery mode
-	 *
-	 * @param array $input Request input
-	 */
-	private function handleVulnerabilityDiscovery( array $input ): void {
-		$request = [
-			'model'  => $this->model,
-			'prompt' => $input['prompt'],
-			'stream' => false,
-			'format' => 'json'
-		];
-
-		try {
-			$response = $this->callOllamaGenerate( $request );
-			$analysis = json_decode( $response['response'] ?? '{}', true );
-
-			NodeResponse::success( [
-				'potential_vulnerabilities' => $analysis['potential_vulnerabilities'] ?? [],
-				'summary'                   => $analysis['summary'] ?? '',
-				'file_analyzed'             => $input['file_path'] ?? null
-			], [
-				'model' => $this->model
-			] );
-			return;
-
-		} catch ( Exception $e ) {
-			$this->log_error( "Initial vulnerability scan failed", [ 'error' => $e->getMessage() ] );
-			NodeResponse::error( 'Analysis failed: ' . $e->getMessage(), 500 );
-			return;
-		}
-	}
 
 	/**
 	 * Handle vulnerability investigation mode - COMPLETELY REFACTORED
@@ -157,19 +122,20 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	private function handleVulnerabilityInvestigation( array $input ): void {
 		// DEBUG: Log input structure to diagnose the issue
 		$this->log_info( "DEBUG: handleVulnerabilityInvestigation called", [
-			'input_keys' => array_keys($input),
-			'has_vulnerability' => isset($input['vulnerability']),
+			'input_keys'         => array_keys( $input ),
+			'has_vulnerability'  => isset( $input['vulnerability'] ),
 			'vulnerability_data' => $input['vulnerability'] ?? 'NOT_SET',
-			'job_id' => $input['job_id'] ?? 'unknown'
+			'job_id'             => $input['job_id'] ?? 'unknown'
 		] );
 
 		$vulnerability = $input['vulnerability'] ?? null;
 		if ( ! $vulnerability ) {
 			$this->log_error( "No vulnerability in input", [
-				'input_keys' => array_keys($input),
-				'full_input' => json_encode($input, JSON_PRETTY_PRINT)
+				'input_keys' => array_keys( $input ),
+				'full_input' => json_encode( $input, JSON_PRETTY_PRINT )
 			] );
 			NodeResponse::error( 'No vulnerability provided for investigation', 400 );
+
 			return;
 		}
 
@@ -177,37 +143,40 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		if ( empty( $vulnerability['file'] ) ) {
 			$this->log_error( "Vulnerability missing file path", [
 				'vulnerability' => $vulnerability,
-				'job_id' => $input['job_id'] ?? 'unknown'
+				'job_id'        => $input['job_id'] ?? 'unknown'
 			] );
 			NodeResponse::error( 'Vulnerability missing file path - cannot investigate without target file', 400, [
-				'job_id' => $input['job_id'] ?? null,
+				'job_id'             => $input['job_id'] ?? null,
 				'vulnerability_data' => $vulnerability,
-				'help' => 'Ensure vulnerability discovery phase includes file paths in vulnerability objects'
+				'help'               => 'Ensure vulnerability discovery phase includes file paths in vulnerability objects'
 			] );
+
 			return;
 		}
 
 		if ( empty( $vulnerability['line'] ) ) {
 			$this->log_error( "Vulnerability missing line number", [
 				'vulnerability' => $vulnerability,
-				'job_id' => $input['job_id'] ?? 'unknown'
+				'job_id'        => $input['job_id'] ?? 'unknown'
 			] );
 			NodeResponse::error( 'Vulnerability missing line number - cannot investigate without target location', 400, [
-				'job_id' => $input['job_id'] ?? null,
+				'job_id'             => $input['job_id'] ?? null,
 				'vulnerability_data' => $vulnerability
 			] );
+
 			return;
 		}
 
 		if ( empty( $vulnerability['type'] ) ) {
 			$this->log_error( "Vulnerability missing type", [
 				'vulnerability' => $vulnerability,
-				'job_id' => $input['job_id'] ?? 'unknown'
+				'job_id'        => $input['job_id'] ?? 'unknown'
 			] );
 			NodeResponse::error( 'Vulnerability missing type - cannot investigate without vulnerability type', 400, [
-				'job_id' => $input['job_id'] ?? null,
+				'job_id'             => $input['job_id'] ?? null,
 				'vulnerability_data' => $vulnerability
 			] );
+
 			return;
 		}
 
@@ -215,8 +184,8 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 			'vulnerability_type' => $vulnerability['type'] ?? 'unknown',
 			'vulnerability_file' => $vulnerability['file'] ?? 'unknown',
 			'vulnerability_line' => $vulnerability['line'] ?? 'unknown',
-			'job_id'            => $input['job_id'] ?? 'unknown',
-			'model'             => $this->model
+			'job_id'             => $input['job_id'] ?? 'unknown',
+			'model'              => $this->model
 		] );
 
 		try {
@@ -230,6 +199,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 				'job_id' => $input['job_id'] ?? null,
 				'help'   => 'Ensure extract_path is provided from zip extraction step'
 			] );
+
 			return;
 		}
 
@@ -250,14 +220,14 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		// Prepare response
 		$responseContent = json_encode( [
 			'vulnerability_confirmed' => $investigationResult['confirmed'] ?? false,
-			'analysis'               => $investigationResult['analysis'] ?? '',
-			'severity'               => $investigationResult['severity'] ?? $vulnerability['severity'],
-			'exploitability'         => $investigationResult['exploitability'] ?? 'unknown',
-			'impact'                 => $investigationResult['impact'] ?? 'unknown',
-			'remediation'            => $investigationResult['remediation'] ?? '',
-			'evidence'               => $investigationResult['evidence'] ?? [],
-			'tool_calls_count'       => count( $investigationResult['tool_calls'] ?? [] ),
-			'investigation_steps'    => $investigationResult['completed_steps'] ?? []
+			'analysis'                => $investigationResult['analysis'] ?? '',
+			'severity'                => $investigationResult['severity'] ?? $vulnerability['severity'],
+			'exploitability'          => $investigationResult['exploitability'] ?? 'unknown',
+			'impact'                  => $investigationResult['impact'] ?? 'unknown',
+			'remediation'             => $investigationResult['remediation'] ?? '',
+			'evidence'                => $investigationResult['evidence'] ?? [],
+			'tool_calls_count'        => count( $investigationResult['tool_calls'] ?? [] ),
+			'investigation_steps'     => $investigationResult['completed_steps'] ?? []
 		] );
 
 		NodeResponse::toolPrompt(
@@ -271,6 +241,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 				'execution_time' => $investigationResult['execution_time'] ?? 0
 			]
 		);
+
 		return;
 	}
 
@@ -292,26 +263,26 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	): array {
 		$startTime = microtime( true );
 		$this->log_info( "Starting STRUCTURED vulnerability investigation", [
-			'vulnerability' => $vulnerability['type'] ?? 'unknown',
-			'file'          => $vulnerability['file'] ?? 'unknown',
-			'line'          => $vulnerability['line'] ?? 'unknown',
+			'vulnerability'  => $vulnerability['type'] ?? 'unknown',
+			'file'           => $vulnerability['file'] ?? 'unknown',
+			'line'           => $vulnerability['line'] ?? 'unknown',
 			'max_iterations' => $maxIterations
 		] );
 
 		// DEBUG LOGGING - Full vulnerability details and prompts
 		$this->log_info( "INVESTIGATION STARTING - Full vulnerability details", [
-			'vulnerability' => json_encode($vulnerability),
-			'initial_prompt' => $this->buildInitialInvestigationPrompt($vulnerability),
-			'system_prompt_preview' => substr($this->buildStructuredSystemPrompt($vulnerability, $workDir), 0, 500)
+			'vulnerability'         => json_encode( $vulnerability ),
+			'initial_prompt'        => $this->buildInitialInvestigationPrompt( $vulnerability ),
+			'system_prompt_preview' => substr( $this->buildStructuredSystemPrompt( $vulnerability, $workDir ), 0, 500 )
 		] );
 
 		// Track investigation progress
 		$investigationState = [
-			'read_target_file' => false,
-			'found_entry_points' => false,
+			'read_target_file'       => false,
+			'found_entry_points'     => false,
 			'checked_authentication' => false,
-			'traced_data_flow' => false,
-			'final_assessment' => false
+			'traced_data_flow'       => false,
+			'final_assessment'       => false
 		];
 
 		// Build initial conversation
@@ -331,11 +302,11 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 
 		// Track all tool calls and iterations
 		$allToolCalls = [];
-		$iterations = 0;
+		$iterations   = 0;
 
 		// Investigation loop
 		while ( $iterations < $maxIterations && ! $investigationState['final_assessment'] ) {
-			$iterations++;
+			$iterations ++;
 
 			$this->log_info( "Investigation iteration $iterations/$maxIterations", [
 				'completed_steps' => array_keys( array_filter( $investigationState ) )
@@ -365,21 +336,21 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 			// Check if model made tool calls
 			if ( isset( $message['tool_calls'] ) && ! empty( $message['tool_calls'] ) ) {
 				$this->log_info( "Model requested tool calls", [
-					'count' => count( $message['tool_calls'] ),
+					'count'     => count( $message['tool_calls'] ),
 					'iteration' => $iterations
 				] );
 
 				// Execute tool calls
-				$toolResults = $this->executeToolCalls( 
-					$message['tool_calls'], 
-					$toolRegistry, 
-					$allToolCalls, 
-					$iterations 
+				$toolResults = $this->executeToolCalls(
+					$message['tool_calls'],
+					$toolRegistry,
+					$allToolCalls,
+					$iterations
 				);
 
 				// Add tool results to conversation
 				$messages[] = [
-					'role' => 'tool',
+					'role'    => 'tool',
 					'content' => json_encode( $toolResults )
 				];
 
@@ -390,7 +361,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 				$guidanceMessage = $this->getGuidedNextStep( $investigationState, $vulnerability, $iterations );
 				if ( $guidanceMessage ) {
 					$messages[] = [
-						'role' => 'user',
+						'role'    => 'user',
 						'content' => $guidanceMessage
 					];
 				}
@@ -402,7 +373,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 				// Force minimum investigation depth
 				if ( $iterations < 3 || ! $investigationState['read_target_file'] ) {
 					$messages[] = [
-						'role' => 'user',
+						'role'    => 'user',
 						'content' => "You must read the vulnerable file first. Use the read_file tool to examine {$vulnerability['file']} around line {$vulnerability['line']}."
 					];
 					continue;
@@ -411,44 +382,46 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 				if ( $this->isInvestigationComplete( $content ) || $iterations >= $maxIterations - 1 ) {
 					$investigationState['final_assessment'] = true;
 					$this->log_info( "Investigation completed at iteration $iterations" );
-					return $this->compileInvestigationResults( 
-						$content, 
-						$allToolCalls, 
-						$iterations, 
-						$startTime, 
-						$investigationState 
+
+					return $this->compileInvestigationResults(
+						$content,
+						$allToolCalls,
+						$iterations,
+						$startTime,
+						$investigationState
 					);
 				}
 
 				// Prompt for continuation
 				$messages[] = [
-					'role' => 'user',
-					'content' => "Continue your investigation. You've completed these steps: " . 
-					            implode(', ', array_keys(array_filter($investigationState))) . 
-					            ". What else do you need to check?"
+					'role'    => 'user',
+					'content' => "Continue your investigation. You've completed these steps: " .
+					             implode( ', ', array_keys( array_filter( $investigationState ) ) ) .
+					             ". What else do you need to check?"
 				];
 			}
 		}
 
 		// Max iterations reached or error occurred
 		$finalContent = $this->getFinalAssessment( $messages );
-		return $this->compileInvestigationResults( 
-			$finalContent, 
-			$allToolCalls, 
-			$iterations, 
-			$startTime, 
-			$investigationState 
+
+		return $this->compileInvestigationResults(
+			$finalContent,
+			$allToolCalls,
+			$iterations,
+			$startTime,
+			$investigationState
 		);
 	}
 
 	/**
 	 * Execute tool calls and track them
 	 */
-	private function executeToolCalls( 
-		array $toolCalls, 
-		ToolRegistry $toolRegistry, 
-		array &$allToolCalls, 
-		int $iteration 
+	private function executeToolCalls(
+		array $toolCalls,
+		ToolRegistry $toolRegistry,
+		array &$allToolCalls,
+		int $iteration
 	): array {
 		$toolResults = [];
 
@@ -471,7 +444,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 
 				$toolResults[] = [
 					'tool_call_id' => $toolCall['id'] ?? uniqid(),
-					'output' => json_encode( $result )
+					'output'       => json_encode( $result )
 				];
 
 				$allToolCalls[] = [
@@ -483,13 +456,13 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 				];
 			} catch ( Exception $e ) {
 				$this->log_error( "Tool execution failed", [
-					'tool' => $toolName,
+					'tool'  => $toolName,
 					'error' => $e->getMessage()
 				] );
 
 				$toolResults[] = [
 					'tool_call_id' => $toolCall['id'] ?? uniqid(),
-					'output' => json_encode( [ 'error' => $e->getMessage() ] )
+					'output'       => json_encode( [ 'error' => $e->getMessage() ] )
 				];
 			}
 		}
@@ -503,7 +476,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	private function updateInvestigationState( array &$state, array $toolCalls, array $vulnerability ): void {
 		foreach ( $toolCalls as $call ) {
 			// Check if target file was read
-			if ( $call['tool'] === 'read_file' && 
+			if ( $call['tool'] === 'read_file' &&
 			     isset( $call['args']['path'] ) &&
 			     strpos( $call['args']['path'], $vulnerability['file'] ) !== false ) {
 				$state['read_target_file'] = true;
@@ -512,11 +485,11 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 			// Check if searching for entry points
 			if ( $call['tool'] === 'search_pattern' ) {
 				$pattern = strtolower( $call['args']['pattern'] ?? '' );
-				if ( strpos( $pattern, 'add_action' ) !== false || 
+				if ( strpos( $pattern, 'add_action' ) !== false ||
 				     strpos( $pattern, 'ajax' ) !== false ) {
 					$state['found_entry_points'] = true;
 				}
-				if ( strpos( $pattern, 'verify_nonce' ) !== false || 
+				if ( strpos( $pattern, 'verify_nonce' ) !== false ||
 				     strpos( $pattern, 'current_user_can' ) !== false ) {
 					$state['checked_authentication'] = true;
 				}
@@ -532,49 +505,145 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	/**
 	 * Get guided next step based on investigation state
 	 */
+	// Enhanced getGuidedNextStep method with more specific instructions:
+
 	private function getGuidedNextStep( array $state, array $vulnerability, int $iteration ): ?string {
+		// Extract function name more intelligently
+		$funcName = $this->extractFunctionName( $vulnerability );
+
 		// Step 1: Read the vulnerable file
 		if ( ! $state['read_target_file'] ) {
-			return "You must first read the vulnerable code. Use read_file to examine {$vulnerability['file']} " .
-			       "from line " . max(1, $vulnerability['line'] - 30) . " to line " . ($vulnerability['line'] + 30) . ".";
+			return sprintf(
+				"Start by reading the vulnerable code. Use:\n" .
+				"read_file with parameters:\n" .
+				"- path: \"%s\"\n" .
+				"- start_line: %d\n" .
+				"- end_line: %d\n" .
+				"This will show you the code around line %d where the %s vulnerability was found.",
+				$vulnerability['file'],
+				max( 1, $vulnerability['line'] - 30 ),
+				$vulnerability['line'] + 30,
+				$vulnerability['line'],
+				$vulnerability['type']
+			);
 		}
 
 		// Step 2: Find entry points
 		if ( ! $state['found_entry_points'] && $iteration === 2 ) {
-			$funcName = $this->extractFunctionName( $vulnerability );
-			return "Good, you've read the vulnerable code. Now search for where the '{$funcName}' function " .
-			       "is called from. Use search_pattern to find 'add_action' calls that reference this function. " .
-			       "Also search for 'wp_ajax_' to find AJAX handlers.";
+			$patterns = [];
+
+			// For CSRF vulnerabilities, look for AJAX handlers
+			if ( stripos( $vulnerability['type'], 'CSRF' ) !== false ) {
+				$patterns[] = "- search_pattern with pattern: \"add_action.*wp_ajax.*{$funcName}\"";
+				$patterns[] = "- search_pattern with pattern: \"wp_ajax_nopriv_\"";
+			}
+
+			// For any vulnerability, search for function calls
+			$patterns[] = "- search_pattern with pattern: \"{$funcName}\\s*\\(\"";
+			$patterns[] = "- search_pattern with pattern: \"->call_api\\s*\\(\" (if this is an API call)";
+
+			return "Now find where this vulnerable code is called from. Try these searches:\n" .
+			       implode( "\n", $patterns ) . "\n" .
+			       "This will help identify all entry points to the vulnerable code.";
 		}
 
 		// Step 3: Check authentication
 		if ( ! $state['checked_authentication'] && $iteration === 3 ) {
-			return "Now check if there's any authentication or nonce verification. Search for 'wp_verify_nonce', " .
-			       "'current_user_can', 'is_user_logged_in', or 'check_admin_referer' in the vulnerable function " .
-			       "and its callers.";
+			return "Check for security measures. Use search_pattern with these patterns:\n" .
+			       "- Pattern: \"wp_verify_nonce\" (for CSRF protection)\n" .
+			       "- Pattern: \"current_user_can\" (for authorization)\n" .
+			       "- Pattern: \"is_user_logged_in\" (for authentication)\n" .
+			       "- Pattern: \"check_admin_referer\" (for admin CSRF)\n" .
+			       "Search in the vulnerable function and any calling functions you found.";
 		}
 
 		// Step 4: Trace data flow
 		if ( ! $state['traced_data_flow'] && $iteration === 4 ) {
-			return "Trace how user input flows to the vulnerable code. Search for '$_POST', '$_GET', '$_REQUEST' " .
-			       "to see how data enters the system and reaches the vulnerable function.";
+			return "Trace how user input reaches the vulnerable code. Use search_pattern:\n" .
+			       "- Pattern: \"\\\$_(?:POST|GET|REQUEST)\\s*\\[\" (to find user input)\n" .
+			       "- Pattern: \"sanitize_\" (to check for input sanitization)\n" .
+			       "- Pattern: \"esc_\" (to check for output escaping)\n" .
+			       "Focus on the functions you've already identified.";
 		}
 
 		// Step 5: Final assessment
 		if ( $iteration >= 5 && ! $state['final_assessment'] ) {
-			return "Based on your investigation, provide your final assessment. Is this vulnerability exploitable? " .
-			       "What are the specific conditions for exploitation? What would be the impact? " .
-			       "Provide a clear conclusion about the {$vulnerability['type']} vulnerability.";
+			$vulnType = $vulnerability['type'] ?? 'vulnerability';
+
+			return "Based on your investigation, provide your FINAL ASSESSMENT:\n\n" .
+			       "1. Is the {$vulnType} vulnerability confirmed? (Yes/No)\n" .
+			       "2. Exploitability: How can it be exploited?\n" .
+			       "3. Prerequisites: What access level is needed?\n" .
+			       "4. Impact: What damage could be done?\n" .
+			       "5. Severity: Critical/High/Medium/Low\n" .
+			       "6. Remediation: Specific fix recommendation\n\n" .
+			       "Base your assessment ONLY on the evidence you've gathered.";
 		}
 
 		return null;
 	}
 
 	/**
+	 * Extract function name from vulnerability info
+	 */
+	private function extractFunctionName( array $vulnerability ): string {
+		// Try multiple extraction strategies
+		$candidates = [];
+
+		// From code snippet
+		if ( isset( $vulnerability['code_snippet'] ) ) {
+			$snippet = is_array( $vulnerability['code_snippet'] )
+				? implode( "\n", $vulnerability['code_snippet'] )
+				: $vulnerability['code_snippet'];
+
+			// Method call pattern: ->method_name(
+			if ( preg_match( '/->(\w+)\s*\(/', $snippet, $matches ) ) {
+				$candidates[] = $matches[1];
+			}
+
+			// Function call pattern: function_name(
+			if ( preg_match( '/(\w+)\s*\(/', $snippet, $matches ) ) {
+				$candidates[] = $matches[1];
+			}
+
+			// Function definition: function name(
+			if ( preg_match( '/function\s+(\w+)/', $snippet, $matches ) ) {
+				$candidates[] = $matches[1];
+			}
+		}
+
+		// From description
+		if ( isset( $vulnerability['description'] ) ) {
+			if ( preg_match( '/function\s+(\w+)/i', $vulnerability['description'], $matches ) ) {
+				$candidates[] = $matches[1];
+			}
+			if ( preg_match( '/method\s+(\w+)/i', $vulnerability['description'], $matches ) ) {
+				$candidates[] = $matches[1];
+			}
+			if ( preg_match( '/(\w+)\s*\(/', $vulnerability['description'], $matches ) ) {
+				$candidates[] = $matches[1];
+			}
+		}
+
+		// Return the most specific/longest candidate
+		if ( ! empty( $candidates ) ) {
+			usort( $candidates, function ( $a, $b ) {
+				return strlen( $b ) - strlen( $a );
+			} );
+
+			return $candidates[0];
+		}
+
+		return 'vulnerable_function';
+	}
+
+	/**
 	 * Build structured system prompt
 	 */
+	// Replace buildStructuredSystemPrompt method:
+
 	private function buildStructuredSystemPrompt( array $vulnerability, string $workDir ): string {
-		$prompt = "You are a security analyst conducting a STRUCTURED investigation of a specific vulnerability.\n\n";
+		$prompt = "You are a WordPress security expert conducting a STRUCTURED investigation of a specific vulnerability.\n\n";
 
 		$prompt .= "WORK DIRECTORY: $workDir\n";
 		$prompt .= "All file operations are relative to this directory.\n\n";
@@ -586,20 +655,45 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		$prompt .= "- Description: " . ( $vulnerability['description'] ?? 'No description' ) . "\n\n";
 
 		$prompt .= "INVESTIGATION METHODOLOGY:\n";
-		$prompt .= "You MUST follow these steps IN ORDER:\n";
-		$prompt .= "1. Read the vulnerable code at the specified location\n";
-		$prompt .= "2. Find all entry points that can reach this code\n";
-		$prompt .= "3. Check for authentication/authorization requirements\n";
-		$prompt .= "4. Trace how user input flows to the vulnerable code\n";
-		$prompt .= "5. Determine exploitability and impact\n\n";
+		$prompt .= "Follow these steps IN ORDER:\n\n";
 
-		$prompt .= "CRITICAL REQUIREMENTS:\n";
-		$prompt .= "- Focus ONLY on the specific vulnerability reported\n";
-		$prompt .= "- Do NOT investigate other potential issues\n";
-		$prompt .= "- Use tools systematically to gather evidence\n";
-		$prompt .= "- Provide specific, factual findings based on the code\n\n";
+		$prompt .= "1. READ THE VULNERABLE CODE:\n";
+		$prompt .= "   - Use read_file to examine the specific file and line\n";
+		$prompt .= "   - Read at least 30 lines before and after the vulnerability\n";
+		$prompt .= "   - Identify the function name and understand what it does\n\n";
 
-		$prompt .= "Remember: This is about {$vulnerability['type']} at {$vulnerability['file']}:{$vulnerability['line']}";
+		$prompt .= "2. FIND ENTRY POINTS:\n";
+		$prompt .= "   - Search for where this function is called using search_pattern\n";
+		$prompt .= "   - For AJAX handlers: search_pattern with pattern 'add_action.*wp_ajax.*function_name'\n";
+		$prompt .= "   - For direct calls: search_pattern with pattern 'function_name\\s*\\('\n";
+		$prompt .= "   - Check if it's accessible via public AJAX (wp_ajax_nopriv_)\n\n";
+
+		$prompt .= "3. CHECK AUTHENTICATION:\n";
+		$prompt .= "   - Search for security checks in the vulnerable function\n";
+		$prompt .= "   - Use search_pattern with patterns like:\n";
+		$prompt .= "     * 'wp_verify_nonce' - for CSRF protection\n";
+		$prompt .= "     * 'current_user_can' - for capability checks\n";
+		$prompt .= "     * 'is_user_logged_in' - for authentication\n";
+		$prompt .= "     * 'check_admin_referer' - for admin CSRF\n\n";
+
+		$prompt .= "4. TRACE DATA FLOW:\n";
+		$prompt .= "   - Search for user input: search_pattern with '\\\$_(GET|POST|REQUEST)'\n";
+		$prompt .= "   - Track how data flows from input to the vulnerable point\n";
+		$prompt .= "   - Check if input is sanitized/validated\n\n";
+
+		$prompt .= "5. ASSESS EXPLOITABILITY:\n";
+		$prompt .= "   - Can an attacker reach this code?\n";
+		$prompt .= "   - What privileges are required?\n";
+		$prompt .= "   - What would be the impact of exploitation?\n\n";
+
+		$prompt .= "EXAMPLE SEARCH PATTERNS:\n";
+		$prompt .= "- For AJAX: 'add_action\\s*\\(\\s*['\"]wp_ajax_'\n";
+		$prompt .= "- For SQL: '\\\$wpdb->(?:query|prepare|get_results)'\n";
+		$prompt .= "- For file ops: '(?:include|require|fopen|file_get_contents)\\s*\\('\n";
+		$prompt .= "- For user input: '\\\$_(?:GET|POST|REQUEST|COOKIE|SERVER)\\s*\\['\n\n";
+
+		$prompt .= "CRITICAL: Focus ONLY on the reported vulnerability. Do NOT investigate other issues.\n";
+		$prompt .= "Use regex patterns in search_pattern for flexible matching.\n";
 
 		return $prompt;
 	}
@@ -631,8 +725,8 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		$prompt .= "Read the file '{$file}' focusing on line {$line}.\n";
 		$prompt .= "Use the read_file tool with these parameters:\n";
 		$prompt .= "- path: {$file}\n";
-		$prompt .= "- start_line: " . max(1, $line - 30) . "\n";
-		$prompt .= "- end_line: " . ($line + 30) . "\n\n";
+		$prompt .= "- start_line: " . max( 1, $line - 30 ) . "\n";
+		$prompt .= "- end_line: " . ( $line + 30 ) . "\n\n";
 
 		$prompt .= "This is mandatory - you cannot investigate without first reading the vulnerable code.\n";
 		$prompt .= "Execute the read_file tool now.";
@@ -641,41 +735,12 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	}
 
 	/**
-	 * Extract function name from vulnerability info
-	 */
-	private function extractFunctionName( array $vulnerability ): string {
-		// Try to extract from description
-		if ( isset( $vulnerability['description'] ) ) {
-			if ( preg_match( '/function\s+(\w+)/i', $vulnerability['description'], $matches ) ) {
-				return $matches[1];
-			}
-			if ( preg_match( '/(\w+)\s*\(/', $vulnerability['description'], $matches ) ) {
-				return $matches[1];
-			}
-		}
-
-		// Try to extract from code snippet
-		if ( isset( $vulnerability['code_snippet'] ) ) {
-			$snippet = is_array( $vulnerability['code_snippet'] ) 
-				? implode( "\n", $vulnerability['code_snippet'] ) 
-				: $vulnerability['code_snippet'];
-
-			if ( preg_match( '/function\s+(\w+)/i', $snippet, $matches ) ) {
-				return $matches[1];
-			}
-		}
-
-		// Default
-		return 'target_function';
-	}
-
-	/**
 	 * Compile investigation results
 	 */
-	private function compileInvestigationResults( 
-		string $content, 
-		array $toolCalls, 
-		int $iterations, 
+	private function compileInvestigationResults(
+		string $content,
+		array $toolCalls,
+		int $iterations,
 		float $startTime,
 		array $investigationState
 	): array {
@@ -741,8 +806,8 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 			if ( $call['tool'] === 'search_pattern' && isset( $result['results'] ) ) {
 				foreach ( $result['results'] as $match ) {
 					if ( isset( $match['content'] ) ) {
-						$evidence[] = sprintf( 
-							"Found in %s:%d: %s", 
+						$evidence[] = sprintf(
+							"Found in %s:%d: %s",
 							$match['file'] ?? 'unknown',
 							$match['line'] ?? 0,
 							trim( $match['content'] )
@@ -793,8 +858,8 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	 */
 	private function getFinalAssessment( array $messages ): string {
 		// Work backwards to find the last substantial assistant message
-		for ( $i = count( $messages ) - 1; $i >= 0; $i-- ) {
-			$message = $messages[$i];
+		for ( $i = count( $messages ) - 1; $i >= 0; $i -- ) {
+			$message = $messages[ $i ];
 
 			if ( $message['role'] === 'assistant' && isset( $message['content'] ) ) {
 				$content = $message['content'];
@@ -839,12 +904,12 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		// Look for common impact descriptions
 		$impactPatterns = [
 			'remote code execution' => 'Remote code execution possible',
-			'sql injection' => 'Database compromise possible',
-			'xss' => 'Cross-site scripting attacks possible',
+			'sql injection'         => 'Database compromise possible',
+			'xss'                   => 'Cross-site scripting attacks possible',
 			'authentication bypass' => 'Authentication bypass possible',
-			'privilege escalation' => 'Privilege escalation possible',
-			'csrf' => 'Cross-site request forgery possible',
-			'unauthorized access' => 'Unauthorized access to functionality'
+			'privilege escalation'  => 'Privilege escalation possible',
+			'csrf'                  => 'Cross-site request forgery possible',
+			'unauthorized access'   => 'Unauthorized access to functionality'
 		];
 
 		$lowerContent = strtolower( $content );
@@ -886,27 +951,29 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	/**
 	 * Get tool definitions for Llama 3.2
 	 */
+	// In LogicalSecurityAnalysisHandler.php, replace getToolDefinitions method:
+
 	private function getToolDefinitions(): array {
 		return [
 			[
-				'type' => 'function',
+				'type'     => 'function',
 				'function' => [
 					'name'        => 'read_file',
-					'description' => 'Read the contents of a file with optional line range',
+					'description' => 'Read the contents of a PHP file to examine code. Use this to inspect suspicious functions and their implementation.',
 					'parameters'  => [
 						'type'       => 'object',
 						'properties' => [
-							'path' => [
+							'path'       => [
 								'type'        => 'string',
-								'description' => 'File path relative to the plugin directory'
+								'description' => 'File path relative to plugin root (e.g., "classes/FortisApi.php")'
 							],
 							'start_line' => [
 								'type'        => 'integer',
-								'description' => 'Starting line number (optional)'
+								'description' => 'Starting line number (1-based, inclusive)'
 							],
-							'end_line' => [
+							'end_line'   => [
 								'type'        => 'integer',
-								'description' => 'Ending line number (optional)'
+								'description' => 'Ending line number (1-based, inclusive)'
 							]
 						],
 						'required'   => [ 'path' ]
@@ -914,20 +981,24 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 				]
 			],
 			[
-				'type' => 'function',
+				'type'     => 'function',
 				'function' => [
 					'name'        => 'search_pattern',
-					'description' => 'Search for a pattern in all PHP files',
+					'description' => 'Search for code patterns across all PHP files. Supports regex patterns. Use this to find function calls, security checks, and entry points.',
 					'parameters'  => [
 						'type'       => 'object',
 						'properties' => [
-							'pattern' => [
+							'pattern'     => [
 								'type'        => 'string',
-								'description' => 'Pattern to search for (string or regex)'
+								'description' => 'Regex pattern to search for. Examples: "wp_verify_nonce", "add_action.*wp_ajax_", "\\$_(GET|POST|REQUEST)"'
 							],
 							'max_results' => [
 								'type'        => 'integer',
-								'description' => 'Maximum number of results (default: 50)'
+								'description' => 'Maximum results to return (default: 50)'
+							],
+							'is_regex'    => [
+								'type'        => 'boolean',
+								'description' => 'Whether pattern is regex (true) or literal string (false). Default: true'
 							]
 						],
 						'required'   => [ 'pattern' ]
@@ -935,16 +1006,16 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 				]
 			],
 			[
-				'type' => 'function',
+				'type'     => 'function',
 				'function' => [
 					'name'        => 'list_files',
-					'description' => 'List files in a directory',
+					'description' => 'List all files and directories in a given path. Use this to explore the plugin structure.',
 					'parameters'  => [
 						'type'       => 'object',
 						'properties' => [
 							'directory' => [
 								'type'        => 'string',
-								'description' => 'Directory path relative to plugin root (default: .)'
+								'description' => 'Directory path relative to plugin root (use "." for root)'
 							]
 						],
 						'required'   => []
@@ -982,7 +1053,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	 */
 	public function handleDiscovery( array $input, string $jobId ): void {
 		$this->log_info( "Starting logical security discovery", [
-			'job_id' => $jobId,
+			'job_id'     => $jobId,
 			'input_keys' => array_keys( $input )
 		] );
 
@@ -990,7 +1061,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 			$workDir = ExtractPathResolver::resolve( $input );
 		} catch ( Exception $e ) {
 			$this->log_error( "Path resolution failed for discovery", [
-				'error' => $e->getMessage(),
+				'error'  => $e->getMessage(),
 				'job_id' => $jobId
 			] );
 
@@ -998,19 +1069,20 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 				'job_id' => $jobId,
 				'help'   => 'Ensure extract_path is provided from zip extraction step'
 			] );
+
 			return;
 		}
 
 		$this->log_info( "Work directory resolved for discovery", [
 			'work_dir' => $workDir,
-			'job_id' => $jobId
+			'job_id'   => $jobId
 		] );
 
 		// Get vulnerability patterns to search for
-		$patterns = $this->getVulnerabilityPatterns();
+		$patterns                  = $this->getVulnerabilityPatterns();
 		$discoveredVulnerabilities = [];
-		$totalFilesScanned = 0;
-		$totalMatches = 0;
+		$totalFilesScanned         = 0;
+		$totalMatches              = 0;
 
 		// Scan all PHP files in the work directory
 		$iterator = new RecursiveIteratorIterator(
@@ -1020,50 +1092,50 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 
 		foreach ( $iterator as $file ) {
 			if ( $file->isFile() && pathinfo( $file, PATHINFO_EXTENSION ) === 'php' ) {
-				$totalFilesScanned++;
+				$totalFilesScanned ++;
 				$relativePath = str_replace( $workDir . '/', '', $file->getPathname() );
 
 				try {
 					$content = file_get_contents( $file->getPathname() );
-					$lines = explode( "\n", $content );
+					$lines   = explode( "\n", $content );
 
 					// Check each vulnerability pattern
 					foreach ( $patterns as $patternName => $patternInfo ) {
-						$pattern = $patternInfo['pattern'];
+						$pattern     = $patternInfo['pattern'];
 						$description = $patternInfo['description'];
 
 						// Search for pattern in file content
 						if ( preg_match_all( '/' . $pattern . '/i', $content, $matches, PREG_OFFSET_CAPTURE ) ) {
 							foreach ( $matches[0] as $match ) {
 								$matchText = $match[0];
-								$offset = $match[1];
+								$offset    = $match[1];
 
 								// Calculate line number
 								$lineNumber = substr_count( substr( $content, 0, $offset ), "\n" ) + 1;
 
 								// Get context around the match
 								$contextStart = max( 0, $lineNumber - 3 );
-								$contextEnd = min( count( $lines ), $lineNumber + 2 );
-								$context = array_slice( $lines, $contextStart, $contextEnd - $contextStart );
+								$contextEnd   = min( count( $lines ), $lineNumber + 2 );
+								$context      = array_slice( $lines, $contextStart, $contextEnd - $contextStart );
 
 								$discoveredVulnerabilities[] = [
-									'type' => $patternName,
+									'type'        => $patternName,
 									'description' => $description,
-									'file' => $relativePath,
-									'line' => $lineNumber,
-									'match' => trim( $matchText ),
-									'context' => $context,
-									'severity' => $this->calculateSeverity( $patternName ),
-									'confidence' => $this->calculateConfidence( $patternName, $matchText )
+									'file'        => $relativePath,
+									'line'        => $lineNumber,
+									'match'       => trim( $matchText ),
+									'context'     => $context,
+									'severity'    => $this->calculateSeverity( $patternName ),
+									'confidence'  => $this->calculateConfidence( $patternName, $matchText )
 								];
 
-								$totalMatches++;
+								$totalMatches ++;
 							}
 						}
 					}
 				} catch ( Exception $e ) {
 					$this->log_warning( "Failed to scan file", [
-						'file' => $relativePath,
+						'file'  => $relativePath,
 						'error' => $e->getMessage()
 					] );
 				}
@@ -1071,10 +1143,10 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		}
 
 		// Sort vulnerabilities by severity and confidence
-		usort( $discoveredVulnerabilities, function( $a, $b ) {
+		usort( $discoveredVulnerabilities, function ( $a, $b ) {
 			$severityOrder = [ 'critical' => 4, 'high' => 3, 'medium' => 2, 'low' => 1 ];
-			$aSeverity = $severityOrder[ $a['severity'] ] ?? 0;
-			$bSeverity = $severityOrder[ $b['severity'] ] ?? 0;
+			$aSeverity     = $severityOrder[ $a['severity'] ] ?? 0;
+			$bSeverity     = $severityOrder[ $b['severity'] ] ?? 0;
 
 			if ( $aSeverity !== $bSeverity ) {
 				return $bSeverity - $aSeverity; // Higher severity first
@@ -1084,36 +1156,37 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		} );
 
 		$this->log_info( "Discovery scan completed", [
-			'job_id' => $jobId,
-			'files_scanned' => $totalFilesScanned,
-			'total_matches' => $totalMatches,
+			'job_id'                 => $jobId,
+			'files_scanned'          => $totalFilesScanned,
+			'total_matches'          => $totalMatches,
 			'unique_vulnerabilities' => count( $discoveredVulnerabilities )
 		] );
 
 		// Prepare summary statistics
 		$severityCounts = [];
-		$typeCounts = [];
+		$typeCounts     = [];
 		foreach ( $discoveredVulnerabilities as $vuln ) {
 			$severityCounts[ $vuln['severity'] ] = ( $severityCounts[ $vuln['severity'] ] ?? 0 ) + 1;
-			$typeCounts[ $vuln['type'] ] = ( $typeCounts[ $vuln['type'] ] ?? 0 ) + 1;
+			$typeCounts[ $vuln['type'] ]         = ( $typeCounts[ $vuln['type'] ] ?? 0 ) + 1;
 		}
 
 		// Return discovery results
 		NodeResponse::success( [
 			'discovered_vulnerabilities' => $discoveredVulnerabilities,
-			'summary' => [
+			'summary'                    => [
 				'total_vulnerabilities' => count( $discoveredVulnerabilities ),
-				'files_scanned' => $totalFilesScanned,
-				'severity_breakdown' => $severityCounts,
-				'type_breakdown' => $typeCounts
+				'files_scanned'         => $totalFilesScanned,
+				'severity_breakdown'    => $severityCounts,
+				'type_breakdown'        => $typeCounts
 			],
-			'work_directory' => $workDir,
-			'patterns_used' => array_keys( $patterns )
+			'work_directory'             => $workDir,
+			'patterns_used'              => array_keys( $patterns )
 		], [
-			'job_id' => $jobId,
+			'job_id'     => $jobId,
 			'session_id' => $input['session_id'] ?? null,
-			'model' => $this->model
+			'model'      => $this->model
 		] );
+
 		return;
 	}
 
@@ -1121,16 +1194,17 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	 * Calculate severity based on vulnerability pattern type
 	 *
 	 * @param string $patternName Pattern name
+	 *
 	 * @return string Severity level
 	 */
 	private function calculateSeverity( string $patternName ): string {
 		$severityMap = [
 			'dangerous_functions' => 'critical',
-			'nopriv_ajax'        => 'high',
-			'sql_queries'        => 'high',
-			'file_operations'    => 'medium',
-			'ajax_handlers'      => 'medium',
-			'direct_input'       => 'low'
+			'nopriv_ajax'         => 'high',
+			'sql_queries'         => 'high',
+			'file_operations'     => 'medium',
+			'ajax_handlers'       => 'medium',
+			'direct_input'        => 'low'
 		];
 
 		return $severityMap[ $patternName ] ?? 'low';
@@ -1141,16 +1215,17 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	 *
 	 * @param string $patternName Pattern name
 	 * @param string $matchText Matched text
+	 *
 	 * @return int Confidence score (0-100)
 	 */
 	private function calculateConfidence( string $patternName, string $matchText ): int {
 		$baseConfidence = [
 			'dangerous_functions' => 90,
-			'nopriv_ajax'        => 85,
-			'sql_queries'        => 70,
-			'file_operations'    => 60,
-			'ajax_handlers'      => 50,
-			'direct_input'       => 40
+			'nopriv_ajax'         => 85,
+			'sql_queries'         => 70,
+			'file_operations'     => 60,
+			'ajax_handlers'       => 50,
+			'direct_input'        => 40
 		];
 
 		$confidence = $baseConfidence[ $patternName ] ?? 30;
@@ -1189,15 +1264,15 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	 */
 	private function handleGeneralSecurityAnalysis( array $input ): void {
 		$this->log_info( "Starting simplified general security analysis", [
-			'input_keys' => array_keys( $input ),
+			'input_keys'   => array_keys( $input ),
 			'has_messages' => isset( $input['messages'] ),
-			'has_tools' => isset( $input['tools'] ),
-			'job_id' => $input['job_id'] ?? 'none'
+			'has_tools'    => isset( $input['tools'] ),
+			'job_id'       => $input['job_id'] ?? 'none'
 		] );
 
-		$messages = $input['messages'] ?? [];
+		$messages       = $input['messages'] ?? [];
 		$availableTools = $input['tools'] ?? [];
-		$maxIterations = $input['max_iterations'] ?? 10;
+		$maxIterations  = $input['max_iterations'] ?? 10;
 
 		// Resolve work directory if needed
 		$workDir = null;
@@ -1217,7 +1292,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 				$toolRegistry = new ToolRegistry( $workDir );
 			} catch ( Exception $e ) {
 				$this->log_warning( "Could not initialize tool registry", [
-					'error' => $e->getMessage(),
+					'error'    => $e->getMessage(),
 					'work_dir' => $workDir
 				] );
 			}
@@ -1232,11 +1307,11 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		}, $availableTools );
 
 		// Simple analysis loop
-		$iterations = 0;
+		$iterations   = 0;
 		$allToolCalls = [];
 
 		while ( $iterations < $maxIterations ) {
-			$iterations++;
+			$iterations ++;
 
 			$this->log_info( "General analysis iteration $iterations/$maxIterations" );
 
@@ -1256,7 +1331,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 				break;
 			}
 
-			$message = $response['message'] ?? [];
+			$message    = $response['message'] ?? [];
 			$messages[] = $message;
 
 			// Check if model made tool calls
@@ -1265,16 +1340,16 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 					'count' => count( $message['tool_calls'] )
 				] );
 
-				$toolResults = $this->executeToolCalls( 
-					$message['tool_calls'], 
-					$toolRegistry, 
-					$allToolCalls, 
-					$iterations 
+				$toolResults = $this->executeToolCalls(
+					$message['tool_calls'],
+					$toolRegistry,
+					$allToolCalls,
+					$iterations
 				);
 
 				// Add tool results to conversation
 				$messages[] = [
-					'role' => 'tool',
+					'role'    => 'tool',
 					'content' => json_encode( $toolResults )
 				];
 			} else {
@@ -1285,9 +1360,9 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 
 		// Get final response content
 		$finalContent = '';
-		for ( $i = count( $messages ) - 1; $i >= 0; $i-- ) {
-			if ( $messages[$i]['role'] === 'assistant' && isset( $messages[$i]['content'] ) ) {
-				$finalContent = $messages[$i]['content'];
+		for ( $i = count( $messages ) - 1; $i >= 0; $i -- ) {
+			if ( $messages[ $i ]['role'] === 'assistant' && isset( $messages[ $i ]['content'] ) ) {
+				$finalContent = $messages[ $i ]['content'];
 				break;
 			}
 		}
@@ -1298,9 +1373,9 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 			$allToolCalls,
 			$this->model,
 			[
-				'job_id' => $input['job_id'] ?? null,
-				'session_id' => $input['session_id'] ?? null,
-				'iterations' => $iterations,
+				'job_id'        => $input['job_id'] ?? null,
+				'session_id'    => $input['session_id'] ?? null,
+				'iterations'    => $iterations,
 				'analysis_type' => 'general_security'
 			]
 		);
@@ -1309,32 +1384,70 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	/**
 	 * Get vulnerability patterns
 	 */
+	// Enhanced getVulnerabilityPatterns method:
+
 	private function getVulnerabilityPatterns(): array {
 		return [
 			'ajax_handlers'       => [
-				'pattern'     => 'add_action\s*\(\s*[\'"]wp_ajax_',
-				'description' => 'AJAX handlers that could be entry points'
+				'pattern'     => 'add_action\s*\(\s*[\'"]wp_ajax_\w+[\'"]',
+				'description' => 'AJAX handlers that could be entry points for attacks'
 			],
 			'nopriv_ajax'         => [
-				'pattern'     => 'add_action\s*\(\s*[\'"]wp_ajax_nopriv_',
-				'description' => 'Public AJAX handlers without authentication'
+				'pattern'     => 'add_action\s*\(\s*[\'"]wp_ajax_nopriv_\w+[\'"]',
+				'description' => 'Public AJAX handlers accessible without authentication'
 			],
 			'direct_input'        => [
-				'pattern'     => '\$_(GET|POST|REQUEST)\s*\[',
-				'description' => 'Direct user input access'
+				'pattern'     => '\$_(?:GET|POST|REQUEST|COOKIE|SERVER)\s*\[[\'"]?\w+[\'"]?\]',
+				'description' => 'Direct user input access without validation'
 			],
-			'sql_queries'         => [
-				'pattern'     => '\$wpdb->(query|prepare|get_results|get_var)',
-				'description' => 'Database queries that might have SQL injection'
+			'unsafe_sql'          => [
+				'pattern'     => '\$wpdb->(?:query|get_results|get_var)\s*\(\s*["\'].*\$_(?:GET|POST|REQUEST)',
+				'description' => 'Potential SQL injection from direct input in queries'
+			],
+			'prepared_sql_concat' => [
+				'pattern'     => '\$wpdb->prepare\s*\([^)]*\.\s*\$_(?:GET|POST|REQUEST)',
+				'description' => 'Incorrect use of prepare() with concatenation'
+			],
+			'file_inclusion'      => [
+				'pattern'     => '(?:include|require|include_once|require_once)\s*\([^)]*\$_(?:GET|POST|REQUEST)',
+				'description' => 'Dynamic file inclusion from user input'
 			],
 			'file_operations'     => [
-				'pattern'     => '(include|require|fopen|file_get_contents|file_put_contents)\s*\(',
-				'description' => 'File operations that might have path traversal'
+				'pattern'     => '(?:fopen|file_get_contents|file_put_contents|readfile)\s*\([^)]*\$_(?:GET|POST|REQUEST)',
+				'description' => 'File operations with user-controlled paths'
 			],
 			'dangerous_functions' => [
-				'pattern'     => '(eval|exec|system|shell_exec|passthru)\s*\(',
+				'pattern'     => '(?:eval|exec|system|shell_exec|passthru|proc_open|popen)\s*\(',
 				'description' => 'Dangerous functions that could lead to RCE'
 			],
+			'unescaped_output'    => [
+				'pattern'     => 'echo\s+\$_(?:GET|POST|REQUEST|COOKIE)',
+				'description' => 'Direct output of user input (potential XSS)'
+			],
+			'missing_nonce_check' => [
+				'pattern'     => 'function\s+\w+.*(?:POST|GET|REQUEST)(?!.*wp_verify_nonce)',
+				'description' => 'Functions processing input without nonce verification'
+			],
+			'object_injection'    => [
+				'pattern'     => 'unserialize\s*\([^)]*\$_(?:GET|POST|REQUEST|COOKIE)',
+				'description' => 'Unsafe deserialization of user input'
+			],
+			'weak_crypto'         => [
+				'pattern'     => '(?:md5|sha1)\s*\([^)]*(?:password|pass|pwd)',
+				'description' => 'Weak cryptographic functions for passwords'
+			],
+			'hardcoded_secrets'   => [
+				'pattern'     => '(?:api_key|secret|token|password)\s*=\s*[\'"][^\'"]{10,}[\'"]',
+				'description' => 'Hardcoded secrets or API keys'
+			],
+			'open_redirect'       => [
+				'pattern'     => 'wp_redirect\s*\([^)]*\$_(?:GET|POST|REQUEST)',
+				'description' => 'Potential open redirect vulnerability'
+			],
+			'path_traversal'      => [
+				'pattern'     => '(?:\.\.\/|\.\.\\\\)',
+				'description' => 'Path traversal patterns in file operations'
+			]
 		];
 	}
 }

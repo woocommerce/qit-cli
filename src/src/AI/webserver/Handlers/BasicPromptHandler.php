@@ -35,6 +35,14 @@ class BasicPromptHandler extends AbstractHandler {
 		}
 
 		try {
+			// DEBUG: Log what we received from manager
+			$this->log_debug( "Node received input", [
+				'input_keys' => array_keys( $input ),
+				'prompt_preview' => substr( $input['prompt'] ?? '', 0, 200 ) . '...',
+				'prompt_length' => strlen( $input['prompt'] ?? '' ),
+				'has_format' => isset( $input['format'] ) ? 'yes' : 'no'
+			] );
+
 			// Ensure the model is available before processing
 			$model = $input['model'] ?? 'llama3.2';
 			NodeResponse::mark( 'model_check' );
@@ -46,7 +54,7 @@ class BasicPromptHandler extends AbstractHandler {
 				'model'         => $model,
 				'job_id'        => $input['job_id'] ?? 'unknown',
 				'prompt_length' => strlen( $input['prompt'] ),
-				'has_schema'    => isset( $input['schema'] ) ? 'yes' : 'no'
+				'has_schema'    => isset( $input['format'] ) ? 'yes' : 'no'
 			] );
 
 			$ollamaRequest = [
@@ -57,9 +65,9 @@ class BasicPromptHandler extends AbstractHandler {
 			];
 
 			// Add format if schema is provided
-			if ( isset( $input['schema'] ) && is_array( $input['schema'] ) ) {
-				$ollamaRequest['format'] = $input['schema'];
-				$this->log_debug( "Using schema format", [ 'schema_keys' => array_keys( $input['schema'] ) ] );
+			if ( isset( $input['format'] ) && is_array( $input['format'] ) ) {
+				$ollamaRequest['format'] = $input['format'];
+				$this->log_debug( "Using schema format", [ 'format_keys' => array_keys( $input['format'] ) ] );
 			}
 
 			$this->log_debug( "Sending request to Ollama API", [
