@@ -36,7 +36,7 @@ class BasicPromptHandler extends AbstractHandler {
 
 		try {
 			// Ensure the model is available before processing
-			$model = $input['model'] ?? 'llama3.2';
+			$model = $input['model'];
 			NodeResponse::mark( 'model_check' );
 			if ( ! $this->ensureModelAvailable( $model ) ) {
 				throw new Exception( 'Failed to ensure model availability: ' . $model );

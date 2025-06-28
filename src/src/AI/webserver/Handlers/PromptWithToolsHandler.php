@@ -10,28 +10,30 @@ use QIT_AI_Webserver\NodeResponse;
 /**
  * Prompt With Tools Handler
  *
- * This handler implements an orchestration pattern where a coder model
- * drives a tools model (devstral) to gather information and analyze code.
+ * This handler implements a single-model approach for AI analysis with tools.
+ * The model handles both reasoning and tool execution.
  */
 class PromptWithToolsHandler extends AbstractHandler {
 
-	private string $coderModel = 'qwen2.5-coder:7b';
-	private string $toolsModel = 'devstral:24b';
+	private string $defaultModel = 'llama3.2';
 
 	/**
-	 * Handle AI request with tools using orchestration pattern
+	 * Handle AI request with tools using single model approach
 	 *
 	 * @param array $input Request input data
 	 *
 	 * @return void Outputs JSON response
 	 */
 	public function handle( array $input ): void {
-		$this->log_info( "Processing orchestrated prompt with tools request" );
+		$this->log_info( "Processing prompt with tools request" );
 
 		// Validate input
-		if ( ! isset( $input['prompt'] ) ) {
-			$this->log_error( "Missing prompt in request" );
-			NodeResponse::error( 'Missing prompt parameter', 400, [
+		if ( ! isset( $input['prompt'] ) || ! isset( $input['model'] ) ) {
+			$this->log_error( "Missing required parameters", [
+				'missing' => ! isset( $input['prompt'] ) ? 'prompt' : 'model',
+				'uri'     => $_SERVER['REQUEST_URI'] ?? 'unknown'
+			] );
+			NodeResponse::error( 'Missing prompt or model parameter', 400, [
 				'job_id' => $input['job_id'] ?? null
 			] );
 		}
@@ -39,8 +41,7 @@ class PromptWithToolsHandler extends AbstractHandler {
 		try {
 			// Extract parameters
 			$userPrompt     = $input['prompt'];
-			$coderModel     = $input['coder_model'] ?? $this->coderModel;
-			$toolsModel     = $input['tools_model'] ?? $this->toolsModel;
+			$model          = $input['model'];
 			$jobId          = $input['job_id'] ?? null;
 			$maxIterations  = $input['max_iterations'] ?? 10;
 			$availableTools = $input['available_tools'] ?? [ 'read_file', 'search_pattern', 'list_files' ];
@@ -68,14 +69,14 @@ class PromptWithToolsHandler extends AbstractHandler {
 			NodeResponse::mark( 'tool_registry_init' );
 			$toolRegistry = new ToolRegistry( $workDir );
 
-			// Build system prompt for coder model
-			$coderSystemPrompt = $this->buildCoderSystemPrompt( $workDir, $availableTools );
+			// Build system prompt for model
+			$systemPrompt = $this->buildSystemPrompt( $workDir, $availableTools );
 
-			// Initialize coder conversation
-			$coderConversation = [
+			// Initialize conversation
+			$conversation = [
 				[
 					'role'    => 'system',
-					'content' => $coderSystemPrompt
+					'content' => $systemPrompt
 				],
 				[
 					'role'    => 'user',
@@ -86,9 +87,8 @@ class PromptWithToolsHandler extends AbstractHandler {
 			// Execute orchestration loop
 			NodeResponse::mark( 'orchestration_loop' );
 			$result = $this->runOrchestrationLoop(
-				$coderModel,
-				$toolsModel,
-				$coderConversation,
+				$model,
+				$conversation,
 				$toolRegistry,
 				$maxIterations
 			);
@@ -102,11 +102,10 @@ class PromptWithToolsHandler extends AbstractHandler {
 			NodeResponse::toolPrompt(
 				$result['final_response'],
 				$result['tool_calls'],
-				$coderModel, // Primary model used
+				$model, // Primary model used
 				[
 					'job_id'         => $jobId,
-					'coder_model'    => $coderModel,
-					'tools_model'    => $toolsModel,
+					'model'          => $model,
 					'iterations'     => $result['iterations'],
 					'session_id'     => $sessionId,
 					'execution_time' => $result['execution_time'] ?? null
@@ -122,20 +121,18 @@ class PromptWithToolsHandler extends AbstractHandler {
 	}
 
 	/**
-	 * Run orchestration loop where coder model drives tools model
+	 * Run orchestration loop using single model for both reasoning and tool execution
 	 *
-	 * @param string $coderModel Coder model for reasoning
-	 * @param string $toolsModel Tools model for execution
-	 * @param array $coderConversation Coder conversation history
+	 * @param string $model Model for both reasoning and tool execution
+	 * @param array $conversation Conversation history
 	 * @param ToolRegistry $toolRegistry Tool registry
 	 * @param int $maxIterations Maximum iterations
 	 *
 	 * @return array Results
 	 */
 	private function runOrchestrationLoop(
-		string $coderModel,
-		string $toolsModel,
-		array &$coderConversation,
+		string $model,
+		array &$conversation,
 		ToolRegistry $toolRegistry,
 		int $maxIterations
 	): array {
@@ -148,61 +145,61 @@ class PromptWithToolsHandler extends AbstractHandler {
 
 			$this->log_info( "Orchestration iteration $iterations" );
 
-			// Step 1: Ask coder model what information it needs
-			$coderRequest = [
-				'model'    => $coderModel,
-				'messages' => $coderConversation,
+			// Step 1: Ask model what information it needs
+			$modelRequest = [
+				'model'    => $model,
+				'messages' => $conversation,
 				'stream'   => false,
 				'format'   => 'json' // Request structured response
 			];
 
 			try {
-				$coderResponse = $this->callOllamaChat( $coderRequest );
+				$modelResponse = $this->callOllamaChat( $modelRequest );
 			} catch ( Exception $e ) {
-				$this->log_error( "Coder model failed", [ 'error' => $e->getMessage() ] );
+				$this->log_error( "Model failed", [ 'error' => $e->getMessage() ] );
 				break;
 			}
 
-			// Parse coder's request for tool usage
-			$coderMessage = $coderResponse['message'] ?? [];
-			$coderContent = $coderMessage['content'] ?? '';
+			// Parse model's request for tool usage
+			$modelMessage = $modelResponse['message'] ?? [];
+			$modelContent = $modelMessage['content'] ?? '';
 
 			// Try to parse as JSON first
-			$toolRequests = json_decode( $coderContent, true );
+			$toolRequests = json_decode( $modelContent, true );
 			if ( json_last_error() !== JSON_ERROR_NONE ) {
 				// If not JSON, check if it's a final response
-				if ( $this->isFinaResponse( $coderContent ) ) {
-					$this->log_info( "Coder provided final response" );
-					$coderConversation[] = $coderMessage;
+				if ( $this->isFinaResponse( $modelContent ) ) {
+					$this->log_info( "Model provided final response" );
+					$conversation[] = $modelMessage;
 					break;
 				}
 
 				// Otherwise, prompt for structured response
-				$coderConversation[] = $coderMessage;
-				$coderConversation[] = [
+				$conversation[] = $modelMessage;
+				$conversation[] = [
 					'role'    => 'user',
 					'content' => 'Please provide your tool requests in JSON format: {"tool_requests": [{"tool": "tool_name", "args": {...}}]} or {"final_response": "your analysis"}'
 				];
 				continue;
 			}
 
-			// Add coder's response to conversation
-			$coderConversation[] = $coderMessage;
+			// Add model's response to conversation
+			$conversation[] = $modelMessage;
 
-			// Check if coder wants to use tools or is done
+			// Check if model wants to use tools or is done
 			if ( isset( $toolRequests['final_response'] ) ) {
-				$this->log_info( "Coder provided final response" );
+				$this->log_info( "Model provided final response" );
 				break;
 			}
 
 			if ( ! isset( $toolRequests['tool_requests'] ) || empty( $toolRequests['tool_requests'] ) ) {
-				$this->log_info( "No tool requests from coder" );
+				$this->log_info( "No tool requests from model" );
 				break;
 			}
 
-			// Step 2: Execute tools using the tools model
+			// Step 2: Execute tools using the same model
 			$toolResults = $this->executeToolsWithModel(
-				$toolsModel,
+				$model,
 				$toolRequests['tool_requests'],
 				$toolRegistry
 			);
@@ -217,16 +214,16 @@ class PromptWithToolsHandler extends AbstractHandler {
 				];
 			}
 
-			// Step 3: Feed results back to coder
-			$toolResultsSummary  = $this->formatToolResults( $toolResults );
-			$coderConversation[] = [
+			// Step 3: Feed results back to model
+			$toolResultsSummary = $this->formatToolResults( $toolResults );
+			$conversation[]     = [
 				'role'    => 'user',
 				'content' => "Tool execution results:\n" . $toolResultsSummary . "\n\nBased on these results, what would you like to do next? Request more tools or provide your final analysis?"
 			];
 		}
 
 		// Extract final response
-		$finalResponse = $this->extractFinalResponse( $coderConversation );
+		$finalResponse = $this->extractFinalResponse( $conversation );
 
 		$executionTime = round( ( microtime( true ) - $startTime ) * 1000 );
 
@@ -239,16 +236,16 @@ class PromptWithToolsHandler extends AbstractHandler {
 	}
 
 	/**
-	 * Execute tools using the tools model (devstral)
+	 * Execute tools using the model
 	 *
-	 * @param string $toolsModel Model to use for tool execution
-	 * @param array $toolRequests Tool requests from coder
+	 * @param string $model Model to use for tool execution
+	 * @param array $toolRequests Tool requests from model
 	 * @param ToolRegistry $toolRegistry Tool registry
 	 *
 	 * @return array Tool results
 	 */
 	private function executeToolsWithModel(
-		string $toolsModel,
+		string $model,
 		array $toolRequests,
 		ToolRegistry $toolRegistry
 	): array {
@@ -257,7 +254,7 @@ class PromptWithToolsHandler extends AbstractHandler {
 		// Convert tool requests to Ollama tool format
 		$tools = $this->getToolDefinitionsForRequests( $toolRequests );
 
-		// Build messages for tool model
+		// Build messages for model
 		$toolMessages = [
 			[
 				'role'    => 'system',
@@ -269,9 +266,9 @@ class PromptWithToolsHandler extends AbstractHandler {
 			]
 		];
 
-		// Call tools model
+		// Call model for tool execution
 		$toolRequest = [
-			'model'    => $toolsModel,
+			'model'    => $model,
 			'messages' => $toolMessages,
 			'tools'    => $tools,
 			'stream'   => false
@@ -316,7 +313,7 @@ class PromptWithToolsHandler extends AbstractHandler {
 				}
 			}
 		} catch ( Exception $e ) {
-			$this->log_error( "Tools model failed", [ 'error' => $e->getMessage() ] );
+			$this->log_error( "Model failed during tool execution", [ 'error' => $e->getMessage() ] );
 
 			// Fallback: execute tools directly without model
 			foreach ( $toolRequests as $request ) {
@@ -346,19 +343,19 @@ class PromptWithToolsHandler extends AbstractHandler {
 	}
 
 	/**
-	 * Build system prompt for coder model
+	 * Build system prompt for model
 	 *
 	 * @param string $workDir Work directory
 	 * @param array $availableTools Available tools
 	 *
 	 * @return string System prompt
 	 */
-	private function buildCoderSystemPrompt( string $workDir, array $availableTools ): string {
+	private function buildSystemPrompt( string $workDir, array $availableTools ): string {
 		$prompt = "You are an AI code analyst examining a WordPress plugin/theme.\n\n";
 		$prompt .= "WORK DIRECTORY: $workDir\n";
 		$prompt .= "All file operations are relative to this directory.\n\n";
 
-		$prompt .= "You have access to the following tools through a tools assistant:\n";
+		$prompt .= "You have access to the following tools:\n";
 
 		$toolDescriptions = [
 			'read_file'        => 'Read file contents with optional line range',
