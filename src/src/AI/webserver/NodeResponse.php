@@ -143,6 +143,9 @@ class NodeResponse {
             'meta' => self::getPerformanceStats()
         ];
 
+        // Log the FULL response
+        log_info('NodeResponse - Sending prompt response', $response);
+
         echo json_encode($response);
         exit;
     }
@@ -173,6 +176,9 @@ class NodeResponse {
             'meta' => self::getPerformanceStats()
         ];
 
+        // Log the FULL response
+        log_info('NodeResponse - Sending tool prompt response', $response);
+
         echo json_encode($response);
         exit;
     }
@@ -202,6 +208,9 @@ class NodeResponse {
             'meta' => self::getPerformanceStats()
         ];
 
+        // Log the FULL response
+        log_info('NodeResponse - Sending extraction response', $response);
+
         echo json_encode($response);
         exit;
     }
@@ -222,6 +231,9 @@ class NodeResponse {
             'data' => $data,
             'meta' => array_merge(self::getPerformanceStats(), $meta)
         ];
+
+        // Log the FULL response
+        log_info('NodeResponse - Sending success response', $response);
 
         echo json_encode($response);
         exit;
@@ -254,6 +266,9 @@ class NodeResponse {
             'meta' => self::getPerformanceStats()
         ];
 
+        // Log the FULL response
+        log_info('NodeResponse - Sending error response', $response);
+
         echo json_encode($response);
         exit;
     }
@@ -283,6 +298,9 @@ class NodeResponse {
         if (!isset($response['type'])) {
             $response['type'] = 'manager_orchestrated';
         }
+
+        // Log the FULL response
+        log_info('NodeResponse - Sending manager response', $response);
 
         echo json_encode($response);
         exit;

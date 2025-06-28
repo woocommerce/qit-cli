@@ -71,12 +71,9 @@ function log_message( $level, $message, $context = [] ) {
 		$formatted_message .= " " . json_encode( $context, JSON_UNESCAPED_SLASHES );
 	}
 
-	// Write to log file
+	// Write to log file only (removed duplication to error_log)
 	global $router_log_file;
 	file_put_contents( $router_log_file, $formatted_message . PHP_EOL, FILE_APPEND );
-
-	// Also write to error_log for system logging
-	error_log( "[QIT Node Router] $formatted_message" );
 }
 
 function log_debug( $message, $context = [] ) {
@@ -275,13 +272,11 @@ require_once __DIR__ . '/Handlers/helpers.php';
 use QIT_AI_Webserver\Handlers\BasicPromptHandler;
 use QIT_AI_Webserver\Handlers\LogicalSecurityAnalysisHandler;
 use QIT_AI_Webserver\Handlers\PromptWithToolsHandler;
-use QIT_AI_Webserver\Handlers\SecurityAnalysisHandler;
 use QIT_AI_Webserver\Handlers\ZipExtractionHandler;
 
 // Create handler instances
 $basicPromptHandler      = new BasicPromptHandler( '{{OLLAMA_API_URL}}' );
 $logicalSecurityHandler  = new LogicalSecurityAnalysisHandler( '{{OLLAMA_API_URL}}' );
-$securityAnalysisHandler = new SecurityAnalysisHandler( '{{OLLAMA_API_URL}}' );
 $zipExtractionHandler    = new ZipExtractionHandler( '{{OLLAMA_API_URL}}' );
 $promptWithToolsHandler  = new PromptWithToolsHandler( '{{OLLAMA_API_URL}}' );
 $fileReadingHandler      = new FileReadingHandler( '{{OLLAMA_API_URL}}' );
@@ -302,18 +297,13 @@ switch ( $uri ) {
 		$zipExtractionHandler->handle( $input );
 		break;
 
-	case '/security-analysis':
-		log_info( "Handling security analysis request" );
-		$securityAnalysisHandler->handle( $input );
-		break;
-
 	case '/read-file':
 		log_info( "Handling file reading request" );
 		$fileReadingHandler->handle( $input );
 		break;
 
-	case '/logical-security-analysis':
-		log_info( "Handling logical security analysis request" );
+	case '/ai-analysis-with-tools':
+		log_info( "Handling AI analysis with tools request" );
 		$logicalSecurityHandler->handle( $input );
 		break;
 
