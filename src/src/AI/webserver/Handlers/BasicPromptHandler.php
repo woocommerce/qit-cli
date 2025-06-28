@@ -35,14 +35,6 @@ class BasicPromptHandler extends AbstractHandler {
 		}
 
 		try {
-			// DEBUG: Log what we received from manager
-			$this->log_debug( "Node received input", [
-				'input_keys' => array_keys( $input ),
-				'prompt_preview' => substr( $input['prompt'] ?? '', 0, 200 ) . '...',
-				'prompt_length' => strlen( $input['prompt'] ?? '' ),
-				'has_format' => isset( $input['format'] ) ? 'yes' : 'no'
-			] );
-
 			// Ensure the model is available before processing
 			$model = $input['model'] ?? 'llama3.2';
 			NodeResponse::mark( 'model_check' );
@@ -67,14 +59,7 @@ class BasicPromptHandler extends AbstractHandler {
 			// Add format if schema is provided
 			if ( isset( $input['format'] ) && is_array( $input['format'] ) ) {
 				$ollamaRequest['format'] = $input['format'];
-				$this->log_debug( "Using schema format", [ 'format_keys' => array_keys( $input['format'] ) ] );
 			}
-
-			$this->log_debug( "Sending request to Ollama API", [
-				'model'  => $ollamaRequest['model'],
-				'system' => $ollamaRequest['system'],
-				'prompt' => $ollamaRequest['prompt'],
-			] );
 
 			// Make the API call using the parent class method
 			NodeResponse::mark( 'ollama_call' );
