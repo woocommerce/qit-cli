@@ -33,11 +33,9 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	public function handle( array $input ): void {
 		$jobId = $input['job_id'] ?? null;
 
-		// Check if this is a discovery or file analysis mode
+		// Check if this is a file analysis mode
 		if ( isset( $input['config']['analysis_mode'] ) ) {
-			if ( $input['config']['analysis_mode'] === 'logical_security_discovery' ) {
-				$this->handleDiscovery( $input, $jobId );
-			} elseif ( $input['config']['analysis_mode'] === 'vulnerability_investigation' ) {
+			if ( $input['config']['analysis_mode'] === 'vulnerability_investigation' ) {
 				$this->handleFileAnalysis( $input, $jobId );
 			} else {
 				// Handle other analysis modes as general security analysis
@@ -58,16 +56,11 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 			// Handle general security analysis with tools
 			$this->handleGeneralSecurityAnalysis( $input );
 		} else {
-			// Default to discovery if no mode specified and we have a job_id
-			if ( ! $jobId ) {
-				$this->log_error( "Missing job_id" );
-				NodeResponse::error( 'Missing required job_id parameter', 400, [
-					'job_id' => $jobId
-				] );
-
-				return;
-			}
-			$this->handleDiscovery( $input, $jobId );
+			// No valid mode specified
+			$this->log_error( "No valid analysis mode specified" );
+			NodeResponse::error( 'No valid analysis mode specified', 400, [
+				'job_id' => $jobId
+			] );
 		}
 	}
 
@@ -1045,217 +1038,6 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		return $structure;
 	}
 
-	/**
-	 * Handle logical security discovery
-	 *
-	 * @param array $input Request input
-	 * @param string $jobId Job identifier
-	 */
-	public function handleDiscovery( array $input, string $jobId ): void {
-		$this->log_info( "Starting logical security discovery", [
-			'job_id'     => $jobId,
-			'input_keys' => array_keys( $input )
-		] );
-
-		try {
-			$workDir = ExtractPathResolver::resolve( $input );
-		} catch ( Exception $e ) {
-			$this->log_error( "Path resolution failed for discovery", [
-				'error'  => $e->getMessage(),
-				'job_id' => $jobId
-			] );
-
-			NodeResponse::error( $e->getMessage(), 400, [
-				'job_id' => $jobId,
-				'help'   => 'Ensure extract_path is provided from zip extraction step'
-			] );
-
-			return;
-		}
-
-		$this->log_info( "Work directory resolved for discovery", [
-			'work_dir' => $workDir,
-			'job_id'   => $jobId
-		] );
-
-		// Get vulnerability patterns to search for
-		$patterns                  = $this->getVulnerabilityPatterns();
-		$discoveredVulnerabilities = [];
-		$totalFilesScanned         = 0;
-		$totalMatches              = 0;
-
-		// Scan all PHP files in the work directory
-		$iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator( $workDir, RecursiveDirectoryIterator::SKIP_DOTS ),
-			RecursiveIteratorIterator::SELF_FIRST
-		);
-
-		foreach ( $iterator as $file ) {
-			if ( $file->isFile() && pathinfo( $file, PATHINFO_EXTENSION ) === 'php' ) {
-				$totalFilesScanned ++;
-				$relativePath = str_replace( $workDir . '/', '', $file->getPathname() );
-
-				try {
-					$content = file_get_contents( $file->getPathname() );
-					$lines   = explode( "\n", $content );
-
-					// Check each vulnerability pattern
-					foreach ( $patterns as $patternName => $patternInfo ) {
-						$pattern     = $patternInfo['pattern'];
-						$description = $patternInfo['description'];
-
-						// Search for pattern in file content
-						if ( preg_match_all( '/' . $pattern . '/i', $content, $matches, PREG_OFFSET_CAPTURE ) ) {
-							foreach ( $matches[0] as $match ) {
-								$matchText = $match[0];
-								$offset    = $match[1];
-
-								// Calculate line number
-								$lineNumber = substr_count( substr( $content, 0, $offset ), "\n" ) + 1;
-
-								// Get context around the match
-								$contextStart = max( 0, $lineNumber - 3 );
-								$contextEnd   = min( count( $lines ), $lineNumber + 2 );
-								$context      = array_slice( $lines, $contextStart, $contextEnd - $contextStart );
-
-								$discoveredVulnerabilities[] = [
-									'type'        => $patternName,
-									'description' => $description,
-									'file'        => $relativePath,
-									'line'        => $lineNumber,
-									'match'       => trim( $matchText ),
-									'context'     => $context,
-									'severity'    => $this->calculateSeverity( $patternName ),
-									'confidence'  => $this->calculateConfidence( $patternName, $matchText )
-								];
-
-								$totalMatches ++;
-							}
-						}
-					}
-				} catch ( Exception $e ) {
-					$this->log_warning( "Failed to scan file", [
-						'file'  => $relativePath,
-						'error' => $e->getMessage()
-					] );
-				}
-			}
-		}
-
-		// Sort vulnerabilities by severity and confidence
-		usort( $discoveredVulnerabilities, function ( $a, $b ) {
-			$severityOrder = [ 'critical' => 4, 'high' => 3, 'medium' => 2, 'low' => 1 ];
-			$aSeverity     = $severityOrder[ $a['severity'] ] ?? 0;
-			$bSeverity     = $severityOrder[ $b['severity'] ] ?? 0;
-
-			if ( $aSeverity !== $bSeverity ) {
-				return $bSeverity - $aSeverity; // Higher severity first
-			}
-
-			return $b['confidence'] - $a['confidence']; // Higher confidence first
-		} );
-
-		$this->log_info( "Discovery scan completed", [
-			'job_id'                 => $jobId,
-			'files_scanned'          => $totalFilesScanned,
-			'total_matches'          => $totalMatches,
-			'unique_vulnerabilities' => count( $discoveredVulnerabilities )
-		] );
-
-		// Prepare summary statistics
-		$severityCounts = [];
-		$typeCounts     = [];
-		foreach ( $discoveredVulnerabilities as $vuln ) {
-			$severityCounts[ $vuln['severity'] ] = ( $severityCounts[ $vuln['severity'] ] ?? 0 ) + 1;
-			$typeCounts[ $vuln['type'] ]         = ( $typeCounts[ $vuln['type'] ] ?? 0 ) + 1;
-		}
-
-		// Return discovery results
-		NodeResponse::success( [
-			'discovered_vulnerabilities' => $discoveredVulnerabilities,
-			'summary'                    => [
-				'total_vulnerabilities' => count( $discoveredVulnerabilities ),
-				'files_scanned'         => $totalFilesScanned,
-				'severity_breakdown'    => $severityCounts,
-				'type_breakdown'        => $typeCounts
-			],
-			'work_directory'             => $workDir,
-			'patterns_used'              => array_keys( $patterns )
-		], [
-			'job_id'     => $jobId,
-			'session_id' => $input['session_id'] ?? null,
-			'model'      => $this->model
-		] );
-
-		return;
-	}
-
-	/**
-	 * Calculate severity based on vulnerability pattern type
-	 *
-	 * @param string $patternName Pattern name
-	 *
-	 * @return string Severity level
-	 */
-	private function calculateSeverity( string $patternName ): string {
-		$severityMap = [
-			'dangerous_functions' => 'critical',
-			'nopriv_ajax'         => 'high',
-			'sql_queries'         => 'high',
-			'file_operations'     => 'medium',
-			'ajax_handlers'       => 'medium',
-			'direct_input'        => 'low'
-		];
-
-		return $severityMap[ $patternName ] ?? 'low';
-	}
-
-	/**
-	 * Calculate confidence based on pattern type and match content
-	 *
-	 * @param string $patternName Pattern name
-	 * @param string $matchText Matched text
-	 *
-	 * @return int Confidence score (0-100)
-	 */
-	private function calculateConfidence( string $patternName, string $matchText ): int {
-		$baseConfidence = [
-			'dangerous_functions' => 90,
-			'nopriv_ajax'         => 85,
-			'sql_queries'         => 70,
-			'file_operations'     => 60,
-			'ajax_handlers'       => 50,
-			'direct_input'        => 40
-		];
-
-		$confidence = $baseConfidence[ $patternName ] ?? 30;
-
-		// Adjust confidence based on context clues
-		$lowerMatch = strtolower( $matchText );
-
-		// Increase confidence for dangerous patterns
-		if ( $patternName === 'dangerous_functions' ) {
-			if ( strpos( $lowerMatch, 'eval' ) !== false ) {
-				$confidence = min( 95, $confidence + 5 );
-			}
-		}
-
-		// Increase confidence for SQL injection patterns
-		if ( $patternName === 'sql_queries' ) {
-			if ( strpos( $lowerMatch, 'prepare' ) !== false ) {
-				$confidence = max( 30, $confidence - 20 ); // Prepared statements are safer
-			} elseif ( strpos( $lowerMatch, 'query' ) !== false ) {
-				$confidence = min( 90, $confidence + 20 ); // Direct queries are riskier
-			}
-		}
-
-		// Increase confidence for unprotected AJAX handlers
-		if ( $patternName === 'nopriv_ajax' ) {
-			$confidence = min( 95, $confidence + 10 ); // Public AJAX is always concerning
-		}
-
-		return max( 10, min( 100, $confidence ) );
-	}
 
 	/**
 	 * Handle general security analysis with tools (simplified version)
@@ -1381,73 +1163,4 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		);
 	}
 
-	/**
-	 * Get vulnerability patterns
-	 */
-	// Enhanced getVulnerabilityPatterns method:
-
-	private function getVulnerabilityPatterns(): array {
-		return [
-			'ajax_handlers'       => [
-				'pattern'     => 'add_action\s*\(\s*[\'"]wp_ajax_\w+[\'"]',
-				'description' => 'AJAX handlers that could be entry points for attacks'
-			],
-			'nopriv_ajax'         => [
-				'pattern'     => 'add_action\s*\(\s*[\'"]wp_ajax_nopriv_\w+[\'"]',
-				'description' => 'Public AJAX handlers accessible without authentication'
-			],
-			'direct_input'        => [
-				'pattern'     => '\$_(?:GET|POST|REQUEST|COOKIE|SERVER)\s*\[[\'"]?\w+[\'"]?\]',
-				'description' => 'Direct user input access without validation'
-			],
-			'unsafe_sql'          => [
-				'pattern'     => '\$wpdb->(?:query|get_results|get_var)\s*\(\s*["\'].*\$_(?:GET|POST|REQUEST)',
-				'description' => 'Potential SQL injection from direct input in queries'
-			],
-			'prepared_sql_concat' => [
-				'pattern'     => '\$wpdb->prepare\s*\([^)]*\.\s*\$_(?:GET|POST|REQUEST)',
-				'description' => 'Incorrect use of prepare() with concatenation'
-			],
-			'file_inclusion'      => [
-				'pattern'     => '(?:include|require|include_once|require_once)\s*\([^)]*\$_(?:GET|POST|REQUEST)',
-				'description' => 'Dynamic file inclusion from user input'
-			],
-			'file_operations'     => [
-				'pattern'     => '(?:fopen|file_get_contents|file_put_contents|readfile)\s*\([^)]*\$_(?:GET|POST|REQUEST)',
-				'description' => 'File operations with user-controlled paths'
-			],
-			'dangerous_functions' => [
-				'pattern'     => '(?:eval|exec|system|shell_exec|passthru|proc_open|popen)\s*\(',
-				'description' => 'Dangerous functions that could lead to RCE'
-			],
-			'unescaped_output'    => [
-				'pattern'     => 'echo\s+\$_(?:GET|POST|REQUEST|COOKIE)',
-				'description' => 'Direct output of user input (potential XSS)'
-			],
-			'missing_nonce_check' => [
-				'pattern'     => 'function\s+\w+.*(?:POST|GET|REQUEST)(?!.*wp_verify_nonce)',
-				'description' => 'Functions processing input without nonce verification'
-			],
-			'object_injection'    => [
-				'pattern'     => 'unserialize\s*\([^)]*\$_(?:GET|POST|REQUEST|COOKIE)',
-				'description' => 'Unsafe deserialization of user input'
-			],
-			'weak_crypto'         => [
-				'pattern'     => '(?:md5|sha1)\s*\([^)]*(?:password|pass|pwd)',
-				'description' => 'Weak cryptographic functions for passwords'
-			],
-			'hardcoded_secrets'   => [
-				'pattern'     => '(?:api_key|secret|token|password)\s*=\s*[\'"][^\'"]{10,}[\'"]',
-				'description' => 'Hardcoded secrets or API keys'
-			],
-			'open_redirect'       => [
-				'pattern'     => 'wp_redirect\s*\([^)]*\$_(?:GET|POST|REQUEST)',
-				'description' => 'Potential open redirect vulnerability'
-			],
-			'path_traversal'      => [
-				'pattern'     => '(?:\.\.\/|\.\.\\\\)',
-				'description' => 'Path traversal patterns in file operations'
-			]
-		];
-	}
 }
