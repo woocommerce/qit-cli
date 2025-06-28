@@ -17,13 +17,6 @@ use QIT_AI_Webserver\NodeResponse;
  * using Llama 3.2's native tool calling capabilities with improved investigation flow.
  */
 class LogicalSecurityAnalysisHandler extends AbstractHandler {
-	private string $model = 'llama3.1:8b';
-
-	// Increase context window for better tool calling performance
-	private array $modelOptions = [
-		'num_ctx'     => 32768,
-		'temperature' => 0.3  // Lower temperature for more consistent tool usage
-	];
 
 	/**
 	 * Handle request based on input
@@ -33,13 +26,45 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	public function handle( array $input ): void {
 		$jobId = $input['job_id'] ?? null;
 
+		// Validate that model is provided in the input
+		if ( ! isset( $input['model'] ) ) {
+			$this->log_error( "Missing required model parameter", [
+				'job_id' => $jobId,
+				'uri'    => $_SERVER['REQUEST_URI'] ?? 'unknown'
+			] );
+
+			NodeResponse::error( 'Missing required model parameter', 400, [
+				'job_id' => $jobId
+			] );
+
+			return;
+		}
+
+		$model = $input['model'];
+
+		// Validate that options are provided in the input
+		if ( ! isset( $input['options'] ) ) {
+			$this->log_error( "Missing required options parameter", [
+				'job_id' => $jobId,
+				'uri'    => $_SERVER['REQUEST_URI'] ?? 'unknown'
+			] );
+
+			NodeResponse::error( 'Missing required options parameter', 400, [
+				'job_id' => $jobId
+			] );
+
+			return;
+		}
+
+		$modelOptions = $input['options'];
+
 		// Check if this is a file analysis mode
 		if ( isset( $input['config']['analysis_mode'] ) ) {
 			if ( $input['config']['analysis_mode'] === 'vulnerability_investigation' ) {
-				$this->handleFileAnalysis( $input, $jobId );
+				$this->handleFileAnalysis( $input, $jobId, $model, $modelOptions );
 			} else {
 				// Handle other analysis modes as general security analysis
-				$this->handleGeneralSecurityAnalysis( $input );
+				$this->handleGeneralSecurityAnalysis( $input, $model, $modelOptions );
 			}
 		} elseif ( isset( $input['task_phase'] ) && $input['task_phase'] === 'file_analysis' ) {
 			// Handle file analysis task
@@ -51,10 +76,10 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 
 				return;
 			}
-			$this->handleFileAnalysis( $input, $jobId );
+			$this->handleFileAnalysis( $input, $jobId, $model, $modelOptions );
 		} elseif ( isset( $input['messages'] ) && isset( $input['tools'] ) ) {
 			// Handle general security analysis with tools
-			$this->handleGeneralSecurityAnalysis( $input );
+			$this->handleGeneralSecurityAnalysis( $input, $model, $modelOptions );
 		} else {
 			// No valid mode specified
 			$this->log_error( "No valid analysis mode specified" );
@@ -69,8 +94,10 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	 *
 	 * @param array $input Request input
 	 * @param string $jobId Job identifier
+	 * @param string $model Model to use
+	 * @param array $modelOptions Model options
 	 */
-	public function handleFileAnalysis( array $input, string $jobId ): void {
+	public function handleFileAnalysis( array $input, string $jobId, string $model, array $modelOptions ): void {
 		$this->log_info( "Starting file analysis for logical security", [
 			'job_id'           => $jobId,
 			'file_path'        => $input['file_path'] ?? 'unknown',
@@ -86,7 +113,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 				$this->log_info( "Proceeding with tool-based vulnerability investigation", [
 					'available_tools' => $input['config']['available_tools']
 				] );
-				$this->handleVulnerabilityInvestigation( $input );
+				$this->handleVulnerabilityInvestigation( $input, $model, $modelOptions );
 
 				return;
 			}
@@ -100,7 +127,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 
 		// Deep investigation with tools (can work with or without pre-loaded content)
 		if ( $input['config']['analysis_mode'] === 'vulnerability_investigation' ) {
-			$this->handleVulnerabilityInvestigation( $input );
+			$this->handleVulnerabilityInvestigation( $input, $model, $modelOptions );
 
 			return;
 		}
@@ -111,8 +138,10 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	 * Handle vulnerability investigation mode - COMPLETELY REFACTORED
 	 *
 	 * @param array $input Request input
+	 * @param string $model Model to use
+	 * @param array $modelOptions Model options
 	 */
-	private function handleVulnerabilityInvestigation( array $input ): void {
+	private function handleVulnerabilityInvestigation( array $input, string $model, array $modelOptions ): void {
 		// DEBUG: Log input structure to diagnose the issue
 		$this->log_info( "DEBUG: handleVulnerabilityInvestigation called", [
 			'input_keys'         => array_keys( $input ),
@@ -178,7 +207,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 			'vulnerability_file' => $vulnerability['file'] ?? 'unknown',
 			'vulnerability_line' => $vulnerability['line'] ?? 'unknown',
 			'job_id'             => $input['job_id'] ?? 'unknown',
-			'model'              => $this->model
+			'model'              => $model
 		] );
 
 		try {
@@ -207,7 +236,9 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 			$vulnerability,
 			$workDir,
 			$toolRegistry,
-			$maxIterations
+			$maxIterations,
+			$model,
+			$modelOptions
 		);
 
 		// Prepare response
@@ -226,7 +257,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		NodeResponse::toolPrompt(
 			$responseContent,
 			$investigationResult['tool_calls'] ?? [],
-			$this->model,
+			$model,
 			[
 				'job_id'         => $input['job_id'] ?? null,
 				'session_id'     => $input['session_id'] ?? null,
@@ -245,6 +276,8 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	 * @param string $workDir Work directory
 	 * @param ToolRegistry $toolRegistry Tool registry
 	 * @param int $maxIterations Maximum iterations
+	 * @param string $model Model to use
+	 * @param array $modelOptions Model options
 	 *
 	 * @return array Investigation result
 	 */
@@ -252,7 +285,9 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		array $vulnerability,
 		string $workDir,
 		ToolRegistry $toolRegistry,
-		int $maxIterations
+		int $maxIterations,
+		string $model,
+		array $modelOptions
 	): array {
 		$startTime = microtime( true );
 		$this->log_info( "Starting STRUCTURED vulnerability investigation", [
@@ -307,11 +342,11 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 
 			// Call Llama 3.2 with tools
 			$request = [
-				'model'    => $this->model,
+				'model'    => $model,
 				'messages' => $messages,
 				'tools'    => $tools,
 				'stream'   => false,
-				'options'  => $this->modelOptions
+				'options'  => $modelOptions
 			];
 
 			try {
@@ -1043,8 +1078,10 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	 * Handle general security analysis with tools (simplified version)
 	 *
 	 * @param array $input Request input
+	 * @param string $model Model to use
+	 * @param array $modelOptions Model options
 	 */
-	private function handleGeneralSecurityAnalysis( array $input ): void {
+	private function handleGeneralSecurityAnalysis( array $input, string $model, array $modelOptions ): void {
 		$this->log_info( "Starting simplified general security analysis", [
 			'input_keys'   => array_keys( $input ),
 			'has_messages' => isset( $input['messages'] ),
@@ -1099,11 +1136,11 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 
 			// Call model with tools
 			$request = [
-				'model'    => $this->model,
+				'model'    => $model,
 				'messages' => $messages,
 				'tools'    => $ollamaTools,
 				'stream'   => false,
-				'options'  => $this->modelOptions
+				'options'  => $modelOptions
 			];
 
 			try {
@@ -1153,7 +1190,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 		NodeResponse::toolPrompt(
 			$finalContent,
 			$allToolCalls,
-			$this->model,
+			$model,
 			[
 				'job_id'        => $input['job_id'] ?? null,
 				'session_id'    => $input['session_id'] ?? null,
