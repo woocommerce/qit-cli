@@ -36,9 +36,8 @@ class FileReadingEndpoint extends AbstractEndpoint {
 			'has_extract_path' => isset( $input['extract_path'] )
 		] );
 
-		// Parse the input
-		$params = json_decode( $input['prompt'], true );
-		if ( ! isset( $params['file_path'] ) || empty( $params['file_path'] ) ) {
+		// Access parameters directly from input (consistent with Actions)
+		if ( ! isset( $input['file_path'] ) || empty( $input['file_path'] ) ) {
 			$this->log_error( 'No file path provided for reading' );
 			http_response_code( 400 );
 			NodeResponse::error( 'Missing file_path parameter' );
@@ -46,17 +45,17 @@ class FileReadingEndpoint extends AbstractEndpoint {
 			return;
 		}
 
-		$filePath = $params['file_path'];
+		$filePath = $input['file_path'];
 
 		// Use centralized path resolution
 		try {
-			$extractPath = ExtractPathResolver::resolve( $params );
+			$extractPath = ExtractPathResolver::resolve( $input );
 			$this->log_info( 'Extract path resolved for file reading', [ 'extract_path' => $extractPath ] );
 		} catch ( Exception $e ) {
 			$this->log_error( 'Path resolution failed for file reading', [
 				'error'       => $e->getMessage(),
 				'file_path'   => $filePath,
-				'diagnostics' => ExtractPathResolver::getDiagnosticMessage( $params )
+				'diagnostics' => ExtractPathResolver::getDiagnosticMessage( $input )
 			] );
 			http_response_code( 400 );
 			NodeResponse::error( $e->getMessage() );

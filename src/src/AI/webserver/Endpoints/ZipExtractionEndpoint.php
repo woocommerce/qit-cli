@@ -39,18 +39,14 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			'has_session_id' => isset( $input['session_id'] )
 		] );
 
-		// Parse the input
-		NodeResponse::mark( 'input_parsing' );
-		$params = json_decode( $input['prompt'], true );
-
-		// Validate required parameters
+		// Access parameters directly from input (consistent with Actions)
 		NodeResponse::mark( 'parameter_validation' );
-		if ( ! $this->validateParameters( $params ) ) {
+		if ( ! $this->validateParameters( $input ) ) {
 			return;
 		}
 
-		$zipUrl        = $params['zip_url'];
-		$extractSubdir = $params['extract_subdir'];
+		$zipUrl        = $input['zip_url'];
+		$extractSubdir = $input['extract_subdir'];
 
 		// Validate and sanitize the extraction subdirectory
 		NodeResponse::mark( 'path_sanitization' );
@@ -65,14 +61,14 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 
 		// Validate extraction path security
 		NodeResponse::mark( 'security_validation' );
-		if ( ! $this->validateExtractionSecurity( $tempBase, $extractTo, $params['extract_subdir'], $sanitizedSubdir ) ) {
+		if ( ! $this->validateExtractionSecurity( $tempBase, $extractTo, $input['extract_subdir'], $sanitizedSubdir ) ) {
 			return;
 		}
 
 		// Perform extraction
 		try {
 			NodeResponse::mark( 'extraction_start' );
-			$this->performExtraction( $zipUrl, $extractTo, $params );
+			$this->performExtraction( $zipUrl, $extractTo, $input );
 		} catch ( Exception $e ) {
 			$this->handleExtractionError( $e );
 		}
@@ -81,12 +77,12 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	/**
 	 * Validate required parameters
 	 *
-	 * @param array|null $params Parsed parameters
+	 * @param array $input Input parameters
 	 *
 	 * @return bool True if valid
 	 */
-	private function validateParameters( ?array $params ): bool {
-		if ( ! isset( $params['zip_url'] ) || empty( $params['zip_url'] ) ) {
+	private function validateParameters( array $input ): bool {
+		if ( ! isset( $input['zip_url'] ) || empty( $input['zip_url'] ) ) {
 			$this->log_error( 'No ZIP URL provided for extraction' );
 			http_response_code( 400 );
 			NodeResponse::error( 'Missing zip_url parameter' );
@@ -94,7 +90,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			return false;
 		}
 
-		if ( ! isset( $params['extract_subdir'] ) || empty( $params['extract_subdir'] ) ) {
+		if ( ! isset( $input['extract_subdir'] ) || empty( $input['extract_subdir'] ) ) {
 			$this->log_error( 'No extraction subdirectory provided' );
 			http_response_code( 400 );
 			NodeResponse::error( 'Missing extract_subdir parameter' );
@@ -297,15 +293,8 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			'is_subdirectory'     => ( $actualExtractPath !== $extractTo )
 		] );
 
-		// Handle file discovery mode
-		if ( $this->isFileDiscoveryMode( $params ) ) {
-			$this->handleFileDiscovery( $actualExtractPath, $params );
-
-			return;
-		}
-
-		// Regular extraction response
-		$this->sendExtractionResponse( $actualExtractPath, $extractionResult['file_count'], $params );
+		// Send unified response with both stats and file list
+		$this->sendUnifiedExtractionResponse( $actualExtractPath, $extractionResult['file_count'], $params );
 	}
 
 	/**
@@ -439,67 +428,49 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	}
 
 	/**
-	 * Check if this is file discovery mode
-	 *
-	 * @param array $params Request parameters
-	 *
-	 * @return bool True if file discovery mode
-	 */
-	private function isFileDiscoveryMode( array $params ): bool {
-		return ( $params['config']['return_file_list'] ?? false ) === true;
-	}
-
-	/**
-	 * Handle file discovery mode
+	 * Send unified extraction response with both stats and file list
 	 *
 	 * @param string $actualExtractPath Actual extraction path
+	 * @param int $fileCount Number of files extracted
 	 * @param array $params Request parameters
 	 */
-	private function handleFileDiscovery( string $actualExtractPath, array $params ): void {
+	private function sendUnifiedExtractionResponse( string $actualExtractPath, int $fileCount, array $params ): void {
 		$filePattern     = $params['config']['file_pattern'] ?? '*.php';
 		$resolver        = new FilePathResolver( $actualExtractPath );
 		$discoveredFiles = [];
+		$phpFiles        = [];
+		$totalFiles      = 0;
 
 		$iterator = new RecursiveIteratorIterator(
 			new RecursiveDirectoryIterator( $actualExtractPath, RecursiveDirectoryIterator::SKIP_DOTS )
 		);
 
 		foreach ( $iterator as $file ) {
-			if ( $file->isFile() && fnmatch( $filePattern, $file->getFilename() ) ) {
-				$relativePath = $resolver->toRelative( $file->getPathname() );
-				$priority     = $this->calculateSecurityPriority( $relativePath );
+			if ( $file->isFile() ) {
+				$totalFiles++;
 
-				$discoveredFiles[] = [
-					'path'     => $relativePath,
-					'size'     => $file->getSize(),
-					'lines'    => substr_count( file_get_contents( $file ), "\n" ) + 1,
-					'priority' => $priority
-				];
+				// Check if it's a PHP file for basic stats
+				if ( pathinfo( $file, PATHINFO_EXTENSION ) === 'php' ) {
+					$phpFiles[] = str_replace( $actualExtractPath . '/', '', $file->getPathname() );
+				}
+
+				// Check if it matches the file pattern for discovery
+				if ( fnmatch( $filePattern, $file->getFilename() ) ) {
+					$relativePath = $resolver->toRelative( $file->getPathname() );
+					$priority     = $this->calculateSecurityPriority( $relativePath );
+
+					$discoveredFiles[] = [
+						'path'     => $relativePath,
+						'size'     => $file->getSize(),
+						'lines'    => substr_count( file_get_contents( $file ), "\n" ) + 1,
+						'priority' => $priority
+					];
+				}
 			}
 		}
 
-		// Sort by priority (security-sensitive files first)
+		// Sort discovered files by priority (security-sensitive files first)
 		usort( $discoveredFiles, fn( $a, $b ) => $b['priority'] - $a['priority'] );
-
-		NodeResponse::success( [
-			'extract_path'     => $actualExtractPath,
-			'files_discovered' => $discoveredFiles,
-			'total_files'      => count( $discoveredFiles ),
-			'session_id'       => $params['session_id'] ?? md5( $actualExtractPath )
-		] );
-	}
-
-	/**
-	 * Send regular extraction response
-	 *
-	 * @param string $actualExtractPath Actual extraction path
-	 * @param int $fileCount Number of files extracted
-	 * @param array $params Request parameters
-	 */
-	private function sendExtractionResponse( string $actualExtractPath, int $fileCount, array $params ): void {
-		// Get PHP files info
-		$phpFiles   = $this->getPhpFiles( $actualExtractPath );
-		$totalFiles = $this->getTotalFileCount( $actualExtractPath );
 
 		if ( empty( $phpFiles ) ) {
 			$this->log_warning( 'ZIP extracted successfully but no PHP files found', [
@@ -508,66 +479,25 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			] );
 		}
 
-		// Use NodeResponse::extraction for standardized extraction response
-		NodeResponse::extraction(
-			$actualExtractPath,
-			[
-				'files_extracted' => $fileCount,
-				'php_files_found' => count( $phpFiles ),
-				'total_files'     => $totalFiles
-			],
-			$params['session_id'] ?? md5( $actualExtractPath )
-		);
-	}
-
-	/**
-	 * Get PHP files from directory
-	 *
-	 * @param string $directory Directory path
-	 *
-	 * @return array PHP file paths
-	 */
-	private function getPhpFiles( string $directory ): array {
-		$phpFiles = [];
-		$iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator( $directory, RecursiveDirectoryIterator::SKIP_DOTS )
-		);
-
-		foreach ( $iterator as $file ) {
-			if ( $file->isFile() && pathinfo( $file, PATHINFO_EXTENSION ) === 'php' ) {
-				$phpFiles[] = str_replace( $directory . '/', '', $file->getPathname() );
-			}
-		}
-
 		$this->log_info( 'PHP files detected', [
 			'php_files' => array_slice( $phpFiles, 0, 10 ),
 			'count'     => count( $phpFiles )
 		] );
 
-		return $phpFiles;
+		// Send unified response with both stats and file discovery data
+		NodeResponse::success( [
+			'extract_path'     => $actualExtractPath,
+			'session_id'       => $params['session_id'] ?? md5( $actualExtractPath ),
+			'files_discovered' => $discoveredFiles,
+			'stats'            => [
+				'files_extracted' => $fileCount,
+				'php_files_found' => count( $phpFiles ),
+				'total_files'     => $totalFiles,
+				'files_matching_pattern' => count( $discoveredFiles )
+			]
+		] );
 	}
 
-	/**
-	 * Get total file count
-	 *
-	 * @param string $directory Directory path
-	 *
-	 * @return int Total file count
-	 */
-	private function getTotalFileCount( string $directory ): int {
-		$totalFiles = 0;
-		$allFiles   = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator( $directory, RecursiveDirectoryIterator::SKIP_DOTS )
-		);
-
-		foreach ( $allFiles as $file ) {
-			if ( $file->isFile() ) {
-				$totalFiles ++;
-			}
-		}
-
-		return $totalFiles;
-	}
 
 	/**
 	 * Handle extraction error

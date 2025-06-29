@@ -49,23 +49,8 @@ class LogicalSecurityAnalysisEndpoint extends AbstractEndpoint {
 			return;
 		}
 
-		$model = $input['model'];
-
-		// Validate that options are provided in the input
-		if ( ! isset( $input['options'] ) ) {
-			$this->log_error( "Missing required options parameter", [
-				'job_id' => $jobId,
-				'uri'    => $_SERVER['REQUEST_URI'] ?? 'unknown'
-			] );
-
-			NodeResponse::error( 'Missing required options parameter', 400, [
-				'job_id' => $jobId
-			] );
-
-			return;
-		}
-
-		$modelOptions = $input['options'];
+		$model        = $input['model'];
+		$modelOptions = $input['model_options'] ?? [];
 
 		// Check if this is a file analysis mode
 		if ( isset( $input['config']['analysis_mode'] ) ) {
