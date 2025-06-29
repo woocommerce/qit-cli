@@ -33,15 +33,26 @@ abstract class AbstractEndpoint {
 	abstract public function handle( array $input ): void;
 
 	/**
-	 * Call Ollama API
+	 * Call Ollama API with automatic model config application
 	 *
 	 * @param string $endpoint API endpoint (e.g., '/api/generate', '/api/chat')
 	 * @param array $data Request data
+	 * @param array $input Original input data containing potential options
 	 *
 	 * @return array Response data
 	 * @throws Exception On API error
 	 */
-	protected function callOllama( string $endpoint, array $data ): array {
+	protected function callOllama( string $endpoint, array $data, array $input = [] ): array {
+		// Automatically apply options if this is an AI request
+		if ( isset( $data['model'] ) && isset( $input['options'] ) && is_array( $input['options'] ) ) {
+			$data['options'] = $input['options'];
+
+			$this->log_debug( "Applied model options", [
+				'model'   => $data['model'],
+				'options' => $data['options']
+			] );
+		}
+
 		// Ensure we have the full URL
 		$url = $this->ollamaApiUrl . $endpoint;
 
@@ -54,7 +65,8 @@ abstract class AbstractEndpoint {
 			'message_count' => isset( $data['messages'] ) ? count( $data['messages'] ) : 0,
 			'has_tools'     => $hasTools,
 			'tools_count'   => isset( $data['tools'] ) ? count( $data['tools'] ) : 0,
-			'request_size'  => strlen( json_encode( $data ) )
+			'request_size'  => strlen( json_encode( $data ) ),
+			'has_options'   => isset( $data['options'] ) ? 'yes' : 'no'
 		] );
 
 		// IMPORTANT: Use the correct endpoint for tool calls
@@ -120,15 +132,16 @@ abstract class AbstractEndpoint {
 	}
 
 	/**
-	 * Call Ollama Generate API
+	 * Call Ollama Generate API with automatic model config
 	 *
 	 * @param array $request Request data
+	 * @param array $input Original input for options extraction
 	 *
 	 * @return array Response data
 	 * @throws Exception On API error
 	 */
-	protected function callOllamaGenerate( array $request ): array {
-		$response = $this->callOllama( '/api/generate', $request );
+	protected function callOllamaGenerate( array $request, array $input = [] ): array {
+		$response = $this->callOllama( '/api/generate', $request, $input );
 
 		if ( ! isset( $response['response'] ) ) {
 			$this->log_error( "Invalid Ollama response structure", [
@@ -156,15 +169,16 @@ abstract class AbstractEndpoint {
 	}
 
 	/**
-	 * Call Ollama Chat API
+	 * Call Ollama Chat API with automatic model config
 	 *
 	 * @param array $request Request data
+	 * @param array $input Original input for options extraction
 	 *
 	 * @return array Response data
 	 * @throws Exception On API error
 	 */
-	protected function callOllamaChat( array $request ): array {
-		return $this->callOllama( '/api/chat', $request );
+	protected function callOllamaChat( array $request, array $input = [] ): array {
+		return $this->callOllama( '/api/chat', $request, $input );
 	}
 
 	/**

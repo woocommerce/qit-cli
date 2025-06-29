@@ -359,7 +359,7 @@ class LogicalSecurityAnalysisEndpoint extends AbstractEndpoint {
 			];
 
 			try {
-				$response = $this->callOllamaChat( $request );
+				$response = $this->callOllamaChat( $request, [ 'options' => $modelOptions ] );
 			} catch ( Exception $e ) {
 				$this->log_error( "Llama 3.2 call failed", [ 'error' => $e->getMessage() ] );
 				break;
@@ -1153,7 +1153,7 @@ class LogicalSecurityAnalysisEndpoint extends AbstractEndpoint {
 			];
 
 			try {
-				$response = $this->callOllamaChat( $request );
+				$response = $this->callOllamaChat( $request, [ 'options' => $modelOptions ] );
 			} catch ( Exception $e ) {
 				$this->log_error( "Model call failed in general analysis", [ 'error' => $e->getMessage() ] );
 				break;

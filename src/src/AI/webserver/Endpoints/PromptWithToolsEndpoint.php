@@ -14,6 +14,8 @@ use QIT_AI_Webserver\NodeResponse;
  * The model handles both reasoning and tool execution.
  */
 class PromptWithToolsEndpoint extends AbstractEndpoint {
+	private array $currentInput = [];
+
 	/**
 	 * Get the route for this endpoint
 	 *
@@ -32,6 +34,8 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 	 */
 	public function handle( array $input ): void {
 		$this->log_info( "Processing prompt with tools request" );
+
+		$this->currentInput = $input;
 
 		// Validate input
 		if ( ! isset( $input['prompt'] ) || ! isset( $input['model'] ) ) {
@@ -160,7 +164,7 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 			];
 
 			try {
-				$modelResponse = $this->callOllamaChat( $modelRequest );
+				$modelResponse = $this->callOllamaChat( $modelRequest, $this->currentInput );
 			} catch ( Exception $e ) {
 				$this->log_error( "Model failed", [ 'error' => $e->getMessage() ] );
 				break;
@@ -281,7 +285,7 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 		];
 
 		try {
-			$toolResponse = $this->callOllamaChat( $toolRequest );
+			$toolResponse = $this->callOllamaChat( $toolRequest, $this->currentInput );
 
 			// Extract tool calls from response
 			$toolCalls = $toolResponse['message']['tool_calls'] ?? [];

@@ -31,16 +31,17 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 	public function handle( array $input ): void {
 		$this->log_info( "Processing basic AI request" );
 
-		// Validate input
-		if ( ! isset( $input['prompt'] ) || ! isset( $input['model'] ) ) {
-			$this->log_error( "Missing required parameters", [
-				'missing' => ! isset( $input['prompt'] ) ? 'prompt' : 'model',
-				'uri'     => $_SERVER['REQUEST_URI'] ?? 'unknown'
+		// Validate input - only model is required
+		if ( ! isset( $input['model'] ) ) {
+			$this->log_error( "Missing required model parameter", [
+				'uri' => $_SERVER['REQUEST_URI'] ?? 'unknown'
 			] );
 
-			NodeResponse::error( 'Missing prompt or model', 400, [
+			NodeResponse::error( 'Missing required model parameter', 400, [
 				'job_id' => $input['job_id'] ?? null
 			] );
+
+			return;
 		}
 
 		try {
@@ -54,13 +55,14 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 			$this->log_info( "Starting AI processing", [
 				'model'         => $model,
 				'job_id'        => $input['job_id'] ?? 'unknown',
-				'prompt_length' => strlen( $input['prompt'] ),
-				'has_schema'    => isset( $input['format'] ) ? 'yes' : 'no'
+				'prompt_length' => strlen( $input['prompt'] ?? '' ),
+				'has_schema'    => isset( $input['format'] ) ? 'yes' : 'no',
+				'has_options'   => isset( $input['options'] ) ? 'yes' : 'no'
 			] );
 
 			$ollamaRequest = [
 				'model'  => $model,
-				'prompt' => $input['prompt'],
+				'prompt' => $input['prompt'] ?? '',
 				'stream' => false,
 				'system' => '/no_think', // Disable thinking for models that support it
 			];
@@ -70,16 +72,16 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 				$ollamaRequest['format'] = $input['format'];
 			}
 
-			// Make the API call using the parent class method
+			// Make the API call - options are automatically applied by parent class
 			NodeResponse::mark( 'ollama_call' );
-			$response = $this->callOllamaGenerate( $ollamaRequest );
+			$response = $this->callOllamaGenerate( $ollamaRequest, $input );
 
 			// Log performance metrics
 			$this->log_info( "AI processing completed successfully", [
-				'job_id'             => $input['job_id'] ?? 'unknown',
-				'model'              => $response['model'] ?? $model,
-				'tokens_generated'   => $response['eval_count'] ?? 0,
-				'response_length'    => strlen( $response['response'] ),
+				'job_id'           => $input['job_id'] ?? 'unknown',
+				'model'            => $response['model'] ?? $model,
+				'tokens_generated' => $response['eval_count'] ?? 0,
+				'response_length'  => strlen( $response['response'] ),
 			] );
 
 			// Use NodeResponse::prompt for standardized response
@@ -91,7 +93,7 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 			);
 
 		} catch ( Exception $e ) {
-			NodeResponse::error( $e->getMessage(), 500, [
+			$this->handleError( $e, [
 				'job_id'   => $input['job_id'] ?? null,
 				'model'    => $input['model'] ?? 'unknown',
 				'job_type' => $input['type'] ?? 'unknown'
