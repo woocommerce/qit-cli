@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_AI_Webserver\Handlers;
+namespace QIT_AI_Webserver\Endpoints;
 
 use Exception;
 use QIT_AI_Webserver\NodeResponse;
@@ -8,11 +8,20 @@ use QIT_AI_Webserver\Lib\ToolRegistry;
 use QIT_AI_Webserver\Lib\ExtractPathResolver;
 
 /**
- * File Reading Handler
+ * File Reading Endpoint
  *
  * Handles secure file reading operations within extracted WordPress plugin/theme directories.
  */
-class FileReadingHandler extends AbstractHandler {
+class FileReadingEndpoint extends AbstractEndpoint {
+	/**
+	 * Get the route for this endpoint
+	 *
+	 * @return string The route path
+	 */
+	public function get_route(): string {
+		return '/read-file';
+	}
+
 	/**
 	 * Handle file reading request
 	 *
@@ -21,7 +30,7 @@ class FileReadingHandler extends AbstractHandler {
 	 * @return void Outputs JSON response
 	 */
 	public function handle( array $input ): void {
-		$this->log_info( 'Starting file reading handler', [
+		$this->log_info( 'Starting file reading endpoint', [
 			'input_keys'       => array_keys( $input ),
 			'has_file_path'    => isset( $input['file_path'] ),
 			'has_extract_path' => isset( $input['extract_path'] )

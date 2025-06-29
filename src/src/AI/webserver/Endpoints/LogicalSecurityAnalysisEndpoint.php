@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_AI_Webserver\Handlers;
+namespace QIT_AI_Webserver\Endpoints;
 
 use Exception;
 use RecursiveDirectoryIterator;
@@ -11,12 +11,21 @@ use QIT_AI_Webserver\Lib\FilePathResolver;
 use QIT_AI_Webserver\NodeResponse;
 
 /**
- * Logical Security Analysis Handler - Complete Refactored Version
+ * Logical Security Analysis Endpoint - Complete Refactored Version
  *
  * This class contains methods specifically for logical security analysis,
  * using Llama 3.2's native tool calling capabilities with improved investigation flow.
  */
-class LogicalSecurityAnalysisHandler extends AbstractHandler {
+class LogicalSecurityAnalysisEndpoint extends AbstractEndpoint {
+
+	/**
+	 * Get the route for this endpoint
+	 *
+	 * @return string The route path
+	 */
+	public function get_route(): string {
+		return '/ai-analysis-with-tools';
+	}
 
 	/**
 	 * Handle request based on input
@@ -979,7 +988,7 @@ class LogicalSecurityAnalysisHandler extends AbstractHandler {
 	/**
 	 * Get tool definitions for Llama 3.2
 	 */
-	// In LogicalSecurityAnalysisHandler.php, replace getToolDefinitions method:
+	// Tool definitions for LogicalSecurityAnalysisEndpoint:
 
 	private function getToolDefinitions(): array {
 		return [

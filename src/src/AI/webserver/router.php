@@ -257,61 +257,50 @@ if ( $input ) {
 }
 
 // Initialize NodeResponse for performance tracking
-use QIT_AI_Webserver\Handlers\FileReadingHandler;
 use QIT_AI_Webserver\NodeResponse;
 
 NodeResponse::init();
 
-// Route to appropriate handler
+// Route to appropriate endpoint
 log_info( "Routing request", [ 'uri' => $uri, 'method' => $method ] );
 
 // The autoloader will handle loading these classes automatically
 // Just need to require helpers.php as it contains functions, not classes
 require_once __DIR__ . '/Handlers/helpers.php';
 
-use QIT_AI_Webserver\Handlers\BasicPromptHandler;
-use QIT_AI_Webserver\Handlers\LogicalSecurityAnalysisHandler;
-use QIT_AI_Webserver\Handlers\PromptWithToolsHandler;
-use QIT_AI_Webserver\Handlers\ZipExtractionHandler;
+use QIT_AI_Webserver\Endpoints\BasicPromptEndpoint;
+use QIT_AI_Webserver\Endpoints\LogicalSecurityAnalysisEndpoint;
+use QIT_AI_Webserver\Endpoints\PromptWithToolsEndpoint;
+use QIT_AI_Webserver\Endpoints\ZipExtractionEndpoint;
+use QIT_AI_Webserver\Endpoints\FileReadingEndpoint;
 
-// Create handler instances
-$basicPromptHandler      = new BasicPromptHandler( '{{OLLAMA_API_URL}}' );
-$logicalSecurityHandler  = new LogicalSecurityAnalysisHandler( '{{OLLAMA_API_URL}}' );
-$zipExtractionHandler    = new ZipExtractionHandler( '{{OLLAMA_API_URL}}' );
-$promptWithToolsHandler  = new PromptWithToolsHandler( '{{OLLAMA_API_URL}}' );
-$fileReadingHandler      = new FileReadingHandler( '{{OLLAMA_API_URL}}' );
+// Create endpoint instances
+$endpoints = [
+	new BasicPromptEndpoint( '{{OLLAMA_API_URL}}' ),
+	new LogicalSecurityAnalysisEndpoint( '{{OLLAMA_API_URL}}' ),
+	new ZipExtractionEndpoint( '{{OLLAMA_API_URL}}' ),
+	new PromptWithToolsEndpoint( '{{OLLAMA_API_URL}}' ),
+	new FileReadingEndpoint( '{{OLLAMA_API_URL}}' )
+];
 
-switch ( $uri ) {
-	case '/basic-prompt':
-		log_info( "Handling basic prompt request" );
-		$basicPromptHandler->handle( $input );
-		break;
+// Build route map from endpoints
+$routeMap = [];
+foreach ( $endpoints as $endpoint ) {
+	$route = $endpoint->get_route();
+	$routeMap[$route] = $endpoint;
+}
 
-	case '/prompt-with-tools':
-		log_info( "Handling prompt with tools request" );
-		$promptWithToolsHandler->handle( $input );
-		break;
-
-	case '/extract-zip':
-		log_info( "Handling ZIP extraction request" );
-		$zipExtractionHandler->handle( $input );
-		break;
-
-	case '/read-file':
-		log_info( "Handling file reading request" );
-		$fileReadingHandler->handle( $input );
-		break;
-
-	case '/ai-analysis-with-tools':
-		log_info( "Handling AI analysis with tools request" );
-		$logicalSecurityHandler->handle( $input );
-		break;
-
-	default:
-		log_warning( "Route not found", [ 'uri' => $uri ] );
-		http_response_code( 404 );
-		echo json_encode( [ 'error' => "Route $uri not found on Node." ] );
-		exit;
+// Route to appropriate endpoint
+if ( isset( $routeMap[$uri] ) ) {
+	$endpoint = $routeMap[$uri];
+	$endpointClass = get_class( $endpoint );
+	log_info( "Handling request with endpoint", [ 'endpoint' => $endpointClass, 'route' => $uri ] );
+	$endpoint->handle( $input );
+} else {
+	log_warning( "Route not found", [ 'uri' => $uri ] );
+	http_response_code( 404 );
+	echo json_encode( [ 'error' => "Route $uri not found on Node." ] );
+	exit;
 }
 
 // Cleanup old sessions periodically (1% chance)

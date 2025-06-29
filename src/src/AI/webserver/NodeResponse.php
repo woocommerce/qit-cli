@@ -115,7 +115,7 @@ class NodeResponse {
 
     /**
      * Basic prompt response (single AI inference)
-     * Used by BasicPromptHandler
+     * Used by BasicPromptEndpoint
      * 
      * @param string $response AI response text
      * @param string $model Model used
@@ -152,7 +152,7 @@ class NodeResponse {
 
     /**
      * Tool execution response (AI with tools)
-     * Used by ToolPromptHandler
+     * Used by PromptWithToolsEndpoint and LogicalSecurityAnalysisEndpoint
      * 
      * @param string $response Final AI response
      * @param array $toolCalls Tool execution records
@@ -185,7 +185,7 @@ class NodeResponse {
 
     /**
      * ZIP extraction response
-     * Used by ZipExtractionHandler
+     * Used by ZipExtractionEndpoint
      * 
      * @param string $extractPath Extraction directory path
      * @param array $stats Extraction statistics

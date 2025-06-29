@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_AI_Webserver\Handlers;
+namespace QIT_AI_Webserver\Endpoints;
 
 use Exception;
 use ZipArchive;
@@ -10,12 +10,21 @@ use QIT_AI_Webserver\NodeResponse;
 use QIT_AI_Webserver\Lib\FilePathResolver;
 
 /**
- * ZIP Extraction Handler
+ * ZIP Extraction Endpoint
  *
  * Handles ZIP file extraction for WordPress plugins/themes analysis.
  * Provides secure extraction with path validation and WordPress structure detection.
  */
-class ZipExtractionHandler extends AbstractHandler {
+class ZipExtractionEndpoint extends AbstractEndpoint {
+	/**
+	 * Get the route for this endpoint
+	 *
+	 * @return string The route path
+	 */
+	public function get_route(): string {
+		return '/extract-zip';
+	}
+
 	/**
 	 * Handle ZIP extraction request
 	 *
@@ -24,7 +33,7 @@ class ZipExtractionHandler extends AbstractHandler {
 	 * @return void Outputs JSON response
 	 */
 	public function handle( array $input ): void {
-		$this->log_info( 'Starting ZIP extraction handler', [
+		$this->log_info( 'Starting ZIP extraction endpoint', [
 			'input_keys'     => array_keys( $input ),
 			'has_zip_url'    => isset( $input['zip_url'] ),
 			'has_session_id' => isset( $input['session_id'] )

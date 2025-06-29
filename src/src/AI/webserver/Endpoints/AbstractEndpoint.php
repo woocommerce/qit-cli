@@ -1,22 +1,36 @@
 <?php
 
-namespace QIT_AI_Webserver\Handlers;
+namespace QIT_AI_Webserver\Endpoints;
 
 use Exception;
 use QIT_AI_Webserver\NodeResponse;
 
 /**
- * Abstract Base Handler
+ * Abstract Base Endpoint
  *
- * Base class for all AI handlers providing common functionality
- * including Ollama API communication and logging.
+ * Base class for all AI endpoints providing common functionality
+ * including Ollama API communication, logging, and route definition.
  */
-abstract class AbstractHandler {
+abstract class AbstractEndpoint {
 	protected string $ollamaApiUrl;
 
 	public function __construct( string $ollamaApiUrl ) {
 		$this->ollamaApiUrl = $ollamaApiUrl;
 	}
+
+	/**
+	 * Get the route for this endpoint
+	 *
+	 * @return string The route path (e.g., '/basic-prompt')
+	 */
+	abstract public function get_route(): string;
+
+	/**
+	 * Handle the request
+	 *
+	 * @param array $input Request input data
+	 */
+	abstract public function handle( array $input ): void;
 
 	/**
 	 * Call Ollama API
@@ -167,7 +181,7 @@ abstract class AbstractHandler {
 	}
 
 	/**
-	 * Handle errors consistently across all handlers
+	 * Handle errors consistently across all endpoints
 	 *
 	 * @param Exception $e Exception to handle
 	 * @param array $context Additional context for error reporting
@@ -242,11 +256,4 @@ abstract class AbstractHandler {
 	protected function log_warning( string $message, array $context = [] ): void {
 		log_warning( $message, $context );
 	}
-
-	/**
-	 * Abstract method that must be implemented by child classes
-	 *
-	 * @param array $input Request input data
-	 */
-	abstract public function handle( array $input ): void;
 }

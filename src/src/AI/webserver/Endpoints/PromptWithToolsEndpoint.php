@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_AI_Webserver\Handlers;
+namespace QIT_AI_Webserver\Endpoints;
 
 use Exception;
 use QIT_AI_Webserver\Lib\ToolRegistry;
@@ -8,12 +8,21 @@ use QIT_AI_Webserver\Lib\ExtractPathResolver;
 use QIT_AI_Webserver\NodeResponse;
 
 /**
- * Prompt With Tools Handler
+ * Prompt With Tools Endpoint
  *
- * This handler implements a single-model approach for AI analysis with tools.
+ * This endpoint implements a single-model approach for AI analysis with tools.
  * The model handles both reasoning and tool execution.
  */
-class PromptWithToolsHandler extends AbstractHandler {
+class PromptWithToolsEndpoint extends AbstractEndpoint {
+	/**
+	 * Get the route for this endpoint
+	 *
+	 * @return string The route path
+	 */
+	public function get_route(): string {
+		return '/prompt-with-tools';
+	}
+
 	/**
 	 * Handle AI request with tools using single model approach
 	 *

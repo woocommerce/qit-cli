@@ -9,10 +9,10 @@ namespace QIT_AI_Webserver\Lib;
  * - Always require extract_path to be provided explicitly
  * - No complex fallback mechanisms or searching
  * - Fail fast with clear error messages
- * - Single source of truth for all handlers
+ * - Single source of truth for all endpoints
  */
 class ExtractPathResolver {
-    
+
     /**
      * Single-method path resolution - no fallbacks, no complexity
      * 
@@ -29,9 +29,9 @@ class ExtractPathResolver {
                 'Ensure your pipeline properly passes the extraction path from zip_extraction step.'
             );
         }
-        
+
         $path = $input['extract_path'];
-        
+
         // Validate it exists
         if (!is_dir($path)) {
             throw new \RuntimeException(
@@ -39,7 +39,7 @@ class ExtractPathResolver {
                 "Check that zip extraction completed successfully."
             );
         }
-        
+
         // Additional validation: ensure it's readable
         if (!is_readable($path)) {
             throw new \RuntimeException(
@@ -47,10 +47,10 @@ class ExtractPathResolver {
                 "Check directory permissions."
             );
         }
-        
+
         return $path;
     }
-    
+
     /**
      * Validate that an extract path is properly formatted and accessible
      * 
@@ -60,7 +60,7 @@ class ExtractPathResolver {
     public static function isValidExtractPath(string $path): bool {
         return !empty($path) && is_dir($path) && is_readable($path);
     }
-    
+
     /**
      * Get helpful error message for debugging path resolution issues
      * 
@@ -75,7 +75,7 @@ class ExtractPathResolver {
             'input_keys' => array_keys($input),
             'session_id' => $input['session_id'] ?? 'not_set'
         ];
-        
+
         return 'Path resolution diagnostics: ' . json_encode($diagnostics, JSON_PRETTY_PRINT);
     }
 }

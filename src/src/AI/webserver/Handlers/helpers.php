@@ -1,85 +1,9 @@
 <?php
 /**
- * Helper Functions
+ * Helper Functions for QIT AI Webserver
+ * 
+ * Contains utility functions used by the webserver endpoints.
  */
-
-/**
- * Helper function to call Ollama API
- */
-function call_ollama( $url, $data ) {
-	// Determine if this is a tool call or regular generation
-	$has_tools = isset( $data['tools'] ) && ! empty( $data['tools'] );
-
-	log_debug( "Calling Ollama API", [
-		'url'           => $url,
-		'model'         => $data['model'] ?? 'unknown',
-		'message_count' => isset( $data['messages'] ) ? count( $data['messages'] ) : 0,
-		'has_tools'     => $has_tools,
-		'tools_count'   => isset( $data['tools'] ) ? count( $data['tools'] ) : 0,
-		'request_size'  => strlen( json_encode( $data ) )
-	] );
-
-	// IMPORTANT: Use the correct endpoint for tool calls
-	if ( $has_tools && strpos( $url, '/api/generate' ) !== false ) {
-		// For tool calls, we MUST use /api/chat endpoint
-		$url = str_replace( '/api/generate', '/api/chat', $url );
-		log_info( "Using chat endpoint for tool-enabled request", [ 'url' => $url ] );
-	}
-
-	$start_time = microtime( true );
-
-	$ch = curl_init( $url );
-	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-	curl_setopt( $ch, CURLOPT_POST, true );
-	curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $data ) );
-	curl_setopt( $ch, CURLOPT_HTTPHEADER, [ 'Content-Type: application/json' ] );
-	curl_setopt( $ch, CURLOPT_TIMEOUT, 300 );
-
-	$response  = curl_exec( $ch );
-	$http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-	$error     = curl_error( $ch );
-	$info      = curl_getinfo( $ch );
-	curl_close( $ch );
-
-	$duration = microtime( true ) - $start_time;
-
-	log_debug( "Ollama API response", [
-		'http_code'        => $http_code,
-		'duration_seconds' => round( $duration, 2 ),
-		'response_size'    => $response ? strlen( $response ) : 0,
-		'curl_error'       => $error ?: null,
-		'total_time'       => $info['total_time'] ?? null
-	] );
-
-	if ( $response === false ) {
-		throw new Exception( "Ollama API curl error: $error" );
-	}
-
-	if ( $http_code !== 200 ) {
-		log_error( "Ollama API error response", [
-			'http_code' => $http_code,
-			'response'  => substr( $response, 0, 500 )
-		] );
-		throw new Exception( "Ollama API error: HTTP $http_code" );
-	}
-
-	$decoded = json_decode( $response, true );
-	if ( json_last_error() !== JSON_ERROR_NONE ) {
-		throw new Exception( "Invalid JSON response from Ollama: " . json_last_error_msg() );
-	}
-
-	// Log tool calls if present
-	if ( isset( $decoded['message']['tool_calls'] ) ) {
-		log_info( "Ollama returned tool calls", [
-			'tool_calls_count' => count( $decoded['message']['tool_calls'] ),
-			'tool_names'       => array_map( function ( $tc ) {
-				return $tc['function']['name'] ?? 'unknown';
-			}, $decoded['message']['tool_calls'] )
-		] );
-	}
-
-	return $decoded;
-}
 
 /**
  * Safely remove a directory and its contents
@@ -115,21 +39,6 @@ function remove_directory_safely( $dir ) {
 		'files_removed'   => $file_count,
 		'subdirs_removed' => $dir_count
 	] );
-}
-
-/**
- * Format bytes to human readable format
- */
-function format_bytes( $bytes, $precision = 2 ) {
-	$units = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
-
-	$bytes = max( $bytes, 0 );
-	$pow   = floor( ( $bytes ? log( $bytes ) : 0 ) / log( 1024 ) );
-	$pow   = min( $pow, count( $units ) - 1 );
-
-	$bytes /= pow( 1024, $pow );
-
-	return round( $bytes, $precision ) . ' ' . $units[ $pow ];
 }
 
 /**

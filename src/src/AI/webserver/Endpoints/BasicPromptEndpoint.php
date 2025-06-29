@@ -1,17 +1,26 @@
 <?php
 
-namespace QIT_AI_Webserver\Handlers;
+namespace QIT_AI_Webserver\Endpoints;
 
 use Exception;
 use QIT_AI_Webserver\NodeResponse;
 
 /**
- * Basic Prompt Handler
+ * Basic Prompt Endpoint
  *
- * Simplified handler for basic prompting: receive a string and model, process it, return response.
+ * Simplified endpoint for basic prompting: receive a string and model, process it, return response.
  * Tool-based requests are handled by dedicated endpoints.
  */
-class BasicPromptHandler extends AbstractHandler {
+class BasicPromptEndpoint extends AbstractEndpoint {
+	/**
+	 * Get the route for this endpoint
+	 *
+	 * @return string The route path
+	 */
+	public function get_route(): string {
+		return '/basic-prompt';
+	}
+
 	/**
 	 * Handle AI process request
 	 *
