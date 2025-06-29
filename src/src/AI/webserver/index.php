@@ -14,7 +14,6 @@ echo json_encode( [
 		"/analyze-code"               => "Code analysis endpoint",
 		"/extract-zip"                => "ZIP extraction endpoint",
 		"/read-file"                  => "File content reading endpoint",
-		"/ai-analysis-with-tools"     => "AI analysis with tools endpoint",
 		"/prompt-with-tools"          => "Prompt with tools endpoint"
 	],
 	"version"   => "1.0.0"

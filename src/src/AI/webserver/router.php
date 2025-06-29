@@ -269,7 +269,6 @@ log_info( "Routing request", [ 'uri' => $uri, 'method' => $method ] );
 require_once __DIR__ . '/Handlers/helpers.php';
 
 use QIT_AI_Webserver\Endpoints\BasicPromptEndpoint;
-use QIT_AI_Webserver\Endpoints\LogicalSecurityAnalysisEndpoint;
 use QIT_AI_Webserver\Endpoints\PromptWithToolsEndpoint;
 use QIT_AI_Webserver\Endpoints\ZipExtractionEndpoint;
 use QIT_AI_Webserver\Endpoints\FileReadingEndpoint;
@@ -277,7 +276,6 @@ use QIT_AI_Webserver\Endpoints\FileReadingEndpoint;
 // Create endpoint instances
 $endpoints = [
 	new BasicPromptEndpoint( '{{OLLAMA_API_URL}}' ),
-	new LogicalSecurityAnalysisEndpoint( '{{OLLAMA_API_URL}}' ),
 	new ZipExtractionEndpoint( '{{OLLAMA_API_URL}}' ),
 	new PromptWithToolsEndpoint( '{{OLLAMA_API_URL}}' ),
 	new FileReadingEndpoint( '{{OLLAMA_API_URL}}' )
