@@ -36,20 +36,24 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 
 		$this->currentInput = $input;
 
-		// Validate input
-		if ( ! isset( $input['prompt'] ) || ! isset( $input['model'] ) ) {
+		// Validate input - messages and model are required
+		if ( ! isset( $input['messages'] ) || ! isset( $input['model'] ) ) {
+			$missing = [];
+			if ( ! isset( $input['messages'] ) ) $missing[] = 'messages';
+			if ( ! isset( $input['model'] ) ) $missing[] = 'model';
+
 			$this->log_error( "Missing required parameters", [
-				'missing' => ! isset( $input['prompt'] ) ? 'prompt' : 'model',
+				'missing' => $missing,
 				'uri'     => $_SERVER['REQUEST_URI'] ?? 'unknown'
 			] );
-			NodeResponse::error( 'Missing prompt or model parameter', 400, [
+			NodeResponse::error( 'Missing required parameters: ' . implode(', ', $missing), 400, [
 				'job_id' => $input['job_id'] ?? null
 			] );
 		}
 
 		try {
 			// Extract parameters
-			$userPrompt     = $input['prompt'];
+			$messages       = $input['messages'];
 			$model          = $input['model'];
 			$jobId          = $input['job_id'] ?? null;
 			$maxIterations  = $input['max_iterations'] ?? 30;
@@ -81,13 +85,7 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 			// Get tool definitions
 			$tools = $this->getToolDefinitions( $availableTools );
 
-			// Initialize conversation with the user prompt
-			$messages = [
-				[
-					'role'    => 'user',
-					'content' => $userPrompt
-				]
-			];
+			// Use the provided messages directly
 
 			// Run the tool-calling loop
 			NodeResponse::mark( 'tool_calling_loop' );

@@ -31,13 +31,35 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 	public function handle( array $input ): void {
 		$this->log_info( "Processing basic AI request" );
 
-		// Validate input - only model is required
-		if ( ! isset( $input['model'] ) ) {
-			$this->log_error( "Missing required model parameter", [
-				'uri' => $_SERVER['REQUEST_URI'] ?? 'unknown'
+		// Validate input - model and messages are required
+		$missing = [];
+		if ( ! isset( $input['model'] ) || empty( $input['model'] ) ) {
+			$missing[] = 'model';
+		}
+		if ( ! isset( $input['messages'] ) || $input['messages'] === null || ! is_array( $input['messages'] ) || empty( $input['messages'] ) ) {
+			$missing[] = 'messages';
+		}
+
+		// Validate message structure if messages are provided
+		if ( ! in_array( 'messages', $missing ) ) {
+			foreach ( $input['messages'] as $index => $message ) {
+				if ( ! is_array( $message ) || ! isset( $message['role'] ) || ! isset( $message['content'] ) ) {
+					$missing[] = "messages[$index] must have 'role' and 'content' fields";
+				} elseif ( ! in_array( $message['role'], [ 'system', 'user', 'assistant', 'tool' ] ) ) {
+					$missing[] = "messages[$index] has invalid role: " . $message['role'];
+				}
+			}
+		}
+
+		if ( ! empty( $missing ) ) {
+			$this->log_error( "Missing or invalid required parameters", [
+				'missing' => $missing,
+				'uri' => $_SERVER['REQUEST_URI'] ?? 'unknown',
+				'messages_type' => gettype( $input['messages'] ?? 'undefined' ),
+				'messages_value' => $input['messages'] ?? 'undefined'
 			] );
 
-			NodeResponse::error( 'Missing required model parameter', 400, [
+			NodeResponse::error( 'Missing or invalid required parameters: ' . implode(', ', $missing), 400, [
 				'job_id' => $input['job_id'] ?? null
 			] );
 
@@ -52,20 +74,42 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 				throw new Exception( 'Failed to ensure model availability: ' . $model );
 			}
 
+			// Convert messages to Ollama format
+			$messages = $input['messages'];
+			$systemMessage = '';
+			$userPrompt = '';
+
+			// Extract system and user messages
+			foreach ( $messages as $message ) {
+				if ( $message['role'] === 'system' ) {
+					$systemMessage .= $message['content'] . "\n";
+				} elseif ( $message['role'] === 'user' ) {
+					$userPrompt .= $message['content'] . "\n";
+				}
+			}
+
 			$this->log_info( "Starting AI processing", [
-				'model'         => $model,
-				'job_id'        => $input['job_id'] ?? 'unknown',
-				'prompt_length' => strlen( $input['prompt'] ?? '' ),
-				'has_schema'    => isset( $input['format'] ) ? 'yes' : 'no',
-				'has_options'   => isset( $input['options'] ) ? 'yes' : 'no'
+				'model'           => $model,
+				'job_id'          => $input['job_id'] ?? 'unknown',
+				'message_count'   => count( $messages ),
+				'prompt_length'   => strlen( trim( $userPrompt ) ),
+				'has_system'      => ! empty( trim( $systemMessage ) ) ? 'yes' : 'no',
+				'has_schema'      => isset( $input['format'] ) ? 'yes' : 'no',
+				'has_options'     => isset( $input['options'] ) ? 'yes' : 'no'
 			] );
 
 			$ollamaRequest = [
 				'model'  => $model,
-				'prompt' => $input['prompt'] ?? '',
+				'prompt' => trim( $userPrompt ),
 				'stream' => false,
-				'system' => '/no_think', // Disable thinking for models that support it
 			];
+
+			// Add system message if present
+			if ( ! empty( trim( $systemMessage ) ) ) {
+				$ollamaRequest['system'] = trim( $systemMessage );
+			} else {
+				$ollamaRequest['system'] = '/no_think'; // Disable thinking for models that support it
+			}
 
 			// Add format if schema is provided
 			if ( isset( $input['format'] ) && is_array( $input['format'] ) ) {
