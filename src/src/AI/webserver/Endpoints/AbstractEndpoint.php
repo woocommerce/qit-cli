@@ -120,6 +120,11 @@ abstract class AbstractEndpoint {
 			] );
 		}
 
+		// Stop the model to free up VRAM for the next call
+		if ( isset( $data['model'] ) ) {
+			$this->stopOllamaModel( $data['model'] );
+		}
+
 		return $decoded;
 	}
 
@@ -261,5 +266,32 @@ abstract class AbstractEndpoint {
 
 	protected function log_warning( string $message, array $context = [] ): void {
 		log_warning( $message, $context );
+	}
+
+	/**
+	 * Stop an Ollama model to free up VRAM
+	 *
+	 * @param string $model Model name to stop
+	 */
+	protected function stopOllamaModel( string $model ): void {
+		try {
+			$this->log_debug( "Stopping Ollama model to free VRAM", [ 'model' => $model ] );
+
+			// Execute ollama stop command
+			$command = "ollama stop " . escapeshellarg( $model ) . " 2>&1";
+			$output = shell_exec( $command );
+
+			$this->log_debug( "Ollama stop command executed", [
+				'model' => $model,
+				'command' => $command,
+				'output' => trim( $output ?: '' )
+			] );
+		} catch ( Exception $e ) {
+			// Don't throw exceptions for stop failures - just log them
+			$this->log_warning( "Failed to stop Ollama model", [
+				'model' => $model,
+				'error' => $e->getMessage()
+			] );
+		}
 	}
 }
