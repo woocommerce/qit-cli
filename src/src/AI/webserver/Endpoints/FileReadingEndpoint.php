@@ -111,6 +111,14 @@ class FileReadingEndpoint extends AbstractEndpoint {
 				return;
 			}
 
+			// FileReadingEndpoint::handle()  – right before NodeResponse::success()
+			$rawLines = explode( "\n", $result['content'] ?? '' );
+			$numbered = [];
+			foreach ( $rawLines as $idx => $l ) {
+				// human-friendly 1-based index, 6-char wide
+				$numbered[] = str_pad( $idx + 1, 6, ' ', STR_PAD_LEFT ) . "│ " . $l;
+			}
+
 			$this->log_info( 'File read successfully', [
 				'file_path'    => $filePath,
 				'content_size' => strlen( $result['content'] ?? '' ),
@@ -119,11 +127,12 @@ class FileReadingEndpoint extends AbstractEndpoint {
 
 			// Return clean response
 			NodeResponse::success( [
-				'file_content' => $result['content'] ?? '',
-				'file_lines'   => $result['total_lines'] ?? 0,
-				'file_size'    => strlen( $result['content'] ?? '' ),
-				'file_path'    => $filePath,
-				'extract_path' => $extractPath
+				'file_content'              => $result['content'] ?? '',
+				'file_lines'                => $result['total_lines'] ?? 0,
+				'file_size'                 => strlen( $result['content'] ?? '' ),
+				'content_with_line_numbers' => implode( "\n", $numbered ),
+				'file_path'                 => $filePath,
+				'extract_path'              => $extractPath
 			], 'file_reading' );
 
 		} catch ( Exception $e ) {
