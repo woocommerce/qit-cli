@@ -115,6 +115,10 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 			// Return the final response
 			$totalExecutionTime = round( ( microtime( true ) - $benchmarkStart ) * 1000, 2 );
 			$this->log_info( "BENCHMARK: Total PromptWithTools execution completed in {$totalExecutionTime}ms" );
+
+			// Stop the model after the entire request is complete (per-request stopping)
+			$this->stopOllamaModel( $model );
+
 			NodeResponse::toolPrompt(
 				$result['final_response'],
 				$result['all_tool_calls'],
@@ -128,6 +132,11 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 				]
 			);
 		} catch ( Exception $e ) {
+			// Stop the model even on error (per-request stopping)
+			if ( isset( $model ) ) {
+				$this->stopOllamaModel( $model );
+			}
+
 			$this->handleError( $e, [
 				'job_id'   => $jobId ?? 'unknown',
 				'job_type' => 'prompt_with_tools'

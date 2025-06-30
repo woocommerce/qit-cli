@@ -120,10 +120,7 @@ abstract class AbstractEndpoint {
 			] );
 		}
 
-		// Stop the model to free up VRAM for the next call
-		if ( isset( $data['model'] ) ) {
-			$this->stopOllamaModel( $data['model'] );
-		}
+		// Model stopping moved to per-request level to preserve context in multi-round conversations
 
 		return $decoded;
 	}

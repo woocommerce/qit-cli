@@ -128,6 +128,9 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 				'response_length'  => strlen( $response['response'] ),
 			] );
 
+			// Stop the model after the entire request is complete (per-request stopping)
+			$this->stopOllamaModel( $model );
+
 			// Use NodeResponse::prompt for standardized response
 			NodeResponse::prompt(
 				trim( $response['response'] ),
@@ -137,6 +140,11 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 			);
 
 		} catch ( Exception $e ) {
+			// Stop the model even on error (per-request stopping)
+			if ( isset( $model ) ) {
+				$this->stopOllamaModel( $model );
+			}
+
 			$this->handleError( $e, [
 				'job_id'   => $input['job_id'] ?? null,
 				'model'    => $input['model'] ?? 'unknown',
