@@ -59,15 +59,7 @@ abstract class AbstractEndpoint {
 		// Determine if this is a tool call or regular generation
 		$hasTools = isset( $data['tools'] ) && ! empty( $data['tools'] );
 
-		$this->log_debug( "Calling Ollama API", [
-			'url'           => $url,
-			'model'         => $data['model'] ?? 'unknown',
-			'message_count' => isset( $data['messages'] ) ? count( $data['messages'] ) : 0,
-			'has_tools'     => $hasTools,
-			'tools_count'   => isset( $data['tools'] ) ? count( $data['tools'] ) : 0,
-			'request_size'  => strlen( json_encode( $data ) ),
-			'has_options'   => isset( $data['options'] ) ? 'yes' : 'no'
-		] );
+		$this->log_debug( "Calling Ollama API", $data );
 
 		// IMPORTANT: Use the correct endpoint for tool calls
 		if ( $hasTools && strpos( $url, '/api/generate' ) !== false ) {

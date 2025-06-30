@@ -10,8 +10,7 @@ use QIT_AI_Webserver\NodeResponse;
 /**
  * Prompt With Tools Endpoint
  *
- * This endpoint implements a single-model approach for AI analysis with tools.
- * The model handles both reasoning and tool execution.
+ * Implements proper multi-turn tool calling with Ollama
  */
 class PromptWithToolsEndpoint extends AbstractEndpoint {
 	private array $currentInput = [];
@@ -26,7 +25,7 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 	}
 
 	/**
-	 * Handle AI request with tools using single model approach
+	 * Handle AI request with tools
 	 *
 	 * @param array $input Request input data
 	 *
@@ -53,11 +52,11 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 			$userPrompt     = $input['prompt'];
 			$model          = $input['model'];
 			$jobId          = $input['job_id'] ?? null;
-			$maxIterations  = $input['max_iterations'] ?? 10;
+			$maxIterations  = $input['max_iterations'] ?? 30;
 			$availableTools = $input['available_tools'] ?? [ 'read_file', 'search_pattern', 'list_files' ];
 			$sessionId      = $input['session_id'] ?? null;
 
-			// Resolve work directory using ExtractPathResolver
+			// Resolve work directory
 			NodeResponse::mark( 'path_resolution' );
 			try {
 				$workDir = ExtractPathResolver::resolve( $input );
@@ -79,40 +78,37 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 			NodeResponse::mark( 'tool_registry_init' );
 			$toolRegistry = new ToolRegistry( $workDir );
 
-			// Build system prompt for model
-			$systemPrompt = $this->buildSystemPrompt( $workDir, $availableTools );
+			// Get tool definitions
+			$tools = $this->getToolDefinitions( $availableTools );
 
-			// Initialize conversation
-			$conversation = [
-				[
-					'role'    => 'system',
-					'content' => $systemPrompt
-				],
+			// Initialize conversation with the user prompt
+			$messages = [
 				[
 					'role'    => 'user',
 					'content' => $userPrompt
 				]
 			];
 
-			// Execute orchestration loop
-			NodeResponse::mark( 'orchestration_loop' );
-			$result = $this->runOrchestrationLoop(
+			// Run the tool-calling loop
+			NodeResponse::mark( 'tool_calling_loop' );
+			$result = $this->runToolCallingLoop(
 				$model,
-				$conversation,
+				$messages,
+				$tools,
 				$toolRegistry,
 				$maxIterations
 			);
 
-			$this->log_info( "Orchestrated request completed successfully", [
-				'iterations' => $result['iterations'],
-				'tool_calls' => count( $result['tool_calls'] )
+			$this->log_info( "Tool calling completed", [
+				'iterations'  => $result['iterations'],
+				'total_tools' => count( $result['all_tool_calls'] )
 			] );
 
-			// Use NodeResponse::toolPrompt for standardized response
+			// Return the final response
 			NodeResponse::toolPrompt(
 				$result['final_response'],
-				$result['tool_calls'],
-				$model, // Primary model used
+				$result['all_tool_calls'],
+				$model,
 				[
 					'job_id'         => $jobId,
 					'model'          => $model,
@@ -131,280 +127,152 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 	}
 
 	/**
-	 * Run orchestration loop using single model for both reasoning and tool execution
+	 * Run the tool-calling loop
 	 *
-	 * @param string $model Model for both reasoning and tool execution
-	 * @param array $conversation Conversation history
+	 * @param string $model Model name
+	 * @param array $messages Initial messages
+	 * @param array $tools Tool definitions
 	 * @param ToolRegistry $toolRegistry Tool registry
 	 * @param int $maxIterations Maximum iterations
 	 *
-	 * @return array Results
+	 * @return array Results with final response and all tool calls
 	 */
-	private function runOrchestrationLoop(
+	private function runToolCallingLoop(
 		string $model,
-		array &$conversation,
+		array $messages,
+		array $tools,
 		ToolRegistry $toolRegistry,
 		int $maxIterations
 	): array {
-		$startTime    = microtime( true );
-		$allToolCalls = [];
-		$iterations   = 0;
+		$startTime       = microtime( true );
+		$allToolCalls    = [];
+		$iterations      = 0;
+		$completionToken = 'INVESTIGATION_COMPLETE';
 
 		while ( $iterations < $maxIterations ) {
 			$iterations ++;
 
-			$this->log_info( "Orchestration iteration $iterations" );
+			$this->log_info( "Tool calling iteration $iterations" );
 
-			// Step 1: Ask model what information it needs
+			// Call the model
 			$modelRequest = [
 				'model'    => $model,
-				'messages' => $conversation,
-				'stream'   => false,
-				'format'   => 'json' // Request structured response
+				'messages' => $messages,
+				'tools'    => $tools,
+				'stream'   => false
 			];
 
 			try {
 				$modelResponse = $this->callOllamaChat( $modelRequest, $this->currentInput );
 			} catch ( Exception $e ) {
-				$this->log_error( "Model failed", [ 'error' => $e->getMessage() ] );
+				$this->log_error( "Model call failed", [ 'error' => $e->getMessage() ] );
 				break;
 			}
 
-			// Parse model's request for tool usage
-			$modelMessage = $modelResponse['message'] ?? [];
-			$modelContent = $modelMessage['content'] ?? '';
+			// Get the model's response
+			$message   = $modelResponse['message'] ?? [];
+			$content   = $message['content'] ?? '';
+			$toolCalls = $message['tool_calls'] ?? [];
 
-			// Try to parse as JSON first
-			$toolRequests = json_decode( $modelContent, true );
-			if ( json_last_error() !== JSON_ERROR_NONE ) {
-				// If not JSON, check if it's a final response
-				if ( $this->isFinaResponse( $modelContent ) ) {
-					$this->log_info( "Model provided final response" );
-					$conversation[] = $modelMessage;
-					break;
+			// Add the assistant's message to history
+			$messages[] = [
+				'role'       => 'assistant',
+				'content'    => $content,
+				'tool_calls' => $toolCalls
+			];
+
+			// Execute any tool calls
+			if ( ! empty( $toolCalls ) ) {
+				foreach ( $toolCalls as $toolCall ) {
+					$toolName = $toolCall['function']['name'] ?? '';
+					$toolArgs = $toolCall['function']['arguments'] ?? '{}';
+
+					if ( is_string( $toolArgs ) ) {
+						$toolArgs = json_decode( $toolArgs, true ) ?? [];
+					}
+
+					$this->log_info( "Executing tool", [
+						'tool' => $toolName,
+						'args' => $toolArgs
+					] );
+
+					$result = $toolRegistry->execute_tool( $toolName, $toolArgs );
+
+					$allToolCalls[] = [
+						'iteration' => $iterations,
+						'tool'      => $toolName,
+						'args'      => $toolArgs,
+						'result'    => $result,
+						'success'   => ! isset( $result['error'] )
+					];
+
+					$messages[] = [
+						'role'         => 'tool',
+						'content'      => json_encode( $result ),
+						'tool_call_id' => $toolCall['id'] ?? uniqid()
+					];
 				}
-
-				// Otherwise, prompt for structured response
-				$conversation[] = $modelMessage;
-				$conversation[] = [
-					'role'    => 'user',
-					'content' => 'Please provide your tool requests in JSON format: {"tool_requests": [{"tool": "tool_name", "args": {...}}]} or {"final_response": "your analysis"}'
-				];
-				continue;
 			}
 
-			// Add model's response to conversation
-			$conversation[] = $modelMessage;
-
-			// Check if model wants to use tools or is done
-			if ( isset( $toolRequests['final_response'] ) ) {
-				$this->log_info( "Model provided final response" );
+			// Check if investigation is complete
+			if ( strpos( $content, $completionToken ) !== false ) {
+				$this->log_info( "Found completion token, investigation complete" );
 				break;
 			}
 
-			if ( ! isset( $toolRequests['tool_requests'] ) || empty( $toolRequests['tool_requests'] ) ) {
-				$this->log_info( "No tool requests from model" );
-				break;
-			}
+			// If no completion token, prompt to continue
+			$this->log_info( "No completion token found, prompting to continue" );
 
-			// Step 2: Execute tools using the same model
-			$toolResults = $this->executeToolsWithModel(
-				$model,
-				$toolRequests['tool_requests'],
-				$toolRegistry
-			);
-
-			// Track all tool calls
-			foreach ( $toolResults as $result ) {
-				$allToolCalls[] = [
-					'iteration' => $iterations,
-					'tool'      => $result['tool'],
-					'args'      => $result['args'],
-					'result'    => $result['result']
-				];
-			}
-
-			// Step 3: Feed results back to model
-			$toolResultsSummary = $this->formatToolResults( $toolResults );
-			$conversation[]     = [
+			$messages[] = [
 				'role'    => 'user',
-				'content' => "Tool execution results:\n" . $toolResultsSummary . "\n\nBased on these results, what would you like to do next? Request more tools or provide your final analysis?"
+				'content' => 'Continue with the next step of the investigation. When you have completed ALL investigation steps and are ready to provide your final analysis, include the text "' . $completionToken . '" in your response.'
 			];
 		}
 
-		// Extract final response
-		$finalResponse = $this->extractFinalResponse( $conversation );
-
+		// Extract final response (remove the token)
+		$finalResponse = $this->extractFinalResponse( $messages, $completionToken );
 		$executionTime = round( ( microtime( true ) - $startTime ) * 1000 );
 
 		return [
 			'final_response' => $finalResponse,
-			'tool_calls'     => $allToolCalls,
+			'all_tool_calls' => $allToolCalls,
 			'iterations'     => $iterations,
 			'execution_time' => $executionTime
 		];
 	}
 
 	/**
-	 * Execute tools using the model
-	 *
-	 * @param string $model Model to use for tool execution
-	 * @param array $toolRequests Tool requests from model
-	 * @param ToolRegistry $toolRegistry Tool registry
-	 *
-	 * @return array Tool results
+	 * Extract final response and clean up completion token
 	 */
-	private function executeToolsWithModel(
-		string $model,
-		array $toolRequests,
-		ToolRegistry $toolRegistry
-	): array {
-		$results = [];
+	private function extractFinalResponse( array $messages, string $completionToken ): string {
+		$fullResponse = [];
 
-		// Convert tool requests to Ollama tool format
-		$tools = $this->getToolDefinitionsForRequests( $toolRequests );
+		foreach ( $messages as $message ) {
+			if ( $message['role'] === 'assistant' && ! empty( $message['content'] ) ) {
+				$content = str_replace( $completionToken, '', $message['content'] );
+				$content = trim( $content );
 
-		// Build messages for model
-		$toolMessages = [
-			[
-				'role'    => 'system',
-				'content' => 'You are a tool execution assistant. Execute the requested tools and return the results.'
-			],
-			[
-				'role'    => 'user',
-				'content' => 'Please execute these tools: ' . json_encode( $toolRequests )
-			]
-		];
-
-		// Call model for tool execution
-		$toolRequest = [
-			'model'    => $model,
-			'messages' => $toolMessages,
-			'tools'    => $tools,
-			'stream'   => false
-		];
-
-		try {
-			$toolResponse = $this->callOllamaChat( $toolRequest, $this->currentInput );
-
-			// Extract tool calls from response
-			$toolCalls = $toolResponse['message']['tool_calls'] ?? [];
-
-			// Execute each tool call
-			foreach ( $toolCalls as $toolCall ) {
-				$toolName = $toolCall['function']['name'] ?? '';
-				$toolArgs = $toolCall['function']['arguments'] ?? '{}';
-
-				// Parse arguments if string
-				if ( is_string( $toolArgs ) ) {
-					$toolArgs = json_decode( $toolArgs, true ) ?? [];
-				}
-
-				$this->log_info( "Executing tool via registry", [
-					'tool' => $toolName,
-					'args' => $toolArgs
-				] );
-
-				try {
-					$result    = $toolRegistry->execute_tool( $toolName, $toolArgs );
-					$results[] = [
-						'tool'    => $toolName,
-						'args'    => $toolArgs,
-						'result'  => $result,
-						'success' => ! isset( $result['error'] )
-					];
-				} catch ( Exception $e ) {
-					$results[] = [
-						'tool'    => $toolName,
-						'args'    => $toolArgs,
-						'result'  => [ 'error' => $e->getMessage() ],
-						'success' => false
-					];
-				}
-			}
-		} catch ( Exception $e ) {
-			$this->log_error( "Model failed during tool execution", [ 'error' => $e->getMessage() ] );
-
-			// Fallback: execute tools directly without model
-			foreach ( $toolRequests as $request ) {
-				$toolName = $request['tool'] ?? '';
-				$toolArgs = $request['args'] ?? [];
-
-				try {
-					$result    = $toolRegistry->execute_tool( $toolName, $toolArgs );
-					$results[] = [
-						'tool'    => $toolName,
-						'args'    => $toolArgs,
-						'result'  => $result,
-						'success' => ! isset( $result['error'] )
-					];
-				} catch ( Exception $e ) {
-					$results[] = [
-						'tool'    => $toolName,
-						'args'    => $toolArgs,
-						'result'  => [ 'error' => $e->getMessage() ],
-						'success' => false
-					];
+				if ( ! empty( $content ) ) {
+					$fullResponse[] = $content;
 				}
 			}
 		}
 
-		return $results;
+		return implode( "\n\n", $fullResponse );
 	}
 
 	/**
-	 * Build system prompt for model
+	 * Get tool definitions for available tools
 	 *
-	 * @param string $workDir Work directory
-	 * @param array $availableTools Available tools
+	 * @param array $availableTools List of available tool names
 	 *
-	 * @return string System prompt
+	 * @return array Tool definitions for Ollama
 	 */
-	private function buildSystemPrompt( string $workDir, array $availableTools ): string {
-		$prompt = "You are an AI code analyst examining a WordPress plugin/theme.\n\n";
-		$prompt .= "WORK DIRECTORY: $workDir\n";
-		$prompt .= "All file operations are relative to this directory.\n\n";
-
-		$prompt .= "You have access to the following tools:\n";
-
-		$toolDescriptions = [
-			'read_file'        => 'Read file contents with optional line range',
-			'search_pattern'   => 'Search for patterns in PHP files',
-			'list_files'       => 'List files in a directory',
-			'get_file_info'    => 'Get file metadata',
-			'analyze_function' => 'Analyze a specific function'
-		];
-
-		foreach ( $availableTools as $tool ) {
-			if ( isset( $toolDescriptions[ $tool ] ) ) {
-				$prompt .= "- $tool: " . $toolDescriptions[ $tool ] . "\n";
-			}
-		}
-
-		$prompt .= "\nTo gather information, respond with JSON in this format:\n";
-		$prompt .= '{"tool_requests": [{"tool": "tool_name", "args": {...}}]}' . "\n\n";
-
-		$prompt .= "When you have enough information, provide your final analysis with:\n";
-		$prompt .= '{"final_response": "Your complete analysis here"}' . "\n\n";
-
-		$prompt .= "Be systematic and thorough. Start by understanding the code structure, then dive into specifics.\n";
-
-		return $prompt;
-	}
-
-	/**
-	 * Get tool definitions for requested tools
-	 *
-	 * @param array $toolRequests Tool requests
-	 *
-	 * @return array Tool definitions
-	 */
-	private function getToolDefinitionsForRequests( array $toolRequests ): array {
+	private function getToolDefinitions( array $availableTools ): array {
 		$allTools = $this->getAllToolDefinitions();
 		$tools    = [];
 
-		foreach ( $toolRequests as $request ) {
-			$toolName = $request['tool'] ?? '';
+		foreach ( $availableTools as $toolName ) {
 			if ( isset( $allTools[ $toolName ] ) ) {
 				$tools[] = [
 					'type'     => 'function',
@@ -417,7 +285,7 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 	}
 
 	/**
-	 * Get all tool definitions
+	 * Get all tool definitions matching ToolRegistry implementation
 	 *
 	 * @return array Tool definitions
 	 */
@@ -435,11 +303,11 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 						],
 						'start_line' => [
 							'type'        => 'integer',
-							'description' => 'Starting line number (optional)'
+							'description' => 'Starting line number (optional, 1-based)'
 						],
 						'end_line'   => [
 							'type'        => 'integer',
-							'description' => 'Ending line number (optional)'
+							'description' => 'Ending line number (optional, inclusive)'
 						]
 					],
 					'required'   => [ 'path' ]
@@ -453,12 +321,22 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 					'properties' => [
 						'pattern'     => [
 							'type'        => 'string',
-							'description' => 'Pattern to search for (regex or string)'
+							'description' => 'Pattern to search for (regex or literal string)'
 						],
 						'max_results' => [
 							'type'        => 'integer',
 							'description' => 'Maximum number of results to return',
 							'default'     => 50
+						],
+						'directory'   => [
+							'type'        => 'string',
+							'description' => 'Directory to search in (optional, relative to work directory)',
+							'default'     => ''
+						],
+						'is_regex'    => [
+							'type'        => 'boolean',
+							'description' => 'Whether to treat pattern as regex (default: true)',
+							'default'     => true
 						]
 					],
 					'required'   => [ 'pattern' ]
@@ -466,7 +344,7 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 			],
 			'list_files'     => [
 				'name'        => 'list_files',
-				'description' => 'List files in a directory',
+				'description' => 'List files and directories in a directory',
 				'parameters'  => [
 					'type'       => 'object',
 					'properties' => [
@@ -480,180 +358,5 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 				]
 			]
 		];
-	}
-
-	/**
-	 * Format tool results for coder model
-	 *
-	 * @param array $toolResults Tool execution results
-	 *
-	 * @return string Formatted results
-	 */
-	private function formatToolResults( array $toolResults ): string {
-		$formatted = "=== TOOL EXECUTION RESULTS ===\n\n";
-
-		foreach ( $toolResults as $i => $result ) {
-			$formatted .= sprintf( "[%d] Tool: %s\n", $i + 1, $result['tool'] );
-			$formatted .= sprintf( "    Args: %s\n", json_encode( $result['args'] ) );
-
-			if ( $result['success'] ) {
-				$formatted .= "    Status: SUCCESS\n";
-				$formatted .= "    Result:\n";
-				$formatted .= $this->formatToolResult( $result['result'] );
-			} else {
-				$formatted .= "    Status: FAILED\n";
-				$formatted .= "    Error: " . ( $result['result']['error'] ?? 'Unknown error' ) . "\n";
-			}
-			$formatted .= "\n";
-		}
-
-		return $formatted;
-	}
-
-	/**
-	 * Format individual tool result
-	 *
-	 * @param array $result Tool result
-	 *
-	 * @return string Formatted result
-	 */
-	private function formatToolResult( array $result ): string {
-		// Format based on known result types
-		if ( isset( $result['content'] ) ) {
-			// File read result
-			$lines = substr_count( $result['content'], "\n" ) + 1;
-
-			return sprintf( "    File: %s (%d lines)\n    Content preview:\n%s\n",
-				$result['path'] ?? 'unknown',
-				$lines,
-				$this->truncateContent( $result['content'], 500 )
-			);
-		}
-
-		if ( isset( $result['results'] ) && isset( $result['pattern'] ) ) {
-			// Search result
-			return sprintf( "    Pattern: %s\n    Matches: %d%s\n%s",
-				$result['pattern'],
-				$result['count'] ?? count( $result['results'] ),
-				$result['truncated'] ? ' (truncated)' : '',
-				$this->formatSearchResults( $result['results'] )
-			);
-		}
-
-		if ( isset( $result['files'] ) && isset( $result['directories'] ) ) {
-			// Directory listing
-			return sprintf( "    Directory: %s\n    Files: %d, Directories: %d\n",
-				$result['directory'] ?? '.',
-				$result['total_files'] ?? 0,
-				$result['total_directories'] ?? 0
-			);
-		}
-
-		// Default: JSON encode
-		return "    " . json_encode( $result, JSON_PRETTY_PRINT ) . "\n";
-	}
-
-	/**
-	 * Format search results
-	 *
-	 * @param array $results Search results
-	 *
-	 * @return string Formatted results
-	 */
-	private function formatSearchResults( array $results ): string {
-		$formatted = '';
-		$shown     = 0;
-
-		foreach ( $results as $match ) {
-			if ( $shown >= 5 ) {
-				$formatted .= sprintf( "    ... and %d more matches\n", count( $results ) - $shown );
-				break;
-			}
-
-			$formatted .= sprintf( "    - %s:%d: %s\n",
-				$match['file'] ?? 'unknown',
-				$match['line'] ?? 0,
-				$this->truncateContent( $match['content'] ?? '', 80 )
-			);
-			$shown ++;
-		}
-
-		return $formatted;
-	}
-
-	/**
-	 * Truncate content for display
-	 *
-	 * @param string $content Content to truncate
-	 * @param int $maxLength Maximum length
-	 *
-	 * @return string Truncated content
-	 */
-	private function truncateContent( string $content, int $maxLength ): string {
-		if ( strlen( $content ) <= $maxLength ) {
-			return $content;
-		}
-
-		return substr( $content, 0, $maxLength ) . '...';
-	}
-
-	/**
-	 * Check if coder response is a final response
-	 *
-	 * @param string $content Response content
-	 *
-	 * @return bool True if final response
-	 */
-	private function isFinaResponse( string $content ): bool {
-		// Check for common final response indicators
-		$finalIndicators = [
-			'final analysis',
-			'conclusion',
-			'summary',
-			'based on my analysis',
-			'in conclusion',
-			'to summarize'
-		];
-
-		$lowerContent = strtolower( $content );
-		foreach ( $finalIndicators as $indicator ) {
-			if ( strpos( $lowerContent, $indicator ) !== false ) {
-				return true;
-			}
-		}
-
-		// Check if it's a substantial response without tool requests
-		return strlen( $content ) > 200 && strpos( $content, 'tool' ) === false;
-	}
-
-	/**
-	 * Extract final response from conversation
-	 *
-	 * @param array $conversation Conversation history
-	 *
-	 * @return string Final response
-	 */
-	private function extractFinalResponse( array $conversation ): string {
-		// Work backwards to find the last substantial coder response
-		for ( $i = count( $conversation ) - 1; $i >= 0; $i -- ) {
-			$message = $conversation[ $i ];
-
-			if ( $message['role'] === 'assistant' && isset( $message['content'] ) ) {
-				$content = $message['content'];
-
-				// Try to parse as JSON
-				$parsed = json_decode( $content, true );
-				if ( json_last_error() === JSON_ERROR_NONE && isset( $parsed['final_response'] ) ) {
-					return $parsed['final_response'];
-				}
-
-				// If it's a substantial non-JSON response, use it
-				if ( strlen( $content ) > 100 && $this->isFinaResponse( $content ) ) {
-					return $content;
-				}
-			}
-		}
-
-		return 'Analysis incomplete - no final response generated.';
 	}
 }
