@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "399 total, 375 passed, 0 failed, 24 skipped.",
+            "test_summary": "399 total, 375 passed, 3 failed, 21 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -50,13 +50,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 93,
-                "numPendingTestSuites": 12,
+                "numFailedTestSuites": 2,
+                "numPassedTestSuites": 92,
+                "numPendingTestSuites": 11,
                 "numTotalTestSuites": 105,
-                "numFailedTests": 0,
+                "numFailedTests": 3,
                 "numPassedTests": 375,
-                "numPendingTests": 24,
+                "numPendingTests": 21,
                 "numTotalTests": 399,
                 "testResults": [
                     {
@@ -1185,13 +1185,13 @@
                     },
                     {
                         "file": "editor\\/create-woocommerce-blocks.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Add WooCommerce Blocks Into Page": [
                                 {
                                     "title": "can insert all WooCommerce blocks into page",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2300,21 +2300,21 @@
                     },
                     {
                         "file": "product\\/product-import-csv.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
+                        "status": "failed",
+                        "has_pending": false,
                         "tests": {
                             "Import Products from a CSV file": [
                                 {
                                     "title": "should show error message if you go without providing CSV file",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can upload the CSV file and import products",
-                                    "status": "pending"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can override the existing products via CSV import",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2800,7 +2800,7 @@
                         }
                     }
                 ],
-                "summary": "399 total, 375 passed, 0 failed, 24 skipped."
+                "summary": "399 total, 375 passed, 3 failed, 21 skipped."
             }
         },
         {
@@ -2812,9 +2812,9 @@
                     "summary": {
                         "tests": 399,
                         "passed": 375,
-                        "failed": 0,
+                        "failed": 3,
                         "pending": 0,
-                        "skipped": 24,
+                        "skipped": 21,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -6464,12 +6464,7 @@
                             "filePath": "\\/normalized\\/path\\/font-picker.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Expect \\"poll toEqual\\"",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/font-picker.spec.js > Assembler -> Font Picker",
                             "attachments": [],
                             "stdout": [
@@ -7646,11 +7641,14 @@
                         },
                         {
                             "name": "can insert all WooCommerce blocks into page",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Product\', exact: true })\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Product\', exact: true })\\u001b[22m\\n\\n    at _callee8$ (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/editor.js:224:14)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/node_modules\\/@babel\\/runtime\\/helpers\\/regeneratorRuntime.js:52:18\\n    at Generator.<anonymous> (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/node_modules\\/@babel\\/runtime\\/helpers\\/regenerator.js:52:51)\\n    at Generator.next (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/node_modules\\/@babel\\/runtime\\/helpers\\/regeneratorDefine.js:17:23)\\n    at asyncGeneratorStep (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/node_modules\\/@babel\\/runtime\\/helpers\\/asyncToGenerator.js:3:17)\\n    at _next (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/node_modules\\/@babel\\/runtime\\/helpers\\/asyncToGenerator.js:17:9)",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/editor.js:224\\n\\n\\u001b[0m \\u001b[90m 222 |\\u001b[39m             name\\u001b[33m:\\u001b[39m blockName\\u001b[33m,\\u001b[39m\\n \\u001b[90m 223 |\\u001b[39m             exact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 224 |\\u001b[39m           })\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m              \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 225 |\\u001b[39m         \\u001b[36mcase\\u001b[39m \\u001b[35m14\\u001b[39m\\u001b[33m:\\u001b[39m\\n \\u001b[90m 226 |\\u001b[39m           _context8\\u001b[33m.\\u001b[39mnext \\u001b[33m=\\u001b[39m \\u001b[35m16\\u001b[39m\\u001b[33m;\\u001b[39m\\n \\u001b[90m 227 |\\u001b[39m           \\u001b[36mreturn\\u001b[39m page\\u001b[33m.\\u001b[39mgetByRole(\\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m {\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-woocommerce-blocks.spec.js",
@@ -7718,24 +7716,33 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Insert Single Product block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Store Notices block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Top Rated Products block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Upsells block",
-                                    "status": "passed"
+                                    "name": "Insert Product block",
+                                    "status": "failed"
                                 }
                             ],
                             "suite": "e2e > editor\\/create-woocommerce-blocks.spec.js > Add WooCommerce Blocks Into Page",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/editor-create-woocommerce--1fb5c-ooCommerce-blocks-into-page-e2e-retry1\\/test-failed-1.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/editor-create-woocommerce--1fb5c-ooCommerce-blocks-into-page-e2e-retry1\\/video.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/editor-create-woocommerce--1fb5c-ooCommerce-blocks-into-page-e2e-retry1\\/error-context.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/editor-create-woocommerce--1fb5c-ooCommerce-blocks-into-page-e2e-retry1\\/trace.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -12432,11 +12439,11 @@
                         },
                         {
                             "name": "should show error message if you go without providing CSV file",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
@@ -12450,20 +12457,19 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
+                                "annotations": []
                             }
                         },
                         {
                             "name": "can upload the CSV file and import products",
-                            "status": "skipped",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'a.row-title\')\\nExpected: \\u001b[32m18\\u001b[39m\\nReceived: \\u001b[31m0\\u001b[39m\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'a.row-title\')\\u001b[22m\\n\\u001b[2m    24 \\u00d7 locator resolved to 0 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"0\\"\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'a.row-title\')\\nExpected: \\u001b[32m18\\u001b[39m\\nReceived: \\u001b[31m0\\u001b[39m\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'a.row-title\')\\u001b[22m\\n\\u001b[2m    24 \\u00d7 locator resolved to 0 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"0\\"\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js:215:50",
+                            "snippet": "\\u001b[0m \\u001b[90m 213 |\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m \\t\\t\\t\\u001b[90m\\/\\/ Compare imported products to what\'s expected\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 215 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'a.row-title\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoHaveCount(\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t                                              \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 216 |\\u001b[39m \\t\\t\\t\\tproductNames\\u001b[33m.\\u001b[39mlength\\n \\u001b[90m 217 |\\u001b[39m \\t\\t\\t)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 218 |\\u001b[39m \\t\\t\\t\\u001b[36mconst\\u001b[39m productTitles \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m page\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
@@ -12471,26 +12477,46 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/product-import-csv.spec.js > Import Products from a CSV file",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-a78cb-SV-file-and-import-products-e2e-retry1\\/test-failed-1.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-a78cb-SV-file-and-import-products-e2e-retry1\\/video.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-a78cb-SV-file-and-import-products-e2e-retry1\\/error-context.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-a78cb-SV-file-and-import-products-e2e-retry1\\/trace.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
+                                "annotations": []
                             }
                         },
                         {
                             "name": "can override the existing products via CSV import",
-                            "status": "skipped",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'a.row-title\')\\nExpected: \\u001b[32m18\\u001b[39m\\nReceived: \\u001b[31m0\\u001b[39m\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'a.row-title\')\\u001b[22m\\n\\u001b[2m    23 \\u00d7 locator resolved to 0 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"0\\"\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'a.row-title\')\\nExpected: \\u001b[32m18\\u001b[39m\\nReceived: \\u001b[31m0\\u001b[39m\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'a.row-title\')\\u001b[22m\\n\\u001b[2m    23 \\u00d7 locator resolved to 0 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"0\\"\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js:261:50",
+                            "snippet": "\\u001b[0m \\u001b[90m 259 |\\u001b[39m\\n \\u001b[90m 260 |\\u001b[39m \\t\\t\\t\\u001b[90m\\/\\/ Compare imported products to what\'s expected\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 261 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'a.row-title\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoHaveCount(\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t                                              \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 262 |\\u001b[39m \\t\\t\\t\\tproductNamesOverride\\u001b[33m.\\u001b[39mlength\\n \\u001b[90m 263 |\\u001b[39m \\t\\t\\t)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 264 |\\u001b[39m \\t\\t\\t\\u001b[36mconst\\u001b[39m productTitles \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m page\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
@@ -12498,17 +12524,34 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/product-import-csv.spec.js > Import Products from a CSV file",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-39299-ing-products-via-CSV-import-e2e-retry1\\/test-failed-1.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-39299-ing-products-via-CSV-import-e2e-retry1\\/video.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-39299-ing-products-via-CSV-import-e2e-retry1\\/error-context.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-39299-ing-products-via-CSV-import-e2e-retry1\\/trace.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip"
-                                    }
-                                ]
+                                "annotations": []
                             }
                         },
                         {
