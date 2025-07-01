@@ -447,7 +447,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 
 		foreach ( $iterator as $file ) {
 			if ( $file->isFile() ) {
-				$totalFiles++;
+				$totalFiles ++;
 
 				// Check if it's a PHP file for basic stats
 				if ( pathinfo( $file, PATHINFO_EXTENSION ) === 'php' ) {
@@ -490,9 +490,9 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			'session_id'       => $params['session_id'] ?? md5( $actualExtractPath ),
 			'files_discovered' => $discoveredFiles,
 			'stats'            => [
-				'files_extracted' => $fileCount,
-				'php_files_found' => count( $phpFiles ),
-				'total_files'     => $totalFiles,
+				'files_extracted'        => $fileCount,
+				'php_files_found'        => count( $phpFiles ),
+				'total_files'            => $totalFiles,
 				'files_matching_pattern' => count( $discoveredFiles )
 			]
 		] );
@@ -508,7 +508,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 		$this->log_error( 'ZIP extraction failed: ' . $e->getMessage() );
 
 		http_response_code( 500 );
-		NodeResponse::error( 'Extraction failed', [ 'message' => $e->getMessage() ] );
+		NodeResponse::error( 'Extraction failed', 500, [ 'message' => $e->getMessage() ] );
 	}
 
 	/**

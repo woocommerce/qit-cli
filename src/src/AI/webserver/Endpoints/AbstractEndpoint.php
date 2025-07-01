@@ -74,7 +74,12 @@ abstract class AbstractEndpoint {
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 		curl_setopt( $ch, CURLOPT_POST, true );
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $data ) );
-		curl_setopt( $ch, CURLOPT_HTTPHEADER, [ 'Content-Type: application/json' ] );
+		if ( ! empty( $data['format'] ) ) {
+			$this->log_info( 'Setting content type for format', [
+				'format' => $data['format']
+			] );
+			curl_setopt( $ch, CURLOPT_HTTPHEADER, [ 'Content-Type: application/json' ] );
+		}
 		curl_setopt( $ch, CURLOPT_TIMEOUT, 300 );
 
 		$response = curl_exec( $ch );
@@ -90,7 +95,8 @@ abstract class AbstractEndpoint {
 			'duration_seconds' => round( $duration, 2 ),
 			'response_size'    => $response ? strlen( $response ) : 0,
 			'curl_error'       => $error ?: null,
-			'total_time'       => $info['total_time'] ?? null
+			'total_time'       => $info['total_time'] ?? null,
+			'response'         => $response,
 		] );
 
 		if ( $response === false ) {
@@ -276,12 +282,12 @@ abstract class AbstractEndpoint {
 
 			// Execute ollama stop command
 			$command = "ollama stop " . escapeshellarg( $model ) . " 2>&1";
-			$output = shell_exec( $command );
+			$output  = shell_exec( $command );
 
 			$this->log_debug( "Ollama stop command executed", [
-				'model' => $model,
+				'model'   => $model,
 				'command' => $command,
-				'output' => trim( $output ?: '' )
+				'output'  => trim( $output ?: '' )
 			] );
 		} catch ( Exception $e ) {
 			// Don't throw exceptions for stop failures - just log them

@@ -61,7 +61,7 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 			$maxIterations  = $input['max_iterations'] ?? 30;
 			$availableTools = $input['available_tools'] ?? [ 'read_file', 'search_pattern', 'list_files' ];
 			$sessionId      = $input['session_id'] ?? null;
-			$format         = $input['format'] ?? null;
+			$format         = $input['format'] ?? [];
 			// Resolve work directory
 			$pathResolutionStart = microtime( true );
 			NodeResponse::mark( 'path_resolution' );
