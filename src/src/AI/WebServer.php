@@ -14,9 +14,8 @@ class WebServer {
 	private string $ollama_api_url = 'http://localhost:11434';
 	private bool $use_local_mode = false;
 
-	public function __construct() {
-		// No Ollama instance needed here - it runs in the node context
-		$this->use_local_mode = ! empty( $_ENV['QIT_USE_LOCAL'] );
+	public function __construct( bool $use_local_mode = false ) {
+		$this->use_local_mode = $use_local_mode;
 	}
 
 	/**
@@ -52,7 +51,6 @@ class WebServer {
 		if ( $this->use_local_mode ) {
 			// Use the source webserver directory directly
 			$this->webroot = __DIR__ . '/webserver';
-
 			if ( ! is_dir( $this->webroot ) ) {
 				$error_msg = 'Webserver source directory not found: ' . $this->webroot;
 				if ( $this->logger ) {
@@ -60,16 +58,23 @@ class WebServer {
 				}
 				throw new \RuntimeException( $error_msg );
 			}
-
 			if ( $this->logger ) {
 				$this->logger->info( 'Using local webserver directory', [ 'webroot' => $this->webroot ] );
 			}
-
-			// Create a temporary router file with replaced placeholders
-			$this->createTempRouterFile();
 		} else {
-			// Original behavior: create temp directory and copy files
+			// Create temp directory and copy files
 			$this->setupTempWebroot();
+		}
+
+		// For both modes, we need to handle placeholders
+		// In local mode: create temp router file
+		// In temp mode: modify the copied router file in place
+		if ( $this->use_local_mode ) {
+			$router_path = $this->createTempRouterFile();
+		} else {
+			// In temp mode, replace placeholders in the copied router.php
+			$this->replacePlaceholders();
+			$router_path = $this->webroot . '/router.php';
 		}
 
 		// Start the PHP built-in server in the background
@@ -77,13 +82,10 @@ class WebServer {
 			$this->logger->info( 'Starting PHP built-in server', [
 				'host'    => "localhost:{$this->port}",
 				'webroot' => $this->webroot,
+				'router'  => $router_path,
 				'mode'    => $this->use_local_mode ? 'local' : 'temp'
 			] );
 		}
-
-		$router_path = $this->use_local_mode ?
-			sys_get_temp_dir() . '/qit-router-' . getmypid() . '.php' :
-			$this->webroot . '/router.php';
 
 		$this->process = new Process( [
 			'php',
@@ -123,7 +125,7 @@ class WebServer {
 	}
 
 	/**
-	 * Setup temporary webroot directory (original behavior)
+	 * Setup temporary webroot directory (for temp mode)
 	 */
 	private function setupTempWebroot(): void {
 		// Create the web server directory with safety checks
@@ -170,47 +172,6 @@ class WebServer {
 		if ( $this->logger ) {
 			$this->logger->debug( 'Webserver files prepared' );
 		}
-	}
-
-	/**
-	 * Create a temporary router file for local mode
-	 */
-	private function createTempRouterFile(): void {
-		$source_router = $this->webroot . '/router.php';
-		$temp_router   = sys_get_temp_dir() . '/qit-router-' . getmypid() . '.php';
-
-		if ( ! file_exists( $source_router ) ) {
-			throw new \RuntimeException( 'Router file not found: ' . $source_router );
-		}
-
-		// Read the router content
-		$content = file_get_contents( $source_router );
-
-		// Replace placeholders
-		$replacements = [
-			'{{NODE_TOKEN}}'     => $this->node_token,
-			'{{OLLAMA_API_URL}}' => $this->getOllamaApiUrl(),
-			'{{LOG_FILE}}'       => $this->logger ? $this->logger->get_log_file() : sys_get_temp_dir() . '/qit-node.log'
-		];
-
-		foreach ( $replacements as $placeholder => $value ) {
-			$content = str_replace( $placeholder, $value, $content );
-		}
-
-		// Write the modified content to temp file
-		file_put_contents( $temp_router, $content );
-		chmod( $temp_router, 0755 );
-
-		if ( $this->logger ) {
-			$this->logger->debug( 'Created temporary router file', [
-				'path'         => $temp_router,
-				'placeholders' => array_keys( $replacements )
-			] );
-		}
-	}
-
-	public function get_node_token(): string {
-		return $this->node_token;
 	}
 
 	/**
@@ -272,7 +233,7 @@ class WebServer {
 	}
 
 	/**
-	 * Replace placeholders in the router.php file
+	 * Replace placeholders in the router.php file (for temp mode)
 	 */
 	private function replacePlaceholders(): void {
 		$router_file = $this->webroot . '/router.php';
@@ -303,6 +264,50 @@ class WebServer {
 				'placeholders' => array_keys( $replacements )
 			] );
 		}
+	}
+
+	/**
+	 * Create a temporary router file for local mode
+	 * @return string Path to the temporary router file
+	 */
+	private function createTempRouterFile(): string {
+		$source_router = $this->webroot . '/router.php';
+		$temp_router   = $this->webroot . '/router.local.php'; // Save in same directory
+
+		if ( ! file_exists( $source_router ) ) {
+			throw new \RuntimeException( 'Router file not found: ' . $source_router );
+		}
+
+		// Read the router content
+		$content = file_get_contents( $source_router );
+
+		// Replace placeholders
+		$replacements = [
+			'{{NODE_TOKEN}}'     => $this->node_token,
+			'{{OLLAMA_API_URL}}' => $this->getOllamaApiUrl(),
+			'{{LOG_FILE}}'       => $this->logger ? $this->logger->get_log_file() : sys_get_temp_dir() . '/qit-node.log'
+		];
+
+		foreach ( $replacements as $placeholder => $value ) {
+			$content = str_replace( $placeholder, $value, $content );
+		}
+
+		// Write the modified content to local temp file
+		file_put_contents( $temp_router, $content );
+		chmod( $temp_router, 0755 );
+
+		if ( $this->logger ) {
+			$this->logger->debug( 'Created local router file', [
+				'path'         => $temp_router,
+				'placeholders' => array_keys( $replacements )
+			] );
+		}
+
+		return $temp_router;
+	}
+
+	public function get_node_token(): string {
+		return $this->node_token;
 	}
 
 	/**
@@ -403,7 +408,6 @@ class WebServer {
 	private function findAvailablePort(): int {
 		// Let PHP find an available port by binding to port 0
 		$tempServer = stream_socket_server( 'tcp://127.0.0.1:0', $errno, $errstr );
-
 		if ( ! $tempServer ) {
 			throw new \RuntimeException( "Failed to find available port: $errstr" );
 		}
@@ -434,16 +438,16 @@ class WebServer {
 
 		// Clean up temporary router file in local mode
 		if ( $this->use_local_mode ) {
-			$temp_router = sys_get_temp_dir() . '/qit-router-' . getmypid() . '.php';
-			if ( file_exists( $temp_router ) ) {
-				unlink( $temp_router );
+			$local_router = $this->webroot . '/router.local.php';
+			if ( file_exists( $local_router ) ) {
+				unlink( $local_router );
 				if ( $this->logger ) {
-					$this->logger->debug( 'Removed temporary router file', [ 'path' => $temp_router ] );
+					$this->logger->debug( 'Removed local router file', [ 'path' => $local_router ] );
 				}
 			}
 
 			if ( $this->logger ) {
-				$this->logger->info( 'Webserver stopped (local mode - no cleanup needed)' );
+				$this->logger->info( 'Webserver stopped (local mode - cleaned up router.local.php)' );
 			}
 
 			return;

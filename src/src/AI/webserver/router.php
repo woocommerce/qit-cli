@@ -284,13 +284,13 @@ $endpoints = [
 // Build route map from endpoints
 $routeMap = [];
 foreach ( $endpoints as $endpoint ) {
-	$route = $endpoint->get_route();
-	$routeMap[$route] = $endpoint;
+	$route              = $endpoint->get_route();
+	$routeMap[ $route ] = $endpoint;
 }
 
 // Route to appropriate endpoint
-if ( isset( $routeMap[$uri] ) ) {
-	$endpoint = $routeMap[$uri];
+if ( isset( $routeMap[ $uri ] ) ) {
+	$endpoint      = $routeMap[ $uri ];
 	$endpointClass = get_class( $endpoint );
 	log_info( "Handling request with endpoint", [ 'endpoint' => $endpointClass, 'route' => $uri ] );
 	$endpoint->handle( $input );

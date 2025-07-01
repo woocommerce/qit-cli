@@ -33,13 +33,12 @@ class NodeStartCommand extends QITCommand {
 
 	public function __construct(
 		TunnelRunner $tunnel_runner,
-		WebServer $webserver,
 		Cache $cache,
 		Auth $auth
 	) {
 		parent::__construct( self::getDefaultName() );
 		$this->tunnel_runner = $tunnel_runner;
-		$this->webserver     = $webserver;
+		$this->webserver = new WebServer( true );
 		$this->cache         = $cache;
 		$this->auth          = $auth;
 	}
