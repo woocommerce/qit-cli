@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "399 total, 374 passed, 1 failed, 24 skipped.",
+            "test_summary": "399 total, 374 passed, 0 failed, 25 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -50,13 +50,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 92,
-                "numPendingTestSuites": 12,
+                "numPendingTestSuites": 13,
                 "numTotalTestSuites": 105,
-                "numFailedTests": 1,
+                "numFailedTests": 0,
                 "numPassedTests": 374,
-                "numPendingTests": 24,
+                "numPendingTests": 25,
                 "numTotalTests": 399,
                 "testResults": [
                     {
@@ -1185,13 +1185,13 @@
                     },
                     {
                         "file": "editor\\/create-woocommerce-blocks.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Add WooCommerce Blocks Into Page": [
                                 {
                                     "title": "can insert all WooCommerce blocks into page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2800,7 +2800,7 @@
                         }
                     }
                 ],
-                "summary": "399 total, 374 passed, 1 failed, 24 skipped."
+                "summary": "399 total, 374 passed, 0 failed, 25 skipped."
             }
         },
         {
@@ -2812,9 +2812,9 @@
                     "summary": {
                         "tests": 399,
                         "passed": 374,
-                        "failed": 1,
+                        "failed": 0,
                         "pending": 0,
-                        "skipped": 24,
+                        "skipped": 25,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -7641,114 +7641,29 @@
                         },
                         {
                             "name": "can insert all WooCommerce blocks into page",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Product\', exact: true })\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Product\', exact: true })\\u001b[22m\\n\\n    at _callee8$ (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/editor.js:224:14)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/node_modules\\/@babel\\/runtime\\/helpers\\/regeneratorRuntime.js:52:18\\n    at Generator.<anonymous> (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/node_modules\\/@babel\\/runtime\\/helpers\\/regenerator.js:52:51)\\n    at Generator.next (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/node_modules\\/@babel\\/runtime\\/helpers\\/regeneratorDefine.js:17:23)\\n    at asyncGeneratorStep (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/node_modules\\/@babel\\/runtime\\/helpers\\/asyncToGenerator.js:3:17)\\n    at _next (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/node_modules\\/@babel\\/runtime\\/helpers\\/asyncToGenerator.js:17:9)",
-                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/editor.js:224\\n\\n\\u001b[0m \\u001b[90m 222 |\\u001b[39m             name\\u001b[33m:\\u001b[39m blockName\\u001b[33m,\\u001b[39m\\n \\u001b[90m 223 |\\u001b[39m             exact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 224 |\\u001b[39m           })\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m              \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 225 |\\u001b[39m         \\u001b[36mcase\\u001b[39m \\u001b[35m14\\u001b[39m\\u001b[33m:\\u001b[39m\\n \\u001b[90m 226 |\\u001b[39m           _context8\\u001b[33m.\\u001b[39mnext \\u001b[33m=\\u001b[39m \\u001b[35m16\\u001b[39m\\u001b[33m;\\u001b[39m\\n \\u001b[90m 227 |\\u001b[39m           \\u001b[36mreturn\\u001b[39m page\\u001b[33m.\\u001b[39mgetByRole(\\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m {\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-woocommerce-blocks.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Insert All Reviews block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Best Sellers block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Cross-Sells block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Customer account block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Featured Category block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Featured Product block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Featured Products block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Hand-Picked Products block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert New Arrivals block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert On Sale Products block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Product Categories List block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Product Collection block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Product Search block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Reviews by Category block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Reviews by Product block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Product block",
-                                    "status": "failed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > editor\\/create-woocommerce-blocks.spec.js > Add WooCommerce Blocks Into Page",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/editor-create-woocommerce--1fb5c-ooCommerce-blocks-into-page-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/editor-create-woocommerce--1fb5c-ooCommerce-blocks-into-page-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/editor-create-woocommerce--1fb5c-ooCommerce-blocks-into-page-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/editor-create-woocommerce--1fb5c-ooCommerce-blocks-into-page-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
