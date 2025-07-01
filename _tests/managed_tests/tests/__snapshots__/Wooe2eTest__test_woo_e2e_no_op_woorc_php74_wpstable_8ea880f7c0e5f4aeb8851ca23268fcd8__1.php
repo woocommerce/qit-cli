@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "399 total, 375 passed, 3 failed, 21 skipped.",
+            "test_summary": "399 total, 374 passed, 1 failed, 24 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -50,13 +50,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 2,
+                "numFailedTestSuites": 1,
                 "numPassedTestSuites": 92,
-                "numPendingTestSuites": 11,
+                "numPendingTestSuites": 12,
                 "numTotalTestSuites": 105,
-                "numFailedTests": 3,
-                "numPassedTests": 375,
-                "numPendingTests": 21,
+                "numFailedTests": 1,
+                "numPassedTests": 374,
+                "numPendingTests": 24,
                 "numTotalTests": 399,
                 "testResults": [
                     {
@@ -2300,21 +2300,21 @@
                     },
                     {
                         "file": "product\\/product-import-csv.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Import Products from a CSV file": [
                                 {
                                     "title": "should show error message if you go without providing CSV file",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can upload the CSV file and import products",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can override the existing products via CSV import",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2800,7 +2800,7 @@
                         }
                     }
                 ],
-                "summary": "399 total, 375 passed, 3 failed, 21 skipped."
+                "summary": "399 total, 374 passed, 1 failed, 24 skipped."
             }
         },
         {
@@ -2811,10 +2811,10 @@
                     },
                     "summary": {
                         "tests": 399,
-                        "passed": 375,
-                        "failed": 3,
+                        "passed": 374,
+                        "failed": 1,
                         "pending": 0,
-                        "skipped": 21,
+                        "skipped": 24,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -12439,11 +12439,11 @@
                         },
                         {
                             "name": "should show error message if you go without providing CSV file",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
@@ -12457,19 +12457,20 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can upload the CSV file and import products",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'a.row-title\')\\nExpected: \\u001b[32m18\\u001b[39m\\nReceived: \\u001b[31m0\\u001b[39m\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'a.row-title\')\\u001b[22m\\n\\u001b[2m    24 \\u00d7 locator resolved to 0 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"0\\"\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'a.row-title\')\\nExpected: \\u001b[32m18\\u001b[39m\\nReceived: \\u001b[31m0\\u001b[39m\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'a.row-title\')\\u001b[22m\\n\\u001b[2m    24 \\u00d7 locator resolved to 0 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"0\\"\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js:215:50",
-                            "snippet": "\\u001b[0m \\u001b[90m 213 |\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m \\t\\t\\t\\u001b[90m\\/\\/ Compare imported products to what\'s expected\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 215 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'a.row-title\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoHaveCount(\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t                                              \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 216 |\\u001b[39m \\t\\t\\t\\tproductNames\\u001b[33m.\\u001b[39mlength\\n \\u001b[90m 217 |\\u001b[39m \\t\\t\\t)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 218 |\\u001b[39m \\t\\t\\t\\u001b[36mconst\\u001b[39m productTitles \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m page\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
@@ -12477,46 +12478,26 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/product-import-csv.spec.js > Import Products from a CSV file",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-a78cb-SV-file-and-import-products-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-a78cb-SV-file-and-import-products-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-a78cb-SV-file-and-import-products-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-a78cb-SV-file-and-import-products-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can override the existing products via CSV import",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'a.row-title\')\\nExpected: \\u001b[32m18\\u001b[39m\\nReceived: \\u001b[31m0\\u001b[39m\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'a.row-title\')\\u001b[22m\\n\\u001b[2m    24 \\u00d7 locator resolved to 0 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"0\\"\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'a.row-title\')\\nExpected: \\u001b[32m18\\u001b[39m\\nReceived: \\u001b[31m0\\u001b[39m\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'a.row-title\')\\u001b[22m\\n\\u001b[2m    24 \\u00d7 locator resolved to 0 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"0\\"\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js:261:50",
-                            "snippet": "\\u001b[0m \\u001b[90m 259 |\\u001b[39m\\n \\u001b[90m 260 |\\u001b[39m \\t\\t\\t\\u001b[90m\\/\\/ Compare imported products to what\'s expected\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 261 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'a.row-title\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoHaveCount(\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t                                              \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 262 |\\u001b[39m \\t\\t\\t\\tproductNamesOverride\\u001b[33m.\\u001b[39mlength\\n \\u001b[90m 263 |\\u001b[39m \\t\\t\\t)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 264 |\\u001b[39m \\t\\t\\t\\u001b[36mconst\\u001b[39m productTitles \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m page\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
@@ -12524,34 +12505,17 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/product-import-csv.spec.js > Import Products from a CSV file",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-39299-ing-products-via-CSV-import-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-39299-ing-products-via-CSV-import-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-39299-ing-products-via-CSV-import-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-product-import-csv-39299-ing-products-via-CSV-import-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
