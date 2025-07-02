@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "395 total, 376 passed, 0 failed, 19 skipped.",
+            "test_summary": "395 total, 375 passed, 0 failed, 20 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "ai_suggestion_status": "none",
@@ -51,12 +51,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 90,
-                "numPendingTestSuites": 11,
+                "numPassedTestSuites": 89,
+                "numPendingTestSuites": 12,
                 "numTotalTestSuites": 101,
                 "numFailedTests": 0,
-                "numPassedTests": 376,
-                "numPendingTests": 19,
+                "numPassedTests": 375,
+                "numPendingTests": 20,
                 "numTotalTests": 395,
                 "testResults": [
                     {
@@ -1130,12 +1130,12 @@
                     {
                         "file": "editor\\/create-woocommerce-blocks.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Add WooCommerce Blocks Into Page": [
                                 {
                                     "title": "can insert all WooCommerce blocks into page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2749,7 +2749,7 @@
                         }
                     }
                 ],
-                "summary": "395 total, 376 passed, 0 failed, 19 skipped."
+                "summary": "395 total, 375 passed, 0 failed, 20 skipped."
             }
         },
         {
@@ -2760,10 +2760,10 @@
                     },
                     "summary": {
                         "tests": 395,
-                        "passed": 376,
+                        "passed": 375,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 19,
+                        "skipped": 20,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -7324,94 +7324,17 @@
                         },
                         {
                             "name": "can insert all WooCommerce blocks into page",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-woocommerce-blocks.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Insert All Reviews block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Best Sellers block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Cross-Sells block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Customer account block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Featured Category block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Featured Product block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Featured Products block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Hand-Picked Products block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert New Arrivals block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert On Sale Products block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Product Categories List block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Product Collection block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Product Search block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Reviews by Category block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Reviews by Product block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Single Product block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Store Notices block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Top Rated Products block",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Upsells block",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > editor\\/create-woocommerce-blocks.spec.js > Add WooCommerce Blocks Into Page",
                             "attachments": [],
                             "stdout": [
@@ -7419,7 +7342,11 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip"
+                                    }
+                                ]
                             }
                         },
                         {
