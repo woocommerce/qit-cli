@@ -73,11 +73,12 @@ class LLPhantIntegration {
 		// Create composer.json
 		$composerJson = [
 			'require' => [
-				'theodo-group/llphant' => '^0'
+				'theodo-group/llphant' => 'dev-main#e0e01fbb696a56acc5652c573f155f538dc9936e'
 			],
 			'config'  => [
 				'optimize-autoloader'    => true,
-				'classmap-authoritative' => true
+				'classmap-authoritative' => true,
+				'minimum-stability'     => 'dev',
 			]
 		];
 
@@ -90,7 +91,7 @@ class LLPhantIntegration {
 		$output     = [];
 		$returnCode = 0;
 		$cmd        = sprintf(
-			'cd %s && composer install --no-dev --no-interaction --quiet 2>&1',
+			'cd %s && composer install --no-dev --no-interaction --no-progress --ignore-platform-req=ext-gd 2>&1',
 			escapeshellarg( $this->installDir )
 		);
 

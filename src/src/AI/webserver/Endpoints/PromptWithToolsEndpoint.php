@@ -2,182 +2,268 @@
 
 namespace QIT_AI_Webserver\Endpoints;
 
-use Exception;
-use LLPhant\Chat\FunctionInfo\FunctionInfo;
 use LLPhant\Chat\Message;
+use LLPhant\Chat\ChatResponse;
+use LLPhant\Chat\FunctionInfo\ToolCall;
+use LLPhant\Evaluation\Output\JSONFormatEvaluator;
 use QIT_AI_Webserver\Lib\ExtractPathResolver;
-use QIT_AI_Webserver\ToolRegistry;
+use QIT_AI_Webserver\Lib\ToolPathGuard;
 use QIT_AI_Webserver\NodeResponse;
+use QIT_AI_Webserver\ToolRegistry;
 
-/**
- * Prompt-With-Tools Endpoint
- *
- * Implements a full multi-turn function-calling loop following LLPhant's
- * documented pattern (see GH issues #219, #251).
- */
 class PromptWithToolsEndpoint extends AbstractEndpoint {
-
+	/* ------------------------------------------------------------------ */
 	public function get_route(): string {
 		return '/prompt-with-tools';
 	}
 
+	/* ------------------------------------------------------------------ */
 	public function handle( array $input ): void {
-		try {
-			// ---------- 1. Validate & extract parameters ----------
-			if ( ! isset( $input['messages'], $input['model'] ) ) {
-				$missing = array_diff( [ 'messages', 'model' ], array_keys( $input ) );
-				NodeResponse::error(
-					'Missing required parameters: ' . implode( ',', $missing ),
-					400
-				);
+		/* ─────────────── 0.  helpers ────────────── */
+		$dbg     = [];
+		$log     = function ( string $stage, $data = null ) use ( &$dbg ) {
+			$dbg[] = [ 'ts_ms' => (int) ( microtime( true ) * 1000 ), 'stage' => $stage, 'data' => $data ];
+			file_put_contents( '/tmp/debug-prompt.log', json_encode( $dbg, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE ) );
+		};
+		$logTool = function ( string $event, array $payload ) use ( $log ) {
+			$log( $event, $payload );
+		};
+
+		/* ─────────────── 1.  validate ───────────── */
+		foreach ( [ 'messages', 'model' ] as $k ) {
+			if ( ! isset( $input[ $k ] ) ) {
+				$log( 'error', "Missing {$k}" );
+				NodeResponse::error( "Missing required parameter: {$k}", 400 );
 			}
-
-			$rawMessages    = $input['messages'];
-			$model          = $input['model'];
-			$availableTools = $input['available_tools'] ??
-			                  [ 'read_file', 'search_pattern', 'list_files' ];
-			$maxIterations  = $input['max_iterations'] ?? 10;
-			$jobId          = $input['job_id'] ?? null;
-			$sessionId      = $input['session_id'] ?? null;
-			$format         = $input['format'] ?? null;
-
-			// ---------- 2. Initialise LLM ----------
-			$this->providerConfig['model'] = $model;
-			if ( $format ) {
-				$this->providerConfig['format'] = $format;
-			}
-			$this->initializeLLM();                 // sets $this->llm
-			$this->llm->ensureInitialized();        // creates chat client
-			$chat = $this->llm->getChat();
-
-			// ---------- 3. Prepare workdir & tools ----------
-			$workDir      = ExtractPathResolver::resolve( $input );
-			$toolRegistry = new ToolRegistry( $workDir );
-
-			foreach ( $availableTools as $toolName ) {
-				if ( $tool = $toolRegistry->getTool( $toolName ) ) {
-					$chat->addTool( $tool->getFunctionInfo() );
-				}
-			}
-
-			// ---------- 4. Convert input messages to LLPhant objects ----------
-			$conversation  = [];   // array<Message>
-			$systemMessage = '';
-
-			foreach ( $rawMessages as $m ) {
-				switch ( $m['role'] ) {
-					case 'system':
-						$systemMessage .= $m['content'] . "\n";
-						break;
-					case 'user':
-						$conversation[] = Message::user( $m['content'] );
-						break;
-					case 'assistant':
-						$conversation[] = Message::assistant( $m['content'] );
-						break;
-					case 'tool':
-						// Tool results need the tool_call_id if available
-						$toolCallId     = $m['tool_call_id'] ?? null;
-						$conversation[] = Message::toolResult( $m['content'], $toolCallId );
-						break;
-					default:
-						$this->log_warning( "Unknown message role: {$m['role']}" );
-				}
-			}
-
-			if ( trim( $systemMessage ) !== '' ) {
-				$chat->setSystemMessage( trim( $systemMessage ) );
-			}
-
-			// Ensure we have at least one message
-			if ( empty( $conversation ) ) {
-				NodeResponse::error( 'No valid messages provided', 400 );
-			}
-
-			// ---------- 5. Main tool-calling loop ----------
-			$iterations   = 0;
-			$allToolCalls = [];
-			$startMs      = microtime( true );
-			$finalContent = '';
-
-			while ( $iterations < $maxIterations ) {
-				$iterations ++;
-
-				try {
-					$answer = $chat->generateChatOrReturnFunctionCalled( $conversation );
-				} catch ( Exception $e ) {
-					$this->log_error( "LLM call failed: " . $e->getMessage() );
-					throw new Exception( "Failed to generate response: " . $e->getMessage() );
-				}
-
-				// --- 5.a  Tool branch ---
-				if ( is_array( $answer ) ) {
-					/** @var FunctionInfo[] $answer */
-					foreach ( $answer as $functionInfo ) {
-						$args = json_decode( $functionInfo->jsonArgs, true ) ?? [];
-
-						try {
-							$result = $toolRegistry->execute_tool( $functionInfo->name, $args );
-						} catch ( Exception $e ) {
-							$this->log_error(
-								"Tool execution failed for {$functionInfo->name}: " . $e->getMessage()
-							);
-							$result = [
-								'error'   => true,
-								'message' => "Tool execution failed: " . $e->getMessage()
-							];
-						}
-
-						$allToolCalls[] = [
-							'toolName' => $functionInfo->name,
-							'args'     => $args,
-							'result'   => $result,
-						];
-
-						// Append assistant tool call + tool result, preserving IDs
-						$conversation[] = Message::assistantAskingTools( [ $functionInfo ] );
-						$conversation[] = Message::toolResult(
-							json_encode(
-								$result,
-								JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-							),
-							$functionInfo->getToolCallId()
-						);
-					}
-					continue;   // loop again with updated context
-				}
-
-				// --- 5.b  Final text branch ---
-				$finalContent = is_string( $answer ) ? trim( $answer ) : '';
-				break;
-			}
-
-			// Check if we hit the iteration limit
-			if ( $iterations >= $maxIterations && is_array( $answer ) ) {
-				$this->log_warning( "Hit max iterations limit ({$maxIterations})" );
-				$finalContent = "Maximum iteration limit reached. The task may be incomplete.";
-			}
-
-			// ---------- 6. Respond ----------
-			NodeResponse::toolPrompt(
-				$finalContent,
-				$allToolCalls,
-				$model,
-				[
-					'job_id'         => $jobId,
-					'iterations'     => $iterations,
-					'session_id'     => $sessionId,
-					'execution_time' => (int) round(
-						( microtime( true ) - $startMs ) * 1000
-					),
-				]
-			);
-
-		} catch ( Exception $e ) {
-			$this->handleError( $e, [
-				'job_type' => 'prompt_with_tools',
-				'job_id'   => $jobId ?? null
-			] );
 		}
+		$raw           = $input['messages'];
+		$model         = (string) $input['model'];
+		$tools         = $input['available_tools'] ?? [ 'read_file', 'search_pattern', 'list_files' ];
+		$format        = $input['format'] ?? null;
+		$maxIterations = (int) ( $input['max_iterations'] ?? 10 );
+		$minToolCalls  = (int) ( $input['min_tool_calls'] ?? 2 );
+		$log( 'validated', compact( 'model', 'tools', 'format', 'minToolCalls' ) );
+
+		$supportsNativeTools = str_contains( $model, 'mistral' )
+		                       || str_contains( $model, 'gpt' )
+		                       || ( $input['force_native'] ?? false );
+		$log( 'capabilities', [ 'native_tools' => $supportsNativeTools ] );
+
+		/* ─────────────── 2.  boot LLM ───────────── */
+		$this->providerConfig['model'] = $model;
+		$this->initializeLLM();
+		$this->llm->ensureInitialized();
+		$chat = $this->llm->getChat();
+		$chat->setModelOption( 'think', false );
+
+		/* ─────────────── 3.  register tools ─────── */
+		$workDir   = ExtractPathResolver::resolve( $input );
+		$registry  = new ToolRegistry( $workDir );
+		$pathGuard = new ToolPathGuard( $workDir );
+		foreach ( $tools as $t ) {
+			if ( $tool = $registry->getTool( $t ) ) {
+				$chat->addTool( $tool->getFunctionInfo() );
+			}
+		}
+
+		/* ─────────────── 4.  seed conversation ──── */
+		$system = '';
+		$conv   = [];
+		foreach ( $raw as $m ) {
+			if ( $m['role'] === 'system' ) {
+				$system .= $m['content'] . "\n";
+			} else {
+				$conv[] = Message::{$m['role']}( $m['content'] );
+			}
+		}
+
+		$system .= "\nWhen the investigation is complete, say **done** and "
+		           . "give a short summary.\n"
+		           . "You must execute at least {$minToolCalls} tool calls.";
+		if ( $supportsNativeTools ) {
+			$system .= "\nUse function calls natively; do NOT embed JSON blocks.";
+		} else {
+			$system .= "\nYour model cannot call functions natively; "
+			           . "therefore embed the JSON object for the tool you need.";
+		}
+		$chat->setSystemMessage( trim( $system ) );
+
+		/* ───────────── helper: unwrap ChatResponse ─ */
+		$unwrap = function ( mixed $resp ): array {
+			return $resp instanceof ChatResponse
+				? [ $resp->getContent(), $resp->getToolCalls() ]
+				: [ (string) $resp, [] ];
+		};
+
+		/* ───────────── 5.  main loop ─────────────── */
+		$it         = 0;
+		$successful = 0;
+		$summary    = '';
+		$calls      = [];
+
+		while ( ++ $it <= $maxIterations ) {
+
+			/* ask next step */
+			$conv[] = $ask = Message::user(
+				"🧠 Reason about the next step. "
+				. ( $supportsNativeTools
+					? "If you need a tool, call it."
+					: "If you need a tool, output ONLY its JSON object." )
+			);
+			$log( 'prompt', $ask->content );
+
+			[ $rawOut, $nativeCalls ] = $unwrap( $chat->generateChat( $conv ) );
+			$thought = trim( $rawOut );
+			$conv[]  = Message::assistant( $thought );
+			$log( 'response', $thought );
+
+			/* finished? */
+			if ( preg_match( '/\b(done|finished)\b/i', $thought ) ) {
+				if ( $successful >= $minToolCalls ) {
+					$summary = $thought;
+					$log( 'summary', $summary );
+					break;
+				}
+				$conv[] = Message::assistant(
+					"❌ Only {$successful} tool calls executed; need {$minToolCalls}. Continue."
+				);
+				continue;
+			}
+
+			/* ───────── 5a  native function‑calls ───────── */
+			if ( $nativeCalls !== [] ) {
+				foreach ( $nativeCalls as $tc ) {
+					$toolName = $tc->name;
+					if ( ! in_array( $toolName, $tools, true ) ) {
+						continue;
+					}
+
+					$args = is_string( $tc->arguments )
+						? ( json_decode( $tc->arguments, true ) ?: [] )
+						: (array) $tc->arguments;
+
+					if ( in_array( $toolName, [ 'list_files', 'search_pattern' ], true )
+					     && isset( $args['path'] ) && ! isset( $args['directory'] ) ) {
+						$args['directory'] = $args['path'];
+					}
+					try {
+						if ( in_array( $toolName, [ 'read_file', 'search_pattern', 'list_files' ], true ) ) {
+							$key          = $toolName === 'read_file' ? 'path' : 'directory';
+							$args[ $key ] = $pathGuard->normalise( $args[ $key ] ?? '.' );
+						}
+					} catch ( \RuntimeException $e ) {
+						continue;
+					}
+
+					/* execute & log */
+					$logTool( 'tool_call', [ 'id' => $tc->id, 'name' => $toolName, 'args' => $args ] );
+					$result = $registry->getTool( $toolName )->execute( $args );
+					$logTool( 'tool_result', [ 'id' => $tc->id, 'result' => $result ] );
+
+					$conv[] = Message::assistantAskingTools( [
+						new ToolCall( $tc->id, $toolName, json_encode( $args, JSON_UNESCAPED_UNICODE ) ),
+					] );
+					$conv[] = Message::toolResult( json_encode( $result, JSON_UNESCAPED_UNICODE ), $tc->id );
+
+					$successful ++;
+					$calls[] = [ 'toolName' => $toolName, 'args' => $args, 'result' => $result ];
+				}
+				$conv[] = Message::user( "✅ Interpret results, then next step or **done**." );
+				continue;
+			}
+
+			/* ───────── 5b  legacy JSON‑inside‑content path ─────────
+			   (now ALWAYS allowed – even for native‑capable models)   */
+			if ( preg_match( '/\{.*\}/s', $thought, $m )
+			     && ( $call = json_decode( $m[0], true ) )
+			     && is_array( $call ) && isset( $call['name'] ) ) {
+
+				$toolName = $call['name'];
+				$args     = $call['arguments'] ?? [];
+
+				if ( ! in_array( $toolName, $tools, true ) ) {
+					$conv[] = Message::assistant( "❌ Unknown tool `{$toolName}`." );
+					continue;
+				}
+
+				if ( in_array( $toolName, [ 'list_files', 'search_pattern' ], true )
+				     && isset( $args['path'] ) && ! isset( $args['directory'] ) ) {
+					$args['directory'] = $args['path'];
+				}
+				try {
+					if ( in_array( $toolName, [ 'read_file', 'search_pattern', 'list_files' ], true ) ) {
+						$key          = $toolName === 'read_file' ? 'path' : 'directory';
+						$args[ $key ] = $pathGuard->normalise( $args[ $key ] ?? '.' );
+					}
+				} catch ( \RuntimeException $e ) {
+					continue;
+				}
+
+				/* execute & log */
+				$id = uniqid( 'call_', true );
+				$logTool( 'tool_call', [ 'id' => $id, 'name' => $toolName, 'args' => $args ] );
+				$result = $registry->getTool( $toolName )->execute( $args );
+				$logTool( 'tool_result', [ 'id' => $id, 'result' => $result ] );
+
+				$conv[] = Message::assistantAskingTools( [
+					new ToolCall( $id, $toolName, json_encode( $args, JSON_UNESCAPED_UNICODE ) ),
+				] );
+				$conv[] = Message::toolResult( json_encode( $result, JSON_UNESCAPED_UNICODE ), $id );
+
+				$successful ++;
+				$calls[] = [ 'toolName' => $toolName, 'args' => $args, 'result' => $result ];
+				$conv[]  = Message::user( "✅ Interpret results, then next step or **done**." );
+				continue;
+			}
+
+			/* nothing actionable produced – re‑prompt automatically */
+			$conv[] = Message::assistant( "❌ You produced no usable tool call. Think again." );
+		}
+
+		if ( $summary === '' ) {
+			$log( 'error', 'loop ended w/o summary' );
+			NodeResponse::error( 'Model never produced summary.', 500 );
+		}
+
+		/* ───────────── 6.  final JSON ───────────── */
+		$conv[] = Message::assistant( $summary );
+		$conv[] = Message::user( "🟢 Reply ONLY with the final JSON object." );
+		$chat->setModelOption( 'tool_choice', 'none' );
+		$chat->setModelOption( 'format', $format );
+
+		$jsonEval = new JSONFormatEvaluator();
+
+		for ( $attempt = 0; $attempt < 2; $attempt ++ ) {
+			$log( 'prompt', '[final JSON request]' );
+			[ $finRaw ] = $unwrap( $chat->generateChat( $conv ) );
+			$log( 'response', $finRaw );
+
+			$answer = preg_replace( '/```json|```/i', '', $finRaw );
+			if ( $jsonEval->evaluateText( $answer )->getResults()['score'] ?? 0 ) {
+				$log( 'done', [ 'iterations' => $it, 'json_bytes' => strlen( $answer ) ] );
+				NodeResponse::toolPrompt( $answer, $calls, $model, [
+					'iterations'     => $it,
+					'job_id'         => $input['job_id'] ?? null,
+					'session_id'     => $input['session_id'] ?? null,
+					'execution_time' => (int) ( ( microtime( true ) - $_SERVER['REQUEST_TIME_FLOAT'] ) * 1000 ),
+				] );
+
+				return;
+			}
+			$conv[] = Message::assistant( "❌ Invalid JSON. Output ONLY the object." );
+		}
+
+		$log( 'error', 'final JSON invalid after retry' );
+		NodeResponse::error( 'Model failed to produce valid JSON.', 500 );
+	}
+
+	/* ------------------------------------------------------------------ */
+	private static function exampleFor( string $tool ): string {
+		return match ( $tool ) {
+			'read_file' => '{"name":"read_file","arguments":{"path":"includes/utils.php"}}',
+			'list_files' => '{"name":"list_files","arguments":{"directory":"."}}',
+			'search_pattern' => '{"name":"search_pattern","arguments":{"pattern":"foo","directory":"."}}',
+			default => sprintf( '{"name":"%s","arguments":{}}', $tool ),
+		};
 	}
 }
